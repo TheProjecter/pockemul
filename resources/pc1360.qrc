@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/PC1360" >
+        <file>pc1360/1360lcd.jpg</file>
+        <file>pc1360/1360symb.jpg</file>
+        <file>pc1360/B0-1360.rom</file>
+        <file>pc1360/B1-1360.rom</file>
+        <file>pc1360/B2-1360.rom</file>
+        <file>pc1360/B3-1360.rom</file>
+        <file>pc1360/B4-1360.rom</file>
+        <file>pc1360/B5-1360.rom</file>
+        <file>pc1360/B6-1360.rom</file>
+        <file>pc1360/B7-1360.rom</file>
+        <file>pc1360/cpu-1360.rom</file>
+        <file>pc1360/pc1360.jpg</file>
+    </qresource>
+</RCC>

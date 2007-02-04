@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/POCKEMUL" >
+        <file>pockemul/pockemul.bmp</file>
+    </qresource>
+</RCC>

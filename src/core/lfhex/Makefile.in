@@ -1,0 +1,109 @@
+GREP = @GREP@
+MOC  = @MOC@
+CXX  = @CXX@
+FLEX = @FLEX@
+BISON = @BISON@
+INSTALL = @INSTALL@
+
+TOPDIR = @top_srcdir@
+PROGRAM = @PROGRAM@
+VERSION = @VERSION@
+PROGRAM_PATH = $(TOPDIR)/bin/$(PROGRAM)
+#
+# allow user specified install path prefix
+#
+EXEC_PREFIX = @exec_prefix@
+ifeq ($(EXEC_PREFIX),)
+	EXEC_PREFIX=/usr/local/bin
+endif
+
+CXXFLAGS = @CXXFLAGS@
+INCLUDE_DIRS = @QT_INC_DIR@
+IFLAGS = $(addprefix -I,$(INCLUDE_DIRS))
+LIBRARIES = QtCore Xext X11 m
+LIB_DIRS  = @QT_LIB_DIR@ /usr/X11R6/lib
+LFLAGS = $(addprefix -L,$(LIB_DIRS)) $(addprefix -l,$(LIBRARIES))
+
+CPP_SRC = $(wildcard *.cpp) expr.ll.cpp expr.yy.cpp
+HPP_SRC = $(wildcard *.hpp)
+H_SRC   = $(wildcard *.h) $(HPP_SRC)
+MOC_HPP = $(shell $(GREP) -l Q_OBJECT $(HPP_SRC))
+
+MOC_SRC  = $(addprefix moc_,$(MOC_HPP:.hpp=.cpp))
+CXX_SRC  = $(CPP_SRC) $(MOC_SRC)
+
+OBJECTS = $(sort $(CXX_SRC:.cpp=.o))
+
+BUILD_DATE = $(shell @DATE_PROG@)
+BUILD_HOST = $(shell @HOSTNAME_PROG@)
+
+ifeq ($(VERBOSE),)
+	QUIET = @
+else
+	QUIET =
+endif
+
+.PHONY : clean_moc clean_objects clean moc all build_info.h
+
+#
+# rules
+#
+all : $(PROGRAM_PATH)
+
+$(PROGRAM_PATH) : $(OBJECTS)
+	@echo "Linking $(PROGRAM_PATH)"
+	$(QUIET) $(CXX) $(OBJECTS) $(LFLAGS) -o $@
+
+app.pro :
+	echo "TEMPLATE = app" > $@
+	echo "SOURCES  = $(CPP_SRC)" >> $@
+	echo "HEADERS  = $(H_SRC)" >> $@
+	echo "TARGET   = $(PROGRAM)" >> $@
+	echo "CONFIG   = qt warn_on debug" >> $@
+
+build_info.h :
+	echo #define BUILD_HOST "$(BUILD_HOST)" > $@
+	echo #define BIULD_DATE "$(BUILD_DATE)" >> $@
+
+moc : $(MOC_SRC)
+
+clean : clean_moc clean_objects
+	@echo "Removing objects and derived sources..."
+	$(QUIET) $(RM) core *~ .depend img/*~
+
+clean_moc :
+	$(QUIET) $(RM) $(MOC_SRC)
+
+clean_objects :
+	$(QUIET) $(RM) $(OBJECTS) $(PROGRAM_PATH)
+
+depend : $(CXX_SRC)
+	@echo "Generating .depend file..."
+	$(QUIET) $(CXX) $(CXXFLAGS) $(IFLAGS) $^ -M -MG > .depend
+
+objects : $(OBJECTS)
+
+install :
+	@echo "Installing $(PROGRAM) in $(EXEC_PREFIX)"
+	$(QUIET) $(INSTALL) $(PROGRAM_PATH) $(EXEC_PREFIX)
+
+# pattern rules
+moc_%.cpp : %.hpp
+	@echo "Generating $@..."
+	$(QUIET) $(MOC) $< -o $@
+
+%.o : %.cpp
+	@echo "Compiling $<..."
+	$(QUIET) $(CXX) $(CXXFLAGS) $(IFLAGS) -c $< -o $@
+
+# rules for flex/bison
+expr.ll.cpp : expr.l expr.yy.hh
+	$(FLEX) -o$@ -Pexpr expr.l
+expr.yy.cpp expr.yy.hh : expr.y
+	$(BISON) -d -b expr -p expr -o expr.yy.cpp $^
+
+#
+# Include make dependancies if they have been generated
+#
+-include .depend
+

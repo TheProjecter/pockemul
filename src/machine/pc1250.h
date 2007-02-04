@@ -1,0 +1,77 @@
+#ifndef _PC1250_H
+#define _PC1250_H
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "extension.h"
+#include "pcxxxx.h"
+#include "sc61860.h"
+#include "Keyb.h"
+#include "Connect.h"
+
+#define PS_OFF	0
+#define PS_RUN	0
+#define PS_RSV	1
+#define PS_PRO	2
+
+// WARNING -- TO MODIFY !!!!!!!!!!!!!
+//#define KEY(c)	( asfocus && ( GetAsyncKeyState(c) || (toupper(pPC->pKEYB->LastKey)==toupper(c)) || pPC->pKEYB->LastKey == c) )
+#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+
+class Cpc1250:public CpcXXXX{						//PC1250 emulator main class
+
+public:
+	char*	GetClassName(){ return("Cpc1250");};
+
+	void	TurnON(void);
+
+	
+	bool	Set_Connector(void);
+	bool	Get_Connector(void);
+	BYTE	Get_PortA(void);
+	virtual BYTE	Get_PortB(void);
+
+	bool	InitDisplay(void);
+	bool	CompleteDisplay(void);
+
+	bool	Mem_Mirror(DWORD *d);
+	bool	Chk_Adr(DWORD *d,DWORD data);
+	bool	Chk_Adr_R(DWORD *d,DWORD data);
+	UINT8 in(void){return(1);};
+
+	qint8		PowerSwitch;
+	virtual bool	LoadExtra(QFile *);
+	virtual bool	SaveExtra(QFile *);
+
+	Cpc1250(CPObject *parent = 0);
+
+	virtual ~Cpc1250()
+	{								//[constructor]
+	}
+protected:
+	BYTE previous_key;
+};
+
+
+
+class Ctrspc3:public Cpc1250{						//PC1250 emulator main class
+public:
+
+	Ctrspc3(CPObject *parent = 0)	: Cpc1250(this)
+	{								//[constructor]
+		setcfgfname("trspc3");
+
+		SessionHeader	= "TRSPC3PKM";
+		SessionHeaderLen= 9;
+		Initial_Session_Fname ="trspc3.pkm";
+
+		BackGroundFname	= ":/PC1250/pc1250/trspc3.png";
+	}
+
+
+};
+
+#endif
+
+
