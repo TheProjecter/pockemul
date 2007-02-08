@@ -91,7 +91,7 @@ public:
 	
 	Cpc15XX(CPObject *parent = 0);
 
-	~Cpc15XX()
+	virtual ~Cpc15XX()
 	{								//[constructor]
 		delete pLH5810;
 		delete pce152;

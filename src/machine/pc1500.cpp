@@ -68,7 +68,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	pCONNECTOR	= new Cconnector60(this);	publish(pCONNECTOR);
 	pKEYB		= new Ckeyb_pc1500(this);
 	pce152		= new Cce152_PC15XX(this);
-	pce152->pTIMER = pTIMER;
+	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
 	
 	ce150_connected = false;
 	
