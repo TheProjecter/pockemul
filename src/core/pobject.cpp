@@ -54,9 +54,9 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
 
 CPObject::~CPObject()
 {
-	delete pKEYB;
-	delete pTIMER;
-	delete pLCDC;	
+	//delete pKEYB;
+	//delete pTIMER;
+	//delete pLCDC;	
 	
 	//delete FinalImage;
 	//delete BackgroundImage;

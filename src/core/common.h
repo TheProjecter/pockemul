@@ -3,6 +3,9 @@
 
 #include <QMessageBox>
 
+
+#define PROJECT_NAME "PockEmul"
+
 #define TRACE(c)             QMessageBox::about(mainwindow, mainwindow->tr("Trace"),mainwindow->tr(c));
 #define MSG_ERROR(c)         QMessageBox::critical(mainwindow, mainwindow->tr("ERROR"),c);
 

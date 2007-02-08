@@ -13,6 +13,7 @@
 #include "dialogstartup.h"
 #include "dialoglog.h"
 #include "hexviewer.h"
+#include "autoupdater.h"
 
 #include "init.h"
 #include "common.h"
@@ -52,6 +53,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     connect(actionOpen,				SIGNAL(triggered()), this, SLOT(opensession()));
     connect(actionLog_Messages,		SIGNAL(triggered()), this, SLOT(Log()));
  	connect(actionAnalogic_Port,	SIGNAL(triggered()), this, SLOT(Analogic()));    
+ 	connect(actionCheck_for_Updates,SIGNAL(triggered()), this, SLOT(CheckUpdates()));    
 
 	pdirectLink = new CDirectLink;
  
@@ -159,6 +161,11 @@ void MainWindowPockemul::Analogic()
         dialoganalogic->show();
 }
 
+void MainWindowPockemul::CheckUpdates()
+{
+	CAutoUpdater dialogcheckupdate(this);
+	dialogcheckupdate.exec();
+}
     
 void MainWindowPockemul::opensession()
 {

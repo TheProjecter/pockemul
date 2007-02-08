@@ -37,6 +37,7 @@ private slots:
 	void about();
 	void Log();
 	void Analogic();
+	void CheckUpdates();
 	int  newsession();
 	void opensession();
 	void updateTimer();
