@@ -41,14 +41,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuHelp" >
-    <property name="title" >
-     <string>Help</string>
-    </property>
-    <addaction name="actionAbout_PockEmul" />
-    <addaction name="separator" />
-    <addaction name="actionCheck_for_Updates" />
-   </widget>
    <widget class="QMenu" name="menuMonitor_2" >
     <property name="title" >
      <string>Monitor</string>
@@ -68,6 +60,14 @@
     <addaction name="actionExit" />
     <addaction name="separator" />
     <addaction name="actionSkin_Editor" />
+   </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout_PockEmul" />
+    <addaction name="separator" />
+    <addaction name="actionCheck_for_Updates" />
    </widget>
    <addaction name="menuRoot" />
    <addaction name="menuMonitor_2" />
@@ -136,7 +136,7 @@
   </action>
   <action name="actionCheck_for_Updates" >
    <property name="enabled" >
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text" >
     <string>Check for Updates...</string>
@@ -253,8 +253,7 @@
   </action>
  </widget>
  <layoutdefault spacing="0" margin="0" />
- <resources>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>actionExit</sender>
