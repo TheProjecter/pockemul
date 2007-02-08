@@ -14,7 +14,7 @@ void Cce125tape::ComputeKey(void)
 		{
 			if (mode = LOAD)
 				{
-					BackGroundFname	= ":/EXT/res/ext/ce-125play.jpg";
+					BackGroundFname	= ":/EXT/ext/ce-125play.jpg";
 					InitDisplay();
 					update();				
 					Play();	
@@ -26,26 +26,26 @@ void Cce125tape::ComputeKey(void)
 		switch (mode)
 		{
 		case EJECT: 
-		case STOP : BackGroundFname	= ":/EXT/res/ext/ce-125eject.jpg";
+		case STOP : BackGroundFname	= ":/EXT/ext/ce-125eject.jpg";
 					InitDisplay();
 					update();
 					if (LoadTape())
-						BackGroundFname	= ":/EXT/res/ext/ce-125load.jpg";
+						BackGroundFname	= ":/EXT/ext/ce-125load.jpg";
 					else
-						BackGroundFname	= ":/EXT/res/ext/ce-125tape.jpg";
+						BackGroundFname	= ":/EXT/ext/ce-125tape.jpg";
 					InitDisplay();
 					update(); break;
-		case LOAD : BackGroundFname	= ":/EXT/res/ext/ce-125eject.jpg";
+		case LOAD : BackGroundFname	= ":/EXT/ext/ce-125eject.jpg";
 					InitDisplay();
 					update();
 					if (LoadTape())
-						BackGroundFname	= ":/EXT/res/ext/ce-125load.jpg";
+						BackGroundFname	= ":/EXT/ext/ce-125load.jpg";
 					else
-						BackGroundFname	= ":/EXT/res/ext/ce-125tape.jpg";
+						BackGroundFname	= ":/EXT/ext/ce-125tape.jpg";
 					InitDisplay();
 					update(); break;
 		case RECORD:
-		case PLAY : BackGroundFname	= ":/EXT/res/ext/ce-125load.jpg";
+		case PLAY : BackGroundFname	= ":/EXT/ext/ce-125load.jpg";
 					InitDisplay();
 					update();
 					StopPlay(); break;
