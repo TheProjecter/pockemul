@@ -24,7 +24,7 @@ INLINE void Log_Oper(int set,int oper)
 
 bool CLH5801::init(void)
 {
-//	logsw = true;
+	logsw = false;
 	Check_Log();
 	pDEBUG->init();
 	Reset();
@@ -260,11 +260,16 @@ INLINE void CLH5801::ADD_MEM(DWORD addr, UINT8 data)
 
 INLINE void CLH5801::ADR(PAIR *reg)
 {
+//	UINT8 tmp_t = lh5801.t;
+
 	reg->b.l = add_generic(reg->b.l,lh5801.a,0);
 	if (F_C) {
+//		reg->b.h = add_generic(reg->b.h,1,0);
 		reg->b.h++;
+//		lh5801.t = tmp_t;
+		
 	}
-	UnSet_C();
+//	UnSet_C();
 }
 
 INLINE void CLH5801::SBC(UINT8 data)
