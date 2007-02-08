@@ -153,6 +153,8 @@ bool Cce152::GetWav(void)
 	delta_state = new_state - first_state;
 
 	// Calculate nb of byte to skip corresponding to the CPU frequency
+	int tmp = pTIMER->pPC->getfrequency();
+	u_long tmp2= info.freq;
 	qint64 wait = (counter * pTIMER->pPC->getfrequency() / info.freq);
 	if (delta_state >= wait)
 	{
@@ -1037,84 +1039,17 @@ int Cce152::LoadTape(void)
 	}
 //	MSG_ERROR(tr("Sampling frequency is  %1 Hz").arg(info.freq));
 
-	info.bitLen = (info.freq  * 8) / pPC->Tape_Base_Freq ;
-	info.freq = pPC->Tape_Base_Freq ;
+//	info.freq = (u_long) pPC->Tape_Base_Freq ;
+	info.bitLen = (info.freq  * 8) / pTIMER->pPC->Tape_Base_Freq ;
 
 	med_pt	= (info.freq/rec_speed)*0.45;
 	low_pt	= (info.freq/rec_speed)*0.25;
-
-	
-#if 0	
-	WAVEFORMATEX wfx;
-    /*
-    * first we need to set up the WAVEFORMATEX structure. 
-    * the structure describes the format of the audio.
-    */
-    wfx.nSamplesPerSec = info.freq*2; /* sample rate */
-    wfx.wBitsPerSample = 8; /* sample size */
-    wfx.nChannels = 1; /* channels*/
-    /*
-    * WAVEFORMATEX also has other fields which need filling.
-    * as long as the three fields above are filled this should
-    * work for any PCM (pulse code modulation) format.
-    */
-    wfx.cbSize = 0; /* size of _extra_ info */
-    wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nBlockAlign = (wfx.wBitsPerSample >> 3) * wfx.nChannels;
-    wfx.nAvgBytesPerSec = wfx.nBlockAlign * wfx.nSamplesPerSec;
-
-	OpenSound(&wfx);
-#endif
 
 
 	first_state = 0;
 	mode = LOAD;
 	return (1);
 }
-
-#if 0
-u_long testReadQuarterTape(void)
-{
-	u_long quarter=0;
-	u_long trans=0;
-	BYTE bit;
-
-	if (fp_tape==NULL) 
-		fp_tape=fopen("LOG TAPE.txt","wb");
-
-	// Loop until bit start
-	do 
-	{
-		ce152.ReadBitFromWav(&trans,&ce152.info);
-		if (trans > BIT_MID)
-			bit = 1;     /* Bit a 1 */
-		else
-			bit = 0;     /* Bit a 0 */
-		
-		fprintf(fp_tape,"%c",(bit==1?'1':'0'));
-
-	}
-	while (bit==1);
-		fprintf(fp_tape," ");
-
-	for (int jj=0;jj<4;jj++) 
-	{
-		ce152.ReadBitFromWav(&trans,&ce152.info);
-		if (trans > BIT_MID)
-			bit = 1;     /* Bit a 1 */
-		else
-			bit = 0;     /* Bit a 0 */
-		fprintf(fp_tape,"%c",(bit==1?'1':'0'));
-
-		quarter |= (bit << (jj)); 
-	}
-
-
-	//fprintf(fp_tape,"   ** LOAD QUARTER BIT : %02X\n",quarter<<4);
-
-return (quarter);
-}
-#endif
 
 
 int Cce152::WriteHeadToWav (u_long    nbSamp,
@@ -1384,7 +1319,7 @@ int Cce152::RecTape(void)
 int Cce152_PC15XX::RecTape(void)
 {
 	Cce152::RecTape();
-	int sync = (2 * pPC->Tape_Base_Freq) / 8 ;
+	int sync = (2 * pTIMER->pPC->Tape_Base_Freq) / 8 ;
 	WriteSyncToWav (sync, &info) ;
 	return (1);
 }
