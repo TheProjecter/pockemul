@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
+    <width>709</width>
     <height>557</height>
    </rect>
   </property>
@@ -261,7 +261,7 @@
            <iconset resource="../resources/pc1500.qrc" >:/TRSPC2/pc1500/trspc2.jpg</iconset>
           </property>
          </item>
-         <item>
+		 <item>
           <property name="text" >
            <string>PC 1600</string>
           </property>
@@ -397,14 +397,6 @@
            <iconset resource="../resources/ext.qrc" >:/EXT/ext/ce-152.png</iconset>
           </property>
          </item>
-         <item>
-          <property name="text" >
-           <string>CE-1600P</string>
-          </property>
-          <property name="icon" >
-           <iconset resource="../resources/ext.qrc" >:/EXT/ext/ce-1600p.png</iconset>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>
@@ -483,14 +475,6 @@
           </property>
           <property name="icon" >
            <iconset resource="../resources/ext.qrc" >:/EXT/ext/cable.png</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text" >
-           <string>Potar</string>
-          </property>
-          <property name="icon" >
-           <iconset resource="../resources/ext.qrc" >:/EXT/ext/potar.png</iconset>
           </property>
          </item>
         </widget>
