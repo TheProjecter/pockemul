@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/PC1600">
+        <file>pc1600/pc-1600.jpg</file>
+        <file>pc1600/pc1600lcd.jpg</file>
+        <file>pc1600/romI-0.bin</file>
+        <file>pc1600/romII-0.bin</file>
+        <file>pc1600/romIII-3.bin</file>
+        <file>pc1600/romIV-6.bin</file>
+        <file>pc1600/rom1500.bin</file>
+        <file>pc1600/rom3b.bin</file>
+        <file>pc1600/romce1600-1.bin</file>
+        <file>pc1600/romce1600-2.bin</file>
+    </qresource>
+</RCC>
