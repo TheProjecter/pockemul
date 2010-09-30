@@ -69,6 +69,7 @@ void	Clcdc::TurnOFF(void){ On = false; }
 bool	Clcdc::init(void)
 {
 	On = false;
+    ready = true;
 	
 	return(true);
 }
@@ -402,7 +403,7 @@ static const struct {
 	{134,0},	// DE
 	{142,0},	// G
 	{147,0},	// RAD
-	(125,0)	
+    {125,0}
 };
 
 

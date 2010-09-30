@@ -1,8 +1,8 @@
 #ifndef _POBJECT_H_
 #define _POBJECT_H_
 
+//#include <QObject>
 
-#include <QObject>
 #include <QWidget>
 #include <QPoint>
 #include <QImage>
@@ -18,9 +18,11 @@ class CExtensionArray;
 class DialogKeyList;
 class DialogDump;
 
-class CPObject:public QWidget						// a POCKEMUL OBJECT
+class CPObject:public QWidget
 {
-Q_OBJECT
+
+    Q_OBJECT
+
 public:
 
 	CPObject(CPObject *parent=0);
@@ -29,7 +31,7 @@ public:
 	
 	QPoint		SnapPts;
 	qreal		RangeFrom(CPObject * target);
-	virtual void ComputeKey(void){};
+    virtual void ComputeKey(void){}
 	bool		stackBehind;		// if true then always stacked behind the connected object
 	CPObject	*Parent;
 	CpcXXXX		*pPC;
@@ -40,11 +42,11 @@ public:
 	QString	LcdFname;
 	QString	SymbFname;
 	
-	void setName(QString val){ Name = val;	};
-	QString getName(){ return Name;	};
+    void setName(QString val){ Name = val;	}
+    QString getName(){ return Name;	}
 	
-	QString getcfgfname() { return cfgfname; };
-	void	setcfgfname(QString s) { cfgfname = s; };
+    QString getcfgfname() { return cfgfname; }
+    void	setcfgfname(QString s) { cfgfname = s; }
 	
 	int	posx();
 	int posy();
@@ -65,10 +67,10 @@ public:
 	virtual	bool	init();			// initialize
 	virtual bool	InitDisplay(void);
 	virtual void	UpdateFinalImage(void);
-	virtual	bool	run(void){ return true;};					// emulator main step
+    virtual	bool	run(void){ return true;}					// emulator main step
 	virtual bool	exit();					// exit
-	int		getfrequency() { return frequency; };
-	void	setfrequency(int f) { frequency = f; };
+    int		getfrequency() { return frequency; }
+    void	setfrequency(int f) { frequency = f; }
 
 	QImage * LoadImage(QSize size,QString fname);
 	bool	Refresh_Display;
@@ -94,16 +96,16 @@ public:
 	FSOUND_STREAM* pStream;
 	static signed char F_CALLBACKAPI CustomStreamCallBack( FSOUND_STREAM *stream, void *buff, int len, void * param );
 #endif
-	QList<unsigned char> soundBuffer;
+    QList<unsigned char> soundBuffer;
 	
 	DialogKeyList	*dialogkeylist;
-	DialogDump		*dialogdump;
+    DialogDump		*dialogdump;
 
 	void setCpu(int );
-	virtual void TurnON() {};
-	virtual void TurnOFF() {};
+    virtual void TurnON() {}
+    virtual void TurnOFF() {}
 	bool	Power;
-	virtual void Reset() {};
+    virtual void Reset() {}
 		
 protected:
 	void paintEvent(QPaintEvent *);
@@ -121,20 +123,15 @@ private slots:
 	void slotExit();
 	void KeyList();
 
-	void slotCpu100();
-	void slotCpu200();
-	void slotCpu300();
-	void slotCpu500();
-	void slotCpumax();
+    void slotCpu(QAction*);
 
-	void contrast_0();
-	void contrast_1();
-	void contrast_2();
-	void contrast_3();
-	void contrast_4();
+    void slotContrast(QAction *);
 
 	void slotPower();
 	void slotReset();
+    //void slotDetach();
+    void slotLoadSession();
+    void slotSaveSession();
 	void Dump();
 	
 	

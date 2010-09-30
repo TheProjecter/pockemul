@@ -17,7 +17,7 @@
 
 extern int	g_DasmStep;
 extern bool	UpdateDisplayRunning;
-
+ 
 
 Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -62,10 +62,10 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	ce150_Access	= FALSE;
 
 	pLCDC		= new Clcdc_pc1500(this);
-	pCPU		= new CLH5801(this);
+    pCPU		= new CLH5801(this); pCPU->logsw=false;
 	pLH5810		= new CLH5810_PC1500(this);
 	pTIMER		= new Ctimer(this);
-	pCONNECTOR	= new Cconnector60(this);	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",false);	publish(pCONNECTOR);
 	pKEYB		= new Ckeyb_pc1500(this);
 	pce152		= new Cce152_PC15XX(this);
 	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
@@ -108,45 +108,6 @@ bool Cpc15XX::CompleteDisplay(void)
 //	AddLog(LOG_FUNC,"Cpc1500::CompleteDisplay");
 	
 	CpcXXXX::CompleteDisplay();
-
-#if 0 
- 	if ((EXTENSION_CE150_CHECK) && (pCE150) )
-	{
-		////////////////////////////////////////////////////
-		// Draw the Paper
-		////////////////////////////////////////////////////
-		if ( pCE150->ce150display)
-		{
-//			if (pCE150->needRedraw)
-			{
-				painter.begin(FinalImage);
-				painter.drawImage(QRect(80,46,167,170),pCE150->ce150display->copy(QRect(40,250,280,267)).scaled(QSize(167,170), Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
-//			painter.drawImage(QRect(80,46,167,170),*pCE150->ce150display,QRect(40,250,280,267));
-				painter.end();
-				pCE150->needRedraw = false;
-			}
-		}
-
-		////////////////////////////////////////////////////
-		// Deal with the Print Mode Switch
-		////////////////////////////////////////////////////
-		if (pCE150->Print_Mode)		// Draw Print Mode Switch
-		{
-			// Swap 2 square  552-278, 564-278
-			srcRect.left	= 552;
-			srcRect.right	= srcRect.left + 10;
-			srcRect.top		= 278;
-			srcRect.bottom	= srcRect.top + 14;
-
-			destRect.left	= 564;
-			destRect.right	= destRect.left + 10;
-			destRect.top	= 278;
-			destRect.bottom = destRect.top + 14;
-			hRet = pDDSurface->Blt(&destRect, g_pDDSOne, &srcRect, DDBLT_WAIT, NULL);
-			hRet = pDDSurface->Blt(&srcRect, g_pDDSOne, &destRect, DDBLT_WAIT, NULL);
-		}
-	}
-#endif
 	
 	return TRUE;
 }
@@ -271,7 +232,7 @@ bool Cpc15XX::run(void)
 	}
 	else
 	{
-		TurnOFF();
+//		TurnOFF();
 	}
 #endif
 
@@ -528,8 +489,9 @@ BYTE Cpc15XX::Get_Port(PORTS Port){return(0);};
 #define KS		( pKEYB->Get_KS()) 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 
-UINT8 Cpc15XX::in(void)
+UINT8 Cpc15XX::in(UINT8 address)
 {
+//return 1^0xff;
 //	static int cnt=0;
 	UINT8 data=0;
 	if (KS&1) {
@@ -680,13 +642,15 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	ON/Break
 	////////////////////////////////////////////////////////////////////
-	if (pPC->pKEYB->Kon)
-	{
-		SetRegBit(LH5810_OPB,7,TRUE);
-	} else
-	{
-		SetRegBit(LH5810_OPB,7,FALSE);
-	}
+    SetRegBit(LH5810_OPB,7,pPC->pKEYB->Kon);
+
+//	if (pPC->pKEYB->Kon)
+//	{
+//		SetRegBit(LH5810_OPB,7,TRUE);
+//	} else
+//	{
+//		SetRegBit(LH5810_OPB,7,FALSE);
+//	}
 
 	////////////////////////////////////////////////////////////////////
 	//	TAPE READER

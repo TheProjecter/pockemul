@@ -14,8 +14,10 @@
 #include "Keyb1403.h"
 #include "Keyb1450.h"
 #include "Keyb1500.h"
+#include "Keyb1600.h"
 #include "keybce150.h"
-#include "keybce152.h"  
+#include "keybce152.h"
+
 
 extern CPocketThread* PcThread;
 INLINE BYTE bit(int ii)

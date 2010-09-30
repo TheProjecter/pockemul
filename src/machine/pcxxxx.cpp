@@ -27,6 +27,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	pCONNECTOR	= 0;
 	pSIOCONNECTOR	= 0;
 
+    fp_log  = 0;
 	off			= TRUE;
 	DialogExtensionID = 0;	
 	setcfgfname(QString("pcXXXX"));
@@ -283,10 +284,18 @@ void CpcXXXX::Set_16(DWORD adr,WORD d)
 	DWORD	a;
 	a=adr;
 	if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
-	a=++adr;
-	if(Chk_Adr(&a,d)) mem[a]=(BYTE) (d>>8);
+    a=adr+1;
+    if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
 }
  
+void CpcXXXX::Set_16r(DWORD adr,WORD d)
+{
+    DWORD	a;
+    a=adr;
+    if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
+    a=adr+1;
+    if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
+}
 
 /*****************************************************************************/
 /* RETURN: 0=error, 1=success												 */
@@ -380,23 +389,12 @@ bool CpcXXXX::run(void)
 #if 1
 		if ( (pCPU->logsw) && (pCPU->fp_log) )
 		{
-			pCPU->Regs_Info(1);
-#if 1
+            Regs_Info(1);
+
 			fprintf(pCPU->fp_log,"%-40s   %s\n",
 				pCPU->pDEBUG->Buffer,pCPU->Regs_String);
-#endif
-#if 0
-			fprintf(pCPU->fp_log,"%-25s%s  0x1F000:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x  0x1F000:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x  \n",
-				pCPU->pDEBUG->Buffer,pCPU->Regs_String,mem[0x1B000],mem[0x1B001],mem[0x1B002],mem[0x1B003],mem[0x1B004],mem[0x1B005],mem[0x1B006],mem[0x1B007],mem[0x1B008],mem[0x1B009],mem[0x1B00A],mem[0x1B00B],mem[0x1B00C],mem[0x1B00D],mem[0x1B00E],mem[0x1B00F],mem[0x1F000],mem[0x1F001],mem[0x1F002],mem[0x1F003],mem[0x1F004],mem[0x1F005],mem[0x1F006],mem[0x1F007],mem[0x1F008],mem[0x1F009],mem[0x1F00A],mem[0x1F00B],mem[0x1F00C],mem[0x1F00D],mem[0x1F00E],mem[0x1F00F]);
-#endif
-#if 0
-			fprintf(pCPU->fp_log,"0x7879=%02X 0x7B90:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n",
-				mem[0x7879],mem[0x7B90],mem[0x7B91],mem[0x7B92],mem[0x7B93],mem[0x7B94],mem[0x7B95],mem[0x7B96],mem[0x7B97],mem[0x7B98],mem[0x7B99],mem[0x7B9A],mem[0x7B9B],mem[0x7B9C],mem[0x7B9D],mem[0x7B9E],mem[0x7B9F]);
-#endif
-#if 0
-			fprintf(pCPU->fp_log,"%-25s%s  0x4000:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x \n",
-				pCPU->pDEBUG->Buffer,pCPU->Regs_String,mem[0x4000],mem[0x4001],mem[0x4002],mem[0x4003],mem[0x4004],mem[0x4005],mem[0x4006],mem[0x4007],mem[0x4008],mem[0x4009],mem[0x400A],mem[0x400B],mem[0x400C],mem[0x400D],mem[0x400E],mem[0x400F]);
-#endif
+
+            fflush(pCPU->fp_log);
 		}
 
 		if (g_BreakPointAdr == (pCPU->get_PC()))
@@ -412,13 +410,13 @@ bool CpcXXXX::run(void)
 	else pTIMER->state= (qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
 
 
-#if 0
-	if (g_DasmStep)		// Stop after 1 step processed (DASM)
-	{
-		pCPU->halt = 1;
-		g_DasmStep = 0;
-	}
-#endif
+
+//	if (g_DasmStep)		// Stop after 1 step processed (DASM)
+//	{
+//		pCPU->halt = 1;
+//		g_DasmStep = 0;
+//	}
+
 
 	Set_Connector();		//Write the connectors
 	
@@ -471,7 +469,7 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 	// Read Header
 	file->read( t, SessionHeaderLen );
 	t[SessionHeaderLen] = '\0';
-//	MSG_ERROR(QString(t))
+	//MSG_ERROR(QString(t))
 	if(QString(t) != SessionHeader)
 	{		//bad image
 		MSG_ERROR(tr("Not the correct file format"));
@@ -551,7 +549,7 @@ void CpcXXXX::LoadSession(void)
 
 void CpcXXXX::SaveSession(void)
 {
-QString fileName = QFileDialog::getOpenFileName(
+QString fileName = QFileDialog::getSaveFileName(
                     mainwindow,
                     tr("Choose a file"),
                     ".",
@@ -598,7 +596,6 @@ bool CpcXXXX::Mem_Load(BYTE s)
 {
 	QFile file;
 
-//	file.setFileName(SlotName[s]);
 	file.setFileName(SlotList[s].getFileName());
 	
     if (file.exists())
@@ -666,6 +663,10 @@ void CpcXXXX::Regs_Info(UINT8 Type)
 			pCPU->Regs_Info(0);
 			strcpy(Regs_String,pCPU->Regs_String);
 			break;
+    case 1:			// Monitor Registers Dialog
+            pCPU->Regs_Info(1);
+            strcpy(Regs_String,pCPU->Regs_String);
+            break;
 	}
 }
 
@@ -673,6 +674,18 @@ void CpcXXXX::manageEmptyExtensions(void)
 {
 	emptyExtensionArray((QAction *)sender());
 	updateMenuFromExtension();
+
+}
+void CpcXXXX::manageLoadExtensions(void)
+{
+    emptyExtensionArray((QAction *)sender());
+    updateMenuFromExtension();
+
+}
+void CpcXXXX::manageSaveExtensions(void)
+{
+    emptyExtensionArray((QAction *)sender());
+    updateMenuFromExtension();
 
 }
 void CpcXXXX::manageExtensions(QAction * action)

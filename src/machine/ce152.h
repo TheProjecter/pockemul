@@ -1,6 +1,3 @@
-/*** POCKEMUL Emulator [CE152.H] ************************/
-/* Tape Reader/recorder(CE-152) emulation class			*/
-/********************************************************/
 #ifndef _CE152_H_
 #define _CE152_H_
 
@@ -26,15 +23,16 @@
 extern TransMap KeyMapce152[];
 extern int KeyMapce152Lenght; 
 
-typedef unsigned char    u_char;    /*  8 bits */
-typedef unsigned short   u_short;   /* 16 bits */
-typedef unsigned long    u_long;    /* 32 bits */
+typedef unsigned char    u_char;    //  8 bits
+typedef unsigned short   u_short;   // 16 bits
+typedef unsigned long    u_long;    // 32 bits
+
+
 
 
 class Cce152:public CPObject{
 
 Q_OBJECT
-
 
 public:
 	typedef struct {
@@ -80,25 +78,7 @@ typedef struct {
 	qint64		pTAPECONNECTOR_value;
 	virtual void ComputeKey(void);
 	
-	Cce152(CPObject *parent = 0)	: CPObject(parent)
-	{
-		BackGroundFname	= ":/EXT/ext/ce-152.png";
-		Tapein		= 0;				//Tape loaded (0:none, other:access)
-		TapeCounter	= 0;
-		mode		= EJECT;
-		SoundOn		= FALSE;
-		info.ptrFd	= 0;
-		pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
-		pTIMER		= new Ctimer(this);
-		Pc_DX		= 200;
-		Pc_DY		= 320;
-		KeyMap		= KeyMapce152;
-		KeyMapLenght= KeyMapce152Lenght;
-		pKEYB		= new Ckeyb(this,"ce152.map");
-		first_state = 0;
-		counter		= 0;
-		GetWav_Val	= 0;
-	};
+    Cce152(CPObject *parent = 0);
 
 protected slots:
 	int		Play(void);
@@ -139,6 +119,7 @@ protected:
 
 
 class Cce152_PC15XX:public Cce152{
+
 public:
 
 	int		GetBit(void);
@@ -173,7 +154,7 @@ public:
 	{
 	};
 
-private:
+
 
 
 };

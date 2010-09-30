@@ -15,7 +15,7 @@ extern int KeyMap1401Lenght;
 
 class Cpc1401:public CpcXXXX{						//PC1403 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1401");};
+    const char*	GetClassName(){ return("Cpc1401");};
 
 	void	TurnON(void);
 
@@ -27,7 +27,8 @@ public:
 
 	bool	Chk_Adr(DWORD *d,DWORD data);
 	bool	Chk_Adr_R(DWORD *d,DWORD data);
-	UINT8 in(void){return(1);};
+    UINT8 in(UINT8 address){return(1);};
+    UINT8 out(UINT8 address,UINT8 value){return(1);};
 	
 	virtual bool CheckUpdateExtension(CExtension *ext);
 
@@ -65,7 +66,7 @@ public:
 		pLCDC		= new Clcdc_pc1401(this);
 		pCPU		= new CSC61860(this);
 		pTIMER		= new Ctimer(this);
-		pCONNECTOR	= new Cconnector11(this);	publish(pCONNECTOR);
+        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false);	publish(pCONNECTOR);
 		pKEYB		= new Ckeyb_pc1401(this);
 
 		Lcd_X	= 119;

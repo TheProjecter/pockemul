@@ -3,6 +3,7 @@
 	
     #include "mainwindowpockemul.h"
 
+
     MainWindowPockemul* mainwindow;
 
 //	Q_IMPORT_PLUGIN(qjpeg)
@@ -16,6 +17,7 @@
 		mainwindow->setWindowIcon ( QIcon(":/POCKEMUL/pockemul/pockemul.bmp") );      
         mainwindow->resize(680,505);
         mainwindow->show();
+
         return app.exec(); 
         	
     }

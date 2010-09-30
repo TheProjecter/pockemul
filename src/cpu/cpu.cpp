@@ -17,7 +17,7 @@ void CCPU::save(void)
  
 void CCPU::Check_Log(void)
 {
-	if( logsw && (!fp_log) ) fp_log=fopen("lh5801.log","wt");	// Open log file
+    if( logsw && (!fp_log) ) fp_log=fopen(fn_log,"wt");	// Open log file
 	if( (!logsw) && fp_log ) fclose(fp_log);					// Close log file
 }
 

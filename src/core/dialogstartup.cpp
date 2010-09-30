@@ -52,6 +52,7 @@ void DialogStartup::create(QString ItemText)
 	if (ItemText == "PC 1500A")	result = 31;	
 	if (ItemText == "Tandy PC-2")	result = 32;	
 	if (ItemText == "PC 1251H")	result = 33;
+    if (ItemText == "PC 1600")	result = 34;
 
 	if (ItemText == "CE-125")	result = 101;	
 	if (ItemText == "CE-126P")	result = 102;	
@@ -62,7 +63,10 @@ void DialogStartup::create(QString ItemText)
 	if (ItemText == "26-3591")	result = 109;	
 		
 	if (ItemText == "Serial Console")	result = 105;	
-	if (ItemText == "11Pins Cable")	result = 106;	
+    if (ItemText == "11Pins Cable")	result = 106;
+    if (ItemText == "Potar")	result = 111;
+
+    if (ItemText == "CE-1600P")	result = 110;
 		
 	if (result)	{
 		this->done(result);

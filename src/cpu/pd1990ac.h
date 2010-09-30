@@ -17,7 +17,7 @@ class CPD1990AC:public QObject{
 };
 
 public:
-	char*	GetClassName(){ return("CPD1990AC");};
+    const char*	GetClassName(){ return("CPD1990AC");};
 
 
 	bool	init(void);						//initialize
@@ -56,6 +56,7 @@ public:
 	~CPD1990AC();
 	
 	void	addretrace (void);
+    //UINT	TP_FREQUENCY;
 
 private:
 
@@ -71,7 +72,7 @@ private:
 	UINT8	prev_mode;
 	UINT8	prev_clk;
 	bool	flip_clk;
-	UINT	TP_FREQUENCY;
+    UINT	TP_FREQUENCY;
 	
 	QDateTime	lastDateTime;
 	CPObject *pPC;

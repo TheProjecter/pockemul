@@ -7,7 +7,7 @@
 
 class Ccable:public CPObject{
 public:
-	char*	GetClassName(){ return("Ccable");};
+    const char*	GetClassName(){ return("Ccable");};
 
 		
 	Cconnector	*pCONNECTOR_A;
@@ -21,8 +21,8 @@ public:
 	{							//[constructor]
 		
 		
-		pCONNECTOR_A = new Cconnector11(this); publish(pCONNECTOR_A);
-		pCONNECTOR_B = new Cconnector11(this); publish(pCONNECTOR_B);
+        pCONNECTOR_A = new Cconnector(this,11,"Connector 11 pins",false); publish(pCONNECTOR_A);
+        pCONNECTOR_B = new Cconnector(this,11,"Connector 11 pins",false); publish(pCONNECTOR_B);
 		setfrequency( 0);
 		BackGroundFname	= ":/EXT/ext/cable.png";
 		

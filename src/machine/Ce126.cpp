@@ -171,23 +171,14 @@ bool Cce126::exit(void)
 void Cce126::Printer(qint8 d)
 {
 	if(ctrl_char && d==0x20)
-		ctrl_char=false;						//skip char(after 0f,0e)
+        ctrl_char=false;
 	else
 	{
 		if(d==0xf || d==0xe)
 			ctrl_char=true;
 		else
 		{
-//			if(d==0x30) d=0x4f;		//convert to 'O'
-//			if(d==0xf0) d=0x30;		//convert to '0'
-//			if(d>0x1f)
-			{
-				RefreshCe126(d);
-			}
-//			if(d==0xd)
-//			{
-//				RefreshCe126(0x0d);
-//			}
+            RefreshCe126(d);
 		}
 	}
 }

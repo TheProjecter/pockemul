@@ -20,7 +20,7 @@ void CData::Clear(void)
 void CData::Write(TAnalog_Data tmp_value)
 {
 
-// if values unchanged , simple remove last entry
+// if values unchanged , simple remove last entry and add the new one
 	if ((values.size() >3) &&
 		(values.last() == tmp_value.values) &&
 		(values.last() == values.at(values.size()-2)) &&

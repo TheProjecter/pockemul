@@ -8,7 +8,7 @@
 
 class Cpc1475:public Cpc1360{						//PC1350 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1475");};
+    const char*	GetClassName(){ return("Cpc1475");};
 
 	bool Chk_Adr(DWORD *d,DWORD data);
 	bool Chk_Adr_R(DWORD *d,DWORD data);
@@ -18,7 +18,7 @@ public:
 		setfrequency(768000/3);
 		setcfgfname("pc1475");
 
-		SessionHeader	= "PC14575PKM";
+		SessionHeader	= "PC1475PKM";
 		SessionHeaderLen= 9;
 		Initial_Session_Fname ="pc1475.pkm";
 

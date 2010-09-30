@@ -34,13 +34,17 @@ public:
 	bool exit(void);		//end
 	void check(void);				//check for interrupt
 	
-	BYTE CheckSpeed(void);
+    bool CheckSpeed(void);
 
 	float GetCPUspeed(void)
 	{			//get CPU speed by %
 		return(CPUSpeed);
 	};
 
+    int  initTP(int frequency);
+    void resetTP(int index);
+    bool GetTP(int index);
+    void deleteTP(int index);
 	void SetCPUspeed(float);
 
 	qint64	state;					//state counter
@@ -57,12 +61,22 @@ public:
 		chkspeed= 1;				// speed checker
 		CPUSpeed= 1;
 		Suspend = FALSE;
+
+        for (int i=0;i<10;i++)
+        {
+            previous_state_tp[i]=0;
+            frequency_tp[i]=0;
+            tp[i] = false;
+        }
 	};
 	~Ctimer()
 	{
 	};
 
 private:
+    qint64 previous_state_tp[10];
+    int     frequency_tp[10];
+    bool    tp[10];
 };
 
 

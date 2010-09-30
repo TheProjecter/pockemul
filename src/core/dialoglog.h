@@ -5,7 +5,7 @@
 //
 class DialogLog : public QDialog, public Ui::DialogLog
 {
-Q_OBJECT
+    Q_OBJECT
 
 
 

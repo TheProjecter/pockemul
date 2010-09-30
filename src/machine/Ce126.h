@@ -57,7 +57,7 @@ int ce126_Mode;
 		
 		settop(10);
 		setposX(0);
-		pCONNECTOR	= new Cconnector11(this,true);	publish(pCONNECTOR);
+        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",true);	publish(pCONNECTOR);
 		pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
 		pTIMER		= new Ctimer(this);
 		Pc_DX	= 698;
@@ -122,4 +122,23 @@ public:
 		stackBehind = true;
 	};
 };
+
+class C263591:public Cce126
+{
+public:
+
+    C263591()
+    {								//[constructor]
+        BackGroundFname	= ":/EXT/ext/26-3591.jpg";
+        Pc_DX	= 854;
+        Pc_DY	= 349;
+        SnapPts = QPoint(373,0);
+        setPaperPos(QPoint(78,0));
+
+        stackBehind = true;
+    };
+
+private:
+};
+
 #endif

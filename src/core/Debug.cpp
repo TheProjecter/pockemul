@@ -553,7 +553,11 @@ DWORD Cdebug::DisAsm_File(DWORD adr,FILE *fp)
 }
 
 
-
+void Cdebug::header(DWORD adr,int l) {
+    sprintf(Buffer,"%05X:",adr);
+    for(int i=0;i<l;i++)
+        sprintf(Buffer,"%s%02X",Buffer,pPC->pCPU->get_mem(adr+i,SIZE_8));
+}
 
 /*****************************************************************************/
 /* Initializeing Debugger													 */

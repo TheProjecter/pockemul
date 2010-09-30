@@ -20,7 +20,12 @@
 //extern void AddLog(int ,QString);
 #include "dialoglog.h"
 
-#define AddLog(Level,msg); 	{ if ( mainwindow->dialoglog) if ((Level) & mainwindow->dialoglog->LogLevel) mainwindow->SendSignal_AddLogItem(msg);}
+#define AddLog(Level,msg); 	\
+    { \
+        if ( mainwindow->dialoglog) \
+            if ((Level) & mainwindow->dialoglog->LogLevel) \
+                mainwindow->SendSignal_AddLogItem(msg); \
+    }
 
 
 

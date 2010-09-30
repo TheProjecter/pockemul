@@ -14,7 +14,7 @@ extern int KeyMap1403Lenght;
 
 class Cpc1403:public Cpc1401{						//PC1403 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1403");};
+    const char*	GetClassName(){ return("Cpc1403");};
 
 
 	bool	Set_Connector(void);
@@ -23,7 +23,8 @@ public:
 
 	bool Chk_Adr(DWORD *d,DWORD data);
 	bool Chk_Adr_R(DWORD *d,DWORD data);
-	UINT8 in(void){return(1);};
+    UINT8 in(UINT8 address){return(1);};
+    UINT8 out(UINT8 address,UINT8 value){return(1);};
 
 	Cpc1403(CPObject *parent = 0)	: Cpc1401(this)
 	{											//[constructor]
@@ -60,7 +61,7 @@ public:
 		delete pLCDC;	pLCDC		= new Clcdc_pc1403(this);
 		delete pCPU;	pCPU		= new CSC61860(this);
 		delete pTIMER;	pTIMER		= new Ctimer(this);
-		delete pCONNECTOR;pCONNECTOR= new Cconnector11(this);
+        delete pCONNECTOR;pCONNECTOR= new Cconnector(this,11,"Connector 11 pins",false);
 		delete pKEYB;	pKEYB		= new Ckeyb_pc1403(this);
 
 		Lcd_X	= 116;
@@ -85,7 +86,7 @@ private:
 
 class Cpc1403H:public Cpc1403{						
 public:
-	char*	GetClassName(){ return("Cpc1403H");};
+    const char*	GetClassName(){ return("Cpc1403H");};
 
 
 

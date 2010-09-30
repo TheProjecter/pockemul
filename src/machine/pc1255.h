@@ -6,7 +6,7 @@
 
 class Cpc1255:public Cpc1250{
 public:
-	char*	GetClassName(){ return("Cpc1255");};
+    const char*	GetClassName(){ return("Cpc1255");};
 
 
 	bool	Chk_Adr(DWORD *d,DWORD data);
@@ -43,7 +43,7 @@ private:
 
 class Cpc1251H:public Cpc1255{
 public:
-	char*	GetClassName(){ return("Cpc1251H");};
+    const char*	GetClassName(){ return("Cpc1251H");};
 
 
 	Cpc1251H(CPObject *parent = 0)	: Cpc1255(this)

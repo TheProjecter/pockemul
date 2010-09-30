@@ -5,7 +5,7 @@
 
 class Cpc1260:public Cpc1250{
 public:
-	char*	GetClassName(){ return("Cpc1260");};
+    const char*	GetClassName(){ return("Cpc1260");};
 
 	BYTE	Get_PortB(void);
 
@@ -57,7 +57,7 @@ private:
 
 class Cpc1261:public Cpc1260{
 public:
-	char*	GetClassName(){ return("Cpc1261");};
+    const char*	GetClassName(){ return("Cpc1261");};
 	bool	Chk_Adr(DWORD *d,DWORD data);
 
 	Cpc1261(CPObject *parent = 0)	: Cpc1260(this)
@@ -89,7 +89,7 @@ private:
 
 class Cpc1262:public Cpc1261{						//PC1360 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1262");};
+    const char*	GetClassName(){ return("Cpc1262");};
 
 
 	Cpc1262(CPObject *parent = 0)	: Cpc1261(this)

@@ -22,7 +22,6 @@ FILE *fp_tmplog=NULL;
 extern FILE *fp_tmp;
 
 /*---------------------------------------------------------------------------*/
-//#define AddLog(Level,msg) 	if ( mainwindow->dialoglog &&	(Level & mainwindow->dialoglog->LogLevel)) mainwindow->SendSignal_AddLogItem(msg);
 
 #define		XTICKS ( pPC->getfrequency() / 2)
 #define		XTICK2 ( pPC->getfrequency() / 1000 * 2)
@@ -2663,7 +2662,7 @@ bool Csc::init(void)
 	}
 
 
-	if(logsw) fp_log=fopen("sc61860.log","wt");			//open log file
+    //if(logsw) fp_log=fopen("sc61860.log","wt");			//open log file
 
 	pDEBUG->init();
 
@@ -2712,7 +2711,7 @@ void Csc::save_internal(QFile *file)
 /*****************************************************************************/
 bool Csc::exit(void)
 {
-	if(logsw) fclose(fp_log);							//close log file
+    if(fp_log) fclose(fp_log);							//close log file
 
 	pDEBUG->exit();
 
@@ -2732,7 +2731,7 @@ void Csc::step(void)
 
 	if(logsw)
 	{
-		if(log && fp_log!=0)						//check log mode
+        if(log && fp_log)						//check log mode
 		{
 //			debug.DisAsm_1(reg.d.pc,fp_log);		//write execute log
 		}

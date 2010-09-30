@@ -53,6 +53,16 @@
 
 INLINE bool Cce150::lh5810_write(void)
 {
+#if 1 // TRY TO OPTIMIZE ... 
+    SETREG_LH5810_OPC(pLH5810,pTIMER->pPC->Get_8(0x1B008))
+    SETREG_LH5810_G(pLH5810  ,pTIMER->pPC->Get_8(0x1B009))
+    SETREG_LH5810_MSK(pLH5810,pTIMER->pPC->Get_8(0x1B00A))
+    SETREG_LH5810_IF(pLH5810 ,pTIMER->pPC->Get_8(0x1B00B))
+    SETREG_LH5810_DDA(pLH5810,pTIMER->pPC->Get_8(0x1B00C))
+    SETREG_LH5810_DDB(pLH5810,pTIMER->pPC->Get_8(0x1B00D))
+    SETREG_LH5810_OPA(pLH5810,pTIMER->pPC->Get_8(0x1B00E))
+    SETREG_LH5810_OPB(pLH5810,pTIMER->pPC->Get_8(0x1B00F))
+#else	
 	pLH5810->SetReg(LH5810_OPC,pTIMER->pPC->Get_8(0x1B008));
 	pLH5810->SetReg(LH5810_G  ,pTIMER->pPC->Get_8(0x1B009));
 	pLH5810->SetReg(LH5810_MSK,pTIMER->pPC->Get_8(0x1B00A));
@@ -61,7 +71,7 @@ INLINE bool Cce150::lh5810_write(void)
 	pLH5810->SetReg(LH5810_DDB,pTIMER->pPC->Get_8(0x1B00D));
 	pLH5810->SetReg(LH5810_OPA,pTIMER->pPC->Get_8(0x1B00E));
 	pLH5810->SetReg(LH5810_OPB,pTIMER->pPC->Get_8(0x1B00F));
-
+#endif
 	return(1);
 }
 INLINE bool Cce150::lh5810_read(void)
@@ -78,45 +88,6 @@ INLINE bool Cce150::lh5810_read(void)
 	return(1);
 }
 
-INLINE int Cmotor::SendPhase(int Phase)		// Next step, return direction: 0 no move, 1 Right,2 left
-{
-	LastStepDirection=NO_MOVE;
-	if (Phase==0) return(LastStepDirection);
-
-//	AddLog(LOG_PRINTER,"CurrentPhase=%02X,Phase=%02X",CurrentPhase,Phase);
-	switch (CurrentPhase){
-	case 0x06: 
-		switch (Phase){
-		case 0x03: Step++; LastStepDirection=RI_MOVE;	break;		// 1 step right
-		case 0x0C: Step++; LastStepDirection=LE_MOVE;	break;		// 1 step left
-		}
-		break;
-	case 0x03: 
-		switch (Phase){
-		case 0x09: Step++; LastStepDirection=RI_MOVE;	break;		// 1 step right
-		case 0x06: Step++; LastStepDirection=LE_MOVE;	break;		// 1 step left
-		}
-		break;
-	case 0x09: 
-		switch (Phase){
-		case 0x0C: Step++; LastStepDirection=RI_MOVE;	break;		// 1 step right
-		case 0x03: Step++; LastStepDirection=LE_MOVE;	break;		// 1 step left
-		}
-		break;
-	case 0x0C: 
-		switch (Phase){
-		case 0x06: Step++; LastStepDirection=RI_MOVE;	break;		// 1 step right
-		case 0x09: Step++; LastStepDirection=LE_MOVE;	break;		// 1 step left
-		}
-		break;
-	}
-	
-	CurrentPhase = Phase;
-//	if (LastStepDirection) AddLog(LOG_PRINTER,"Direction=%02X",LastStepDirection);
-
-	return (LastStepDirection);
-
-}
 
 
 
@@ -133,7 +104,6 @@ PB7		Paper feed key input
 bool Cce150::run(void)
 {
 	bool has_moved = false;
-
 	lh5810_write();
 	
 	////////////////////////////////////////////////////////////////////
@@ -176,11 +146,11 @@ bool Cce150::run(void)
 	{
 		case RI_MOVE:	Pen_X++;
 						has_moved=TRUE;
-						MACRO_ADD_LOG;
+                        //MACRO_ADD_LOG;
 						break;
 		case LE_MOVE:	Pen_X--;
 						has_moved=TRUE;
-						MACRO_ADD_LOG;
+//						MACRO_ADD_LOG;
 						if (Pen_X == -16)	StartRot = TRUE;	// rotation pin engaged
 						if (Pen_X < -45)	Pen_X = -45;		// physical stop at x==-45
 						if ((Pen_X == -45) && StartRot)
@@ -264,7 +234,7 @@ bool Cce150::run(void)
 	return(1);
 }
 
-INLINE bool Cce150::Next_Color(void)
+bool Cce150::Next_Color(void)
 {
 	Pen_Color++;
 	Change_Color = true;
@@ -301,21 +271,24 @@ bool Cce150::init(void)
 	CPObject::init();
 	
 #ifndef NO_SOUND
-	clac = FSOUND_Sample_Load(FSOUND_FREE, "clac2.wav", 0, 0, 0);	
+    clac = FSOUND_Sample_Load(FSOUND_FREE, "clac2.wav", 0, 0, 0);
 #endif
 
 	setfrequency( 0);
 
 	WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
+	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");
+	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opb),8,8,this,"LH5810 Port B");
+	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
 
 	AddLog(LOG_PRINTER,tr("PRT initializing..."));
 
 	if(pKEYB)	pKEYB->init();
-	if(pTIMER)	pTIMER->init();
+    if(pTIMER)	pTIMER->init();
 
 	// Create CE-150 Paper Image
-	ce150buf	= new QImage(QSize(320, 3000),QImage::Format_ARGB32);
-	ce150display= new QImage(QSize(320, 567),QImage::Format_ARGB32);
+    ce150buf	= new QImage(QSize(320, 3000),QImage::Format_ARGB32);
+    ce150display= new QImage(QSize(320, 567),QImage::Format_ARGB32);
 	ce150pen	= new QImage(":/EXT/ext/ce-150pen.png");
 	// Fill it blank
 	clearPaper();		
@@ -331,7 +304,6 @@ bool Cce150::init(void)
 void Cce150::Print(void)
 {	
 	QPainter painter;
-
 
 	pPC->Refresh_Display = true;
 	
@@ -404,7 +376,7 @@ void Cce150::SaveAsText(void)
 bool CLH5810_CE150::step()
 {
 
-	CLH5810::step();
+    CLH5810::step();
 
 	return(1);
 }

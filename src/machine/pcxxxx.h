@@ -109,7 +109,7 @@ extern TransMap KeyMap1360[]; extern int KeyMap1360Lenght;
 class CpcXXXX:public CPObject{
 Q_OBJECT
 public:
-	virtual char*	GetClassName(){ return("CpcXXXX");};
+    virtual const char*	GetClassName(){ return("CpcXXXX");};
 
 	QList<CSlot> SlotList;
 	
@@ -195,10 +195,12 @@ public:
 
 	void	Set_8(DWORD adr,BYTE d);
 	void	Set_16(DWORD adr,WORD d);
+    void	Set_16r(DWORD adr,WORD d);
 
 	virtual bool	Chk_Adr(DWORD *d,DWORD data) = 0;
 	virtual bool	Chk_Adr_R(DWORD *d,DWORD data) = 0;
-	virtual UINT8 in(void)=0;
+    virtual UINT8 in(UINT8 address)=0;
+    virtual UINT8 out(UINT8 address,UINT8 value)=0;
 
 
 	void	SaveSession(void);
@@ -235,11 +237,15 @@ public:
 	virtual bool	CheckUpdateExtension(CExtension *ext);
 	void		updateMenuFromExtension(void);
 	void		emptyExtensionArray(QAction *action);
+    void		loadExtensionArray(QAction *action);
+    void		saveExtensionArray(QAction *action);
 
 	BYTE	*mem;
 	
 	bool	Japan;
 	
+    FILE	*fp_log;
+
 	CpcXXXX(CPObject *parent = 0);
 	
 	virtual ~CpcXXXX()
@@ -248,9 +254,10 @@ public:
 
 private slots:
 	void manageEmptyExtensions();
+    void manageLoadExtensions();
+    void manageSaveExtensions();
 	void manageExtensions(QAction *);
 	
-private:
 
 };
 

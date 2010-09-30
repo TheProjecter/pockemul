@@ -63,7 +63,8 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(this)
 	pLCDC		= new Clcdc_pc1250(this);
 	pCPU		= new CSC61860(this);
 	pTIMER		= new Ctimer(this);
-	pCONNECTOR	= new Cconnector11(this);		publish(pCONNECTOR);
+    //pCONNECTOR	= new Cconnector11(this);		publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false);		publish(pCONNECTOR);
 	pKEYB		= new Ckeyb_pc1250(this);
 
 }
@@ -72,7 +73,7 @@ bool Cpc1250::CompleteDisplay(void)
 {
 	CpcXXXX::CompleteDisplay();
 		
-#if 0 
+#if 0
     RECT	CLRRect,RUNRect,PRORect,RSVRect;
     HRESULT	hRet;
 	////////////////////////////////////////////////////

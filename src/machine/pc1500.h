@@ -5,26 +5,27 @@
 #include <stdio.h>
 
 #include <QMenu>
+#include "common.h"
 
-
-#include "extension.h"
+//#include "cextension.h"
 #include "pcxxxx.h"
-#include "Log.h"
+//#include "Log.h"
 #include "lh5801.h"
 #include "lh5810.h"
-#include "ce150.h"
-#include "Connect.h"
-#include "Keyb.h"
+//#include "ce150.h"
+//#include "Connect.h"
+//#include "Keyb.h"
 #include "ce152.h"
 
 extern TransMap KeyMap1500[];
-extern int KeyMap1500Lenght; 
+extern int KeyMap1500Lenght;
 
 class CLH5810_PC1500:public CLH5810{
+    Q_OBJECT
 public:
 	bool	init(void);						//initialize
 	bool	step(void);
-	char*	GetClassName(){ return("CLH5810_PC1500");};
+    const char*	GetClassName(){ return("CLH5810_PC1500");};
 	CPD1990AC	*pPD1990AC;
 
 	CLH5810_PC1500(CPObject *parent)	: CLH5810(parent)
@@ -36,21 +37,22 @@ public:
 		delete pPD1990AC;
 	};
 
-private:
+
 };
 
-class Cpc15XX:public CpcXXXX{						//PC1500 emulator main class
+
+class Cpc15XX:public CpcXXXX{
 
 Q_OBJECT
 
-typedef struct{
-	bool ce_151,ce_155,ce_161,ce_159,ce_150,ce_158;
-}	TExtension;
+//typedef struct{
+//	bool ce_151,ce_155,ce_161,ce_159,ce_150,ce_158;
+//}	TExtension;
 
 
 
 public:
-	char*	GetClassName(){ return("Cpc1500");};
+    const char*	GetClassName(){ return("Cpc15XX");};
 
 	void	ReadQuarterTape(void);
 	bool	LoadConfig(QFile *file);
@@ -73,7 +75,8 @@ public:
 
 	virtual bool		Chk_Adr(DWORD *d,DWORD data);
 	virtual bool		Chk_Adr_R(DWORD *d,DWORD data);
-	UINT8		in(void);
+    UINT8		in(UINT8 address);
+    UINT8 out(UINT8 address,UINT8 value){return(1);};
 	bool		Set_Connector(void);
 	bool		Get_Connector(void);
 
@@ -102,7 +105,7 @@ protected slots:
 
 class Cpc1500:public Cpc15XX{						//PC1500 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1500");};
+    const char*	GetClassName(){ return("Cpc1500");};
 
 	Cpc1500(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]
@@ -112,11 +115,11 @@ public:
 		SlotList.append(CSlot(16, 0x4000 ,	""								, "" , RAM , "RAM"));
 		SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , NOTUSED , "NOT USED"));
 		SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(16, 0xC000 ,	":/PC1500A/pc1500A/SYS1500A.ROM", "" , ROM , "SYSTEM ROM"));
+		SlotList.append(CSlot(16, 0xC000 ,	":/PC1500/pc1500/SYS1500.ROM"	, "" , ROM , "SYSTEM ROM"));
 		SlotList.append(CSlot(64, 0x10000 ,	""								, "" , RAM , "RAM"));
 		SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , ROM , "ROM"));
 		SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(8 , 0x24000 ,	":/PC1500A/pc1500A/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
+		SlotList.append(CSlot(8 , 0x24000 ,	":/PC1500/pc1500/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
 	}
 
 	~Cpc1500()
@@ -128,7 +131,7 @@ private:
 
 class Cpc1500A:public Cpc15XX{						//PC1500 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1500A");};
+    const char*	GetClassName(){ return("Cpc1500A");};
 
 
 	bool Chk_Adr(DWORD *d,DWORD data);
@@ -178,7 +181,7 @@ private:
 
 class Ctrspc2:public Cpc15XX{
 public:
-	char*	GetClassName(){ return("Ctrspc2");};
+    const char*	GetClassName(){ return("Ctrspc2");};
 
 	Ctrspc2(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]

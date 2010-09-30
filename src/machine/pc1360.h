@@ -15,7 +15,7 @@
 class Cpc1360:public Cpc13XX{						//PC1360 emulator main class
 
 public:
-	char*	GetClassName(){ return("Cpc1360");};
+    const char*	GetClassName(){ return("Cpc1360");};
 
 	BYTE	Get_PortB(void);
 //	void	Set_PortB(BYTE data);

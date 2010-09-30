@@ -10,7 +10,7 @@
 
 bool	CPD1990AC::exit(void)						//end
 {
-	
+	return true;
 }
 
 INLINE WORD HEX2BCD(BYTE d)
@@ -144,7 +144,10 @@ bool CPD1990AC::step(void)
 	if (clk != prev_clk) {	flip_clk=TRUE; prev_clk=clk;	}
 	else					flip_clk=FALSE;
 
-	if (mode == 4)	{ TP_FREQUENCY=64;	}
+    if (mode == 4)	{
+//        if (( (CpcXXXX *)pPC)->pCPU->fp_log) fprintf(( (CpcXXXX *)pPC)->pCPU->fp_log,"TP64\n");
+        TP_FREQUENCY=64;
+    }
 	if (mode == 0)	{ clk = TRUE; flip_clk=TRUE; bitno=0; }
 
 	if (clk && flip_clk)

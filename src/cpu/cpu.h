@@ -1,15 +1,11 @@
-/**********************************************************/
-/* SC61860 CPU emulation class                            */
-/**********************************************************/
-
-
 #ifndef CPU_H
 #define CPU_H
 
-#include <QFile>
+#include <QtCore/QFile>
 
 #include "Debug.h"
 class CpcXXXX;
+
 
 #define		MASK_4		0xf				/*  4bit data mask */
 #define		MASK_8		0xff			/*  8bit data mask */
@@ -24,6 +20,7 @@ class CpcXXXX;
 
 
 class CCPU:public QObject{
+Q_OBJECT
 public:
 	Cdebug	*pDEBUG;
 	CpcXXXX *pPC;
@@ -47,21 +44,22 @@ public:
 	virtual	DWORD	get_PC(void) =0;					//get Program Counter
 	virtual void	Regs_Info(UINT8) =0;
 
-	char	*fn_status;					//status file name
+    const char	*fn_status;					//status file name
 	bool	usestatus;						//use status file(0:no,1:yes)
 	bool	halt;					//halt,off flag
 	bool	end,savesw, log,logsw;	//etc.flag
-	char	Regs_String[1024];
+    char	Regs_String[1024];
 
 	FILE	*fp_log;			// file pointer to log file
+    const char    *fn_log;
 
-	BYTE	imem[0X200];			// Internal memory 
+    BYTE	imem[0x200];			// Internal memory
 
 	int		CallSubLevel;
 
 	void	Check_Log(void);
 
-	virtual char*	GetClassName(){ return("CCPU");};
+    virtual const char*	GetClassName(){ return("CCPU");};
 
 	virtual void	Reset(void) = 0;
 
@@ -77,9 +75,10 @@ public:
 		usestatus=0;
 		fp_status=0;
 		fp_log=0;
+        fn_log="cpu.log";
 		CallSubLevel=0;
 
-		for (int i=0;i<200;i++) imem[i]=0;
+        for (int i=0;i<0x200;i++) imem[i]=0;
 
 	};
 private:

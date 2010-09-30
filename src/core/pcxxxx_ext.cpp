@@ -83,6 +83,14 @@ void CpcXXXX::addExtMenu(CExtensionArray *ext)
 			ext->actionGroup->addAction(ext->ExtArray[ind]->Action);
 		}
 	}
+    // check if power saved extensions exist
+    ext->Menu->addSeparator();
+    ext->loadAction = ext->Menu->addAction("Load...");
+    ext->saveAction = ext->Menu->addAction("Save...");
+    connect(ext->loadAction, SIGNAL(triggered()), this, SLOT(manageLoadExtensions()));
+    connect(ext->saveAction, SIGNAL(triggered()), this, SLOT(manageSaveExtensions()));
+
+
 }
 
 void CpcXXXX::emptyExtensionArray(QAction *action)
@@ -106,5 +114,13 @@ void CpcXXXX::emptyExtensionArray(QAction *action)
 			}
 		}
 	}
+
+}
+void CpcXXXX::loadExtensionArray(QAction *action)
+{
+
+}
+void CpcXXXX::saveExtensionArray(QAction *action)
+{
 
 }

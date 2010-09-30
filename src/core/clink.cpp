@@ -82,7 +82,7 @@ void CDirectLink::outConnector(Cconnector* search)
 			{
 //				AddLog(LOG_TEMP,tr("Connector Chain with %1").arg(BConnList.at(found)->Parent->getName()));
 				foundConnector->Parent->pTIMER = search->Parent->pTIMER;
-				foundConnector->Parent->run();
+                foundConnector->Parent->run();
 				insertlog(foundConnector->Parent);
 				Output( foundConnector->Parent );
 			}

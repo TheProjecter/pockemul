@@ -215,7 +215,7 @@ void dialogAnalog::plot(bool forceRedraw,QSize size)
 	if (forceRedraw)
 	{
 		initPixmap(size);
-	    QPen dataPen1(QColor(Qt::green));
+        QPen dataPen1( QColor(Qt::green));
 		fillPixmap(&dataplot,&dataPen1);
 #if 0
 	    QPen dataPen2(QColor(Qt::red));

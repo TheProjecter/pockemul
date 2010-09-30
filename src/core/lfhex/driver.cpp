@@ -18,7 +18,7 @@
 
 #include <qapplication.h>
 #include <stdexcept>
-#include <unistd.h>
+//#include <unistd.h>
 
 extern "C" {
   int optind;

@@ -22,7 +22,7 @@
 class Cpc1250:public CpcXXXX{						//PC1250 emulator main class
 
 public:
-	char*	GetClassName(){ return("Cpc1250");};
+    const char*	GetClassName(){ return("Cpc1250");};
 
 	void	TurnON(void);
 
@@ -38,7 +38,8 @@ public:
 	bool	Mem_Mirror(DWORD *d);
 	bool	Chk_Adr(DWORD *d,DWORD data);
 	bool	Chk_Adr_R(DWORD *d,DWORD data);
-	UINT8 in(void){return(1);};
+    UINT8 in(UINT8 address){return(1);};
+    UINT8 out(UINT8 address,UINT8 value){return(1);};
 
 	qint8		PowerSwitch;
 	virtual bool	LoadExtra(QFile *);

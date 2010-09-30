@@ -15,7 +15,7 @@ extern int KeyMap1450Lenght;
 
 class Cpc1450:public Cpc1350{						//PC1350 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1450");};
+    const char*	GetClassName(){ return("Cpc1450");};
 
 
 	void	initExtension(void);
@@ -23,7 +23,8 @@ public:
 
 	bool	Chk_Adr(DWORD *d,DWORD data);
 	bool	Chk_Adr_R(DWORD *d,DWORD data);
-	UINT8	in(void){return(1);};
+    UINT8	in(UINT8 address){return(1);};
+    UINT8 out(UINT8 address,UINT8 value){return(1);};
 	
 
 	Cpc1450(CPObject *parent = 0)	: Cpc1350(this)

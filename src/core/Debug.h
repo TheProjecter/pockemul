@@ -14,6 +14,7 @@ extern 	DisAsmTbl	AsmTbl_lh5801[];
 
 class Cdebug:public CPObject
 {
+    Q_OBJECT
 public:
 	bool	isdebug, breakf,debugged;			//debug,break point flag
 	DWORD	breakadr;					//break point address
@@ -23,6 +24,7 @@ public:
 	bool exit(void);					//end
 	DWORD DisAsm_File(DWORD adr,FILE *fp);	//disasm 1 line to File
 
+    void header(DWORD adr,int l);
 	virtual	DWORD	DisAsm_1(DWORD adr) = 0;			//disasm 1 line to Buffer
 
 	DisAsmTbl	*AsmTbl;
@@ -43,6 +45,7 @@ private:
 };
 
 class Cdebug_sc61860:public Cdebug{
+    Q_OBJECT
 public:
 	DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
 
@@ -56,6 +59,7 @@ public:
 
 
 class Cdebug_lh5801:public Cdebug{
+    Q_OBJECT
 public:
 	DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
 
@@ -66,4 +70,15 @@ public:
 
 };
 
+class Cdebug_z80:public Cdebug{
+    Q_OBJECT
+public:
+    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+
+        Cdebug_z80(CPObject *parent)	: Cdebug(parent)
+        {
+            AsmTbl = AsmTbl_sc61860;
+        }
+
+};
 #endif

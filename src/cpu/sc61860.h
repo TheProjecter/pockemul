@@ -118,7 +118,7 @@ public:
 	DWORD	get_PC(void){return(get_reg(REG_PC));};					//get Program Counter
 	void	Regs_Info(UINT8);
 
-	virtual char*	GetClassName(){ return("Csc");};
+    virtual const char*	GetClassName(){ return("Csc");};
 
 	Csc(CPObject *parent)	: CCPU(parent)
 	{				//[constructor]
@@ -327,7 +327,7 @@ private:
 
 class CSC61860:public Csc{
 public:
-	char*	GetClassName(){ return("CSC61860");};
+    const char*	GetClassName(){ return("CSC61860");};
 	CSC61860(CPObject *parent )	: Csc(parent){	};
 };
 

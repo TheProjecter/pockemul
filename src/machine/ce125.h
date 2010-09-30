@@ -46,22 +46,6 @@ private:
 	Cce125tape* pTAPE;
 };
 
-class C263591:public Cce126
-{
-public:
 
-	C263591()
-	{								//[constructor]
-		BackGroundFname	= ":/EXT/ext/26-3591.jpg";
-		Pc_DX	= 854;
-		Pc_DY	= 349;
-		SnapPts = QPoint(373,0);
-		setPaperPos(QPoint(78,0));
-
-		stackBehind = true;
-	};
-	
-private:
-};
 
 #endif

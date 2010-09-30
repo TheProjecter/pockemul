@@ -1,4 +1,4 @@
-/********************************************************************************************************
+ /********************************************************************************************************
  * PROGRAM      : 
  * DATE - TIME  : samedi 28 octobre 2006 - 12h42
  * AUTHOR       :  (  )
@@ -10,14 +10,14 @@
 #include <QtGui>
 #include <QString>
 #include <QPainter>
- 
-#include "init.h"
 
+#include "init.h"
+  
 #include "common.h"
 
 #include "dialoganalog.h"
-
-#include "pcxxxx.h"
+ 
+#include "pcxxxx.h" 
 #include "pc1245.h"
 #include "pc1250.h"
 #include "pc1251.h"
@@ -36,12 +36,17 @@
 #include "pc1500.h"
 #include "ce150.h"
 
+#include "pc1600.h"
+#include "ce1600p.h"
+
 #include "ce152.h"
 #include "sio.h"
 #include "Ce126.h"
 #include "ce125.h"
 #include "clink.h"
 #include "ccable.h"
+
+#include "potar.h"
 
 
 
@@ -88,6 +93,8 @@ CPObject *pPC=0;
 		case 31 : pPC = new Cpc1500A;	pPC->setName("PC-1500A");break;
 		case 32 : pPC = new Ctrspc2;	pPC->setName("Tandy PC-2");break;
 
+        case 34 : pPC = new Cpc1600;	pPC->setName("PC-1600");break;
+
 		case 101: pPC = new Cce125;		pPC->setName("CE-125");break;
 		case 102: pPC = new Cce126;		pPC->setName("CE-126P");break;
 		case 103: pPC = new Cce123;		pPC->setName("CE-123P");break;
@@ -98,6 +105,9 @@ CPObject *pPC=0;
  
 		case 105: pPC = new Csio;		pPC->setName("Serial Console");break;
 		case 106: pPC = new Ccable;		pPC->setName("11Pins Cable");break;
+        case 111: pPC = new Cpotar;		pPC->setName("Potar");break;
+
+        case 110: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
  		
 		default			: return 0;
 	}
@@ -139,14 +149,16 @@ void CPocketThread::run()
 				{
 					pPC->run();
 					// WRITE the LINK BOX Connector
-					mainwindow->pdirectLink->clearlog();
-					mainwindow->pdirectLink->Output(pPC);
+                    mainwindow->pdirectLink->clearlog();
+                    mainwindow->pdirectLink->Output(pPC);
 					pause = false;
 				}
 				if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->captureData();
 			}
 			if (pPC->toDestroy)
 			{
+                // TODO - unlink before destroy
+
 				listpPObject.removeAt(i);
 				i--;
 				emit Destroy(pPC);

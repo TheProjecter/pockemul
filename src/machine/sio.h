@@ -8,12 +8,12 @@
 #include "pobject.h"
 #include "Inter.h"
 
-#define TICKS_1200BDS	(pTIMER->pPC->getfrequency()/1200)
+#define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
 class DialogConsole;
 
 class Csio:public CPObject{
 public:
-	char*	GetClassName(){ return("Csio");};
+    const char*	GetClassName(){ return("Csio");};
 
 	QByteArray baOutput;
 	QByteArray baInput;
@@ -29,6 +29,9 @@ public:
 
 	void ExportBit(bool);
 	void ExportByte(qint8);
+
+    void Set_BaudRate(int);
+    int  Get_BaudRate(void);
 
 	virtual void Set_CD(bool);
 	virtual void Set_CS(bool);
@@ -80,6 +83,8 @@ public:
 		exportbyte=1;
 		convCRLF=1;
 		
+        baudrate = 1200;
+
 		ToDestroy = false;
 		
 		inBitNb = 0;
@@ -92,7 +97,7 @@ public:
 		Sii_Bit_Nb			= 0;
 		Sii_LfWait			= 500;
 		
-		pSIOCONNECTOR = new Cconnector15(this,true); publish(pSIOCONNECTOR);
+        pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins",true); publish(pSIOCONNECTOR);
 		setfrequency( 0);
 		BackGroundFname	= ":/EXT/ext/serial.png";
 		
@@ -122,6 +127,7 @@ private:
 	int		Sii_Bit_Nb;
 	int		Sii_LfWait;	
 	DialogConsole *dialogconsole;
+    int     baudrate;
 };
 
 

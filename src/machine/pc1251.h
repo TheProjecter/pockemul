@@ -6,7 +6,7 @@
 
 class Cpc1251:public Cpc1250{						//PC1360 emulator main class
 public:
-	char*	GetClassName(){ return("Cpc1251");};
+    const char*	GetClassName(){ return("Cpc1251");};
 
 
 	bool	Chk_Adr(DWORD *d,DWORD data);

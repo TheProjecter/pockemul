@@ -26,7 +26,7 @@
 
 
 
-#define	POCKEMUL_VERSION	"0.9"
+#define	POCKEMUL_VERSION	"0.9.2.1"
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
 #define MAX(x,y) ((x)>(y)?(x):(y))
@@ -34,7 +34,8 @@
 #define READ_BIT(b,p)	( ((b)>>(p)) & 0x01 ? 1 :0 )
 #define SET_BIT(b,p)	((b) |= (0x01<<(p)))
 #define UNSET_BIT(b,p)	((b) &= ~(0x01<<(p)))
-#define PUT_BIT(b,p,v)	if (v) SET_BIT(b,p); else UNSET_BIT(b,p);
+//#define PUT_BIT(b,p,v)	if (v) SET_BIT(b,p); else UNSET_BIT(b,p);
+#define PUT_BIT(b,p,v)	(v) ? SET_BIT(b,p) : UNSET_BIT(b,p);
 
 #define B0	0x01
 #define B1	0x02
@@ -87,7 +88,7 @@ typedef struct tagRECT
 	long bottom;
 } RECT;
 
-typedef struct TransMap
+struct TransMap
 {
 	int		Icode;
     char	KeyDescription[256];

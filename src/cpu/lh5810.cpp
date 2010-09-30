@@ -40,13 +40,13 @@ void	CLH5810::Reset(void)
 
 };
 
-bool CLH5810::step()
+INLINE bool CLH5810::step()
 {
 	INT = false;
 	// If the L register change, then TD flag of the IF register down
 	if (New_L)
 	{
-		AddLog(LOG_TAPE,tr("L register change -> %1X").arg(lh5810.r_l,4,16,QChar('0')));
+        //AddLog(LOG_TAPE,tr("L register change -> %1X").arg(lh5810.r_l,4,16,QChar('0')));
 		SetRegBit(LH5810_IF,3,false);
 		New_L=false;
 	}
@@ -59,6 +59,7 @@ bool CLH5810::step()
 		)
 	{
 		INT=true;
+//        if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"INT\n");
 	}
 	
 	
@@ -97,7 +98,8 @@ UINT8 CLH5810::GetReg(LH5810_REGS reg)
 	return(0);
 }
 
- UINT8 CLH5810::SetReg(LH5810_REGS reg, UINT8 data)	// return the value written
+	
+UINT8 CLH5810::SetReg(LH5810_REGS reg, UINT8 data)	// return the value written
 {
 	switch (reg)
 	{

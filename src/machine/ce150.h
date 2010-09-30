@@ -11,11 +11,10 @@
 #include "Connect.h"
 #include "Inter.h"
 #include "Keyb.h"
+#include "cmotor.h"
 
 
-#define NO_MOVE	0
-#define RI_MOVE	1
-#define LE_MOVE 2
+
 #define PEN_UP	0
 #define PEN_DOWN 1
 
@@ -29,7 +28,7 @@ extern int KeyMapce150Lenght;
 class CLH5810_CE150:public CLH5810{
 public:
 	bool	step(void);
-	char*	GetClassName(){ return("CLH5810_CE150");};
+    const char*	GetClassName(){ return("CLH5810_CE150");};
 
 	CLH5810_CE150(CPObject *parent)	: CLH5810(parent){};
 	~CLH5810_CE150(){};
@@ -37,20 +36,7 @@ public:
 private:
 };
 
-class Cmotor:public QObject{
-public:
-	int		SendPhase(int Phase);		// Next step, return direction: 0 no move, 1 Right,2 left
-	long	Step;
-	int		CurrentPhase;
-	int		LastStepDirection;		// TRUE= Right   FALSE=Left
-	Cmotor(){
-		LastStepDirection = NO_MOVE;
-		Step = 0;
-		CurrentPhase = 0x09;
-	}
 
-private:
-};
 
 class Cce150:public Cprinter{						
 public:
@@ -60,14 +46,14 @@ public:
 	bool		init(void);
 	bool		exit(void);
 
-	char		*PaperFname;
+    const char		*PaperFname;
 	int			Paper_X,Paper_Y,Paper_DX,Paper_DY;
 
 	bool		Print_Mode;
 	bool		needRedraw;
 	Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
 
-	CLH5810_CE150		*pLH5810;
+    CLH5810		*pLH5810;
 
 	bool lh5810_write(void);
 	bool lh5810_read(void);
@@ -79,22 +65,25 @@ public:
 	void	clearPaper(void);
 	void	SaveAsText(void);
 
+    Cmotor		Motor_X;
+    Cmotor		Motor_Y;
 
 
-	Cce150():Cprinter(this)
+    Cce150(CPObject *parent = 0):Cprinter(this)
 	{				
 		//[constructor]
 		BackGroundFname	= ":/EXT/ext/ce-150.jpg";
 		PaperFname		= "ext\\ce-150paper.jpg";
 		setcfgfname(QString("ce150"));
-		Paper_X = 100;
+        Paper_X = 100;  Paper_DX = 320;
 		Paper_Y = 100;
+        //PaperWidgetRect = QRect(80,46,167,170);
 		Pc_DX	= 960;
 		Pc_DY	= 320;
 		SnapPts = QPoint(388,0);
-		pCONNECTOR	= new Cconnector60(this,true);	publish(pCONNECTOR);
-		pTIMER		= new Ctimer(this);
-		pLH5810		= new CLH5810_CE150(this);
+        pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",true);	publish(pCONNECTOR);
+        pTIMER		= new Ctimer(this);
+        pLH5810		= new CLH5810(this);
 		KeyMap		= KeyMapce150;
 		KeyMapLenght= KeyMapce150Lenght;
 		pKEYB		= new Ckeyb_ce150(this);
@@ -103,10 +92,12 @@ public:
 
 		Pen_X = 0;
 		Pen_Y = 000;
+        Pen_Z = 0;
 		prev_Pen_X = 0;
-		prev_Pen_Y = 0;		
+		prev_Pen_Y = 0;	
+        prev_Pen_Z = 0;
 		Pen_Status = PEN_UP;
-		Pen_Color = 3;
+        Pen_Color = 0;
 		Rot = 0;
 //960,320,388,0)		
 		ce150buf=0;
@@ -121,18 +112,19 @@ public:
 		StartRot = false;
 		Change_Color = true;
 	}
+public:
 
-private:
-	Cmotor		Motor_X;
-	Cmotor		Motor_Y;
 
-	int			Pen_X,Pen_Y,prev_Pen_X,prev_Pen_Y;
+
+protected:
+    bool		Next_Color(void);
+    int			Pen_X,Pen_Y,Pen_Z,prev_Pen_X,prev_Pen_Y,prev_Pen_Z;
 	bool		Pen_Status;			// UP or Down Position
 	int			Pen_Color;			// Color : 0 to 3
 	DWORD		Offset_Paper_View;
 	BYTE		Rot;
 
-	bool		Next_Color(void);
+
 	bool		Change_Color;
 #ifndef NO_SOUND
 	FSOUND_SAMPLE *clac;

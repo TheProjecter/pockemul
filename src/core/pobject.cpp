@@ -1,4 +1,5 @@
-#include <QtGui> 
+#include <QtGui>
+#include <QMutex>
 
 #include "common.h"
 #include "pobject.h"
@@ -13,6 +14,8 @@
  
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
+
+
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
 	{
@@ -123,6 +126,7 @@ bool CPObject::exit()
 }
 
 #define SAMPLERATE 8000
+#define BUFFLEN 500
 
 int CPObject::initsound()
 {
@@ -131,10 +135,10 @@ int CPObject::initsound()
 	int lenbytes;
 	int samplerate;
 	
-	lenbytes = 1000;
+    lenbytes = BUFFLEN;
 	mode = FSOUND_LOOP_OFF | FSOUND_MONO | FSOUND_8BITS | FSOUND_SIGNED;
 	samplerate = SAMPLERATE;
-	
+
 	pStream = FSOUND_Stream_Create( CustomStreamCallBack , lenbytes ,  mode , samplerate ,  this);
 	
 	iChanIndex = FSOUND_Stream_Play( FSOUND_FREE, pStream ); 
@@ -154,6 +158,8 @@ int CPObject::exitsound()
 #ifndef NO_SOUND
 signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream, void *buff, int len, void * param )
 {
+    mainwindow->audioMutex.lock();
+
     CPObject *pPC = ((CPObject *) param);
     char *mono8bitbuffer = (char *)buff;
 
@@ -161,19 +167,20 @@ signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream,
     {
         if (! pPC->soundBuffer.isEmpty())
         {
-        	*mono8bitbuffer++ =  pPC->soundBuffer.at(0)-128;
-			pPC->soundBuffer.removeFirst();
+            *mono8bitbuffer++ =  pPC->soundBuffer.at(0)-128;
+            pPC->soundBuffer.removeAt(0);
 		}
 		else *mono8bitbuffer++ = 0-128;
     }
 //	fprintf(fp_tmp,"\n%s\n",tr("%1 : buffersize = %2 len=%3 stream=%4 buff=%5").arg(pPC->getName()).arg(pPC->soundBuffer.size()).arg(len).arg((int)stream).arg((int)buff).toLocal8Bit().data());
 
 	// Purge buffer for resync
-	if ( (pPC->soundBuffer.size() > 3000) && (pPC->soundBuffer.indexOf(0xff) == -1) )
+    if ( (pPC->soundBuffer.size() > BUFFLEN) && (pPC->soundBuffer.indexOf(0xff) == -1) )
 	{
 		pPC->soundBuffer.clear();
 	}
 
+    mainwindow->audioMutex.unlock();
 	return 1;
 }
 #endif
@@ -190,37 +197,41 @@ void CPObject::fillSoundBuffer(BYTE val)
 	// Calculate nb of state to skip corresponding to the CPU frequency
 	qint64 wait = (getfrequency() / SAMPLERATE);
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
-//	if (delta_state >= wait)
-	while (delta_state >= wait)
-	{
-		if (soundBuffer.size() < 3000) soundBuffer.append(val);
-		fillSoundBuffer_old_state += wait;
-		delta_state -= wait;
-	}
+    if (delta_state >= wait)
+    {
+        mainwindow->audioMutex.lock();
+        while (delta_state >= wait)
+        {
+            if (soundBuffer.size() < BUFFLEN) soundBuffer.append(val);
+            fillSoundBuffer_old_state += wait;
+            delta_state -= wait;
+        }
+        mainwindow->audioMutex.unlock();
+    }
 }
 
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 {
-#if 0
-	if ( ( (parentWidget() == 0)||(parentWidget() == mainwindow)) && (event->button() == Qt::LeftButton) )
-	{
-		if (Front)
-		{
-			move(mainwindow->pos() + pos());
-			setParent(0);
-			show();
-		}
-		else
-		{
-			QPoint newpos = pos() - mainwindow->pos();
-			setParent(mainwindow);
-			move(newpos);
-			show();
-			update();
-		}
-		Front = ! Front;
-		update();
-	}
+#if 1
+    if ( ( (parentWidget() == 0)||(parentWidget() == mainwindow)) && (event->button() == Qt::LeftButton) )
+    {
+        if (Front)
+        {
+            move(mainwindow->pos() + pos());
+            setParent(0);
+            show();
+        }
+        else
+        {
+            QPoint newpos = pos() - mainwindow->pos();
+            setParent(mainwindow);
+            move(newpos);
+            show();
+            update();
+        }
+        Front = ! Front;
+        update();
+    }
 #endif
 }
 
@@ -252,7 +263,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
 		if (pKEYB->LastKey == K_OF)
 		{
-			slotPower();
+            //slotPower();
 		}
 		
 		if (pKEYB->LastKey != 0)
@@ -281,7 +292,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 	else raise();
 	
-	if (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwindow)
+        && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
 	}
@@ -340,12 +352,14 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 		}
 	}
 	
-	if (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwindow)
+        && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
 	}
 	
 }
+
 #define SNAPRANGE 20
 			
 void CPObject::mouseReleaseEvent(QMouseEvent *event)
@@ -390,7 +404,8 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	setCursor(Qt::ArrowCursor);
 	if (pKEYB) pKEYB->LastKey = 0;
 
-	if (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwindow)
+        && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
 	}
@@ -460,7 +475,7 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 		case Qt::Key_F4:		pKEYB->LastKey = K_F4;		event->accept();	break;
 		case Qt::Key_F5:		pKEYB->LastKey = K_F5;		event->accept();	break;
 		case Qt::Key_F6:		pKEYB->LastKey = K_F6;		event->accept();	break;
-		case Qt::Key_F7:		pKEYB->LastKey = K_SHT;		event->accept();	break;
+        case Qt::Key_F7:		pKEYB->LastKey = K_F7;		event->accept();	break;
 		case Qt::Key_F8:		pKEYB->LastKey = K_CLR;		event->accept();	break;
 		case Qt::Key_F9:		pKEYB->LastKey = K_DEF;		event->accept();	break;
 		case Qt::Key_F11:		pKEYB->LastKey = K_BRK;		event->accept();	break;
@@ -495,41 +510,50 @@ void CPObject::BuildContextMenu(QMenu * menu)
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));
 			menupocket->addAction(tr("Turn On"),this,SLOT(slotPower()));
 			menupocket->addAction(tr("Reset"),this,SLOT(slotReset()));
+            //menupocket->addAction(tr("Detach"),this,SLOT(slotDetach()));
+            menupocket->addSeparator();
+            menupocket->addAction(tr("Load ..."),this,SLOT(slotLoadSession()));
+            menupocket->addAction(tr("Save ..."),this,SLOT(slotSaveSession()));
 	}
 	
 	QMenu * menuext = NULL;
 	for (int i=0;i<5;i++)
-		{
-			if (extensionArray[i])
-				{
-					if (!menuext) menuext = menu->addMenu(tr("Extensions"));
-					menuext->addMenu(((CpcXXXX *)this)->extensionArray[i]->Menu);
-				}
-		}
+    {
+        if (extensionArray[i])
+            {
+                if (!menuext) menuext = menu->addMenu(tr("Extensions"));
+                menuext->addMenu(((CpcXXXX *)this)->extensionArray[i]->Menu);
+            }
+    }
 	
 	QMenu * menuconfig = menu->addMenu(tr("Configuration"));
 	
-		if ( dynamic_cast<CpcXXXX *>(this) )
-		{
-			QMenu * menucpuspeed = menuconfig->addMenu(tr("CPU Speed"));
-				menucpuspeed->addAction(tr("100%"),this,SLOT(slotCpu100()));
-				menucpuspeed->addAction(tr("200%"),this,SLOT(slotCpu200()));
-				menucpuspeed->addAction(tr("300%"),this,SLOT(slotCpu300()));
-				menucpuspeed->addAction(tr("500%"),this,SLOT(slotCpu500()));
-				menucpuspeed->addAction(tr("Maximum"),this,SLOT(slotCpumax()));
-		}
+    if ( dynamic_cast<CpcXXXX *>(this) )
+    {
+        QMenu * menucpuspeed = menuconfig->addMenu(tr("CPU Speed"));
+            menucpuspeed->addAction(tr("100%"));
+            menucpuspeed->addAction(tr("200%"));
+            menucpuspeed->addAction(tr("300%"));
+            menucpuspeed->addAction(tr("500%"));
+            menucpuspeed->addAction(tr("Maximum"));
+
+            connect(menucpuspeed, SIGNAL(triggered(QAction*)), this, SLOT(slotCpu(QAction*)));
+}
 	
-		if (pLCDC)
-		{
-			QMenu * menulcd = menuconfig->addMenu(tr("LCD contrast"));
-				menulcd->addAction(tr("0"),this,SLOT(contrast_0()));
-				menulcd->addAction(tr("1"),this,SLOT(contrast_1()));
-				menulcd->addAction(tr("2"),this,SLOT(contrast_2()));
-				menulcd->addAction(tr("3"),this,SLOT(contrast_3()));
-				menulcd->addAction(tr("4"),this,SLOT(contrast_4()));
-		}
-		
-		menuconfig->addAction(tr("Keyboard"),this,SLOT(KeyList()));
+    if (pLCDC)
+    {
+        QMenu * menulcd = menuconfig->addMenu(tr("LCD contrast"));
+            menulcd->addAction(tr("0"));
+            menulcd->addAction(tr("1"));
+            menulcd->addAction(tr("2"));
+            menulcd->addAction(tr("3"));
+            menulcd->addAction(tr("4"));
+
+            connect(menulcd, SIGNAL(triggered(QAction*)), this, SLOT(slotContrast(QAction*)));
+
+        }
+
+    menuconfig->addAction(tr("Keyboard"),this,SLOT(KeyList()));
 	
 	menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
 
@@ -627,17 +651,21 @@ void CPObject::setCpu(int newspeed)
 	pTIMER->SetCPUspeed(newspeed);
 }
 
-void CPObject::slotCpu100() {	setCpu(1); }
-void CPObject::slotCpu200() {	setCpu(2); }
-void CPObject::slotCpu300() {	setCpu(3); }
-void CPObject::slotCpu500() {	setCpu(5); }
-void CPObject::slotCpumax() {	setCpu(100); }
+void CPObject::slotCpu(QAction* action) {
+    if (action->text() == tr("100%")) setCpu(1);
+    if (action->text() == tr("200%")) setCpu(2);
+    if (action->text() == tr("300%")) setCpu(3);
+    if (action->text() == tr("500%")) setCpu(5);
+    if (action->text() == tr("Maximum")) setCpu(1000);
+}
 
-void CPObject::contrast_0() { pPC->pLCDC->Contrast(0); }
-void CPObject::contrast_1() { pPC->pLCDC->Contrast(1); }
-void CPObject::contrast_2() { pPC->pLCDC->Contrast(2); }
-void CPObject::contrast_3() { pPC->pLCDC->Contrast(3); }
-void CPObject::contrast_4() { pPC->pLCDC->Contrast(4); }
+void CPObject::slotContrast(QAction * action) {
+    if (action->text() == tr("0")) pPC->pLCDC->Contrast(0);
+    if (action->text() == tr("1")) pPC->pLCDC->Contrast(1);
+    if (action->text() == tr("2")) pPC->pLCDC->Contrast(2);
+    if (action->text() == tr("3")) pPC->pLCDC->Contrast(3);
+    if (action->text() == tr("4")) pPC->pLCDC->Contrast(4);
+}
 
 void CPObject::slotPower()
 { 
@@ -649,6 +677,16 @@ void CPObject::slotPower()
 }
 
 void CPObject::slotReset()		{ Reset(); }
+
+void CPObject::slotLoadSession()
+{
+    ((CpcXXXX *)this)->LoadSession();
+}
+
+void CPObject::slotSaveSession()
+{
+    ((CpcXXXX *)this)->SaveSession();
+}
 
 void CPObject::Dump()
 {

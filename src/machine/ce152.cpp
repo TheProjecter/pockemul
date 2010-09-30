@@ -65,7 +65,25 @@ FILE	*fp_tape=NULL;
 */
 
 
-
+Cce152::Cce152(CPObject *parent)	: CPObject(parent)
+{
+    BackGroundFname	= ":/EXT/ext/ce-152.png";
+    Tapein		= 0;				//Tape loaded (0:none, other:access)
+    TapeCounter	= 0;
+    mode		= EJECT;
+    SoundOn		= FALSE;
+    info.ptrFd	= 0;
+    pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pTIMER		= new Ctimer(this);
+    Pc_DX		= 200;
+    Pc_DY		= 320;
+    KeyMap		= KeyMapce152;
+    KeyMapLenght= KeyMapce152Lenght;
+    pKEYB		= new Ckeyb(this,"ce152.map");
+    first_state = 0;
+    counter		= 0;
+    GetWav_Val	= 0;
+};
 
 
 /*********************************/

@@ -13,6 +13,51 @@
 #include "Debug.h"
 #include "Log.h"
 
+#define P	(lh5801.p.w)
+#define S	(lh5801.s.w)
+#define U	(lh5801.u.w)
+#define UL	(lh5801.u.b.l)
+#define UH	(lh5801.u.b.h)
+#define X	(lh5801.x.w)
+#define XL	(lh5801.x.b.l)
+#define XH	(lh5801.x.b.h)
+#define Y	(lh5801.y.w)
+#define YL	(lh5801.y.b.l)
+#define YH	(lh5801.y.b.h)
+#define T	(lh5801.t)
+
+#define C	(0x01)
+#define IE	(0x02)
+#define Z	(0x04)
+#define V	(0x08)
+#define H	(0x10)
+
+#define F_C		(lh5801.t & C)
+#define F_IE	(lh5801.t & IE)
+#define F_Z		(lh5801.t & Z)
+#define F_V		(lh5801.t & V)
+#define F_H		(lh5801.t & H)
+
+#define SET_C	(lh5801.t |= C)
+#define SET_IE	(lh5801.t |= IE)
+#define SET_Z	(lh5801.t |= Z)
+#define SET_V	(lh5801.t |= V)
+#define SET_H	(lh5801.t |= H)
+
+#define UNSET_C		(lh5801.t &= ~C)
+#define UNSET_IE	(lh5801.t &= ~IE)
+#define UNSET_Z		(lh5801.t &= ~Z)
+#define UNSET_V		(lh5801.t &= ~V)
+#define UNSET_H		(lh5801.t &= ~H)
+
+#define CHECK_Z(a)	{ ( !(a)? SET_Z : UNSET_Z);	}
+#define CHECK_C(a)	{ ( (a) ? SET_C : UNSET_C);	}
+#define CHECK_H(a)	{ ( (a) ? SET_H : UNSET_H);	}
+#define CHECK_V(a)	{ ( (a) ? SET_V : UNSET_V);	}
+
+#define ME1(a)		((a)|0x10000)
+#define bool(b)		((b)?1:0)
+
 long Oper_Use[1][0xff];
 
 INLINE void Log_Oper(int set,int oper)
@@ -21,10 +66,18 @@ INLINE void Log_Oper(int set,int oper)
 //	Oper_Use[set][oper]++;
 }
 
+CLH5801::CLH5801(CPObject *parent)	: CCPU(parent)
+{
+    pDEBUG = new Cdebug_lh5801(parent);
+    fn_status="LH5801.sta";
+    fn_log = "lh5801.log";
+
+    Is_Timer_Reached=FALSE;
+    step_Previous_State = 0;
+};
 
 bool CLH5801::init(void)
 {
-	logsw = false;
 	Check_Log();
 	pDEBUG->init();
 	Reset();
@@ -33,7 +86,7 @@ bool CLH5801::init(void)
 
 bool	CLH5801::exit(void)
 {
-	if(logsw) fclose(fp_log);							//close log file
+    if(fp_log) fclose(fp_log);							//close log file
 	pDEBUG->exit();
 	return true;
 };						//end
@@ -260,16 +313,13 @@ INLINE void CLH5801::ADD_MEM(DWORD addr, UINT8 data)
 
 INLINE void CLH5801::ADR(PAIR *reg)
 {
-//	UINT8 tmp_t = lh5801.t;
+	UINT8 loc_t = lh5801.t;		// Record Flags
 
 	reg->b.l = add_generic(reg->b.l,lh5801.a,0);
 	if (F_C) {
-//		reg->b.h = add_generic(reg->b.h,1,0);
 		reg->b.h++;
-//		lh5801.t = tmp_t;
-		
 	}
-//	UnSet_C();
+	lh5801.t = loc_t;		// Restore Flags : OFFICIAL DOCUMENTATION IS WRONG Flags are not impacted 
 }
 
 INLINE void CLH5801::SBC(UINT8 data)
@@ -453,7 +503,7 @@ INLINE void CLH5801::LOP(void)
 
 	AddState(8);
 
-#if 0
+#if 0 // Since i need perfect synchronization with connected material , this hack is no more acceptable
 	// HACK SKIP LOP-2 opcode
 	if (LOP_SKIP_sw && (t == 2))
 	{
@@ -564,7 +614,7 @@ INLINE void CLH5801::AM(int value)
 
 INLINE void CLH5801::ITA(void)
 {
-	lh5801.a=((CpcXXXX *)pPC)->in();
+    lh5801.a=((CpcXXXX *)pPC)->in(0);
 	CHECK_Z(lh5801.a);
 }
 

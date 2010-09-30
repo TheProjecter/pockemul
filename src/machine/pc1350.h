@@ -17,7 +17,7 @@
 class Cpc13XX:public CpcXXXX{						//PC1350 emulator main class
 
 public:
-	virtual char*	GetClassName(){ return("Cpc13XX");};
+    virtual const char*	GetClassName(){ return("Cpc13XX");};
 
 	virtual void	Set_PortA(BYTE data);
 	virtual BYTE	Get_PortA(void);
@@ -25,8 +25,8 @@ public:
 
 
 	
-	UINT8 in(void){return(1);};
-
+    UINT8 in(UINT8 address){return(1);};
+    UINT8 out(UINT8 address,UINT8 value){return(1);};
 	virtual bool CheckUpdateExtension(CExtension *ext);
 	
 	Cpc13XX(CPObject *parent = 0)	: CpcXXXX(parent)
@@ -53,8 +53,8 @@ public:
 		Lcd_Symb_DX	= 30;
 		Lcd_Symb_DY	= 64;
 		
-		pCONNECTOR	= new Cconnector11(this);	publish(pCONNECTOR);
-		pSIOCONNECTOR	= new Cconnector15(this);		publish(pSIOCONNECTOR);	
+        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false);	publish(pCONNECTOR);
+        pSIOCONNECTOR	= new Cconnector(this,15,"Connector 15 pins",false);	publish(pSIOCONNECTOR);
 
 	}
 

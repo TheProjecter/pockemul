@@ -1,6 +1,6 @@
 
 /**********************************************************/
-/* lh5801 CPU emulation class                            */
+/* lh5810 CPU emulation class                            */
 /**********************************************************/
 
 #ifndef LH5810_H
@@ -8,6 +8,19 @@
 
 #include "pobject.h"
 #include "pd1990ac.h"
+
+#define SETREG_LH5810_RESET(p,data)	(p->lh5810.reset	= (data));
+#define SETREG_LH5810_U(p,data)		(p->lh5810.r_u	= (data));
+#define SETREG_LH5810_L(p,data)		(p->lh5810.r_l	= (data));
+#define SETREG_LH5810_G(p,data)		(p->lh5810.r_g	= (data));
+#define SETREG_LH5810_MSK(p,data)	(p->lh5810.r_msk = (data)&0x0F);
+#define SETREG_LH5810_IF(p,data)	(p->lh5810.r_if	= (data));
+#define SETREG_LH5810_DDA(p,data)	(p->lh5810.r_dda = (data));
+#define SETREG_LH5810_DDB(p,data)	(p->lh5810.r_ddb = (data));
+#define SETREG_LH5810_OPA(p,data)	(p->lh5810.r_opa = ( (p->lh5810.r_opa & (~p->lh5810.r_dda)) | ((data) & (p->lh5810.r_dda))) );
+#define SETREG_LH5810_OPB(p,data)	(p->lh5810.r_opb = ( (p->lh5810.r_opb & (~p->lh5810.r_ddb)) | ((data) & (p->lh5810.r_ddb))) );
+#define SETREG_LH5810_OPC(p,data)	(p->lh5810.r_opc = (data));
+#define SETREG_LH5820_F(p,data)		(p->lh5810.r_f	= (data));
 
 enum LH5810_REGS{
 	LH5810_RESET,
@@ -42,7 +55,7 @@ public:
 
 	void	Regs_Info(UINT8);
 
-	char*	GetClassName(){ return("CLH5810");};
+    const char*	GetClassName(){ return("CLH5810");};
 
 	UINT8	GetReg(LH5810_REGS);
 	UINT8	SetReg(LH5810_REGS,UINT8);	// return the value written

@@ -1,6 +1,7 @@
 #ifndef MAINWINDOWPOCKEMUL_H
 #define MAINWINDOWPOCKEMUL_H
 
+#include <QMutex>
 #include <QPoint>
 //
 #include "ui_pockemul.h"
@@ -17,6 +18,8 @@ class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
 public:
+    QMutex audioMutex;
+
 	MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
 	void setZoom(int );
 	void setCpu(int );
@@ -32,6 +35,8 @@ public:
 	void SendSignal_AddLogItem(QString str);
 	
 	qint64	rawclk;
+
+    //Audio audio;
 
 private slots:
 	void about();

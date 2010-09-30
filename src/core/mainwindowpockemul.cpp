@@ -61,6 +61,9 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 	FSOUND_Init(44100, 32, 0); 
 #endif
 
+//audio.show();
+
+
 	// Create a timer for Drawing screen FRAMERATE times per seconds
 	FrameTimer = new QTimer(mainwindow);
     connect(FrameTimer, SIGNAL(timeout()), this, SLOT(updateFrameTimer()));
@@ -226,7 +229,7 @@ void  MainWindowPockemul::updateFrameTimer()
 			{
 //	AddLog(LOG_TIME,tr("Time Frame elapsed : %1 ms  nb=%2 cur=%3 last=%4").arg(deltaTime).arg(CurrentpPC->pTIMER->nb_state).arg(Current_State).arg(CurrentpPC->pTIMER->last_state));
 				statepersec = (int) ( CurrentpPC->getfrequency());
-				rate = (int) ((100*CurrentpPC->pTIMER->nb_state)/(statepersec*deltaTime/1000));
+                rate = (int) ((100L*CurrentpPC->pTIMER->nb_state)/((statepersec/1000)*deltaTime));
 				CurrentpPC->pTIMER->nb_state=0;
 				
 				QString str;

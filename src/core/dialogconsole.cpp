@@ -22,7 +22,7 @@ void DialogConsole::refresh( void)
 	static int currentIndex = 0;
 	
 	if (! pSIO) return;
-	ConnectLbl->setText("Connected to : " + pSIO->pTIMER->pPC->getName());	
+    if (pSIO->pTIMER) ConnectLbl->setText("Connected to : " + pSIO->pTIMER->pPC->getName());
 	if (pSIO->baOutput.size() > currentIndex)
 	{
 		int len = pSIO->baOutput.size()-currentIndex;

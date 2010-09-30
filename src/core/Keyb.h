@@ -46,7 +46,8 @@ K_COS,
 K_SIN,
 K_HYP,
 K_RM,
-K_F1,K_F2,K_F3,K_F4,K_F5,K_F6,
+K_CTRL,K_BS,K_KBII,
+K_F1,K_F2,K_F3,K_F4,K_F5,K_F6,K_F7,
 K_A,K_B,K_C,K_D,K_E,K_F,K_G,K_H,K_I,K_J,K_K,K_L,K_M,K_N,K_O,K_P,K_Q,K_R,K_S,K_T,K_U,K_V,K_W,K_X,K_Y,K_Z,
 K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 };
@@ -74,13 +75,16 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 
 #define K_PRINT		0xc0
 #define K_PFEED		0xc1
+#define K_PBFEED	0xc2
 
 #define K_EJECT		0xd0
 #define K_PLAY		0xd1
 #define K_STOP		0xd2
 #define K_LOAD		0xd3
 #define K_RECORD	0xd4
-
+#define K_CTRL      0xd5
+#define K_BS        0xd6
+#define K_KBII      0xd7
 
 #define K_RCL		0xde
 #define K_RSV		0xdf
@@ -114,6 +118,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_F4		0xf9
 #define K_F5		0xfa
 #define K_F6		0xfb
+#define K_F7		0xfc
 
 #define K_A			0x41
 #define K_B			0x42
@@ -149,6 +154,7 @@ extern BYTE scandef_pc1401[];
 extern BYTE scandef_pc1403[];
 extern BYTE scandef_pc1450[];
 extern BYTE scandef_pc1500[];
+extern BYTE scandef_pc1600[];
 
 
 class CKey{
@@ -198,7 +204,7 @@ public:
 	BYTE	keym[200];
 	bool	access;							//KO access flag(0:none,1:access)
 	QString fn_KeyMap;
-	BYTE	Kon;
+    bool	Kon;
 	BYTE	LastKey;
 
 	QList<CKey>	Keys;
@@ -216,7 +222,7 @@ public:
 		access		= 0;							//ko port access?(0:none, 1:access)
 		KStrobe		= 0;
 		IA_PORT		= 0;
-		Kon			= 0;
+        Kon			= false;
 		fn_KeyMap	= map;
 		modified = false;
 		handler = new KEYBMAPParser(this);
@@ -355,6 +361,30 @@ public:
 private:
 };
 
+class Ckeyb_pc1600:public Ckeyb{
+public:
 
+    Ckeyb_pc1600(CPObject *parent = 0)	: Ckeyb(parent)
+    {
+        scandef = scandef_pc1600;
+        fn_KeyMap	= "pc1600.map";
+    }
+    virtual ~Ckeyb_pc1600(){};
+
+private:
+};
+
+class Ckeyb_ce1600p:public Ckeyb{
+public:
+
+    Ckeyb_ce1600p(CPObject *parent = 0)	: Ckeyb(parent)
+    {
+        scandef = 0;
+        fn_KeyMap	= "ce1600p.map";
+    }
+    virtual ~Ckeyb_ce1600p(){};
+
+private:
+};
 
 #endif

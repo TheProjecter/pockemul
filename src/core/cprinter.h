@@ -7,7 +7,9 @@ class CpaperWidget;
 
 
 class Cprinter:public CPObject{
-Q_OBJECT
+
+//Q_OBJECT
+
 public:
 	virtual void clearPaper(void) {};
 	virtual void SaveAsText(void) {};
@@ -17,6 +19,9 @@ public:
 	virtual ~Cprinter();
 	
 	int paper_X,paper_Y;
+    int paper_DX,paper_DY;
+    QRect PaperWidgetRect;
+
 	void setPaperPos(QPoint);
 	QPoint PaperPos();
 	

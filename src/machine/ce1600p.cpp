@@ -1,0 +1,255 @@
+#include <QPainter>
+#include "common.h"
+#include "ce150.h"
+#include "ce1600p.h"
+#include "pc1500.h"
+#include "paperwidget.h"
+#include "Keyb.h"
+#include "clink.h"
+#include "dialoganalog.h"
+
+#define NO_MOVE	0
+#define RI_MOVE	1
+#define LE_MOVE 2
+#define RI_MOVE_MID	3
+#define LE_MOVE_MID 4
+#define UP_MOVE 1
+#define DN_MOVE 2
+#define UP_MOVE_MID 3
+#define DN_MOVE_MID 4
+
+#define PORT_MOTOR_X (pTIMER->pPC->pCPU->imem[0x83] & 0x0f)
+#define PORT_MOTOR_Y ((pTIMER->pPC->pCPU->imem[0x83] >> 4) & 0x0f)
+#define PORT_MOTOR_Z (pTIMER->pPC->pCPU->imem[0x82] & 0x0f)
+
+//#define MACRO_ADD_LOG	AddLog(LOG_PRINTER,tr("X=%1 Y=%2 Rot=%3 Color=%4,   IF=%5").arg(Pen_X,Pen_Y,Rot,Pen_Color,pLH5810->lh5810.r_if))
+#define MACRO_ADD_LOG	if (pTIMER->pPC->fp_log) fprintf(pTIMER->pPC->fp_log,"X=%d Y=%d Z=%d Rot=%d Color=%d\n",Pen_X,Pen_Y,Pen_Z,Rot,Pen_Color)
+
+Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
+{
+    //[constructor]
+    BackGroundFname	= ":/EXT/ext/ce-1600p.jpg";
+    PaperFname		= "ext\\ce-150paper.jpg";
+    setcfgfname(QString("ce1600p"));
+    SnapPts = QPoint(375,404);
+    Paper_X = 192;
+    Paper_Y = 50;
+    Pc_DX	= 960;
+    Pc_DY	= 658;
+
+    KeyMap		= KeyMapce1600p;
+    KeyMapLenght= KeyMapce1600pLenght;
+    delete pKEYB;
+    pKEYB		= new Ckeyb_ce1600p(this);
+}
+
+bool Cce1600p::init(void)
+{
+    Pc_DX	= 960;
+    Pc_DY	= 658;
+
+        CPObject::init();
+
+    #ifndef NO_SOUND
+        clac = FSOUND_Sample_Load(FSOUND_FREE, "clac2.wav", 0, 0, 0);
+    #endif
+
+        setfrequency( 0);
+
+        WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
+
+        AddLog(LOG_PRINTER,tr("PRT initializing..."));
+
+        if(pKEYB)	pKEYB->init();
+        if(pTIMER)	pTIMER->init();
+
+        // Create CE-150 Paper Image
+        ce150buf	= new QImage(QSize(1920, 3000),QImage::Format_ARGB32);
+        ce150display= new QImage(QSize(1920, 567),QImage::Format_ARGB32);
+        ce150pen	= new QImage(":/EXT/ext/ce-150pen.png");
+        // Fill it blank
+        clearPaper();
+
+        // Create a paper widget
+        paperWidget = new CpaperWidget(QRect(160,30,650,170),ce150buf,this);
+        paperWidget->show();
+
+
+
+    return true;
+}
+
+
+
+
+bool Cce1600p::run(void)
+{
+    bool has_moved_X = false;
+    bool has_moved_Y = false;
+    bool has_moved_Z = false;
+
+//	lh5810_write();
+
+    ////////////////////////////////////////////////////////////////////
+    //	VOLTAGE OK :-)
+    //////////////////////////////////////////////////////////////////
+//	pLH5810->SetRegBit(LH5810_OPB,6,FALSE);
+
+    ////////////////////////////////////////////////////////////////////
+    //	PRINT MODE
+    //////////////////////////////////////////////////////////////////
+    if (pKEYB->LastKey==K_PRINT)
+    {
+        Print_Mode = ! Print_Mode;
+        PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],4,true);
+        pKEYB->LastKey = 0;
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //	PAPER FEED
+    //////////////////////////////////////////////////////////////////
+    PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],1,(pKEYB->LastKey==K_PFEED));
+
+    ////////////////////////////////////////////////////////////////////
+    //	REVERSE PAPER FEED
+    //////////////////////////////////////////////////////////////////
+    PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],2,(pKEYB->LastKey==K_PBFEED));
+
+
+    ////////////////////////////////////////////////////////////////////
+    //	RMT ON/OFF
+    ////////////////////////////////////////////////////////////////////
+//	if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = FALSE;	// RMT 0 ON
+//	if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = TRUE;	// RMT 0 OFF
+
+
+
+    Direction = Motor_X.SendPhase(PORT_MOTOR_X);
+
+    switch (Direction)
+    {
+        case RI_MOVE:   Pen_X++;
+        case RI_MOVE_MID:	Pen_X++;
+                        has_moved_X=TRUE;
+                        MACRO_ADD_LOG;
+                        break;
+        case LE_MOVE:   Pen_X--;
+        case LE_MOVE_MID:   Pen_X--;
+                        has_moved_X=TRUE;
+                        MACRO_ADD_LOG;
+                        break;
+    }
+
+    Direction = Motor_Y.SendPhase(PORT_MOTOR_Y);
+
+    switch (Direction)
+    {
+    case UP_MOVE:       Pen_Y--;
+    case UP_MOVE_MID:   Pen_Y--;
+                        has_moved_Y=TRUE;
+                        MACRO_ADD_LOG;
+                        break;
+    case DN_MOVE:       Pen_Y++;
+    case DN_MOVE_MID:	Pen_Y++;
+                        has_moved_Y=TRUE;
+                        MACRO_ADD_LOG;
+                        break;
+    }
+
+    Direction = Motor_Z.SendPhase(PORT_MOTOR_Z);
+
+    switch (Direction)
+    {
+    case UP_MOVE:       Pen_Z--;
+    case UP_MOVE_MID:   Pen_Z--;
+                        has_moved_Z=true;
+                        MACRO_ADD_LOG;
+                        break;
+    case DN_MOVE:       Pen_Z++;
+    case DN_MOVE_MID:	Pen_Z++;
+                        has_moved_Z=TRUE;
+                        MACRO_ADD_LOG;
+                        break;
+    }
+
+    if (has_moved_Z)
+    {
+        if (Pen_Z < 0) Pen_Z = 0;
+        if (Pen_Z >50) Pen_Z = 50;
+        if (Pen_Z == 6) // Pen up
+        {
+#ifndef NO_SOUND
+            int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac, 0 , true);
+            FSOUND_SetVolumeAbsolute(iChanIndex,255);
+            FSOUND_SetPaused(iChanIndex,false);
+#endif
+
+            Pen_Status = PEN_UP;
+            AddLog(LOG_PRINTER,"PEN UP");
+        }
+        if (Pen_Z == 0) {   // Pen down
+#ifndef NO_SOUND
+            int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac,0,true);
+            FSOUND_SetVolumeAbsolute(iChanIndex,255);
+            FSOUND_SetPaused(iChanIndex,false);
+#endif
+
+            Pen_Status = PEN_DOWN;
+            AddLog(LOG_PRINTER,"PEN DOWN");
+        }
+
+        if (Pen_Z == 20) { // change color position
+            StartRot = true;	// rotation pin engaged
+        }
+        if ((Pen_Z == 50) && StartRot) {
+            Rot++;
+            StartRot = false;
+            // If the third 1/12 rotation, then put next color
+            if (Rot == 8) {
+                Rot = 0;
+                Next_Color();
+            }
+        }
+
+    }
+
+
+//    pTIMER->pPC->pCPU->imem[0x81] |= (Pen_X <= 0 ? 0x20 : 0x00);
+    // Left position detection
+    PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],5,Pen_X <= 0);
+
+    //---------------------------------------------------
+    // Draw printer
+    //---------------------------------------------------
+    if (has_moved_Y || (has_moved_X && (Pen_Status==PEN_DOWN))) Print();
+
+
+    pCONNECTOR->Set_pin(1	,1);
+//    pCONNECTOR->Set_pin(30	,pLH5810->INT);
+
+    return(1);
+}
+
+
+void Cce1600p::Print(void)
+{
+    QPainter painter;
+
+    pPC->Refresh_Display = true;
+
+    if (Pen_Status==PEN_DOWN)
+    {
+        painter.begin(ce150buf);
+        switch (Pen_Color)
+        {
+            case 0 : painter.setPen( Qt::black); break;
+            case 1 : painter.setPen( Qt::blue); break;
+            case 2 : painter.setPen( Qt::green); break;
+            case 3 : painter.setPen( Qt::red); break;
+        }
+        painter.drawPoint( Pen_X, Pen_Y );
+        painter.end();
+    }
+
+    paperWidget->setOffset(QPoint(0,Pen_Y));
+}
