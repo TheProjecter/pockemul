@@ -16,6 +16,6 @@
     <qresource prefix="/TRSPC2" >
         <file>pc1500/pc2lcd.jpg</file>
         <file>pc1500/pc2symb.jpg</file>
-        <file>pc1500/trspc2.jpg</file>
+        <file>pc1500/trspc2.jpg</file> 
     </qresource>
 </RCC>

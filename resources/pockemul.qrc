@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/POCKEMUL" >
         <file>pockemul/pockemul.bmp</file>
+        <file>pockemul/release_notes.html</file>  
     </qresource>
 </RCC>

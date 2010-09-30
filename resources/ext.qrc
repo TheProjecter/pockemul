@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/EXT" >
+    <qresource prefix="/EXT">
         <file>ext/26-3591.jpg</file>
         <file>ext/cable.png</file>
         <file>ext/ce-123p.jpg</file>
@@ -17,5 +17,9 @@
         <file>ext/ce-152.png</file>
         <file>ext/ce126ptable.bmp</file>
         <file>ext/serial.png</file>
+        <file>ext/ce-1600p.png</file>
+        <file>ext/ce-1600p.jpg</file>
+        <file>ext/potar.png</file>
+        <file>ext/jack.png</file>
     </qresource>
 </RCC>
