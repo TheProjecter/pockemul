@@ -44,6 +44,9 @@ void Csio::Set_RR(bool val) { RR = val;	}
 void Csio::Set_ER(bool val) { ER = val;	}
 void Csio::Set_RS(bool val) { RS = val;	}
 
+void Csio::Set_BaudRate(int br) {baudrate = br;}
+int  Csio::Get_BaudRate(void) {return baudrate;}
+
 bool Csio::run(void)
 {
 	
@@ -97,7 +100,7 @@ bool Csio::inReadBit(void)
 	int			deltastate	= 0;
 
 	Sii_LfWait = 100;
-	Sii_wait	= TICKS_1200BDS;
+    Sii_wait	= TICKS_BDS;
 	
 // If there are new data in baInput
 	if (! Sii_TransferStarted) return 0;
@@ -118,15 +121,15 @@ bool Csio::inReadBit(void)
 		switch (bit)
 		{
 		case 3:	bit = 1;
-				Sii_wait = TICKS_1200BDS;
+                Sii_wait = TICKS_BDS;
 				return(bit);		// START BIT
 		case 0:
 		case 1:	AddLog(LOG_SIO,tr("Envoie bit = %1").arg(bit));
-				Sii_wait = TICKS_1200BDS;
+                Sii_wait = TICKS_BDS;
 				return(bit);		// DATA BIT
 
 		case 2:	bit = 0;
-				Sii_wait = TICKS_1200BDS;
+                Sii_wait = TICKS_BDS;
 
 				if (data == 0x0D)
 				{
@@ -225,7 +228,7 @@ static long oldstate	= pTIMER->state;
 		Sii_wait	= 0;
 		return;
 	}	
-//	Sii_wait	= TICKS_1200BDS;
+//	Sii_wait	= TICKS_BDS;
 	oldstate	= pTIMER->state;		
 //	oldstate	+= Sii_wait;		
 		
@@ -242,7 +245,7 @@ static long oldstate	= pTIMER->state;
 		waitbitstart = 0;
 //		Bit START
 		AddLog(LOG_SIO,tr("START BIT"));
-		Sii_wait	= TICKS_1200BDS;
+        Sii_wait	= TICKS_BDS;
 		
 	}
 	else if (!waitbitstart)
@@ -287,6 +290,10 @@ bool Csio::init(void)
 /*****************************************************************************/
 bool Csio::exit(void)
 {
+    if (dialogconsole) {
+        dialogconsole->close();
+        dialogconsole = 0;
+    }
 	return true;
 }
 
