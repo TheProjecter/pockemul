@@ -108,7 +108,10 @@ HEADERS += src/core/Connect.h \
     src/core/dialogpotar.h \
     src/machine/cmotor.h \
     src/cpu/tc8576p.h \
-    src/core/cextension.h
+    src/core/cextension.h \
+    src/machine/pc2500.h \
+    src/core/Keyb2500.h \
+    src/machine/ce515p.h
 INCLUDEPATH += . \
     C:\Users\Remy\dev\fmodapi375win/api/inc \
     src/core \
@@ -144,7 +147,8 @@ RESOURCES += resources/ext.qrc \
     resources/pc1500.qrc \
     resources/pockemul.qrc \
     src/core/lfhex/lfhex.qrc \
-    resources/pc1600.qrc
+    resources/pc1600.qrc \
+    resources/pc2500.qrc
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
     src/core/Debug.cpp \
@@ -222,7 +226,9 @@ SOURCES += src/core/Connect.cpp \
     src/core/dialogpotar.cpp \
     src/machine/cmotor.cpp \
     src/cpu/tc8576p.cpp \
-    src/core/cextension.cpp
+    src/core/cextension.cpp \
+    src/machine/pc2500.cpp \
+    src/machine/ce515p.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
