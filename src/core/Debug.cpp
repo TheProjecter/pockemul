@@ -88,7 +88,7 @@ DisAsmTbl	AsmTbl_sc61860[]={
 		 1,"DECK",			"DECK",
 		 1,"INCM",			"INCM",
 		 1,"DECM",			"DECM",
-		 1,"INA",			"INA",
+         1,"IN A",			"IN A",
 		 1,"NOPW",			"NOPW",
 		 2,"WAIT  %02X",	"WAIT",
 		 1,"CUP",			"CUP",
@@ -105,7 +105,7 @@ DisAsmTbl	AsmTbl_sc61860[]={
 		 1,"SL",			"SL",
 		 1,"POP",			"POP",
 		 1,"???   (5C)",	"???   (5C)",
-		 1,"OUTA",			"OUTA",
+         1,"OUT A",			"OUT A",
 		 1,"???   (5E)",	"???   (5E)",
 		 1,"OUT F",			"OUT F",
 		 2,"ANIM  %02X",	"ANIM",						// 60h
@@ -134,7 +134,7 @@ DisAsmTbl	AsmTbl_sc61860[]={
 		 1,"???   (77)",	"???   (77)",
 		 3,"CALL  %02X%02X","CALL",
 		 3,"JP    %02X%02X","JP",
-		-4,"CASE1 %02X-(%02X","CASE1",
+        -4,"CASE1 %02X-(%02X%02X)","CASE1",
 		 1,"???   (7B)",	"???   (7B)",
 		 3,"JPNZ  %02X%02X","JPNZ",
 		 3,"JPNC  %02X%02X","JPNC",
@@ -220,7 +220,7 @@ DisAsmTbl	AsmTbl_sc61860[]={
 		 1,"DECL","DECL",
 		 1,"INCN","INCN",
 		 1,"DECN","DECN",
-		 1,"INB ","INB ",
+         1,"IN B ","IN B ",
 		 1,"??? ","??? ",
 		 1,"NOPT","NOPT",
 		 1,"??? ","??? ",
@@ -238,9 +238,9 @@ DisAsmTbl	AsmTbl_sc61860[]={
 		 1,"EXAB","EXAB",
 		 1,"EXAM","EXAM",
 		 1,"???   (DC)","???   (DC)",
-		 1,"OUTB","OUTB",
+         1,"OUT B","OUT B",
 		 1,"???   (DE)","???   (DE)",
-		 1,"OUTC","OUTC",
+         1,"OUT C","OUT C",
 
 	    -2,"CAL%02X%02X","CAL",
 		-2,"CAL%02X%02X","CAL",
@@ -593,7 +593,7 @@ DWORD Cdebug_sc61860::DisAsm_1(DWORD adr)
 	DasmAdr = adr;
 
 	l=abs(AsmTbl[pPC->pCPU->get_mem(adr,SIZE_8)].len);
-	switch(AsmTbl[pPC->Get_8(adr)].len)
+    switch(AsmTbl[pPC->Get_PC(adr)].len)
 	{
 	case  1:sprintf(s,AsmTbl[pPC->pCPU->get_mem(adr,SIZE_8)].nim);
 			break;

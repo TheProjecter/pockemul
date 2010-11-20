@@ -108,7 +108,24 @@ public:
 	};
 
 };
+class Clcdc_pc2500:public Clcdc
+{
+public:
+    void disp(void);				//display LCDC data to screen
+    void disp_symb(void);
 
+    Clcdc_pc2500(CPObject *parent)	: Clcdc(parent)
+    {						//[constructor]
+        Color_Off.setRgb(
+                            (int) (0x4f*contrast),
+                            (int) (0x5b*contrast),
+                            (int) (0x51*contrast));
+    };
+    virtual ~Clcdc_pc2500()
+    {						//[constructor]
+    };
+
+};
 class Clcdc_pc1250:public Clcdc{
 public:
 	void disp(void);				//display LCDC data to screen

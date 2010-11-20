@@ -34,9 +34,9 @@ static const struct {
 // S2           RUN     PRO     RESERVE         RAD     G       DE      F64F
 // S3   DEF     I       II      III     SML     x       SHIFT   BUSY    F64E
 
-#define SYMB1_1600		((Cpc1600 *)pPC)->pHD61102_2->imem[symbSL(4)]
-#define SYMB2_1600		((Cpc1600 *)pPC)->pHD61102_2->imem[symbSL(6)]
-#define SYMB3_1600		((Cpc1600 *)pPC)->pHD61102_2->imem[symbSL(7)]
+#define SYMB1_1600		((Cpc1600 *)pPC)->pHD61102_2->info.imem[symbSL(4)]
+#define SYMB2_1600		((Cpc1600 *)pPC)->pHD61102_2->info.imem[symbSL(6)]
+#define SYMB3_1600		((Cpc1600 *)pPC)->pHD61102_2->info.imem[symbSL(7)]
 
 void Clcdc_pc1600::disp_symb(void)
 {
@@ -64,7 +64,7 @@ void Clcdc_pc1600::disp_symb(void)
 INLINE int Clcdc_pc1600::symbSL(int x)
 {
     Cpc1600 *p = (Cpc1600 *)pPC;
-    int l=(x+((Cpc1600 *)pPC)->pHD61102_2->displaySL/8);
+    int l=(x+((Cpc1600 *)pPC)->pHD61102_2->info.displaySL/8);
     l = (l>=8) ? l-8 : l;
     return l*0x40+63;
 }
@@ -72,7 +72,7 @@ INLINE int Clcdc_pc1600::symbSL(int x)
 INLINE int Clcdc_pc1600::computeSL(CHD61102* pCtrl,int ord)
 {
     int y = ord;
-    y -= pCtrl->displaySL;
+    y -= pCtrl->info.displaySL;
     if (y < 0) y += 64;
     return y;
 }
@@ -93,12 +93,12 @@ void Clcdc_pc1600::disp(void)
 
     QPainter painter(pPC->LcdImage);
 
-    if (((Cpc1600 *)pPC)->pHD61102_1->on_off) {
+    if (((Cpc1600 *)pPC)->pHD61102_1->info.on_off) {
         for (int i = 0 ; i < 64; i++)
         {
             for (int j = 0 ; j < 8 ; j++)
             {
-            BYTE data = ((Cpc1600 *)pPC)->pHD61102_1->imem[ (j * 0x40) + i ];
+            BYTE data = ((Cpc1600 *)pPC)->pHD61102_1->info.imem[ (j * 0x40) + i ];
                 for (b=0; b<8;b++)
                 {
     //                if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",i,j*8+b);
@@ -111,12 +111,12 @@ void Clcdc_pc1600::disp(void)
         }
     }
 
-    if (((Cpc1600 *)pPC)->pHD61102_2->on_off) {
+    if (((Cpc1600 *)pPC)->pHD61102_2->info.on_off) {
         for (int i = 0 ; i < 64; i++)
         {
             for (int j = 0 ; j < 8 ; j++)
             {
-                BYTE data = ((Cpc1600 *)pPC)->pHD61102_2->imem[ (j * 0x40) + i ];
+                BYTE data = ((Cpc1600 *)pPC)->pHD61102_2->info.imem[ (j * 0x40) + i ];
                 for (b=0; b<8;b++)
                 {
     //                if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",64+i,j*8+b);
@@ -129,13 +129,13 @@ void Clcdc_pc1600::disp(void)
         }
     }
 
-    if (((Cpc1600 *)pPC)->pHD61102_1->on_off) {
+    if (((Cpc1600 *)pPC)->pHD61102_1->info.on_off) {
 
         for (int i = 0 ; i < 28; i++)
         {
             for (int j = 0 ; j < 8 ; j++)
             {
-                BYTE data = ((Cpc1600 *)pPC)->pHD61102_1->imem[ (j * 0x40) + i ];
+                BYTE data = ((Cpc1600 *)pPC)->pHD61102_1->info.imem[ (j * 0x40) + i ];
                 for (b=0; b<8;b++)
                 {
     //                if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",128+i,(j-4)*8+b);

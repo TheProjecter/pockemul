@@ -73,6 +73,20 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_OB		0x3f
 #define K_OF		0x3e
 
+#define K_0         0xa0
+#define K_1         0xa0
+#define K_2         0xa0
+#define K_3         0xa0
+#define K_4         0xa0
+#define K_5         0xa0
+#define K_6         0xa0
+#define K_7         0xa0
+#define K_8         0xa0
+#define K_9         0xa0
+#define K_MIN         0xa0
+#define K_PT         0xa0
+#define K_SLH         0xa0
+
 #define K_PRINT		0xc0
 #define K_PFEED		0xc1
 #define K_PBFEED	0xc2
@@ -150,6 +164,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 extern BYTE scandef_pc1250[];
 extern BYTE scandef_pc1350[];
 extern BYTE scandef_pc1360[];
+extern BYTE scandef_pc2500[];
 extern BYTE scandef_pc1401[];
 extern BYTE scandef_pc1403[];
 extern BYTE scandef_pc1450[];
@@ -160,7 +175,7 @@ extern BYTE scandef_pc1600[];
 class CKey{
 public:
 	CKey(int ScanCode, QString Description,QRect Rect = QRect());
-	~CKey(){};
+    ~CKey(){}
 	
 	int		Icode;
     QString	Description;
@@ -177,7 +192,7 @@ public:
   bool endElement( const QString&, const QString&, const QString &name );
   bool startElement( const QString&, const QString&, const QString &name, const QXmlAttributes &attrs );
 
-	KEYBMAPParser(CPObject *parent = 0)	: CPObject(parent){};
+    KEYBMAPParser(CPObject *parent = 0)	: CPObject(parent){}
 private:
   bool inKeyboard;
 };
@@ -211,6 +226,8 @@ public:
 	bool	modified;
 	int		baseWidth;
 	int		baseHeight;
+
+        bool    isShift;
 
 
 	KEYBMAPParser *handler;
@@ -265,6 +282,19 @@ public:
 		fn_KeyMap	= "pc1360.map";
 	}
 	virtual ~Ckeyb_pc1360(){};
+
+private:
+};
+
+class Ckeyb_pc2500:public Ckeyb{
+public:
+
+    Ckeyb_pc2500(CPObject *parent = 0)	: Ckeyb(parent)
+    {
+        scandef = scandef_pc2500;
+        fn_KeyMap	= "pc2500.map";
+    }
+    virtual ~Ckeyb_pc2500(){};
 
 private:
 };

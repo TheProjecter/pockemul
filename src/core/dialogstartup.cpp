@@ -53,6 +53,7 @@ void DialogStartup::create(QString ItemText)
 	if (ItemText == "Tandy PC-2")	result = 32;	
 	if (ItemText == "PC 1251H")	result = 33;
     if (ItemText == "PC 1600")	result = 34;
+    if (ItemText == "PC 2500")	result = 35;
 
 	if (ItemText == "CE-125")	result = 101;	
 	if (ItemText == "CE-126P")	result = 102;	

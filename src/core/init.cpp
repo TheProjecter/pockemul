@@ -26,6 +26,8 @@
 
 #include "pc1350.h"
 #include "pc1360.h"
+
+#include "pc2500.h"
  
 #include "pc1401.h"
 #include "pc1402.h"
@@ -95,7 +97,9 @@ CPObject *pPC=0;
 
         case 34 : pPC = new Cpc1600;	pPC->setName("PC-1600");break;
 
-		case 101: pPC = new Cce125;		pPC->setName("CE-125");break;
+        case 35 : pPC = new Cpc2500;	pPC->setName("PC-2500");break;
+
+        case 101: pPC = new Cce125;		pPC->setName("CE-125");break;
 		case 102: pPC = new Cce126;		pPC->setName("CE-126P");break;
 		case 103: pPC = new Cce123;		pPC->setName("CE-123P");break;
 		case 104: pPC = new Cce129;		pPC->setName("CE-129P");break;

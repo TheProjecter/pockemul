@@ -10,6 +10,7 @@
 #include "Keyb1250.h"
 #include "Keyb1350.h"
 #include "Keyb1360.h"
+#include "Keyb2500.h"
 #include "Keyb1401.h"
 #include "Keyb1403.h"
 #include "Keyb1450.h"
@@ -80,8 +81,12 @@ void Ckeyb::keyscan(void)
 		for (j = 0; j < 8; j++)
 		{
 			ch = scandef[i * 8 + j];
+
 			if ( (LastKey == ch) || (toupper(LastKey) == toupper(ch)) )
 			{
+                if (ch=='k') {
+                    LastKey=0;
+                }
 				keym[i] = (1 << j);
 				LastKey = 0;
 				break;
@@ -97,15 +102,15 @@ BYTE Ckeyb::Read(BYTE data)
 	BYTE	ret	=0;
 	BYTE	jj	=0;
 
-    if ((data == 0) && ((KStrobe & 0x7F) != 0))
+    if ((data == 0) && ((KStrobe) != 0))
 	{
-		jj = bit(KStrobe & 0x7F);
-		if (jj < 7) { ret = keym[jj]; }
+        jj = bit(KStrobe);
+        if (jj < 8) { ret = keym[jj]; }
     }
     else 
 	{
 		jj = bit(data);
-		if (jj < 8) { ret = keym[8 + jj]; }
+        if (jj < 8) { ret = keym[8 + jj]; }
     }
 	return(ret);  
 }
@@ -117,6 +122,8 @@ BYTE Ckeyb::Get_KS(void)
 
 void Ckeyb::Set_KS(BYTE data)
 {
+    if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"KStrobe = [%02X]\n",data);
+
 	KStrobe = data;
 }
 

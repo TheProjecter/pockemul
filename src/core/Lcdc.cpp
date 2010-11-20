@@ -88,8 +88,6 @@ void Clcdc::SetDirtyBuf(WORD index)
 	Refresh=true;
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////
 //
 //  PC 1350
@@ -98,29 +96,115 @@ void Clcdc::SetDirtyBuf(WORD index)
 #define SYMB1_ADR_1350	0x783C
 
 static const struct {
-	int x,y;
-	const char *symb;
-	DWORD	addr;
-	int	bit;
+    int x,y;
+    const char *symb;
+    DWORD	addr;
+    int	bit;
 } pc1350_pos[7]={
-	{1, 3,  PRINT	,SYMB1_ADR_1350	,0x04},
-	{8, 3,  RUN		,SYMB1_ADR_1350	,0x10},
-	{4, 11, PRO		,SYMB1_ADR_1350	,0x20},
-	{6, 21, JAP		,SYMB1_ADR_1350	,0x40},
-	{4, 29, SML		,SYMB1_ADR_1350	,0x80},
-	{1, 39, SHIFT	,SYMB1_ADR_1350	,0x01},
-	{4, 47, DEF		,SYMB1_ADR_1350	,0x02}
+    {1, 3,  PRINT	,SYMB1_ADR_1350	,0x04},
+    {8, 3,  RUN		,SYMB1_ADR_1350	,0x10},
+    {4, 11, PRO		,SYMB1_ADR_1350	,0x20},
+    {6, 21, JAP		,SYMB1_ADR_1350	,0x40},
+    {4, 29, SML		,SYMB1_ADR_1350	,0x80},
+    {1, 39, SHIFT	,SYMB1_ADR_1350	,0x01},
+    {4, 47, DEF		,SYMB1_ADR_1350	,0x02}
 };
 
 void Clcdc_pc1350::disp_symb(void)
 {
 
-	if (DirtyBuf[SYMB1_ADR_1350-0x7000] )
+    if (DirtyBuf[SYMB1_ADR_1350-0x7000] )
+    {
+        for (int ii=0;ii<7;ii++)
+            disp_one_symb( pc1350_pos[ii].symb,		COLOR((pPC->Get_8(pc1350_pos[ii].addr)) & pc1350_pos[ii].bit),	pc1350_pos[ii].x,	pc1350_pos[ii].y);
+
+        DirtyBuf[SYMB1_ADR_1350-0x7000] = 0;
+
+        Refresh = TRUE;
+    }
+
+    Clcdc::disp_symb();
+
+}
+
+
+void Clcdc_pc1350::disp(void)
+{
+    BYTE co,li,ind,b,data,x,y;
+    WORD adr;
+
+    Refresh = FALSE;
+
+    disp_symb();
+
+    QPainter painter(pPC->LcdImage);
+
+    for (co=0; co<5; co++)
+    {	for (li=0; li<4; li++)
+        {	for (ind=0; ind<30; ind++)
+            {
+                adr = ind + (0x0200 * co);
+                switch (li)
+                {
+                    case 0 : adr += 0x7000; break;
+                    case 1 : adr += 0x7040; break;
+                    case 2 : adr += 0x701E; break;
+                    case 3 : adr += 0x705E; break;
+                }
+                if (DirtyBuf[adr-0x7000])
+                {
+                    Refresh = TRUE;
+                    x = ind + (co * 30);
+                    y = 8 * li;
+
+                    data = ( On ? (BYTE) pPC->Get_8(adr) : 0 );
+
+                    for (b=0; b<8;b++)
+                    {
+                        painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
+                        painter.drawPoint( x, y+b);
+                    }
+                    DirtyBuf[adr-0x7000]=0;
+                }
+            }
+        }
+    }
+    redraw = 0;
+    painter.end();
+}
+
+
+///////////////////////////////////////////////////////////////////////
+//
+//  PC 2500
+//
+///////////////////////////////////////////////////////////////////////
+#define SYMB1_ADR_2500	0x783C
+
+static const struct {
+	int x,y;
+	const char *symb;
+	DWORD	addr;
+	int	bit;
+} pc2500_pos[7]={
+    {1, 3,  PRINT	,SYMB1_ADR_2500	,0x04},
+    {8, 3,  RUN		,SYMB1_ADR_2500	,0x10},
+    {4, 11, PRO		,SYMB1_ADR_2500	,0x20},
+    {6, 21, JAP		,SYMB1_ADR_2500	,0x40},
+    {4, 29, SML		,SYMB1_ADR_2500	,0x80},
+    {1, 39, SHIFT	,SYMB1_ADR_2500	,0x01},
+    {4, 47, DEF		,SYMB1_ADR_2500	,0x02}
+};
+
+void Clcdc_pc2500::disp_symb(void)
+{
+
+    if (DirtyBuf[SYMB1_ADR_2500-0x7000] )
 	{
 		for (int ii=0;ii<7;ii++)
-			disp_one_symb( pc1350_pos[ii].symb,		COLOR((pPC->Get_8(pc1350_pos[ii].addr)) & pc1350_pos[ii].bit),	pc1350_pos[ii].x,	pc1350_pos[ii].y);
+            disp_one_symb( pc2500_pos[ii].symb,		COLOR((pPC->Get_8(pc2500_pos[ii].addr)) & pc2500_pos[ii].bit),	pc2500_pos[ii].x,	pc2500_pos[ii].y);
 
-		DirtyBuf[SYMB1_ADR_1350-0x7000] = 0;				
+        DirtyBuf[SYMB1_ADR_2500-0x7000] = 0;
 
 		Refresh = TRUE;
 	}
@@ -130,7 +214,7 @@ void Clcdc_pc1350::disp_symb(void)
 }
 
 
-void Clcdc_pc1350::disp(void)
+void Clcdc_pc2500::disp(void)
 {
 	BYTE co,li,ind,b,data,x,y;
 	WORD adr;
