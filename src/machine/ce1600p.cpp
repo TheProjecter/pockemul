@@ -2,7 +2,7 @@
 #include "common.h"
 #include "ce150.h"
 #include "ce1600p.h"
-#include "pc1500.h"
+#include "pcxxxx.h"
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "clink.h"

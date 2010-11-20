@@ -105,6 +105,7 @@ enum PORTS{
 extern TransMap KeyMap1250[]; extern int KeyMap1250Lenght; 
 extern TransMap KeyMap1350[]; extern int KeyMap1350Lenght;
 extern TransMap KeyMap1360[]; extern int KeyMap1360Lenght;
+extern TransMap KeyMap2500[]; extern int KeyMap2500Lenght;
 
 class CpcXXXX:public CPObject{
 Q_OBJECT
@@ -188,10 +189,11 @@ public:
 
 	char	Regs_String[1024];
 
-	
+    virtual BYTE    Get_PC(DWORD adr);
 	BYTE	Get_8(DWORD adr);
 	WORD	Get_16(DWORD adr);
 	WORD	Get_16r(DWORD adr);
+    virtual WORD	Get_16rPC(DWORD adr);
 
 	void	Set_8(DWORD adr,BYTE d);
 	void	Set_16(DWORD adr,WORD d);
@@ -205,19 +207,22 @@ public:
 
 	void	SaveSession(void);
 	bool	SaveSession_File(QFile *);
-	void	LoadSession(void);
+    bool	SaveSession_XML(QFile *);
+    void	LoadSession(void);
 	bool	LoadSession_File(QFile *);
 
 	void	Mem_Load(QFile *file,BYTE s);
 	bool	Mem_Load(BYTE s);
 	void	Mem_Save(QFile *file,BYTE s);
 	void	Mem_Save(BYTE s);
+    void    Mem_Save_XML(QFile *, BYTE);
 
 	long	old_state;
 
 	bool	off;
 
 	int		RomBank,RamBank;					// Bank Number id
+    int     ProtectMemory;
 	UINT	DialogExtensionID;
 
 	int		Tape_Base_Freq;

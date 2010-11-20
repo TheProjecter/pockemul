@@ -34,12 +34,12 @@ class CLH5810_PC1600:public CLH5810{
 public:
     bool	init(void);						//initialize
     bool	step(void);
-    const char*	GetClassName(){ return("CLH5810_PC1600");};
+    const char*	GetClassName(){ return("CLH5810_PC1600");}
 
     CLH5810_PC1600(CPObject *parent)	: CLH5810(parent)
     {
 
-    };
+    }
     ~CLH5810_PC1600()
     {
     };
@@ -54,10 +54,17 @@ class Cpc1600:public CpcXXXX{
 
 Q_OBJECT
 
+protected slots:
+    void    LoadSIO(void);
+
+
 public:
-    const char*	GetClassName(){ return("Cpc1600");};
+    const char*	GetClassName(){ return("Cpc1600");}
 
     void	ReadQuarterTape(void);
+    void    Hack_CRVA(void);
+    FILE*   fp_CRVA;
+
     bool	LoadConfig(QFile *file);
     bool	SaveConfig(QFile *file);
     bool	InitDisplay(void);

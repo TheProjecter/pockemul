@@ -237,7 +237,7 @@ bool Cpc15XX::run(void)
 #endif
 
 // HACK Program Counter
-#define FUNC_CALL(ADDR,LIB) case ADDR: AddLog(LOG_ROM,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')));
+#define FUNC_CALL(ADDR,LIB) case ADDR: AddLog(LOG_ROM,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')))
 
 	switch (Current_PC)
 	{

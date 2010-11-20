@@ -15,6 +15,9 @@
 
 bool Cpc13XX::init(void)
 {
+#ifndef QT_NO_DEBUG
+    pCPU->logsw = true;
+#endif
 	CpcXXXX::init();
 	WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
 	
@@ -26,7 +29,7 @@ void	Cpc1350::initExtension(void)
 {
 	// initialise ext_MemSlot1
 	ext_MemSlot1 = new CExtensionArray("Memory Slot 1","Add memory credit card");
-	ext_MemSlot1->setAvailable(ID_CE201M,true);		ext_MemSlot1->setChecked(ID_CE202M,true);
+    ext_MemSlot1->setAvailable(ID_CE201M,true);		ext_MemSlot1->setChecked(ID_CE202M,true);
 	ext_MemSlot1->setAvailable(ID_CE202M,true);
 	ext_MemSlot1->setAvailable(ID_CE203M,true);
 	
@@ -188,20 +191,23 @@ bool Cpc1350::run(void)
 
 	CpcXXXX::run();
 
-#if 0
+#if 1
 	// HACK Program Counter
 #define FUNC_CALL(ADDR,LIB) case ADDR: AddLog(LOG_ROM,tr(LIB).arg(pCPU->get_PC(),5,16,QChar('0')));
 
 	switch (pCPU->get_PC())
 	{
-	FUNC_CALL(0xF22A,QT_TR_NOOP("Function Call [%1] - SIO Input 1 byte"));			break;
+    FUNC_CALL(0x8758,QT_TR_NOOP("Console Call [%1] - SIO Input 1 byte"));
+//            pCPU->logsw = true;
+//            pCPU->Check_Log();
+            break;
 	//FUNC_CALL(0xF343,QT_TR_NOOP("Function Call [%1] - LOAD"));						break;
 	//FUNC_CALL(0xF267,QT_TR_NOOP("Function Call [%1] - SAVE"));						break;
 
-	FUNC_CALL(0x9D1D,QT_TR_NOOP("Function Call [%1] - Header Input"));				;
+//	FUNC_CALL(0x9D1D,QT_TR_NOOP("Function Call [%1] - Header Input"));				;
 //											pCPU->logsw=1;
 //											pCPU->Check_Log();
-											break;
+//											break;
 	}
 #endif
 	return(1); 

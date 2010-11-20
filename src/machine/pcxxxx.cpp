@@ -15,6 +15,7 @@
 #include	"dialoganalog.h"
 #include	"extension.h"
 #include	"Keyb.h"
+#include    "xmlwriter.h"
 
 #define		bREAD				0
 
@@ -38,7 +39,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	InitMemValue	= 0x00;
 	SoundOn			= 1;
 	IO_A = IO_B = IO_C = IO_F = 0;
-	RomBank=RamBank=0;
+    RomBank=RamBank=ProtectMemory=0;
 
 	Japan		= false;
 	
@@ -161,6 +162,7 @@ void CpcXXXX::TurnON(void)
 
 void CpcXXXX::Reset(void)
 {
+
 	pCPU->Reset();
 }
 
@@ -244,31 +246,50 @@ void	CpcXXXX::Set_Port_Bit(PORTS Port, int bit, BYTE data)
 /*****************************************************************************/
 /* Get data from mem[]														 */
 /*****************************************************************************/
+BYTE CpcXXXX::Get_PC(DWORD adr)
+{
+    if (Chk_Adr_R(&adr,bREAD))
+        return(mem[adr]);
+    else
+        return(0);
+}
 BYTE CpcXXXX::Get_8(DWORD adr)
 {
-	Chk_Adr_R(&adr,bREAD);
-	return(mem[adr]);
+    if (Chk_Adr_R(&adr,bREAD))
+        return(mem[adr]);
+    else
+        return(0);
 }
 
 WORD CpcXXXX::Get_16(DWORD adr)
 {
 	DWORD	a;
 	a=adr+1;
-	Chk_Adr_R(&adr,bREAD);
-	Chk_Adr_R(&a,bREAD);
-	return(mem[adr]+(mem[a]<<8));
+    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
+        return(mem[adr]+(mem[a]<<8));
+    else
+        return(0);
 }
 
 WORD CpcXXXX::Get_16r(DWORD adr)
 {
 	DWORD	a;
 	a=adr+1;
-	Chk_Adr_R(&adr,bREAD);
-	Chk_Adr_R(&a,bREAD);
-	return((mem[adr]<<8)+mem[a]);
+    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
+        return((mem[adr]<<8)+mem[a]);
+    else
+        return(0);
 }
 
-
+WORD CpcXXXX::Get_16rPC(DWORD adr)
+{
+    DWORD	a;
+    a=adr+1;
+    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
+        return((mem[adr]<<8)+mem[a]);
+    else
+        return(0);
+}
 /*****************************************************************************/
 /* Set data to mem[]														 */
 /*  ENTRY :DWORD adr=RAM address, BYTE(8),WORD(16),DWORD(20,24) d=data		 */
@@ -381,8 +402,9 @@ bool CpcXXXX::run(void)
 //			RefreshDasm();
 //		}
 
-		if (pCPU->logsw)
+        if (pCPU->logsw) {
 			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
+        }
 
 		pCPU->step();
 
@@ -391,9 +413,35 @@ bool CpcXXXX::run(void)
 		{
             Regs_Info(1);
 
-			fprintf(pCPU->fp_log,"%-40s   %s\n",
-				pCPU->pDEBUG->Buffer,pCPU->Regs_String);
+            fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
+            for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
 
+            fprintf(pCPU->fp_log,"%-40s   %s  ",
+				pCPU->pDEBUG->Buffer,pCPU->Regs_String);
+#if 0
+            for (int r=0x00;r<0x5c;r++){
+                if ((r&0x08)==0x08) fprintf(pCPU->fp_log," R[%02x]:",r);
+                fprintf(pCPU->fp_log,"%02x ",pCPU->imem[r]);
+
+            }
+#endif
+            fprintf(pCPU->fp_log," a:%02x b:%02x c:%02x f:%02x\n",
+                    pCPU->imem[0x5C],
+                    pCPU->imem[0x5D],
+                    pCPU->imem[0x5F],
+                    pCPU->imem[0x5E]
+                    );
+
+            if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
+                for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
+                fprintf(pCPU->fp_log,"{\n");
+            }
+            if (pCPU->prevCallSubLevel > pCPU->CallSubLevel) {
+                for (int g=0;g<(pCPU->prevCallSubLevel-1);g++) fprintf(pCPU->fp_log,"\t");
+                fprintf(pCPU->fp_log,"}\n");
+            }
+            if (pCPU->CallSubLevel <0) pCPU->CallSubLevel=0;
+            pCPU->prevCallSubLevel = pCPU->CallSubLevel;
             fflush(pCPU->fp_log);
 		}
 
@@ -434,6 +482,16 @@ void CpcXXXX::Mem_Save(QFile *file,BYTE s)
 	out.writeRawData( (char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
 }
 
+void CpcXXXX::Mem_Save_XML(QFile *file,BYTE s)
+{
+    QDataStream out(file);
+    int len = SlotList[s].getSize() * 1024;
+    for (int i=0 ; i < len ; i++) {
+
+    }
+    out.writeRawData( (char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+}
+
 void CpcXXXX::Mem_Save(BYTE s)
 {
 	QFile file( SlotList[s].getFileName() );
@@ -444,6 +502,30 @@ void CpcXXXX::Mem_Save(BYTE s)
 		file.close();	
 		return;
 	}
+}
+
+bool CpcXXXX::SaveSession_XML(QFile *file)
+{
+
+    XmlWriter xw(file);
+
+
+    xw.setAutoNewLine( true );
+    xw.writeRaw( "<!DOCTYPE PKM>");
+    xw.writeRaw("<PKM version=\"1.0\">" );
+    xw.newLine();
+    xw.writeTaggedString( "model", SessionHeader );
+    xw.writeOpenTag( "config" );
+
+    //SaveConfig(&xw);									// Write PC configuration
+    pCPU->save_internal(file);							// Save cpu status
+    for (int s=0; s<SlotList.size(); s++)				// Save Memory
+    {
+        if (SlotList[s].getType() == RAM)	Mem_Save(file,s);
+    }
+
+    //SaveExtra(&xw);									// Save all other data  (virtual)
+    return(1);
 }
 
 bool CpcXXXX::SaveSession_File(QFile *file)
@@ -484,7 +566,8 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 		// Save Memory
 		for (int s=0; s<SlotList.size(); s++)
 		{
-			if (SlotList[s].getType() == RAM)	Mem_Load(file,s);
+            if (SlotList[s].getType() == RAM)
+                Mem_Load(file,s);
 		}
 		// Close the file
 		return(1);
@@ -497,15 +580,16 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 bool CpcXXXX::LoadConfig(QFile *file)
 {
 	QDataStream in(file);
-	qint8 ioA,ioB,ioC,ioF,romb,ramb;
+    qint8 ioA,ioB,ioC,ioF,romb,ramb,protect;
 		
-	in >> ioA >> ioB >> ioC >> ioF >> romb >> ramb >> Japan;
+    in >> ioA >> ioB >> ioC >> ioF >> romb >> ramb >> protect >> Japan;
 	IO_A = ioA;
 	IO_B = ioB;
 	IO_C = ioC;
 	IO_F = ioF;
 	RomBank = romb;
 	RamBank = ramb;
+    ProtectMemory = protect;
 
 	return true;
 }
@@ -516,7 +600,7 @@ bool CpcXXXX::SaveConfig(QFile *file)
 	QDataStream out(file);
 		
 	out << (qint8)IO_A << (qint8)IO_B << (qint8)IO_C << (qint8)IO_F;
-	out << (qint8)RomBank << (qint8)RamBank;
+    out << (qint8)RomBank << (qint8)RamBank << (qint8)ProtectMemory;
 	out << Japan;
 
 	return true;
@@ -602,6 +686,7 @@ bool CpcXXXX::Mem_Load(BYTE s)
     {
 		if (file.size() == (SlotList[s].getSize() * 1024) )
 		{
+            file.open(QIODevice::ReadOnly);
 			Mem_Load(&file,s);
 			AddLog(LOG_MASTER,tr("loaded from file : %1").arg(SlotList[s].getFileName()));
 			return true;
@@ -634,7 +719,8 @@ bool CpcXXXX::Initial_Session_Load()
 
 	if (file.open(QIODevice::ReadOnly))
 	{
-		if (LoadSession_File(&file)) pLCDC->Update();
+        if (LoadSession_File(&file))
+            pLCDC->Update();
 		file.close();	
 		return true;
 	}

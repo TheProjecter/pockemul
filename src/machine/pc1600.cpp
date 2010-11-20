@@ -196,7 +196,7 @@ void Cpc1600::TurnON(void)
     AddLog(LOG_FUNC,"Cpc1600::TurnOn");
 
     remove(Initial_Session_Fname.toStdString().c_str());
-    pCPU->Reset();
+    Reset();
     CpcXXXX::TurnON();
 }
 
@@ -253,14 +253,49 @@ bool Cpc1600::InitDisplay(void)
 bool Cpc1600::LoadConfig(QFile *file)
 {
     AddLog(LOG_FUNC,"Cpc1600::LoadConfig");
+    CpcXXXX::LoadConfig(file);
 
-//--	fread(&Extension,1,sizeof(TExtension),fp);
+    QDataStream in(file);
+    qint8 b1,b2,b3,b4,csp,mcpu;
+
+    in >> b1 >> b2 >> b3 >> b4;
+    in >> csp >> mcpu;
+    bank1 = b1;
+    bank2 = b2;
+    bank3 = b3;
+    bank4 = b4;
+    cpuSwitchPending = csp;
+    masterCPU = mcpu;
+
+    pZ80->Load_Internal(file);
+    pLH5803->Load_Internal(file);
+    pLH5810->Load_Internal(file);
+    pHD61102_1->Load_Internal(file);
+    pHD61102_2->Load_Internal(file);
+    pLU57813P->Load_Internal(file);
+
+
+    //--	fread(&Extension,1,sizeof(TExtension),fp);
     return(1);
 }
 
 bool Cpc1600::SaveConfig(QFile *file)
 {
     AddLog(LOG_FUNC,"Cpc1600::SaveConfig");
+    CpcXXXX::SaveConfig(file);
+
+    QDataStream out(file);
+    out << (qint8)bank1 << (qint8)bank2 << (qint8)bank3 << (qint8)bank4;
+    out << (qint8)cpuSwitchPending << (qint8) masterCPU;
+
+    pZ80->save_internal(file);
+    pLH5803->save_internal(file);
+    pLH5810->save_internal(file);
+    pHD61102_1->save_internal(file);
+    pHD61102_2->save_internal(file);
+    pLU57813P->save_internal(file);
+
+
 
 //--	fwrite(&Extension,1,sizeof(TExtension),fp);
     return(1);
@@ -268,10 +303,10 @@ bool Cpc1600::SaveConfig(QFile *file)
 
 bool Cpc1600::init(void)				// initialize
 {
-
+    fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
-//    pZ80->logsw = true;
+    pZ80->logsw = true;
 #endif
     CpcXXXX::init();
 
@@ -467,6 +502,33 @@ INLINE void Cpc1600::hack(DWORD pc)
     FUNC_CALL(0,0x018A,QT_TR_NOOP("[%1] - BREAKRESET - Clear the latch cf the BREAK key.\n"));                break;
 
 
+    case 0x01D8: switch (pZ80->z80.r.c) {
+    FUNC_CALL_C(0,0x01D8,0x01,QT_TR_NOOP("RS232 / SIO - [%1] - CWCOM      - Set communication parameters.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x02,QT_TR_NOOP("RS232 / SIO - [%1] - CRCOM      - Read the current communication parameters.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x03,QT_TR_NOOP("RS232 / SIO - [%1] - CSNDA      - Transmit one byte cf data.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x04,QT_TR_NOOP("RS232 / SIO - [%1] - CRCVA      - Receive one byte cf data (if there is no data te read, wait until data are sent in.)\n"));
+                        Hack_CRVA();
+                        break;
+    FUNC_CALL_C(0,0x01D8,0x07,QT_TR_NOOP("RS232 / SIO - [%1] - CRCV1      - Receive one byte of data (do net wait even if there is no data te read.)\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x0E,QT_TR_NOOP("RS232 / SIO - [%1] - CSETHS     - Set RS and ER signais to high in the auto handshake mode.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x0F,QT_TR_NOOP("RS232 / SIO - [%1] - CRESHS     - Set RS and ER signais to low in the auto handshake mode.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x10,QT_TR_NOOP("RS232 / SIO - [%1] - CWOUTS     - Set the state of the outgoing controi signaIs (RS and ER).\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x11,QT_TR_NOOP("RS232 / SIO - [%1] - CRCTRL     - Read the state of the control signals.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x12,QT_TR_NOOP("RS232 / SIO - [%1] - CWDEV      - Select a channel and set the input and output device selection parameters for that channel.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x13,QT_TR_NOOP("RS232 / SIO - [%1] - CRDEV      - Read the currently seiected channel number and the input and output device selection parameters set by CWDEV routine.\n"));
+    pCPU->logsw=1;
+    pCPU->Check_Log();
+    break;
+    FUNC_CALL_C(0,0x01D8,0x14,QT_TR_NOOP("RS232 / SIO - [%1] - CESND      - Enable the transmission on(y when the specified incoming control signal (or signaIs) is high.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x15,QT_TR_NOOP("RS232 / SIO - [%1] - CERCV      - Enabie the reception only when the specified incoming control signal (or- signaIs) is low.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x16,QT_TR_NOOP("RS232 / SIO - [%1] - CSBRK      - Send the specified number et break characters\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x17,QT_TR_NOOP("RS232 / SIO - [%1] - CSRCVB     - Reserve a receive buffer in memory.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x18,QT_TR_NOOP("RS232 / SIO - [%1] - CCLRSB     - Clear the work area for transmission.\n"));                break;
+    FUNC_CALL_C(0,0x01D8,0x1C,QT_TR_NOOP("RS232 / SIO - [%1] - CCLRRB     - Clearthe receive buffer.\n"));                break;
+
+    }
+    break;
+
     case 0x01D5: switch (pZ80->z80.r.c) {
     FUNC_CALL_C(0,0x01D5,0x00,QT_TR_NOOP("TIMER/ ANALOG PORT - [%1] - SINIT      - Initialize the timers and the analog input port.\n"));                break;
     FUNC_CALL_C(0,0x01D5,0x01,QT_TR_NOOP("TIMER/ ANALOG PORT - [%1] - SBEEP      - Generate a key clicking sound.\n"));                break;
@@ -586,6 +648,53 @@ INLINE void Cpc1600::hack(DWORD pc)
 
     } break;
     }
+
+}
+
+void Cpc1600::LoadSIO(void) {
+    fclose(fp_CRVA);
+        // Display the Open dialog box.
+        QString ofn = QFileDialog::getOpenFileName(
+                        mainwindow,
+                        "Choose a file",
+                        ".",
+                        "Text Files (*.*)");
+
+        if (ofn.isEmpty())
+        {
+            return ;
+        }
+
+        char * str = qstrdup(ofn.toLocal8Bit());
+
+        if ((fp_CRVA = fopen(str,"r"))==NULL) {
+            MSG_ERROR(tr("Failed to open file"));
+            return ;
+        }
+
+}
+
+void Cpc1600::Hack_CRVA(void){
+    // Is a file open ?
+    // If no open it
+    int c;
+
+    if (fp_CRVA == 0) {
+            return;
+    }
+    else {
+        c=fgetc(fp_CRVA);
+        if (c==0x0A) c=fgetc(fp_CRVA);
+    }
+    if (c==EOF)
+    {
+        fclose(fp_CRVA);
+        fp_CRVA = 0;
+        c = 0x1A;
+    }
+    if (fp_log) fprintf(fp_log,"SEND DATA [%02x]\n",c);
+    ((CZ80 *)pCPU)->z80.r.a = c;
+    ((CZ80 *)pCPU)->z80retn(&((CZ80 *)pCPU)->z80);
 
 }
 
@@ -873,6 +982,9 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
     case 0x23: pTC8576P->instruction(value);
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         break;
+    case 0x28:
+        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
+        break;
 
     case 0x30: break;
         // RomBank = port 31h
@@ -963,6 +1075,9 @@ UINT8 Cpc1600::in(UINT8 address)
         pCPU->imem[address] = pTC8576P->get_psr();
         if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;// bit 5 to 0
+    case 0x28:
+        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
+        break;
 
     case 0x14:
     case 0x15:
@@ -974,7 +1089,8 @@ UINT8 Cpc1600::in(UINT8 address)
     case 0x1c:
     case 0x1d:
     case 0x1e:
-    case 0x1f: pLH5810->step();lh5810_read(); break;
+    case 0x1f:  if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
+                pLH5810->step();lh5810_read(); break;
 
     case 0x33: if (pLU57813P->output_pending) pCPU->imem[address] = pLU57813P->Get_reg_out(); break;
 
@@ -1083,8 +1199,8 @@ void Cpc1600::contextMenuEvent ( QContextMenuEvent * event )
       // I use a hack to manage tape read and write	   //
      // as i need to improve LH5810 serial emulation  //
     //-----------------------------------------------//
-    QMenu * menuTape = menu.addMenu(tr("Tape"));
-        menuTape->addAction(tr("Load..."),pce152,SLOT(LoadTape()));
+    QMenu * menuTape = menu.addMenu(tr("SIO"));
+        menuTape->addAction(tr("Load..."),this,SLOT(LoadSIO()));
         menuTape->addAction(tr("Play"),pce152,SLOT(Play()));
         menuTape->addAction(tr("Stop"),pce152,SLOT(StopPlay()));
         menuTape->addAction(tr("Record"),pce152,SLOT(RecTape()));

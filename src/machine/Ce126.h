@@ -45,7 +45,7 @@ public:
 	void	setposX(int value) { posX = value; };
 int ce126_Mode;
 					
-	Cce126():Cprinter(this)
+    Cce126(CPObject *parent = 0):Cprinter(this)
 	{								//[constructor]
 	setfrequency( 0);
 		ce126buf	= 0;

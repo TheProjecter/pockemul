@@ -75,11 +75,11 @@ public:
 	virtual bool	Chk_Adr(DWORD *d,DWORD data);
 	virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
 	virtual void	initExtension(void);
-	bool	Set_Connector(void);
-	bool	Get_Connector(void);
-	bool	run(void);				// emulator main
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+    virtual bool	run(void);				// emulator main
 
-	Cpc1350(CPObject *parent = 0)	: Cpc13XX(this)
+    Cpc1350(CPObject *parent = 0)	: Cpc13XX(parent)
 	{								//[constructor]
 		setcfgfname("pc1350");
 
