@@ -13,6 +13,8 @@
 #include "Debug.h"
 #include "Log.h"
 
+#define IMEM_LEN    0x200
+
 #define P	(lh5801.p.w)
 #define S	(lh5801.s.w)
 #define U	(lh5801.u.w)
@@ -175,6 +177,7 @@ void CLH5801::Load_Internal(QFile *file)
 	
 	in.readRawData(t, 9);
 	in.readRawData((char*)&lh5801,sizeof(lh5801));
+    in.readRawData( (char *)imem,IMEM_LEN);	// Write Header
 }													
 
 void CLH5801::save_internal(QFile *file)
@@ -183,6 +186,7 @@ void CLH5801::save_internal(QFile *file)
 
 	out.writeRawData("LH5801STA", 9);					//header
 	out.writeRawData((char*)&lh5801,sizeof(lh5801));			//reg
+    out.writeRawData((char*)imem,IMEM_LEN);			//i-mem
 }
 
 

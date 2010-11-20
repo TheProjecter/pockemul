@@ -1,15 +1,27 @@
 #ifndef HD61102_H
 #define HD61102_H
 
+#include <QFile>
+
+
 // Display Driver
 #include "pobject.h"
+
+typedef struct {
+    BYTE    on_off;
+    BYTE    displaySL;
+    BYTE    Xadr;
+    BYTE    Yadr;
+    BYTE    status;
+    BYTE    imem[0x200];
+} HD61102info;
 
 class CHD61102:public QObject{
 
 
 
 public:
-    const char*	GetClassName(){ return("CHD61102");};
+    const char*	GetClassName(){ return("CHD61102");}
     CpcXXXX		*pPC;
 
     bool	init(void);						//initialize
@@ -29,23 +41,16 @@ public:
     BYTE    get8(qint16 adr);
     void    set8(qint16 adr,BYTE val);
 
-    BYTE    on_off;
-    BYTE    displaySL;
-    BYTE    Xadr;
-    BYTE    Yadr;
-    BYTE    status;
+    HD61102info info;
 
-    void	Load_Internal(FILE *ffile);
-    void	save_internal(FILE *file);
+    void	Load_Internal(QFile *);
+    void	save_internal(QFile *);
 
     CHD61102(CpcXXXX *parent);
 //    ~CHD61102();
 
     void	addretrace (void);
 
-public:
-
-    BYTE imem[0x200];
 
 };
 

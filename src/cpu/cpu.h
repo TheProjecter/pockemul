@@ -48,6 +48,7 @@ public:
 	bool	usestatus;						//use status file(0:no,1:yes)
 	bool	halt;					//halt,off flag
 	bool	end,savesw, log,logsw;	//etc.flag
+    bool    resetFlag;
     char	Regs_String[1024];
 
 	FILE	*fp_log;			// file pointer to log file
@@ -55,7 +56,7 @@ public:
 
     BYTE	imem[0x200];			// Internal memory
 
-	int		CallSubLevel;
+    int		CallSubLevel,prevCallSubLevel;
 
 	void	Check_Log(void);
 
@@ -72,11 +73,12 @@ public:
 		savesw=1;			//end with memory save?(0:no, 1:yes)
 		log=0;				//execute log?(0:off, 1:on)
 		logsw=false;			//log mode?(0:off, 1:on)
+        resetFlag = false;
 		usestatus=0;
 		fp_status=0;
 		fp_log=0;
         fn_log="cpu.log";
-		CallSubLevel=0;
+        CallSubLevel=prevCallSubLevel=0;
 
         for (int i=0;i<0x200;i++) imem[i]=0;
 

@@ -9,6 +9,27 @@
 #include "Inter.h"
 #include "Keyb.h"
 
+
+
+void	CLU57813P::Load_Internal(QFile *file){
+    char t[16];
+    QDataStream in(file);
+
+    in.readRawData(t, 11);
+    in.readRawData( (char *)imem,sizeof(imem));	// Write Header
+    qint8 stackpointer;
+    in >> stackpointer;
+    sp = stackpointer;
+}
+
+void	CLU57813P::save_internal(QFile *file){
+    QDataStream out(file);
+
+    out.writeRawData("LU57813PSTA", 11);					//header
+    out.writeRawData((char*)imem,sizeof(imem));			//i-mem
+    out << (qint8) sp;
+}
+
 bool	CLU57813P::exit(void)						//end
 {
     return true;

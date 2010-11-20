@@ -68,7 +68,7 @@ void CTC8576P::Reset(void)
 
 bool CTC8576P::step(void)
 {
-
+// Get the connector Informations depending of the correct comm device (RS232 - SIO)
 
     // Set ssr
 //    ssr = 0;
@@ -136,12 +136,13 @@ BYTE CTC8576P::get_ssr(void)
     PUT_BIT(ssr,1,RxRDY);
     PUT_BIT(ssr,0,TxRDY);
 
+    //if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - getSSR - %02x\n",ssr);
     return ssr;
 }
 
 void CTC8576P::SCR(BYTE cmd)
 {
-    if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - SCR - %02x\n",cmd);
+    //if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - SCR - %02x\n",cmd);
 
     scr = cmd;
     TxEN = READ_BIT(scr,0);

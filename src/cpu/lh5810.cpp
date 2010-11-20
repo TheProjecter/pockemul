@@ -30,8 +30,20 @@ CLH5810::~CLH5810(){			//[destructor]
 
 bool	CLH5810::init(void){return true;};						//initialize
 bool	CLH5810::exit(void){return true;};						//end
-void	CLH5810::Load_Internal(FILE *file){};
-void	CLH5810::save_internal(FILE *file){};
+void	CLH5810::Load_Internal(QFile *file){
+    char t[16];
+    QDataStream in(file);
+
+    in.readRawData(t, 9);
+    in.readRawData((char*)&lh5810,sizeof(lh5810));
+}
+
+void	CLH5810::save_internal(QFile *file){
+    QDataStream out(file);
+
+    out.writeRawData("LH5810STA", 9);					//header
+    out.writeRawData((char*)&lh5810,sizeof(lh5810));		//reg
+}
 
 void	CLH5810::Reset(void)
 {

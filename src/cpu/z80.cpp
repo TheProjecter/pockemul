@@ -18,6 +18,7 @@
 #include "dialoganalog.h"
 #include "dialoglog.h"
 
+#define IMEM_LEN    0x200
 
 /* レジスタ */
 #define A	z->r.a	/* アキュムレータ */
@@ -1124,7 +1125,12 @@ const uint8 CZ80::parity[] = {
 };
 
 
-
+int CZ80::z80retn(Z80stat *z) {
+    uint16 _length = 0;
+    uint16 _state = 0;
+    RETN();
+    return 0;
+}
 
 /*
 	DAA実行時にAレジスタに加算される値とCYフラグ
@@ -2939,8 +2945,22 @@ void	CZ80::Reset(void)
     z80reset(&z80);
 }
 
-void	CZ80::Load_Internal(QFile *file){}
-void	CZ80::save_internal(QFile *file){}
+void	CZ80::Load_Internal(QFile *file){
+    char t[16];
+    QDataStream in(file);
+
+    in.readRawData(t, 6);
+    in.readRawData((char*)&z80,sizeof(z80));
+    in.readRawData( (char *)imem,IMEM_LEN);	// Write Header
+}
+
+void	CZ80::save_internal(QFile *file){
+    QDataStream out(file);
+
+    out.writeRawData("Z80STA", 6);					//header
+    out.writeRawData((char*)&z80,sizeof(z80));		//reg
+    out.writeRawData((char*)imem,IMEM_LEN);			//i-mem
+}
 
 INLINE DWORD	CZ80::get_mem(DWORD adr,int size)
 {

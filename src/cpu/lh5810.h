@@ -6,6 +6,8 @@
 #ifndef LH5810_H
 #define LH5810_H
 
+#include <QFile>
+
 #include "pobject.h"
 #include "pd1990ac.h"
 
@@ -50,8 +52,8 @@ public:
 	void	Reset(void);
 	virtual bool	step(void);
 
-	void	Load_Internal(FILE *ffile);
-	void	save_internal(FILE *file);
+    void	Load_Internal(QFile *file);
+    void	save_internal(QFile *file);
 
 	void	Regs_Info(UINT8);
 

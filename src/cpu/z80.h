@@ -177,6 +177,7 @@ public:
     int z80int2chk(const Z80stat *);
     int z80int2(Z80stat *, uint8);
     int z80exec(Z80stat *);
+    int z80retn(Z80stat *);
 
     /* z80disasm.c */
     void *z80disasm(char *, uint8 *);

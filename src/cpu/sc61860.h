@@ -128,12 +128,15 @@ public:
 		usestatus=0;
 		fp_status=0;
 		fn_status="pc1350.sta";
+        fn_log="sc61860.log";
 		CallSubLevel=0;
 
 		div500	= 0;
 		div2	= 0;
 		ticks	= 0;
-		ticks2	= 0;DASMLOG=0;
+        ticks2	= 0;
+        ticksReset = 0;
+        DASMLOG=0;
 		pDEBUG	= new Cdebug_sc61860(parent);
 
 		start2khz = 0;
@@ -319,6 +322,7 @@ private:
 
 	long ticks;
 	long ticks2;
+    long ticksReset;
 	BYTE power_on;
 	BYTE disp_on;
 

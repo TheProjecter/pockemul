@@ -23,8 +23,9 @@ extern FILE *fp_tmp;
 
 /*---------------------------------------------------------------------------*/
 
-#define		XTICKS ( pPC->getfrequency() / 2)
-#define		XTICK2 ( pPC->getfrequency() / 1000 * 2)
+#define		XTICKS      ( pPC->getfrequency() / 2)              // 0.5s counter
+#define		XTICK2      ( pPC->getfrequency() / 1000 * 2)       // 2ms counter
+#define		XTICKRESET  ( pPC->getfrequency() / 2)              // Reset laptime (0.5s)
 
 INLINE void Csc::AddState(BYTE n)
 {
@@ -32,7 +33,7 @@ INLINE void Csc::AddState(BYTE n)
 
     ticks+=(n);
 	ticks2+=(n);
-	
+
 	if (ticks >= XTICKS)
 	{
 		div500 = true;
@@ -43,6 +44,17 @@ INLINE void Csc::AddState(BYTE n)
 		div2 = true;
 		ticks2 -= XTICK2;
 	}
+
+    if (resetFlag)
+    {
+        ticksReset+=(n);
+        if (ticksReset >= XTICKRESET)
+        {
+            resetFlag = false;
+            ticksReset = 0;
+        }
+
+    }
 }
 
 
@@ -151,11 +163,13 @@ void Csc::compute_xout(void)
 /*****************************************************************************/
 INLINE BYTE Csc::Get_i8(BYTE adr)
 {
+    if (fp_log) fprintf(fp_log,"LECTURE INT [%02x]=%02x (%c)\n",adr,imem[adr],imem[adr]);
 	return(imem[adr]);
 }
 INLINE WORD Csc::Get_i16(BYTE adr)
 {
-	return(imem[adr]+(imem[adr+1]<<8));
+    //if (fp_log) fprintf(fp_log,"LECTURE INT [%02x]=%04x (%c)(%c)\n",adr,imem[adr]+(imem[adr+1]<<8),imem[adr],(imem[adr+1]<<8));
+    return(imem[adr]+(imem[adr+1]<<8));
 }
 
 /*****************************************************************************/
@@ -164,10 +178,12 @@ INLINE WORD Csc::Get_i16(BYTE adr)
 /*****************************************************************************/
 INLINE void Csc::Set_i8(BYTE adr,BYTE d)
 {
+    if (fp_log) fprintf(fp_log,"ECRITURE INT [%02x]=%02x (%c)\n",adr,d,d);
 	imem[adr] = d;
 }
 INLINE void Csc::Set_i16(BYTE adr,WORD d)
 {
+    //if (fp_log) fprintf(fp_log,"ECRITURE INT [%04x]=%04x (%c)(%c)\n",adr,d,(BYTE) d),(BYTE) (d>>8);
 	imem[adr  ]	=(BYTE) d;
 	imem[adr+1]	=(BYTE) (d>>8);
 }
@@ -266,7 +282,7 @@ INLINE WORD hex2bcd(BYTE d)
 //--------------------------
 INLINE void Csc::Op_00(void)
 {
-	I_REG_I = pPC->Get_8(reg.d.pc);
+    I_REG_I = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LII %1").ARG2x(I_REG_I));
 	reg.d.pc++;
 	AddState(4);
@@ -276,7 +292,7 @@ INLINE void Csc::Op_00(void)
 //--------------------------
 INLINE void Csc::Op_01(void)
 {
-	I_REG_J = pPC->Get_8(reg.d.pc);
+    I_REG_J = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIJ %1").ARG2x(I_REG_J));
 	reg.d.pc++;
 	AddState(4);
@@ -286,7 +302,7 @@ INLINE void Csc::Op_01(void)
 //--------------------------
 INLINE void Csc::Op_02(void)
 {
-	I_REG_A = pPC->Get_8(reg.d.pc);
+    I_REG_A = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIA %1").ARG2x(I_REG_A));
 	reg.d.pc++;
 	AddState(4);
@@ -296,7 +312,7 @@ INLINE void Csc::Op_02(void)
 //--------------------------
 INLINE void Csc::Op_03(void)
 {
-	I_REG_B = pPC->Get_8(reg.d.pc);
+    I_REG_B = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIB %1").ARG2x(I_REG_B));
 	reg.d.pc++;
 	AddState(4);
@@ -306,7 +322,7 @@ INLINE void Csc::Op_03(void)
 //--------------------------
 INLINE void Csc::Op_04(void)
 {
-	reg.r.q=5;	
+    reg.r.q=I_REG_Xh;
 	if (++I_REG_Xl==0) I_REG_Xh++;
 	reg.d.dp=I_REG_Xl|(I_REG_Xh<<8);
 	AddLog(LOG_CPU,tr("IX"));
@@ -317,7 +333,7 @@ INLINE void Csc::Op_04(void)
 //--------------------------
 INLINE void Csc::Op_05(void)
 {
-	reg.r.q=5;	
+    reg.r.q=I_REG_Xh;
 	if (--I_REG_Xl==0xff) I_REG_Xh--;
     reg.d.dp=I_REG_Xl|(I_REG_Xh<<8);	
 	AddLog(LOG_CPU,"DX");
@@ -328,7 +344,7 @@ INLINE void Csc::Op_05(void)
 //--------------------------
 INLINE void Csc::Op_06(void)
 {
-	reg.r.q=7;
+    reg.r.q=I_REG_Yh;
 	if (++I_REG_Yl==0) I_REG_Yh++;
 	reg.d.dp=I_REG_Yl|(I_REG_Yh<<8);
 	AddLog(LOG_CPU,"IY");
@@ -340,7 +356,7 @@ INLINE void Csc::Op_06(void)
 //--------------------------
 INLINE void Csc::Op_07(void)
 {
-	reg.r.q=7;
+    reg.r.q=I_REG_Yh;
 	if (--I_REG_Yl==0xff) I_REG_Yh--;
     reg.d.dp=I_REG_Yl|(I_REG_Yh<<8);	
 	AddLog(LOG_CPU,"DY");
@@ -567,7 +583,7 @@ INLINE void Csc::Op_0f(void)
 //--------------------------
 INLINE void Csc::Op_10(void)
 {
-	reg.d.dp=pPC->Get_16r(reg.d.pc);
+    reg.d.dp=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIDP    %1").ARG4x(reg.d.dp));
 	reg.d.pc+=SIZE_16;
 	AddState(8);
@@ -578,7 +594,7 @@ INLINE void Csc::Op_10(void)
 //--------------------------
 INLINE void Csc::Op_11(void)
 {
-	reg.r.dpl=pPC->Get_8(reg.d.pc);
+    reg.r.dpl=pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIDL    %1").ARG2x(reg.r.dpl));
 	reg.d.pc++;
 	AddState(5);
@@ -589,7 +605,7 @@ INLINE void Csc::Op_11(void)
 //--------------------------
 INLINE void Csc::Op_12(void)
 {
-	reg.r.p=pPC->Get_8(reg.d.pc);	reg.r.p &=0x7F;
+    reg.r.p=pPC->Get_PC(reg.d.pc);	reg.r.p &=0x7F;
 
 	AddLog(LOG_CPU,tr("LIP     %1").ARG2x(reg.r.p));
 	reg.d.pc++;
@@ -600,7 +616,7 @@ INLINE void Csc::Op_12(void)
 //--------------------------
 INLINE void Csc::Op_13(void)
 {
-	reg.r.q=pPC->Get_8(reg.d.pc);
+    reg.r.q=pPC->Get_PC(reg.d.pc);
 	reg.r.q &=0x7F;
 
 	AddLog(LOG_CPU,tr("LIQ %1").ARG2x(reg.r.q));
@@ -655,7 +671,7 @@ INLINE void Csc::Op_35(void)	//ok
 
 	while(l != 0xFF)
 	{
-		Set_i8(reg.r.p,pPC->Get_8(ba));
+        Set_i8(reg.r.p,pPC->Get_PC(ba));
 		reg.r.p++;	reg.r.p &= 0x7F;
 		ba++;
 		l--;
@@ -870,7 +886,7 @@ INLINE void Csc::Op_22(void)
 //--------------------------
 INLINE void Csc::Op_24(void)
 {
-	reg.r.q=5;	
+    reg.r.q=I_REG_Xh;
 	if (++I_REG_Xl==0) I_REG_Xh++;
 	reg.d.dp=I_REG_Xl|(I_REG_Xh<<8);
 	I_REG_A = pPC->Get_8(reg.d.dp);
@@ -885,7 +901,7 @@ INLINE void Csc::Op_24(void)
 //--------------------------
 INLINE void Csc::Op_25(void)
 {
-	reg.r.q=5;
+    reg.r.q=I_REG_Xh;
 	if (--I_REG_Xl==0xff) I_REG_Xh--;
     reg.d.dp=I_REG_Xl|(I_REG_Xh<<8);	
 	I_REG_A = pPC->Get_8(reg.d.dp);
@@ -898,7 +914,7 @@ INLINE void Csc::Op_25(void)
 //--------------------------
 INLINE void Csc::Op_26(void)
 {
-	reg.r.q=5;
+    reg.r.q=I_REG_Yh;
 	if (++I_REG_Yl==0) I_REG_Yh++;
 	reg.d.dp=I_REG_Yl|(I_REG_Yh<<8);
 	pPC->Set_8(reg.d.dp,I_REG_A);
@@ -911,7 +927,7 @@ INLINE void Csc::Op_26(void)
 //--------------------------
 INLINE void Csc::Op_27(void)
 {
-	reg.r.q=5;
+    reg.r.q=I_REG_Yh;
 	if (--I_REG_Yl==0xff) I_REG_Yh--;
     reg.d.dp=I_REG_Yl|(I_REG_Yh<<8);	
 	pPC->Set_8(reg.d.dp,I_REG_A);
@@ -924,7 +940,7 @@ INLINE void Csc::Op_27(void)
 INLINE void Csc::Op_28(void)
 {
 	BYTE	t;
-	t=pPC->Get_8(reg.d.pc);
+    t=pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JRNZP   %1").ARG2x(t));
 	reg.d.pc++;
 	if(!reg.r.z)
@@ -940,7 +956,7 @@ INLINE void Csc::Op_28(void)
 INLINE void Csc::Op_29(void)
 {
 	BYTE	t;
-	t=pPC->Get_8(reg.d.pc);
+    t=pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JRNZM   %1").ARG2x(t));
 	reg.d.pc++;
 	if(!reg.r.z)
@@ -956,7 +972,7 @@ INLINE void Csc::Op_29(void)
 INLINE void Csc::Op_2a(void)
 {
 	BYTE	t;
-	t=pPC->Get_8(reg.d.pc);
+    t=pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JRNCP   %1").ARG2x(t));
 	reg.d.pc++;
 	if(!reg.r.c)
@@ -972,7 +988,7 @@ INLINE void Csc::Op_2a(void)
 INLINE void Csc::Op_2b(void)
 {
 	BYTE	t;
-	t=pPC->Get_8(reg.d.pc++);
+    t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRNCM   %1").ARG2x(t));
 	
 	if(!reg.r.c)
@@ -988,7 +1004,7 @@ INLINE void Csc::Op_2b(void)
 INLINE void Csc::Op_2c(void)
 {
 	BYTE	t;
-	t=pPC->Get_8(reg.d.pc++);
+    t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRP     %1").ARG2x(t));
 	reg.d.pc += (t-1);
 	AddState(7);
@@ -1000,7 +1016,7 @@ INLINE void Csc::Op_2c(void)
 INLINE void Csc::Op_2d(void)
 {
 	BYTE t;
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRM     %1").ARG2x(t));
 	reg.d.pc -= (t+1);
 	AddState(7);
@@ -1041,8 +1057,9 @@ INLINE void Csc::Op_34(void)
 	reg.r.r--;
 	Set_i8(reg.r.r,I_REG_A);
 	AddLog(LOG_CPU,"PUSH");
-	if (reg.r.r > 0x5f)
+    if (reg.r.r > 0x5b)
 	{
+        if (fp_log) fprintf(fp_log,"STACK OVERFLOW!!!!!!!!\n");
 		AddLog(0x00,"STACK OVERFLOW");
 	}
 	AddState(3);
@@ -1054,7 +1071,7 @@ INLINE void Csc::Op_34(void)
 INLINE void Csc::Op_38(void)
 {
 	register BYTE	t;
-	t=pPC->Get_8(reg.d.pc++);
+    t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRZP %1").ARG2x(t));
 	
 	if(reg.r.z)
@@ -1070,7 +1087,7 @@ INLINE void Csc::Op_38(void)
 INLINE void Csc::Op_39(void)
 {
 	register BYTE	t;
-	t=pPC->Get_8(reg.d.pc++);
+    t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRZM %1").ARG2x(t));
 	
 	if(reg.r.z)
@@ -1086,7 +1103,7 @@ INLINE void Csc::Op_39(void)
 INLINE void Csc::Op_3a(void)
 {
 	register BYTE	t;
-	t=pPC->Get_8(reg.d.pc++);
+    t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRCP %1").ARG2x(t));
 	
 	if(reg.r.c)
@@ -1102,7 +1119,7 @@ INLINE void Csc::Op_3a(void)
 INLINE void Csc::Op_3b(void)
 {
 	register BYTE	t;
-	t=pPC->Get_8(reg.d.pc++);
+    t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRCM %1").ARG2x(t));
 	
 	if(reg.r.c)
@@ -1121,6 +1138,7 @@ INLINE void Csc::Op_37(void)
 
 	reg.d.pc=Get_i16(reg.r.r);
 	CallSubLevel--;
+//    if (CallSubLevel <0) CallSubLevel = 0;
 	reg.r.r+=SIZE_16;
 	AddLog(LOG_CPU,"RTN");
 	AddState(4);
@@ -1272,7 +1290,7 @@ INLINE void Csc::Op_4e(void)
 	{
 		loop_running = true;
 		AddState(6);
-		op_local_counter=pPC->Get_8(reg.d.pc++);
+        op_local_counter=pPC->Get_PC(reg.d.pc++);
 		AddLog(LOG_CPU,tr("WAIT %1").ARG2x(op_local_counter));
 		reg.d.pc--;
 	}
@@ -1294,7 +1312,7 @@ INLINE void Csc::Op_4e(void)
 		reg.d.pc++;
 	}
 #else
-	AddState(6+pPC->Get_8(reg.d.pc++));
+    AddState(6+pPC->Get_PC(reg.d.pc++));
 #endif
 }
 
@@ -1363,8 +1381,9 @@ INLINE void Csc::Op_5b(void)
 {
 	I_REG_A=Get_i8(reg.r.r++);
 	AddLog(LOG_CPU,"POP");
-	if (reg.r.r > 0x5f)
+    if (reg.r.r > 0x5c)
 	{
+        if (fp_log) fprintf(fp_log,"STACK OVERFLOW!!!!!!!!\n");
 		AddLog(0x80,"STACK OVERFLOW");
 	}
 	AddState(2);
@@ -1378,7 +1397,7 @@ INLINE void Csc::Op_65(void)
 	BYTE t,d,r ;
 
 	d = I_REG_A;
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ORIA %1").ARG2x(t));
 
 	r = (d | t);
@@ -1400,7 +1419,7 @@ INLINE void Csc::Op_61(void)
 	BYTE t,d,r ;
 
 	d = Get_i8(reg.r.p);
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ORIM %1").ARG2x(t));
 
 	r = (d | t);
@@ -1421,7 +1440,7 @@ INLINE void Csc::Op_d5(void)
 	BYTE t,d,r ;
 
 	d = pPC->Get_8(reg.d.dp);
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ORID %1").ARG2x(t));
 
 	r = (d | t);
@@ -1466,7 +1485,7 @@ INLINE void Csc::Op_64(void)
 	BYTE t,d,r ;
 
 	d = I_REG_A;
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ANIA %1").ARG2x(t));
 
 	r = (d & t);
@@ -1488,7 +1507,7 @@ INLINE void Csc::Op_60(void)
 	BYTE t,d,r ;
 
 	d = Get_i8(reg.r.p);
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ANIM %1").ARG2x(t));
 
 	r = (d & t);
@@ -1509,7 +1528,7 @@ INLINE void Csc::Op_d4(void)
 	BYTE t,d,r ;
 
 	d = pPC->Get_8(reg.d.dp);
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ANID %1").ARG2x(t));
 
 	r = (d & t);
@@ -1553,7 +1572,7 @@ INLINE void Csc::Op_66(void)
 	BYTE t,d,r ;
 
 	d = I_REG_A;
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("TSIA %1").ARG2x(t));
 
 	r = (d & t);
@@ -1573,7 +1592,7 @@ INLINE void Csc::Op_62(void)
 	BYTE t,d,r ;
 
 	d = Get_i8(reg.r.p);
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("TSIM %1").ARG2x(t));
 
 	r = (d & t);
@@ -1596,7 +1615,7 @@ INLINE void Csc::Op_d6(void)
 // R-1 used as temporarty storage
 	Set_i8( reg.r.r-1,d); 
 
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("TSID %1").ARG2x(t));
 
 	r = (d & t);
@@ -1617,7 +1636,7 @@ INLINE void Csc::Op_63(void)
 	BYTE t,d ;
 
 	d = Get_i8(reg.r.p);
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("CPIM %1").ARG2x(t));
 
 	if (d<t) { reg.r.c=1;reg.r.z=0;}
@@ -1636,7 +1655,7 @@ INLINE void Csc::Op_67(void)
 	BYTE t,d ;
 
 	d = I_REG_A;
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("CPIA %1").ARG2x(t));
 
 	if (d<t) { reg.r.c=1;reg.r.z=0;}
@@ -1652,7 +1671,7 @@ INLINE void Csc::Op_67(void)
 INLINE void Csc::Op_6b(void)
 {
 	BYTE	t;
-	t = pPC->Get_8(reg.d.pc++);
+    t = pPC->Get_PC(reg.d.pc++);
 
 	AddState(4);
 	reg.r.z = 0;
@@ -1692,10 +1711,13 @@ INLINE void Csc::Op_6b(void)
 					reg.r.z=1;
 //				if (fp_log) fprintf(fp_log,"    Z=%c\n",(reg.r.z?'1':'0'));
 				break;
-	case 0x40: 
-				{	
-					reg.r.z = 1; 
-				}
+	case 0x40: 	
+                if (resetFlag) {
+                        //resetFlag = false;
+                        reg.r.z = 0;
+                    }
+                else
+                    reg.r.z = 1;
 				break;
 	}
 }
@@ -1708,7 +1730,7 @@ INLINE void Csc::Op_70(void)
 	DWORD t;
 	BYTE n;
 
-	n = pPC->Get_8(reg.d.pc++);
+    n = pPC->Get_PC(reg.d.pc++);
 
 	t = Get_i8(reg.r.p) + n;
 	Chk_Flag(t,SIZE_8);
@@ -1726,7 +1748,7 @@ INLINE void Csc::Op_71(void)
 	DWORD t;
 	BYTE n;
 
-	n = pPC->Get_8(reg.d.pc++);
+    n = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ADIM %1").ARG2x(n));
 
 	t = Get_i8(reg.r.p) - n;
@@ -1743,7 +1765,7 @@ INLINE void Csc::Op_74(void)
 	DWORD	t;
 	BYTE d;
 
-	d = pPC->Get_8(reg.d.pc++);
+    d = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("ADIA %1").ARG2x(d));
 
 	t = I_REG_A + d;
@@ -1760,7 +1782,7 @@ INLINE void Csc::Op_75(void)
 	DWORD	t;
 	BYTE	d;
 
-	d = pPC->Get_8(reg.d.pc++);
+    d = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("SBIA %1").ARG2x(d));
 	t = I_REG_A -  d;
 	Chk_Flag(t,SIZE_8);
@@ -1774,7 +1796,7 @@ INLINE void Csc::Op_75(void)
 INLINE void Csc::Op_78(void)
 {
 	WORD	t;
-	t=pPC->Get_16r(reg.d.pc);
+    t=pPC->Get_16rPC(reg.d.pc);
 
 	reg.d.pc+=SIZE_16;
 
@@ -1792,7 +1814,7 @@ INLINE void Csc::Op_78(void)
 INLINE void Csc::Op_79(void)
 {
 	register WORD	t;
-	t=pPC->Get_16r(reg.d.pc);
+    t=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JP      %1").ARG4x(t));
 	reg.d.pc+=SIZE_16;
 	reg.d.pc=t;
@@ -1805,7 +1827,7 @@ INLINE void Csc::Op_79(void)
 INLINE void Csc::Op_7c(void)
 {
 	register WORD	t;
-	t=pPC->Get_16r(reg.d.pc);
+    t=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JPNZ    %1").ARG4x(t));
 	reg.d.pc+=SIZE_16;
 	if(!reg.r.z)
@@ -1820,7 +1842,7 @@ INLINE void Csc::Op_7c(void)
 INLINE void Csc::Op_7d(void)
 {
 	register WORD	t;
-	t=pPC->Get_16r(reg.d.pc);
+    t=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JPNC    %1").ARG4x(t));
 	reg.d.pc+=SIZE_16;
 	if(!reg.r.c)
@@ -1835,7 +1857,7 @@ INLINE void Csc::Op_7d(void)
 INLINE void Csc::Op_7e(void)
 {
 	register WORD	t;
-	t=pPC->Get_16r(reg.d.pc);
+    t=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JPZ     %1").ARG4x(t));
 	reg.d.pc+=SIZE_16;
 	if(reg.r.z)
@@ -1850,7 +1872,7 @@ INLINE void Csc::Op_7e(void)
 INLINE void Csc::Op_7f(void)
 {
 	register WORD	t;
-	t=pPC->Get_16r(reg.d.pc);
+    t=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("JPC     %1").ARG4x(t));
 	reg.d.pc+=SIZE_16;
 	if(reg.r.c)
@@ -1940,28 +1962,23 @@ INLINE void Csc::Op_2f(void)
 {
 	BYTE	n;
 	WORD	t;
-	n = pPC->Get_8(reg.d.pc++);
-
+    n = pPC->Get_PC(reg.d.pc++);
 	t = Get_i8(reg.r.r);
-	
 	t--;
 	Chk_Flag(t,SIZE_8);
-
 	Set_i8(reg.r.r, (BYTE) t);
-
-	if(!reg.r.c)
-	{
+    if(!reg.r.c) {
+        //reg.r.r++;
 		reg.d.pc-=(n+1);
 		AddState(3);
 	}
 	else
 	{
-		reg.r.r++;		// VERY IMPORTANT UNDOCUMENTED
+        reg.r.r++;		// VERY IMPORTANT UNDOCUMENTED
 	}
-
 	AddLog(LOG_CPU,tr("LOOP    %1").ARG2x(n));
-
 	AddState(7);
+
 }
 
 //----------------------------
@@ -2028,7 +2045,7 @@ INLINE void Csc::Op_53(void)
 //----------------------------
 INLINE void Csc::Op_54(void)
 {
-	Set_i8(reg.r.p,pPC->Get_8(reg.d.pc++));
+    Set_i8(reg.r.p,pPC->Get_PC(reg.d.pc++));
 	AddLog(LOG_CPU,"READM");
 	AddState(3);
 }
@@ -2038,7 +2055,7 @@ INLINE void Csc::Op_54(void)
 INLINE void Csc::Op_56(void)
 {
 
-	I_REG_A = pPC->Get_8(reg.d.pc++);
+    I_REG_A = pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,"READ");
 	AddState(3);
 }
@@ -2172,7 +2189,7 @@ INLINE void Csc::Op_e0(BYTE Op)
 	BYTE h,l;
 	WORD t;
 	h = Op - 0xE0;
-	l = pPC->Get_8(reg.d.pc++);
+    l = pPC->Get_PC(reg.d.pc++);
 
 	t = (h<<8)+l;
 
@@ -2262,17 +2279,19 @@ INLINE void Csc::Op_23(void)
 INLINE void Csc::Op_7a(void)
 {
 	BYTE ind,d,op,r,n,m;
-	
+    WORD	t;
 
-	d=pPC->Get_8(reg.d.pc++);		// number of brances
+    d=pPC->Get_PC(reg.d.pc++);		// number of brances
 
-	n=pPC->Get_8(reg.d.pc++);		// Return address Hi
-	Set_i8(--reg.r.r, n);			// Push return address
-	m=pPC->Get_8(reg.d.pc++);		// Return address Lo
-	Set_i8(--reg.r.r, m);			// Push return address
-	AddState(8);
+    n=pPC->Get_PC(reg.d.pc++);		// Return address Hi
+    Set_i8(--reg.r.r, n);			// Push return address
+    m=pPC->Get_PC(reg.d.pc++);		// Return address Lo
+    Set_i8(--reg.r.r, m);			// Push return address
 
-	op=pPC->Get_8(reg.d.pc++);
+    CallSubLevel++;
+    AddState(8);
+
+    op=pPC->Get_PC(reg.d.pc++);
 	if (op != 0x69)
 	{
 		AddLog(LOG_CPU,"ERREUR !!! CASE1 Without CASE2");
@@ -2282,11 +2301,13 @@ INLINE void Csc::Op_7a(void)
 	AddState(5);
 	while(ind < d)
 	{
-		r = pPC->Get_8(reg.d.pc++);	// when A=r
-		n = pPC->Get_8(reg.d.pc++);	// Subroutine Jump address Hi
-		m = pPC->Get_8(reg.d.pc++);	// Subroutine Jump address Lo
+        r = pPC->Get_PC(reg.d.pc++);	// when A=r
+        n = pPC->Get_PC(reg.d.pc++);	// Subroutine Jump address Hi
+        m = pPC->Get_PC(reg.d.pc++);	// Subroutine Jump address Lo
 
-		if (I_REG_A == r)
+//        reg.r.z = (I_REG_A == r);
+//        if (reg.r.z)
+        if (I_REG_A == r)
 		{
 			AddLog(LOG_CPU,tr(" JP CASE2 %1").ARG4x((n<<8)+m));
 			reg.d.pc = (n<<8) + m;
@@ -2298,8 +2319,8 @@ INLINE void Csc::Op_7a(void)
  
 	if (ind == d)	// Default jump
 	{
-		n = pPC->Get_8(reg.d.pc++);
-		m = pPC->Get_8(reg.d.pc++);
+        n = pPC->Get_PC(reg.d.pc++);
+        m = pPC->Get_PC(reg.d.pc++);
 		reg.d.pc = (n<<8) + m;
 	}
 
@@ -2590,6 +2611,7 @@ INLINE void Csc::OpExec(BYTE Op)
 	
 	
 	default : 	DASMLOG = 1;
+                if (fp_log) fprintf(fp_log,"PC=[%04X]='%02X' : NOT YET EMULATED",reg.d.pc-1,Op);
 //				AddLog(0x04,"PC=[%04X]='%02X' : NOT YET EMULATED",reg.d.pc-1,Op); 
 		break;
 	}
@@ -2626,6 +2648,7 @@ INLINE void Csc::OpExec(BYTE Op)
 
 bool Csc::init(void)
 {
+    Check_Log();
 	AddLog(0x01,"MEMORY initializing...");
 
 	ticks = ticks2 = div500 = div2 = 0;
@@ -2671,6 +2694,7 @@ bool Csc::init(void)
 
 void Csc::Reset(void)
 {
+    resetFlag = true;
 	memset(imem,0,MAX_IMEM);
 	I_REG_A  = 0;
 	I_REG_B  = 0;
@@ -2739,7 +2763,7 @@ void Csc::step(void)
 	t=reg.d.pc;
 	reg.d.pc++;
 //	fprintf(fp_tmp,"%2X - ",pPC->Get_8(t));
-	OpExec(pPC->Get_8(t));
+    OpExec(pPC->Get_PC(t));
 	compute_xout();  
 	pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
 
@@ -2804,10 +2828,10 @@ DWORD Csc::get_mem(DWORD adr,int size)
 {
 	switch(size)
 	{
-	case SIZE_8 :return(pPC->Get_8(adr));
-	case SIZE_16:return(pPC->Get_8(adr)+(pPC->Get_8(adr+1)<<8));
-	case SIZE_20:return((pPC->Get_8(adr)+(pPC->Get_8(adr+1)<<8)+(pPC->Get_8(adr+2)<<16))&MASK_20);
-	case SIZE_24:return((pPC->Get_8(adr)+(pPC->Get_8(adr+1)<<8)+(pPC->Get_8(adr+2)<<16))&MASK_24);
+    case SIZE_8 :return(pPC->Get_PC(adr));
+    case SIZE_16:return(pPC->Get_PC(adr)+(pPC->Get_PC(adr+1)<<8));
+    case SIZE_20:return((pPC->Get_PC(adr)+(pPC->Get_PC(adr+1)<<8)+(pPC->Get_PC(adr+2)<<16))&MASK_20);
+    case SIZE_24:return((pPC->Get_PC(adr)+(pPC->Get_PC(adr+1)<<8)+(pPC->Get_PC(adr+2)<<16))&MASK_24);
 	}
 	return(0);
 }

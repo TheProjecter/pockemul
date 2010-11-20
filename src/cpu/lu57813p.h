@@ -18,7 +18,7 @@ class CLU57813P:public QObject{
 };
 
 public:
-    const char*	GetClassName(){ return("CLU57813P");};
+    const char*	GetClassName(){ return("CLU57813P");}
 
 
     bool	init(void);						//initialize
@@ -37,8 +37,8 @@ public:
     void	increment_day(void);
     void	increment_month(void);
 
-    void	Load_Internal(FILE *ffile);
-    void	save_internal(FILE *file);
+    void	Load_Internal(QFile *file);
+    void	save_internal(QFile *file);
 
     void	Regs_Info(UINT8 Type);
 
