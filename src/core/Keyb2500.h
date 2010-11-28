@@ -6,10 +6,10 @@
 BYTE scandef_pc2500[] = {
 //+0		+1			+2			+3			+4			+5			+6			+7
 K_SML,		K_6,		' ',		'z',		'a',		'q',		'1',		NUL,
-'"',		K_3,		'*',		'x',		's',		'w',		'2',		NUL,
+K_F1,		K_3,		'*',		'x',		's',		'w',		'2',		NUL,
 K_RET,		K_MIN,		'+',		'c',		'd',		'e',		'3',		NUL,
-NUL,		K_PT,		K_0,		'v',		'f',		'r',		'4',		NUL,
-NUL,		K_2,		K_1,		'b',		'g',		't',		'5',		NUL,
+K_F2,		K_PT,		K_0,		'v',		'f',		'r',		'4',		NUL,
+K_F3,		K_2,		K_1,		'b',		'g',		't',		'5',		NUL,
 K_DEL,		K_5,		K_4,		'n',		'h',		'y',		'6',		NUL,
 K_INS,		K_8,		K_7,		'm',		'j',		'u',		'7',		NUL,
 K_CLR,		K_9,		K_SLH,		',',		'k',		'i',		'8',		NUL,
@@ -17,8 +17,8 @@ K_CLR,		K_9,		K_SLH,		',',		'k',		'i',		'8',		NUL,
 NUL,		K_MOD,		NUL,		'.',		'l',		'o',		'9',		NUL,
 NUL,		NUL,		K_DA,		NUL,		';',		'p',		'0',		NUL,
 NUL,		NUL,		NUL,		K_UA,		NUL,		':',		'-',		NUL,
-NUL,		NUL,		NUL,		NUL,		K_RA,		NUL,		'/',		NUL,
-NUL,		NUL,		NUL,		NUL,		NUL,		K_LA,		NUL,		NUL,
+NUL,		NUL,		NUL,		NUL,		K_RA,		K_F5,		'/',		NUL,
+NUL,		NUL,		NUL,		NUL,		NUL,		K_LA,		K_F4,		NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		K_DEF,		NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL
 };
@@ -87,9 +87,10 @@ TransMap KeyMap2500[]={
 61,	"W           ",	'w',	88,		157,	1,
 62,	"X           ",	'x',	88,		221,	1,
 63,	"Y           ",	'y',	224,	157,	1,
-64,	"Z           ",	'z',	57,		221,	1		//OK
+64,	"Z           ",	'z',	57,		221,	1,
+65, "PRINT       ", K_PRINT,50,     50,     1
 };
-int KeyMap2500Lenght = 63;
+int KeyMap2500Lenght = 64;
 
 
 
