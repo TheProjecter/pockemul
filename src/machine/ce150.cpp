@@ -252,7 +252,7 @@ void Cce150::clearPaper(void)
 	// Fill it blank
 	ce150buf->fill(PaperColor.rgba());
 	ce150display->fill(QColor(0,0,0,0).rgba());
-	Pen_Y = 0;
+    Pen_Y = 100;
 }
 
 bool Cce150::exit(void)

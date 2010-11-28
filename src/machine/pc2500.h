@@ -79,11 +79,14 @@ public:
         Lcd_Symb_Y	= 48;
         Lcd_Symb_DX	= 30;
         Lcd_Symb_DY	= 64;
+
+        printMode = false;
     }
     virtual ~Cpc2500()
     {								//[constructor]
     }
-
+private:
+bool printMode;
 };
 
 #endif // PC2500_H

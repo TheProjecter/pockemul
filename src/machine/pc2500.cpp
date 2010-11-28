@@ -3,15 +3,40 @@
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 BYTE	Cpc2500::Get_PortA(void)
 {
-    IO_A = Cpc13XX::Get_PortA();
+    BYTE data = Cpc13XX::Get_PortA();
 
-    BYTE ks = Get_8(0x7A00);
+    //if (IO_A == 0x80)
+    {
 
+    BYTE ks = pKEYB->Get_KS();
+#if 1
+    if ((ks & 0x10) && printMode) {
+        data|=0x80;
+        //IO_A &= 0x7F;
+    }
+#endif
+#if 1
     if (ks & 0x20) {
-        if (pKEYB->isShift)
-            IO_A|=0x01;
+        if (pKEYB->isShift) {
+            data|=0x80;
+        }
     }
 
+
+#endif
+#if 0
+    if (ks & 0x40) {
+        data|=0x80;
+        //IO_A &= 0x7F;
+    }
+#endif
+#if 0
+    if (ks & 0x80) {
+        data|=0x80;
+    }
+#endif
+    }
+    IO_A = data;
     return (IO_A);
 }
 
@@ -56,7 +81,7 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
         return (1);
     }
 
-    if ( (*d>=0x7000) && (*d<=0x79FF) ) {
+    if ( (*d>=0x7000) && (*d<=0x7BFF) ) {
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",*d,data,data);
     }
     if ( (*d>=0x7100) && (*d<=0x71FF) )	{
@@ -93,7 +118,10 @@ bool Cpc2500::init(void) {
 
 bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
 {
-
+    if ( (*d >= 0x8000) && (*d<=0xFFFF) && (RomBank & 0x02) ) {
+        *d += 0x8000;
+        return(1);
+    }
 
     if (ProtectMemory) {
         if ( (*d>=0x8000) && (*d<=0xFFFF) )	{
@@ -114,6 +142,10 @@ bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
 
 bool Cpc2500::run(void)
 {
+    if (pKEYB->LastKey == K_PRINT) {
+        printMode = !printMode;
+    }
+
     Set_Port_Bit(PORT_B,8,1);
 // Connect CE126
     //pCONNECTOR->Set_values( pce515p->pCONNECTOR->Get_values());

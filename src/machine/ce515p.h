@@ -24,13 +24,36 @@ class Cprinter;
 extern TransMap KeyMapce150[];
 extern int KeyMapce150Lenght;
 
+enum eMODE {GRAPH,TEXT};
 
+class CMove
+{
+public:
+    int		X;
+    int     Y;
+    bool    penDown;
+    bool    changeColor;
+    int     oldColor;
+    int     newColor;
+    CMove(int x,int y,bool pendown) {
+        this->X = x;
+        this->Y = y;
+        this->penDown = pendown;
+        changeColor = false;
+    }
+    CMove(int oldcolor,int newcolor) {
+        this->oldColor = oldcolor;
+        this->newColor = newcolor;
+        this->changeColor = true;
+    }
+
+};
 
 class Cce515p:public Cprinter{
 public:
 
     bool		run(void);
-    void		Print(void);
+    void		Print(CMove);
     bool		init(void);
     bool		exit(void);
 
@@ -47,9 +70,17 @@ public:
 
     void	clearPaper(void);
     void	SaveAsText(void);
-    void set_SD(BYTE val);
+    void    set_SD(BYTE val);
+    void    drawChar(BYTE data);
+    void    DrawMove(int lenght,int dir,bool penDown);
+    void    Command(BYTE);
+    void    ProcessEscCommand(void);
+    void    ProcessGraphCommand(void);
+    void    ProcessMultiPointCommand(QString);
+    void    DrawLine(int xa, int ya, int xb, int yb);
+    void    DrawTest(void);
 
-    Cce515p(CPObject *parent = 0):Cprinter(this)
+    Cce515p(CPObject *parent = 0):Cprinter(parent)
     {
         //[constructor]
         BackGroundFname	= ":/EXT/ext/ce-150.jpg";
@@ -70,7 +101,7 @@ public:
         Print_Mode = 0;
 
         Pen_X = 0;
-        Pen_Y = 000;
+        Pen_Y = 100;
         Pen_Z = 0;
         prev_Pen_X = 0;
         prev_Pen_Y = 0;
@@ -114,7 +145,29 @@ protected:
     BYTE    SD;
     int		Sii_wait;
 
+    static const QString graph[];
+
+private:
+    QList<CMove> moveBuffer;
+    int charSize;
+    QString escCommand;
+    QString graphCommand;
+    bool    escMode;
+
+    int     lenght,dir;
+    bool    penDown;
+
+    eMODE   mode;
+
+    int orig_X;
+    int orig_Y;
+    int lineType;
+    int mainRot;
+
+
 };
+
+
 
 
 
