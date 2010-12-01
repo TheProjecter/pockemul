@@ -13,6 +13,7 @@ public:
 	
 	void setOffset(QPoint);
 	QPoint getOffset();
+    QRect baseRect;
 	
 	
 	CpaperWidget(QRect rect,QImage * buffer,QWidget * parent):QWidget(parent)
@@ -25,6 +26,7 @@ public:
 		resize(rect.width(),rect.height());
 		move(rect.x(),rect.y());
 		Offset = QPoint(0,0);
+        this->baseRect = rect;
 	}
 	~CpaperWidget()
 	{

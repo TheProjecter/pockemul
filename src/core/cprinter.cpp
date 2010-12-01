@@ -18,6 +18,16 @@ Cprinter::~Cprinter()
 	delete paperWidget;
 }
 
+void Cprinter::resizeEvent ( QResizeEvent * ) {
+    float ratio = (float)this->width()/this->Pc_DX ;
+
+    QRect rect = this->paperWidget->baseRect;
+    this->paperWidget->setGeometry( rect.x()*ratio,
+                                    rect.y()*ratio,
+                                    rect.width()*ratio,
+                                    rect.height()*ratio);
+}
+
 
 void Cprinter::setPaperPos(QPoint pos)
 {

@@ -64,6 +64,23 @@
     <KEY description="X" height="45" left="163" scancode="0x78" top="541" width="45"/>
     <KEY description="Y" height="45" left="364" scancode="0x79" top="421" width="45"/>
     <KEY description="Z" height="45" left="102" scancode="0x7a" top="542" width="45"/>
-    <KEY description="PRINT" height="15" left="582" scancode="0xc0" top="239" width="59"/>
+    <KEY description="Paper Feed" height="16" left="584" scancode="0xc1" top="273" width="52"/>
+    <KEY description="PRINT ON" height="15" left="576" scancode="0xc3" top="239" width="28"/>
+    <KEY description="PRINT OFF" height="15" left="607" scancode="0xc4" top="239" width="38"/>
+    <KEY description="&apos;" height="45" left="765" scancode="0xb0" top="357" width="45"/>
+    <KEY description="[" height="45" left="825" scancode="0xb1" top="357" width="45"/>
+    <KEY description="Numpad 0" height="40" left="733" scancode="0xa0" top="605" width="37"/>
+    <KEY description="Numpad 1" height="40" left="733" scancode="0xa1" top="544" width="37"/>
+    <KEY description="Numpad 2" height="40" left="787" scancode="0xa2" top="544" width="37"/>
+    <KEY description="Numpad 3" height="40" left="843" scancode="0xa3" top="544" width="37"/>
+    <KEY description="Numpad 4" height="40" left="733" scancode="0xa4" top="482" width="37"/>
+    <KEY description="Numpad 5" height="40" left="788" scancode="0xa5" top="483" width="37"/>
+    <KEY description="Numpad 6" height="40" left="842" scancode="0xa6" top="482" width="37"/>
+    <KEY description="Numpad 7" height="40" left="732" scancode="0xa7" top="420" width="37"/>
+    <KEY description="Numpad 8" height="40" left="787" scancode="0xa8" top="422" width="37"/>
+    <KEY description="Numpad 9" height="40" left="843" scancode="0xa9" top="421" width="37"/>
+    <KEY description="Numpad -" height="40" left="843" scancode="0xaa" top="606" width="37"/>
+    <KEY description="Numpad ." height="40" left="787" scancode="0xab" top="606" width="37"/>
+    <KEY description="Numpad /" height="40" left="898" scancode="0xac" top="482" width="37"/>
 </Keyboard>
 </KEYBMAP>

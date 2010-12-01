@@ -79,6 +79,7 @@ public:
     void    ProcessMultiPointCommand(QString);
     void    DrawLine(int xa, int ya, int xb, int yb);
     void    DrawTest(void);
+    void    PaperFeed(void);
 
     Cce515p(CPObject *parent = 0):Cprinter(parent)
     {

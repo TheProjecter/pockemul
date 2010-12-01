@@ -29,6 +29,8 @@ public:
 
 	virtual void clearPaper(void);
 	virtual void SaveAsText(void);
+
+    //virtual void resizeEvent ( QResizeEvent * );
 	
 	Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
 	Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;

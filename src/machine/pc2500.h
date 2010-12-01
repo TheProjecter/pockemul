@@ -4,6 +4,9 @@
 #include "pc1350.h"
 #include "Ce515p.h"
 
+// SPEED 73mm/s  -> 73*5 = 365 step/sec
+
+
 class Cpc2500:public Cpc1350{						//PC1350 emulator main class
 
 public:
@@ -21,6 +24,7 @@ public:
     virtual bool	Get_Connector(void);
     bool	run(void);				// emulator main
     virtual bool	init(void);
+    virtual void resizeEvent ( QResizeEvent * );
 
     Cce515p  *pce515p;
 

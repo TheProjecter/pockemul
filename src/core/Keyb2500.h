@@ -16,9 +16,9 @@ K_CLR,		K_9,		K_SLH,		',',		'k',		'i',		'8',		NUL,
 
 NUL,		K_MOD,		NUL,		'.',		'l',		'o',		'9',		NUL,
 NUL,		NUL,		K_DA,		NUL,		';',		'p',		'0',		NUL,
-NUL,		NUL,		NUL,		K_UA,		NUL,		':',		'-',		NUL,
-NUL,		NUL,		NUL,		NUL,		K_RA,		K_F5,		'/',		NUL,
-NUL,		NUL,		NUL,		NUL,		NUL,		K_LA,		K_F4,		NUL,
+NUL,		NUL,		NUL,		K_UA,		NUL,		'/',		'-',		NUL,
+NUL,		NUL,		NUL,		NUL,		K_RA,		K_BRACKET,	'=',		NUL,
+NUL,		NUL,		NUL,		NUL,		NUL,		K_LA,		K_QUOTE,	NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		K_DEF,		NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL
 };

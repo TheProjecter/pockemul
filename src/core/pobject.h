@@ -88,6 +88,7 @@ public:
 	TransMap *KeyMap;
 	int		KeyMapLenght;
 	BYTE	LastKey;
+    int     zoom;
 	
 	virtual int initsound();
 	virtual int exitsound();
@@ -106,8 +107,10 @@ public:
     virtual void TurnOFF() {}
 	bool	Power;
     virtual void Reset() {}
+    void    SwitchFrontBack(QPoint);
 		
 protected:
+
 	void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
@@ -133,11 +136,12 @@ private slots:
     void slotLoadSession();
     void slotSaveSession();
 	void Dump();
-	
+
 	
 private:
 	int		PosX,PosY;
 	int		Width,Height;
+
 	bool	startKeyDrag;
 	QPoint	KeyDrag;
 	bool	startPosDrag;

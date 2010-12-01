@@ -3,7 +3,7 @@
 
 #include <QColor>
 #include "pobject.h"
-class CpaperWidget;
+#include "paperwidget.h"
 
 
 class Cprinter:public CPObject{
@@ -17,6 +17,8 @@ public:
 	
 	Cprinter(CPObject *parent);
 	virtual ~Cprinter();
+
+    virtual void resizeEvent ( QResizeEvent * );
 	
 	int paper_X,paper_Y;
     int paper_DX,paper_DY;

@@ -24,7 +24,15 @@
 #define DOWN	0
 #define UP		1
 
+//void Cce126::resizeEvent ( QResizeEvent * ) {
+//    float ratio = (float)this->width()/this->Pc_DX ;
 
+//    QRect rect = paperWidget->baseRect;
+//    paperWidget->setGeometry( rect.x()*ratio,
+//                              rect.y()*ratio,
+//                              rect.width()*ratio,
+//                              rect.height()*ratio);
+//}
 
 
 void Cce126::SaveAsText(void)

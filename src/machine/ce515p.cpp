@@ -19,9 +19,26 @@
 #define DOWN	0
 #define UP		1
 
+#define TRANSX(x) (orig_X + x)
+#define TRANSY(y) (orig_Y + y)
+
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/1200)
+
+#define PRINTER_TICKS	(pTIMER->pPC->getfrequency()/375)   // 75mm/s => 5*75 step/s
+
 void Cce515p::set_SD(BYTE val) {
     SD = val;
+}
+
+void Cce515p::PaperFeed(void) {
+    int printer_deltastate=0;
+    static long printer_oldstate	= pTIMER->state;
+
+    printer_deltastate = pTIMER->state - printer_oldstate;
+    if (printer_deltastate >= PRINTER_TICKS){
+        printer_oldstate	= pTIMER->state;
+        ProcessMultiPointCommand("R0,1");
+    }
 }
 
 bool Cce515p::run(void)
@@ -29,10 +46,13 @@ bool Cce515p::run(void)
     bool bit = false;
     bool has_moved = false;
 
+    int printer_deltastate=0;
+    static long printer_oldstate	= pTIMER->state;
 
     static unsigned char	t=0,c=0,waitbitstart=1,waitbitstop=0;
     int deltastate=0;
     static long oldstate	= pTIMER->state;
+
 
 
     //	0	START BIT
@@ -98,10 +118,17 @@ bool Cce515p::run(void)
     // Draw printer
     //---------------------------------------------------
     //if (has_moved) Print();
-        if (moveBuffer.length()>0) {
-            Print(moveBuffer.at(0));
-            moveBuffer.removeFirst();
+        printer_deltastate = pTIMER->state - printer_oldstate;
+        if (printer_deltastate >= PRINTER_TICKS){
+            printer_oldstate	= pTIMER->state;
+            if (moveBuffer.length()>0) {
+                Print(moveBuffer.at(0));
+                moveBuffer.removeFirst();
+            }
         }
+
+
+
 
 
     //pCONNECTOR->Set_pin(1	,1);
@@ -160,19 +187,19 @@ bool Cce515p::init(void)
     if(pTIMER)	pTIMER->init();
 
     // Create CE-150 Paper Image
-    ce515pbuf	= new QImage(QSize(640, 3000),QImage::Format_ARGB32);
-    ce515pdisplay= new QImage(QSize(640, 567),QImage::Format_ARGB32);
+    ce515pbuf	= new QImage(QSize(500, 3000),QImage::Format_ARGB32);
+    ce515pdisplay= new QImage(QSize(500, 567),QImage::Format_ARGB32);
     ce515ppen	= new QImage(":/EXT/ext/ce-150pen.png");
     // Fill it blank
     clearPaper();
 
     // Create a paper widget
-    paperWidget = new CpaperWidget(QRect(80,46,400,170),ce515pbuf,pTIMER->pPC);
+    paperWidget = new CpaperWidget(QRect(75,46,380,170),ce515pbuf,pTIMER->pPC);
     paperWidget->show();
 
     Sii_wait = 0;
     Pen_Y=100;
-    charSize = 1;
+    charSize = 2;
     escMode = false;
     mode = TEXT;
     orig_X = 0;
@@ -203,7 +230,7 @@ void Cce515p::Print(CMove point)
             case 2 : painter.setPen( Qt::green); break;
             case 3 : painter.setPen( Qt::red); break;
         }
-        painter.drawPoint( point.X+65, point.Y );
+        painter.drawPoint( point.X, point.Y );
         painter.end();
     }
 
@@ -249,7 +276,7 @@ void Cce515p::Print(CMove point)
 #endif
     pPC->Refresh_Display = true;
 
-    paperWidget->setOffset(QPoint(65,Pen_Y));
+    paperWidget->setOffset(QPoint(0,point.Y));
 }
 
 void Cce515p::SaveAsText(void)
@@ -262,6 +289,7 @@ void Cce515p::SaveAsText(void)
 void Cce515p::Command(BYTE t) {
     if (escMode) {
         escCommand+=QChar(t);
+        AddLog(LOG_PRINTER,"Esc Command:"+escCommand);
 
         switch (t) {
             case 'a' :
@@ -294,28 +322,41 @@ void Cce515p::Command(BYTE t) {
     switch (mode) {
     case TEXT :
         switch (t) {
-            case 0x08: Pen_X -= 6*charSize; break;
-            case 0x0A: Pen_Y+=(12*charSize); break;
-            case 0x0B: Pen_Y-=(12*charSize); break;
-            case 0x0D: Pen_Y+=(12*charSize); Pen_X = 0;break;
+            case 0x08: ProcessMultiPointCommand(QString("R%1,0").arg(-6*charSize)); break;
+            case 0x0A: ProcessMultiPointCommand(QString("R0,%1").arg(12*charSize));
+                //Pen_Y+=(12*charSize);
+                break;
+            case 0x0B: ProcessMultiPointCommand(QString("R0,%1").arg(-12*charSize));
+                //Pen_Y-=(12*charSize);
+                break;
+            case 0x0D: ProcessMultiPointCommand(QString("R%1,%2").arg(-1*TRANSX(Pen_X)).arg(12*charSize));
+                //Pen_Y+=(12*charSize); Pen_X = 0;
+                break;
             case 0x1B: escMode = true; break;
             default: drawChar(t);break;
         }
         break;
     case GRAPH :
-        if (t == 0x0D)
-            ProcessGraphCommand();
-        else
-            graphCommand+=QChar(t);
-        break;
+        switch (t) {
+            case 0x1B: escMode = true; break;
+            case 0x0D: AddLog(LOG_PRINTER,tr("Pen_X = %1   Pen_Y = %2").arg(TRANSX(Pen_X),5,10,QChar('0')).arg(TRANSY(Pen_Y),5,10,QChar('0')));
+                        ProcessGraphCommand();
+                        graphCommand = "";
+                        break;
+            default:    graphCommand+=QChar(t);
+                        break;
+        }
     }
 
 }
 void Cce515p::ProcessGraphCommand() {
     bool ok;
+    AddLog(LOG_PRINTER,"Graph Command:"+graphCommand);
     switch (graphCommand.at(0).toAscii()) {
     case 'A' : // Back to TEXT Mode
                 mode = TEXT;
+                orig_X = 0 ;            Pen_X = 0;
+                orig_Y = TRANSY(Pen_Y); Pen_Y = 0;
                 break;
     case 'D' : // Trace absolute figure
 
@@ -328,11 +369,14 @@ void Cce515p::ProcessGraphCommand() {
                 lineType = graphCommand.mid(1).toInt(&ok,10);
                 break;
     case 'I' : // Define current position as origin
-                orig_X = Pen_X;
-                orig_Y = Pen_Y;
+                orig_X = TRANSX(Pen_X); Pen_X = 0;
+                orig_Y = TRANSY(Pen_Y); Pen_Y = 0;
                 break;
     case 'P' : // Print character
-
+                for (int i=1; i < graphCommand.size(); i++) {
+                    drawChar(graphCommand.at(i).toAscii());
+                }
+                break;
     case 'Q' : // Main rotation
                 mainRot = graphCommand.mid(1,1).toInt(&ok,10);
                 break;
@@ -340,65 +384,76 @@ void Cce515p::ProcessGraphCommand() {
 }
 
 void Cce515p::DrawTest(void) {
-    Pen_X = 0;
+    //Pen_X = 0;
+    //orig_X = 0;
+    Command(0x0D);
     //ProcessMultiPointCommand("M0,0");
     moveBuffer.append( CMove(Pen_Color,0));
     Pen_Color = 0;
 
-    ProcessMultiPointCommand("J25,0,0,25,-25,0,0,-25");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
     ProcessMultiPointCommand("R30,0");
     moveBuffer.append( CMove(Pen_Color,1));
     Pen_Color = 1;
-    ProcessMultiPointCommand("J25,0,0,25,-25,0,0,-25");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
     ProcessMultiPointCommand("R30,0");
     moveBuffer.append( CMove(Pen_Color,2));
     Pen_Color = 2;
-    ProcessMultiPointCommand("J25,0,0,25,-25,0,0,-25");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
     ProcessMultiPointCommand("R30,0");
     moveBuffer.append( CMove(Pen_Color,3));
     Pen_Color = 3;
-    ProcessMultiPointCommand("J25,0,0,25,-25,0,0,-25");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
     //ProcessMultiPointCommand("R0,40");
     moveBuffer.append( CMove(Pen_Color,0));
     Pen_Color = 0;
-    Pen_X = 0;
-    Pen_Y += 20;
-
+    //Pen_X = 0;
+    //Pen_Y += 40;
+    Command(0x0D);
+    Command(0x0D);
 }
 
-#define TRANSX(x) (orig_X + x)
-#define TRANSY(y) (orig_Y + y)
+
 
 void Cce515p::ProcessMultiPointCommand(QString command) {
     bool ok;
     AddLog(LOG_PRINTER,command);
     QStringList coordList = command.mid(1).split(",");
-    AddLog(LOG_PRINTER,tr("size = %1").arg(coordList.size(),2,16,QChar('0')));
+    //AddLog(LOG_PRINTER,tr("size = %1").arg(coordList.size(),2,16,QChar('0')));
     if (!(coordList.size() % 2)) { // we need a odd parameters count
         for (int ind = 0; ind < coordList.size(); ind += 2)
         {
-            int x = coordList.at(ind).toInt(&ok,10);
-            int y = coordList.at(ind+1).toInt(&ok,10);
+            //QLocale::setDefault(QLocale::C);
+            QLocale c(QLocale::C);
+            //int d = c.toFloat("501.5", &ok );
+            int x = c.toFloat(coordList.at(ind),&ok);
+            int y = c.toFloat(coordList.at(ind+1),&ok);
+            //int x = coordList.at(ind).toInt(&ok,10);
+            //int y = coordList.at(ind+1).toInt(&ok,10);
+            //AddLog(LOG_PRINTER,tr("test convert 501 =%1").arg(d));
+            //AddLog(LOG_PRINTER,"first param:"+coordList.at(ind));
+            //AddLog(LOG_PRINTER,"second param:"+coordList.at(ind+1));
+            AddLog(LOG_PRINTER,tr("draw to [%1,%2]").arg(x,4,10,QChar('0')).arg(y,4,10,QChar('0')));
             switch (command.at(0).toAscii()) {
             case 'D' :  penDown = true;
                         DrawLine(TRANSX(Pen_X),TRANSY(Pen_Y),TRANSX(x),TRANSY(y));
-                        Pen_X = TRANSX(x);
-                        Pen_Y = TRANSY(y);
+                        Pen_X = (x);
+                        Pen_Y = (y);
                         break;
             case 'J' :  penDown = true;
                         DrawLine(TRANSX(Pen_X),TRANSY(Pen_Y),TRANSX(Pen_X+x),TRANSY(Pen_Y+y));
-                        Pen_X = TRANSX(Pen_X+x);
-                        Pen_Y = TRANSY(Pen_Y+y);
+                        Pen_X = (Pen_X+x);
+                        Pen_Y = (Pen_Y+y);
                         break;
             case 'M' :  penDown = false;
                         DrawLine(TRANSX(Pen_X),TRANSY(Pen_Y),TRANSX(x),TRANSY(y));
-                        Pen_X = TRANSX(x);
-                        Pen_Y = TRANSY(y);
+                        Pen_X = (x);
+                        Pen_Y = (y);
                         break;
             case 'R' :  penDown = false;
                         DrawLine(TRANSX(Pen_X),TRANSY(Pen_Y),TRANSX(Pen_X+x),TRANSY(Pen_Y+y));
-                        Pen_X = TRANSX(Pen_X+x);
-                        Pen_Y = TRANSY(Pen_Y+y);
+                        Pen_X = (Pen_X+x);
+                        Pen_Y = (Pen_Y+y);
                         break;
             }
 
@@ -420,6 +475,8 @@ void Cce515p::ProcessEscCommand() {
         break;
     case 'b': // graphic mode
         mode = GRAPH;
+        orig_X = TRANSX(Pen_X); Pen_X = 0;
+        orig_Y = TRANSY(Pen_Y); Pen_Y = 0;
         break;
     case '0':
     case '1':
@@ -489,7 +546,7 @@ void Cce515p::DrawMove(int lenght,int dir,bool penDown) {
             case 7 : Pen_X++; Pen_Y++; break;
         }
 
-        moveBuffer.append( CMove(Pen_X,Pen_Y,penDown));
+        moveBuffer.append( CMove(TRANSX(Pen_X),TRANSY(Pen_Y),penDown));
 
     }
 }

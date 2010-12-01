@@ -26,6 +26,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
 		PosY	= 0;
 		Pc_DX	= 0;
 		Pc_DY	= 0;
+        zoom = 100;
 		pKEYB	= 0;
 		pTIMER	= 0;
 		pLCDC	= 0;
@@ -213,26 +214,64 @@ void CPObject::fillSoundBuffer(BYTE val)
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 {
 #if 1
-    if ( ( (parentWidget() == 0)||(parentWidget() == mainwindow)) && (event->button() == Qt::RightButton) )
+
+
+    if (parentWidget() == mainwindow)
     {
-        if (Front)
+        // Search all conected objects then move them
+        QList<CPObject *> ConList;
+        ConList.append(this);
+        mainwindow->pdirectLink->findAllObj(this,&ConList);
+        for (int i=0;i<ConList.size();i++)
         {
-            move(mainwindow->pos() + pos());
-            setParent(0);
-            show();
+            ConList.at(i)->SwitchFrontBack(this->pos());
+            // Move object at the correct origine
         }
-        else
-        {
-            QPoint newpos = pos() - mainwindow->pos();
-            setParent(mainwindow);
-            move(newpos);
-            show();
-            update();
-        }
-        Front = ! Front;
-        update();
+
+        //SwitchFrontBack();
+        //update();
     }
 #endif
+}
+
+void CPObject::SwitchFrontBack(QPoint point) {
+    if (Front)
+    {
+        // calculate the new origine
+        int newposx = point.x() + (pos().x()-point.x())/4;
+        int newposy = point.y() + (pos().y()-point.y())/4;
+        zoom = 25;
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+        animation->setDuration(1000);
+        animation->setStartValue(this->rect());
+        animation->setEndValue(QRect(newposx,newposy,Pc_DX/4,Pc_DY/4));
+        animation->setEasingCurve(QEasingCurve::OutBounce);
+        animation->start();
+        this->setPosX(newposx);
+        this->setPosY(newposy);
+
+    }
+    else
+    {
+        // calculate the new origine
+        int newposx = point.x() + (pos().x()-point.x())*4;
+        int newposy = point.y() + (pos().y()-point.y())*4;
+        zoom = 100;
+//        QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+//        animation->setDuration(1000);
+//        animation->setStartValue(this->rect());
+//        animation->setEndValue(QRect(newposx,newposy,Pc_DX,Pc_DY));
+//        animation->setEasingCurve(QEasingCurve::OutBounce);
+//        animation->start();
+        setGeometry(newposx,newposy,Pc_DX,Pc_DY);
+        this->setPosX(newposx);
+        this->setPosY(newposy);
+//            QPoint newpos = pos() - mainwindow->pos();
+//            setParent(mainwindow);
+//            move(newpos);
+
+    }
+    Front = ! Front;
 }
 
 void CPObject::mousePressEvent(QMouseEvent *event)

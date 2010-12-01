@@ -1,43 +1,31 @@
 #include "pc2500.h"
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+
+
+void Cpc2500::resizeEvent ( QResizeEvent * ) {
+    float ratio = (float)this->width()/this->Pc_DX ;
+
+    QRect rect = pce515p->paperWidget->baseRect;
+    pce515p->paperWidget->setGeometry(rect.x()*ratio,
+                                      rect.y()*ratio,
+                                      rect.width()*ratio,
+                                      rect.height()*ratio);
+}
+
 BYTE	Cpc2500::Get_PortA(void)
 {
     BYTE data = Cpc13XX::Get_PortA();
 
-    //if (IO_A == 0x80)
-    {
-
     BYTE ks = pKEYB->Get_KS();
-#if 1
-    if ((ks & 0x10) && printMode) {
-        data|=0x80;
-        //IO_A &= 0x7F;
-    }
-#endif
-#if 1
-    if (ks & 0x20) {
-        if (pKEYB->isShift) {
-            data|=0x80;
-        }
-    }
+    //BYTE data = IO_A;
 
+    if ((ks & 0x10) && printMode)       data |= 0x80;
+    if ((ks & 0x20) && pKEYB->isShift)  data |= 0x80;
+    if (ks & 0x40)                      data |= 0x80;         // JAPAN ?
+//    if (ks & 0x80)                      data |= 0x80;         // Power OFF
 
-#endif
-#if 0
-    if (ks & 0x40) {
-        data|=0x80;
-        //IO_A &= 0x7F;
-    }
-#endif
-#if 0
-    if (ks & 0x80) {
-        data|=0x80;
-    }
-#endif
-    }
-    IO_A = data;
-    return (IO_A);
+    return (data);
 }
 
 void	Cpc2500::Set_PortF(BYTE data)
@@ -142,10 +130,16 @@ bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
 
 bool Cpc2500::run(void)
 {
-    if (pKEYB->LastKey == K_PRINT) {
-        printMode = !printMode;
+    if (pKEYB->LastKey == K_PRINT_ON) {
+        printMode = true;
     }
-
+    if (pKEYB->LastKey == K_PRINT_OFF) {
+        printMode = false;
+    }
+    if (pKEYB->LastKey == K_PFEED) {
+        pce515p->PaperFeed();
+        //pKEYB->LastKey = 0;
+    }
     Set_Port_Bit(PORT_B,8,1);
 // Connect CE126
     //pCONNECTOR->Set_values( pce515p->pCONNECTOR->Get_values());
@@ -207,9 +201,9 @@ bool Cpc2500::Get_Connector(void)
 
     // MANAGE SERIAL CONNECTOR
     // TO DO
-//	Set_Port_Bit(PORT_B,4,pSIOCONNECTOR->Get_pin(SIO_RD));
-//	Set_Port_Bit(PORT_B,5,pSIOCONNECTOR->Get_pin(SIO_CS));
-//	Set_Port_Bit(PORT_B,6,pSIOCONNECTOR->Get_pin(SIO_CD));
+    Set_Port_Bit(PORT_B,4,pSIOCONNECTOR->Get_pin(SIO_RD));
+    Set_Port_Bit(PORT_B,5,pSIOCONNECTOR->Get_pin(SIO_CS));
+    Set_Port_Bit(PORT_B,6,pSIOCONNECTOR->Get_pin(SIO_CD));
     // PAK
     return(1);
 }

@@ -74,22 +74,26 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_OF		0x3e
 
 #define K_0         0xa0
-#define K_1         0xa0
-#define K_2         0xa0
-#define K_3         0xa0
-#define K_4         0xa0
-#define K_5         0xa0
-#define K_6         0xa0
-#define K_7         0xa0
-#define K_8         0xa0
-#define K_9         0xa0
-#define K_MIN         0xa0
-#define K_PT         0xa0
-#define K_SLH         0xa0
+#define K_1         0xa1
+#define K_2         0xa2
+#define K_3         0xa3
+#define K_4         0xa4
+#define K_5         0xa5
+#define K_6         0xa6
+#define K_7         0xa7
+#define K_8         0xa8
+#define K_9         0xa9
+#define K_MIN       0xaa
+#define K_PT        0xab
+#define K_SLH       0xac
+#define K_QUOTE     0xb0
+#define K_BRACKET   0xb1
 
 #define K_PRINT		0xc0
 #define K_PFEED		0xc1
 #define K_PBFEED	0xc2
+#define K_PRINT_ON	0xc3
+#define K_PRINT_OFF 0xc4
 
 #define K_EJECT		0xd0
 #define K_PLAY		0xd1
