@@ -44,7 +44,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 	dialoglog = 0;
 	dialoganalogic = 0;
 	zoom = 100;
-	
+
 	startKeyDrag = false;
 	startPosDrag = false;
 

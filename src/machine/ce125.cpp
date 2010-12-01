@@ -8,6 +8,9 @@ TransMap KeyMapce125tape[]={
 };
 int KeyMapce125tapeLenght = 3;
 
+
+
+
 void Cce125tape::ComputeKey(void)
 {
 	if (pKEYB->LastKey == K_PLAY) 
@@ -56,6 +59,18 @@ void Cce125tape::ComputeKey(void)
 			RecTape();	
 		}
 };
+
+void Cce125::resizeEvent ( QResizeEvent * event ) {
+    float ratio = (float)this->width()/this->Pc_DX ;
+
+    QRect rect = QRect(0,0,pTAPE->Pc_DX,pTAPE->Pc_DY);
+    pTAPE->setGeometry(rect.x()*ratio,
+              rect.y()*ratio,
+              rect.width()*ratio,
+              rect.height()*ratio);
+
+    Cce126::resizeEvent(event);
+}
 
 bool Cce125::init(void)
 {

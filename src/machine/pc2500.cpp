@@ -1,7 +1,26 @@
+#include <QtGui>
 #include "pc2500.h"
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 
+void Cpc2500::UpdateFinalImage(void) {
+    CpcXXXX::UpdateFinalImage();
+
+    // Draw switch by 180° rotation
+    QPainter painter;
+
+    // PRINTER SWITCH
+    painter.begin(FinalImage);
+    painter.drawImage(580,239,FinalImage->copy(580,239,59,15).mirrored(!printMode,false));
+
+
+    // CAPS LOCK
+    if (capslock) {
+//        painter.setPen( Qt::green);
+        painter.fillRect(139,645,5,5,QColor(Qt::green));
+    }
+    painter.end();
+}
 
 void Cpc2500::resizeEvent ( QResizeEvent * ) {
     float ratio = (float)this->width()/this->Pc_DX ;
@@ -76,7 +95,10 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
         RomBank = data;
         return(1);
     }
-
+    if ( (*d>=0x7700) && (*d<=0x77FF) )	{
+        capslock = data;
+        return(1);
+    }
     if ( (*d>=0x7000) && (*d<=0x79FF) )	{pLCDC->SetDirtyBuf(*d-0x7000);return(1);}
     if ( (*d>=0x7A00) && (*d<=0x7AFF) )
     {

@@ -25,6 +25,7 @@ public:
     bool	run(void);				// emulator main
     virtual bool	init(void);
     virtual void resizeEvent ( QResizeEvent * );
+    virtual void UpdateFinalImage(void);
 
     Cce515p  *pce515p;
 
@@ -37,8 +38,8 @@ public:
         Initial_Session_Fname ="pc2500.pkm";
 
         BackGroundFname	= ":/PC2500/pc2500/pc2500.png";
-        LcdFname		= ":/PC1350/pc1350/1350lcd.png";
-        SymbFname		= ":/PC1350/pc1350/1350symb.png";
+        LcdFname		= ":/PC2500/pc2500/2500lcd.png";
+        SymbFname		= ":/PC2500/pc2500/2500symb.png";
         memsize			= 0x18000;
 //		NbSlot		= 3;
 
@@ -79,18 +80,21 @@ public:
         Lcd_ratio_X	= 2;
         Lcd_ratio_Y	= 2;
 
-        Lcd_Symb_X	= 50;
-        Lcd_Symb_Y	= 48;
-        Lcd_Symb_DX	= 30;
-        Lcd_Symb_DY	= 64;
+        Lcd_Symb_X	= 560;
+        Lcd_Symb_Y	= 60;
+        Lcd_Symb_DX	= 300;
+        Lcd_Symb_DY	= 5;
+        //Lcd_Symb_ratio = 2;
 
         printMode = false;
+        capslock = false;
     }
     virtual ~Cpc2500()
     {								//[constructor]
     }
 private:
 bool printMode;
+bool capslock;
 };
 
 #endif // PC2500_H

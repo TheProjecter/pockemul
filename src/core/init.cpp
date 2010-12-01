@@ -16,7 +16,7 @@
 #include "common.h"
 
 #include "dialoganalog.h"
- 
+
 #include "pcxxxx.h" 
 #include "pc1245.h"
 #include "pc1250.h"
@@ -106,7 +106,7 @@ CPObject *pPC=0;
 		case 107: pPC = new Cce150;		pPC->setName("CE-150");break;
 		case 108: pPC = new Cce152;		pPC->setName("CE-152");break;
 		case 109: pPC = new C263591;	pPC->setName("26-3591");break;
- 
+
 		case 105: pPC = new Csio;		pPC->setName("Serial Console");break;
 		case 106: pPC = new Ccable;		pPC->setName("11Pins Cable");break;
         case 111: pPC = new Cpotar;		pPC->setName("Potar");break;

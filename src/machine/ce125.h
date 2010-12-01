@@ -30,6 +30,7 @@ public:
 	virtual bool init(void);				//initialize
 	virtual bool exit(void);				//end
 	virtual	bool run(void);					//check access
+    virtual void resizeEvent ( QResizeEvent * );
 
 	Cce125()
 	{								//[constructor]

@@ -4,6 +4,7 @@
 /*** POCKEMUL [SIO.H] *************************************/
 /* UART(serial port) emulation class                      */
 /**********************************************************/
+#include <QMenu>
 #include "Connect.h"
 #include "pobject.h"
 #include "Inter.h"
@@ -12,6 +13,8 @@
 class DialogConsole;
 
 class Csio:public CPObject{
+Q_OBJECT
+
 public:
     const char*	GetClassName(){ return("Csio");};
 
@@ -115,6 +118,11 @@ public:
 	};
 protected:
 	void paintEvent(QPaintEvent *);
+
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
+    void ShowConsole(void);
+    void HideConsole(void);
 
 private:
 	int		inBitNb;

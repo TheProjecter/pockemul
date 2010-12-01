@@ -186,14 +186,14 @@ static const struct {
 	const char *symb;
 	DWORD	addr;
 	int	bit;
-} pc2500_pos[7]={
-    {1, 3,  PRINT	,SYMB1_ADR_2500	,0x04},
-    {8, 3,  RUN		,SYMB1_ADR_2500	,0x10},
-    {4, 11, PRO		,SYMB1_ADR_2500	,0x20},
-    {6, 21, JAP		,SYMB1_ADR_2500	,0x40},
-    {4, 29, SML		,SYMB1_ADR_2500	,0x80},
-    {1, 39, SHIFT	,SYMB1_ADR_2500	,0x01},
-    {4, 47, DEF		,SYMB1_ADR_2500	,0x02}
+} pc2500_pos[5]={
+    {0, 0,  BUSY	,SYMB1_ADR_2500	,0x04},
+    {223, 0,  RUN		,SYMB1_ADR_2500	,0x10},
+    {260, 0, PRO		,SYMB1_ADR_2500	,0x20},
+//    {6, 21, JAP		,SYMB1_ADR_2500	,0x40},
+    {60, 0, CAPS		,SYMB1_ADR_2500	,0x80},
+//    {1, 39, SHIFT	,SYMB1_ADR_2500	,0x01},
+    {185, 0, DEF		,SYMB1_ADR_2500	,0x02}
 };
 
 void Clcdc_pc2500::disp_symb(void)
@@ -201,7 +201,7 @@ void Clcdc_pc2500::disp_symb(void)
 
     if (DirtyBuf[SYMB1_ADR_2500-0x7000] )
 	{
-		for (int ii=0;ii<7;ii++)
+        for (int ii=0;ii<5;ii++)
             disp_one_symb( pc2500_pos[ii].symb,		COLOR((pPC->Get_8(pc2500_pos[ii].addr)) & pc2500_pos[ii].bit),	pc2500_pos[ii].x,	pc2500_pos[ii].y);
 
         DirtyBuf[SYMB1_ADR_2500-0x7000] = 0;

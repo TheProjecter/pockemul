@@ -329,8 +329,9 @@ void Cce515p::Command(BYTE t) {
             case 0x0B: ProcessMultiPointCommand(QString("R0,%1").arg(-12*charSize));
                 //Pen_Y-=(12*charSize);
                 break;
-            case 0x0D: ProcessMultiPointCommand(QString("R%1,%2").arg(-1*TRANSX(Pen_X)).arg(12*charSize));
-                //Pen_Y+=(12*charSize); Pen_X = 0;
+            case 0x0D:  ProcessMultiPointCommand(QString("R0,%1").arg(12*charSize));
+                        ProcessMultiPointCommand(QString("R%1,0").arg(-1*TRANSX(Pen_X)));
+                        //Pen_Y+=(12*charSize); Pen_X = 0;
                 break;
             case 0x1B: escMode = true; break;
             default: drawChar(t);break;
@@ -391,19 +392,19 @@ void Cce515p::DrawTest(void) {
     moveBuffer.append( CMove(Pen_Color,0));
     Pen_Color = 0;
 
-    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0,0,25,25,0,0,-25,-25,0");
     ProcessMultiPointCommand("R30,0");
     moveBuffer.append( CMove(Pen_Color,1));
     Pen_Color = 1;
-    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0,0,25,25,0,0,-25,-25,0");
     ProcessMultiPointCommand("R30,0");
     moveBuffer.append( CMove(Pen_Color,2));
     Pen_Color = 2;
-    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0,0,25,25,0,0,-25,-25,0");
     ProcessMultiPointCommand("R30,0");
     moveBuffer.append( CMove(Pen_Color,3));
     Pen_Color = 3;
-    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0");
+    ProcessMultiPointCommand("J0,25,25,0,0,-25,-25,0,0,25,25,0,0,-25,-25,0");
     //ProcessMultiPointCommand("R0,40");
     moveBuffer.append( CMove(Pen_Color,0));
     Pen_Color = 0;

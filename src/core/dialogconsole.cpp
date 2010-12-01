@@ -13,7 +13,7 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
 	setFocusPolicy(Qt::StrongFocus);
 
     connect(pbSend, SIGNAL(clicked()), this, SLOT(sendData())); 
-	pSIO = (Csio *) parent;
+    pSIO = (Csio *) parent;
 	
 }
 //

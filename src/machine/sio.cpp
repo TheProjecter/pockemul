@@ -1,4 +1,5 @@
 #include <QPainter>
+#include <QtGui>
 
 #include "common.h"
 #include "Log.h"
@@ -46,6 +47,28 @@ void Csio::Set_RS(bool val) { RS = val;	}
 
 void Csio::Set_BaudRate(int br) {baudrate = br;}
 int  Csio::Get_BaudRate(void) {return baudrate;}
+
+
+void Csio::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
+
+    BuildContextMenu(&menu);
+
+    menu.addSeparator();
+
+    menu.addAction(tr("Show console"),this,SLOT(ShowConsole()));
+    menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
+
+    menu.exec(event->globalPos () );
+}
+
+void Csio::ShowConsole(void) {
+    dialogconsole->show();
+}
+void Csio::HideConsole(void) {
+    dialogconsole->hide();
+}
 
 bool Csio::run(void)
 {

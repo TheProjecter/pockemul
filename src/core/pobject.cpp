@@ -596,10 +596,13 @@ void CPObject::BuildContextMenu(QMenu * menu)
 
         }
 
-    menuconfig->addAction(tr("Keyboard"),this,SLOT(KeyList()));
-	
-	menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
+    if (pKEYB) {
+        menuconfig->addAction(tr("Keyboard"),this,SLOT(KeyList()));
+    }
 
+    if ( dynamic_cast<CpcXXXX *>(this) ) {
+        menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
+    }
 	menu->addSeparator();
 	computeLinkMenu(menu);
 	computeUnLinkMenu(menu);
