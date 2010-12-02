@@ -180,20 +180,19 @@ void Clcdc_pc1350::disp(void)
 //
 ///////////////////////////////////////////////////////////////////////
 #define SYMB1_ADR_2500	0x783C
-
+#define SYMB2_ADR_2500	0x787C
 static const struct {
 	int x,y;
 	const char *symb;
 	DWORD	addr;
 	int	bit;
-} pc2500_pos[5]={
-    {0, 0,  BUSY	,SYMB1_ADR_2500	,0x04},
-    {223, 0,  RUN		,SYMB1_ADR_2500	,0x10},
-    {260, 0, PRO		,SYMB1_ADR_2500	,0x20},
-//    {6, 21, JAP		,SYMB1_ADR_2500	,0x40},
-    {60, 0, CAPS		,SYMB1_ADR_2500	,0x80},
-//    {1, 39, SHIFT	,SYMB1_ADR_2500	,0x01},
-    {185, 0, DEF		,SYMB1_ADR_2500	,0x02}
+} pc2500_pos[6]={
+    {0, 0,  BUSY	,SYMB2_ADR_2500	,0x80},
+    {223, 0,  RUN	,SYMB1_ADR_2500	,0x10},
+    {260, 0, PRO	,SYMB1_ADR_2500	,0x20},
+    {120, 0, JAP	,SYMB1_ADR_2500	,0x40},
+    {60, 0, CAPS	,SYMB1_ADR_2500	,0x80},
+    {185, 0, DEF	,SYMB1_ADR_2500	,0x02}
 };
 
 void Clcdc_pc2500::disp_symb(void)

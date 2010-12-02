@@ -152,7 +152,8 @@ public:
 
 	int		Lcd_Symb_X,Lcd_Symb_Y;		// LCD panel display position(x,y)
 	int		Lcd_Symb_DX,Lcd_Symb_DY;	// LCD panel display Width & Heigth
-	float	Lcd_Symb_ratio;
+    float	Lcd_Symb_ratio_X;
+    float	Lcd_Symb_ratio_Y;
 
 	BYTE	IO_A,IO_B,IO_C,IO_F,IO_T;			// Four Input Output port 
 	bool	Get_Port_bit(PORTS Port, int bit);

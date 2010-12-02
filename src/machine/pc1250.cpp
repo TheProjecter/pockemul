@@ -53,7 +53,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(this)
 	Lcd_Symb_Y	= (int) (35 * 1.18);
 	Lcd_Symb_DX	= 288;
 	Lcd_Symb_DY	= 5;
-	Lcd_Symb_ratio	= 1.18;
+    Lcd_Symb_ratio_X	= 1.18;
 
 //		DialogExtensionID = IDD_EXT_PROPERTIES_12XX;
 

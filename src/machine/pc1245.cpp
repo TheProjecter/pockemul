@@ -35,7 +35,7 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(this)
 	Lcd_Symb_Y	= 45;
 	Lcd_Symb_DX	= 173;
 	Lcd_Symb_DY	= 5;
-	Lcd_Symb_ratio	= 1*1.18;
+    Lcd_Symb_ratio_X	= 1*1.18;
 	
 	delete pLCDC;	pLCDC		= new Clcdc_pc1245(this);
 }

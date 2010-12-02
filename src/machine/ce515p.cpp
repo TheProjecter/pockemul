@@ -212,6 +212,7 @@ bool Cce515p::init(void)
 
 void Cce515p::Print(CMove point)
 {
+    static bool old_penDown = true;
     QPainter painter;
 
     pPC->Refresh_Display = true;
@@ -219,19 +220,29 @@ void Cce515p::Print(CMove point)
     if (point.changeColor) {
         Pen_Color = point.newColor;
     }
-    else
-    if (point.penDown)
-    {
-        painter.begin(ce515pbuf);
-        switch (Pen_Color)
+    else {
+        if (point.penDown)
         {
-            case 0 : painter.setPen( Qt::black); break;
-            case 1 : painter.setPen( Qt::blue); break;
-            case 2 : painter.setPen( Qt::green); break;
-            case 3 : painter.setPen( Qt::red); break;
+            painter.begin(ce515pbuf);
+            switch (Pen_Color)
+            {
+                case 0 : painter.setPen( Qt::black); break;
+                case 1 : painter.setPen( Qt::blue); break;
+                case 2 : painter.setPen( Qt::green); break;
+                case 3 : painter.setPen( Qt::red); break;
+            }
+            painter.drawPoint( point.X, point.Y );
+            painter.end();
         }
-        painter.drawPoint( point.X, point.Y );
-        painter.end();
+        // Check is pen up/down status change to play the CLAC
+        if (point.penDown != old_penDown) {
+#ifndef NO_SOUND
+            int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac, 0 , true);
+            FSOUND_SetVolumeAbsolute(iChanIndex,255);
+            FSOUND_SetPaused(iChanIndex,false);
+#endif
+            old_penDown = point.penDown;
+        }
     }
 
 #if 0

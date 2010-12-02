@@ -6,7 +6,7 @@
 #include "autoupdater.h"
 
 #define POCKEMUL_UPDATE_FILE "http://pockemul.free.fr/update/autoupdater.txt"
-#define CURRENT_VERSION "0.9.2.1"
+#define CURRENT_VERSION "0.9.3.0"
 
 CAutoUpdater::CAutoUpdater(QWidget *parent)
      : QDialog(parent)

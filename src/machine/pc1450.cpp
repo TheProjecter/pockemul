@@ -30,11 +30,11 @@ void	Cpc1450::initExtension(void)
 
 BYTE	Cpc1450::Get_PortA(void)
 {
-	IO_A = pKEYB->Read(IO_A);
+    BYTE data = pKEYB->Read(IO_A);
 
 //	if (! Japan) PUT_BIT(IO_A,7,IO_F & 0x01);
 
-	return (IO_A);
+    return (data);
 }
 
 

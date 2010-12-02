@@ -58,13 +58,13 @@ public:
 		Lcd_Y		= 48;
 		Lcd_DX		= 264;
 		Lcd_DY		= 30;
-		Lcd_ratio_X	= 1;
-		Lcd_ratio_Y	= 1;
+        Lcd_ratio_X	= .9;
 
 		Lcd_Symb_X	= 111;
 		Lcd_Symb_Y	= 38;
 		Lcd_Symb_DX	= 264;
 		Lcd_Symb_DY	= 45;
+        Lcd_Symb_ratio_X = .9;
 	}
 
 	~Cpc1475()

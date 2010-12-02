@@ -57,7 +57,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	Lcd_Symb_Y	= 0;
 	Lcd_Symb_DX	= 0;
 	Lcd_Symb_DY	= 0;;
-	Lcd_Symb_ratio	= 1;
+    Lcd_Symb_ratio_X = Lcd_Symb_ratio_Y	= 1;
 
 	Tape_Base_Freq=4000;
 	
@@ -101,8 +101,8 @@ void CpcXXXX::UpdateFinalImage(void)
 
 			x = Lcd_Symb_X + Pc_Offset_X;
 			y = Lcd_Symb_Y + Pc_Offset_Y;
-			z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio);
-			t = (int) (Lcd_Symb_DY * Lcd_Symb_ratio);
+            z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio_X);
+            t = (int) (Lcd_Symb_DY * Lcd_Symb_ratio_Y);
 		
 			painter.drawImage(QRect(x,y,z,t),*SymbImage);	
 			
@@ -147,7 +147,12 @@ bool CpcXXXX::InitDisplay(void)
 
 void CpcXXXX::TurnOFF(void)
 {
-	Initial_Session_Save();
+    if (QMessageBox::question(mainwindow, "PockEmul",
+                              "Do you want to save the session ?",
+                              "Yes",
+                              "No", 0, 0, 1) == 0) {
+        Initial_Session_Save();
+    }
 	off = 1;
 	pLCDC->TurnOFF();
 }

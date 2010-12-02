@@ -190,9 +190,9 @@ public:
 
 	Clcdc_pc1260(CPObject *parent = 0)	: Clcdc_pc1250(parent){						//[constructor]
 		Color_Off.setRgb(
-							(int) (0x73*contrast),
-							(int) (0x88*contrast),
-							(int) (0x73*contrast));
+                            (int) (0x63*contrast),
+                            (int) (0x6D*contrast),
+                            (int) (0x62*contrast));
 	};
 	virtual ~Clcdc_pc1260()
 	{						//[constructor]

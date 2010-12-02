@@ -12,7 +12,7 @@
 #include <QPainter>
 
 #include "init.h"
-  
+
 #include "common.h"
 
 #include "dialoganalog.h"
