@@ -45,7 +45,10 @@ void Csio::Set_RR(bool val) { RR = val;	}
 void Csio::Set_ER(bool val) { ER = val;	}
 void Csio::Set_RS(bool val) { RS = val;	}
 
-void Csio::Set_BaudRate(int br) {baudrate = br;}
+void Csio::Set_BaudRate(int br) {
+    baudrate = br;
+    AddLog(LOG_SIO,tr("new baudrate = %1").arg(br))
+}
 int  Csio::Get_BaudRate(void) {return baudrate;}
 
 
@@ -138,6 +141,10 @@ bool Csio::inReadBit(void)
 //		oldstate	+= deltastate;
 
 		data	= baInput.at(Sii_ndx); 
+
+        // Update Input proressbar
+        emit valueChanged((int)((Sii_ndx*100)/baInput.size()+.5));
+        Refresh_Display = true;
 		data = (data == 0x0A ? 0x0D : data);
 		bit		= inReadBitFromByte(data);
 		
@@ -185,6 +192,10 @@ bool Csio::inReadBit(void)
 	return(0);
 }
 
+
+//
+// Take in account number of start, stop and parity bits
+//
 qint8 Csio::inReadBitFromByte(qint8 data)
 {
 	static bool Start_Bit_Sent	= FALSE;
@@ -303,6 +314,8 @@ bool Csio::init(void)
 
     dialogconsole = new DialogConsole(this);
     dialogconsole->show();
+
+    connect(this,SIGNAL(valueChanged(int)),dialogconsole->inputProgressBar,SLOT(setValue(int)));
 
 	AddLog(LOG_MASTER,"done.\n");
 	return true;

@@ -13,6 +13,8 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
 	setFocusPolicy(Qt::StrongFocus);
 
     connect(pbSend, SIGNAL(clicked()), this, SLOT(sendData())); 
+    connect(baudCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(changeBaudrate(QString)));
+
     pSIO = (Csio *) parent;
 	
 }
@@ -46,6 +48,11 @@ void DialogConsole::refresh( void)
 		
 		currentIndex += len;
 	}
+}
+
+void DialogConsole::changeBaudrate(QString baud) {
+    bool ok;
+    pSIO->Set_BaudRate(baud.toInt(&ok));
 }
 
 void DialogConsole::sendData( void)

@@ -123,6 +123,8 @@ protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowConsole(void);
     void HideConsole(void);
+signals:
+    void valueChanged(int v);
 
 private:
 	int		inBitNb;

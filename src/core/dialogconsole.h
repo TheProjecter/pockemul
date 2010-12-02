@@ -15,6 +15,7 @@ public:
 
 private slots:
 	void	sendData( void);
+    void    changeBaudrate(QString);
 
 protected:
 	void closeEvent(QCloseEvent *event);
