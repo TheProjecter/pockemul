@@ -637,10 +637,16 @@ void CPObject::computeLinkMenu(QMenu * menu)
 void CPObject::computeUnLinkMenu(QMenu * menu)
 {
 	QMenu * menulink = menu->addMenu(tr("Remove Link"));
+    if(ConnList.size()>1) {
+        QAction * actionLocAllConn = menulink->addAction("All");
+        actionLocAllConn->setData(tr("A%1").arg((long)this));
+        menulink->addSeparator();
+    //connect(menulink, SIGNAL(triggered( QAction *)), mainwindow, SLOT(slotUnLinkAll( QAction *)));
+    }
 	for (int i = 0;i < ConnList.size(); i++)
  	{
 		QAction * actionLocConn = menulink->addAction(ConnList.at(i)->Desc);
-		actionLocConn->setData(tr("%1").arg((long)ConnList.at(i)));
+        actionLocConn->setData(tr("C%1").arg((long)ConnList.at(i)));
 		connect(menulink, SIGNAL(triggered( QAction *)), mainwindow, SLOT(slotUnLink( QAction *)));    
 		
 	}	

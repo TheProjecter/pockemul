@@ -84,28 +84,49 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 //
 void MainWindowPockemul::SendSignal_AddLogItem(QString str) { emit AddLogItem(str); }
 
+
+void MainWindowPockemul::slotUnLink(Cconnector * conn) {
+    int i;
+    for ( i = 0 ; i< pdirectLink->AConnList.size() ; i++)
+    {
+        if (pdirectLink->AConnList.at(i) == conn)
+        {
+            pdirectLink->AConnList.removeAt(i);
+            pdirectLink->BConnList.removeAt(i);
+            i--;
+        }
+    }
+    for ( i = 0 ; i< pdirectLink->BConnList.size() ; i++)
+    {
+        if (pdirectLink->BConnList.at(i) == conn)
+        {
+            pdirectLink->AConnList.removeAt(i);
+            pdirectLink->BConnList.removeAt(i);
+            i--;
+        }
+    }
+
+}
+
+void MainWindowPockemul::slotUnlink(CPObject * obj) {
+    int i;
+    for (i = 0;i < obj->ConnList.size(); i++)
+    {
+        slotUnLink(obj->ConnList.at(i));
+    }
+}
+
 void MainWindowPockemul::slotUnLink(QAction * action)
 {
-	int i;
-	Cconnector * p1 = (Cconnector*) action->data().toString().toULongLong();
-	for ( i = 0 ; i< pdirectLink->AConnList.size() ; i++)
-	{
-		if (pdirectLink->AConnList.at(i) == p1)
-		{
-			pdirectLink->AConnList.removeAt(i);
-			pdirectLink->BConnList.removeAt(i);
-			i--;
-		}
-	}
-	for ( i = 0 ; i< pdirectLink->BConnList.size() ; i++)
-	{
-		if (pdirectLink->BConnList.at(i) == p1)
-		{
-			pdirectLink->AConnList.removeAt(i);
-			pdirectLink->BConnList.removeAt(i);
-			i--;
-		}
-	}
+    if (action->data().toString().startsWith("A")) {
+        CPObject * obj = (CPObject*) action->data().toString().mid(1).toULongLong();
+        slotUnlink(obj);
+    }
+    else if (action->data().toString().startsWith("C"))
+        {
+            Cconnector * conn = (Cconnector*) action->data().toString().mid(1).toULongLong();
+            slotUnLink(conn);
+        }
 }
 
 void MainWindowPockemul::slotNewLink(QAction * action)

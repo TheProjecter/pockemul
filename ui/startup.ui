@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
+    <width>704</width>
     <height>557</height>
    </rect>
   </property>
@@ -235,11 +235,47 @@
          </item>
          <item>
           <property name="text">
+           <string>PC 1421</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1421.qrc">
+            <normaloff>:/PC1421/pc1421/pc-1421.jpg</normaloff>:/PC1421/pc1421/pc-1421.jpg</iconset>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC 1425</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1425.qrc">
+            <normaloff>:/PC1425/pc1425/pc-1425.jpg</normaloff>:/PC1425/pc1425/pc-1425.jpg</iconset>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>PC 1450</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1450.qrc">
             <normaloff>:/PC1450/pc1450/pc1450.jpg</normaloff>:/PC1450/pc1450/pc1450.jpg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC 1460</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1460.qrc">
+            <normaloff>:/PC1460/pc1460/pc-1460.jpg</normaloff>:/PC1460/pc1460/pc-1460.jpg</iconset>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
           </property>
          </item>
          <item>
@@ -294,6 +330,18 @@
           <property name="icon">
            <iconset resource="../resources/pc2500.qrc">
             <normaloff>:/PC2500/pc2500/pc-2500.jpg</normaloff>:/PC2500/pc2500/pc-2500.jpg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC 1280</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1280.qrc">
+            <normaloff>:/PC1280/pc1280/pc-1280.jpg</normaloff>:/PC1280/pc1280/pc-1280.jpg</iconset>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
           </property>
          </item>
         </widget>
@@ -546,12 +594,16 @@
   <include location="../resources/pc1260.qrc"/>
   <include location="../resources/pc1261.qrc"/>
   <include location="../resources/pc1262.qrc"/>
+  <include location="../resources/pc1280.qrc"/>
   <include location="../resources/pc1350.qrc"/>
   <include location="../resources/pc1360.qrc"/>
   <include location="../resources/pc1401.qrc"/>
   <include location="../resources/pc1402.qrc"/>
   <include location="../resources/pc1403.qrc"/>
+  <include location="../resources/pc1421.qrc"/>
+  <include location="../resources/pc1425.qrc"/>
   <include location="../resources/pc1450.qrc"/>
+  <include location="../resources/pc1460.qrc"/>
   <include location="../resources/pc1475.qrc"/>
   <include location="../resources/pc1500.qrc"/>
   <include location="../resources/pc1600.qrc"/>

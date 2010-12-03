@@ -15,7 +15,7 @@
 #include <QThread>
 #include <QTimer>
 
-class CPObject;
+#include "pobject.h"
 class CPocketThread;
 class CWatchPoint;
 

@@ -12,7 +12,7 @@
 #include <QPainter>
 
 #include "init.h"
-
+#include "mainwindowpockemul.h"
 #include "common.h"
 
 #include "dialoganalog.h"
@@ -161,7 +161,8 @@ void CPocketThread::run()
 			}
 			if (pPC->toDestroy)
 			{
-                // TODO - unlink before destroy
+                // Unlink before destroy
+                mainwindow->slotUnlink(pPC);
 
 				listpPObject.removeAt(i);
 				i--;
@@ -170,7 +171,7 @@ void CPocketThread::run()
 		}
 		if (pause) usleep(1);	
 	}
-}	
+}
 
 void CPocketThread::SendSignal_AddLogItem(QString str)
 {

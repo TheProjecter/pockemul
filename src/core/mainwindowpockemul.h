@@ -13,6 +13,7 @@ class CPObject;
 class CDirectLink;
 class CKey;
 class CpcXXXX;
+class Cconnector;
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -33,6 +34,8 @@ public:
 
 	CDirectLink		*pdirectLink;
 	void SendSignal_AddLogItem(QString str);
+
+    void slotUnlink(CPObject *);
 	
 	qint64	rawclk;
 
@@ -52,6 +55,8 @@ private slots:
 	void DestroySlot(CPObject *pObject);
 	void slotNewLink(QAction *);
 	void slotUnLink(QAction *);
+    void slotUnLink(Cconnector *);
+
 	
 protected:
 	void paintEvent(QPaintEvent *);
@@ -61,7 +66,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent( QMouseEvent * event );
 	void resizeEvent(QResizeEvent *);
-	void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 signals:
 	void AddLogItem(QString);
