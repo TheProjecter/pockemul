@@ -166,6 +166,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_Z			0x66
 
 extern BYTE scandef_pc1250[];
+extern BYTE scandef_pc1280[];
 extern BYTE scandef_pc1350[];
 extern BYTE scandef_pc1360[];
 extern BYTE scandef_pc2500[];
@@ -263,6 +264,19 @@ protected:
 ///////////////////////////////////////////////////////////////////
 // Keyboard emulation Windows ////////////////////////////////////
 ////////////////////////////////////////////////////////////////
+class Ckeyb_pc1280:public Ckeyb{
+public:
+
+    Ckeyb_pc1280(CPObject *parent = 0)	: Ckeyb(parent)
+    {
+        scandef = scandef_pc1280;
+        fn_KeyMap	= "pc1280.map";
+    }
+    virtual ~Ckeyb_pc1280(){}
+
+private:
+};
+
 class Ckeyb_pc1350:public Ckeyb{
 public:
 

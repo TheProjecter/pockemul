@@ -27,7 +27,7 @@ public:
 	virtual bool	Set_Connector(void);
 	virtual bool	Get_Connector(void);
 
-	void	initExtension(void);
+    virtual void	initExtension(void);
 
 	Cpc1360(CPObject *parent = 0)	: Cpc13XX(this)
 	{								//[constructor]

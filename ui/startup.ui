@@ -241,9 +241,6 @@
            <iconset resource="../resources/pc1421.qrc">
             <normaloff>:/PC1421/pc1421/pc-1421.jpg</normaloff>:/PC1421/pc1421/pc-1421.jpg</iconset>
           </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-          </property>
          </item>
          <item>
           <property name="text">
@@ -339,9 +336,6 @@
           <property name="icon">
            <iconset resource="../resources/pc1280.qrc">
             <normaloff>:/PC1280/pc1280/pc-1280.jpg</normaloff>:/PC1280/pc1280/pc-1280.jpg</iconset>
-          </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
           </property>
          </item>
         </widget>

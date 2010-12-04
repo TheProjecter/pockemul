@@ -151,7 +151,7 @@ int MainWindowPockemul::newsession()
 {
     DialogStartup dialogstartup(this);
     int result = dialogstartup.exec();
-	if (result)	{
+    if (result)	{
 		CPObject *newpPC = InitApp(result);
  		if (! newpPC) MSG_ERROR("pPC is NULL in slotStart")
  		else

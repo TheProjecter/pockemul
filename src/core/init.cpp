@@ -23,6 +23,7 @@
 #include "pc1251.h"
 #include "pc1255.h"
 #include "pc1260.h"
+#include "pc1280.h"
 
 #include "pc1350.h"
 #include "pc1360.h"
@@ -32,6 +33,7 @@
 #include "pc1401.h"
 #include "pc1402.h"
 #include "pc1403.h"
+#include "pc1421.h"
 #include "pc1450.h"
 #include "pc1475.h"
 
@@ -66,54 +68,56 @@ QList<CPocketThread*> listPcThread;
 CPObject * InitApp(int idPC )
 {
 CPObject *pPC=0;
-	  
+
 	switch (idPC) 
 	{
 
-		case 0	: return 0;
-		case 10	: pPC = new Cpc1245;	pPC->setName("PC-1245");break;
-		case 11	: pPC = new Cpc1250;	pPC->setName("PC-1250");break;
-		case 12	: pPC = new Cpc1251;	pPC->setName("PC-1251");break;
-		case 33	: pPC = new Cpc1251H;	pPC->setName("PC-1251H");break;
-		case 13	: pPC = new Cpc1255;	pPC->setName("PC-1255");break;
-		case 14	: pPC = new Ctrspc3;	pPC->setName("Tandy PC-3");break;
+        case EMPTY	: return 0;
+        case PC1245	: pPC = new Cpc1245;	pPC->setName("PC-1245");break;
+        case PC1250	: pPC = new Cpc1250;	pPC->setName("PC-1250");break;
+        case PC1251	: pPC = new Cpc1251;	pPC->setName("PC-1251");break;
+        case PC1251H: pPC = new Cpc1251H;	pPC->setName("PC-1251H");break;
+        case PC1255	: pPC = new Cpc1255;	pPC->setName("PC-1255");break;
+        case TandyPC3:pPC = new Ctrspc3;	pPC->setName("Tandy PC-3");break;
  
-		case 15	: pPC = new Cpc1260;	pPC->setName("PC-1260");break;
-		case 16	: pPC = new Cpc1261;	pPC->setName("PC-1261");break;
-		case 17	: pPC = new Cpc1262;	pPC->setName("PC-1262");break;
+        case PC1260	: pPC = new Cpc1260;	pPC->setName("PC-1260");break;
+        case PC1261	: pPC = new Cpc1261;	pPC->setName("PC-1261");break;
+        case PC1262	: pPC = new Cpc1262;	pPC->setName("PC-1262");break;
+        case PC1280	: pPC = new Cpc1280;	pPC->setName("PC-1280");break;
 
-		case 18	: pPC = new Cpc1350;	pPC->setName("PC-1350");break;
-		case 19	: pPC = new Cpc1360;	pPC->setName("PC-1360");break;
-		case 20	: pPC = new Cpc1401;	pPC->setName("PC-1401");break;
-		case 21	: pPC = new Cpc1402;	pPC->setName("PC-1402");break;
-		case 22	: pPC = new Cpc1403;	pPC->setName("PC-1403");break;
-		case 23:  pPC = new Cpc1403H;	pPC->setName("PC-1403H");break;
-		case 24	: pPC = new Cpc1450;	pPC->setName("PC-1450");break;
-		case 25	: pPC = new Cpc1475;	pPC->setName("PC-1475");break;
+        case PC1350	: pPC = new Cpc1350;	pPC->setName("PC-1350");break;
+        case PC1360	: pPC = new Cpc1360;	pPC->setName("PC-1360");break;
+        case PC1401	: pPC = new Cpc1401;	pPC->setName("PC-1401");break;
+        case PC1402	: pPC = new Cpc1402;	pPC->setName("PC-1402");break;
+        case PC1403	: pPC = new Cpc1403;	pPC->setName("PC-1403");break;
+        case PC1403H: pPC = new Cpc1403H;	pPC->setName("PC-1403H");break;
+        case PC1421	: pPC = new Cpc1421;	pPC->setName("PC-1421");break;
+        case PC1450	: pPC = new Cpc1450;	pPC->setName("PC-1450");break;
+        case PC1475	: pPC = new Cpc1475;	pPC->setName("PC-1475");break;
 
-		case 30	: pPC = new Cpc1500;	pPC->setName("PC-1500");break;
-		case 31 : pPC = new Cpc1500A;	pPC->setName("PC-1500A");break;
-		case 32 : pPC = new Ctrspc2;	pPC->setName("Tandy PC-2");break;
+        case PC1500	: pPC = new Cpc1500;	pPC->setName("PC-1500");break;
+        case PC1500A: pPC = new Cpc1500A;	pPC->setName("PC-1500A");break;
+        case TandyPC2:pPC = new Ctrspc2;	pPC->setName("Tandy PC-2");break;
 
-        case 34 : pPC = new Cpc1600;	pPC->setName("PC-1600");break;
+        case PC1600 : pPC = new Cpc1600;	pPC->setName("PC-1600");break;
 
-        case 35 : pPC = new Cpc2500;	pPC->setName("PC-2500");break;
+        case PC2500 : pPC = new Cpc2500;	pPC->setName("PC-2500");break;
 
-        case 101: pPC = new Cce125;		pPC->setName("CE-125");break;
-		case 102: pPC = new Cce126;		pPC->setName("CE-126P");break;
-		case 103: pPC = new Cce123;		pPC->setName("CE-123P");break;
-		case 104: pPC = new Cce129;		pPC->setName("CE-129P");break;
-		case 107: pPC = new Cce150;		pPC->setName("CE-150");break;
-		case 108: pPC = new Cce152;		pPC->setName("CE-152");break;
-		case 109: pPC = new C263591;	pPC->setName("26-3591");break;
+        case CE125  : pPC = new Cce125;		pPC->setName("CE-125");break;
+        case CE126P : pPC = new Cce126;		pPC->setName("CE-126P");break;
+        case CE123P : pPC = new Cce123;		pPC->setName("CE-123P");break;
+        case CE129P : pPC = new Cce129;		pPC->setName("CE-129P");break;
+        case CE150  : pPC = new Cce150;		pPC->setName("CE-150");break;
+        case CE152  : pPC = new Cce152;		pPC->setName("CE-152");break;
+        case TANDY263591: pPC = new C263591;	pPC->setName("26-3591");break;
 
-		case 105: pPC = new Csio;		pPC->setName("Serial Console");break;
-		case 106: pPC = new Ccable;		pPC->setName("11Pins Cable");break;
-        case 111: pPC = new Cpotar;		pPC->setName("Potar");break;
+        case SerialConsole: pPC = new Csio;		pPC->setName("Serial Console");break;
+        case CABLE11Pins: pPC = new Ccable;		pPC->setName("11Pins Cable");break;
+        case POTAR  : pPC = new Cpotar;		pPC->setName("Potar");break;
 
-        case 110: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
+        case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
  		
-		default			: return 0;
+        default			: return 0;
 	}
 	AddLog(LOG_MASTER,"OK1");
 	if (!pPC->init()) return 0;

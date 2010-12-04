@@ -13,7 +13,7 @@ void	Cpc1360::initExtension(void)
 	
 	// initialise ext_MemSlot1
 	ext_MemSlot1 = new CExtensionArray("Memory Slot 1","Add memory credit card");
-	ext_MemSlot1->setAvailable(ID_CE210M,true);		ext_MemSlot1->setChecked(ID_CE2H32M,true);
+    ext_MemSlot1->setAvailable(ID_CE210M,true);		ext_MemSlot1->setChecked(ID_CE2H32M,true);
 	ext_MemSlot1->setAvailable(ID_CE211M,true);
 	ext_MemSlot1->setAvailable(ID_CE212M,true);
 	ext_MemSlot1->setAvailable(ID_CE2H16M,true);
@@ -153,7 +153,7 @@ bool Cpc1360::Chk_Adr(DWORD *d,DWORD data)
 		return(1);
 	}
 
-#if 0
+#if 1
 	if ( (*d>=0x3C00) && (*d<=0x3DFF) )
 	{
 		AddLog(LOG_MASTER,tr("Write Slot Register %1=%2").arg(*d).arg(mem[*d]));	

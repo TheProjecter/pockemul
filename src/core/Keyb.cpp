@@ -8,6 +8,7 @@
 #include "Keyb.h"
 
 #include "Keyb1250.h"
+#include "Keyb1280.h"
 #include "Keyb1350.h"
 #include "Keyb1360.h"
 #include "Keyb2500.h"
@@ -37,8 +38,8 @@ typedef struct{
 	BYTE pc1350,scan;
 }	Transkey;
 
-const int RIGHT[9] = { 25 , 32 , 59 , 19, 21, 13, 21, 16, 31 };
-const int BOTTOM[9]= { 16 , 22 , 16 , 21, 10, 13, 13, 31, 31 };
+const int RIGHT[11] = { 25 , 32 , 59 , 19, 21, 13, 21, 16, 31,16,16 };
+const int BOTTOM[11]= { 16 , 22 , 16 , 21, 10, 13, 13, 31, 31,16,16 };
 
 CKey::CKey(int scancode, QString description,QRect rect )	
 {

@@ -84,4 +84,48 @@ signals:
 };
 
 extern CPocketThread* PcThread;
+
+enum Models {
+    EMPTY,
+
+    PC1245,
+    PC1250,
+    PC1251,
+    PC1255,
+    TandyPC3,
+    PC1260,
+    PC1261,
+    PC1262,
+    PC1280,
+    PC1350,
+    PC1360,
+    PC1401,
+    PC1402,
+    PC1403,
+    PC1421,
+    PC1403H,
+    PC1450,
+    PC1475,
+    PC1500,
+    PC1500A,
+    TandyPC2,
+    PC1251H,
+    PC1600,
+    PC2500,
+
+    CE125,
+    CE126P,
+    CE123P,
+    CE129P,
+    CE150,
+    CE152,
+    TANDY263591,
+
+    SerialConsole,
+    CABLE11Pins,
+    POTAR,
+
+    CE1600P
+};
+
 #endif

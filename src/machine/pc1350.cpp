@@ -65,9 +65,9 @@ bool Cpc13XX::CheckUpdateExtension(CExtension *ext)
 
 BYTE	Cpc13XX::Get_PortA(void)
 {
-	IO_A = pKEYB->Read(IO_A);
+    BYTE data = pKEYB->Read(IO_A);
 
-	return (IO_A);
+    return (data);
 }
 
 BYTE	Cpc1350::Get_PortA(void)
