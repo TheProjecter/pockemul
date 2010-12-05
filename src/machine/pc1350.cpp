@@ -19,6 +19,7 @@ bool Cpc13XX::init(void)
     pCPU->logsw = true;
 #endif
 	CpcXXXX::init();
+    initExtension();
 	WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
 	
 	return true;
@@ -34,7 +35,10 @@ void	Cpc1350::initExtension(void)
 	ext_MemSlot1->setAvailable(ID_CE203M,true);
 	
 	addExtMenu(ext_MemSlot1);
-	
+
+    extensionArray[0] = ext_11pins;
+    extensionArray[1] = ext_MemSlot1;
+    extensionArray[2] = ext_Serial;
 }
 
 bool Cpc13XX::CheckUpdateExtension(CExtension *ext)

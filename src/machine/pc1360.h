@@ -67,11 +67,7 @@ public:
 		pCPU		= new CSC61860(this);
 		pTIMER		= new Ctimer(this);
 
-		this->initExtension();
-		extensionArray[0] = ext_11pins;
-		extensionArray[1] = ext_MemSlot1;
-		extensionArray[2] = ext_MemSlot2;
-		extensionArray[3] = ext_Serial;
+
 //		InitMemValue = 0xFF;		
 	}
 

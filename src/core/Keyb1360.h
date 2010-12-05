@@ -1,3 +1,6 @@
+
+
+
 BYTE scandef_pc1360[] = {
 //+0		+1			+2			+3			+4			+5			+6			+7
 ')',		':',		';',		',',		K_SML,		K_DEF,		K_SHT,		NUL,
@@ -8,7 +11,6 @@ BYTE scandef_pc1360[] = {
 NUL,		NUL,		K_DA,		K_UA,		'b',		'g',		't',		NUL,
 NUL,		K_MOD,		K_RA,		K_LA,		'n',		'h',		'y',		NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,
-
 NUL,		NUL,		K_CLR,		K_DEL,		'm',		'j',		'u',		NUL,
 NUL,		NUL,		NUL,		K_INS,		' ',		'k',		'i',		NUL,
 NUL,		NUL,		NUL,		NUL,		K_RET,		'l',		'o',		NUL,

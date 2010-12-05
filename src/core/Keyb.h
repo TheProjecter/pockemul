@@ -103,6 +103,8 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_CTRL      0xd5
 #define K_BS        0xd6
 #define K_KBII      0xd7
+#define K_CAL_PER   0xd8
+#define K_CAL_RES   0xd9
 
 #define K_RCL		0xde
 #define K_RSV		0xdf
@@ -137,6 +139,9 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_F5		0xfa
 #define K_F6		0xfb
 #define K_F7		0xfc
+#define K_F8		0xfd
+#define K_F9		0xfe
+
 
 #define K_A			0x41
 #define K_B			0x42

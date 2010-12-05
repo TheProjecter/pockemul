@@ -31,6 +31,11 @@ void	Cpc1360::initExtension(void)
 	
 	addExtMenu(ext_MemSlot1);
 	addExtMenu(ext_MemSlot2);
+
+    extensionArray[0] = ext_11pins;
+    extensionArray[1] = ext_MemSlot1;
+    extensionArray[2] = ext_MemSlot2;
+    extensionArray[3] = ext_Serial;
 	
 }
 
@@ -153,7 +158,7 @@ bool Cpc1360::Chk_Adr(DWORD *d,DWORD data)
 		return(1);
 	}
 
-#if 1
+#if 0
 	if ( (*d>=0x3C00) && (*d<=0x3DFF) )
 	{
 		AddLog(LOG_MASTER,tr("Write Slot Register %1=%2").arg(*d).arg(mem[*d]));	

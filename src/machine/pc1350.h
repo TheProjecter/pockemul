@@ -22,11 +22,12 @@ public:
 	virtual void	Set_PortA(BYTE data);
 	virtual BYTE	Get_PortA(void);
 	virtual bool	init(void);
+    virtual void	initExtension(void){}
 
 
 	
-    UINT8 in(UINT8 address){return(1);};
-    UINT8 out(UINT8 address,UINT8 value){return(1);};
+    UINT8 in(UINT8 address){return(1);}
+    UINT8 out(UINT8 address,UINT8 value){return(1);}
 	virtual bool CheckUpdateExtension(CExtension *ext);
 	
 	Cpc13XX(CPObject *parent = 0)	: CpcXXXX(parent)
@@ -108,10 +109,7 @@ public:
 		pTIMER		= new Ctimer(this);
 
 
-		this->initExtension();
-		extensionArray[0] = ext_11pins;
-		extensionArray[1] = ext_MemSlot1;
-		extensionArray[2] = ext_Serial;
+
 		
 	}
 	virtual ~Cpc1350()
