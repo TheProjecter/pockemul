@@ -104,6 +104,7 @@ CPObject *pPC=0;
         case PC2500 : pPC = new Cpc2500;	pPC->setName("PC-2500");break;
 
         case CE125  : pPC = new Cce125;		pPC->setName("CE-125");break;
+        case CE120P : pPC = new Cce120p;	pPC->setName("CE-120P");break;
         case CE126P : pPC = new Cce126;		pPC->setName("CE-126P");break;
         case CE123P : pPC = new Cce123;		pPC->setName("CE-123P");break;
         case CE129P : pPC = new Cce129;		pPC->setName("CE-129P");break;

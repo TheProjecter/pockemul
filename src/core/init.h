@@ -113,6 +113,7 @@ enum Models {
     PC1600,
     PC2500,
 
+    CE120P,
     CE125,
     CE126P,
     CE123P,

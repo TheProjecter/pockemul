@@ -93,7 +93,20 @@ private:
 	qint64	run_oldstate;
 };
 
+class Cce120p:public Cce126
+{
+public:
+    Cce120p()
+    {								//[constructor]
+        BackGroundFname	= ":/EXT/ext/ce-120p.jpg";
+        Pc_DX	= 883;
+        Pc_DY	= 568;
+        SnapPts = QPoint(402,43);
+        setPaperPos(QPoint(89,185-149));
 
+        stackBehind = true;
+    }
+};
 
 class Cce123:public Cce126
 {

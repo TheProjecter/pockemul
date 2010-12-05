@@ -43,7 +43,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(this)
 	Pc_DY		= 252;//213;
 
 	Lcd_X		= (int) (45 * 1.18);
-	Lcd_Y		= (int) (45 * 1.18);
+    Lcd_Y		= (int) (43 * 1.18);
 	Lcd_DX		= 144 ;
 	Lcd_DY		= 8;
 	Lcd_ratio_X	= 2 * 1.18;

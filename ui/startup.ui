@@ -402,6 +402,15 @@
          </property>
          <item>
           <property name="text">
+           <string>CE-120P</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/ce-120p.jpg</normaloff>:/EXT/ext/ce-120p.jpg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>CE-125</string>
           </property>
           <property name="icon">
@@ -411,20 +420,20 @@
          </item>
          <item>
           <property name="text">
-           <string>CE-126P</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/ext.qrc">
-            <normaloff>:/EXT/ext/ce-126p.png</normaloff>:/EXT/ext/ce-126p.png</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>CE-123P</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/ext.qrc">
             <normaloff>:/EXT/ext/ce-123p.jpg</normaloff>:/EXT/ext/ce-123p.jpg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CE-126P</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/ce-126p.png</normaloff>:/EXT/ext/ce-126p.png</iconset>
           </property>
          </item>
          <item>
@@ -465,20 +474,20 @@
          </item>
          <item>
           <property name="text">
-           <string>CE-152</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/ext.qrc">
-            <normaloff>:/EXT/ext/ce-152.png</normaloff>:/EXT/ext/ce-152.png</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>CE-1600P</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/ext.qrc">
             <normaloff>:/EXT/ext/ce-1600p.png</normaloff>:/EXT/ext/ce-1600p.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CE-152</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/ce-152.png</normaloff>:/EXT/ext/ce-152.png</iconset>
           </property>
          </item>
         </widget>
