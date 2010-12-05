@@ -2,6 +2,7 @@
 
 #include "dialogdump.h"
 #include "hexviewer.h"
+#include "qhexedit.h"
 #include "common.h"
 #include "pcxxxx.h"
 #include "slot.h"
@@ -21,10 +22,13 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
     connect(pbLoadBin, SIGNAL(clicked()), this, SLOT(LoadBin())); 
     connect(pbSaveBin, SIGNAL(clicked()), this, SLOT(SaveBin())); 
 
-	hexeditor = new HexViewer(framedump);
-	hexeditor->setFocus();
+    hexeditor = new HexViewer(framedump);
+    hexeditor->setFocus();
 
 	LoadSlot(); 
+
+//    hextemp = new QHexEdit(framedump);
+//    hextemp->setFocus();
 
 	resize( 605,400);
 }
@@ -119,6 +123,7 @@ void DialogDump::resizeEvent( QResizeEvent * event )
 {
 
 	hexeditor->resize( framedump->size() );
+//    hextemp->resize(framedump->size());
 }
 
 void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previous)
@@ -128,5 +133,14 @@ void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previo
 	int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(&ok,16);
 	int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
 	hexeditor->setData("",&(pPC->mem[adr]), size, adr);
+
+//    QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]));
+//    hextemp->data().clear();
+//    hextemp->data().append((&(pPC->mem[adr]),size);
+//    for (int i = 0;i<size;i++) {
+//        hextemp->insert(i,pPC->mem[i+adr]);
+//    }
+//    hextemp->setFocus();
 	update();
+
 }
