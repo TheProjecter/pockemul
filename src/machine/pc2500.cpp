@@ -34,11 +34,10 @@ void Cpc2500::resizeEvent ( QResizeEvent * ) {
 
 BYTE	Cpc2500::Get_PortA(void)
 {
-    BYTE data = Cpc13XX::Get_PortA();
-
+    //BYTE data = Cpc13XX::Get_PortA();
+    BYTE data = pKEYB->Read(IO_A);
     BYTE ks = pKEYB->Get_KS();
-    //BYTE data = IO_A;
-
+    IO_A = data;
     if ((ks & 0x10) && printMode)       data |= 0x80;
     if ((ks & 0x20) && pKEYB->isShift)  data |= 0x80;
     if (ks & 0x40)                      data |= 0x80;         // JAPAN ?

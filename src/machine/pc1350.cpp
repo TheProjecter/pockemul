@@ -76,11 +76,11 @@ BYTE	Cpc13XX::Get_PortA(void)
 
 BYTE	Cpc1350::Get_PortA(void)
 {
-	IO_A = Cpc13XX::Get_PortA();
+    BYTE data = Cpc13XX::Get_PortA();
 
-	if (! Japan) PUT_BIT(IO_A,7,pKEYB->Get_KS() & 0x40);
+    if (! Japan) PUT_BIT(data,7,pKEYB->Get_KS() & 0x40);
 
-	return (IO_A);
+    return (data);
 }
 
 BYTE	Cpc1350::Get_PortB(void)

@@ -10,10 +10,10 @@
 class Cpc2500:public Cpc1350{						//PC1350 emulator main class
 
 public:
-    BYTE	Get_PortA(void);
+    virtual BYTE	Get_PortA(void);
 //    BYTE	Get_PortB(void);
 //    void	Set_PortB(BYTE data);
-    void	Set_PortF(BYTE data);
+    virtual void	Set_PortF(BYTE);
     virtual BYTE    Get_PC(DWORD adr);
     virtual WORD    Get_16rPC(DWORD adr);
 
@@ -22,7 +22,7 @@ public:
 //    virtual void	initExtension(void);
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);
-    bool	run(void);				// emulator main
+    virtual bool	run(void);				// emulator main
     virtual bool	init(void);
     virtual void resizeEvent ( QResizeEvent * );
     virtual void UpdateFinalImage(void);
@@ -60,12 +60,6 @@ public:
         pce515p     = new Cce515p(this);
         pce515p->pTIMER = pTIMER;
 
-
-        this->initExtension();
-        extensionArray[0] = ext_11pins;
-        extensionArray[1] = ext_MemSlot1;
-        extensionArray[2] = ext_Serial;
-
         Pc_DX_mm = 182;
         Pc_DY_mm = 72;
         Pc_DZ_mm = 16;
@@ -93,8 +87,8 @@ public:
     {								//[constructor]
     }
 private:
-bool printMode;
-bool capslock;
+    bool printMode;
+    bool capslock;
 };
 
 #endif // PC2500_H
