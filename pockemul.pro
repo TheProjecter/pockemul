@@ -114,7 +114,9 @@ HEADERS += src/core/Connect.h \
     src/machine/ce515p.h \
     src/machine/pc1421.h \
     src/machine/pc1280.h \
-    src/core/Keyb1280.h
+    src/core/Keyb1280.h \
+    src/core/qhexedit.h \
+    src/core/qhexedit_p.h
 INCLUDEPATH += . \
     C:\Users\Remy\dev\fmodapi375win/api/inc \
     src/core \
@@ -237,7 +239,9 @@ SOURCES += src/core/Connect.cpp \
     src/machine/pc2500.cpp \
     src/machine/ce515p.cpp \
     src/machine/pc1421.cpp \
-    src/machine/pc1280.cpp
+    src/machine/pc1280.cpp \
+    src/core/qhexedit.cpp \
+    src/core/qhexedit_p.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
