@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/PC1425">
+        <file>pc1425/pc-1425.jpg</file>
+    </qresource>
+</RCC>

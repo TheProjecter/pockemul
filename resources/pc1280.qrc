@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/PC1280">
+        <file>pc1280/pc-1280.jpg</file>
+        <file>pc1280/1280lcd.jpg</file>
+        <file>pc1280/1280symb.jpg</file>
+        <file>pc1280/b0-1280.rom</file>
+        <file>pc1280/b1-1280.rom</file>
+        <file>pc1280/b2-1280.rom</file>
+        <file>pc1280/b3-1280.rom</file>
+        <file>pc1280/b4-1280.rom</file>
+        <file>pc1280/b5-1280.rom</file>
+        <file>pc1280/b6-1280.rom</file>
+        <file>pc1280/b7-1280.rom</file>
+        <file>pc1280/cpu-1280.rom</file>
+        <file>pc1280/pc-1280.png</file>
+        <file>pc1280/1280lcd.png</file>
+        <file>pc1280/1280symb.png</file>
+    </qresource>
+</RCC>
