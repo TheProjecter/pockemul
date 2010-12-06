@@ -54,6 +54,8 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     connect(actionLog_Messages,		SIGNAL(triggered()), this, SLOT(Log()));
  	connect(actionAnalogic_Port,	SIGNAL(triggered()), this, SLOT(Analogic()));    
  	connect(actionCheck_for_Updates,SIGNAL(triggered()), this, SLOT(CheckUpdates()));    
+    connect(actionMinimize_All,     SIGNAL(triggered()), this, SLOT(Minimize_All()));
+    connect(menuPockets, SIGNAL(triggered( QAction *)), this, SLOT(SelectPocket( QAction *)));
 
 	pdirectLink = new CDirectLink;
  
@@ -157,6 +159,10 @@ int MainWindowPockemul::newsession()
  		else
  		{
  			listpPObject.append(newpPC);
+
+            QAction * actionDistConn = menuPockets->addAction(newpPC->getName());
+            actionDistConn->setData(tr("%1").arg((long)newpPC));
+
 		}
 
 	}
@@ -164,6 +170,32 @@ int MainWindowPockemul::newsession()
 		QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
 
 	return 1;
+}
+
+void MainWindowPockemul::Minimize_All() {
+    // Fetch listpPObject and minimize if not minimized
+    for (int k = 0; k < listpPObject.size(); k++)
+    {
+        CPObject *pc = listpPObject.at(k);
+        if (pc->isFront()) {
+            QMouseEvent *m = 0;
+            pc->mouseDoubleClickEvent(m);
+        }
+    }
+
+}
+
+void MainWindowPockemul::SelectPocket(QAction * action) {
+    if (action->data().isNull()) return;
+
+    CPObject *pc = (CPObject*) action->data().toString().toULongLong();
+    pc->raise();
+    pc->setFocus();
+    if (!pc->isFront()) {
+        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonDblClick, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(pc, e);
+        delete e;
+    }
 }
 
 void MainWindowPockemul::about()

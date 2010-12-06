@@ -2,7 +2,7 @@
 
 #include "dialogdump.h"
 #include "hexviewer.h"
-#include "qhexedit.h"
+//#include "qhexedit.h"
 #include "common.h"
 #include "pcxxxx.h"
 #include "slot.h"

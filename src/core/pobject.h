@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QPoint>
 #include <QImage>
+#include <QMenu>
 
 #include "common.h"
 
@@ -108,8 +109,9 @@ public:
 	bool	Power;
     virtual void Reset() {}
     void    SwitchFrontBack(QPoint);
+    bool    isFront() {return Front;}
 		
-protected:
+public:
 
 	void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *event);

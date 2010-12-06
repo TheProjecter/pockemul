@@ -46,6 +46,8 @@ private slots:
 	void Log();
 	void Analogic();
 	void CheckUpdates();
+    void Minimize_All();
+    void SelectPocket(QAction *);
 	int  newsession();
 	void opensession();
 	void updateTimer();

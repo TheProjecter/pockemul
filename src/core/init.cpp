@@ -173,7 +173,7 @@ void CPocketThread::run()
 				i--;
 				emit Destroy(pPC);
 			}
-		}
+        }
 		if (pause) usleep(1);	
 	}
 }

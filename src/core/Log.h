@@ -19,6 +19,8 @@
 
 //extern void AddLog(int ,QString);
 #include "dialoglog.h"
+#include "mainwindowpockemul.h"
+extern MainWindowPockemul *mainwindow;
 
 #define AddLog(Level,msg); 	\
     { \

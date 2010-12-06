@@ -6,6 +6,10 @@
 #include "pcxxxx.h"
 #include "init.h"
 #include "Log.h"
+#include "mainwindowpockemul.h"
+
+extern MainWindowPockemul *mainwindow;
+
 #define TIMER_RES 30
 
 

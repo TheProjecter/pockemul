@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "paperwidget.h"
+#include "cprinter.h"
 #include "Log.h"
 
 void CpaperWidget::setOffset(QPoint val)

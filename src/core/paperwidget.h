@@ -1,8 +1,8 @@
 #ifndef _PAPERWIDGET_H
 #define _PAPERWIDGET_H
 
-#include "cprinter.h"
-
+//#include "cprinter.h"
+#include "pobject.h"
 
 class CpaperWidget:public QWidget{
 Q_OBJECT
