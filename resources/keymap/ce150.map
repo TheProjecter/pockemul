@@ -1,0 +1,7 @@
+<!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
+<model>ce150</model>
+<Keyboard>
+    <KEY description="PRINT" height="16" left="551" scancode="0xc0" top="276" width="25"/>
+    <KEY description="FEED" height="32" left="304" scancode="0xc1" top="42" width="30"/>
+</Keyboard>
+</KEYBMAP>

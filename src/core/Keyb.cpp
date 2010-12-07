@@ -159,6 +159,12 @@ bool Ckeyb::init(void)
 
 	if (result) return true;
 
+    // Else load from ressource
+    QFile fileRes(":/KEYMAP/keymap/"+fn_KeyMap);
+    QXmlInputSource sourceRes(&fileRes);
+    result = reader.parse(sourceRes);
+    if (result) return true;
+
 	// else load the struct
 	for (int i = 0;i < pPC->KeyMapLenght;i++)
 	{

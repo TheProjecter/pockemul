@@ -157,7 +157,8 @@ RESOURCES += resources/ext.qrc \
     resources/pc1421.qrc \
     resources/pc1425.qrc \
     resources/pc1460.qrc \
-    resources/pc1280.qrc
+    resources/pc1280.qrc \
+    resources/keymap.qrc
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
     src/core/Debug.cpp \
@@ -252,3 +253,18 @@ win32 {
     debug:OBJECTS_DIR += build/o/win32-debug
     release:OBJECTS_DIR += build/o/win32-release
 }
+
+OTHER_FILES += \
+    resources/keymap/trspc2.map \
+    resources/keymap/pc2500.map \
+    resources/keymap/pc1600.map \
+    resources/keymap/pc1500.map \
+    resources/keymap/pc1450.map \
+    resources/keymap/pc1403.map \
+    resources/keymap/pc1401.map \
+    resources/keymap/pc1360.map \
+    resources/keymap/pc1350.map \
+    resources/keymap/pc1280.map \
+    resources/keymap/pc1250.map \
+    resources/keymap/ce1600p.map \
+    resources/keymap/ce150.map
