@@ -57,7 +57,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     connect(actionMinimize_All,     SIGNAL(triggered()), this, SLOT(Minimize_All()));
     connect(menuPockets, SIGNAL(triggered( QAction *)), this, SLOT(SelectPocket( QAction *)));
 
-	pdirectLink = new CDirectLink;
+    pdirectLink = new CDirectLink;
  
 #ifndef NO_SOUND
 	FSOUND_Init(44100, 32, 0); 
@@ -89,21 +89,21 @@ void MainWindowPockemul::SendSignal_AddLogItem(QString str) { emit AddLogItem(st
 
 void MainWindowPockemul::slotUnLink(Cconnector * conn) {
     int i;
-    for ( i = 0 ; i< pdirectLink->AConnList.size() ; i++)
+    for ( i = 0 ; i< mainwindow->pdirectLink->AConnList.size() ; i++)
     {
-        if (pdirectLink->AConnList.at(i) == conn)
+        if (mainwindow->pdirectLink->AConnList.at(i) == conn)
         {
-            pdirectLink->AConnList.removeAt(i);
-            pdirectLink->BConnList.removeAt(i);
+            mainwindow->pdirectLink->AConnList.removeAt(i);
+            mainwindow->pdirectLink->BConnList.removeAt(i);
             i--;
         }
     }
-    for ( i = 0 ; i< pdirectLink->BConnList.size() ; i++)
+    for ( i = 0 ; i< mainwindow->pdirectLink->BConnList.size() ; i++)
     {
-        if (pdirectLink->BConnList.at(i) == conn)
+        if (mainwindow->pdirectLink->BConnList.at(i) == conn)
         {
-            pdirectLink->AConnList.removeAt(i);
-            pdirectLink->BConnList.removeAt(i);
+            mainwindow->pdirectLink->AConnList.removeAt(i);
+            mainwindow->pdirectLink->BConnList.removeAt(i);
             i--;
         }
     }
@@ -142,8 +142,8 @@ void MainWindowPockemul::slotNewLink(QAction * action)
 	Cconnector * p1 = (Cconnector*)l1;
 	Cconnector * p2 = (Cconnector*)l2;
 	
-	pdirectLink->AConnList.append(p1);
-	pdirectLink->BConnList.append(p2);
+    mainwindow->pdirectLink->AConnList.append(p1);
+    mainwindow->pdirectLink->BConnList.append(p2);
 	
 	AddLog(LOG_MASTER,tr("DirectLink Iinsert (%1,%2)").arg((qint64)p1).arg((qint64)p2));
 }

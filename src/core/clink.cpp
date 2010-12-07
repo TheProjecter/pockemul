@@ -2,15 +2,19 @@
 #include "clink.h"
 #include "Log.h"
 
+CDirectLink::CDirectLink(void) {
+
+}
+
 // Return the first connected object found
 CPObject * CDirectLink::findObj(CPObject * search)
 {
 	for (int i = 0;i < search->ConnList.size(); i++)
  	{
- 		int found = AConnList.indexOf(search->ConnList.at(i));
- 		if (found >= 0)	return BConnList.at(found)->Parent;
-		found = BConnList.indexOf(search->ConnList.at(i));
- 		if (found >= 0)	return AConnList.at(found)->Parent;
+        int found = AConnList.indexOf(search->ConnList.at(i));
+        if (found >= 0)	return BConnList.at(found)->Parent;
+        found = BConnList.indexOf(search->ConnList.at(i));
+        if (found >= 0)	return AConnList.at(found)->Parent;
 
 	}
 	return 0;
@@ -70,43 +74,31 @@ void CDirectLink::outConnector(Cconnector* search)
 	
 	// Search the connector in List A
 	int found = AConnList.indexOf(search);
-	if ( found >= 0 )
-		{
-			Cconnector *foundConnector = BConnList.at(found);
+    Cconnector *foundConnector;
+    if ( found >= 0 ) {
+        foundConnector = BConnList.at(found);
+    }
+    else { 	// Search the connector in List B
+        found = BConnList.indexOf(search);
+        if ( found >= 0 ) {
+            foundConnector = AConnList.at(found);
+        }
+    }
+    if ( found >= 0 ) {
+        foundConnector->ConnectTo(search);
 
-			foundConnector->ConnectTo(search);
-
-			// start the corresponding pPC if no frequency
-			if ( (foundConnector->Parent->getfrequency() == 0 ) && 
-				 (! inlogrun(foundConnector->Parent) ))
-			{
+        // start the corresponding pPC
+        // if no frequency link to the parent timer
+        if ( (foundConnector->Parent->getfrequency() == 0 ) &&
+             (! inlogrun(foundConnector->Parent) ))
+        {
 //				AddLog(LOG_TEMP,tr("Connector Chain with %1").arg(BConnList.at(found)->Parent->getName()));
-				foundConnector->Parent->pTIMER = search->Parent->pTIMER;
-                foundConnector->Parent->run();
-				insertlog(foundConnector->Parent);
-				Output( foundConnector->Parent );
-			}
-		}
-	else
-	{	// Search the connector in List B
-		found = BConnList.indexOf(search);
-		if ( found >= 0 )
-			{
-				Cconnector *foundConnector = AConnList.at(found);
-				foundConnector->ConnectTo(search);
-				// start he corresponding pPC if no frequency
-				if ((foundConnector->Parent->getfrequency() == 0 )  && 
-					(! inlogrun(foundConnector->Parent) ))
-				{
-//					AddLog(LOG_TEMP,tr("Connector Chain with %1").arg(AConnList.at(found)->Parent->getName()));
-					foundConnector->Parent->pTIMER = search->Parent->pTIMER;
-					foundConnector->Parent->run();
-					insertlog(foundConnector->Parent);
-					Output( foundConnector->Parent );
-				}
-//				AddLog(LOG_MASTER,"DirectLink OUT found");
-			}
-	}
+            foundConnector->Parent->pTIMER = search->Parent->pTIMER;
+            foundConnector->Parent->run();
+            insertlog(foundConnector->Parent);
+            Output( foundConnector->Parent );
+        }
+    }
 }
 
 

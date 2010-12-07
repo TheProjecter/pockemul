@@ -6,12 +6,6 @@
 #include "Inter.h"
 #include "Keyb.h"
 
-#define PLAY	0x01
-#define STOP	0x02
-#define LOAD	0x04
-#define EJECT	0x08
-#define RECORD	0x10
-
 
 #define BIT_0           8
 #define BIT_1           16
@@ -27,8 +21,7 @@ typedef unsigned char    u_char;    //  8 bits
 typedef unsigned short   u_short;   // 16 bits
 typedef unsigned long    u_long;    // 32 bits
 
-
-
+enum TAPEmode {PLAY,STOP,LOAD,EJECT,RECORD};
 
 class Cce152:public CPObject{
 
@@ -64,7 +57,7 @@ typedef struct {
 
 
 
-	int		mode;
+    TAPEmode mode;
 	bool	paused;
 	
 	int		getTapeCounter(void);
@@ -79,6 +72,9 @@ typedef struct {
 	virtual void ComputeKey(void);
 	
     Cce152(CPObject *parent = 0);
+    ~Cce152() {
+        StopPlay();
+    }
 
 protected slots:
 	int		Play(void);
@@ -114,7 +110,7 @@ protected:
 	void	CvStringIToShort (char*    ptrStr,u_short* ptrVal);
 	void	CvStringIToLong (char*   ptrStr,u_long* ptrVal);
 	void	CvShortToStringI (u_short value,char*   ptrStr);
-	void	CvLongToStringI (u_long value,char*  ptrStr);
+    void	CvLongToStringI (u_long value,unsigned char*  ptrStr);
 };
 
 

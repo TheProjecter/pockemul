@@ -27,17 +27,17 @@ public:
 	void	TurnON(void);
 
 	
-	bool	Set_Connector(void);
-	bool	Get_Connector(void);
-	BYTE	Get_PortA(void);
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+    virtual BYTE	Get_PortA(void);
 	virtual BYTE	Get_PortB(void);
 
 	bool	InitDisplay(void);
 	bool	CompleteDisplay(void);
 
 	bool	Mem_Mirror(DWORD *d);
-	bool	Chk_Adr(DWORD *d,DWORD data);
-	bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
     UINT8 in(UINT8 address){return(1);};
     UINT8 out(UINT8 address,UINT8 value){return(1);};
 

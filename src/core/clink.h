@@ -4,36 +4,42 @@
 #include "pobject.h"
 #include "Connect.h"
 
-
 class CDirectLink:public QObject
 {
 public:
 	
-	QList<Cconnector*> AConnList;
-	QList<Cconnector*> BConnList;
+    CDirectLink(void);
+
+    QList<Cconnector*> AConnList;
+    QList<Cconnector*> BConnList;
 	
-	CPObject * log_run[100];
-	int indx_log_object_run;
+    QList<CPObject *> log_run;
+
 	
-	void outConnector(Cconnector* search);
-	void Output(CPObject* pPC);
+    void outConnector(Cconnector* search);
+    void Output(CPObject* pPC);
 	
-	CPObject * findObj(CPObject *);
-	void findAllObj(CPObject *, QList<CPObject *> *);
-	bool isLinked(CPObject *);
+    CPObject * findObj(CPObject *);
+    void findAllObj(CPObject *, QList<CPObject *> *);
+    bool isLinked(CPObject *);
 	
 	
-	void clearlog(void){indx_log_object_run=0;}
-	void insertlog(CPObject * pPC){
-		log_run[indx_log_object_run] = pPC;
-		indx_log_object_run++;
+    void clearlog(void) {
+        log_run.clear();
+        //indx_log_object_run=0;
+    }
+    void insertlog(CPObject * pPC){
+        log_run.append(pPC);
+        //log_run[indx_log_object_run] = pPC;
+        //indx_log_object_run++;
 	}
-	bool inlogrun(CPObject * pPC){
-		for (int i=0; i<indx_log_object_run;i++)
-		{
-			if (log_run[indx_log_object_run] == pPC) return true;
-		}
-		return false;
+    bool inlogrun(CPObject * pPC){
+        return log_run.contains(pPC);
+//		for (int i=0; i<indx_log_object_run;i++)
+//		{
+//			if (log_run[indx_log_object_run] == pPC) return true;
+//		}
+//		return false;
 	}
 };
 

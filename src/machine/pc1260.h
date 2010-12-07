@@ -7,9 +7,9 @@ class Cpc1260:public Cpc1250{
 public:
     const char*	GetClassName(){ return("Cpc1260");};
 
-	BYTE	Get_PortB(void);
+    virtual BYTE	Get_PortB(void);
 
-	bool	Chk_Adr(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr(DWORD *d,DWORD data);
 
 	Cpc1260(CPObject *parent = 0)	: Cpc1250(this)
 	{								//[constructor]

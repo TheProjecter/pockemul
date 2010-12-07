@@ -160,6 +160,7 @@ void CPocketThread::run()
 					// WRITE the LINK BOX Connector
                     mainwindow->pdirectLink->clearlog();
                     mainwindow->pdirectLink->Output(pPC);
+
 					pause = false;
 				}
 				if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->captureData();

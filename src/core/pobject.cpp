@@ -316,7 +316,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	// NO KEY CLICK Global pobject drag mode
 
 	CPObject * ConnectedObj = 0;						// bring the Widget in front
-	if (ConnectedObj=mainwindow->pdirectLink->findObj(this))		// Is this object connected to another ?
+    if (ConnectedObj=mainwindow->pdirectLink->findObj(this))		// Is this object connected to another ?
 	{
 		if (stackBehind)				// Is this object always behind the connected one ?
 		{
@@ -366,7 +366,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 		// Search all conected objects then move them
 		QList<CPObject *> ConList;
 		ConList.append(this);
-		mainwindow->pdirectLink->findAllObj(this,&ConList);
+        mainwindow->pdirectLink->findAllObj(this,&ConList);
 		for (int i=0;i<ConList.size();i++)
 		{
 			ConList.at(i)->Move(delta);
@@ -406,12 +406,12 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	// if a connector is free
 	// if an object with free connector is "near"
 	// propose to autolink
-	if (! mainwindow->pdirectLink->isLinked(this))
+    if (! mainwindow->pdirectLink->isLinked(this))
 	{
 		for (int k = 0; k < listpPObject.size(); k++)
 		{
 			if ( (listpPObject.at(k) != this) && 
-				!mainwindow->pdirectLink->isLinked(listpPObject.at(k)) &&
+                !mainwindow->pdirectLink->isLinked(listpPObject.at(k)) &&
 				(RangeFrom(listpPObject.at(k)) < SNAPRANGE) )
 			{
 				// Propose to Autolink
@@ -423,8 +423,8 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	        	case 0: // The user clicked the Yes again button or pressed Enter
 	            // try again
 					Move(listpPObject.at(k)->pos() + listpPObject.at(k)->SnapPts - pos() - SnapPts);
-					mainwindow->pdirectLink->AConnList.append(ConnList.at(0));
-					mainwindow->pdirectLink->BConnList.append(listpPObject.at(k)->ConnList.at(0));
+                    mainwindow->pdirectLink->AConnList.append(ConnList.at(0));
+                    mainwindow->pdirectLink->BConnList.append(listpPObject.at(k)->ConnList.at(0));
 
 	        	    break;
 	        	case 1: // The user clicked the No or pressed Escape

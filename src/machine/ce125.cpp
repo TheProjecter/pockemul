@@ -15,7 +15,7 @@ void Cce125tape::ComputeKey(void)
 {
 	if (pKEYB->LastKey == K_PLAY) 
 		{
-			if (mode = LOAD)
+            if (mode == LOAD)
 				{
 					BackGroundFname	= ":/EXT/ext/ce-125play.jpg";
 					InitDisplay();

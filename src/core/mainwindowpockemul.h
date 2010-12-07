@@ -32,7 +32,7 @@ public:
 	
 	QTimer *FrameTimer;
 
-	CDirectLink		*pdirectLink;
+    CDirectLink		*pdirectLink;
 	void SendSignal_AddLogItem(QString str);
 
     void slotUnlink(CPObject *);
