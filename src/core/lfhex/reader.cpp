@@ -159,15 +159,15 @@ size_t Reader::read(vector<uchar>& v, size_t numBytes)
   // copy the data a page at a time
   for(int page = _offset/_pageSize; page <= lastPageIdx; page++) {
     // ensure the page is loaded.
-    try {
-      loadPage( page );
-    } 
-    catch (bad_alloc){
-      // out of memory
-      _error = "Out of memory.";
-      // return the number of bytes read
-      return (_offset/_pageSize - page)*_pageSize;
-    }
+//    try {
+//      loadPage( page );
+//    }
+//    catch (bad_alloc){
+//      // out of memory
+//      _error = "Out of memory.";
+//      // return the number of bytes read
+//      return (_offset/_pageSize - page)*_pageSize;
+//    }
 
     int start = _offset%_pageSize;
     int stop  = (page == lastPageIdx)? start+numBytes: _pageSize;
@@ -275,17 +275,17 @@ bool Reader::freePage(off_t pageIdx)
 
 uchar Reader::operator[] (off_t offset)
 {
-  if( !is_open() )
-    throw logic_error("Reader::operator[] - attempt to access non-open file.");
-  if( offset < 0 )
-    throw out_of_range("Reader::operator[] - "
-		       "attempt to access negative offset.");
-  if( offset >= size() ) 
-    throw out_of_range("Reader::operator[] - "
-		       "attempt to access past end of file");
+//  if( !is_open() )
+    //throw logic_error("Reader::operator[] - attempt to access non-open file.");
+//  if( offset < 0 )
+    //throw out_of_range("Reader::operator[] - "
+//		       "attempt to access negative offset.");
+//  if( offset >= size() )
+    ///throw out_of_range("Reader::operator[] - "
+//		       "attempt to access past end of file");
 
   off_t page_idx = offset/_pageSize;
-  assert( loadPage( page_idx ) );
+  //assert( loadPage( page_idx ) );
   return _data[page_idx][ offset%_pageSize ];
 }
 

@@ -242,45 +242,45 @@ void HexEditor::setFont(const QFont& font )
 // set the top left editor to offset in reader
 void HexEditor::setTopLeft( off_t offset )
 {
-  static bool inTopLeft;
-  if( inTopLeft ) {
-     // don't nest
-     return;
-  }
-  inTopLeft = true;
-  try {
-     if( offset < 0 ) {
-	_topLeft = 0;
-     } else if( offset > _reader.size() ) {
-	_topLeft = _reader.size();
-     } else {
-	_topLeft = offset;
-     }
-     // only let _topLeft be an integer multiple of the line length (round down)
-     _topLeft = (_topLeft/bytesPerLine()) * bytesPerLine();
-     // update the labels
-     //  setOffsetLabels(_topLeft);
+//  static bool inTopLeft;
+//  if( inTopLeft ) {
+//     // don't nest
+//     return;
+//  }
+//  inTopLeft = true;
+//  try {
+//     if( offset < 0 ) {
+//	_topLeft = 0;
+//     } else if( offset > _reader.size() ) {
+//	_topLeft = _reader.size();
+//     } else {
+//	_topLeft = offset;
+//     }
+//     // only let _topLeft be an integer multiple of the line length (round down)
+//     _topLeft = (_topLeft/bytesPerLine()) * bytesPerLine();
+//     // update the labels
+//     //  setOffsetLabels(_topLeft);
      
-     const Delta * delta;
+//     const Delta * delta;
      
-     _reader.seek(_topLeft);
-     _reader.read(_data,bytesPerPage());
+//     _reader.seek(_topLeft);
+//     _reader.read(_data,bytesPerPage());
      
-     // update data from delta map
-     for( offset = _delta.lower_bound(_topLeft); 
-	  (offset != -1) && (offset < _topLeft + bytesPerPage());
-	  offset = _delta.lower_bound(offset) ) {
-	delta = _delta.search(offset);
-	_data[offset++-_topLeft] = delta->newData()[0];
-     }
+//     // update data from delta map
+//     for( offset = _delta.lower_bound(_topLeft);
+//	  (offset != -1) && (offset < _topLeft + bytesPerPage());
+//	  offset = _delta.lower_bound(offset) ) {
+//	delta = _delta.search(offset);
+//	_data[offset++-_topLeft] = delta->newData()[0];
+//     }
      
-     repaint();
-     emit topLeftChanged(_topLeft);
-  } catch( const exception &e ) {
-     inTopLeft = false;
-     throw e;
-  }
-  inTopLeft = false;
+//     repaint();
+//     emit topLeftChanged(_topLeft);
+//  } catch( const exception &e ) {
+//     inTopLeft = false;
+//     throw e;
+//  }
+//  inTopLeft = false;
 }
 
 //void HexEditor::setOffsetLabels( off_t topLeft )

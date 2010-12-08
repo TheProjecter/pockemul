@@ -61,7 +61,7 @@ off_t Cursor::decrByChar( off_t n )
   
   if ( charDelta > _charOffset ) {
     if( byteDelta == MAX_OFFSET ) {
-      throw out_of_range("Cursor decriment underflowed.\n");
+      //throw out_of_range("Cursor decriment underflowed.\n");
     }
     byteDelta++;
   }
@@ -87,7 +87,7 @@ off_t Cursor::incrByChar( off_t n )
   if ( charDelta + _charOffset >= _charsPerByte ) {
     // Note: this cannot overflow unless chars perbyte == 1
     if (  byteDelta == MAX_OFFSET ) {
-      throw out_of_range("Cursor increment exceeded maximum offset.\n");
+      //throw out_of_range("Cursor increment exceeded maximum offset.\n");
     }
     byteDelta++;
   }
@@ -103,7 +103,7 @@ off_t Cursor::incrByChar( off_t n )
 off_t Cursor::incrByByte( off_t byteDelta )
 {
   if ( byteDelta > MAX_OFFSET - _byteOffset ) {
-    throw out_of_range("Cursor increment exceeded maximum offset.\n");
+    //throw out_of_range("Cursor increment exceeded maximum offset.\n");
   }
   if ( _byteOffset + byteDelta >= _high ) 
     return OutOfRange;

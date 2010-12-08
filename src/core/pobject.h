@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QImage>
 #include <QMenu>
+#include <QAudioOutput>
 
 #include "common.h"
 
@@ -91,6 +92,7 @@ public:
 	BYTE	LastKey;
     int     zoom;
 	
+
 	virtual int initsound();
 	virtual int exitsound();
 	void fillSoundBuffer(BYTE val);
@@ -100,6 +102,13 @@ public:
 #endif
     QList<unsigned char> soundBuffer;
 	
+    QAudioDeviceInfo* m_device;
+    QAudioFormat    m_format;
+    QAudioOutput*   m_audioOutput;
+    QIODevice*      m_output;
+    int DataFrequencyHz;
+    int BufferSize;
+
 	DialogKeyList	*dialogkeylist;
     DialogDump		*dialogdump;
 
@@ -124,6 +133,7 @@ public:
 	void focusOutEvent ( QFocusEvent * event ); 
 	
 private slots:
+    void audioStateChanged(QAudio::State state);
 	void contextMenuEvent ( QContextMenuEvent * event );
 	void slotExit();
 	void KeyList();

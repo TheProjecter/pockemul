@@ -129,8 +129,42 @@ bool CPObject::exit()
 #define SAMPLERATE 8000
 #define BUFFLEN 500
 
+void CPObject::audioStateChanged(QAudio::State state)
+{
+    if (state == QAudio::IdleState) {
+
+    }
+    //qWarning() << "state = " << state;
+}
+
 int CPObject::initsound()
 {
+    int DataFrequencyHz = 8000;
+    int BufferSize      = 800;
+
+    QAudioDeviceInfo m_device(QAudioDeviceInfo::defaultOutputDevice());
+    m_format.setFrequency(DataFrequencyHz);
+    m_format.setChannels(1);
+    m_format.setSampleSize(8);
+    m_format.setCodec("audio/pcm");
+    m_format.setByteOrder(QAudioFormat::LittleEndian);
+    m_format.setSampleType(QAudioFormat::SignedInt);
+
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    if (!info.isFormatSupported(m_format)) {
+        qWarning() << "Default format not supported - trying to use nearest";
+        m_format = info.nearestFormat(m_format);
+    }
+    //delete m_audioOutput;
+    m_audioOutput = 0;
+    m_audioOutput = new QAudioOutput(m_device, m_format, this);
+    //connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
+    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(audioStateChanged(QAudio::State)));
+    m_audioOutput->setBufferSize(BufferSize);
+
+    m_output = m_audioOutput->start();
+    int p = m_audioOutput->periodSize();
+    qWarning()<<p;
 #ifndef NO_SOUND
 	unsigned int mode;
 	int lenbytes;
@@ -188,6 +222,7 @@ signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream,
 
 void CPObject::fillSoundBuffer(BYTE val)
 {
+    static QByteArray buff;
 	qint64 new_state,delta_state;
 	 
 	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
@@ -203,7 +238,12 @@ void CPObject::fillSoundBuffer(BYTE val)
         mainwindow->audioMutex.lock();
         while (delta_state >= wait)
         {
-            if (soundBuffer.size() < BUFFLEN) soundBuffer.append(val);
+            buff.append(val);
+            if (buff.size() >= m_audioOutput->periodSize()) {
+                m_output->write(buff);
+                buff.clear();
+            }
+            //if (soundBuffer.size() < BUFFLEN) soundBuffer.append(val);
             fillSoundBuffer_old_state += wait;
             delta_state -= wait;
         }
@@ -213,6 +253,15 @@ void CPObject::fillSoundBuffer(BYTE val)
 
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    // Check if we clic a key
+    QPoint pts(event->x() , event->y());
+    if ((pKEYB) &&(pKEYB->KeyClick(pts))) {
+        // Send thee mouseclick event twice
+        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, pts, Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(this, e);
+        delete e;
+        return;
+    }
 #if 1
 
 

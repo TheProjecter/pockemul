@@ -18,11 +18,11 @@ public:
     const char*	GetClassName(){ return("Cpc1450");};
 
 
-	void	initExtension(void);
-	BYTE	Get_PortA(void);
+    virtual void	initExtension(void);
+    virtual BYTE	Get_PortA(void);
 
-	bool	Chk_Adr(DWORD *d,DWORD data);
-	bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
     UINT8	in(UINT8 address){return(1);};
     UINT8 out(UINT8 address,UINT8 value){return(1);};
 	
@@ -71,7 +71,7 @@ public:
 		Lcd_Symb_DX	= 196;
 		Lcd_Symb_DY	= 35;
 		
-		initExtension();
+        //initExtension();
 	}
 
 	~Cpc1450()

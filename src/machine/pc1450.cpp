@@ -16,9 +16,9 @@
 
 void	Cpc1450::initExtension(void)
 {
-	
+    ext_MemSlot1 = new CExtensionArray("Memory Slot 1","Add memory credit card");
 	// Add possible memory card to ext_MemSlot1
-	ext_MemSlot1->setAvailable(ID_CE210M,true);
+    ext_MemSlot1->setAvailable(ID_CE210M,true); ext_MemSlot1->setChecked(ID_CE202M,true);
 	ext_MemSlot1->setAvailable(ID_CE211M,true);
 	ext_MemSlot1->setAvailable(ID_CE212M,true);
 	ext_MemSlot1->setAvailable(ID_CE2H16M,true);
@@ -26,6 +26,10 @@ void	Cpc1450::initExtension(void)
 	ext_MemSlot1->setAvailable(ID_CE2H64M,true);
 	
 	addExtMenu(ext_MemSlot1);
+
+    extensionArray[0] = ext_11pins;
+    extensionArray[1] = ext_MemSlot1;
+    extensionArray[2] = ext_Serial;
 }
 
 BYTE	Cpc1450::Get_PortA(void)
