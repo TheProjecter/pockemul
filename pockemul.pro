@@ -267,4 +267,5 @@ OTHER_FILES += \
     resources/keymap/pc1280.map \
     resources/keymap/pc1250.map \
     resources/keymap/ce1600p.map \
-    resources/keymap/ce150.map
+    resources/keymap/ce150.map \
+    resources/pockemul/release_notes.html

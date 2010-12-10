@@ -12,7 +12,7 @@ public:
 	bool	Chk_Adr(DWORD *d,DWORD data);
 
 
-	Cpc1255(CPObject *parent = 0)	: Cpc1250(this)
+    Cpc1255(CPObject *parent = 0)	: Cpc1250(parent)
 	{								//[constructor]
 		setcfgfname("pc1255");
 

@@ -67,7 +67,7 @@ public:
 		SessionHeaderLen= 9;
 		Initial_Session_Fname ="trspc3.pkm";
 
-		BackGroundFname	= ":/PC1250/pc1250/trspc3.png";
+        BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
 	}
 
 

@@ -40,5 +40,21 @@ public:
 private:
 };
 
+class Ctrspc3Ext:public Cpc1251{						//PC1250 emulator main class
+public:
+
+    Ctrspc3Ext(CPObject *parent = 0)	: Cpc1251(this)
+    {								//[constructor]
+        setcfgfname("trspc3ext");
+
+        SessionHeader	= "TRSPC3EXTPKM";
+        SessionHeaderLen= 12;
+        Initial_Session_Fname ="trspc3ext.pkm";
+
+        BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
+    }
+
+
+};
 
 #endif

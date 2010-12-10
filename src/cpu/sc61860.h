@@ -145,8 +145,8 @@ public:
 		op_local_counter = 0;
 	};
 private:
-	long	div500;
-	long	div2;
+    bool	div500;
+    bool	div2;
 	bool	Xin,Xout;
 	FILE	*fp_status;		//pointer to status file
 
@@ -157,6 +157,7 @@ private:
 	void	Set_i16(BYTE adr,WORD d);			//Set i-mem 16bits
 
 	void	compute_xout(void);
+    void    backgroundTasks(void);
 	qint64	start2khz;
 	qint64	start4khz;
 	
@@ -320,9 +321,9 @@ private:
 	SCREG	reg;				// register structure
 
 
-	long ticks;
-	long ticks2;
-    long ticksReset;
+    qint64 ticks;
+    qint64 ticks2;
+    qint64 ticksReset;
 	BYTE power_on;
 	BYTE disp_on;
 

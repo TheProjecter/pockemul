@@ -8,10 +8,10 @@
 #include	"Keyb.h"
 #include	"Log.h"
  
-Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(this)
+Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-	setfrequency( (int) 576000/3);
-	setcfgfname(QString("pc1250"));
+    setfrequency( (int) 576000/3);
+    setcfgfname(QString("pc1250"));
 
 	SessionHeader	= "PC1250PKM";
 	SessionHeaderLen= 9;

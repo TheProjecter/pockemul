@@ -19,7 +19,7 @@ class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
 public:
-    QMutex audioMutex;
+    QMutex audioMutex,analogMutex;
 
 	MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
 	void setZoom(int );

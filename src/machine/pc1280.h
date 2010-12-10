@@ -37,7 +37,7 @@ public:
 
         SlotList.clear();
         SlotList.append(CSlot(8 , 0x0000 ,	":/PC1280/pc1280/cpu-1280.rom"	, "pc-1280/cpu-1280.rom" , ROM , "CPU ROM"));
-        SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1280/R1-1280.ram" , ROM , "RAM"));
+        SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1280/R1-1280.ram" , RAM , "RAM"));
         SlotList.append(CSlot(16, 0x4000 ,	":/PC1280/pc1280/b0-1280.rom"	, "pc-1280/b0-1280.rom" , ROM , "BANK 1"));
         SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1280/R2-1280.ram" , RAM , "RAM"));
         SlotList.append(CSlot(16, 0x10000 ,	":/PC1280/pc1280/b0-1280.rom"	, "pc-1280/b0-1280.rom" , ROM , "BANK 1"));

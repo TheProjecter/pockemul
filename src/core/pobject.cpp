@@ -238,12 +238,16 @@ void CPObject::fillSoundBuffer(BYTE val)
         mainwindow->audioMutex.lock();
         while (delta_state >= wait)
         {
+#if 0
             buff.append(val);
             if (buff.size() >= m_audioOutput->periodSize()) {
                 m_output->write(buff);
                 buff.clear();
             }
-            //if (soundBuffer.size() < BUFFLEN) soundBuffer.append(val);
+#else
+            //if (soundBuffer.size() < BUFFLEN)
+                soundBuffer.append(val);
+#endif
             fillSoundBuffer_old_state += wait;
             delta_state -= wait;
         }

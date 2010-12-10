@@ -10,8 +10,8 @@ public:
     const char*	GetClassName(){ return("Ccable");};
 
 		
-	Cconnector	*pCONNECTOR_A;
-	Cconnector	*pCONNECTOR_B;
+    Cconnector	*pCONNECTOR_A;  qint64 pCONNECTOR_A_value;
+    Cconnector	*pCONNECTOR_B;  qint64 pCONNECTOR_B_value;
 
 	bool run(void);
 	bool init(void);				//initialize
@@ -21,8 +21,8 @@ public:
 	{							//[constructor]
 		
 		
-        pCONNECTOR_A = new Cconnector(this,11,"Connector 11 pins",false); publish(pCONNECTOR_A);
-        pCONNECTOR_B = new Cconnector(this,11,"Connector 11 pins",false); publish(pCONNECTOR_B);
+        pCONNECTOR_A = new Cconnector(this,11,"11 pins Connector A",false); publish(pCONNECTOR_A);
+        pCONNECTOR_B = new Cconnector(this,11,"11 pins Connector B",false); publish(pCONNECTOR_B);
 		setfrequency( 0);
 		BackGroundFname	= ":/EXT/ext/cable.png";
 		

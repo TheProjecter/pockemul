@@ -122,7 +122,16 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1250.qrc">
-            <normaloff>:/PC1250/pc1250/trspc3.png</normaloff>:/PC1250/pc1250/trspc3.png</iconset>
+            <normaloff>:/PC1250/pc1250/pc31k.png</normaloff>:/PC1250/pc1250/pc31k.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Tandy PC-3 (4Ko)</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1250.qrc">
+            <normaloff>:/PC1250/pc1250/pc31k.png</normaloff>:/PC1250/pc1250/pc31k.png</iconset>
           </property>
          </item>
          <item>

@@ -2,7 +2,7 @@
 
 #include "pc1245.h"
 
-Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(this)
+Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 {								//[constructor]
 	setcfgfname("pc1245");
 

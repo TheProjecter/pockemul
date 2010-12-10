@@ -89,7 +89,8 @@ void CDirectLink::outConnector(Cconnector* search)
 
         // start the corresponding pPC
         // if no frequency link to the parent timer
-        if ( (foundConnector->Parent->getfrequency() == 0 ) &&
+        if (
+            (foundConnector->Parent->getfrequency() == 0 ) &&
              (! inlogrun(foundConnector->Parent) ))
         {
 //				AddLog(LOG_TEMP,tr("Connector Chain with %1").arg(BConnList.at(found)->Parent->getName()));

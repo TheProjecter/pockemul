@@ -34,16 +34,21 @@ INLINE void Csc::AddState(BYTE n)
     ticks+=(n);
 	ticks2+=(n);
 
-	if (ticks >= XTICKS)
-	{
-		div500 = true;
-		ticks -= XTICKS;
-	}
-	if (ticks2 >= XTICK2)
-	{
-		div2 = true;
-		ticks2 -= XTICK2;
-	}
+#if 0
+    div500  = (ticks >= XTICKS);
+    div2    = (ticks2>= XTICK2);
+#else
+    if (ticks >= XTICKS)
+    {
+        div500 = true;
+        ticks =0;
+    }
+    if (ticks2 >= XTICK2)
+    {
+        div2 = true;
+        ticks2 =0;
+    }
+#endif
 
     if (resetFlag)
     {
@@ -55,6 +60,8 @@ INLINE void Csc::AddState(BYTE n)
         }
 
     }
+
+    backgroundTasks();
 }
 
 
@@ -108,30 +115,30 @@ void Csc::compute_xout(void)
 					break;
 					
 		case 0x02 : // 2khz
-					start4khz = 0;
-					if (!start2khz){
+                    start4khz = 0;
+                    if (start2khz == 0){
 						start2khz = pPC->pTIMER->state;
-						Xout = true;
+                        Xout = true;
 					}
 					delta = pPC->pTIMER->state - start2khz;
 					if (delta >= wait2khz){
-						Xout = !Xout;
-						start2khz += delta;
+                        Xout = !Xout;
+                        start2khz += wait2khz;
 					}
 					break;
 					
 		case 0x03 : // 4khz
-					start2khz = 0;
-					if (!start4khz)
+                    start2khz = 0;
+                    if (start4khz==0)
 					{
 						start4khz = pPC->pTIMER->state;
-						Xout = true;
+                        Xout = true;
 					}
 					delta = pPC->pTIMER->state - start4khz;
-					if (delta >= wait4khz)
+                    if (delta >= wait4khz)
 					{
 						Xout = !Xout;
-						start4khz += delta;
+                        start4khz += wait4khz;
 					}
 					break;
 					
@@ -372,13 +379,14 @@ INLINE void Csc::Op_08(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(5+2*l);
+    AddState(5);
 	while(l != 0xFF)
 	{
 		Set_i8( reg.r.p,Get_i8(reg.r.q));
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.r.q++;	reg.r.q &=0x7F;
 		l--;
+        AddState(2);
 		AddLog(LOG_CPU,tr("MVW  (i)=%1").ARG2x(l));
 	}
 }
@@ -390,7 +398,7 @@ INLINE void Csc::Op_0a(void)
 {
 	BYTE l;
 	l = I_REG_J;
-	AddState(5+2*l);
+    AddState(5);
 	AddLog(LOG_CPU,"MVB");
 	while(l != 0xFF)
 	{
@@ -398,6 +406,7 @@ INLINE void Csc::Op_0a(void)
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.r.q++;	reg.r.q &=0x7F;
 		l--;
+        AddState(2);
 	}
 }
 
@@ -410,7 +419,7 @@ INLINE void Csc::Op_09(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(6+3*l);
+    AddState(6);
 	AddLog(LOG_CPU,"EXW");
 	while(l != 0xFF)
 	{
@@ -420,6 +429,7 @@ INLINE void Csc::Op_09(void)
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.r.q++;	reg.r.q &=0x7F;
 		l--;
+        AddState(3);
 	}
 }
 
@@ -432,7 +442,7 @@ INLINE void Csc::Op_0b(void)
 	BYTE l;
 	l = I_REG_J;
 
-	AddState(6+3*l);
+    AddState(6);
 	AddLog(LOG_CPU,"EXB");
 	while(l != 0xFF)
 	{
@@ -442,6 +452,7 @@ INLINE void Csc::Op_0b(void)
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.r.q++;	reg.r.q &=0x7F;
 		l--;
+        AddState(3);
 	}
 }
 //--------------------------
@@ -454,7 +465,7 @@ INLINE void Csc::Op_0c(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(7+3*l);
+    AddState(7);
 
 	d=Get_i8(reg.r.p);
 	w=hex2bcd(
@@ -462,6 +473,7 @@ INLINE void Csc::Op_0c(void)
 		);
 	Chk_Flag(w,SIZE_8);
 	Set_i8(reg.r.p,(BYTE)w);
+    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	b = (BYTE) w;
 	while(l!=0x00)
@@ -474,6 +486,7 @@ INLINE void Csc::Op_0c(void)
 		reg.r.p--;reg.r.p &=0x7F;
 		b |= w;
 		l--;
+        AddState(3);
 	}
 	Chk_Zero(b,SIZE_8);
 	AddLog(LOG_CPU,"ADN");
@@ -488,11 +501,12 @@ INLINE void Csc::Op_0d(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(7+3*l);
+    AddState(7);
 
 	w=hex2bcd(100+bcd2hex(Get_i8(reg.d.p)) - bcd2hex(I_REG_A));
 	reg.r.c=1-(w>>8);
 	Set_i8(reg.r.p,(BYTE)w);
+    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	b = (BYTE) w;
 	while(l!=0x00)
@@ -503,6 +517,7 @@ INLINE void Csc::Op_0d(void)
 		reg.r.p--;reg.r.p &=0x7F;
 		b |= w;
 		l--;
+        AddState(3);
 	}
 	Chk_Zero(b,SIZE_8);
 	AddLog(LOG_CPU,"SBN");
@@ -518,13 +533,14 @@ INLINE void Csc::Op_0e(void)
 	l = I_REG_I;
 
 
-	AddState(7+3*l);
+    AddState(7);
 
 	w=hex2bcd(
 		bcd2hex(Get_i8(reg.d.p)) + bcd2hex(Get_i8(reg.r.q))
 		);
 	Chk_Flag(w,SIZE_8);
 	Set_i8(reg.r.p,(BYTE)w);
+    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	reg.r.q--;reg.r.q &=0x7F;
 	b = (BYTE) w;
@@ -539,6 +555,7 @@ INLINE void Csc::Op_0e(void)
 		reg.r.p--;reg.r.p &=0x7F;
 		reg.r.q--;reg.r.q &=0x7F;
 		l--;
+        AddState(3);
 	}
 	Chk_Zero(b,SIZE_8);
 	AddLog(LOG_CPU,"ADW");
@@ -553,13 +570,14 @@ INLINE void Csc::Op_0f(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(7+3*l);
+    AddState(7);
 
 	w=hex2bcd(
 		100 + bcd2hex(Get_i8(reg.d.p)) - bcd2hex(Get_i8(reg.r.q))
 		);
 	reg.r.c=1-(w>>8);
 	Set_i8(reg.r.p,(BYTE)w);
+    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	reg.r.q--;reg.r.q &=0x7F;
 	b = (BYTE) w;
@@ -574,6 +592,7 @@ INLINE void Csc::Op_0f(void)
 		reg.r.p--;reg.r.p &=0x7F;
 		reg.r.q--;reg.r.q &=0x7F;
 		l--;
+        AddState(3);
 	}
 	Chk_Zero(b,SIZE_8);
 	AddLog(LOG_CPU,"SBW");
@@ -666,7 +685,7 @@ INLINE void Csc::Op_35(void)	//ok
 	l = I_REG_I;
 	ba = ( I_REG_A|(I_REG_B<<8) );
 
-	AddState(5+4*l);
+    AddState(5);
 	AddLog(LOG_CPU,"DATA");
 
 	while(l != 0xFF)
@@ -675,6 +694,7 @@ INLINE void Csc::Op_35(void)	//ok
 		reg.r.p++;	reg.r.p &= 0x7F;
 		ba++;
 		l--;
+        AddState(4);
 	}
 
 }
@@ -688,13 +708,14 @@ INLINE void Csc::Op_18(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(5+4*l);
+    AddState(5);
 	while( l != 0xFF)
 	{
 		Set_i8((BYTE) reg.r.p,pPC->Get_8(reg.d.dp));
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.d.dp++;
 		l--;
+        AddState(4);
 		AddLog(LOG_CPU,tr("MVWD  (i)=%1").ARG2x(l));
 	}
 }
@@ -707,7 +728,7 @@ INLINE void Csc::Op_1a(void)
 	BYTE l;
 	l = I_REG_J;
 
-	AddState(5+4*l);
+    AddState(5);
 	AddLog(LOG_CPU,"MVBD");
 		while(l != 0xFF)
 	{
@@ -715,6 +736,7 @@ INLINE void Csc::Op_1a(void)
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.d.dp++;
 		l--;
+        AddState(4);
 	}
 }
 
@@ -727,7 +749,7 @@ INLINE void Csc::Op_19(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(7+6*l);
+    AddState(7);
 	AddLog(LOG_CPU,"EXWD");
 		while(l != 0xFF)
 	{
@@ -737,6 +759,7 @@ INLINE void Csc::Op_19(void)
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.d.dp++;
 		l--;
+        AddState(6);
 	}
 }
 
@@ -749,7 +772,7 @@ INLINE void Csc::Op_1b(void)
 	BYTE l;
 	l = I_REG_J;
 
-	AddState(7+6*l);
+    AddState(7);
 	AddLog(LOG_CPU,"EXBD");
 		while(l != 0xFF)
 	{
@@ -759,6 +782,7 @@ INLINE void Csc::Op_1b(void)
 		reg.r.p++;	reg.r.p &=0x7F;
 		reg.d.dp++;
 		l--;
+        AddState(6);
 	}
 }
 
@@ -772,7 +796,7 @@ INLINE void Csc::Op_1c(void)
 	l = I_REG_I;
 
 
-	AddState(5+l);
+    AddState(5);
 	AddLog(LOG_CPU,"SRW");
 
 	bp = 0;//Get_i8(reg.r.p-1)&0x0f;
@@ -786,6 +810,7 @@ INLINE void Csc::Op_1c(void)
 		bp = b;
 		reg.r.p++;	reg.r.p &=0x7F;
 		l--;
+        AddState(1);
 	}
 
 //	Chk_Zero(b,SIZE_8);
@@ -798,7 +823,7 @@ INLINE void Csc::Op_1d(void)
 	BYTE l,a,t,b,ap;
 	AddLog(LOG_CPU,"SLW");
 	l = I_REG_I;
-	AddState(5+l);
+    AddState(5);
 	
 	ap = 0;//Get_i8(reg.r.p+1)>>4;
 		while(l != 0xFF)
@@ -811,6 +836,7 @@ INLINE void Csc::Op_1d(void)
 		ap = a;
 		reg.r.p--;reg.r.p &=0x7F;
 		l--;
+        AddState(1);
 	}
 
 //	Chk_Zero(b,SIZE_8);
@@ -823,13 +849,14 @@ INLINE void Csc::Op_1e(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(5+l);
+    AddState(5);
 	AddLog(LOG_CPU,"FILM");
 		while(l != 0xFF)
 	{
 		Set_i8( reg.r.p,I_REG_A);
 		reg.r.p++;	reg.r.p &=0x7F;
 		l--;
+        AddState(1);
 	}
 }
 
@@ -842,13 +869,14 @@ INLINE void Csc::Op_1f(void)
 	BYTE l;
 	l = I_REG_I;
 
-	AddState(4+3*l);
+    AddState(4);
 	AddLog(LOG_CPU,"FILD");
 		while(l != 0xFF)
 	{
 		pPC->Set_8( reg.d.dp,I_REG_A);
 		reg.d.dp++;
 		l--;
+        AddState(3);
 	}
 //	reg.d.dp--;
 }
@@ -1294,10 +1322,10 @@ INLINE void Csc::Op_4e(void)
 		AddLog(LOG_CPU,tr("WAIT %1").ARG2x(op_local_counter));
 		reg.d.pc--;
 	}
-	if (op_local_counter>10)
+    if (op_local_counter>5)
 	{
 		AddState(10);
-		op_local_counter-=10;
+        op_local_counter-=5;
 		reg.d.pc--;
 	}
 	else
@@ -1673,27 +1701,26 @@ INLINE void Csc::Op_6b(void)
 	BYTE	t;
     t = pPC->Get_PC(reg.d.pc++);
 
-	AddState(4);
 	reg.r.z = 0;
 	switch (t)
 	{
 	case 0x01: 
-				reg.r.z = 1;
-				if (div500)
-			   {
-				   reg.r.z = 0;
-				   div500=false;
-				   ticks=0;
-				}
+        reg.r.z = 1;
+                if (div500)
+               {
+                   reg.r.z = 0;
+                   div500=false;
+                   ticks=0;
+                }
 				break;
 	case 0x02: 
-				reg.r.z = 1;
-				if (div2)
-			   {
-				   reg.r.z = 0;
-				   div2=false;
-				   ticks2=0;
-				}
+        reg.r.z = 1;
+                if (div2)
+               {
+                   reg.r.z = 0;
+                   div2=false;
+                   ticks2=0;
+                }
 				break;
 	case 0x08: if (t==0x08)
 				{
@@ -1720,6 +1747,8 @@ INLINE void Csc::Op_6b(void)
                     reg.r.z = 1;
 				break;
 	}
+
+    AddState(4);
 }
 
 //----------------------------
@@ -2115,9 +2144,11 @@ INLINE void Csc::Op_df(void)
 	}
     if (pPC->Get_Port(PORT_C) & 2)
 	{
-		ticks = ticks2 = div500 = div2 = 0;
+        ticks = ticks2 = 0;
+        div500 = div2 = false;
     }
     power_on = !(pPC->Get_Port(PORT_C) & 8);
+    //start2khz = start4khz = 0;
 
 	AddLog(LOG_CPU,"OUTC");
 }
@@ -2652,6 +2683,7 @@ bool Csc::init(void)
 	AddLog(0x01,"MEMORY initializing...");
 
 	ticks = ticks2 = div500 = div2 = 0;
+    Xin = Xout = false;
 
     power_on = 1;
  
@@ -2764,9 +2796,13 @@ void Csc::step(void)
 	reg.d.pc++;
 //	fprintf(fp_tmp,"%2X - ",pPC->Get_8(t));
     OpExec(pPC->Get_PC(t));
-	compute_xout();  
-	pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
+    backgroundTasks();
 
+}
+
+void Csc::backgroundTasks(void) {
+    compute_xout();
+    pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
 }
 
 /*---------------------------------------------------------------------------*/

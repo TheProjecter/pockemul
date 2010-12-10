@@ -1,4 +1,4 @@
- /********************************************************************************************************
+/********************************************************************************************************
  * PROGRAM      : 
  * DATE - TIME  : samedi 28 octobre 2006 - 12h42
  * AUTHOR       :  (  )
@@ -79,7 +79,8 @@ CPObject *pPC=0;
         case PC1251H: pPC = new Cpc1251H;	pPC->setName("PC-1251H");break;
         case PC1255	: pPC = new Cpc1255;	pPC->setName("PC-1255");break;
         case TandyPC3:pPC = new Ctrspc3;	pPC->setName("Tandy PC-3");break;
- 
+        case TandyPC3EXT:pPC = new Ctrspc3Ext;	pPC->setName("Tandy PC-3 (4Ko)");break;
+
         case PC1260	: pPC = new Cpc1260;	pPC->setName("PC-1260");break;
         case PC1261	: pPC = new Cpc1261;	pPC->setName("PC-1261");break;
         case PC1262	: pPC = new Cpc1262;	pPC->setName("PC-1262");break;

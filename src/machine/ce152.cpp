@@ -123,7 +123,8 @@ void Cce152::ComputeKey(void)
 {
     BYTE k = pKEYB->LastKey;
     switch (k) {
-    case K_PLAY : if (mode == LOAD) Play();
+    case K_PLAY : if (mode == LOAD) { Play();
+        }
                     break;
     case K_EJECT:
         switch (mode) {
@@ -152,25 +153,16 @@ bool Cce152::run(void)
 
 bool Cce152::GetWav(void)
 {
-	float		ratio;
-	qint64		new_state;
-	qint64		delta_state;
-	
 	if (mode != PLAY) return false;			// Return 0 If not PLAY mode
 
     if (first_state == 0) {
-        counter = 0;
+        counter = 1;
         first_state = pTIMER->state;
     }
 
-	new_state = pTIMER->state;
-	delta_state = new_state - first_state;
-
 	// Calculate nb of byte to skip corresponding to the CPU frequency
-	int tmp = pTIMER->pPC->getfrequency();
-	u_long tmp2= info.freq;
-	qint64 wait = (counter * pTIMER->pPC->getfrequency() / info.freq);
-    if (delta_state >= wait) {
+    qint64 wait = counter * (pTIMER->pPC->getfrequency() / info.freq);
+    if ((pTIMER->state - first_state) >= wait) {
 		GetWav_Val = myfgetc(&info);
 		counter++;
 	}
@@ -198,35 +190,29 @@ int Cce152::myfgetc(WavFileInfo* ptrFile)
 
 bool Cce152::SetWav(bool bit)
 {
-	static BYTE	Val=0;
-	float		ratio;
-	qint64		new_state;
-	qint64		delta_state;
-	static qint64		counter = 0;
-	
-//	if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
-	
+    if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
 //fprintf(fp_tape,"setwav - mode=%d",mode);
 	if (mode != RECORD) return false;			// Return 0 If not PLAY mode
 //fprintf(fp_tape,"RECORD - ");
-//if (pTIMER->pPC->pCPU) fprintf(fp_tape," Xout=%d - ",pTIMER->pPC->pCPU->Get_Xout());
 
 	if (first_state == 0) 
 		{
-			counter = 0;
-//			delta = 0;
+            counter = 1;
 			first_state = pTIMER->state;
 		}
 
-	new_state = pTIMER->state;
-	delta_state = new_state - first_state;
-
 	// Calculate nb of byte to skip corresponding to the CPU frequency
-	qint64 wait = (counter * pTIMER->pPC->getfrequency() / info.freq);
-	if (delta_state >= wait)
+    qint64 wait = ( pTIMER->pPC->getfrequency()) / info.freq;
+    qint64 delta = (pTIMER->state - first_state);
+
+//    if (pTIMER->pPC->pCPU) fprintf(fp_tape," Xout=%d - ",pTIMER->pPC->pCPU->Get_Xout());
+
+    if ((pTIMER->state - first_state) >= wait)
 	{
+        fprintf(fp_tape,"delta=%lld val=%s c=%lld\n",delta,bit?"1":"0",counter);
         int error = fputc ( (bit?0xFF:0x00), info.ptrFd) ;
-		counter++;
+        counter++;
+        first_state +=wait;
 	}
 
 	return (true);

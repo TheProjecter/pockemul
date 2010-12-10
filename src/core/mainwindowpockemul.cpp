@@ -178,7 +178,7 @@ void MainWindowPockemul::Minimize_All() {
     {
         CPObject *pc = listpPObject.at(k);
         if (pc->isFront()) {
-            QMouseEvent *m = 0;
+            QMouseEvent *m = new QMouseEvent(QEvent::MouseButtonDblClick, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
             pc->mouseDoubleClickEvent(m);
         }
     }
@@ -287,7 +287,7 @@ void  MainWindowPockemul::updateFrameTimer()
 				
 				QString str;
 				str.setNum((int)rate);
-				CurrentpPC->setToolTip(str+tr("% original speed"));
+                CurrentpPC->setToolTip(CurrentpPC->getName()+": "+str+tr("% original speed"));
 			}
 		}
 		if (CurrentpPC->pLCDC) 
@@ -322,6 +322,18 @@ void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
 
 void MainWindowPockemul::DestroySlot( CPObject *pObject)
 {
+
+    QList< QAction *> actionList = menuPockets->actions();
+    for (int i=0; i< actionList.size();i++) {
+        QAction* action = actionList.at(i);
+        if (! action->data().isNull()) {
+            CPObject *pc = (CPObject*) action->data().toString().toULongLong();
+            if (pc == pObject) {
+                 menuPockets->removeAction(action);
+            }
+        }
+    }
+
 	pObject->exit();
 	pObject->deleteLater();
 }

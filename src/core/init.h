@@ -93,6 +93,7 @@ enum Models {
     PC1251,
     PC1255,
     TandyPC3,
+    TandyPC3EXT,
     PC1260,
     PC1261,
     PC1262,

@@ -37,6 +37,7 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "PC 1251")	result = PC1251;
     if (ItemText == "PC 1255")	result = PC1255;
     if (ItemText == "Tandy PC-3")	result = TandyPC3;
+    if (ItemText == "Tandy PC-3 (4Ko)")	result = TandyPC3EXT;
     if (ItemText == "PC 1260")	result = PC1260;
     if (ItemText == "PC 1261")	result = PC1261;
     if (ItemText == "PC 1262")	result = PC1262;

@@ -88,7 +88,7 @@ void dialogAnalog::slotSave(void)
 //	out << (quint32)0xA0B0C0D0;
 //	out << (qint32)123;
 
-	out.setVersion(QDataStream::Qt_4_0);
+    //out.setVersion(QDataStream::Qt_4_0);
 
 	// Write the data
 
@@ -97,6 +97,12 @@ void dialogAnalog::slotSave(void)
 
 void dialogAnalog::slotLoad(void)
 {
+    if (capture()) {
+        QMessageBox::warning(mainwindow, "PockEmul",
+                             tr("Capture is running.\n") +
+                             tr("Stop capture before loading a sample") );
+        return;
+    }
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                  ".",
                                                  tr("Analogic Sample (*.ana)"));
@@ -106,8 +112,10 @@ void dialogAnalog::slotLoad(void)
 	file.open(QIODevice::ReadOnly);
 	QDataStream in(&file);
 
+    mainwindow->analogMutex.lock();
 	// Read the data
 	in >> dataplot;
+    mainwindow->analogMutex.unlock();
 
 	m_zoom = 1.0;
 	ComputeScrollBar();
@@ -160,6 +168,8 @@ void dialogAnalog::scroll(int value)
 
 void dialogAnalog::updatecapture(int state)
 {
+    mainwindow->analogMutex.lock();
+
 	if (state == Qt::Checked )
 	{
 		setCapture(true);
@@ -190,13 +200,16 @@ void dialogAnalog::updatecapture(int state)
 
 		this->update();
 	}
+    mainwindow->analogMutex.unlock();
 }
 
 void dialogAnalog::captureData(void)
 {
 	if ( !pPC) return;
+    mainwindow->analogMutex.lock();
 	if (Capture)
 	{
+
 		switch (currentWatchPointSize)
 		{
 			case 8 : dataplot.Write(*((qint8 *) currentWatchPoint),pPC->pTIMER->state); break;
@@ -205,6 +218,7 @@ void dialogAnalog::captureData(void)
 			case 64: dataplot.Write(*currentWatchPoint,pPC->pTIMER->state); break;
 		}
 	}
+    mainwindow->analogMutex.unlock();
 }
 	
 void dialogAnalog::plot(bool forceRedraw,QSize size)
@@ -236,14 +250,17 @@ void dialogAnalog::plot(bool forceRedraw,QSize size)
 #define READ_BIT(b,p)	( ((b)>>(p)) & 0x01 ? 1 :0 )
 void dialogAnalog::fillPixmap(CData *data, QPen *dataPen)
 {
+    mainwindow->analogMutex.lock();
 	TAnalog_Data plot,next_plot;
 	QPainter painter;
     int heightPerField = lastPixmap.height() / NbBits;
 	
 	painter.begin(&lastPixmap);
 	painter.setPen(*dataPen);
-	
-	for (int j=1;j<dataplot.size();j++)
+
+    QVector< QVector<QPoint> > polyline(64);
+
+    for (int j=1;j<data->size();j++)
 	{
 		plot = data->Read(j-1);
 		next_plot = data->Read(j);
@@ -253,17 +270,24 @@ void dialogAnalog::fillPixmap(CData *data, QPen *dataPen)
 		
 		X1=StateToX(plot.state);
 		X2=StateToX(next_plot.state);
-		for (int jj=0;jj<NbBits;jj++)
-		{
-			//#define READ_BIT(b,p)	( ((b)>>(p)) & 0x01 ? 1 :0 )
-			Y1= current - READ_BIT(plot.values,jj)* 3 * heightPerField / 5;
-			Y2=current - READ_BIT(next_plot.values,jj)* 3 * heightPerField / 5;
-			painter.drawLine(X1,Y1,X2,Y1);
-			painter.drawLine(X2,Y1,X2,Y2);
-			current += heightPerField;
-		}
-		
-		// plot the Marker
+
+        // Crop to the visible area
+        if (!( (j>1) && ( (X2<0) || ( X1>frame_dataview->width())))) {
+
+            for (int jj=0;jj<NbBits;jj++)
+            {
+                //#define READ_BIT(b,p)	( ((b)>>(p)) & 0x01 ? 1 :0 )
+                Y1= current - READ_BIT(plot.values,jj)* 3 * heightPerField / 5;
+                Y2= current - READ_BIT(next_plot.values,jj)* 3 * heightPerField / 5;
+                //painter.drawLine(X1,Y1,X2,Y1);
+                //painter.drawLine(X2,Y1,X2,Y2);
+                polyline[jj].append( QPoint(X1,Y1) );
+                polyline[jj].append( QPoint(X2,Y1) );
+                current += heightPerField;
+            }
+        }
+        // plot the Markers
+        // Need to optimize
 		if ( plot.marker && (chkBShowMarker->checkState() == Qt::Checked) )
 			{
 				QPen pen((Qt::white));
@@ -278,7 +302,15 @@ void dialogAnalog::fillPixmap(CData *data, QPen *dataPen)
 				painter.setPen(*dataPen);
 			}
 	}
+    if (polyline.size()) {
+        for (int jj=0;jj<NbBits;jj++)
+        {
+            if (polyline[jj].size())
+                painter.drawPolyline(polyline[jj].data(),polyline[jj].size());
+        }
+    }
 	painter.end();
+    mainwindow->analogMutex.unlock();
 }
 
 void dialogAnalog::initPixmap(QSize size)
@@ -430,7 +462,10 @@ void dialogAnalog::zoomout(void)
 	
 }
 
-void dialogAnalog::setCapture(bool val)	{ Capture = val; }
+void dialogAnalog::setCapture(bool val)	{
+
+    Capture = val;
+}
 bool dialogAnalog::capture(void)		{ return Capture; }
 
 long dialogAnalog::StateToX(long plotState)
