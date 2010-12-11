@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/KEYMAP">
+        <file>keymap/ce150.map</file>
+        <file>keymap/ce1600p.map</file>
+        <file>keymap/pc1250.map</file>
+        <file>keymap/pc1280.map</file>
+        <file>keymap/pc1350.map</file>
+        <file>keymap/pc1360.map</file>
+        <file>keymap/pc1401.map</file>
+        <file>keymap/pc1403.map</file>
+        <file>keymap/pc1450.map</file>
+        <file>keymap/pc1500.map</file>
+        <file>keymap/pc1600.map</file>
+        <file>keymap/pc2500.map</file>
+        <file>keymap/trspc2.map</file>
+    </qresource>
+</RCC>
