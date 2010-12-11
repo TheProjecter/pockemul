@@ -2898,11 +2898,11 @@ void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
 /*
     16bits READ/WRITE (エンディアン非依存)
 */
-static inline uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
+inline uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
 {
     return 0;//((uint16 )memory[(address) + 1] << 8U | memory[address]);
 }
-static inline void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
+inline void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
 {
 //    if(address < 0x7fff) {
 //        memory[address    ] = value & 0xff;
