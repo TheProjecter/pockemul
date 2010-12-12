@@ -1,4 +1,6 @@
 #include <QPainter>
+#include <QResource>
+
 #include "common.h"
 #include "ce515p.h"
 #include "paperwidget.h"
@@ -172,9 +174,13 @@ bool Cce515p::exit(void)
 bool Cce515p::init(void)
 {
     CPObject::init();
+    QResource res(":/EXT/clac2.wav");
+
+        //QByteArray b(qUncompress(resource.data(), resource.size()));
+
 
 #ifndef NO_SOUND
-    clac = FSOUND_Sample_Load(FSOUND_FREE, "clac2.wav", 0, 0, 0);
+    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) qUncompress(res.data(), res.size()).data(), 0, 0, 0);
 #endif
 
     setfrequency( 0);

@@ -22,5 +22,6 @@
         <file>ext/potar.png</file>
         <file>ext/jack.png</file>
         <file>ext/ce-120p.jpg</file>
+        <file>ext/clac2.wav</file>
     </qresource>
 </RCC>
