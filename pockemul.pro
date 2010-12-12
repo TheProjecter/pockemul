@@ -118,12 +118,14 @@ HEADERS += src/core/Connect.h \
     src/core/qhexedit.h \
     src/core/qhexedit_p.h
 INCLUDEPATH += . \
-    C:\Users\Remy\dev\fmodapi375win/api/inc \
     src/core \
     src/cpu \
     src/machine
+mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
+win32:INCLUDEPATH += C:\Users\Remy\dev\fmodapi375win/api/inc
 LANGUAGE += C++
-LIBS += C:\Users\Remy\dev\fmodapi375win/api/lib/libfmod.a
+win32:LIBS += C:\Users\Remy\dev\fmodapi375win/api/lib/libfmod.a
+mac:LIBS += /Users/svp/Library/fmodapi375mac/api/lib/libfmodx86.a
 LICENSE += GPL
 MOC_DIR += build/moc
 OPENEDFILES += 
