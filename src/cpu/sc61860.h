@@ -59,18 +59,22 @@ enum OPRMODE{					//operation mode
 
 typedef
 union {
-	struct 
-	{
-		BYTE	p,q,r,dummy;
+    struct
+    {
+        BYTE	p,q,r,dummy;
+#if 0
 #ifdef BIG_ENDIAN
-		BYTE	dph,dpl;
-		BYTE	pch,pcl;
+        BYTE	dph,dpl;
+        BYTE	pch,pcl;
 #else
-		BYTE	dpl,dph;
-		BYTE	pcl,pch;
+        BYTE	dpl,dph;
+        BYTE	pcl,pch;
 #endif
-		BYTE	c,z;//,IB,FO,CTRL;
-	}r;
+#else
+        WORD	dp,pc;
+#endif
+        BYTE	c,z;//,IB,FO,CTRL;
+    }r;
 	struct 
 	{
 		BYTE	p,q,r,dummy;

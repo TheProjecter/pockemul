@@ -613,8 +613,9 @@ INLINE void Csc::Op_10(void)
 //--------------------------
 INLINE void Csc::Op_11(void)
 {
-    reg.r.dpl=pPC->Get_PC(reg.d.pc);
-	AddLog(LOG_CPU,tr("LIDL    %1").ARG2x(reg.r.dpl));
+    reg.d.dp = (reg.d.dp & 0xFF00) | pPC->Get_PC(reg.d.pc);
+    //reg.r.dpl=pPC->Get_PC(reg.d.pc);
+    //AddLog(LOG_CPU,tr("LIDL    %1").ARG2x(reg.r.dpl));
 	reg.d.pc++;
 	AddState(5);
 }
@@ -2310,7 +2311,7 @@ INLINE void Csc::Op_23(void)
 INLINE void Csc::Op_7a(void)
 {
 	BYTE ind,d,op,r,n,m;
-    WORD	t;
+    //WORD	t;
 
     d=pPC->Get_PC(reg.d.pc++);		// number of brances
 
