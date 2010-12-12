@@ -10,7 +10,7 @@
 
 void	Cpc1360::initExtension(void)
 {
-	
+
 	// initialise ext_MemSlot1
 	ext_MemSlot1 = new CExtensionArray("Memory Slot 1","Add memory credit card");
     ext_MemSlot1->setAvailable(ID_CE210M,true);		ext_MemSlot1->setChecked(ID_CE2H32M,true);

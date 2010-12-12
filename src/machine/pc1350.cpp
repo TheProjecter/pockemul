@@ -25,7 +25,7 @@ bool Cpc13XX::init(void)
 	return true;
 }
 
- 
+
 void	Cpc1350::initExtension(void)
 {
 	// initialise ext_MemSlot1
