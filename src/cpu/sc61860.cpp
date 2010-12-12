@@ -41,12 +41,12 @@ INLINE void Csc::AddState(BYTE n)
     if (ticks >= XTICKS)
     {
         div500 = true;
-        ticks =0;
+        ticks -= XTICKS;
     }
     if (ticks2 >= XTICK2)
     {
         div2 = true;
-        ticks2 =0;
+        ticks -= XTICK2;
     }
 #endif
 
@@ -379,7 +379,7 @@ INLINE void Csc::Op_08(void)
 	BYTE l;
 	l = I_REG_I;
 
-    AddState(5);
+    AddState(3);
 	while(l != 0xFF)
 	{
 		Set_i8( reg.r.p,Get_i8(reg.r.q));
@@ -398,7 +398,7 @@ INLINE void Csc::Op_0a(void)
 {
 	BYTE l;
 	l = I_REG_J;
-    AddState(5);
+    AddState(3);
 	AddLog(LOG_CPU,"MVB");
 	while(l != 0xFF)
 	{
@@ -419,7 +419,7 @@ INLINE void Csc::Op_09(void)
 	BYTE l;
 	l = I_REG_I;
 
-    AddState(6);
+    AddState(3);
 	AddLog(LOG_CPU,"EXW");
 	while(l != 0xFF)
 	{
@@ -442,7 +442,7 @@ INLINE void Csc::Op_0b(void)
 	BYTE l;
 	l = I_REG_J;
 
-    AddState(6);
+    AddState(3);
 	AddLog(LOG_CPU,"EXB");
 	while(l != 0xFF)
 	{
@@ -473,7 +473,6 @@ INLINE void Csc::Op_0c(void)
 		);
 	Chk_Flag(w,SIZE_8);
 	Set_i8(reg.r.p,(BYTE)w);
-    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	b = (BYTE) w;
 	while(l!=0x00)
@@ -506,7 +505,6 @@ INLINE void Csc::Op_0d(void)
 	w=hex2bcd(100+bcd2hex(Get_i8(reg.d.p)) - bcd2hex(I_REG_A));
 	reg.r.c=1-(w>>8);
 	Set_i8(reg.r.p,(BYTE)w);
-    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	b = (BYTE) w;
 	while(l!=0x00)
@@ -540,7 +538,6 @@ INLINE void Csc::Op_0e(void)
 		);
 	Chk_Flag(w,SIZE_8);
 	Set_i8(reg.r.p,(BYTE)w);
-    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	reg.r.q--;reg.r.q &=0x7F;
 	b = (BYTE) w;
@@ -577,7 +574,6 @@ INLINE void Csc::Op_0f(void)
 		);
 	reg.r.c=1-(w>>8);
 	Set_i8(reg.r.p,(BYTE)w);
-    AddState(3);
 	reg.r.p--;reg.r.p &=0x7F;
 	reg.r.q--;reg.r.q &=0x7F;
 	b = (BYTE) w;
@@ -686,7 +682,7 @@ INLINE void Csc::Op_35(void)	//ok
 	l = I_REG_I;
 	ba = ( I_REG_A|(I_REG_B<<8) );
 
-    AddState(5);
+    AddState(1);
 	AddLog(LOG_CPU,"DATA");
 
 	while(l != 0xFF)
@@ -709,7 +705,7 @@ INLINE void Csc::Op_18(void)
 	BYTE l;
 	l = I_REG_I;
 
-    AddState(5);
+    AddState(1);
 	while( l != 0xFF)
 	{
 		Set_i8((BYTE) reg.r.p,pPC->Get_8(reg.d.dp));
@@ -729,7 +725,7 @@ INLINE void Csc::Op_1a(void)
 	BYTE l;
 	l = I_REG_J;
 
-    AddState(5);
+    AddState(1);
 	AddLog(LOG_CPU,"MVBD");
 		while(l != 0xFF)
 	{
@@ -750,7 +746,7 @@ INLINE void Csc::Op_19(void)
 	BYTE l;
 	l = I_REG_I;
 
-    AddState(7);
+    AddState(1);
 	AddLog(LOG_CPU,"EXWD");
 		while(l != 0xFF)
 	{
@@ -773,7 +769,7 @@ INLINE void Csc::Op_1b(void)
 	BYTE l;
 	l = I_REG_J;
 
-    AddState(7);
+    AddState(1);
 	AddLog(LOG_CPU,"EXBD");
 		while(l != 0xFF)
 	{
@@ -797,7 +793,7 @@ INLINE void Csc::Op_1c(void)
 	l = I_REG_I;
 
 
-    AddState(5);
+    AddState(4);
 	AddLog(LOG_CPU,"SRW");
 
 	bp = 0;//Get_i8(reg.r.p-1)&0x0f;
@@ -824,7 +820,7 @@ INLINE void Csc::Op_1d(void)
 	BYTE l,a,t,b,ap;
 	AddLog(LOG_CPU,"SLW");
 	l = I_REG_I;
-    AddState(5);
+    AddState(4);
 	
 	ap = 0;//Get_i8(reg.r.p+1)>>4;
 		while(l != 0xFF)
@@ -850,7 +846,7 @@ INLINE void Csc::Op_1e(void)
 	BYTE l;
 	l = I_REG_I;
 
-    AddState(5);
+    AddState(4);
 	AddLog(LOG_CPU,"FILM");
 		while(l != 0xFF)
 	{
@@ -870,7 +866,7 @@ INLINE void Csc::Op_1f(void)
 	BYTE l;
 	l = I_REG_I;
 
-    AddState(4);
+    AddState(1);
 	AddLog(LOG_CPU,"FILD");
 		while(l != 0xFF)
 	{
@@ -921,7 +917,6 @@ INLINE void Csc::Op_24(void)
 	I_REG_A = pPC->Get_8(reg.d.dp);
 	AddLog(LOG_CPU,"IXL");
 	AddState(7);
-
 }
 
 
@@ -1325,7 +1320,7 @@ INLINE void Csc::Op_4e(void)
 	}
     if (op_local_counter>5)
 	{
-		AddState(10);
+        AddState(5);
         op_local_counter-=5;
 		reg.d.pc--;
 	}
@@ -1836,7 +1831,6 @@ INLINE void Csc::Op_78(void)
 	CallSubLevel++;
 	AddLog(LOG_CPU,tr("CALL    %1").ARG4x(t));
 	AddState(8);
-
 }
 //----------------------------
 // JP nm
@@ -1936,8 +1930,6 @@ INLINE void Csc::Op_d2(void)
 
 	AddLog(LOG_CPU,"SR");  
 	AddState(2);
-
-
 }
 //----------------------------
 // SL
@@ -2008,7 +2000,6 @@ INLINE void Csc::Op_2f(void)
 	}
 	AddLog(LOG_CPU,tr("LOOP    %1").ARG2x(n));
 	AddState(7);
-
 }
 
 //----------------------------
@@ -2134,7 +2125,6 @@ INLINE void Csc::Op_ce(void)
 //----------------------------
 INLINE void Csc::Op_df(void)
 {
-	AddState(2);
 	pPC->Set_Port(PORT_C , Get_i8(IMEM_IC) );
 	reg.r.q = IMEM_IC;
 
@@ -2152,28 +2142,29 @@ INLINE void Csc::Op_df(void)
     //start2khz = start4khz = 0;
 
 	AddLog(LOG_CPU,"OUTC");
+    AddState(2);
 }
 //----------------------------
 // OUTA
 //----------------------------
 INLINE void Csc::Op_5d(void)
 {
-	AddState(3);
 	pPC->Set_Port(PORT_A , Get_i8(IMEM_IA));
 	reg.r.q = IMEM_IA;
 	AddLog(LOG_CPU,"OUTA");
 //	ShowPortsAuto(0);
+    AddState(3);
 }
 //----------------------------
 // OUTB 
 //----------------------------
 INLINE void Csc::Op_dd(void)
 {
-	AddState(2);
 	pPC->Set_Port(PORT_B , Get_i8(IMEM_IB));
 	reg.r.q = IMEM_IB;
 
 	AddLog(LOG_CPU,"OUTB");
+    AddState(2);
 }
 //----------------------------
 // OUTF
@@ -2181,11 +2172,11 @@ INLINE void Csc::Op_dd(void)
 INLINE void Csc::Op_5f(void)
 {
 //	g_DasmStep=1;
-	AddState(3);
 	pPC->Set_Port(PORT_F , Get_i8(IMEM_FO));
 	reg.r.q = IMEM_FO;
 	
 	AddLog(LOG_CPU,"OUTF");
+    AddState(3);
 }
 
 //----------------------------
@@ -2193,10 +2184,10 @@ INLINE void Csc::Op_5f(void)
 //----------------------------
 INLINE void Csc::Op_4c(void)
 {
-	AddState(2);
 	I_REG_A = pPC->Get_Port(PORT_A);
 	Chk_Zero(I_REG_A,SIZE_8);
 	AddLog(LOG_CPU,"INA");
+    AddState(2);
 }
 //----------------------------
 // INB
@@ -2204,11 +2195,10 @@ INLINE void Csc::Op_4c(void)
 INLINE void Csc::Op_cc(void)
 {
 
-	AddState(2);
 	I_REG_A = pPC->Get_Port(PORT_B);
 	Chk_Zero(I_REG_A,SIZE_8);
 	AddLog(LOG_CPU,"INB");
-
+    AddState(2);
 }
 
 

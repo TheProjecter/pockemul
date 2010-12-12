@@ -70,10 +70,10 @@ public:
 
     void	clearPaper(void);
     void	SaveAsText(void);
-    void    set_SD(BYTE val);
-    void    drawChar(BYTE data);
+    void    set_SD(quint8);
+    void    drawChar(quint8 data);
     void    DrawMove(int lenght,int dir,bool penDown);
-    void    Command(BYTE);
+    void    Command(quint8);
     void    ProcessEscCommand(void);
     void    ProcessGraphCommand(void);
     void    ProcessMultiPointCommand(QString);
@@ -134,18 +134,17 @@ protected:
     bool		Pen_Status;			// UP or Down Position
     int			Pen_Color;			// Color : 0 to 3
     DWORD		Offset_Paper_View;
-    BYTE		Rot;
-    BYTE	t,c;
+    quint8		Rot;
+    quint8  	t,c;
 
     bool		Change_Color;
 #ifndef NO_SOUND
     FSOUND_SAMPLE *clac;
 #endif
     bool	StartRot;
-    BYTE	Direction;
-    BYTE    SD;
+    quint8	Direction;
+    quint8    SD;
     int		Sii_wait;
-
     static const QString graph[];
 
 private:

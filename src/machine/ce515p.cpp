@@ -26,7 +26,7 @@
 
 #define PRINTER_TICKS	(pTIMER->pPC->getfrequency()/375)   // 75mm/s => 5*75 step/s
 
-void Cce515p::set_SD(BYTE val) {
+void Cce515p::set_SD(quint8 val) {
     SD = val;
 }
 
@@ -297,7 +297,7 @@ void Cce515p::SaveAsText(void)
                          tr("Saving output as text is irrelevant") );
 }
 
-void Cce515p::Command(BYTE t) {
+void Cce515p::Command(quint8 t) {
     if (escMode) {
         escCommand+=QChar(t);
         AddLog(LOG_PRINTER,"Esc Command:"+escCommand);
@@ -501,7 +501,7 @@ void Cce515p::ProcessEscCommand() {
     }
 }
 
-void Cce515p::drawChar(BYTE data) {
+void Cce515p::drawChar(quint8 data) {
     QString str = graph[data];
     int origX = Pen_X;
     int origY = Pen_Y;
@@ -514,7 +514,7 @@ void Cce515p::drawChar(BYTE data) {
     {
         QString step = (QString)*it;
         bool ok;
-        int val = step.toInt(&ok, 16);
+        qint8 val = step.toInt(&ok, 16);
         switch (val & 0xC0) {
         case 0x80 : // angular mode
             {
