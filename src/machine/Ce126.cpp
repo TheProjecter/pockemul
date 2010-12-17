@@ -24,6 +24,40 @@
 #define DOWN	0
 #define UP		1
 
+TransMap KeyMapce126[]={
+    {1,	"FEED  ",	K_PFEED,34,234,	9}
+};
+int KeyMapce126Lenght = 1;
+
+Cce126::Cce126(CPObject *parent):Cprinter(this)
+{								//[constructor]
+    setfrequency( 0);
+    ce126buf	= 0;
+    ce126display= 0;
+    bells		= 0;
+    charTable = 0;
+    ToDestroy	= false;
+    BackGroundFname	= ":/EXT/ext/ce-126p.png";
+
+    settop(10);
+    setposX(0);
+    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",true);	publish(pCONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pTIMER		= new Ctimer(this);
+    KeyMap      = KeyMapce126;
+    KeyMapLenght= KeyMapce126Lenght;
+    pKEYB		= new Ckeyb(this,"ce126.map");
+    Pc_DX	= 698;
+    Pc_DY	= 488;
+    SnapPts = QPoint(672,150);
+    setPaperPos(QPoint(150,-3));
+    stackBehind = true;
+
+    ctrl_char = false;
+    t = 0;
+    c = 0;
+};
+
 //void Cce126::resizeEvent ( QResizeEvent * ) {
 //    float ratio = (float)this->width()/this->Pc_DX ;
 
@@ -169,6 +203,7 @@ bool Cce126::exit(void)
 {
 	AddLog(LOG_PRINTER,"PRT Closing...");
 	AddLog(LOG_PRINTER,"done.");
+    Cprinter::exit();
 	return true;
 }
 

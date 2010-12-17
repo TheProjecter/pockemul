@@ -177,7 +177,7 @@ void CPocketThread::run()
 			}
         }
 		if (pause) usleep(1);	
-	}
+    }
 }
 
 void CPocketThread::SendSignal_AddLogItem(QString str)

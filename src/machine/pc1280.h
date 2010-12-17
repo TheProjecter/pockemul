@@ -29,7 +29,7 @@ public:
         SessionHeaderLen= 9;
         Initial_Session_Fname ="pc1280.pkm";
 
-        BackGroundFname	= ":/PC1280/pc1280/pc-1280.jpg";
+        BackGroundFname	= ":/PC1280/pc1280/pc-1280.png";
         LcdFname		= ":/PC1280/pc1280/1280lcd.jpg";
         SymbFname		= ":/PC1280/pc1280/1280symb.jpg";
         memsize			= 0x40000;

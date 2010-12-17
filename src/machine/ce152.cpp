@@ -117,6 +117,7 @@ bool Cce152::exit(void)
 {
     StopPlay();
 	EjectTape();
+    CPObject::exit();
 	return true;
 }
 

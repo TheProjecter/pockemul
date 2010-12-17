@@ -27,6 +27,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	pCPU		= 0;
 	pCONNECTOR	= 0;
 	pSIOCONNECTOR	= 0;
+    KeyMapLenght = 0;
 
     fp_log  = 0;
 	off			= TRUE;

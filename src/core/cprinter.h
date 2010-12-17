@@ -13,6 +13,7 @@ class Cprinter:public CPObject{
 public:
 	virtual void clearPaper(void) {};
 	virtual void SaveAsText(void) {};
+
 	CpaperWidget *paperWidget;
 	
 	Cprinter(CPObject *parent);

@@ -1,0 +1,6 @@
+<!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
+<model></model>
+<Keyboard>
+    <KEY description="FEED" height="30" left="621" scancode="0xc1" top="230" width="30"/>
+</Keyboard>
+</KEYBMAP>

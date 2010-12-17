@@ -747,7 +747,7 @@ void CPObject::UpdateFinalImage(void)
 
 void CPObject::KeyList()
 {
-		dialogkeylist = new DialogKeyList(pPC);
+        dialogkeylist = new DialogKeyList(this);
         dialogkeylist->show();
 }
 

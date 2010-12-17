@@ -49,9 +49,9 @@ typedef struct {
 
 	BYTE	Tapein;					//Tape loaded ? (0:no,other:yes)
 
-	bool	init(void);				//initialize
-	bool	exit(void);				//end
-	bool	run(void);
+    virtual bool	init(void);				//initialize
+    virtual bool	exit(void);				//end
+    virtual bool	run(void);
 	bool	GetWav(void);
 	bool	SetWav(bool);
 

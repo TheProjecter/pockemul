@@ -32,16 +32,7 @@ public:
 	virtual	bool run(void);					//check access
     virtual void resizeEvent ( QResizeEvent * );
 
-	Cce125()
-	{								//[constructor]
-		BackGroundFname	= ":/EXT/ext/ce-125.jpg";
-		Pc_DX	= 731;
-		Pc_DY	= 532;
-		SnapPts = QPoint(247,280);
-		setPaperPos(QPoint(377,0));
-
-		stackBehind = true;
-	};
+    Cce125(CPObject *parent = 0);
 	
 private:
 	Cce125tape* pTAPE;

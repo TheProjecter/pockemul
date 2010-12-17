@@ -2,13 +2,16 @@
 #include "ce152.h"
 
 TransMap KeyMapce125tape[]={
-1,	"EJECT/LOAD  ",	K_EJECT,34,234,	9,		//OK
-2,	"PLAY        ",	K_PLAY,156,234,	9,		//OK
-3,	"RECORD      ",	K_RECORD,194,234,9,		//OK
+    {1,	"EJECT/LOAD  ",	K_EJECT,34,234,	9},		//OK
+    {2,	"PLAY        ",	K_PLAY,156,234,	9},		//OK
+    {3,	"RECORD      ",	K_RECORD,194,234,9},		//OK
 };
 int KeyMapce125tapeLenght = 3;
 
-
+TransMap KeyMapce125[]={
+    {1,	"FEED  ",	K_PFEED,34,234,	9}		//OK
+};
+int KeyMapce125Lenght = 1;
 
 
 void Cce125tape::ComputeKey(void)
@@ -60,6 +63,20 @@ void Cce125tape::ComputeKey(void)
 		}
 };
 
+Cce125::Cce125(CPObject *parent):Cce126(parent)
+{								//[constructor]
+    BackGroundFname	= ":/EXT/ext/ce-125.jpg";
+    Pc_DX	= 731;
+    Pc_DY	= 532;
+    SnapPts = QPoint(247,280);
+    setPaperPos(QPoint(377,0));
+
+    stackBehind = true;
+    KeyMap		= KeyMapce125;
+    KeyMapLenght= KeyMapce125Lenght;
+    delete pKEYB; pKEYB=new Ckeyb(this,"ce125.map");
+}
+
 void Cce125::resizeEvent ( QResizeEvent * event ) {
     float ratio = (float)this->width()/this->Pc_DX ;
 
@@ -87,8 +104,8 @@ bool Cce125::init(void)
 
 bool Cce125::exit(void)
 {
+    pTAPE->exit();
 	delete pTAPE;
-	
 	
 	Cce126::exit();
 	return true;
