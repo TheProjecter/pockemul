@@ -23,5 +23,9 @@
         <file>ext/jack.png</file>
         <file>ext/ce-120p.jpg</file>
         <file>ext/clac2.wav</file>
+        <file>ext/mp-220.jpg</file>
+        <file>ext/ce-125load.png</file>
+        <file>ext/ce-125tape.png</file>
+        <file>ext/ce-125eject.png</file>
     </qresource>
 </RCC>

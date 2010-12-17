@@ -438,6 +438,15 @@
          </item>
          <item>
           <property name="text">
+           <string>MP-2200</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/mp-220.jpg</normaloff>:/EXT/ext/mp-220.jpg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>CE-123P</string>
           </property>
           <property name="icon">

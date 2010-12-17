@@ -14,7 +14,7 @@ public:
 	
 	Cce125tape(CPObject *parent = 0)	: Cce152(parent)
 	{									//[constructor]
-		BackGroundFname	= ":/EXT/ext/ce-125tape.jpg";
+        BackGroundFname	= ":/EXT/ext/ce-125tape.png";
 		Pc_DX	= 249;
 		Pc_DY	= 299;
 		KeyMap		= KeyMapce125tape;
@@ -36,6 +36,14 @@ public:
 	
 private:
 	Cce125tape* pTAPE;
+};
+
+class Cmp2200:public Cce125
+{
+public:
+
+    Cmp2200(CPObject *parent = 0);
+
 };
 
 
