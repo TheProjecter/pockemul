@@ -27,5 +27,7 @@
         <file>ext/ce-125load.png</file>
         <file>ext/ce-125tape.png</file>
         <file>ext/ce-125eject.png</file>
+        <file>ext/ce-125play.png</file>
+        <file>ext/ce-125record.png</file>
     </qresource>
 </RCC>

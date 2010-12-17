@@ -16,11 +16,12 @@ int KeyMapce125Lenght = 1;
 
 void Cce125tape::ComputeKey(void)
 {
+
 	if (pKEYB->LastKey == K_PLAY) 
 		{
             if (mode == LOAD)
 				{
-					BackGroundFname	= ":/EXT/ext/ce-125play.jpg";
+                    BackGroundFname	= playImage;
 					InitDisplay();
 					update();				
 					Play();	
@@ -36,7 +37,7 @@ void Cce125tape::ComputeKey(void)
 					InitDisplay();
 					update();
 					if (LoadTape())
-                        BackGroundFname	= ":/EXT/ext/ce-125load.png";
+                        BackGroundFname	= loadImage;
 					else
                         BackGroundFname	= ":/EXT/ext/ce-125tape.png";
 					InitDisplay();
@@ -45,13 +46,13 @@ void Cce125tape::ComputeKey(void)
 					InitDisplay();
 					update();
 					if (LoadTape())
-                        BackGroundFname	= ":/EXT/ext/ce-125load.png";
+                        BackGroundFname	= loadImage;
 					else
                         BackGroundFname	= ":/EXT/ext/ce-125tape.png";
 					InitDisplay();
 					update(); break;
 		case RECORD:
-        case PLAY : BackGroundFname	= ":/EXT/ext/ce-125load.png";
+        case PLAY : BackGroundFname	= loadImage;
 					InitDisplay();
 					update();
 					StopPlay(); break;
@@ -59,7 +60,10 @@ void Cce125tape::ComputeKey(void)
 	}
 	if (pKEYB->LastKey == K_RECORD) 
 		{
-			RecTape();	
+            RecTape();
+            BackGroundFname	= RECORD;
+            InitDisplay();
+            update();
 		}
 };
 
@@ -71,6 +75,7 @@ Cmp2200::Cmp2200(CPObject *parent):Cce125(parent)
 Cce125::Cce125(CPObject *parent):Cce126(parent)
 {								//[constructor]
     BackGroundFname	= ":/EXT/ext/ce-125.jpg";
+
     Pc_DX	= 731;
     Pc_DY	= 532;
     SnapPts = QPoint(247,280);
@@ -92,6 +97,7 @@ void Cce125::resizeEvent ( QResizeEvent * event ) {
               rect.height()*ratio);
 
     Cce126::resizeEvent(event);
+
 }
 
 bool Cce125::init(void)

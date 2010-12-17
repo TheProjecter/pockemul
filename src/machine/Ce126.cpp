@@ -47,9 +47,9 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     KeyMap      = KeyMapce126;
     KeyMapLenght= KeyMapce126Lenght;
     pKEYB		= new Ckeyb(this,"ce126.map");
-    Pc_DX	= 698;
+    Pc_DX	= 620;
     Pc_DY	= 488;
-    SnapPts = QPoint(672,150);
+    SnapPts = QPoint(594,145);
     setPaperPos(QPoint(150,-3));
     stackBehind = true;
 

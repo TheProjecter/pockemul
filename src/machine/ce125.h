@@ -15,12 +15,19 @@ public:
 	Cce125tape(CPObject *parent = 0)	: Cce152(parent)
 	{									//[constructor]
         BackGroundFname	= ":/EXT/ext/ce-125tape.png";
+        playImage = ":/EXT/ext/ce-125play.png";
+        recordImage=":/EXT/ext/ce-125record.png";
+        loadImage = ":/EXT/ext/ce-125load.png";
 		Pc_DX	= 249;
 		Pc_DY	= 299;
 		KeyMap		= KeyMapce125tape;
 		KeyMapLenght= KeyMapce125tapeLenght;
 		pKEYB		= new Ckeyb(this,"ce125tape.map");
-	};
+    }
+
+    QString playImage;
+    QString recordImage;
+    QString loadImage;
 
 };
 
