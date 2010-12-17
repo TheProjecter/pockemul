@@ -34,31 +34,29 @@ INLINE void Csc::AddState(BYTE n)
     ticks+=(n);
 	ticks2+=(n);
 
-#if 0
+#if 1
     div500  = (ticks >= XTICKS);
     div2    = (ticks2>= XTICK2);
 #else
     if (ticks >= XTICKS)
     {
         div500 = true;
-        ticks -= XTICKS;
+        ticks =0;
     }
     if (ticks2 >= XTICK2)
     {
         div2 = true;
-        ticks -= XTICK2;
+        ticks2 =0;
     }
 #endif
 
-    if (resetFlag)
-    {
+    if (resetFlag) {
         ticksReset+=(n);
         if (ticksReset >= XTICKRESET)
         {
             resetFlag = false;
             ticksReset = 0;
         }
-
     }
 
     backgroundTasks();
@@ -107,49 +105,59 @@ void Csc::compute_xout(void)
 		case 0x00 : Xout = false;
 					start2khz = 0;
 					start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT LOW\n");
 					break;
 					
 		case 0x01 : Xout = true;
 					start2khz = 0;
 					start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT HIGH\n");
 					break;
 					
 		case 0x02 : // 2khz
                     start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT 2Khz\n");
                     if (start2khz == 0){
 						start2khz = pPC->pTIMER->state;
+                        if (fp_log) fprintf(fp_log,"XOUT 2Khz INIT\n");
                         Xout = true;
 					}
 					delta = pPC->pTIMER->state - start2khz;
-					if (delta >= wait2khz){
+                    while ((pPC->pTIMER->state - start2khz) >= wait2khz){
                         Xout = !Xout;
                         start2khz += wait2khz;
+                        if (fp_log) fprintf(fp_log,"XOUT 2Khz switch\n");
 					}
 					break;
 					
 		case 0x03 : // 4khz
                     start2khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT 4Khz\n");
                     if (start4khz==0)
 					{
 						start4khz = pPC->pTIMER->state;
+                        if (fp_log) fprintf(fp_log,"XOUT 4Khz INIT\n");
                         Xout = true;
 					}
 					delta = pPC->pTIMER->state - start4khz;
-                    if (delta >= wait4khz)
+                    while (( pPC->pTIMER->state - start4khz) >= wait4khz)
 					{
 						Xout = !Xout;
                         start4khz += wait4khz;
+                        if (fp_log) fprintf(fp_log,"XOUT 4Khz switch\n");
 					}
 					break;
 					
 		case 0x04 : Xout = false;
 					start2khz = 0;
 					start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT LOW");
 					break;
 					
 		case 0x05 : Xout = true;
 					start2khz = 0;
 					start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT HIGH\n");
 					break;
 		
 		case 0x06 :
@@ -1110,16 +1118,42 @@ INLINE void Csc::Op_38(void)
 //----------------------------
 INLINE void Csc::Op_39(void)
 {
-	register BYTE	t;
+    // Due to synhronization issue (mainly about tape) 7 cycles in one shot is not acceptable
+    // I split this instruction in 2 steps
+#if 0
+    BYTE	t;
+    BYTE st=0;
     t=pPC->Get_PC(reg.d.pc++);
 	AddLog(LOG_CPU,tr("JRZM %1").ARG2x(t));
 	
 	if(reg.r.z)
 	{
 		reg.d.pc-=(t+1);
-		AddState(3);
+        st=3;
 	}
-	AddState(4);
+    AddState(st+4);
+#else
+    static bool first_pass=true;
+    BYTE	t;
+    BYTE st=0;
+    if (first_pass) {
+        AddState(4);
+        first_pass=false;
+        reg.d.pc--;
+    }
+    else {
+        first_pass=true;
+        t=pPC->Get_PC(reg.d.pc++);
+        AddLog(LOG_CPU,tr("JRZM %1").ARG2x(t));
+
+        if(reg.r.z)
+        {
+            reg.d.pc-=(t+1);
+            AddState(3);
+        }
+    }
+
+#endif
 }
 //----------------------------
 // JRCP n
@@ -1310,29 +1344,33 @@ INLINE void Csc::Op_4e(void)
 {
 #if 1
 	
-	if (!loop_running)
+    if (!wait_loop_running)
 	{
-		loop_running = true;
+        wait_loop_running = true;
 		AddState(6);
         op_local_counter=pPC->Get_PC(reg.d.pc++);
+        if (fp_log) fprintf(fp_log,"START WAIT -6: %i\n",op_local_counter);
 		AddLog(LOG_CPU,tr("WAIT %1").ARG2x(op_local_counter));
 		reg.d.pc--;
 	}
-    if (op_local_counter>5)
-	{
-        AddState(5);
-        op_local_counter-=5;
-		reg.d.pc--;
-	}
-	else
+//    if (op_local_counter>5)
+//    {
+//        AddState(5);
+//        op_local_counter-=5;
+//        if (fp_log) fprintf(fp_log,"current WAIT -5: %i\n",op_local_counter);
+//        reg.d.pc--;
+//    }
+//    else
 	if (op_local_counter--)
 	{
 		AddState(1);
+        if (fp_log) fprintf(fp_log,"current WAIT -1: %i\n",op_local_counter);
 		reg.d.pc--;
 	}
 	else
 	{
-		loop_running = false;
+        wait_loop_running = false;
+        if (fp_log) fprintf(fp_log,"FIN WAIT : %i\n",op_local_counter);
 		reg.d.pc++;
 	}
 #else
@@ -1698,6 +1736,7 @@ INLINE void Csc::Op_6b(void)
     t = pPC->Get_PC(reg.d.pc++);
 
 	reg.r.z = 0;
+
 	switch (t)
 	{
 	case 0x01: 
@@ -1744,7 +1783,7 @@ INLINE void Csc::Op_6b(void)
 				break;
 	}
 
-    AddState(4);
+        AddState(4);
 }
 
 //----------------------------
@@ -2139,8 +2178,12 @@ INLINE void Csc::Op_df(void)
         div500 = div2 = false;
     }
     power_on = !(pPC->Get_Port(PORT_C) & 8);
-    //start2khz = start4khz = 0;
+    //if ((pPC->Get_Port(PORT_C) & 2)
+    start2khz = start4khz = 0;
 
+    compute_xout();
+
+    if (fp_log) fprintf(fp_log,"check outc %lld %d\n",pPC->pTIMER->state,pPC->Get_Port(PORT_C)>>4)
 	AddLog(LOG_CPU,"OUTC");
     AddState(2);
 }
@@ -2229,59 +2272,50 @@ INLINE void Csc::Op_e0(BYTE Op)
 //--------------------------
 INLINE void Csc::Op_6f(void)
 {
-		
-	if (! loop_running)
-	{
-		loop_running = true;
+    if (! cdn_loop_running) {
+        cdn_loop_running = true;
 		op_local_counter = I_REG_I;
 		AddState(1);
 	}
 
 	reg.r.z = 1;
 
-	AddState(4);
+    op_local_counter--;
 	reg.r.p++;	reg.r.p &=0x7F;
-	if (!Get_Xin())
-	{
+
+    if (!Get_Xin()) {
 		reg.r.z = 0;
-		loop_running = false;
+        cdn_loop_running = false;
 	}
-	else
-	{
-		op_local_counter--;
-		if (op_local_counter )	{	reg.d.pc--;	}
-		else loop_running = false;
-	}
+    else {
+        if (op_local_counter )	{	reg.d.pc--;	}
+    }
+    AddState(4);
 }
+
 //--------------------------
 //	CUP		tmp:=I;Z:=1;{if(Xin){Z:=0;break;}}while(tmp--)
 // Transform to a reentrent function with static loop pointer
 //--------------------------
 INLINE void Csc::Op_4f(void)
-{
-	
-	if (! loop_running)
-	{
-		loop_running = true;
+{	
+    if (! cup_loop_running) {
+        cup_loop_running = true;
 		op_local_counter = I_REG_I;
 		AddState(1);
 	}
 
 	reg.r.z = 1;
-
-	AddState(4);
-	reg.r.p++;	reg.r.p &=0x7F;
-	if (Get_Xin())
-	{
+    op_local_counter--;
+    reg.r.p++;	reg.r.p &=0x7F;
+    if (Get_Xin()) {
 		reg.r.z = 0;
-		loop_running = false;
+        cup_loop_running = false;
 	}
-	else
-	{
-		op_local_counter--;
-		if (op_local_counter)	{	reg.d.pc--;	}
-		else loop_running = false;
-	}
+    else {
+        if (op_local_counter)	{	reg.d.pc--;	}
+    }
+    AddState(4);
 }
 
 //--------------------------
@@ -2317,6 +2351,7 @@ INLINE void Csc::Op_7a(void)
 	if (op != 0x69)
 	{
 		AddLog(LOG_CPU,"ERREUR !!! CASE1 Without CASE2");
+        MSG_ERROR("ERREUR SC61860 !!! CASE1 Without CASE2");
 	}
 
 	ind = 0;
@@ -2787,7 +2822,7 @@ void Csc::step(void)
 	reg.d.pc++;
 //	fprintf(fp_tmp,"%2X - ",pPC->Get_8(t));
     OpExec(pPC->Get_PC(t));
-    backgroundTasks();
+//    backgroundTasks();
 
 }
 

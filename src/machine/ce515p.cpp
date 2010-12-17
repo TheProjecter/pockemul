@@ -174,15 +174,11 @@ bool Cce515p::exit(void)
 bool Cce515p::init(void)
 {
     CPObject::init();
-    QResource res(":/EXT/clac2.wav");
-
-        //QByteArray b(qUncompress(resource.data(), resource.size()));
-
 
 #ifndef NO_SOUND
-    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) qUncompress(res.data(), res.size()).data(), 0, 0, 0);
+    QResource res(":/EXT/ext/clac2.wav");
+    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
 #endif
-
     setfrequency( 0);
 
     WatchPoint.add(&pCONNECTOR_value,8,5,this,"Internal connector");

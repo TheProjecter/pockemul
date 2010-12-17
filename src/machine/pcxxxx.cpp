@@ -328,6 +328,9 @@ void CpcXXXX::Set_16r(DWORD adr,WORD d)
 /*****************************************************************************/
 bool CpcXXXX::init(void)
 {
+#ifndef QT_NO_DEBUG
+    pCPU->logsw = true;
+#endif
 	CPObject::init();
 	
 	AddLog(LOG_FUNC,"CpcXXXX::init");
@@ -364,6 +367,7 @@ bool CpcXXXX::init(void)
 	WatchPoint.add((qint64 *) &IO_F,8,8,this,"Port F");
 	
 	initsound();
+
 	return(1);
 }
 
@@ -416,6 +420,7 @@ bool CpcXXXX::run(void)
 #if 1
 		if ( (pCPU->logsw) && (pCPU->fp_log) )
 		{
+            fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
             Regs_Info(1);
 
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);

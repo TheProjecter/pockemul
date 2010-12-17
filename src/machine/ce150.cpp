@@ -1,4 +1,6 @@
 #include <QPainter>
+#include <QResource>
+
 #include "common.h" 
 #include "ce150.h"
 #include "pc1500.h"
@@ -271,7 +273,8 @@ bool Cce150::init(void)
 	CPObject::init();
 	
 #ifndef NO_SOUND
-    clac = FSOUND_Sample_Load(FSOUND_FREE, "clac2.wav", 0, 0, 0);
+    QResource res(":/EXT/ext/clac2.wav");
+    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
 #endif
 
 	setfrequency( 0);

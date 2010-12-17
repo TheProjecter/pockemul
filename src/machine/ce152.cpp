@@ -106,6 +106,7 @@ bool Cce152::init(void)
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
 
+if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
     return true;
 }
 
@@ -161,10 +162,13 @@ bool Cce152::GetWav(void)
     }
 
 	// Calculate nb of byte to skip corresponding to the CPU frequency
-    qint64 wait = counter * (pTIMER->pPC->getfrequency() / info.freq);
-    if ((pTIMER->state - first_state) >= wait) {
+    qint64 wait =  (pTIMER->pPC->getfrequency() / info.freq);
+    //qint64 delta = (pTIMER->state - first_state);
+    while ((pTIMER->state - first_state) >= wait) {
 		GetWav_Val = myfgetc(&info);
+        fprintf(fp_tape,"delta=%lld val=%s c=%lld\n",(pTIMER->state - first_state),(GetWav_Val>0x10)?"1":"0",counter);
 		counter++;
+        first_state +=wait;
 	}
 
 	return ((GetWav_Val>0x10)?true:false);
@@ -190,6 +194,7 @@ int Cce152::myfgetc(WavFileInfo* ptrFile)
 
 bool Cce152::SetWav(bool bit)
 {
+    static qint64 previous_state=0;
     if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
 //fprintf(fp_tape,"setwav - mode=%d",mode);
 	if (mode != RECORD) return false;			// Return 0 If not PLAY mode
@@ -207,9 +212,10 @@ bool Cce152::SetWav(bool bit)
 
 //    if (pTIMER->pPC->pCPU) fprintf(fp_tape," Xout=%d - ",pTIMER->pPC->pCPU->Get_Xout());
 
-    if ((pTIMER->state - first_state) >= wait)
+    while ((pTIMER->state - first_state) >= wait)
 	{
-        fprintf(fp_tape,"delta=%lld val=%s c=%lld\n",delta,bit?"1":"0",counter);
+        fprintf(fp_tape,"state=%lld diff=%lld delta=%lld val=%s c=%lld\n",pTIMER->state,pTIMER->state-previous_state,delta,bit?"1":"0",counter);
+        previous_state = pTIMER->state;
         int error = fputc ( (bit?0xFF:0x00), info.ptrFd) ;
         counter++;
         first_state +=wait;
@@ -368,10 +374,10 @@ int Cce152::RecTape(void)
 
     // create th header
     WriteHeadToWav (10,
-                    pTIMER->pPC->Tape_Base_Freq*2,
+                    16000,//pTIMER->pPC->Tape_Base_Freq*2,
                     &info);
-    info.bitLen = 0x10;
-    info.freq = pTIMER->pPC->Tape_Base_Freq*2;
+    info.bitLen = 0x20;
+    info.freq = 16000;//pTIMER->pPC->Tape_Base_Freq*2;
 //       ptrFile->bitLen = (freq * 8) / ptrFile->freq ;
 
 

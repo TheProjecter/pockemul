@@ -145,7 +145,7 @@ public:
 
 		start2khz = 0;
 		start4khz = 0;
-		loop_running = false;
+        wait_loop_running = cup_loop_running = cdn_loop_running = false;
 		op_local_counter = 0;
 	};
 private:
@@ -165,8 +165,8 @@ private:
 	qint64	start2khz;
 	qint64	start4khz;
 	
-	bool	loop_running;
-	BYTE	op_local_counter;
+    bool	wait_loop_running,cup_loop_running,cdn_loop_running;
+    int     op_local_counter;
 	
 	void  Op_00(void);
 	void  Op_01(void);
