@@ -89,6 +89,7 @@ enum Models {
     EMPTY,
 
     PC1245,
+    MC2200,
     PC1250,
     PC1251,
     PC1255,

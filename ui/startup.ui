@@ -109,6 +109,15 @@
          </item>
          <item>
           <property name="text">
+           <string>MC 2200</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1245.qrc">
+            <normaloff>:/PC1245/pc1245/mc2200.png</normaloff>:/PC1245/pc1245/mc2200.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>PC 1250</string>
           </property>
           <property name="icon">

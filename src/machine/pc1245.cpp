@@ -69,3 +69,33 @@ BYTE	Cpc1245::Get_PortB(void)
 	int ret = (retval & ~data) | (IO_B & 0xf0);
 	return (ret);
 }
+
+Cmc2200::Cmc2200(CPObject *parent)	: Cpc1245(parent)
+{								//[constructor]
+    setcfgfname("mc2200");
+
+    SessionHeader	= "MC2200PKM";
+    SessionHeaderLen= 9;
+    Initial_Session_Fname ="mc2200.pkm";
+
+    BackGroundFname	= ":/PC1245/pc1245/mc2200.png";
+    LcdFname		= ":/PC1245/pc1245/mc2200lcd.png";
+    SymbFname		= ":/PC1245/pc1245/mc2200symb.png";
+
+    Lcd_X		= 125;
+    Lcd_Y		= 54;
+    Lcd_DX		= 96;
+    Lcd_DY		= 8;
+    Lcd_ratio_X	= (float) 2;
+    Lcd_ratio_Y	= (float) 2;
+
+    Lcd_Symb_X	= 125;
+    Lcd_Symb_Y	= 40;
+    Lcd_Symb_DX	= 173;
+    Lcd_Symb_DY	= 5;
+    Lcd_Symb_ratio_X	= 1;
+    pLCDC->Color_Off.setRgb(
+                        (int) (132 * pLCDC->contrast),
+                        (int) (143 * pLCDC->contrast),
+                        (int) (127 * pLCDC->contrast));
+}

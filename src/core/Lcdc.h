@@ -157,10 +157,10 @@ public:
 							(int) (0x7e*contrast),
 							(int) (0x94*contrast),
 							(int) (0x90*contrast));
-	};
+    }
 	virtual ~Clcdc_pc1245()
 	{						//[constructor]
-	};
+    }
 
 };
 

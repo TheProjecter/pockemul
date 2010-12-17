@@ -74,6 +74,7 @@ CPObject *pPC=0;
 
         case EMPTY	: return 0;
         case PC1245	: pPC = new Cpc1245;	pPC->setName("PC-1245");break;
+        case MC2200	: pPC = new Cmc2200;	pPC->setName("MC-2200");break;
         case PC1250	: pPC = new Cpc1250;	pPC->setName("PC-1250");break;
         case PC1251	: pPC = new Cpc1251;	pPC->setName("PC-1251");break;
         case PC1251H: pPC = new Cpc1251H;	pPC->setName("PC-1251H");break;

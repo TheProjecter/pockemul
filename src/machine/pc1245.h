@@ -5,10 +5,19 @@
 
 class Cpc1245:public Cpc1250{
 public:
-    const char*	GetClassName(){ return("Cpc1245");};
+    const char*	GetClassName(){ return("Cpc1245");}
 	BYTE	Get_PortB(void);
 
 	Cpc1245(CPObject *parent = 0);
+
+private:
+};
+
+class Cmc2200:public Cpc1245{
+public:
+    const char*	GetClassName(){ return("Cmc2200");}
+
+    Cmc2200(CPObject *parent = 0);
 
 private:
 };
