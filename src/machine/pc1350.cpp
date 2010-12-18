@@ -16,7 +16,7 @@
 bool Cpc13XX::init(void)
 {
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+    //pCPU->logsw = true;
 #endif
 	CpcXXXX::init();
     initExtension();

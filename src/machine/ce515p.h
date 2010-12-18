@@ -19,7 +19,6 @@
 #define PEN_UP	0
 #define PEN_DOWN 1
 
-class Cprinter;
 
 extern TransMap KeyMapce150[];
 extern int KeyMapce150Lenght;
@@ -115,7 +114,7 @@ public:
         ce515pdisplay=0;
         needRedraw = true;
         stackBehind = true;
-        setPaperPos(QPoint(0,0));
+        setPaperPos(QRect(75,46,380,170));
 
 #ifndef NO_SOUND
         clac = NULL;

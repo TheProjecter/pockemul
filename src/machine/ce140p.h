@@ -20,6 +20,10 @@ public:
 
     Cce140p(CPObject *parent = 0);
 
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
+//    void ShowConsole(void);
+//    void HideConsole(void);
 };
 
 #endif // CE140P_H

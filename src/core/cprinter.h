@@ -21,12 +21,11 @@ public:
 
     virtual void resizeEvent ( QResizeEvent * );
 	
-	int paper_X,paper_Y;
-    int paper_DX,paper_DY;
+    QRect pos;
     QRect PaperWidgetRect;
 
-	void setPaperPos(QPoint);
-	QPoint PaperPos();
+    void setPaperPos(QRect);
+    QRect PaperPos();
 	
 protected:
 	QColor	PaperColor;

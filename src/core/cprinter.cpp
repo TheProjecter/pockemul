@@ -9,8 +9,8 @@ Cprinter::Cprinter(CPObject *parent):CPObject(parent)
 {
 	PaperColor = QColor(255,255,255);
 	paperWidget = 0;
-	paper_X = 0;
-	paper_Y = 0;
+    pos=QRect(0,0,0,0);
+
 }
 
 Cprinter::~Cprinter()
@@ -29,13 +29,12 @@ void Cprinter::resizeEvent ( QResizeEvent * ) {
 }
 
 
-void Cprinter::setPaperPos(QPoint pos)
+void Cprinter::setPaperPos(QRect pos)
 {
-	paper_X = pos.x();
-	paper_Y = pos.y();
+    this->pos = pos;
 }
 
-QPoint Cprinter::PaperPos()
+QRect Cprinter::PaperPos()
 {
-	return(QPoint(paper_X,paper_Y));
+    return(pos);
 }

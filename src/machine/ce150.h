@@ -104,7 +104,7 @@ public:
 		ce150display=0;
 		needRedraw = true;
 		stackBehind = true;
-		setPaperPos(QPoint(0,0));
+        setPaperPos(QRect(0,0,0,0));
 		
 #ifndef NO_SOUND
 		clac = NULL;

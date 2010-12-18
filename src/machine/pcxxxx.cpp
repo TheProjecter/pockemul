@@ -330,7 +330,7 @@ void CpcXXXX::Set_16r(DWORD adr,WORD d)
 bool CpcXXXX::init(void)
 {
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+    //pCPU->logsw = true;
 #endif
 	CPObject::init();
 	

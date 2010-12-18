@@ -196,7 +196,7 @@ bool Cce515p::init(void)
     clearPaper();
 
     // Create a paper widget
-    paperWidget = new CpaperWidget(QRect(75,46,380,170),ce515pbuf,pTIMER->pPC);
+    paperWidget = new CpaperWidget(pos,ce515pbuf,pTIMER->pPC);
     paperWidget->show();
 
     Sii_wait = 0;

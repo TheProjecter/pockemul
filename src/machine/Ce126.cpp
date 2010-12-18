@@ -50,7 +50,8 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     Pc_DX	= 620;
     Pc_DY	= 488;
     SnapPts = QPoint(594,145);
-    setPaperPos(QPoint(150,-3));
+    setPaperPos(QRect(150,-3,207,149));
+
     stackBehind = true;
 
     ctrl_char = false;
@@ -181,7 +182,8 @@ bool Cce126::init(void)
 //	bells	 = new QSound("ce.wav");	
 
 // Create a paper widget
-	paperWidget = new CpaperWidget(QRect(PaperPos().x(),PaperPos().y(),207,149),ce126buf,this);
+
+    paperWidget = new CpaperWidget(PaperPos(),ce126buf,this);
 	paperWidget->show();
 	
 //	SET_PIN(PIN_ACK,DOWN);
