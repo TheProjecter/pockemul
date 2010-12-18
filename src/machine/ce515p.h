@@ -49,6 +49,7 @@ public:
 };
 
 class Cce515p:public Cprinter{
+    Q_OBJECT
 public:
 
     virtual bool		run(void);
@@ -72,7 +73,7 @@ public:
     void    set_SD(quint8);
     void    drawChar(quint8 data);
     void    DrawMove(int lenght,int dir,bool penDown);
-    void    Command(quint8);
+
     void    ProcessEscCommand(void);
     void    ProcessGraphCommand(void);
     void    ProcessMultiPointCommand(QString);
@@ -125,7 +126,8 @@ public:
     }
 public:
 
-
+protected slots:
+    void    Command(quint8);
 
 protected:
     bool		Next_Color(void);

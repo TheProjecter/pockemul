@@ -117,7 +117,7 @@ public:
 	virtual ~Csio(){
 		delete(pSIOCONNECTOR);
 	};
-protected:
+public:
 	void paintEvent(QPaintEvent *);
 
 protected slots:
@@ -126,6 +126,7 @@ protected slots:
     void HideConsole(void);
 signals:
     void valueChanged(int v);
+    void newData(qint8);
 
 private:
 	int		inBitNb;

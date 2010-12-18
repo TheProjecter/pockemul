@@ -234,6 +234,10 @@ void Csio::ExportBit(bool data) {}
 void Csio::ExportByte(qint8 data)
 {
 	baOutput.append( (char) data);
+
+    // Emit signal new data
+    emit newData(data);
+
 	Refresh_Display = true;
 }
 

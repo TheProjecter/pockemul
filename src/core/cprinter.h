@@ -11,8 +11,8 @@ class Cprinter:public CPObject{
 //Q_OBJECT
 
 public:
-	virtual void clearPaper(void) {};
-	virtual void SaveAsText(void) {};
+    virtual void clearPaper(void) {}
+    virtual void SaveAsText(void) {}
 
 	CpaperWidget *paperWidget;
 	

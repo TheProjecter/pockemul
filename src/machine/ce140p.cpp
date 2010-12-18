@@ -1,17 +1,22 @@
+#include <QPainter>
+
 #include "ce140p.h"
 #include "Keyb.h"
 
+
 TransMap KeyMapce140p[]={
-    {1,	"FEED  ",	K_PFEED,34,234,	9}
+    {1,	"FEED  ",	K_PFEED,34,234,	9},
+    {2, "PRINTER ON",K_PRINT_ON,34,200,9},
+    {3, "SIO ON",K_PRINT_OFF,35,150,9}
 };
-int KeyMapce140pLenght = 1;
+int KeyMapce140pLenght = 3;
 
 
 Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     //setfrequency( 0);
-
+    setcfgfname(QString("ce140p"));
     BackGroundFname	= ":/EXT/ext/ce-140p.png";
-
+    printerSwitch =true;
 
     pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true); publish(pSIOCONNECTOR);
     //pTIMER		= new Ctimer(this);
@@ -30,16 +35,29 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
 bool Cce140p::init(void) {
 
     Cce515p::init();
+
+
     WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
     pSIO = new Csio(this);
 
     if (pSIO) pSIO->init();
 
+    connect(pSIO,SIGNAL(newData(qint8)),this,SLOT(Command(qint8)));
+
     return true;
 }
 
 bool Cce140p::run(void) {
-    //pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+
+    pSIO->pSIOCONNECTOR->Set_values(pSIOCONNECTOR_value);
+    // Be sure pSIO TIMER IS Connected to CE140p TIMER (can change if connect/unconnect action)
+    pSIO->pTIMER = pTIMER;
+
+    pSIO->run();
+    if (pSIO->Refresh_Display) Refresh_Display=true;
+
+    pSIOCONNECTOR->Set_values(pSIO->pSIOCONNECTOR->Get_values());
 
     return true;
 }
@@ -63,4 +81,37 @@ void Cce140p::contextMenuEvent ( QContextMenuEvent * event )
     menu.addAction(tr("Hide console"),pSIO,SLOT(HideConsole()));
 
     menu.exec(event->globalPos () );
+}
+
+void Cce140p::ComputeKey(void)
+{
+
+    if (pKEYB->LastKey == K_PRINT_ON) {
+        printerSwitch = true;
+    }
+    if (pKEYB->LastKey == K_PRINT_OFF) {
+        printerSwitch = false;
+    }
+}
+
+void Cce140p::UpdateFinalImage(void) {
+    Cce515p::UpdateFinalImage();
+
+    // Draw switch by 180° rotation
+    QPainter painter;
+
+    // PRINTER SWITCH
+    painter.begin(FinalImage);
+    painter.drawImage(800,430,FinalImage->copy(800,430,22,14).mirrored(!printerSwitch,false));
+
+    painter.end();
+
+    Refresh_Display = true;
+}
+
+void Cce140p::paintEvent(QPaintEvent *event)
+{
+    Cce515p::paintEvent(event);
+    pSIO->paintEvent(event);
+
 }

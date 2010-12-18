@@ -1,6 +1,7 @@
 #ifndef CE140P_H
 #define CE140P_H
 
+
 #include "sio.h"
 #include "ce515p.h"
 
@@ -12,6 +13,8 @@ public:
     virtual bool init(void);				//initialize
     virtual bool exit(void);				//end
     //virtual void ExportByte(qint8);
+    virtual void ComputeKey(void);
+    virtual void UpdateFinalImage(void);
 
     Csio *pSIO;
     Cconnector *pSIOCONNECTOR; qint64 pSIOCONNECTOR_value;
@@ -19,11 +22,14 @@ public:
 
 
     Cce140p(CPObject *parent = 0);
-
+protected:
+    void paintEvent(QPaintEvent *);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
 //    void ShowConsole(void);
 //    void HideConsole(void);
+private:
+    bool    printerSwitch;
 };
 
 #endif // CE140P_H
