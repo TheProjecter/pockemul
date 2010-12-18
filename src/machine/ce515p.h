@@ -52,10 +52,10 @@ public:
 class Cce515p:public Cprinter{
 public:
 
-    bool		run(void);
+    virtual bool		run(void);
     void		Print(CMove);
-    bool		init(void);
-    bool		exit(void);
+    virtual bool		init(void);
+    virtual bool		exit(void);
 
     const char		*PaperFname;
     int			Paper_X,Paper_Y,Paper_DX,Paper_DY;

@@ -65,6 +65,7 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "CE-126P")	result = CE126P;
     if (ItemText == "CE-123P")	result = CE123P;
     if (ItemText == "CE-129P")	result = CE129P;
+    if (ItemText == "CE-140P")	result = CE140P;
     if (ItemText == "CE-150")	result = CE150;
     if (ItemText == "CE-152")	result = CE152;
     if (ItemText == "26-3591")	result = TANDY263591;

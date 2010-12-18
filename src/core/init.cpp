@@ -47,6 +47,7 @@
 #include "sio.h"
 #include "Ce126.h"
 #include "ce125.h"
+#include "ce140p.h"
 #include "clink.h"
 #include "ccable.h"
 
@@ -111,6 +112,7 @@ CPObject *pPC=0;
         case CE126P : pPC = new Cce126;		pPC->setName("CE-126P");break;
         case CE123P : pPC = new Cce123;		pPC->setName("CE-123P");break;
         case CE129P : pPC = new Cce129;		pPC->setName("CE-129P");break;
+        case CE140P : pPC = new Cce140p;	pPC->setName("CE-140P");break;
         case CE150  : pPC = new Cce150;		pPC->setName("CE-150");break;
         case CE152  : pPC = new Cce152;		pPC->setName("CE-152");break;
         case TANDY263591: pPC = new C263591;	pPC->setName("26-3591");break;

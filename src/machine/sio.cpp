@@ -75,7 +75,8 @@ void Csio::HideConsole(void) {
 
 bool Csio::run(void)
 {
-	
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+
 	// Read connector
 	Set_SD( SIO_GET_PIN(SIO_SD) );
 	Set_RR( SIO_GET_PIN(SIO_RR) );
@@ -303,6 +304,7 @@ static long oldstate	= pTIMER->state;
 /*****************************************************************************/
 bool Csio::init(void)
 {
+
 	AddLog(LOG_MASTER,"SIO initializing...");
 
 	CD = CS = ER = RD = RR = RS = SD = 0;
@@ -318,6 +320,9 @@ bool Csio::init(void)
     connect(this,SIGNAL(valueChanged(int)),dialogconsole->inputProgressBar,SLOT(setValue(int)));
 
 	AddLog(LOG_MASTER,"done.\n");
+
+    WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
+
 	return true;
 }
 

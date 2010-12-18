@@ -121,6 +121,7 @@ enum Models {
     CE126P,
     CE123P,
     CE129P,
+    CE140P,
     CE150,
     CE152,
     TANDY263591,

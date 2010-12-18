@@ -8,6 +8,7 @@
 #include "Connect.h"
 #include "pobject.h"
 #include "Inter.h"
+#include "init.h"
 
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
 class DialogConsole;
@@ -21,17 +22,17 @@ public:
 	QByteArray baOutput;
 	QByteArray baInput;
 		
-	Cconnector	*pSIOCONNECTOR;
+    Cconnector	*pSIOCONNECTOR; qint64 pSIOCONNECTOR_value;
 
-	bool run(void);
+    virtual bool run(void);
 
-	bool init(void);				//initialize
-	bool exit(void);				//end
+    virtual bool init(void);				//initialize
+    virtual bool exit(void);				//end
 	void Set_SI(void);				//serial in 
 	void Put_SO(void);				//serial out
 
 	void ExportBit(bool);
-	void ExportByte(qint8);
+    virtual void ExportByte(qint8);
 
     void Set_BaudRate(int);
     int  Get_BaudRate(void);
