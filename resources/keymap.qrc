@@ -13,5 +13,10 @@
         <file>keymap/pc1600.map</file>
         <file>keymap/pc2500.map</file>
         <file>keymap/trspc2.map</file>
+        <file>keymap/263591.map</file>
+        <file>keymap/ce120.map</file>
+        <file>keymap/ce123.map</file>
+        <file>keymap/ce129.map</file>
+        <file>keymap/ce126.map</file>
     </qresource>
 </RCC>

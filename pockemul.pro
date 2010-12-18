@@ -116,7 +116,8 @@ HEADERS += src/core/Connect.h \
     src/machine/pc1280.h \
     src/core/Keyb1280.h \
     src/core/qhexedit.h \
-    src/core/qhexedit_p.h
+    src/core/qhexedit_p.h \
+    src/machine/ce140p.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -244,7 +245,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/pc1421.cpp \
     src/machine/pc1280.cpp \
     src/core/qhexedit.cpp \
-    src/core/qhexedit_p.cpp
+    src/core/qhexedit_p.cpp \
+    src/machine/ce140p.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
@@ -273,4 +275,8 @@ OTHER_FILES += \
     resources/pockemul/release_notes.html \
     resources/keymap/ce125tape.map \
     resources/keymap/ce126.map \
-    resources/keymap/ce125.map
+    resources/keymap/ce125.map \
+    resources/keymap/ce129.map \
+    resources/keymap/ce123.map \
+    resources/keymap/ce120.map \
+    resources/keymap/263591.map

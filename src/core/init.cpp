@@ -166,7 +166,9 @@ void CPocketThread::run()
 
 					pause = false;
 				}
-				if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->captureData();
+                if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
+                    mainwindow->dialoganalogic->captureData();
+                }
 			}
 			if (pPC->toDestroy)
 			{
@@ -178,7 +180,7 @@ void CPocketThread::run()
 				emit Destroy(pPC);
 			}
         }
-		if (pause) usleep(1);	
+        if (pause) usleep(10);
     }
 }
 

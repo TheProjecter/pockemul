@@ -191,7 +191,7 @@ bool Cpc2500::run(void)
 
 bool Cpc2500::Set_Connector(void)
 {
-#if 0
+#if 1
     // MANAGE STANDARD CONNECTOR
     pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
     pCONNECTOR->Set_pin(PIN_GND		,0);
@@ -218,7 +218,7 @@ bool Cpc2500::Get_Connector(void)
     // MANAGE STANDARD CONNECTOR
     Set_Port_Bit(PORT_B,8,0);	// DIN	:	IB8
     Set_Port_Bit(PORT_B,7,1);	// ACK	:	IB7
-    //pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+    pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
 
     // MANAGE SERIAL CONNECTOR
     // TO DO

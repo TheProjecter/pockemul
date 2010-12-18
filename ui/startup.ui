@@ -39,7 +39,7 @@
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>Pocket</string>
+       <string>All Pockets</string>
       </attribute>
       <layout class="QVBoxLayout">
        <property name="spacing">
@@ -100,7 +100,7 @@
          </property>
          <item>
           <property name="text">
-           <string>PC 1245</string>
+           <string extracomment="le petit">PC 1245</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1245.qrc">

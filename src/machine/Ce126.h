@@ -82,6 +82,7 @@ public:
         setPaperPos(QPoint(89,185-149));
 
         stackBehind = true;
+        delete pKEYB; pKEYB=new Ckeyb(this,"ce120.map");
     }
 };
 
@@ -97,6 +98,7 @@ public:
 		setPaperPos(QPoint(89,185-149));
 
 		stackBehind = true;
+        delete pKEYB; pKEYB=new Ckeyb(this,"ce123.map");
 	};
 };
 
@@ -110,6 +112,7 @@ public:
 		Pc_DY	= 566;
         SnapPts = QPoint(88,288);
 		setPaperPos(QPoint(89,185-149));
+        delete pKEYB; pKEYB=new Ckeyb(this,"ce129.map");
 
 		stackBehind = true;
 	};
@@ -128,6 +131,7 @@ public:
         setPaperPos(QPoint(78,0));
 
         stackBehind = true;
+        delete pKEYB; pKEYB=new Ckeyb(this,"263591.map");
     };
 
 private:

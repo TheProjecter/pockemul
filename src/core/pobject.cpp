@@ -15,7 +15,7 @@
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
-
+#define NEW_SOUND 0
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
 	{
@@ -141,7 +141,7 @@ int CPObject::initsound()
 {
     int DataFrequencyHz = 8000;
     int BufferSize      = 800;
-
+#if NEW_SOUND
     QAudioDeviceInfo m_device(QAudioDeviceInfo::defaultOutputDevice());
     m_format.setFrequency(DataFrequencyHz);
     m_format.setChannels(1);
@@ -165,6 +165,7 @@ int CPObject::initsound()
     m_output = m_audioOutput->start();
     int p = m_audioOutput->periodSize();
     qWarning()<<p;
+#endif
 #ifndef NO_SOUND
 	unsigned int mode;
 	int lenbytes;
@@ -238,7 +239,7 @@ void CPObject::fillSoundBuffer(BYTE val)
         mainwindow->audioMutex.lock();
         while (delta_state >= wait)
         {
-#if 0
+#if NEW_SOUND
             buff.append(val);
             if (buff.size() >= m_audioOutput->periodSize()) {
                 m_output->write(buff);
