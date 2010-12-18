@@ -18,5 +18,6 @@
         <file>keymap/ce123.map</file>
         <file>keymap/ce129.map</file>
         <file>keymap/ce126.map</file>
+        <file>keymap/ce140p.map</file>
     </qresource>
 </RCC>
