@@ -16,8 +16,9 @@ extern QList<CPObject *> listpPObject;
 FILE	*fp_tmp=NULL;
 
 #define NEW_SOUND 0
+extern QWidget* mainwidget;
 
-CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
+CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 	{
 		pPC = (CpcXXXX*) parent;
 		Parent	= parent;
@@ -270,7 +271,7 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 #if 1
 
 
-    if (parentWidget() == mainwindow)
+    if (parentWidget() == mainwidget)
     {
         // Search all conected objects then move them
         QList<CPObject *> ConList;
@@ -385,7 +386,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 	else raise();
 	
-    if ( (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwidget) //mainwindow
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
@@ -445,7 +446,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 		}
 	}
 	
-    if ( (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwidget)
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
@@ -553,7 +554,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	setCursor(Qt::ArrowCursor);
 	if (pKEYB) pKEYB->LastKey = 0;
 
-    if ( (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwidget)
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);

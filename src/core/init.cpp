@@ -128,7 +128,7 @@ CPObject *pPC=0;
 	AddLog(LOG_MASTER,"OK1");
 	if (!pPC->init()) return 0;
  
-	int l = mainwindow->menuBar()->height();
+//	int l = mainwindow->menuBar()->height();
 //	mainwindow->resize(QSize(pPC->Pc_DX, pPC->Pc_DY+l));
 	
 	pPC->FinalImage = new QImage(QSize(pPC->Pc_DX, pPC->Pc_DY),QImage::Format_RGB32);
@@ -140,7 +140,7 @@ CPObject *pPC=0;
 
 	pPC->InitDisplay();
 
-	pPC->Move(QPoint(0,l));	
+    pPC->Move(QPoint(0,0));
 	pPC->show();
 
     return pPC;
