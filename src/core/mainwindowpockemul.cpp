@@ -304,9 +304,35 @@ void  MainWindowPockemul::updateFrameTimer()
 	if (OneSecTimer >= 1000) OneSecTimer=0;
 }
 
-void MainWindowPockemul::mousePressEvent	( QMouseEvent *event){}
-void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){}
-void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){}
+void MainWindowPockemul::mousePressEvent	( QMouseEvent *event){
+    setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
+    startPosDrag = true;
+    PosDrag = event->globalPos();
+}
+
+void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){
+    if (startPosDrag)
+    {
+        QPoint delta(event->globalPos() - PosDrag);
+
+        // Fetch all_object and move them
+        for (int i=0;i<listpPObject.size();i++)
+        {
+            listpPObject.at(i)->Move(delta);
+        }
+
+        PosDrag = event->globalPos();
+        repaint();
+        return;
+    }
+}
+
+void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
+    startPosDrag = false;
+    setCursor(Qt::ArrowCursor);
+
+}
+
 void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
 void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){}
 void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){}

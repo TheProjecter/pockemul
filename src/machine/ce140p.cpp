@@ -20,7 +20,7 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     printerSwitch =true;
 
     pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true,QPoint(631,468)); publish(pSIOCONNECTOR);
-    pSIOCONNECTOR_OUT = new Cconnector(this,15,"Connector 15 pins (Output)",true,QPoint(895,468)); publish(pSIOCONNECTOR_OUT);
+    pSIOCONNECTOR_OUT = new Cconnector(this,15,"Connector 15 pins (Output)",false,QPoint(885,468)); publish(pSIOCONNECTOR_OUT);
     //pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140p;
     KeyMapLenght= KeyMapce140pLenght;

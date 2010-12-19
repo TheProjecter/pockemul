@@ -549,8 +549,8 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 #endif
 	
 	
-	startKeyDrag = false;
-	startPosDrag = false;
+    startKeyDrag = false;
+    startPosDrag = false;
 	setCursor(Qt::ArrowCursor);
 	if (pKEYB) pKEYB->LastKey = 0;
 
