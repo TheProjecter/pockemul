@@ -77,6 +77,7 @@ public:
 	bool	ToDestroy;
 	
 	void	clearInput(void);
+    DialogConsole *dialogconsole;
 	
 	Csio(CPObject *parent = 0)	: CPObject(this)
 	{							//[constructor]
@@ -138,7 +139,6 @@ private:
 	int		Sii_TextLength;
 	int		Sii_Bit_Nb;
 	int		Sii_LfWait;	
-	DialogConsole *dialogconsole;
     int     baudrate;
 };
 

@@ -181,7 +181,7 @@ bool Cce515p::init(void)
 #endif
     setfrequency( 0);
 
-    WatchPoint.add(&pCONNECTOR_value,8,5,this,"Internal connector");
+    //WatchPoint.add(&pCONNECTOR_value,8,5,this,"Internal connector");
 
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
 

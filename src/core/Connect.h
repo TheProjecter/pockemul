@@ -32,22 +32,27 @@ public:
 	void	setGender(bool);
 
 	void	ConnectTo(Cconnector *);
+
+    void    setSnap(QPoint p) {snap = p;}
+    QPoint  getSnap(void) {return snap;}
 	
-	Cconnector(CPObject *parent , QString desc, bool newGender = false)
+    Cconnector(CPObject *parent , QString desc, bool newGender = false)
 	{
 		Parent	= parent;
 		Desc = desc;
 		gender = newGender;
 		values = 0;
-	};
-	Cconnector(CPObject *parent , int nbpins, QString desc,bool newGender);
-	virtual ~Cconnector(){};
+    }
+    Cconnector(CPObject *parent , int nbpins, QString desc,bool newGender = false,QPoint snap=QPoint(0,0));
+
+    virtual ~Cconnector(){}
 
 private:
 	bool	gender;		// Male = true   Female = false  :-)
 
     int		nbpins;
     qint64	values;
+    QPoint  snap;
 };
 
 #endif		// _CONNECT_H

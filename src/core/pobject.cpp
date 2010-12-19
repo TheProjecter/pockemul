@@ -454,16 +454,70 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 }
 
 #define SNAPRANGE 20
-			
+
+QList<Cconnector *> CPObject::nearConnectors(Cconnector *refConnector,qint8 snaprange) {
+    // Compare snap between the refConnector and all free object connectors
+    QList<Cconnector *> retList;
+    for (int i=0;i<ConnList.size();i++) {
+        if (!mainwindow->pdirectLink->isLinked(ConnList.at(i)) &&
+            ConnList.at(i)->getGender() != refConnector->getGender()) {
+            Cconnector *c = ConnList.at(i);
+            qreal range = QLineF(refConnector->getSnap(),c->getSnap()).length();
+            if (range < snaprange) {
+                retList.append(ConnList.at(i));
+            }
+        }
+    }
+    return retList;
+}
+
 void CPObject::mouseReleaseEvent(QMouseEvent *event)
 {
 	// if a connector is free
 	// if an object with free connector is "near"
 	// propose to autolink
-    if (! mainwindow->pdirectLink->isLinked(this))
-	{
+
+#if 1
+
 		for (int k = 0; k < listpPObject.size(); k++)
 		{
+            // fetch all others objects FREE connectors
+            if (listpPObject.at(k) != this) {
+                for (int c=0; c < listpPObject.at(k)->ConnList.size(); c++) {
+                    if (!mainwindow->pdirectLink->isLinked(listpPObject.at(k)->ConnList.at(c))) {
+                        // If not already linked
+                        QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
+                        for (int r=0; r<nearList.size();r++) {
+                            switch(QMessageBox::question(mainwindow, "PockEmul",
+                                                    "Do you want to link those two materials ?\n"+
+                                                    ConnList.at(c)->Desc+ "--> ["+ listpPObject.at(k)->getName()+"]"+nearList.at(r)->Desc,
+                                                    "Yes",
+                                                    "No", 0, 0, 1))
+                            {
+                            case 0: // The user clicked the Yes button or pressed Enter
+                            // Connect
+                                Move(listpPObject.at(k)->pos() + listpPObject.at(k)->SnapPts - pos() - SnapPts);
+                                mainwindow->pdirectLink->AConnList.append(ConnList.at(c));
+                                mainwindow->pdirectLink->BConnList.append(nearList.at(r));
+
+                                break;
+                            case 1: // The user clicked the No or pressed Escape
+                                // exit
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+#else
+    if (! mainwindow->pdirectLink->isLinked(this))
+    {
+        for (int k = 0; k < listpPObject.size(); k++)
+        {
 			if ( (listpPObject.at(k) != this) && 
                 !mainwindow->pdirectLink->isLinked(listpPObject.at(k)) &&
 				(RangeFrom(listpPObject.at(k)) < SNAPRANGE) )
@@ -485,11 +539,10 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	        	    // exit
 	        	    break;
 	        	}
-
 			}
 		}
-		
-	}
+    }
+#endif
 	
 	
 	startKeyDrag = false;

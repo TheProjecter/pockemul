@@ -7,14 +7,16 @@
 #include "pcxxxx.h"
 #include "Log.h"
 
-Cconnector::Cconnector(CPObject *parent , int nb, QString desc, bool newGender = false)
+Cconnector::Cconnector(CPObject *parent , int nb, QString desc, bool newGender,QPoint snap)
 {
 	Parent	= parent;
 	nbpins = nb;
 	gender = newGender;
 	Desc = desc;
 	values = 0;
+    this->snap = snap;
 }
+
 
 // Link current connector to Source connector
 void Cconnector::ConnectTo(Cconnector * source)

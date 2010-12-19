@@ -51,8 +51,8 @@ public:
 		Lcd_Symb_DX	= 30;
 		Lcd_Symb_DY	= 64;
 		
-        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false);	publish(pCONNECTOR);
-        pSIOCONNECTOR	= new Cconnector(this,15,"Connector 15 pins",false);	publish(pSIOCONNECTOR);
+        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
+        pSIOCONNECTOR	= new Cconnector(this,15,"Connector 15 pins",false,QPoint(633,105));	publish(pSIOCONNECTOR);
 
 	}
 

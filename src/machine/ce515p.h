@@ -49,7 +49,6 @@ public:
 };
 
 class Cce515p:public Cprinter{
-    Q_OBJECT
 public:
 
     virtual bool		run(void);
@@ -62,7 +61,7 @@ public:
 
     bool		Print_Mode;
     bool		needRedraw;
-    Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
+    //Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
 
     QImage *ce515pbuf;
     QImage *ce515pdisplay;
@@ -73,7 +72,7 @@ public:
     void    set_SD(quint8);
     void    drawChar(quint8 data);
     void    DrawMove(int lenght,int dir,bool penDown);
-
+    void    Command(quint8);
     void    ProcessEscCommand(void);
     void    ProcessGraphCommand(void);
     void    ProcessMultiPointCommand(QString);
@@ -93,7 +92,7 @@ public:
         Pc_DX	= 960;
         Pc_DY	= 320;
         SnapPts = QPoint(388,0);
-        pCONNECTOR	= new Cconnector(this,5,"Internal connector 5 pins",true);	publish(pCONNECTOR);
+        //pCONNECTOR	= new Cconnector(this,5,"Internal connector 5 pins",true);	publish(pCONNECTOR);
         pTIMER		= new Ctimer(this);
         KeyMap		= KeyMapce150;
         KeyMapLenght= KeyMapce150Lenght;
@@ -126,8 +125,7 @@ public:
     }
 public:
 
-protected slots:
-    void    Command(quint8);
+
 
 protected:
     bool		Next_Color(void);

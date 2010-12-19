@@ -79,6 +79,7 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     Pc_DX	= 731;
     Pc_DY	= 532;
     SnapPts = QPoint(247,280);
+    pCONNECTOR->setSnap(QPoint(247,370));
     setPaperPos(QRect(377,0,207,149));
 
     stackBehind = true;

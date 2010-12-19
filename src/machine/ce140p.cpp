@@ -2,6 +2,7 @@
 
 #include "ce140p.h"
 #include "Keyb.h"
+#include "dialogconsole.h"
 
 
 TransMap KeyMapce140p[]={
@@ -18,7 +19,7 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     BackGroundFname	= ":/EXT/ext/ce-140p.png";
     printerSwitch =true;
 
-    pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true,QPoint(625,470)); publish(pSIOCONNECTOR);
     //pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140p;
     KeyMapLenght= KeyMapce140pLenght;
@@ -42,7 +43,7 @@ bool Cce140p::init(void) {
 
     if (pSIO) pSIO->init();
 
-    connect(pSIO,SIGNAL(newData(qint8)),this,SLOT(Command(qint8)));
+    connect(pSIO,SIGNAL(newData(qint8)),this,SLOT(CommandSlot(qint8)));
 
     return true;
 }
@@ -112,6 +113,10 @@ void Cce140p::UpdateFinalImage(void) {
 void Cce140p::paintEvent(QPaintEvent *event)
 {
     Cce515p::paintEvent(event);
-    pSIO->paintEvent(event);
+    pSIO->dialogconsole->refresh();
 
+}
+
+void Cce140p::CommandSlot(qint8 data) {
+    Command(data);
 }

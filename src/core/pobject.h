@@ -119,6 +119,8 @@ public:
     virtual void Reset() {}
     void    SwitchFrontBack(QPoint);
     bool    isFront() {return Front;}
+    QList<Cconnector *> nearConnectors(Cconnector *refConnector,qint8 snaprange);
+
 		
 public:
 

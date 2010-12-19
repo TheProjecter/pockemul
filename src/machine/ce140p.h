@@ -5,6 +5,8 @@
 #include "sio.h"
 #include "ce515p.h"
 
+class DialogConsole;
+
 class Cce140p:public Cce515p{
 Q_OBJECT
 public:
@@ -26,6 +28,7 @@ protected:
     void paintEvent(QPaintEvent *);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
+    void CommandSlot(qint8);
 //    void ShowConsole(void);
 //    void HideConsole(void);
 private:

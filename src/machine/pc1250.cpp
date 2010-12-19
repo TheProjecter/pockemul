@@ -38,7 +38,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 	Pc_DX_mm = 135;
 	Pc_DY_mm = 70;
 	Pc_DZ_mm = 10;
-	
+
 	Pc_DX		= 483;//409;
 	Pc_DY		= 252;//213;
 

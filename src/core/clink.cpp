@@ -60,6 +60,10 @@ bool CDirectLink::isLinked(CPObject * search)
 	return ( findObj(search) ? true : false );
 }
 
+bool CDirectLink::isLinked(Cconnector * search)
+{
+     return ((AConnList.indexOf(search)>=0) || (BConnList.indexOf(search)>=0)) ;
+}
 
 void CDirectLink::Output(CPObject* pPC)
 {
