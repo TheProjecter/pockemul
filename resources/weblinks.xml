@@ -1,0 +1,6 @@
+    webLinksList.clear();
+    webLinksList.insert("Pocket Museum","http://pocket.free.fr/html/sharp/pc-1245_e.html");
+
+        webLinksList.clear();
+        webLinksList.insert("Pocket Museum","http://pocket.free.fr/html/sharp/pc-1260_e.html");
+        webLinksList.insert("Silicium (fr)","http://silicium.org/site/index.php?option=com_content&view=article&id=176:sharp-pc-1260-1261-et-1262&catid=55:calcs&Itemid=29");

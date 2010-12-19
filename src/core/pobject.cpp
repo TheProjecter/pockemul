@@ -719,6 +719,19 @@ void CPObject::BuildContextMenu(QMenu * menu)
 	computeUnLinkMenu(menu);
 	menu->addSeparator();
 	menu->addAction(tr("Close"),this,SLOT(slotExit()));
+    computeWebLinksMenu(menu);
+}
+
+void CPObject::computeWebLinksMenu(QMenu * menu) {
+    QMenu * menuweblink = menu->addMenu(tr("Web Links"));
+    connect(menuweblink, SIGNAL(triggered( QAction *)), mainwindow, SLOT(slotWebLink( QAction *)));
+// FETCH XML FILE TO ADD MENU ACTIONS
+//    QMapIterator<QString, QString> i(webLinksList);
+//    while (i.hasNext()) {
+//        i.next();
+//        QAction * actionWebLink = menuweblink->addAction(i.key());
+//        actionWebLink->setData(i.value());
+//    }
 }
 
 void CPObject::computeLinkMenu(QMenu * menu)

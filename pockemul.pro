@@ -280,4 +280,5 @@ OTHER_FILES += \
     resources/keymap/ce123.map \
     resources/keymap/ce120.map \
     resources/keymap/263591.map \
-    resources/keymap/ce140p.map
+    resources/keymap/ce140p.map \
+    resources/weblinks.xml

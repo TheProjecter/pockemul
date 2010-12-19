@@ -68,7 +68,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 	pKEYB		= new Ckeyb_pc1250(this);
 
 }
-	
+
 bool Cpc1250::CompleteDisplay(void)
 {
 	CpcXXXX::CompleteDisplay();

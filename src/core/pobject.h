@@ -20,6 +20,11 @@ class CExtensionArray;
 class DialogKeyList;
 class DialogDump;
 
+struct URL {
+    QString desc;
+    QString url;
+};
+
 class CPObject:public QWidget
 {
 
@@ -81,6 +86,7 @@ public:
 	void publish(Cconnector* newConn);
 
 	void BuildContextMenu(QMenu * menu);
+    void computeWebLinksMenu(QMenu * menu);
 	void computeLinkMenu(QMenu * menu);
 	void computeUnLinkMenu(QMenu * menu);
 	
@@ -168,6 +174,7 @@ private:
 	bool	Front;
 	int		iChanIndex;
 	qint64	fillSoundBuffer_old_state;	
+
 };
 
 

@@ -50,7 +50,8 @@ public:
         Lcd_Symb_ratio_X	= 1.18;
 
 		delete pLCDC;	pLCDC = new Clcdc_pc1260(this);
-	}
+
+    }
 
 private:
 };
