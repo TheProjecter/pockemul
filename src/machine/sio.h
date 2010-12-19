@@ -102,7 +102,7 @@ public:
 		Sii_Bit_Nb			= 0;
 		Sii_LfWait			= 500;
 		
-        pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins",true); publish(pSIOCONNECTOR);
+        pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
 		setfrequency( 0);
 		BackGroundFname	= ":/EXT/ext/serial.png";
 		

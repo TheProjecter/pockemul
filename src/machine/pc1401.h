@@ -66,7 +66,7 @@ public:
 		pLCDC		= new Clcdc_pc1401(this);
 		pCPU		= new CSC61860(this);
 		pTIMER		= new Ctimer(this);
-        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false);	publish(pCONNECTOR);
+        pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
 		pKEYB		= new Ckeyb_pc1401(this);
 
 		Lcd_X	= 119;

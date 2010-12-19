@@ -79,6 +79,7 @@ public:
         Pc_DX	= 883;
         Pc_DY	= 568;
         SnapPts = QPoint(402,43);
+        pCONNECTOR->setSnap(QPoint(402,133));
         setPaperPos(QRect(89,185-149,207,149));
 
         stackBehind = true;
@@ -95,6 +96,7 @@ public:
 		Pc_DX	= 708;
 		Pc_DY	= 566;
 		SnapPts = QPoint(215,307);
+        pCONNECTOR->setSnap(QPoint(215,397));
         setPaperPos(QRect(89,185-149,207,149));
 
 		stackBehind = true;
@@ -111,6 +113,7 @@ public:
 		Pc_DX	= 708;
 		Pc_DY	= 566;
         SnapPts = QPoint(88,288);
+        pCONNECTOR->setSnap(QPoint(88,378));
         setPaperPos(QRect(89,185-149,207,149));
         delete pKEYB; pKEYB=new Ckeyb(this,"ce129.map");
 
@@ -128,6 +131,7 @@ public:
         Pc_DX	= 854;
         Pc_DY	= 349;
         SnapPts = QPoint(373,0);
+        pCONNECTOR->setSnap(QPoint(373,90));
         setPaperPos(QRect(78,0,207,149));
 
         stackBehind = true;

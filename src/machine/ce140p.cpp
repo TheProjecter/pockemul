@@ -19,7 +19,7 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     BackGroundFname	= ":/EXT/ext/ce-140p.png";
     printerSwitch =true;
 
-    pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true,QPoint(625,470)); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true,QPoint(629,470)); publish(pSIOCONNECTOR);
     //pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140p;
     KeyMapLenght= KeyMapce140pLenght;

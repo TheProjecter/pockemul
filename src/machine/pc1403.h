@@ -61,7 +61,7 @@ public:
 		delete pLCDC;	pLCDC		= new Clcdc_pc1403(this);
 		delete pCPU;	pCPU		= new CSC61860(this);
 		delete pTIMER;	pTIMER		= new Ctimer(this);
-        delete pCONNECTOR;pCONNECTOR= new Cconnector(this,11,"Connector 11 pins",false);
+        delete pCONNECTOR;pCONNECTOR= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));
 		delete pKEYB;	pKEYB		= new Ckeyb_pc1403(this);
 
 		Lcd_X	= 116;

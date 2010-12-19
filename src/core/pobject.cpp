@@ -460,9 +460,11 @@ QList<Cconnector *> CPObject::nearConnectors(Cconnector *refConnector,qint8 snap
     QList<Cconnector *> retList;
     for (int i=0;i<ConnList.size();i++) {
         if (!mainwindow->pdirectLink->isLinked(ConnList.at(i)) &&
-            ConnList.at(i)->getGender() != refConnector->getGender()) {
+            Cconnector::arePluggable(ConnList.at(i),refConnector)) {
             Cconnector *c = ConnList.at(i);
-            qreal range = QLineF(refConnector->getSnap(),c->getSnap()).length();
+            // ATTENTION : POSITIONN DE L'OBJECT + SNAP !!!!!!
+            CPObject *p = refConnector->Parent;
+            qreal range = QLineF(p->pos()+refConnector->getSnap(),this->pos()+c->getSnap()).length();
             if (range < snaprange) {
                 retList.append(ConnList.at(i));
             }
@@ -478,11 +480,12 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	// propose to autolink
 
 #if 1
-
+        // Fetch all object
 		for (int k = 0; k < listpPObject.size(); k++)
 		{
             // fetch all others objects FREE connectors
             if (listpPObject.at(k) != this) {
+                // Fect object connectors
                 for (int c=0; c < listpPObject.at(k)->ConnList.size(); c++) {
                     if (!mainwindow->pdirectLink->isLinked(listpPObject.at(k)->ConnList.at(c))) {
                         // If not already linked
@@ -490,14 +493,14 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                         for (int r=0; r<nearList.size();r++) {
                             switch(QMessageBox::question(mainwindow, "PockEmul",
                                                     "Do you want to link those two materials ?\n"+
-                                                    ConnList.at(c)->Desc+ "--> ["+ listpPObject.at(k)->getName()+"]"+nearList.at(r)->Desc,
+                                                    nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
                                                     "Yes",
                                                     "No", 0, 0, 1))
                             {
                             case 0: // The user clicked the Yes button or pressed Enter
                             // Connect
-                                Move(listpPObject.at(k)->pos() + listpPObject.at(k)->SnapPts - pos() - SnapPts);
-                                mainwindow->pdirectLink->AConnList.append(ConnList.at(c));
+                                Move(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap() - pos() - nearList.at(r)->getSnap());
+                                mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
                                 mainwindow->pdirectLink->BConnList.append(nearList.at(r));
 
                                 break;

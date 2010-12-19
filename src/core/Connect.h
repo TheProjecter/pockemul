@@ -35,6 +35,11 @@ public:
 
     void    setSnap(QPoint p) {snap = p;}
     QPoint  getSnap(void) {return snap;}
+    int    getNbpins(void) {return nbpins;}
+
+    static bool arePluggable(Cconnector *a,Cconnector *b) {
+        return ( (a->nbpins==b->nbpins) && (a->gender != b->gender) );
+    }
 	
     Cconnector(CPObject *parent , QString desc, bool newGender = false)
 	{

@@ -41,7 +41,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",true);	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
     pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce126;
@@ -50,6 +50,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     Pc_DX	= 620;
     Pc_DY	= 488;
     SnapPts = QPoint(594,145);
+
     setPaperPos(QRect(150,-3,207,149));
 
     stackBehind = true;
