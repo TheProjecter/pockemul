@@ -20,7 +20,7 @@ public:
 
     Csio *pSIO;
     Cconnector *pSIOCONNECTOR; qint64 pSIOCONNECTOR_value;
-
+    Cconnector *pSIOCONNECTOR_OUT; qint64 pSIOCONNECTOR_OUT_value;
 
 
     Cce140p(CPObject *parent = 0);

@@ -79,7 +79,7 @@ public:
         Pc_DX	= 883;
         Pc_DY	= 568;
         SnapPts = QPoint(402,43);
-        pCONNECTOR->setSnap(QPoint(402,133));
+        pCONNECTOR->setSnap(QPoint(400,131));
         setPaperPos(QRect(89,185-149,207,149));
 
         stackBehind = true;

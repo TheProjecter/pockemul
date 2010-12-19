@@ -19,7 +19,8 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     BackGroundFname	= ":/EXT/ext/ce-140p.png";
     printerSwitch =true;
 
-    pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true,QPoint(629,470)); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,15,"Connector 15 pins (Input)",true,QPoint(631,468)); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR_OUT = new Cconnector(this,15,"Connector 15 pins (Output)",true,QPoint(895,468)); publish(pSIOCONNECTOR_OUT);
     //pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140p;
     KeyMapLenght= KeyMapce140pLenght;
@@ -57,6 +58,8 @@ bool Cce140p::run(void) {
 
     pSIO->run();
     if (pSIO->Refresh_Display) Refresh_Display=true;
+
+    Draw();
 
     pSIOCONNECTOR->Set_values(pSIO->pSIOCONNECTOR->Get_values());
 

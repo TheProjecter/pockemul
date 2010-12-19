@@ -2,11 +2,12 @@
 #include <QResource>
 
 #include "common.h"
-#include "ce515p.h"
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "clink.h"
 #include "dialoganalog.h"
+#include "ce515p.h"
+
 
 #define NO_MOVE	0
 #define RI_MOVE	1
@@ -48,8 +49,7 @@ bool Cce515p::run(void)
     bool bit = false;
     bool has_moved = false;
 
-    int printer_deltastate=0;
-    static long printer_oldstate	= pTIMER->state;
+
 
     static unsigned char	t=0,c=0,waitbitstart=1,waitbitstop=0;
     int deltastate=0;
@@ -120,6 +120,7 @@ bool Cce515p::run(void)
     // Draw printer
     //---------------------------------------------------
     //if (has_moved) Print();
+#if 0
         printer_deltastate = pTIMER->state - printer_oldstate;
         if (printer_deltastate >= PRINTER_TICKS){
             printer_oldstate	= pTIMER->state;
@@ -128,7 +129,9 @@ bool Cce515p::run(void)
                 moveBuffer.removeFirst();
             }
         }
-
+#else
+        Draw();
+#endif
 
 
 
@@ -137,6 +140,23 @@ bool Cce515p::run(void)
     //pCONNECTOR->Set_pin(30	,pLH5810->INT);
 
     return(1);
+}
+
+void Cce515p::Draw(void) {
+    int printer_deltastate=0;
+    static long printer_oldstate	= pTIMER->state;
+    //---------------------------------------------------
+    // Draw printer
+    //---------------------------------------------------
+    //if (has_moved) Print();
+        printer_deltastate = pTIMER->state - printer_oldstate;
+        if (printer_deltastate >= PRINTER_TICKS){
+            printer_oldstate	= pTIMER->state;
+            if (moveBuffer.length()>0) {
+                Print(moveBuffer.at(0));
+                moveBuffer.removeFirst();
+            }
+        }
 }
 
 bool Cce515p::Next_Color(void)

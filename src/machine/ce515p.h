@@ -80,6 +80,8 @@ public:
     void    DrawTest(void);
     void    PaperFeed(void);
 
+    void    Draw(void);
+
     Cce515p(CPObject *parent = 0):Cprinter(parent)
     {
         //[constructor]
@@ -123,7 +125,7 @@ public:
         Change_Color = true;
         Sii_wait			= 0;
     }
-public:
+
 
 
 
