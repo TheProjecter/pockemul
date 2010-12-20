@@ -353,7 +353,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1280.qrc">
-            <normaloff>:/PC1280/pc1280/pc-1280.jpg</normaloff>:/PC1280/pc1280/pc-1280.jpg</iconset>
+            <normaloff>:/PC1280/pc1280/pc-1280.png</normaloff>:/PC1280/pc1280/pc-1280.png</iconset>
           </property>
          </item>
         </widget>
@@ -424,7 +424,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/ext.qrc">
-            <normaloff>:/EXT/ext/ce-120p.jpg</normaloff>:/EXT/ext/ce-120p.jpg</iconset>
+            <normaloff>:/EXT/ext/ce-120p.png</normaloff>:/EXT/ext/ce-120p.png</iconset>
           </property>
          </item>
          <item>
@@ -438,7 +438,7 @@
          </item>
          <item>
           <property name="text">
-           <string>MP-2200</string>
+           <string>MP-220</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/ext.qrc">

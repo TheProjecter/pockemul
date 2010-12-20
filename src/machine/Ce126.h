@@ -75,7 +75,8 @@ class Cce120p:public Cce126
 public:
     Cce120p()
     {								//[constructor]
-        BackGroundFname	= ":/EXT/ext/ce-120p.jpg";
+        BackGroundFname	= ":/EXT/ext/ce-120p.png";
+        setcfgfname("ce120p");
         Pc_DX	= 883;
         Pc_DY	= 568;
         SnapPts = QPoint(402,43);
@@ -93,6 +94,7 @@ public:
 	Cce123()
 	{								//[constructor]
 		BackGroundFname	= ":/EXT/ext/ce-123p.jpg";
+        setcfgfname("ce123p");
 		Pc_DX	= 708;
 		Pc_DY	= 566;
 		SnapPts = QPoint(215,307);
@@ -110,6 +112,7 @@ public:
 	Cce129()
 	{								//[constructor]
 		BackGroundFname	= ":/EXT/ext/ce-129p.jpg";
+        setcfgfname("ce129p");
 		Pc_DX	= 708;
 		Pc_DY	= 566;
         SnapPts = QPoint(88,288);
@@ -128,6 +131,7 @@ public:
     C263591()
     {								//[constructor]
         BackGroundFname	= ":/EXT/ext/26-3591.jpg";
+        setcfgfname("263591");
         Pc_DX	= 854;
         Pc_DY	= 349;
         SnapPts = QPoint(373,0);

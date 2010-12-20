@@ -60,7 +60,7 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "PC 2500")	result = PC2500;
 
     if (ItemText == "CE-125")	result = CE125;
-    if (ItemText == "MP-2200")	result = MP2200;
+    if (ItemText == "MP-220")	result = MP220;
     if (ItemText == "CE-120P")	result = CE120P;
     if (ItemText == "CE-126P")	result = CE126P;
     if (ItemText == "CE-123P")	result = CE123P;

@@ -38,6 +38,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     charTable = 0;
     ToDestroy	= false;
     BackGroundFname	= ":/EXT/ext/ce-126p.png";
+    setcfgfname("ce126p");
 
     settop(10);
     setposX(0);

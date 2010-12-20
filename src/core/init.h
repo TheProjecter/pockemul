@@ -117,7 +117,7 @@ enum Models {
 
     CE120P,
     CE125,
-    MP2200,
+    MP220,
     CE126P,
     CE123P,
     CE129P,

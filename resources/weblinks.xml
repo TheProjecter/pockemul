@@ -57,4 +57,23 @@
     <model value="mc2200">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/seiko/mc-2200_e.html"/>
     </model>
+    <model value="ce120p">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-120p_e.html"/>
+    </model>
+    <model value="ce123p">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-123p_e.html"/>
+    </model>
+    <model value="ce125">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-125_e.html"/>
+    </model>
+    <model value="ce126p">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-126p_e.html"/>
+    </model>
+    <model value="ce129p">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-129p_e.html"/>
+    </model>
+    <model value="mp220">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/seiko/mp-220_e.html"/>
+    </model>
+
 </weblinks>

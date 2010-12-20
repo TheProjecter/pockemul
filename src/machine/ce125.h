@@ -45,11 +45,11 @@ private:
 	Cce125tape* pTAPE;
 };
 
-class Cmp2200:public Cce125
+class Cmp220:public Cce125
 {
 public:
 
-    Cmp2200(CPObject *parent = 0);
+    Cmp220(CPObject *parent = 0);
 
 };
 

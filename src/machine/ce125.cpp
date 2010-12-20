@@ -67,9 +67,10 @@ void Cce125tape::ComputeKey(void)
 		}
 };
 
-Cmp2200::Cmp2200(CPObject *parent):Cce125(parent)
+Cmp220::Cmp220(CPObject *parent):Cce125(parent)
 {
     BackGroundFname	= ":/EXT/ext/mp-220.jpg";
+    setcfgfname("mp220");
 }
 
 Cce125::Cce125(CPObject *parent):Cce126(parent)
