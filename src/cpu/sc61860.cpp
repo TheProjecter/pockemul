@@ -1133,7 +1133,6 @@ INLINE void Csc::Op_39(void)
 	}
     AddState(st+4);
 #else
-    static bool first_pass=true;
     BYTE	t;
     BYTE st=0;
     if (first_pass) {

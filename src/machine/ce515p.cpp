@@ -35,11 +35,11 @@ void Cce515p::set_SD(quint8 val) {
 
 void Cce515p::PaperFeed(void) {
     int printer_deltastate=0;
-    static long printer_oldstate	= pTIMER->state;
+    if (printer_oldstate_paperfeed==0) printer_oldstate_paperfeed	= pTIMER->state;
 
-    printer_deltastate = pTIMER->state - printer_oldstate;
+    printer_deltastate = pTIMER->state - printer_oldstate_paperfeed;
     if (printer_deltastate >= PRINTER_TICKS){
-        printer_oldstate	= pTIMER->state;
+        printer_oldstate_paperfeed	= pTIMER->state;
         ProcessMultiPointCommand("R0,1");
     }
 }
@@ -49,13 +49,8 @@ bool Cce515p::run(void)
     bool bit = false;
     bool has_moved = false;
 
-
-
-    static unsigned char	t=0,c=0,waitbitstart=1,waitbitstop=0;
     int deltastate=0;
-    static long oldstate	= pTIMER->state;
-
-
+    if (oldstate_run == 0)	oldstate_run = pTIMER->state;
 
     //	0	START BIT
     //	0-1	b0 0=set,1=not set
@@ -68,19 +63,19 @@ bool Cce515p::run(void)
     //	0-1	b7 0=set,1=not set
     //	1	STOP BIT
 
-        deltastate = pTIMER->state - oldstate;
+        deltastate = pTIMER->state - oldstate_run;
         if (deltastate < Sii_wait){
             return(1);
         }
 
 //        if (!(ER && RS))
 //        {
-//            oldstate	= pTIMER->state;
+//            oldstate_run	= pTIMER->state;
 //            Sii_wait	= 0;
 //            return;
 //        }
     //	Sii_wait	= TICKS_BDS;
-        oldstate	= pTIMER->state;
+        oldstate_run	= pTIMER->state;
     //	oldstate	+= Sii_wait;
 
 
@@ -144,14 +139,14 @@ bool Cce515p::run(void)
 
 void Cce515p::Draw(void) {
     int printer_deltastate=0;
-    static long printer_oldstate	= pTIMER->state;
+    if (printer_oldstate_draw==0) printer_oldstate_draw = pTIMER->state;
     //---------------------------------------------------
     // Draw printer
     //---------------------------------------------------
     //if (has_moved) Print();
-        printer_deltastate = pTIMER->state - printer_oldstate;
+        printer_deltastate = pTIMER->state - printer_oldstate_draw;
         if (printer_deltastate >= PRINTER_TICKS){
-            printer_oldstate	= pTIMER->state;
+            printer_oldstate_draw	= pTIMER->state;
             if (moveBuffer.length()>0) {
                 Print(moveBuffer.at(0));
                 moveBuffer.removeFirst();

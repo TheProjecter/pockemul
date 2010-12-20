@@ -4,7 +4,7 @@ CONFIG += build_all \
     resources \
     thread \
     warn_on
-DEFINES +=
+DEFINES += NEW_SOUND
 FORMS += ui/about.ui \
     ui/dialoganalog.ui \
     ui/dialogconnectorlink.ui \
@@ -117,7 +117,8 @@ HEADERS += src/core/Connect.h \
     src/core/Keyb1280.h \
     src/core/qhexedit.h \
     src/core/qhexedit_p.h \
-    src/machine/ce140p.h
+    src/machine/ce140p.h \
+    src/core/weblinksparser.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -246,7 +247,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/pc1280.cpp \
     src/core/qhexedit.cpp \
     src/core/qhexedit_p.cpp \
-    src/machine/ce140p.cpp
+    src/machine/ce140p.cpp \
+    src/core/weblinksparser.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

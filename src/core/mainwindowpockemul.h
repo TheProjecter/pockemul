@@ -56,6 +56,7 @@ private slots:
 	void resizeSlot(QSize size , CPObject *pObject);
 	void DestroySlot(CPObject *pObject);
 	void slotNewLink(QAction *);
+    void slotWebLink(QAction *);
 	void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
 

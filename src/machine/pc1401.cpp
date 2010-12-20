@@ -53,7 +53,7 @@ BYTE	Cpc1401::Get_PortA(void)
 
 void	Cpc1401::Set_PortA(BYTE data)
 {
-	static BYTE cnt=0;
+
 
 	if ((IO_A != 0) && (data == 0))
 	{

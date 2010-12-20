@@ -121,8 +121,8 @@ void Csio::clearInput(void)
 
 bool Csio::inReadBit(void)
 {
-	static BYTE	bit			= 0;
-	static int	oldstate	= pTIMER->state;
+
+    if (oldstate_in	== 0) oldstate_in = pTIMER->state;
 	BYTE		data		= 0;
 	int			deltastate	= 0;
 
@@ -134,12 +134,12 @@ bool Csio::inReadBit(void)
 
 	if ( Sii_ndx < baInput.size() )
 	{
-		deltastate = pTIMER->state - oldstate;
+        deltastate = pTIMER->state - oldstate_in;
 
-		if (deltastate < Sii_wait) return(bit);
+        if (deltastate < Sii_wait) return(bit_in);
 
-		oldstate	= pTIMER->state;
-//		oldstate	+= deltastate;
+        oldstate_in	= pTIMER->state;
+//		oldstate_in	+= deltastate;
 
 		data	= baInput.at(Sii_ndx); 
 
@@ -147,19 +147,19 @@ bool Csio::inReadBit(void)
         emit valueChanged((int)((Sii_ndx*100)/baInput.size()+.5));
         Refresh_Display = true;
 		data = (data == 0x0A ? 0x0D : data);
-		bit		= inReadBitFromByte(data);
+        bit_in		= inReadBitFromByte(data);
 		
-		switch (bit)
+        switch (bit_in)
 		{
-		case 3:	bit = 1;
+        case 3:	bit_in = 1;
                 Sii_wait = TICKS_BDS;
-				return(bit);		// START BIT
+                return(bit_in);		// START BIT
 		case 0:
-		case 1:	AddLog(LOG_SIO,tr("Envoie bit = %1").arg(bit));
+        case 1:	AddLog(LOG_SIO,tr("Envoie bit = %1").arg(bit_in));
                 Sii_wait = TICKS_BDS;
-				return(bit);		// DATA BIT
+                return(bit_in);		// DATA BIT
 
-		case 2:	bit = 0;
+        case 2:	bit_in = 0;
                 Sii_wait = TICKS_BDS;
 
 				if (data == 0x0D)
@@ -170,7 +170,7 @@ bool Csio::inReadBit(void)
 				
 				Sii_ndx++;										// Next Char
 
-				return(bit);
+                return(bit_in);
 		}
 	}
 
@@ -199,7 +199,6 @@ bool Csio::inReadBit(void)
 //
 qint8 Csio::inReadBitFromByte(qint8 data)
 {
-	static bool Start_Bit_Sent	= FALSE;
 	qint8			bit			= 0;
 
 		if (!Start_Bit_Sent)
@@ -244,9 +243,9 @@ void Csio::ExportByte(qint8 data)
 
 void Csio::outReadBit(void)
 {
-static unsigned char	t=0,c=0,waitbitstart=1,waitbitstop=0;
-int deltastate=0;
-static long oldstate	= pTIMER->state;
+
+    int deltastate=0;
+    if (oldstate_out == 0) oldstate_out	= pTIMER->state;
 //	0	START BIT
 //	0-1	b0 0=set,1=not set	
 //	0-1	b1 0=set,1=not set
@@ -258,17 +257,17 @@ static long oldstate	= pTIMER->state;
 //	0-1	b7 0=set,1=not set
 //	1	STOP BIT
 
-	deltastate = pTIMER->state - oldstate;
+    deltastate = pTIMER->state - oldstate_out;
 	if (deltastate < Sii_wait) return;
 		
 	if (!(ER && RS)) 
 	{
-		oldstate	= pTIMER->state;
+        oldstate_out	= pTIMER->state;
 		Sii_wait	= 0;
 		return;
 	}	
 //	Sii_wait	= TICKS_BDS;
-	oldstate	= pTIMER->state;		
+    oldstate_out	= pTIMER->state;
 //	oldstate	+= Sii_wait;		
 		
 

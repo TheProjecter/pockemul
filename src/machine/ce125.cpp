@@ -75,6 +75,7 @@ Cmp2200::Cmp2200(CPObject *parent):Cce125(parent)
 Cce125::Cce125(CPObject *parent):Cce126(parent)
 {								//[constructor]
     BackGroundFname	= ":/EXT/ext/ce-125.jpg";
+    setcfgfname("ce125");
 
     Pc_DX	= 731;
     Pc_DY	= 532;

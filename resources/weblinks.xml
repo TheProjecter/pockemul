@@ -1,6 +1,60 @@
-    webLinksList.clear();
-    webLinksList.insert("Pocket Museum","http://pocket.free.fr/html/sharp/pc-1245_e.html");
-
-        webLinksList.clear();
-        webLinksList.insert("Pocket Museum","http://pocket.free.fr/html/sharp/pc-1260_e.html");
-        webLinksList.insert("Silicium (fr)","http://silicium.org/site/index.php?option=com_content&view=article&id=176:sharp-pc-1260-1261-et-1262&catid=55:calcs&Itemid=29");
+<!DOCTYPE WEBLINKS>
+<weblinks version="1.0">
+    <model value="pc1245">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1245_e.html"/>
+    </model>
+    <model value="pc1250">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1250_e.html"/>
+    </model>
+    <model value="pc1251">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1251_e.html"/>
+    </model>
+    <model value="pc1255">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1255_e.html"/>
+    </model>
+    <model value="pc1260">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1260_e.html"/>
+        <url desc="Silicium (fr)" link="http://silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=176:sharp-pc-1260-1261-et-1262&amp;catid=55:calcs&amp;Itemid=29"/>
+    </model>
+    <model value="pc1261">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1261_e.html"/>
+        <url desc="Silicium (fr)" link="http://silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=176:sharp-pc-1260-1261-et-1262&amp;catid=55:calcs&amp;Itemid=29"/>
+    </model>
+    <model value="pc1262">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1262_e.html"/>
+        <url desc="Silicium (fr)" link="http://silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=176:sharp-pc-1260-1261-et-1262&amp;catid=55:calcs&amp;Itemid=29"/>
+    </model>
+    <model value="pc1350">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1350_e.html"/>
+    </model>
+    <model value="pc1360">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1360_e.html"/>
+    </model>
+    <model value="pc1401">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1401_e.html"/>
+    </model>
+    <model value="pc1402">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1402_e.html"/>
+    </model>
+    <model value="pc1403">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403_e.html"/>
+    </model>
+    <model value="pc1403H">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403h_e.html"/>
+    </model>
+    <model value="pc1421">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1421_e.html"/>
+    </model>
+    <model value="pc1450">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-14050_e.html"/>
+    </model>
+    <model value="pc1460">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1460_e.html"/>
+    </model>
+    <model value="ce140p">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-140p_e.html"/>
+    </model>
+    <model value="mc2200">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/seiko/mc-2200_e.html"/>
+    </model>
+</weblinks>

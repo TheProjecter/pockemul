@@ -50,6 +50,8 @@ public:
 		Lcd_Symb_Y	= 48;
 		Lcd_Symb_DX	= 30;
 		Lcd_Symb_DY	= 64;
+
+        cnt=0;
 		
         pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
         pSIOCONNECTOR	= new Cconnector(this,15,"Connector 15 pins",false,QPoint(633,105));	publish(pSIOCONNECTOR);
@@ -60,6 +62,7 @@ public:
 	{								//[constructor]
 	}
 private:
+    BYTE cnt;
 };
 
 class Cpc1350:public Cpc13XX{						//PC1350 emulator main class

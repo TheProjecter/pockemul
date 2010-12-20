@@ -124,6 +124,12 @@ public:
         StartRot = false;
         Change_Color = true;
         Sii_wait			= 0;
+        oldstate_run = 0;
+        printer_oldstate_draw = 0;
+        printer_oldstate_paperfeed=0;
+        t=c=0;
+        waitbitstart=1;
+        waitbitstop=0;
     }
 
 
@@ -136,7 +142,7 @@ protected:
     int			Pen_Color;			// Color : 0 to 3
     DWORD		Offset_Paper_View;
     quint8		Rot;
-    quint8  	t,c;
+    //quint8  	t,c;
 
     bool		Change_Color;
 #ifndef NO_SOUND
@@ -164,7 +170,10 @@ private:
     int orig_Y;
     int lineType;
     int mainRot;
-
+    qint64  oldstate_run;
+    qint64  printer_oldstate_draw;
+    qint64  printer_oldstate_paperfeed;
+    unsigned char	t,c,waitbitstart,waitbitstop;
 
 };
 

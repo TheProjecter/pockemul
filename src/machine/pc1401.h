@@ -63,6 +63,8 @@ public:
 		Pc_DX = 633;
 		Pc_DY = 252;
 		
+        cnt = 0;
+
 		pLCDC		= new Clcdc_pc1401(this);
 		pCPU		= new CSC61860(this);
 		pTIMER		= new Ctimer(this);
@@ -87,6 +89,7 @@ public:
 	{								//[constructor]
 	}
 private:
+    BYTE cnt;
 };
 
 

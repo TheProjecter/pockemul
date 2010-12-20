@@ -87,6 +87,10 @@ public:
 		exportbit=0;
 		exportbyte=1;
 		convCRLF=1;
+
+        bit_in=oldstate_in=0;
+        Start_Bit_Sent = false;
+        t=c=0;waitbitstart=1;waitbitstop=0;
 		
         baudrate = 1200;
 
@@ -140,6 +144,12 @@ private:
 	int		Sii_Bit_Nb;
 	int		Sii_LfWait;	
     int     baudrate;
+
+    qint8   bit_in;
+    qint64  oldstate_in;
+    qint64  oldstate_out;
+    bool    Start_Bit_Sent;
+    unsigned char	t,c,waitbitstart,waitbitstop;
 };
 
 

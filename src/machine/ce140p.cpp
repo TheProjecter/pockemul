@@ -43,6 +43,8 @@ bool Cce140p::init(void) {
     pSIO = new Csio(this);
 
     if (pSIO) pSIO->init();
+    if (pSIO) pSIO->dialogconsole->hide();
+
 
     connect(pSIO,SIGNAL(newData(qint8)),this,SLOT(CommandSlot(qint8)));
 
@@ -50,19 +52,25 @@ bool Cce140p::init(void) {
 }
 
 bool Cce140p::run(void) {
-    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
-    pSIO->pSIOCONNECTOR->Set_values(pSIOCONNECTOR_value);
-    // Be sure pSIO TIMER IS Connected to CE140p TIMER (can change if connect/unconnect action)
-    pSIO->pTIMER = pTIMER;
 
-    pSIO->run();
-    if (pSIO->Refresh_Display) Refresh_Display=true;
+    if (printerSwitch) {
+        pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+        pSIO->pSIOCONNECTOR->Set_values(pSIOCONNECTOR_value);
+        // Be sure pSIO TIMER IS Connected to CE140p TIMER (can change if connect/unconnect action)
+        pSIO->pTIMER = pTIMER;
 
-    Draw();
+        pSIO->run();
+        if (pSIO->Refresh_Display) Refresh_Display=true;
 
-    pSIOCONNECTOR->Set_values(pSIO->pSIOCONNECTOR->Get_values());
+        Draw();
 
+        pSIOCONNECTOR->Set_values(pSIO->pSIOCONNECTOR->Get_values());
+    }
+    else {
+        // NOT FINISHED
+        pSIOCONNECTOR_OUT->Set_values(pSIOCONNECTOR->Get_values());
+    }
     return true;
 }
 

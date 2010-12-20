@@ -16,12 +16,13 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
     connect(baudCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(changeBaudrate(QString)));
 
     pSIO = (Csio *) parent;
+    currentIndex=0;
 	
 }
 //
 void DialogConsole::refresh( void)
 {
-	static int currentIndex = 0;
+
 	
 	if (! pSIO) return;
     if (pSIO->pTIMER) ConnectLbl->setText("Connected to : " + pSIO->pTIMER->pPC->getName());

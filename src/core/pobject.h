@@ -87,6 +87,8 @@ public:
 
 	void BuildContextMenu(QMenu * menu);
     void computeWebLinksMenu(QMenu * menu);
+    void insertLinkAction(QString desc,QString link);
+    QMenu * menuweblink;
 	void computeLinkMenu(QMenu * menu);
 	void computeUnLinkMenu(QMenu * menu);
 	
@@ -174,6 +176,7 @@ private:
 	bool	Front;
 	int		iChanIndex;
 	qint64	fillSoundBuffer_old_state;	
+    QByteArray audioBuff;
 
 };
 

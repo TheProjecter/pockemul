@@ -20,5 +20,6 @@ private slots:
 protected:
 	void closeEvent(QCloseEvent *event);
 	Csio *pSIO;
+    int currentIndex;
 };
 #endif

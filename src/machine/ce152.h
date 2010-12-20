@@ -111,6 +111,8 @@ protected:
 	void	CvStringIToLong (char*   ptrStr,u_long* ptrVal);
 	void	CvShortToStringI (u_short value,char*   ptrStr);
     void	CvLongToStringI (u_long value,unsigned char*  ptrStr);
+
+    qint64  previous_state_setwav;
 };
 
 

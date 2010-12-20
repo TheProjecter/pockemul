@@ -141,6 +141,7 @@ public:
         ticks2	= 0;
         ticksReset = 0;
         DASMLOG=0;
+        first_pass = true;
 		pDEBUG	= new Cdebug_sc61860(parent);
 
 		start2khz = 0;
@@ -332,6 +333,9 @@ private:
 	BYTE disp_on;
 
 	BYTE DASMLOG;
+
+private:
+    bool first_pass;
 };
 
 class CSC61860:public Csc{

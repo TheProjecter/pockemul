@@ -130,6 +130,12 @@ void MainWindowPockemul::slotUnLink(QAction * action)
         }
 }
 
+void MainWindowPockemul::slotWebLink(QAction *action) {
+    QString s = action->data().toString();
+    QUrl url(s);
+    QDesktopServices::openUrl(url);
+}
+
 void MainWindowPockemul::slotNewLink(QAction * action)
 {
 	QString s = action->data().toString();

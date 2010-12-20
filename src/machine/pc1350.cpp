@@ -91,7 +91,6 @@ BYTE	Cpc1350::Get_PortB(void)
 
 void	Cpc13XX::Set_PortA(BYTE data)
 {
-	static BYTE cnt=0;
 
 	if ((IO_A != 0) && (data == 0))
 	{

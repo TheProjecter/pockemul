@@ -84,6 +84,7 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     first_state = 0;
     counter		= 0;
     GetWav_Val	= 0;
+    previous_state_setwav = 0;
 };
 
 
@@ -195,7 +196,6 @@ int Cce152::myfgetc(WavFileInfo* ptrFile)
 
 bool Cce152::SetWav(bool bit)
 {
-    static qint64 previous_state=0;
     if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
 //fprintf(fp_tape,"setwav - mode=%d",mode);
 	if (mode != RECORD) return false;			// Return 0 If not PLAY mode
@@ -215,8 +215,8 @@ bool Cce152::SetWav(bool bit)
 
     while ((pTIMER->state - first_state) >= wait)
 	{
-        fprintf(fp_tape,"state=%lld diff=%lld delta=%lld val=%s c=%lld\n",pTIMER->state,pTIMER->state-previous_state,delta,bit?"1":"0",counter);
-        previous_state = pTIMER->state;
+        fprintf(fp_tape,"state=%lld diff=%lld delta=%lld val=%s c=%lld\n",pTIMER->state,pTIMER->state-previous_state_setwav,delta,bit?"1":"0",counter);
+        previous_state_setwav = pTIMER->state;
         int error = fputc ( (bit?0xFF:0x00), info.ptrFd) ;
         counter++;
         first_state +=wait;

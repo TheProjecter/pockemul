@@ -11,6 +11,7 @@
 #include "clink.h"
 #include "dialogkeylist.h"
 #include "dialogdump.h"
+#include "weblinksparser.h"
  
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
@@ -53,6 +54,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		dialogkeylist	= 0;
 		dialogdump		= 0;
 		Power = false;
+        audioBuff.clear();
 		
 	};
 
@@ -224,7 +226,7 @@ signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream,
 
 void CPObject::fillSoundBuffer(BYTE val)
 {
-    static QByteArray buff;
+
 	qint64 new_state,delta_state;
 	 
 	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
@@ -241,10 +243,10 @@ void CPObject::fillSoundBuffer(BYTE val)
         while (delta_state >= wait)
         {
 #if NEW_SOUND
-            buff.append(val);
-            if (buff.size() >= m_audioOutput->periodSize()) {
-                m_output->write(buff);
-                buff.clear();
+            audioBuff.append(val);
+            if (audioBuff.size() >= m_audioOutput->periodSize()) {
+                m_output->write(audioBuff);
+                audioBuff.clear();
             }
 #else
             //if (soundBuffer.size() < BUFFLEN)
@@ -723,15 +725,26 @@ void CPObject::BuildContextMenu(QMenu * menu)
 }
 
 void CPObject::computeWebLinksMenu(QMenu * menu) {
-    QMenu * menuweblink = menu->addMenu(tr("Web Links"));
+    menuweblink = menu->addMenu(tr("Web Links"));
     connect(menuweblink, SIGNAL(triggered( QAction *)), mainwindow, SLOT(slotWebLink( QAction *)));
 // FETCH XML FILE TO ADD MENU ACTIONS
-//    QMapIterator<QString, QString> i(webLinksList);
-//    while (i.hasNext()) {
-//        i.next();
-//        QAction * actionWebLink = menuweblink->addAction(i.key());
-//        actionWebLink->setData(i.value());
-//    }
+    QFile fileRes(":/POCKEMUL/weblinks.xml");
+    QXmlInputSource sourceRes(&fileRes);
+    QXmlSimpleReader reader;
+    reader.setContentHandler( new WebLinksParser(this) );
+
+    bool result = reader.parse( sourceRes );
+
+
+}
+
+void CPObject::insertLinkAction(QString desc,QString link) {
+    QLabel* label = new QLabel("<a href='"+link+"'>"+desc+"</a>", this);
+    label->setOpenExternalLinks(true);
+
+    QWidgetAction* a = new QWidgetAction(this);
+    a->setDefaultWidget( label );
+    menuweblink->addAction(a);
 }
 
 void CPObject::computeLinkMenu(QMenu * menu)
