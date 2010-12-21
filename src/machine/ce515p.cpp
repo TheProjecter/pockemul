@@ -9,6 +9,7 @@
 #include "ce515p.h"
 
 
+
 #define NO_MOVE	0
 #define RI_MOVE	1
 #define LE_MOVE 2
@@ -193,6 +194,21 @@ bool Cce515p::init(void)
 #ifndef NO_SOUND
     QResource res(":/EXT/ext/clac2.wav");
     clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
+#endif
+
+#if 0
+    QFile inputFile;
+     inputFile.setFileName("/home/alex/Music/noh.wav");
+     inputFile.open(QIODevice::ReadOnly);
+
+     QAudioFormat format;
+     format.setFrequency(44100);
+     format.setChannels(2);
+     format.setSampleSize(32);
+     format.setCodec("audio/pcm");
+     format.setByteOrder(QAudioFormat::LittleEndian);
+     format.setSampleType(QAudioFormat::UnSignedInt);
+     QAudioOutput *audio = new QAudioOutput( format, 0);
 #endif
     setfrequency( 0);
 

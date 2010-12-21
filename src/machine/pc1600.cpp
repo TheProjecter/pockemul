@@ -44,18 +44,20 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
-    Pc_DX		= 572;
-    Pc_DY		= 254;
+    Pc_DX_mm    = 195;
+    Pc_DY_mm    = 86;
+    Pc_DX		= 679; //572;
+    Pc_DY		= 299;//254;
 
-    Lcd_X		= 35;
-    Lcd_Y		= 40;
+    Lcd_X		= 60;
+    Lcd_Y		= 50;
     Lcd_DX		= 156;
     Lcd_DY		= 32;
     Lcd_ratio_X	= 2;
     Lcd_ratio_Y	= 2;
 
-    Lcd_Symb_X	= 35;
-    Lcd_Symb_Y	= 33;
+    Lcd_Symb_X	= 60;
+    Lcd_Symb_Y	= 40;
     Lcd_Symb_DX	= 317;
     Lcd_Symb_DY	= 5;
 
@@ -80,8 +82,8 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     pLH5810		= new CLH5810_PC1600(this);
 
     pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",false);	publish(pCONNECTOR);
-    pSIOCONNECTOR=new Cconnector(this,15,"Connector 15 pins",false);	publish(pSIOCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
+    pSIOCONNECTOR=new Cconnector(this,15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
     pADCONNECTOR= new Cconnector(this,8,"Digital connector 2 pins",false);	publish(pADCONNECTOR);
 
 
@@ -399,17 +401,12 @@ bool Cpc1600::run(void)
     // 1/64s and 1/2s interrupt
     PUT_BIT(pCPU->imem[0x32],4,pTIMER->GetTP( pLU57813P->Get_tpIndex64()));
 
-#if 1
-    pLU57813P->step();
-    PUT_BIT(pCPU->imem[0x32],6,pTIMER->GetTP( pLU57813P->Get_tpIndex2()));
-#else
-
     bool tips = pTIMER->GetTP( pLU57813P->Get_tpIndex2());
     if (READ_BIT(pCPU->imem[0x32],6) != tips) {
         PUT_BIT(pCPU->imem[0x32],6,tips);
         pLU57813P->step();
     }
-#endif
+
     if (pLU57813P->Get_Kon())
     {
         pLH5810->step();

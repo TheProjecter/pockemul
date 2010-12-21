@@ -30,14 +30,15 @@
 Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
 {
     //[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-1600p.jpg";
+    BackGroundFname	= ":/EXT/ext/ce-1600p.png";
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce1600p"));
-    SnapPts = QPoint(375,404);
+    //SnapPts = QPoint(375,404);
+    pCONNECTOR->setSnap(QPoint(424,536));
     Paper_X = 192;
     Paper_Y = 50;
-    Pc_DX	= 960;
-    Pc_DY	= 658;
+    Pc_DX	= 1100;
+    Pc_DY	= 773;
 
     KeyMap		= KeyMapce1600p;
     KeyMapLenght= KeyMapce1600pLenght;
@@ -47,8 +48,6 @@ Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
 
 bool Cce1600p::init(void)
 {
-    Pc_DX	= 960;
-    Pc_DY	= 658;
 
         CPObject::init();
 

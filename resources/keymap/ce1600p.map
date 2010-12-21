@@ -1,8 +1,8 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>ce1600p</model>
 <Keyboard>
-    <KEY description="PRINT" height="20" left="625" scancode="0xc0" top="354" width="25"/>
-    <KEY description="FEED" height="20" left="828" scancode="0xc1" top="353" width="50"/>
-    <KEY description="Back FEED" height="20" left="766" scancode="0xc2" top="354" width="48"/>
+    <KEY description="PRINT" height="20" left="712" scancode="0xc0" top="418" width="36"/>
+    <KEY description="FEED" height="20" left="946" scancode="0xc1" top="417" width="60"/>
+    <KEY description="Back FEED" height="20" left="876" scancode="0xc2" top="418" width="56"/>
 </Keyboard>
 </KEYBMAP>
