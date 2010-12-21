@@ -195,8 +195,8 @@ void Cpc1600::TurnON(void)
 {
     AddLog(LOG_FUNC,"Cpc1600::TurnOn");
 
-    remove(Initial_Session_Fname.toStdString().c_str());
-    Reset();
+    //remove(Initial_Session_Fname.toStdString().c_str());
+    pCPU->Reset();
     CpcXXXX::TurnON();
 }
 
@@ -399,17 +399,23 @@ bool Cpc1600::run(void)
     // 1/64s and 1/2s interrupt
     PUT_BIT(pCPU->imem[0x32],4,pTIMER->GetTP( pLU57813P->Get_tpIndex64()));
 
+#if 1
+    pLU57813P->step();
+    PUT_BIT(pCPU->imem[0x32],6,pTIMER->GetTP( pLU57813P->Get_tpIndex2()));
+#else
+
     bool tips = pTIMER->GetTP( pLU57813P->Get_tpIndex2());
     if (READ_BIT(pCPU->imem[0x32],6) != tips) {
         PUT_BIT(pCPU->imem[0x32],6,tips);
         pLU57813P->step();
     }
+#endif
     if (pLU57813P->Get_Kon())
     {
         pLH5810->step();
     }
 
-    pTC8576P->step();
+    //pTC8576P->step();
 
     return(1);
 }
@@ -741,6 +747,9 @@ INLINE bool Cpc1600::lh5810_read(void)
     pPC->pCPU->imem[0x1D] = pLH5810->GetReg(LH5810_DDB);
     pPC->pCPU->imem[0x1E] = pLH5810->GetReg(LH5810_OPA);
     pPC->pCPU->imem[0x1F] = pLH5810->GetReg(LH5810_OPB);
+    if (pPC->pCPU->imem[0x1F] == 0x20) {
+        pPC->pCPU->imem[0x1F] = 0x20;
+    }
 
     return(1);
 }
@@ -965,6 +974,7 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
         case 0x1e: break;
         case 0x1f: break;
         }
+        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         lh5810_write(); pLH5810->step();
     }
 
@@ -976,10 +986,10 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X   - SEND //\n",address,value);
         pLU57813P->command(value);
         break;
-    case 0x22: pTC8576P->in(value);
+    case 0x22: //pTC8576P->in(value);
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         break;
-    case 0x23: pTC8576P->instruction(value);
+    case 0x23: //pTC8576P->instruction(value);
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         break;
     case 0x28:
@@ -1068,11 +1078,11 @@ UINT8 Cpc1600::in(UINT8 address)
     case 0x21: if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;
     case 0x22:
-        pCPU->imem[address] = pTC8576P->get_ssr();
+        pCPU->imem[address] = 0;//pTC8576P->get_ssr();
 //        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;
     case 0x23:
-        pCPU->imem[address] = pTC8576P->get_psr();
+        pCPU->imem[address] = 0;//pTC8576P->get_psr();
         if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;// bit 5 to 0
     case 0x28:
