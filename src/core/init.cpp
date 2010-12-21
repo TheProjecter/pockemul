@@ -167,7 +167,7 @@ void CPocketThread::run()
                     mainwindow->pdirectLink->Output(pPC);
 
 					pause = false;
-				}
+                }
                 if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
                     mainwindow->dialoganalogic->captureData();
                 }

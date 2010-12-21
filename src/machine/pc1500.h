@@ -109,6 +109,8 @@ public:
 
 	Cpc1500(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]
+        setcfgfname(QString("pc1500"));
+
 		SlotList.clear();
 		SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , RAM , "RAM"));
 		SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , ROM , "ROM"));
@@ -141,7 +143,7 @@ public:
 	Cpc1500A(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]
 		setfrequency( (int) 2600000/2);
-		setcfgfname("pc1500A");
+        setcfgfname("pc1500a");
 
 		SessionHeader	= "PC1500APKM";
 		SessionHeaderLen= 10;
@@ -185,7 +187,7 @@ public:
 
 	Ctrspc2(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]
-		setcfgfname("TRSPC2");
+        setcfgfname("trspc2");
 
 		SessionHeader	= "TRSPC-2PKM";
 		SessionHeaderLen= 10;
