@@ -33,7 +33,7 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     Initial_Session_Fname ="pc1600.pkm";
     BackGroundFname	= ":/PC1600/pc1600/pc-1600.jpg";
     LcdFname		= ":/PC1600/pc1600/pc1600lcd.jpg";
-    SymbFname		= ":/PC1500/pc1500/1500symb.jpg";
+    SymbFname		= ":/PC1600/pc1600/1600symb.jpg";
     memsize			= 0x0E0000;
     InitMemValue	= 0x00;
 
@@ -68,6 +68,10 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     ce150_Access	= false;
 
     pLCDC		= new Clcdc_pc1600(this);
+    pLCDC->Color_Off.setRgb(
+                        (int) (95*pLCDC->contrast),
+                        (int) (119*pLCDC->contrast),
+                        (int) (103*pLCDC->contrast));
 
 
     pZ80        = new CZ80(this);
@@ -190,7 +194,7 @@ void Cpc1600::Reset(void)
     pLU57813P->Reset();
     pLH5810->Reset();
 
-    CpcXXXX::Reset();
+    //CpcXXXX::Reset();
 }
 
 void Cpc1600::TurnON(void)

@@ -192,7 +192,7 @@ bool Cpc1350::run(void)
 { 
 	pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
-	CpcXXXX::run();
+    CpcXXXX::run();
 
 #if 1
 	// HACK Program Counter

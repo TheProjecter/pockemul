@@ -16,7 +16,7 @@
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
-#define NEW_SOUND 1
+#define NEW_SOUND 0
 extern QWidget* mainwidget;
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
@@ -137,7 +137,7 @@ void CPObject::audioStateChanged(QAudio::State state)
     if (state == QAudio::IdleState) {
 
     }
-    //qWarning() << "state = " << state;
+    qWarning() << "state = " << state;
 }
 
 int CPObject::initsound()
@@ -163,7 +163,7 @@ int CPObject::initsound()
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
     //connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
     connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(audioStateChanged(QAudio::State)));
-    m_audioOutput->setBufferSize(BufferSize);
+   // m_audioOutput->setBufferSize(BufferSize);
 
     m_output = m_audioOutput->start();
     int p = m_audioOutput->periodSize();
@@ -244,10 +244,17 @@ void CPObject::fillSoundBuffer(BYTE val)
         {
 #if NEW_SOUND
             audioBuff.append(val);
+            if (val) { AddLog(LOG_MASTER,tr("SOUND:%1").arg(val))}
             int ps = m_audioOutput->periodSize();
             if (audioBuff.size() >= (ps)) {
                 m_output->write(audioBuff,ps);
                 audioBuff.clear();
+            }
+            else {
+                if((m_audioOutput->bufferSize()-m_audioOutput->bytesFree()) < ps) {
+                    QByteArray fill(ps,0);
+                    m_output->write(fill,ps);
+                }
             }
 #else
             //if (soundBuffer.size() < BUFFLEN)

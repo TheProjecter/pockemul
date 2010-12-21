@@ -219,7 +219,7 @@ public:
 	void	Mem_Save(BYTE s);
     void    Mem_Save_XML(QFile *, BYTE);
 
-	long	old_state;
+    qint64	old_state;
 
 	bool	off;
 

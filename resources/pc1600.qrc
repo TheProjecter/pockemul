@@ -10,5 +10,6 @@
         <file>pc1600/rom3b.bin</file>
         <file>pc1600/romce1600-1.bin</file>
         <file>pc1600/romce1600-2.bin</file>
+        <file>pc1600/1600symb.jpg</file>
     </qresource>
 </RCC>
