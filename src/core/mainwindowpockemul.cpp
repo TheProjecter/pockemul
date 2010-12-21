@@ -168,6 +168,10 @@ int MainWindowPockemul::newsession()
             QAction * actionDistConn = menuPockets->addAction(newpPC->getName());
             actionDistConn->setData(tr("%1").arg((long)newpPC));
 
+            if (dialoganalogic) {
+                dialoganalogic->fill_twWatchPoint();
+                dialoganalogic->update();
+            }
 		}
 
 	}
@@ -365,7 +369,12 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
         }
     }
 
-	pObject->exit();
+    WatchPoint.remove(pObject);
+    if (dialoganalogic) {
+        dialoganalogic->fill_twWatchPoint();
+        dialoganalogic->update();
+    }
+    pObject->exit();
 	pObject->deleteLater();
 }
 

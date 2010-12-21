@@ -42,16 +42,18 @@ dialogAnalog::dialogAnalog( int nbbits,QWidget * parent, Qt::WFlags f) : QDialog
 
 void dialogAnalog::slotChangeWatchPoint( QTreeWidgetItem * current , QTreeWidgetItem * previous)
 {
-	int pos = current->data(0,Qt::UserRole).toInt();
-	currentWatchPoint = WatchPoint.Point.at( pos );
-	currentWatchPointSize = WatchPoint.PointSize.at( pos );
-	NbBits = WatchPoint.nbBits.at( pos );
-	pPC = WatchPoint.PObject.at( pos );
+    if (current) {
+        int pos = current->data(0,Qt::UserRole).toInt();
+        currentWatchPoint = WatchPoint.Point.at( pos );
+        currentWatchPointSize = WatchPoint.PointSize.at( pos );
+        NbBits = WatchPoint.nbBits.at( pos );
+        pPC = WatchPoint.PObject.at( pos );
+    }
 }
-
 
 void dialogAnalog::fill_twWatchPoint(void)
 {
+    twWatchPoint->clear();
 	twWatchPoint->setColumnCount(1);
 
 	

@@ -84,6 +84,7 @@ public:
 
 	QList<Cconnector*> ConnList;
 	void publish(Cconnector* newConn);
+    void remove(Cconnector* newConn);
 
 	void BuildContextMenu(QMenu * menu);
     void computeWebLinksMenu(QMenu * menu);

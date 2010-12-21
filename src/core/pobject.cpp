@@ -802,6 +802,11 @@ void CPObject::publish(Cconnector* newConn)
 {
 	ConnList.append(newConn);
 }
+void CPObject::remove(Cconnector* newConn)
+{
+    ConnList.removeAt(ConnList.indexOf(newConn));
+}
+
 
 void CPObject::slotExit(void)
 {

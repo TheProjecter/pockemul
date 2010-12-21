@@ -48,7 +48,7 @@ public:
 				WatchPointName.removeAt(i);
 			}
 		}
-	};
+    }
 	
 	void add( qint64 * watchpoint, qint8 ptrSize,qint8 nbbits,CPObject * object, QString name)
 	{
@@ -57,7 +57,16 @@ public:
 		nbBits.append(nbbits);
 		PObject.append(object);
 		WatchPointName.append(name);
-	};
+    }
+    void remove( qint64 * watchpoint)
+    {
+        int i = Point.indexOf(watchpoint);
+        Point.removeAt(i);
+        PointSize.removeAt(i);
+        nbBits.removeAt(i);
+        PObject.removeAt(i);
+        WatchPointName.removeAt(i);
+    }
 };
 
 class CPocketThread:public QThread

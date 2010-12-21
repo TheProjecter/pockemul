@@ -3,6 +3,67 @@
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 
+Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
+{								//[constructor]
+    setcfgfname("pc2500");
+
+    SessionHeader	= "PC2500PKM";
+    SessionHeaderLen= 9;
+    Initial_Session_Fname ="pc2500.pkm";
+
+    BackGroundFname	= ":/PC2500/pc2500/pc2500.png";
+    LcdFname		= ":/PC2500/pc2500/2500lcd.png";
+    SymbFname		= ":/PC2500/pc2500/2500symb.png";
+    memsize			= 0x18000;
+//		NbSlot		= 3;
+
+    SlotList.clear();
+    SlotList.append(CSlot(8 , 0x0000 ,	":/PC2500/pc2500/cpu-2500.bin"	, "pc-2500/cpu-2500.bin"	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	""								, "pc-2500/R1-2500.ram"		, RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	":/PC2500/pc2500/r1-2500.bin"	, "pc-2500/r1-2500.bin"	, ROM , "BAS ROM"));
+    SlotList.append(CSlot(32, 0x10000 ,	":/PC2500/pc2500/r2-2500.bin"	, "pc-2500/r2-2500.bin"	, ROM , "BUSINESS ROM"));
+
+    KeyMap		= KeyMap2500;
+    KeyMapLenght= KeyMap2500Lenght;
+
+    pLCDC		= new Clcdc_pc2500(this);
+    pKEYB		= new Ckeyb_pc2500(this);
+    pCPU		= new CSC61860(this);
+
+    pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pSIOCONNECTOR->setSnap(QPoint(960,480));
+
+    remove(pCONNECTOR); // delete pCONNECTOR;
+
+    pTIMER		= new Ctimer(this);
+    pce515p     = new Cce515p(this);
+    pce515p->pTIMER = pTIMER;
+
+    Pc_DX_mm = 182;
+    Pc_DY_mm = 72;
+    Pc_DZ_mm = 16;
+
+    Pc_DX = 960;
+    Pc_DY = 673;
+
+    Lcd_X		= 560;
+    Lcd_Y		= 70;
+    Lcd_DX		= 150;
+    Lcd_DY		= 32;
+    Lcd_ratio_X	= 2;
+    Lcd_ratio_Y	= 2;
+
+    Lcd_Symb_X	= 560;
+    Lcd_Symb_Y	= 60;
+    Lcd_Symb_DX	= 300;
+    Lcd_Symb_DY	= 5;
+    //Lcd_Symb_ratio = 2;
+
+    printMode = false;
+    capslock = false;
+}
+
+
 void Cpc2500::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();
 
@@ -123,6 +184,9 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
 bool Cpc2500::init(void) {
     Cpc1350::init();
     pce515p->init();
+    WatchPoint.remove(&pCONNECTOR_value);    // Remove the pc130 11pins connector from the analogic monitor
+    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
+    return true;
 }
 
 bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
@@ -162,8 +226,9 @@ bool Cpc2500::run(void)
         //pKEYB->LastKey = 0;
     }
     Set_Port_Bit(PORT_B,8,1);
-// Connect CE126
-    //pCONNECTOR->Set_values( pce515p->pCONNECTOR->Get_values());
+    pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
+
+
 
     Cpc1350::run();
 
@@ -191,7 +256,7 @@ bool Cpc2500::run(void)
 
 bool Cpc2500::Set_Connector(void)
 {
-#if 1
+#if 0
     // MANAGE STANDARD CONNECTOR
     pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
     pCONNECTOR->Set_pin(PIN_GND		,0);
@@ -202,6 +267,8 @@ bool Cpc2500::Set_Connector(void)
     pCONNECTOR->Set_pin(PIN_SEL2	,0);
     pCONNECTOR->Set_pin(PIN_SEL1	,0);
 #endif
+
+    pTAPECONNECTOR->Set_pin(2,pCPU->Get_Xout());
 
     // MANAGE SERIAL CONNECTOR
     // TO DO
@@ -218,7 +285,7 @@ bool Cpc2500::Get_Connector(void)
     // MANAGE STANDARD CONNECTOR
     Set_Port_Bit(PORT_B,8,0);	// DIN	:	IB8
     Set_Port_Bit(PORT_B,7,1);	// ACK	:	IB7
-    pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+    pCPU->Set_Xin(pTAPECONNECTOR->Get_pin(1));
 
     // MANAGE SERIAL CONNECTOR
     // TO DO
