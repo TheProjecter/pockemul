@@ -124,7 +124,7 @@ CPObject *pPC=0;
         case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
  		
         default			: return 0;
-	}
+    }
 	AddLog(LOG_MASTER,"OK1");
 	if (!pPC->init()) return 0;
  

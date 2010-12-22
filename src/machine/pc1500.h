@@ -181,11 +181,11 @@ private:
 
 };
 
-class Ctrspc2:public Cpc15XX{
+class Ctrspc2:public Cpc1500{
 public:
     const char*	GetClassName(){ return("Ctrspc2");};
 
-	Ctrspc2(CPObject *parent = 0)	: Cpc15XX(this)
+    Ctrspc2(CPObject *parent = 0)	: Cpc1500(this)
 	{								//[constructor]
         setcfgfname("trspc2");
 

@@ -24,7 +24,7 @@ void	Cpc1450::initExtension(void)
 	ext_MemSlot1->setAvailable(ID_CE2H16M,true);
 	ext_MemSlot1->setAvailable(ID_CE2H32M,true);
 	ext_MemSlot1->setAvailable(ID_CE2H64M,true);
-	
+
 	addExtMenu(ext_MemSlot1);
 
     extensionArray[0] = ext_11pins;

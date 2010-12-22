@@ -212,7 +212,7 @@ class Ckeyb : public CPObject
 public:
 	virtual bool init(void);				//initialize
 	virtual bool exit(void);				//end
-	virtual void read_config(void){};		//read key config
+    virtual void read_config(void){}		//read key config
 	void	Set_KS(BYTE data);
 	BYTE	Get_KS(void);
 
@@ -242,20 +242,20 @@ public:
 
 	KEYBMAPParser *handler;
 		
-	Ckeyb(CPObject *parent = 0,QString map = "")	: CPObject(parent)								//[constructor]
-	{
-		for(int i=0;i<MAX_KO;i++) pc1350KeyStatus[i]=0;
-		for(int j=0;j<200;j++) keym[j]=0;
-		access		= 0;							//ko port access?(0:none, 1:access)
-		KStrobe		= 0;
-		IA_PORT		= 0;
+    Ckeyb(CPObject *parent = 0,QString map = "",BYTE *scan=0)	: CPObject(parent)								//[constructor]
+    {
+        for(int i=0;i<MAX_KO;i++) pc1350KeyStatus[i]=0;
+        for(int j=0;j<200;j++) keym[j]=0;
+        access		= 0;							//ko port access?(0:none, 1:access)
+        KStrobe		= 0;
+        IA_PORT		= 0;
         Kon			= false;
-		fn_KeyMap	= map;
-		modified = false;
-		handler = new KEYBMAPParser(this);
-	};
-	
-	virtual ~Ckeyb(){};
+        scandef     = scan;
+        fn_KeyMap	= map;
+        modified = false;
+        handler = new KEYBMAPParser(this);
+    }
+    virtual ~Ckeyb(){}
 					
 protected:
 	BYTE pc1350KeyStatus[MAX_KO];			//Ko0-11

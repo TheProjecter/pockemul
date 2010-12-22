@@ -7,7 +7,7 @@ BYTE scandef_pc1450[] = {
 '4',		'5',		'6',		'*',		K_RM,		K_SHT,		K_DEF,		K_SML,
 '1',		'2',		'3',		'-',		K_MPLUS,	'q',		'a',		'z',
 '0',		K_SIGN,		'.',		'+',		'=',		'w',		's',		'x',
-K_HYP,		K_SIN,		K_COS,		K_TAN,		'K',		'e',		'd',		'c',
+K_HYP,		K_SIN,		K_COS,		K_TAN,		NUL/*Kanji*/,'e',		'd',		'c',
 K_HEX,		K_DEG,		K_LN,		K_LOG,		'[',		'r',		'f',		'v',
 K_EXP,		K_POT,		K_ROOT,		K_SQR,		'\\',		't',		'g',		'b',
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,

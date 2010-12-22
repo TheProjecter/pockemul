@@ -51,7 +51,7 @@ public:
 		Pc_DY = 252;
 		
 		delete pLCDC;		pLCDC		= new Clcdc_pc1475(this);
-		delete pKEYB;		pKEYB		= new Ckeyb_pc1450(this);
+        delete pKEYB;		pKEYB		= new Ckeyb(this,"pc1450.map",scandef_pc1450);
 
 
 		Lcd_X		= 111;
