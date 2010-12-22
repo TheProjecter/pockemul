@@ -10,10 +10,10 @@ class Cpc1475:public Cpc1360{						//PC1350 emulator main class
 public:
     const char*	GetClassName(){ return("Cpc1475");};
 
-	bool Chk_Adr(DWORD *d,DWORD data);
-	bool Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool Chk_Adr(DWORD *d,DWORD data);
+    virtual bool Chk_Adr_R(DWORD *d,DWORD data);
 
-	Cpc1475(CPObject *parent = 0)	: Cpc1360(this)
+    Cpc1475(CPObject *parent = 0)	: Cpc1360(parent)
 	{								//[constructor]
 		setfrequency(768000/3);
 		setcfgfname("pc1475");

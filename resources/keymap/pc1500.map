@@ -70,6 +70,6 @@
     <KEY description="F4" height="10" left="241" scancode="0xf9" top="103" width="21"/>
     <KEY description="F5" height="10" left="288" scancode="0xfa" top="103" width="21"/>
     <KEY description="F6" height="10" left="335" scancode="0xfb" top="103" width="21"/>
-    <KEY description="PRINT" height="22" left="0" scancode="0xc1" top="0" width="21"/>
+    <KEY description="PRINT" height="22" left="1" scancode="0xc1" top="0" width="21"/>
 </Keyboard>
 </KEYBMAP>

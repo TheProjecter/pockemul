@@ -94,7 +94,7 @@ public:
 	bool Chk_Adr(DWORD *d,DWORD data);
 	bool Chk_Adr_R(DWORD *d,DWORD data);
 
-	Cpc1403H(CPObject *parent = 0)	: Cpc1403(this)
+    Cpc1403H(CPObject *parent = 0)	: Cpc1403(parent)
 	{											//[constructor]
 		setfrequency( (int) 768000/3);
 		setcfgfname("pc1403H");

@@ -17,10 +17,10 @@ class Cpc1360:public Cpc13XX{						//PC1360 emulator main class
 public:
     const char*	GetClassName(){ return("Cpc1360");};
 
-	BYTE	Get_PortB(void);
-//	void	Set_PortB(BYTE data);
-	void	Set_PortF(BYTE data);
-	void	Set_PortC(BYTE data);
+    virtual BYTE	Get_PortB(void);
+//	virtual void	Set_PortB(BYTE data);
+    virtual void	Set_PortF(BYTE data);
+    virtual void	Set_PortC(BYTE data);
 	virtual bool	Chk_Adr(DWORD *d,DWORD data);
 	virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
 
@@ -29,7 +29,7 @@ public:
 
     virtual void	initExtension(void);
 
-	Cpc1360(CPObject *parent = 0)	: Cpc13XX(this)
+    Cpc1360(CPObject *parent = 0)	: Cpc13XX(parent)
 	{								//[constructor]
 		setcfgfname("pc1360");
 

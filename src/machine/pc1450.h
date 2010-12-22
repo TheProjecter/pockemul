@@ -27,7 +27,7 @@ public:
     UINT8 out(UINT8 address,UINT8 value){return(1);};
 	
 
-	Cpc1450(CPObject *parent = 0)	: Cpc1350(this)
+    Cpc1450(CPObject *parent = 0)	: Cpc1350(parent)
 	{								//[constructor]
 		setfrequency(768000/3);
 		setcfgfname("pc1450");

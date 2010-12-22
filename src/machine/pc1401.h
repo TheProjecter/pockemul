@@ -33,7 +33,7 @@ public:
 	virtual bool CheckUpdateExtension(CExtension *ext);
 
 			
-	Cpc1401(CPObject *parent = 0)	: CpcXXXX(this)
+    Cpc1401(CPObject *parent = 0)	: CpcXXXX(parent)
 	{								//[constructor]
 		setfrequency( (int) 576000/3);
 		setcfgfname("pc1401");

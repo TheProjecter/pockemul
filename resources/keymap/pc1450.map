@@ -8,8 +8,8 @@
     <KEY description="," height="16" left="370" scancode="0x2c" top="187" width="25"/>
     <KEY description="." height="22" left="498" scancode="0x2e" top="214" width="32"/>
     <KEY description="/" height="22" left="541" scancode="0x2f" top="105" width="32"/>
-    <KEY description=":" height="16" left="0" scancode="0x3a" top="0" width="25"/>
-    <KEY description=";" height="16" left="0" scancode="0x3b" top="0" width="25"/>
+    <KEY description=":" height="16" left="1" scancode="0x3a" top="0" width="25"/>
+    <KEY description=";" height="16" left="1" scancode="0x3b" top="0" width="25"/>
     <KEY description="+" height="22" left="543" scancode="0x2b" top="215" width="32"/>
     <KEY description="CLS" height="16" left="588" scancode="0xef" top="19" width="25"/>
     <KEY description="DEF" height="16" left="22" scancode="0xde" top="188" width="25"/>
@@ -17,9 +17,9 @@
     <KEY description="Down Arrow" height="16" left="233" scancode="0x4" top="125" width="25"/>
     <KEY description="ENTER" height="16" left="339" scancode="0xd" top="220" width="59"/>
     <KEY description="Equal" height="22" left="589" scancode="0x3d" top="217" width="32"/>
-    <KEY description="INS" height="22" left="0" scancode="0x9" top="-1" width="32"/>
+    <KEY description="INS" height="22" left="1" scancode="0x9" top="-1" width="32"/>
     <KEY description="Left Arrow" height="16" left="300" scancode="0x6" top="125" width="25"/>
-    <KEY description="MODE" height="16" left="0" scancode="0x8" top="0" width="25"/>
+    <KEY description="MODE" height="16" left="1" scancode="0x8" top="0" width="25"/>
     <KEY description="On/Brk" height="16" left="93" scancode="0x3" top="126" width="25"/>
     <KEY description="On/Off" height="21" left="22" scancode="0x3e" top="54" width="19"/>
     <KEY description="Rigth Arrow" height="16" left="335" scancode="0x7" top="123" width="25"/>

@@ -163,6 +163,7 @@ int MainWindowPockemul::newsession()
  		if (! newpPC) MSG_ERROR("pPC is NULL in slotStart")
  		else
  		{
+            AddLog(LOG_MASTER,tr("%1").arg((long)newpPC));
  			listpPObject.append(newpPC);
 
             QAction * actionDistConn = menuPockets->addAction(newpPC->getName());

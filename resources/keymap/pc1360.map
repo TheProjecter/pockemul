@@ -64,6 +64,6 @@
     <KEY description="X" height="16" left="91" scancode="0x78" top="220" width="25"/>
     <KEY description="Y" height="16" left="232" scancode="0x79" top="155" width="25"/>
     <KEY description="Z" height="16" left="57" scancode="0x7a" top="221" width="25"/>
-    <KEY description="" height="500" left="0" scancode="0x0" top="0" width="0"/>
+    <KEY description="" height="500" left="1" scancode="0x0" top="0" width="0"/>
 </Keyboard>
 </KEYBMAP>
