@@ -202,7 +202,7 @@ void Cpc1600::TurnON(void)
     AddLog(LOG_FUNC,"Cpc1600::TurnOn");
 
     //remove(Initial_Session_Fname.toStdString().c_str());
-    pCPU->Reset();
+    //pCPU->Reset();
     CpcXXXX::TurnON();
 }
 
@@ -228,7 +228,7 @@ void	Cpc1600::initExtension(void)
     ext_MemSlot2->setAvailable(ID_CE16160,true,false);
     ext_MemSlot2->setAvailable(ID_CE16192,true,false);
     ext_MemSlot2->setAvailable(ID_CE16224,true,false);
-    ext_MemSlot2->setAvailable(ID_CE16256,true,false);
+    ext_MemSlot2->setAvailable(ID_CE16256,true,true);
 
     addExtMenu(ext_MemSlot2);
 }
@@ -272,6 +272,7 @@ bool Cpc1600::LoadConfig(QFile *file)
     bank4 = b4;
     cpuSwitchPending = csp;
     masterCPU = mcpu;
+    pCPU = (masterCPU ? (CCPU *)pZ80 : (CCPU *)pLH5803);
 
     pZ80->Load_Internal(file);
     pLH5803->Load_Internal(file);
@@ -748,9 +749,6 @@ INLINE bool Cpc1600::lh5810_read(void)
     pPC->pCPU->imem[0x1D] = pLH5810->GetReg(LH5810_DDB);
     pPC->pCPU->imem[0x1E] = pLH5810->GetReg(LH5810_OPA);
     pPC->pCPU->imem[0x1F] = pLH5810->GetReg(LH5810_OPB);
-    if (pPC->pCPU->imem[0x1F] == 0x20) {
-        pPC->pCPU->imem[0x1F] = 0x20;
-    }
 
     return(1);
 }
@@ -987,10 +985,10 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X   - SEND //\n",address,value);
         pLU57813P->command(value);
         break;
-    case 0x22: //pTC8576P->in(value);
+    case 0x22: pTC8576P->in(value);
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         break;
-    case 0x23: //pTC8576P->instruction(value);
+    case 0x23: pTC8576P->instruction(value);
         if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         break;
     case 0x28:
@@ -1079,11 +1077,11 @@ UINT8 Cpc1600::in(UINT8 address)
     case 0x21: if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;
     case 0x22:
-        pCPU->imem[address] = 0;//pTC8576P->get_ssr();
+        pCPU->imem[address] = pTC8576P->get_ssr();
 //        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;
     case 0x23:
-        pCPU->imem[address] = 0;//pTC8576P->get_psr();
+        pCPU->imem[address] = pTC8576P->get_psr();
         if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;// bit 5 to 0
     case 0x28:
@@ -1184,6 +1182,12 @@ bool Cpc1600::Get_Connector(void)
 
     // MANAGE SERIAL CONNECTOR
     // TO DO
+//    PUT_BIT(pCPU->imem[0x23],2,pSIOCONNECTOR->Get_pin(SIO_DS));
+//    PUT_BIT(pCPU->imem[0x23],1,pSIOCONNECTOR->Get_pin(SIO_CD));
+//    PUT_BIT(pCPU->imem[0x23],0,!pSIOCONNECTOR->Get_pin(SIO_CS));
+
+//    PUT_BIT(pCPU->imem[0x23],5,!pSIOCONNECTOR->Get_pin(SIO_CI));
+
     PUT_BIT(pCPU->imem[0x23],2,pSIOCONNECTOR->Get_pin(SIO_DS));
     PUT_BIT(pCPU->imem[0x23],1,pSIOCONNECTOR->Get_pin(SIO_CD));
     PUT_BIT(pCPU->imem[0x23],0,!pSIOCONNECTOR->Get_pin(SIO_CS));

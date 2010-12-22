@@ -156,6 +156,7 @@ void CpcXXXX::TurnOFF(void)
     }
 	off = 1;
 	pLCDC->TurnOFF();
+    InitDisplay();
 }
 
 

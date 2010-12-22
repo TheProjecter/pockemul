@@ -367,7 +367,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
 		if (pKEYB->LastKey == K_OF)
 		{
-            //slotPower();
+            slotPower();
 		}
 		
 		if (pKEYB->LastKey != 0)
