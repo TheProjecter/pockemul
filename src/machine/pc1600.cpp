@@ -339,6 +339,7 @@ bool Cpc1600::init(void)				// initialize
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opb),8,8,this,"LH5810 Port B");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
 
+    QMessageBox::about(this, tr("Attention"),"PC-1600 Emulation is in alpha stage.");
     return true;
 }
 

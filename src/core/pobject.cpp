@@ -233,9 +233,9 @@ void CPObject::fillSoundBuffer(BYTE val)
 		
 	new_state = pTIMER->state;
 	delta_state = new_state - fillSoundBuffer_old_state;
-
+    if (delta_state < 0) fillSoundBuffer_old_state=new_state;
 	// Calculate nb of state to skip corresponding to the CPU frequency
-	qint64 wait = (getfrequency() / SAMPLERATE);
+    qint64 wait = ((pTIMER->CPUSpeed*getfrequency()) / SAMPLERATE );
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
     if (delta_state >= wait)
     {
@@ -862,11 +862,11 @@ void CPObject::slotCpu(QAction* action) {
 }
 
 void CPObject::slotContrast(QAction * action) {
-    if (action->text() == tr("0")) pPC->pLCDC->Contrast(0);
-    if (action->text() == tr("1")) pPC->pLCDC->Contrast(1);
-    if (action->text() == tr("2")) pPC->pLCDC->Contrast(2);
-    if (action->text() == tr("3")) pPC->pLCDC->Contrast(3);
-    if (action->text() == tr("4")) pPC->pLCDC->Contrast(4);
+    if (action->text() == tr("0")) pLCDC->Contrast(0);
+    if (action->text() == tr("1")) pLCDC->Contrast(1);
+    if (action->text() == tr("2")) pLCDC->Contrast(2);
+    if (action->text() == tr("3")) pLCDC->Contrast(3);
+    if (action->text() == tr("4")) pLCDC->Contrast(4);
 }
 
 void CPObject::slotPower()
