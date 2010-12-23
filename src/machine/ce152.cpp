@@ -74,7 +74,7 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     mode		= EJECT;
     SoundOn		= FALSE;
     info.ptrFd	= 0;
-    pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,3,"Line in / Rec / Rmt",true);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     Pc_DX		= 200;
     Pc_DY		= 320;
@@ -144,12 +144,16 @@ void Cce152::ComputeKey(void)
 
 bool Cce152::run(void)
 {
-	// Compute input pin
-	SetWav(pTAPECONNECTOR->Get_pin(2));
-	
-	// Compute output pin
-	pTAPECONNECTOR->Set_pin(1,GetWav());
-	
+    bool rmt = pTAPECONNECTOR->Get_pin(3);
+
+    if (rmt) {
+        // Compute input pin
+        SetWav(pTAPECONNECTOR->Get_pin(2));
+
+        // Compute output pin
+        pTAPECONNECTOR->Set_pin(1,GetWav());
+    }
+
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 	return true;
 }

@@ -31,6 +31,8 @@ public:
 	virtual void clearPaper(void);
 	virtual void SaveAsText(void);
 
+    virtual void ComputeKey(void);
+
     //virtual void resizeEvent ( QResizeEvent * );
 	
 	Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
@@ -54,6 +56,9 @@ int ce126_Mode;
 	{
 	}
 
+public:
+    bool    rmtSwitch;
+
 private:
 	void	Printer(qint8 d);			//printer emulator
 	QImage *charTable;
@@ -68,6 +73,8 @@ private:
 	bool	ctrl_char;
 	BYTE	t,c;
 	qint64	run_oldstate;
+
+
 };
 
 class Cce120p:public Cce126

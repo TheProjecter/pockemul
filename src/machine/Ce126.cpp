@@ -25,9 +25,11 @@
 #define UP		1
 
 TransMap KeyMapce126[]={
-    {1,	"FEED  ",	K_PFEED,34,234,	9}
+    {1,	"FEED  ",	K_PFEED,34,234,	9},
+    {2,	"RMT ON",	K_RMT_ON,34,234,9},
+    {3,	"RMT OFF",	K_RMT_OFF,34,234,9}
 };
-int KeyMapce126Lenght = 1;
+int KeyMapce126Lenght = 3;
 
 Cce126::Cce126(CPObject *parent):Cprinter(this)
 {								//[constructor]
@@ -43,7 +45,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     settop(10);
     setposX(0);
     pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
-    pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,3,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce126;
     KeyMapLenght= KeyMapce126Lenght;
@@ -59,7 +61,19 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     ctrl_char = false;
     t = 0;
     c = 0;
+    rmtSwitch = false;
 };
+
+void Cce126::ComputeKey(void)
+{
+
+    if (pKEYB->LastKey == K_RMT_ON) {
+        rmtSwitch = true;
+    }
+    if (pKEYB->LastKey == K_RMT_OFF) {
+        rmtSwitch = false;
+    }
+}
 
 //void Cce126::resizeEvent ( QResizeEvent * ) {
 //    float ratio = (float)this->width()/this->Pc_DX ;
@@ -277,9 +291,9 @@ bool Cce126::run(void)
 	bool bit = false;
 	ce126_Mode=RECEIVE_MODE;
 
-
-	pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));
-	SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));
+    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? GET_PIN(PIN_SEL1):true));       // RMT
+    pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));    // Out
+    SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));      // In
 
 	pCONNECTOR_value = pCONNECTOR->Get_values();
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();

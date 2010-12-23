@@ -94,6 +94,8 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_PBFEED	0xc2
 #define K_PRINT_ON	0xc3
 #define K_PRINT_OFF 0xc4
+#define K_RMT_ON    0xc5
+#define K_RMT_OFF   0xc6
 
 #define K_EJECT		0xd0
 #define K_PLAY		0xd1

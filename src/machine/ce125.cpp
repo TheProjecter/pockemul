@@ -1,3 +1,5 @@
+#include <QPainter>
+
 #include "ce125.h"
 #include "ce152.h"
 
@@ -9,9 +11,11 @@ TransMap KeyMapce125tape[]={
 int KeyMapce125tapeLenght = 3;
 
 TransMap KeyMapce125[]={
-    {1,	"FEED  ",	K_PFEED,34,234,	9}		//OK
+    {1,	"FEED  ",	K_PFEED,34,234,	9},		//OK
+    {2,	"RMT ON",	K_RMT_ON,34,234,	9},
+    {3,	"RMT_OFF",	K_RMT_OFF,34,234,	9}
 };
-int KeyMapce125Lenght = 1;
+int KeyMapce125Lenght = 3;
 
 
 void Cce125tape::ComputeKey(void)
@@ -82,12 +86,27 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     Pc_DY	= 532;
     SnapPts = QPoint(247,280);
     pCONNECTOR->setSnap(QPoint(247,370));
+    remove(pTAPECONNECTOR);
     setPaperPos(QRect(377,0,207,149));
 
     stackBehind = true;
     KeyMap		= KeyMapce125;
     KeyMapLenght= KeyMapce125Lenght;
     delete pKEYB; pKEYB=new Ckeyb(this,"ce125.map");
+}
+
+void Cce125::UpdateFinalImage(void) {
+
+    // Draw switch by 180° rotation
+    QPainter painter;
+
+    // PRINTER SWITCH
+    painter.begin(FinalImage);
+    painter.drawImage(282,235,FinalImage->copy(282,235,30,20).mirrored(!rmtSwitch,false));
+
+    painter.end();
+
+    Refresh_Display = true;
 }
 
 void Cce125::resizeEvent ( QResizeEvent * event ) {
@@ -129,6 +148,7 @@ bool Cce125::run(void)
 {
 	Cce126::run();
 	
+    pTAPE->pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? GET_PIN(PIN_SEL1):true));
 	pTAPE->pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));
 	pTAPE->pTIMER = pTIMER;
 	pTAPE->run();
