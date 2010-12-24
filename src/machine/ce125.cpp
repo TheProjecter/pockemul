@@ -96,13 +96,14 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
 }
 
 void Cce125::UpdateFinalImage(void) {
+    Cprinter::UpdateFinalImage();
 
     // Draw switch by 180° rotation
     QPainter painter;
 
     // PRINTER SWITCH
     painter.begin(FinalImage);
-    painter.drawImage(282,235,FinalImage->copy(282,235,30,20).mirrored(!rmtSwitch,false));
+    painter.drawImage(282,235,FinalImage->copy(282,235,30,20).mirrored(rmtSwitch,false));
 
     painter.end();
 
