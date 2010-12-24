@@ -10,12 +10,9 @@
 #include "Keyb.h"
 #include "Connect.h"
 
-extern TransMap KeyMap1401[];
-extern int KeyMap1401Lenght; 
-
 class Cpc1401:public CpcXXXX{						//PC1403 emulator main class
 public:
-    const char*	GetClassName(){ return("Cpc1401");};
+    const char*	GetClassName(){ return("Cpc1401");}
 
 	void	TurnON(void);
 

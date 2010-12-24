@@ -98,7 +98,7 @@ public:
         pTIMER		= new Ctimer(this);
         KeyMap		= KeyMapce150;
         KeyMapLenght= KeyMapce150Lenght;
-        pKEYB		= new Ckeyb_ce150(this);
+        pKEYB		= new Ckeyb(this,"ce150.map",0);
 
         Print_Mode = 0;
 

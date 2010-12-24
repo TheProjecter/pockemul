@@ -1,16 +1,17 @@
 /*** POCKEMUL [PC1401.CPP] ********************************/
 /* PC1401 emulator main class                             */
 /**********************************************************/
-#include	<string.h>
-#include	<stdlib.h>
+#include <string.h>
+#include <stdlib.h>
  
-#include	"common.h"
-#include	"pc1401.h"
+#include "common.h"
+#include "pc1401.h"
 
-#include 	"Log.h"
-#include	"Inter.h"
-#include	"Keyb.h"
-#include	"extension.h"
+#include "Log.h"
+#include "Inter.h"
+#include "Keyb.h"
+#include "Keyb1401.h"
+#include "extension.h"
 
 Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]

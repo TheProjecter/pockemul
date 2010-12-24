@@ -11,7 +11,6 @@
 
 
 
-
 class Cpc1360:public Cpc13XX{						//PC1360 emulator main class
 
 public:
@@ -29,48 +28,7 @@ public:
 
     virtual void	initExtension(void);
 
-    Cpc1360(CPObject *parent = 0)	: Cpc13XX(parent)
-	{								//[constructor]
-		setcfgfname("pc1360");
-
-		SessionHeader	= "PC1360PKM";
-		SessionHeaderLen= 9;
-		Initial_Session_Fname ="pc1360.pkm";
-
-		BackGroundFname	= ":/PC1360/pc1360/pc1360.jpg";
-		LcdFname		= ":/PC1360/pc1360/1360lcd.jpg";
-		SymbFname		= ":/PC1360/pc1360/1360symb.jpg";
-		memsize			= 0x40000;
-//		NbSlot		= 14;
-									    	 
-		SlotList.clear();
-		SlotList.append(CSlot(8 , 0x0000 ,	":/PC1360/pc1360/cpu-1360.rom"	, "pc-1360/cpu-1360.rom", ROM , "CPU ROM"));
-		SlotList.append(CSlot(8 , 0x2000 ,	""									, "pc-1360/R1-1360.ram"	, RAM , "SYSTEM RAM"));
-		SlotList.append(CSlot(16, 0x4000 ,	":/PC1360/pc1360/B0-1360.rom"	, "pc-1360/B0-1360.rom" , ROM , "CURRENT ROM BANK"));
-		SlotList.append(CSlot(32, 0x8000 ,	""									, "pc-1360/R2-1360.ram"	, RAM , "CURRENT RAM SLOT"));
-		SlotList.append(CSlot(16, 0x10000 ,	":/PC1360/pc1360/B0-1360.rom"	, "pc-1360/B0-1360.rom" , ROM , "ROM BANK 0"));
-		SlotList.append(CSlot(16, 0x14000 ,	":/PC1360/pc1360/B1-1360.rom"	, "pc-1360/B1-1360.rom" , ROM , "ROM BANK 1"));
-		SlotList.append(CSlot(16, 0x18000 ,	":/PC1360/pc1360/B2-1360.rom"	, "pc-1360/B2-1360.rom" , ROM , "ROM BANK 2"));
-		SlotList.append(CSlot(16, 0x1C000 ,	":/PC1360/pc1360/B3-1360.rom"	, "pc-1360/B3-1360.rom" , ROM , "ROM BANK 3"));
-		SlotList.append(CSlot(16, 0x20000 ,	":/PC1360/pc1360/B4-1360.rom"	, "pc-1360/B4-1360.rom" , ROM , "ROM BANK 4"));
-		SlotList.append(CSlot(16, 0x24000 ,	":/PC1360/pc1360/B5-1360.rom"	, "pc-1360/B5-1360.rom" , ROM , "ROM BANK 5"));
-		SlotList.append(CSlot(16, 0x28000 ,	":/PC1360/pc1360/B6-1360.rom"	, "pc-1360/B6-1360.rom" , ROM , "ROM BANK 6"));
-		SlotList.append(CSlot(16, 0x2C000 ,	":/PC1360/pc1360/B7-1360.rom"	, "pc-1360/B7-1360.rom" , ROM , "ROM BANK 7"));
-		SlotList.append(CSlot(32, 0x30000 ,	""									, "pc-1360/B0-1360.ram" , RAM , "RAM SLOT 1"));
-		SlotList.append(CSlot(32, 0x38000 ,	""									, "pc-1360/B1-1360.ram" , RAM , "RAM SLOT 2"));
-
-		KeyMap = KeyMap1360;				    			 
-		KeyMapLenght = KeyMap1360Lenght;
-		
-		pLCDC		= new Clcdc_pc1360(this);
-		pKEYB		= new Ckeyb_pc1360(this);
-		pCPU		= new CSC61860(this);
-		pTIMER		= new Ctimer(this);
-
-
-//		InitMemValue = 0xFF;		
-	}
-
+    Cpc1360(CPObject *parent = 0);
 	virtual ~Cpc1360()
 	{								//[constructor]
 	}

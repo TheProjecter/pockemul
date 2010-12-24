@@ -592,7 +592,7 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 bool CpcXXXX::LoadConfig(QFile *file)
 {
 	QDataStream in(file);
-    qint8 ioA,ioB,ioC,ioF,romb,ramb,protect;
+    qint8 ioA,ioB,ioC,ioF,romb,ramb,protect,ks;
 		
     in >> ioA >> ioB >> ioC >> ioF >> romb >> ramb >> protect >> Japan;
 	IO_A = ioA;
@@ -603,6 +603,10 @@ bool CpcXXXX::LoadConfig(QFile *file)
 	RamBank = ramb;
     ProtectMemory = protect;
 
+//    if (pKEYB) {
+//        in >> ks;
+//        pKEYB->Set_KS(ks);
+//    }
 	return true;
 }
 
@@ -614,6 +618,7 @@ bool CpcXXXX::SaveConfig(QFile *file)
 	out << (qint8)IO_A << (qint8)IO_B << (qint8)IO_C << (qint8)IO_F;
     out << (qint8)RomBank << (qint8)RamBank << (qint8)ProtectMemory;
 	out << Japan;
+//    if (pKEYB) out << (qint8) pKEYB->KStrobe;
 
 	return true;
 }	

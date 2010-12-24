@@ -14,18 +14,16 @@
 #include "lh5810.h"
 //#include "ce150.h"
 //#include "Connect.h"
-//#include "Keyb.h"
-#include "ce152.h"
+#include "Keyb.h"
 
-extern TransMap KeyMap1500[];
-extern int KeyMap1500Lenght;
+#include "ce152.h"
 
 class CLH5810_PC1500:public CLH5810{
     Q_OBJECT
 public:
 	bool	init(void);						//initialize
 	bool	step(void);
-    const char*	GetClassName(){ return("CLH5810_PC1500");};
+    const char*	GetClassName(){ return("CLH5810_PC1500");}
 	CPD1990AC	*pPD1990AC;
 
 	CLH5810_PC1500(CPObject *parent)	: CLH5810(parent)
@@ -35,7 +33,7 @@ public:
 	~CLH5810_PC1500()
 	{
 		delete pPD1990AC;
-	};
+    }
 
 
 };
@@ -45,14 +43,8 @@ class Cpc15XX:public CpcXXXX{
 
 Q_OBJECT
 
-//typedef struct{
-//	bool ce_151,ce_155,ce_161,ce_159,ce_150,ce_158;
-//}	TExtension;
-
-
-
 public:
-    const char*	GetClassName(){ return("Cpc15XX");};
+    const char*	GetClassName(){ return("Cpc15XX");}
 
 	void	ReadQuarterTape(void);
 	bool	LoadConfig(QFile *file);
@@ -76,7 +68,7 @@ public:
 	virtual bool		Chk_Adr(DWORD *d,DWORD data);
 	virtual bool		Chk_Adr_R(DWORD *d,DWORD data);
     UINT8		in(UINT8 address);
-    UINT8 out(UINT8 address,UINT8 value){return(1);};
+    UINT8 out(UINT8 address,UINT8 value){return(1);}
 	bool		Set_Connector(void);
 	bool		Get_Connector(void);
 
@@ -105,7 +97,7 @@ protected slots:
 
 class Cpc1500:public Cpc15XX{						//PC1500 emulator main class
 public:
-    const char*	GetClassName(){ return("Cpc1500");};
+    const char*	GetClassName(){ return("Cpc1500");}
 
 	Cpc1500(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]
@@ -133,7 +125,7 @@ private:
 
 class Cpc1500A:public Cpc15XX{						//PC1500 emulator main class
 public:
-    const char*	GetClassName(){ return("Cpc1500A");};
+    const char*	GetClassName(){ return("Cpc1500A");}
 
 
 	bool Chk_Adr(DWORD *d,DWORD data);
@@ -183,7 +175,7 @@ private:
 
 class Ctrspc2:public Cpc1500{
 public:
-    const char*	GetClassName(){ return("Ctrspc2");};
+    const char*	GetClassName(){ return("Ctrspc2");}
 
     Ctrspc2(CPObject *parent = 0)	: Cpc1500(this)
 	{								//[constructor]
@@ -203,8 +195,7 @@ public:
 		
 		delete pLCDC;	
 		pLCDC = new Clcdc_trspc2(this);
-		delete pKEYB;	
-		pKEYB = new Ckeyb_trspc2(this);
+        pKEYB->fn_KeyMap = "trspc2.map";
 
 	}
 

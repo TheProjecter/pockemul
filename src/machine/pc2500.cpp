@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "pc2500.h"
+#include "Keyb2500.h"
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 
@@ -27,7 +28,7 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     KeyMapLenght= KeyMap2500Lenght;
 
     pLCDC		= new Clcdc_pc2500(this);
-    pKEYB		= new Ckeyb_pc2500(this);
+    pKEYB		= new Ckeyb(this,"pc2500.map",scandef_pc2500);
     pCPU		= new CSC61860(this);
 
     pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);

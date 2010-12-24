@@ -1,4 +1,5 @@
-
+#ifndef KEYB1450_H
+#define KEYB1450_H
 
 
 BYTE scandef_pc1450[] = {
@@ -107,3 +108,5 @@ TransMap KeyMap1450[]={
 84,	"RM          ",	K_RM,	629,	144,	2,		//OK
 };
 int KeyMap1450Lenght = 84;
+
+#endif

@@ -1,12 +1,17 @@
 /*** PC-XXXX Emulator [LCDC.H] ****************************/
 /* LCD Controller emulation class                         */
 /**********************************************************/
-//#include "pc1350.h"
+
 
 #ifndef LCDC_H
 #define LCDC_H
 
+#include <QColor>
+
+#include "common.h"
+
 class CpcXXXX;
+class CPObject;
 
 class Clcdc:public QObject
 {
@@ -33,35 +38,24 @@ public:
 
 	virtual bool	init(void);		// initialize
 	virtual bool	exit(void);		// end
-	virtual void	disp(void){};		//display LCDC data to screen
+    virtual void	disp(void){}		//display LCDC data to screen
 	virtual void	init_screen(void);		//initialize screen
-	virtual void	exit_screen(void){};		//restore screen
-	virtual void	disp_speed(void){};		//display CPU speed
+    virtual void	exit_screen(void){}		//restore screen
+    virtual void	disp_speed(void){}		//display CPU speed
 
 	void disp_one_symb(const char *figure, QColor color, int x, int y);
 	virtual void disp_symb(void);
 	void Contrast(int command);
-    const char*	GetClassName(){ return("Clcdc");};
-	void SetDirtyBuf(WORD);
+    const char*	GetClassName(){ return("Clcdc");}
+    void SetDirtyBuf(WORD);
 	QColor	Color_On;
 	QColor	Color_Off;
 
-	Clcdc(CPObject *parent)
-	{						//[constructor]
-		pPC = (CpcXXXX*) parent;
-
-		redraw		= 1;				//display redraw?(0:not need, 1:need)
-		On			= 1;
-        Refresh		= false;
-		contrast	= 0.95;
-		for (int i=0 ; i<0x1000;i++) DirtyBuf[i] = false;
-		Color_On.setRgb(0,0,0);
-        ready = false;
-	};
+    Clcdc(CPObject *parent);
 
 	virtual ~Clcdc()
 	{						//[constructor]
-	};
+    }
 	
 protected:
 	QColor origColor_Off;

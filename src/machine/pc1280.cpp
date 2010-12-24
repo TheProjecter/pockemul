@@ -3,6 +3,7 @@
 
 #include "pc1280.h"
 #include "init.h"
+#include "Keyb1280.h"
 
 Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
 {								//[constructor]

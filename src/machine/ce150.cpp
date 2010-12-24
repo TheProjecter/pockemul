@@ -6,6 +6,7 @@
 #include "pc1500.h"
 #include "paperwidget.h"
 #include "Keyb.h"
+#include "keybce150.h"
 #include "clink.h"
 #include "dialoganalog.h"
 
@@ -52,6 +53,49 @@
 
 #define MACRO_ADD_LOG	AddLog(LOG_PRINTER,tr("X=%1 Y=%2 Rot=%3 Color=%4,   IF=%5").arg(Pen_X,Pen_Y,Rot,Pen_Color,pLH5810->lh5810.r_if))
 
+Cce150::Cce150(CPObject *parent):Cprinter(this)
+{
+    //[constructor]
+    BackGroundFname	= ":/EXT/ext/ce-150.jpg";
+    PaperFname		= "ext\\ce-150paper.jpg";
+    setcfgfname(QString("ce150"));
+    Paper_X = 100;  Paper_DX = 320;
+    Paper_Y = 100;
+    //PaperWidgetRect = QRect(80,46,167,170);
+    Pc_DX	= 960;
+    Pc_DY	= 320;
+    SnapPts = QPoint(388,0);
+    pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",true);	publish(pCONNECTOR);
+    pTIMER		= new Ctimer(this);
+    pLH5810		= new CLH5810(this);
+    KeyMap		= KeyMapce150;
+    KeyMapLenght= KeyMapce150Lenght;
+    pKEYB		= new Ckeyb(this,"ce150.map");
+
+    Print_Mode = 0;
+
+    Pen_X = 0;
+    Pen_Y = 000;
+    Pen_Z = 0;
+    prev_Pen_X = 0;
+    prev_Pen_Y = 0;
+    prev_Pen_Z = 0;
+    Pen_Status = PEN_UP;
+    Pen_Color = 0;
+    Rot = 0;
+//960,320,388,0)
+    ce150buf=0;
+    ce150display=0;
+    needRedraw = true;
+    stackBehind = true;
+    setPaperPos(QRect(0,0,0,0));
+
+#ifndef NO_SOUND
+    clac = NULL;
+#endif
+    StartRot = false;
+    Change_Color = true;
+}
 
 INLINE bool Cce150::lh5810_write(void)
 {

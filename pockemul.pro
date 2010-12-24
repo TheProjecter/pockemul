@@ -286,5 +286,5 @@ OTHER_FILES += \
     resources/keymap/263591.map \
     resources/keymap/ce140p.map \
     resources/weblinks.xml
-QMAKE_CXXFLAGS_DEBUG += -pg
-QMAKE_LFLAGS_DEBUG += -pg
+#QMAKE_CXXFLAGS_DEBUG += -pg
+#QMAKE_LFLAGS_DEBUG += -pg

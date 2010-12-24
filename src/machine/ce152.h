@@ -14,8 +14,7 @@
 
 #define ERR_OK	0
 #define ERR_NOK	-1
-extern TransMap KeyMapce152[];
-extern int KeyMapce152Lenght; 
+
 
 typedef unsigned char    u_char;    //  8 bits
 typedef unsigned short   u_short;   // 16 bits

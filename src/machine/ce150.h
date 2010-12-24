@@ -21,17 +21,15 @@
 class Cprinter;
 
 extern void DoCe150Dialog(void);
-extern TransMap KeyMapce150[];
-extern int KeyMapce150Lenght; 
 
 
 class CLH5810_CE150:public CLH5810{
 public:
 	bool	step(void);
-    const char*	GetClassName(){ return("CLH5810_CE150");};
+    const char*	GetClassName(){ return("CLH5810_CE150");}
 
-	CLH5810_CE150(CPObject *parent)	: CLH5810(parent){};
-	~CLH5810_CE150(){};
+    CLH5810_CE150(CPObject *parent)	: CLH5810(parent){}
+    ~CLH5810_CE150(){}
 
 private:
 };
@@ -69,49 +67,7 @@ public:
     Cmotor		Motor_Y;
 
 
-    Cce150(CPObject *parent = 0):Cprinter(this)
-	{				
-		//[constructor]
-		BackGroundFname	= ":/EXT/ext/ce-150.jpg";
-		PaperFname		= "ext\\ce-150paper.jpg";
-		setcfgfname(QString("ce150"));
-        Paper_X = 100;  Paper_DX = 320;
-		Paper_Y = 100;
-        //PaperWidgetRect = QRect(80,46,167,170);
-		Pc_DX	= 960;
-		Pc_DY	= 320;
-		SnapPts = QPoint(388,0);
-        pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",true);	publish(pCONNECTOR);
-        pTIMER		= new Ctimer(this);
-        pLH5810		= new CLH5810(this);
-		KeyMap		= KeyMapce150;
-		KeyMapLenght= KeyMapce150Lenght;
-		pKEYB		= new Ckeyb_ce150(this);
-
-		Print_Mode = 0;
-
-		Pen_X = 0;
-		Pen_Y = 000;
-        Pen_Z = 0;
-		prev_Pen_X = 0;
-		prev_Pen_Y = 0;	
-        prev_Pen_Z = 0;
-		Pen_Status = PEN_UP;
-        Pen_Color = 0;
-		Rot = 0;
-//960,320,388,0)		
-		ce150buf=0;
-		ce150display=0;
-		needRedraw = true;
-		stackBehind = true;
-        setPaperPos(QRect(0,0,0,0));
-		
-#ifndef NO_SOUND
-		clac = NULL;
-#endif
-		StartRot = false;
-		Change_Color = true;
-	}
+    Cce150(CPObject *parent = 0);
 public:
 
 

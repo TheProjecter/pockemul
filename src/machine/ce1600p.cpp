@@ -43,7 +43,7 @@ Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
     KeyMap		= KeyMapce1600p;
     KeyMapLenght= KeyMapce1600pLenght;
     delete pKEYB;
-    pKEYB		= new Ckeyb_ce1600p(this);
+    pKEYB		= new Ckeyb(this,"ce1600p.map",0);
 }
 
 bool Cce1600p::init(void)

@@ -6,6 +6,7 @@
  
 #include	"Inter.h"
 #include	"Keyb.h"
+#include "Keyb1250.h"
 #include	"Log.h"
  
 Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
@@ -65,7 +66,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 	pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector11(this);		publish(pCONNECTOR);
     pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));		publish(pCONNECTOR);
-	pKEYB		= new Ckeyb_pc1250(this);
+    pKEYB		= new Ckeyb(this,"pc1250.map",scandef_pc1250);
 
 }
 

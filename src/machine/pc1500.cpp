@@ -12,6 +12,7 @@
 #include	"Inter.h"
 #include	"Debug.h"
 #include	"Keyb.h"
+#include    "Keyb1500.h"
 #include	"ce152.h"
 #include	"dialoganalog.h"
 
@@ -66,7 +67,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	pLH5810		= new CLH5810_PC1500(this);
 	pTIMER		= new Ctimer(this);
     pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",false);	publish(pCONNECTOR);
-	pKEYB		= new Ckeyb_pc1500(this);
+    pKEYB		= new Ckeyb(this,"pc1500.map",scandef_pc1500);
 	pce152		= new Cce152_PC15XX(this);
 	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
 	

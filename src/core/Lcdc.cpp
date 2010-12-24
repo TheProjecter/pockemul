@@ -14,7 +14,18 @@
 
 #include "Inter.h"
 
+Clcdc::Clcdc(CPObject *parent)
+{						//[constructor]
+    pPC = (CpcXXXX*) parent;
 
+    redraw		= 1;				//display redraw?(0:not need, 1:need)
+    On			= 1;
+    Refresh		= false;
+    contrast	= 0.95;
+    for (int i=0 ; i<0x1000;i++) DirtyBuf[i] = false;
+    Color_On.setRgb(0,0,0);
+    ready = false;
+};
 
 void Clcdc::Contrast(int command)
 {
