@@ -1,6 +1,8 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
-<model></model>
+<model>ce125</model>
 <Keyboard>
-    <KEY description="FEED" height="30" left="621" scancode="0xc1" top="230" width="30"/>
+    <KEY description="FEED" height="45" left="612" scancode="0xc1" top="226" width="49"/>
+    <KEY description="RMT ON" height="48" left="304" scancode="0xc5" top="223" width="41"/>
+    <KEY description="RMT_OFF" height="49" left="247" scancode="0xc6" top="221" width="48"/>
 </Keyboard>
 </KEYBMAP>
