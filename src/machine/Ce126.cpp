@@ -66,7 +66,9 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
 
 void Cce126::ComputeKey(void)
 {
-
+    if (pKEYB->LastKey == K_PFEED) {
+        RefreshCe126(0x0d);
+    }
     if (pKEYB->LastKey == K_RMT_ON) {
         rmtSwitch = true;
     }
@@ -356,11 +358,11 @@ bool Cce126::run(void)
 					}
 				}
 
-//                if (GET_PIN(PIN_SEL1) == UP )
-//                {
-//                    t=0;
-//                    c=0;
-//                }
+                if (GET_PIN(PIN_SEL1) == UP )
+                {
+                    t=0;
+                    c=0;
+                }
 
 				if (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY )	//check for BUSY  - F03
 				{
