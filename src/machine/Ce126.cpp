@@ -27,9 +27,11 @@
 TransMap KeyMapce126[]={
     {1,	"FEED  ",	K_PFEED,34,234,	9},
     {2,	"RMT ON",	K_RMT_ON,34,234,9},
-    {3,	"RMT OFF",	K_RMT_OFF,34,234,9}
+    {3,	"RMT OFF",	K_RMT_OFF,34,234,9},
+    {4,	"POWER ON",	K_POW_ON,34,234,	9},
+    {5,	"POWER OFF",K_POW_OFF,34,234,	9}
 };
-int KeyMapce126Lenght = 3;
+int KeyMapce126Lenght = 5;
 
 Cce126::Cce126(CPObject *parent):Cprinter(this)
 {								//[constructor]
