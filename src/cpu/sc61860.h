@@ -139,6 +139,8 @@ public:
 		div2	= 0;
 		ticks	= 0;
         ticks2	= 0;
+        wait2khz = pPC->getfrequency()/1000/4;
+        wait4khz = pPC->getfrequency()/1000/8;
         ticksReset = 0;
         DASMLOG=0;
         first_pass = true;
@@ -328,6 +330,8 @@ private:
 
     qint64 ticks;
     qint64 ticks2;
+    qint64 wait2khz;
+    qint64 wait4khz;
     qint64 ticksReset;
 	BYTE power_on;
 	BYTE disp_on;

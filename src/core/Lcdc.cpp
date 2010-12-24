@@ -973,9 +973,9 @@ void Clcdc_pc1403::disp_symb(void)
 // PRINT
 	disp_one_symb(BAR35,	COLOR(SYMB3_1403&0x40),	pc1403_pos[16].x,	pc1403_pos[16].y);
 	
-	DirtyBuf[SYMB1_ADR_1403-0x6000] = 0;				
-	DirtyBuf[SYMB2_ADR_1403-0x6000] = 0;				
-	DirtyBuf[SYMB3_ADR_1403-0x6000] = 0;				
+    DirtyBuf[SYMB1_ADR_1403-0x3000] = 0;
+    DirtyBuf[SYMB2_ADR_1403-0x3000] = 0;
+    DirtyBuf[SYMB3_ADR_1403-0x3000] = 0;
 
 	Refresh = TRUE;
 	}

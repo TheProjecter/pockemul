@@ -324,19 +324,6 @@ public:
 private:
 };
 
-class Ckeyb_pc1401:public Ckeyb{
-public:
-
-	Ckeyb_pc1401(CPObject *parent = 0)	: Ckeyb(parent)
-	{
-		scandef = scandef_pc1401;
-		fn_KeyMap	= "pc1401.map";
-	}
-	virtual ~Ckeyb_pc1401(){};
-
-private:
-};
-
 
 class Ckeyb_pc1403:public Ckeyb{
 public:

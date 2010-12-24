@@ -249,7 +249,7 @@ bool Cpc15XX::run(void)
 		break;
 
 
-	FUNC_CALL(0xA519,QT_TR_NOOP("Function Call [%1] - Change printer pen color"));				break;
+    FUNC_CALL(0xA519,QT_TR_NOOP("Function Call [%1] - Change printer pen color"));				break;
 	FUNC_CALL(0xA769,QT_TR_NOOP("Function Call [%1] - Printer motor OFF"));						break;
 	FUNC_CALL(0xA781,QT_TR_NOOP("Function Call [%1] - Send ASCCI char to printer. No LF"));		break;
 	FUNC_CALL(0xA8DD,QT_TR_NOOP("Function Call [%1] - Move PEN"));								break;
@@ -642,15 +642,15 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	ON/Break
 	////////////////////////////////////////////////////////////////////
-    SetRegBit(LH5810_OPB,7,pPC->pKEYB->Kon);
+    //SetRegBit(LH5810_OPB,7,pPC->pKEYB->Kon);
 
-//	if (pPC->pKEYB->Kon)
-//	{
-//		SetRegBit(LH5810_OPB,7,TRUE);
-//	} else
-//	{
-//		SetRegBit(LH5810_OPB,7,FALSE);
-//	}
+    if (pPC->pKEYB->Kon)
+    {
+        SetRegBit(LH5810_OPB,7,TRUE);
+    } else
+    {
+        SetRegBit(LH5810_OPB,7,FALSE);
+    }
 
 	////////////////////////////////////////////////////////////////////
 	//	TAPE READER

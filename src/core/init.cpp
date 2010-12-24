@@ -160,7 +160,7 @@ void CPocketThread::run()
 			if (pPC->getfrequency() != 0)
 			{
 				if (pPC->pTIMER->CheckSpeed())
-				{
+                {
 					pPC->run();
 					// WRITE the LINK BOX Connector
                     mainwindow->pdirectLink->clearlog();
@@ -182,7 +182,7 @@ void CPocketThread::run()
 				emit Destroy(pPC);
 			}
         }
-        if (pause) usleep(10);
+        if (pause) usleep(1);
     }
 }
 

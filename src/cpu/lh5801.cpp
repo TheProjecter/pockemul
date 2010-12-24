@@ -150,6 +150,7 @@ void CLH5801::step(void)
 	if (lh5801.HLT)
 	{
 		// Do nothing
+        AddState(2);
 	}
 	else
 	{
@@ -714,7 +715,7 @@ INLINE void CLH5801::instruction_fd(void)
 	case 0xad:	EOR(cpu_readmem(ME1(readop_word()))); 			AddState(17);	break;
 	case 0xae:	cpu_writemem(ME1(readop_word()),lh5801.a);		AddState(16);	break;
 	case 0xaf:	BIT(cpu_readmem(ME1(readop_word())),lh5801.a);	AddState(17);	break;
-	case 0xb1:	lh5801.HLT=0;AddLog(0x01,"HALT");/* LOOK */		AddState(8);	break;
+    case 0xb1:	lh5801.HLT=0;AddLog(0x01,"HALT");/* LOOK */		AddState(8);	break;
 	case 0xba:	ITA();											AddState(9);	break;
 	case 0xbe:	UNSET_IE; /*rie !*/								AddState(8);/**/	break;
 	case 0xc0:	lh5801.dp=0; /*rdp !*/							AddState(8);	break;
@@ -963,7 +964,7 @@ void CLH5801::Regs_Info(UINT8 Type)
 	switch(Type)
 	{
 	case 0:			// Monitor Registers Dialog
-		sprintf(Regs_String,	"LH5801 :\r\nP:%.4x S:%.4x U:%.4x X:%.4x Y:%.4x\r\nT:%.2x A:%.2x TM:%.3x IN:%.2x PV:%x PU:%x\r\nBF:%x DP:%x FLAGS:%s%s%s%s%s%s%s%s\r\n",
+        sprintf(Regs_String,	"LH5801 : P:%.4x S:%.4x U:%.4x X:%.4x Y:%.4x T:%.2x A:%.2x TM:%.3x IN:%.2x PV:%x PU:%x BF:%x DP:%x FLAGS:%s%s%s%s%s%s%s%s",
 							lh5801.p.w,lh5801.s.w,lh5801.u.w,
 							lh5801.x.w,lh5801.y.w,lh5801.t,
 							lh5801.a,lh5801.tm,pPC->pKEYB->KStrobe,

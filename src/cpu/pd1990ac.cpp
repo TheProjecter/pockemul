@@ -36,7 +36,7 @@ bool	CPD1990AC::init(void)
 	bitno = 0;
 	prev_mode = 0x10;
 	tp = 0;
-	TP_FREQUENCY=1;
+    TP_FREQUENCY=1;
 	previous_state = 0;
 	previous_state_tp = 0;
 
@@ -137,6 +137,7 @@ bool CPD1990AC::step(void)
 	{
 		// Mode can change
 		mode = c0+(c1<<1)+(c2<<2);
+        AddLog(LOG_TIME,tr("Mode:%1").arg(mode));
 		if (mode !=prev_mode) { New_Mode = TRUE; prev_mode=mode; }
 		else					New_Mode = FALSE;
 	}
@@ -247,7 +248,7 @@ bool	CPD1990AC::Get_tp(void)
 qint64 delta_state;
 
 	if (previous_state_tp == 0) previous_state_tp = pPC->pTIMER->state;
-	while ( (delta_state = (pPC->pTIMER->state - previous_state_tp)) >= (TP_STATE/2) )
+    while ( ((pPC->pTIMER->state - previous_state_tp)) >= (TP_STATE/2) )
 	{
 		tp ^= 1;
 		previous_state_tp += (TP_STATE / 2);

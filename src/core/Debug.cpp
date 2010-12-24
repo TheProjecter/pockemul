@@ -591,8 +591,11 @@ DWORD Cdebug_sc61860::DisAsm_1(DWORD adr)
 
 	Buffer[0] = '\0';
 	DasmAdr = adr;
-
-	l=abs(AsmTbl[pPC->pCPU->get_mem(adr,SIZE_8)].len);
+    if(adr==20076) {
+        adr=20076;
+    }
+    int a = pPC->pCPU->get_mem(adr,SIZE_8);
+    l=abs(AsmTbl[a].len);
     switch(AsmTbl[pPC->Get_PC(adr)].len)
 	{
 	case  1:sprintf(s,AsmTbl[pPC->pCPU->get_mem(adr,SIZE_8)].nim);

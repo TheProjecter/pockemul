@@ -12,6 +12,58 @@
 #include	"Keyb.h"
 #include	"extension.h"
 
+Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
+{								//[constructor]
+    setfrequency( (int) 576000/3);
+    setcfgfname("pc1401");
+
+    SessionHeader	= "PC1401PKM";
+    SessionHeaderLen= 9;
+    Initial_Session_Fname ="pc1401.pkm";
+
+    BackGroundFname	= ":/PC1401/pc1401/pc1401.jpg";
+    LcdFname		= ":/PC1401/pc1401/1401lcd.jpg";
+    SymbFname		= ":/PC1401/pc1401/1401symb.jpg";
+    memsize			= 0x10000;
+//		NbSlot		= 3;
+
+    SlotList.clear();
+    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1401/pc1401/cpu-1401.rom", "pc-1401/cpu-1401.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1401/R1-1401.ram" , RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	":/PC1401/pc1401/bas-1401.rom", "pc-1401/bas-1401.rom" , ROM , "BASIC ROM"));
+
+    KeyMap		= KeyMap1401;
+    KeyMapLenght= KeyMap1401Lenght;
+
+    Pc_DX_mm = 170;
+    Pc_DY_mm = 72;
+    Pc_DZ_mm = 10;
+
+    Pc_DX = 633;
+    Pc_DY = 252;
+
+    cnt = 0;
+
+    pLCDC		= new Clcdc_pc1401(this);
+    pCPU		= new CSC61860(this);
+    pTIMER		= new Ctimer(this);
+    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
+    pKEYB		= new Ckeyb(this,"pc1401.map",scandef_pc1401);
+
+    Lcd_X	= 119;
+    Lcd_Y	= 53;
+    Lcd_DX	= 96;//206;
+    Lcd_DY	= 7;//21;
+    Lcd_ratio_X	= 206/96;
+    Lcd_ratio_Y	= 21/7;
+
+    Lcd_Symb_X	= 119;
+    Lcd_Symb_Y	= 44;
+    Lcd_Symb_DX	= 210;
+    Lcd_Symb_DY	= 35;
+
+}
+
 bool Cpc1401::CheckUpdateExtension(CExtension *ext)
 {
 		if (ext)
@@ -47,8 +99,8 @@ void Cpc1401::TurnON(void)
 
 BYTE	Cpc1401::Get_PortA(void)
 {
-	IO_A = pKEYB->Read(IO_A);
-	return(IO_A);
+    qint8 data = pKEYB->Read(IO_A);
+    return(data);
 }
 
 void	Cpc1401::Set_PortA(BYTE data)

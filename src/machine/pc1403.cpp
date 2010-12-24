@@ -46,6 +46,55 @@ IB7 ------------------------------------------|<-----			|
 IB8 ----------------------------------------------------|<-------
 */
 
+Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
+{											//[constructor]
+    setfrequency( (int) 768000/3);
+    setcfgfname("pc1403");
+
+    SessionHeader	= "PC1403PKM";
+    SessionHeaderLen= 9;
+    Initial_Session_Fname ="pc1403.pkm";
+
+    BackGroundFname	= ":/PC1403/pc1403/pc1403.jpg";
+    LcdFname		= ":/PC1403/pc1403/1403lcd.jpg";
+    SymbFname		= ":/PC1403/pc1403/1403symb.jpg";
+    memsize			= 0x20000;
+//		NbSlot		= 8;
+
+    SlotList.clear();
+    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1403/pc1403/cpu-1403.rom"	, "pc-1403/cpu-1403.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1403/R1-1403.ram" , RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	":/PC1403/pc1403/ba1-1403.rom"	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
+    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1403/R2-1403.ram" , RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x10000 ,	":/PC1403/pc1403/ba1-1403.rom"	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x14000 ,	":/PC1403/pc1403/ba2-1403.rom"	, "pc-1403/ba2-1403.rom" , ROM , "BANK 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	":/PC1403/pc1403/ba3-1403.rom"	, "pc-1403/ba3-1403.rom" , ROM , "BANK 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	":/PC1403/pc1403/ba4-1403.rom"	, "pc-1403/ba4-1403.rom" , ROM , "BANK 4"));
+
+    RomBank = 0;
+
+    KeyMap		= KeyMap1403;
+    KeyMapLenght= KeyMap1403Lenght;
+
+
+
+    delete pLCDC;	pLCDC		= new Clcdc_pc1403(this);
+    delete pKEYB;	pKEYB		= new Ckeyb(this,"pc1403.map",scandef_pc1403);
+
+    Lcd_X	= 116;
+    Lcd_Y	= 53;
+    Lcd_DX	= 144;
+    Lcd_DY	= 11;
+    Lcd_ratio_X	= 1.5;
+    Lcd_ratio_Y	= 2;
+
+    Lcd_Symb_X	= 119;
+    Lcd_Symb_Y	= 44;
+    Lcd_Symb_DX	= 210;
+    Lcd_Symb_DY	= 35;
+
+}
+
 
 bool Cpc1403::Set_Connector(void)
 {
@@ -105,27 +154,18 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
 	if ( (*d>=0x3100) && (*d<=0x3BFF) )	{ return(1); }
 	if ( (*d>=0x3C00) && (*d<=0x3DFF) )
 	{
-		int NewBank = data; 
-//--		AddLog(LOG_ROM,tr("Change ROM Bank to %02X").arg(,NewBank);
-		if (NewBank != RomBank)
-		{
-//--			AddLog(LOG_ROM,"Change ROM Bank from %02X to %02X",RomBank,NewBank);
-			RomBank = NewBank;
-			switch (RomBank)
-			{
-				case 0x00:
-				case 0x08:	memcpy(&mem[SlotList[SLOT3].getAdr()],&mem[SlotList[SLOT5].getAdr()],SlotList[SLOT3].getSize()*1024); break;
-				case 0x09:	memcpy(&mem[SlotList[SLOT3].getAdr()],&mem[SlotList[SLOT6].getAdr()],SlotList[SLOT3].getSize()*1024); break;
-				case 0x0A:	memcpy(&mem[SlotList[SLOT3].getAdr()],&mem[SlotList[SLOT7].getAdr()],SlotList[SLOT3].getSize()*1024); break;
-				case 0x0B:	memcpy(&mem[SlotList[SLOT3].getAdr()],&mem[SlotList[SLOT8].getAdr()],SlotList[SLOT3].getSize()*1024); break;
-			}
-
-		}
-		*d=0x3C00;
+        switch (data)
+        {
+            case 0x00:
+            case 0x08:	RomBank = 0; break;
+            case 0x09:	RomBank = 1; break;
+            case 0x0A:	RomBank = 2; break;
+            case 0x0B:	RomBank = 3; break;
+        }
 		return(1);
 	}
 	if ( (*d>=0x3E00) && (*d<=0x3FFF) )	{ pKEYB->Set_KS( (BYTE) data & 0x7F );/*ShowPortsAuto(0);*/	return(1);}
-	if ( (*d>=0x4000) && (*d<=0x7FFF) )	{ return(0); }
+    if ( (*d>=0x4000) && (*d<=0x7FFF) )	{*d += 0xC000 + (RomBank * 0x4000); return(0); }
 	if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(1); }
 
 	return(0);
@@ -134,8 +174,27 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
 
 bool Cpc1403::Chk_Adr_R(DWORD *d,DWORD data)
 {
-	if ( (*d>=0x3C00) && (*d<=0x3DFF) ) *d=0x3C00;
+    if ( (*d>=0x4000) && (*d<=0x7FFF) )	{
+        *d += 0xC000 + (RomBank * 0x4000);
+        return(1);
+    }
 	return(1);	
+}
+
+Cpc1403H::Cpc1403H(CPObject *parent) : Cpc1403(parent)
+{											//[constructor]
+    setfrequency( (int) 768000/3);
+    setcfgfname("pc1403H");
+
+    SessionHeader	= "PC1403HPKM";
+    SessionHeaderLen= 10;
+    Initial_Session_Fname ="pc1403H.pkm";
+
+    BackGroundFname	= ":/PC1403/pc1403/pc1403h.jpg";
+    LcdFname		= ":/PC1403/pc1403/1403lcd.jpg";
+    SymbFname		= ":/PC1403/pc1403/1403symb.jpg";
+
+
 }
 
 bool Cpc1403H::Chk_Adr(DWORD *d,DWORD data)

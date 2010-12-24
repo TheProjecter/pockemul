@@ -84,7 +84,7 @@ void Csc::Set_Xin(bool data)
 	Xin = data;
 }
 
-bool Csc::Get_Xout(void)
+INLINE bool Csc::Get_Xout(void)
 {
 	return(Xout);
 }
@@ -94,7 +94,7 @@ void Csc::Set_Xout(bool data)
 	Xout = data;
 }
 
-void Csc::compute_xout(void)
+INLINE void Csc::compute_xout(void)
 {
 	qint64 delta;
 	qint64 wait2khz = pPC->getfrequency()/1000/4;
@@ -2387,7 +2387,9 @@ INLINE void Csc::Op_7a(void)
 
 INLINE void Csc::OpExec(BYTE Op)
 {
-
+    //pPC->pTIMER->state+=(1);
+//    AddState(1);
+//    return;
 
 	if (g_DasmStep)
 	{
@@ -2825,7 +2827,7 @@ void Csc::step(void)
 
 }
 
-void Csc::backgroundTasks(void) {
+INLINE void Csc::backgroundTasks(void) {
     compute_xout();
     pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
 }
