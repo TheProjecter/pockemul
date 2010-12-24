@@ -342,6 +342,7 @@ void CPObject::SwitchFrontBack(QPoint point) {
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
 
+    if (event->button() != Qt::LeftButton) return;
 	if (event->modifiers() == Qt::MetaModifier) return;
 		
 	QPoint pts(event->x() , event->y());
