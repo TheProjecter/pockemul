@@ -343,6 +343,8 @@ bool Cce126::run(void)
 				{
 					Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
 					AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
+                    t=0;
+                    c=0;
 					if (GET_PIN(PIN_BUSY) == DOWN )
 					{
 						if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 2;
@@ -354,11 +356,11 @@ bool Cce126::run(void)
 					}
 				}
 
-				if (GET_PIN(PIN_SEL1) == UP )
-				{
-					t=0;
-					c=0;
-				}
+//                if (GET_PIN(PIN_SEL1) == UP )
+//                {
+//                    t=0;
+//                    c=0;
+//                }
 
 				if (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY )	//check for BUSY  - F03
 				{
