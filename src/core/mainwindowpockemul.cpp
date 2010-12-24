@@ -256,9 +256,9 @@ void  MainWindowPockemul::updateTimeTimer()
 
 void  MainWindowPockemul::updateFrameTimer()
 {
-	static long last_state = 0;
+    static qint64 last_state = 0;
 	int statepersec;
-	static long nb_state=0;
+    static qint64 nb_state=0;
 	int rate=0;
 	static int OneSecTimer=0;
 	long Current_State;
@@ -279,27 +279,28 @@ void  MainWindowPockemul::updateFrameTimer()
  	for (int i = 0;i < listpPObject.size(); i++)
  	{
  		CPObject* CurrentpPC = listpPObject.at(i);
-		
-		if (CurrentpPC->getfrequency())
-		{
-			Current_State = CurrentpPC->pTIMER->state;
-		
-			CurrentpPC->pTIMER->nb_state += (Current_State - CurrentpPC->pTIMER->last_state);
-			CurrentpPC->pTIMER->last_state = Current_State;
-		
-			// Update ToolTip only one time per second
-			if ( deltaTime >= 1000)
-			{
-//	AddLog(LOG_TIME,tr("Time Frame elapsed : %1 ms  nb=%2 cur=%3 last=%4").arg(deltaTime).arg(CurrentpPC->pTIMER->nb_state).arg(Current_State).arg(CurrentpPC->pTIMER->last_state));
-				statepersec = (int) ( CurrentpPC->getfrequency());
+
+        Current_State = CurrentpPC->pTIMER->state;
+
+        CurrentpPC->pTIMER->nb_state += (Current_State - CurrentpPC->pTIMER->last_state);
+        CurrentpPC->pTIMER->last_state = Current_State;
+
+        // Update ToolTip only one time per second
+        if ( deltaTime >= 1000)
+        {
+            QString str;
+            if (CurrentpPC->getfrequency()) {
+                //	AddLog(LOG_TIME,tr("Time Frame elapsed : %1 ms  nb=%2 cur=%3 last=%4").arg(deltaTime).arg(CurrentpPC->pTIMER->nb_state).arg(Current_State).arg(CurrentpPC->pTIMER->last_state));
+                statepersec = (int) ( CurrentpPC->getfrequency());
                 rate = (int) ((100L*CurrentpPC->pTIMER->nb_state)/((statepersec/1000)*deltaTime));
-				CurrentpPC->pTIMER->nb_state=0;
-				
-				QString str;
-				str.setNum((int)rate);
-                CurrentpPC->setToolTip(CurrentpPC->getName()+": "+str+tr("% original speed"));
-			}
-		}
+                CurrentpPC->pTIMER->nb_state=0;
+
+                str.setNum((int)rate);
+                str = ": "+str+tr("% original speed");
+            }
+            CurrentpPC->setToolTip(CurrentpPC->getName()+str);
+        }
+
 		if (CurrentpPC->pLCDC) 
 		{
 			CurrentpPC->pLCDC->disp();
