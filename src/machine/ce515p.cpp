@@ -9,7 +9,6 @@
 #include "ce515p.h"
 
 
-
 #define NO_MOVE	0
 #define RI_MOVE	1
 #define LE_MOVE 2
@@ -29,6 +28,56 @@
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/1200)
 
 #define PRINTER_TICKS	(pTIMER->pPC->getfrequency()/375)   // 75mm/s => 5*75 step/s
+
+Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
+{
+    //[constructor]
+    BackGroundFname	= ":/EXT/ext/ce-150.jpg";
+    PaperFname		= "ext\\ce-150paper.jpg";
+    setcfgfname(QString("ce515p"));
+    Paper_X = 100;  Paper_DX = 320;
+    Paper_Y = 100;
+    //PaperWidgetRect = QRect(80,46,167,170);
+    Pc_DX	= 960;
+    Pc_DY	= 320;
+    SnapPts = QPoint(388,0);
+    //pCONNECTOR	= new Cconnector(this,5,"Internal connector 5 pins",true);	publish(pCONNECTOR);
+    pTIMER		= new Ctimer(this);
+    KeyMap		= KeyMapce150;
+    KeyMapLenght= KeyMapce150Lenght;
+    pKEYB		= new Ckeyb(this,"ce150.map",0);
+
+    Print_Mode = 0;
+
+    Pen_X = 0;
+    Pen_Y = 100;
+    Pen_Z = 0;
+    prev_Pen_X = 0;
+    prev_Pen_Y = 0;
+    prev_Pen_Z = 0;
+    Pen_Status = PEN_UP;
+    Pen_Color = 0;
+    Rot = 0;
+//960,320,388,0)
+    ce515pbuf=0;
+    ce515pdisplay=0;
+    needRedraw = true;
+    stackBehind = true;
+    setPaperPos(QRect(75,46,380,170));
+
+#ifndef NO_SOUND
+    clac = NULL;
+#endif
+    StartRot = false;
+    Change_Color = true;
+    Sii_wait			= 0;
+    oldstate_run = 0;
+    printer_oldstate_draw = 0;
+    printer_oldstate_paperfeed=0;
+    t=c=0;
+    waitbitstart=1;
+    waitbitstop=0;
+}
 
 void Cce515p::set_SD(quint8 val) {
     SD = val;
@@ -238,6 +287,7 @@ bool Cce515p::init(void)
     orig_X = 0;
     orig_Y = 0;
     lineType = 0;
+    mainRot = 0;
 
     return(1);
 
@@ -419,7 +469,7 @@ void Cce515p::ProcessGraphCommand() {
                 break;
     case 'P' : // Print character
                 for (int i=1; i < graphCommand.size(); i++) {
-                    drawChar(graphCommand.at(i).toAscii());
+                    drawChar(graphCommand.at(i).toAscii(),mainRot);
                 }
                 break;
     case 'Q' : // Main rotation
@@ -528,16 +578,18 @@ void Cce515p::ProcessEscCommand() {
     case '2':
     case '3': // change color
         bool ok;
-        Pen_Color = escCommand.toInt(&ok,10);
+        //Pen_Color = escCommand.toInt(&ok,10);
+        moveBuffer.append( CMove(Pen_Color,escCommand.toInt(&ok,10)));
         break;
 
     }
 }
 
-void Cce515p::drawChar(quint8 data) {
+void Cce515p::drawChar(quint8 data, qint8 rot) {
     QString str = graph[data];
     int origX = Pen_X;
     int origY = Pen_Y;
+    qint8 finalDir;
 
     AddLog(LOG_PRINTER,str);
     // parse str
@@ -556,18 +608,24 @@ void Cce515p::drawChar(quint8 data) {
                 dir = dir+(d==0)-(d==4);
                 if (dir >7) dir=0;
                 if (dir <0) dir=7;
-                DrawMove(charSize,dir,true);
+                finalDir= dir + (rot*2);
+                if (finalDir >7) finalDir -= 8;
+                DrawMove(charSize,finalDir,true);
                 dir = dir+(d==0)-(d==4);
                 if (dir >7) dir=0;
                 if (dir <0) dir=7;
-                DrawMove(l,dir,true);
+                finalDir= dir + (rot*2);
+                if (finalDir >7) finalDir -= 8;
+                DrawMove(l,finalDir,true);
             }
             break;
         default : // Standard mode
                 lenght = (val & 0x07) * charSize;
                 dir = (val>>3) & 0x07;
+                finalDir= dir + (rot*2);
+                if (finalDir >7) finalDir -= 8;
                 penDown = val & 0x40;
-                DrawMove(lenght,dir,penDown);
+                DrawMove(lenght,finalDir,penDown);
                 break;
         }
     }

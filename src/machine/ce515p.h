@@ -70,7 +70,7 @@ public:
     void	clearPaper(void);
     void	SaveAsText(void);
     void    set_SD(quint8);
-    void    drawChar(quint8 data);
+    void    drawChar(quint8 data,qint8 rot= 0);
     void    DrawMove(int lenght,int dir,bool penDown);
     void    Command(quint8);
     void    ProcessEscCommand(void);
@@ -82,58 +82,7 @@ public:
 
     void    Draw(void);
 
-    Cce515p(CPObject *parent = 0):Cprinter(parent)
-    {
-        //[constructor]
-        BackGroundFname	= ":/EXT/ext/ce-150.jpg";
-        PaperFname		= "ext\\ce-150paper.jpg";
-        setcfgfname(QString("ce515p"));
-        Paper_X = 100;  Paper_DX = 320;
-        Paper_Y = 100;
-        //PaperWidgetRect = QRect(80,46,167,170);
-        Pc_DX	= 960;
-        Pc_DY	= 320;
-        SnapPts = QPoint(388,0);
-        //pCONNECTOR	= new Cconnector(this,5,"Internal connector 5 pins",true);	publish(pCONNECTOR);
-        pTIMER		= new Ctimer(this);
-        KeyMap		= KeyMapce150;
-        KeyMapLenght= KeyMapce150Lenght;
-        pKEYB		= new Ckeyb(this,"ce150.map",0);
-
-        Print_Mode = 0;
-
-        Pen_X = 0;
-        Pen_Y = 100;
-        Pen_Z = 0;
-        prev_Pen_X = 0;
-        prev_Pen_Y = 0;
-        prev_Pen_Z = 0;
-        Pen_Status = PEN_UP;
-        Pen_Color = 0;
-        Rot = 0;
-//960,320,388,0)
-        ce515pbuf=0;
-        ce515pdisplay=0;
-        needRedraw = true;
-        stackBehind = true;
-        setPaperPos(QRect(75,46,380,170));
-
-#ifndef NO_SOUND
-        clac = NULL;
-#endif
-        StartRot = false;
-        Change_Color = true;
-        Sii_wait			= 0;
-        oldstate_run = 0;
-        printer_oldstate_draw = 0;
-        printer_oldstate_paperfeed=0;
-        t=c=0;
-        waitbitstart=1;
-        waitbitstop=0;
-    }
-
-
-
+    Cce515p(CPObject *parent = 0);
 
 protected:
     bool		Next_Color(void);
