@@ -400,7 +400,14 @@ void Cce515p::Command(quint8 t) {
     case GRAPH :
         switch (t) {
             case 0x1B: escMode = true; break;
-            case 0x0D: AddLog(LOG_PRINTER,tr("Pen_X = %1   Pen_Y = %2").arg(TRANSX(Pen_X),5,10,QChar('0')).arg(TRANSY(Pen_Y),5,10,QChar('0')));
+            case 0x0D:
+                    if (escMode) {
+                        ProcessEscCommand();
+                        escCommand="";
+                        escMode=false;
+                        return;
+                    }
+                    AddLog(LOG_PRINTER,tr("Pen_X = %1   Pen_Y = %2").arg(TRANSX(Pen_X),5,10,QChar('0')).arg(TRANSY(Pen_Y),5,10,QChar('0')));
                         ProcessGraphCommand();
                         graphCommand = "";
                         break;
@@ -525,9 +532,18 @@ void Cce515p::ProcessMultiPointCommand(QString command) {
 }
 
 void Cce515p::ProcessEscCommand() {
+    qint8 tmpcharSize = 0;
     switch (escCommand.at(0).toAscii()) {
-    case '?': //size
-        charSize = escCommand.at(1).toAscii()-96;
+    case '?': //size 2 mode a-o or 1- 63 (for ce-140p)
+
+        if ( (escCommand.at(1).toAscii()>=97) && (escCommand.at(1).toAscii()<=111) )
+            charSize = escCommand.at(1).toAscii()-96;
+        else { // CE-140P Mode
+            tmpcharSize = escCommand.mid(1).toInt();
+            if ((tmpcharSize >0) && (tmpcharSize < 64))
+                charSize = tmpcharSize;
+        }
+
         break;
     case 'a': // text mode
         mode = TEXT;

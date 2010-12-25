@@ -53,6 +53,7 @@ bool Cce140p::init(void) {
 
 bool Cce140p::run(void) {
 
+    if (pKEYB->LastKey == K_PFEED) { PaperFeed();}
 
     if (printerSwitch) {
         pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
