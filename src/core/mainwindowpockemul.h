@@ -8,6 +8,7 @@
 class DialogLog;
 class CpaperWidget;
 class dialogAnalog;
+class DialogIDE;
 #include "dialogkeylist.h"
 class CPObject;
 class CDirectLink;
@@ -27,6 +28,7 @@ public:
 
 	DialogLog		*dialoglog;
 	dialogAnalog	*dialoganalogic;
+    DialogIDE       *dialogide;
 	
 //	CpaperWidget	*paperWidget;
 	
@@ -44,7 +46,8 @@ public:
 private slots:
 	void about();
 	void Log();
-	void Analogic();
+    void IDE();
+    void Analogic();
 	void CheckUpdates();
     void Minimize_All();
     void SelectPocket(QAction *);

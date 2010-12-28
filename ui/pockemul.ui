@@ -79,10 +79,17 @@
     <addaction name="actionMinimize_All"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuIDE">
+    <property name="title">
+     <string>IDE</string>
+    </property>
+    <addaction name="actionEditor"/>
+   </widget>
    <addaction name="menuRoot"/>
    <addaction name="menuMonitor_2"/>
    <addaction name="menuPockets"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuIDE"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAbout_PockEmul">
@@ -274,6 +281,11 @@
   <action name="actionMinimize_All">
    <property name="text">
     <string>Minimize All</string>
+   </property>
+  </action>
+  <action name="actionEditor">
+   <property name="text">
+    <string>Editor</string>
    </property>
   </action>
  </widget>

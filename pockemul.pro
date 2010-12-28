@@ -14,7 +14,8 @@ FORMS += ui/about.ui \
     ui/pockemul.ui \
     ui/serialconsole.ui \
     ui/startup.ui \
-    ui/dialogpotar.ui
+    ui/dialogpotar.ui \
+    ui/dialogide.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -119,7 +120,12 @@ HEADERS += src/core/Connect.h \
     src/core/qhexedit_p.h \
     src/machine/ce140p.h \
     src/core/weblinksparser.h \
-    src/core/wavfile.h
+    src/core/wavfile.h \
+    src/core/lcc/lcc.h \
+    src/core/dialogide.h \
+    src/core/ide/highlighter.h \
+    src/core/lcc/lcpp.h \
+    src/core/mathexpr/mathexpr.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -250,7 +256,17 @@ SOURCES += src/core/Connect.cpp \
     src/core/qhexedit_p.cpp \
     src/machine/ce140p.cpp \
     src/core/weblinksparser.cpp \
-    src/core/wavfile.cpp
+    src/core/wavfile.cpp \
+    src/core/lcc/lcc.cpp \
+    src/core/lcc/calcunit.cpp \
+    src/core/dialogide.cpp \
+    src/core/ide/highlighter.cpp \
+    src/core/lcc/lcpp.cpp \
+    src/core/mathexpr/mathexpr.cpp \
+    src/core/math/variablelist.cpp \
+    src/core/math/parser.cpp \
+    src/core/math/functions.cpp \
+    src/core/math/error.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
