@@ -8,14 +8,13 @@
 DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 {
 
-    lcc = new Clcc();
+
 
     setupUi(this);
 
     setupEditor();
 
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
-    connect(lcc,SIGNAL(outputSignal(QString)),this,SLOT(output(QString)));
     //textBrowser_2->setSource(QUrl("qrc:/POCKEMUL/pockemul/release_notes.html"));
 }
 
@@ -39,9 +38,10 @@ void DialogIDE::setupEditor()
 void DialogIDE::start(void) {
     QString src = editor->toPlainText();
 
-    QMap<QString,QString> mapSRC;
-    QMap<QString,QString> mapPP;
-    mapSRC["test"] = src;
+    QMap<QString,QByteArray> mapSRC;
+    QMap<QString,QByteArray> mapPP;
+    QMap<QString,QByteArray> mapASM;
+    mapSRC["test"] = src.toAscii();
 
     lcpp = new Clcpp(&mapSRC,&mapPP);
 
@@ -50,10 +50,15 @@ void DialogIDE::start(void) {
     outputpp->setText(mapPP["test"]);
 
 
+    lcc = new Clcc(&mapPP,&mapASM);
+    connect(lcc,SIGNAL(outputSignal(QString,QString)),this,SLOT(output(QString,QString)));
+
     lcc->FirstScan(mapPP["test"]);
+    lcc->SecondScan("bof");
+    outputasm->setText(mapASM["asm"]);
 }
 
-void DialogIDE::output(QString s) {
+void DialogIDE::output(QString f,QString s) {
     outputstd->insertPlainText(s);
     //outputstd->append(s);
     outputstd->update();

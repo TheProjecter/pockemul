@@ -21,7 +21,7 @@ public:
     Clcc *lcc;
 private slots:
     void start(void);
-    void output(QString);
+    void output(QString,QString);
 };
 
 
