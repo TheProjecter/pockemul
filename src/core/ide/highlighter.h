@@ -72,10 +72,14 @@ private:
     QRegExp commentStartExpression;
     QRegExp commentEndExpression;
 
+    QRegExp asmStartExpression;
+    QRegExp asmEndExpression;
+
     QTextCharFormat keywordFormat;
     QTextCharFormat classFormat;
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
+    QTextCharFormat asmFormat;
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
 };

@@ -2,8 +2,6 @@
 // test for PC-1350
 
 
-
-
 putchar(char c) {
 
     byte xram dx at 0x7881;
@@ -43,7 +41,7 @@ getchar_key:
 
 }
 
-main() {
+
 main() {
     char k;
 

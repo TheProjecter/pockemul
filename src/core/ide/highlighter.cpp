@@ -84,6 +84,8 @@ Highlighter::Highlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
     multiLineCommentFormat.setForeground(Qt::red);
+
+    asmFormat.setForeground(Qt::green);
 //! [3]
 
 //! [4]
@@ -104,6 +106,9 @@ Highlighter::Highlighter(QTextDocument *parent)
 //! [6]
     commentStartExpression = QRegExp("/\\*");
     commentEndExpression = QRegExp("\\*/");
+
+    asmStartExpression = QRegExp("#asm");
+    asmEndExpression = QRegExp("#endasm");
 }
 //! [6]
 
@@ -122,10 +127,30 @@ void Highlighter::highlightBlock(const QString &text)
 //! [7] //! [8]
     setCurrentBlockState(0);
 //! [8]
-
-//! [9]
     int startIndex = 0;
     if (previousBlockState() != 1)
+        startIndex = asmStartExpression.indexIn(text);
+
+//! [9] //! [10]
+    while (startIndex >= 0) {
+//! [10] //! [11]
+        int endIndex = asmEndExpression.indexIn(text, startIndex);
+        int commentLength;
+        if (endIndex == -1) {
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            commentLength = endIndex - startIndex
+                            + asmEndExpression.matchedLength();
+        }
+        setFormat(startIndex, commentLength, asmFormat);
+        startIndex = asmStartExpression.indexIn(text, startIndex + commentLength);
+    }
+
+
+//! [9]
+    startIndex = 0;
+    if (previousBlockState() != 2)
         startIndex = commentStartExpression.indexIn(text);
 
 //! [9] //! [10]
@@ -134,7 +159,7 @@ void Highlighter::highlightBlock(const QString &text)
         int endIndex = commentEndExpression.indexIn(text, startIndex);
         int commentLength;
         if (endIndex == -1) {
-            setCurrentBlockState(1);
+            setCurrentBlockState(2);
             commentLength = text.length() - startIndex;
         } else {
             commentLength = endIndex - startIndex

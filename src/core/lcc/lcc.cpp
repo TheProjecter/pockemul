@@ -851,7 +851,7 @@ void Clcc::LoadVariable(QByteArray name) {
                     writln(outf,"\tLDR");
                     writln(outf,tr("\tADIA\t%1").arg(adr+2+pushcnt));
                     writln(outf,"\tSTP");
-                    writln(outf,"\LDM\t\t; Load variable "+name);
+                    writln(outf,"\tLDM\t\t; Load variable "+name);
                 }
             }
             else {

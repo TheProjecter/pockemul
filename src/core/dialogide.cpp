@@ -16,6 +16,8 @@ DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
     //textBrowser_2->setSource(QUrl("qrc:/POCKEMUL/pockemul/release_notes.html"));
+
+    this->setWindowFlags(Qt::Window);
 }
 
 void DialogIDE::setupEditor()
