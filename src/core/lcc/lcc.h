@@ -48,6 +48,19 @@ extern MainWindowPockemul *mainwindow;
 
 class Cvar {
 public:
+
+    Cvar() {
+        address=0;
+        locproc=0;
+        size=0;
+        local=false;
+        arr=false;
+        xram=false;
+        pointer=false;
+        at=false;
+        initn=0;
+    }
+
     QByteArray varname;
     QByteArray typ;
     QByteArray pnttyp;
@@ -122,12 +135,12 @@ public:
     QByteArray ExtrList(QByteArray *list);
     QByteArray ExtrWord(QByteArray *word);
     QByteArray ExtrCust(QByteArray *word,char c);
-    void printproclist(void);
-    void printvarlist(void);
+    void printproclist(QString);
+    void printvarlist(QString);
     void inc(int a) {a++;}
     void dec(int a) {a--;}
     void FirstScan(QByteArray filen);
-    void SecondScan(QByteArray filen);
+    void SecondScan(void);
     char Read(void);
     void rd(char *,QByteArray *);
     void GetToken(int,QByteArray *);
@@ -136,7 +149,7 @@ public:
     bool FindVar(QByteArray t);
     bool FindProc(QByteArray t);
     void AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc);
-    void AddProc(QByteArray t, QByteArray c, QByteArray p, int pc, bool hr, bool wd);
+    void AddProc(QByteArray t, QByteArray c, QByteArray p, int pc, bool hr, bool wd,QList<QByteArray> partype,QList<QByteArray> parname);
 
     QMap<QString,QByteArray> *sources;
     QMap<QString,QByteArray> *out;
@@ -237,7 +250,7 @@ public:
      void addasm(QByteArray s);
 
 
-
+    void run(void);
 
 public:
 
@@ -284,6 +297,8 @@ public:
     int asmcnt;
 
     int pushcnt;
+
+    QString inpf,outf;
 
 
 signals:

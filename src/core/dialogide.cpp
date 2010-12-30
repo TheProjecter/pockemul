@@ -53,9 +53,10 @@ void DialogIDE::start(void) {
     lcc = new Clcc(&mapPP,&mapASM);
     connect(lcc,SIGNAL(outputSignal(QString,QString)),this,SLOT(output(QString,QString)));
 
-    lcc->FirstScan(mapPP["test"]);
-    lcc->SecondScan("bof");
-    outputasm->setText(mapASM["asm"]);
+    lcc->run();
+
+    outputstd->setText(mapASM["output"]);
+    outputasm->setText(mapASM["test.asm"]);
 }
 
 void DialogIDE::output(QString f,QString s) {

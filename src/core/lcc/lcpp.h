@@ -33,7 +33,7 @@ void writeln(QString srcName,QString s);
 
     int cline;
     int lcnt;
-    QString cf;
+    QString inpf,outf;
     bool lcom;
 
     QList<QString> sym;

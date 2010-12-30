@@ -8,7 +8,7 @@
 
 
 void Clcpp::abort(QString t) {
-    QMessageBox::about(mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + cf);
+    QMessageBox::about(mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + inpf);
 }
 
 
@@ -179,15 +179,15 @@ void Clcpp::run() {
     QMapIterator<QString, QByteArray> i(*sources);
     while (i.hasNext()) {
         i.next();
-        cf = i.key();
-        parsefile(cf,i.value());
+        inpf = i.key();
+        parsefile(inpf,i.value());
     }
 
 }
 
 void Clcpp::writeln(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
-    out->insert(srcName,locs+s.toAscii());
+    out->insert(srcName,locs+"\r"+s.toAscii());
 }
 
 #endif

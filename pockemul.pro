@@ -128,7 +128,8 @@ HEADERS += src/core/Connect.h \
     src/core/mathexpr/mathexpr.h \
     src/core/expr/expression.h \
     src/core/lcc/parser.h \
-    src/core/lcc/codegen.h
+    src/core/lcc/codegen.h \
+    resources/lcc/stdio/pc1350/stdio.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
