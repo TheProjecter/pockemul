@@ -85,7 +85,7 @@ Highlighter::Highlighter(QTextDocument *parent)
 
     multiLineCommentFormat.setForeground(Qt::red);
 
-    asmFormat.setForeground(Qt::green);
+    asmFormat.setForeground(Qt::darkGreen);
 //! [3]
 
 //! [4]

@@ -44,7 +44,7 @@ QString Clcpp::extractparam(QString s,int p) {
 #if 1
     QString ss = s.simplified();
     QStringList sl = ss.split(" ");
-    if (p<=sl.size()) return sl.at(p);
+    if (p<sl.size()) return sl.at(p);
     return "";
 
 #else
@@ -156,13 +156,34 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                     }
                 }
             }
+            else if (tok.startsWith("#ifndef")) {
+                if ( findsymbol(extractparam(tok, 1))) {
+                    while (linesIter.hasNext() && (op !="#endif"))
+                    {
+                        tok = readline(&linesIter);
+                        if (tok.indexOf("#endif") > 0) op = "#endif";
+                    }
+                }
+            }
             else if (tok.startsWith("#include")) {
                 op = extractparam(tok, 1);
-                if (sources->contains(op)) {
-                        parsefile(srcName,sources->value(op));
+                // Two case : "filename", look in standard sources set
+                //             <filename>, look in library
+                if (op.startsWith('"')) {
+                    op.remove('"');
+                    if (sources->contains(op)) {
+                            parsefile(srcName,sources->value(op));
+                        }
+                    else
+                        abort("Include file " + op + " not found!");
+                }
+                if (op.startsWith('<')) {
+                    op.remove('<').remove('>');
+
+                    if (pStdLibs->libmap.contains(op)) {
+                        parsefile(srcName,pStdLibs->libmap.value(op));
                     }
-                else
-                    abort("Include file " + op + " not found!");
+                }
             }
             else if (tok.indexOf("#endif")<0) writeln(srcName,tok);
         }

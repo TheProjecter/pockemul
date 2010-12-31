@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
-    <height>377</height>
+    <width>516</width>
+    <height>356</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,11 +66,7 @@
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
-            <widget class="QTextEdit" name="editor">
-             <property name="tabStopWidth">
-              <number>50</number>
-             </property>
-            </widget>
+            <widget class="QPlainTextEdit" name="editor"/>
            </item>
           </layout>
          </widget>
@@ -80,7 +76,7 @@
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QTextEdit" name="outputpp"/>
+            <widget class="QPlainTextEdit" name="outputpp"/>
            </item>
           </layout>
          </widget>
@@ -90,11 +86,7 @@
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QTextEdit" name="outputasm">
-             <property name="tabStopWidth">
-              <number>50</number>
-             </property>
-            </widget>
+            <widget class="QPlainTextEdit" name="outputasm"/>
            </item>
           </layout>
          </widget>
@@ -104,7 +96,7 @@
           </attribute>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
-            <widget class="QTextEdit" name="outputstd"/>
+            <widget class="QPlainTextEdit" name="outputstd"/>
            </item>
           </layout>
          </widget>
@@ -132,7 +124,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="modelCB">
          <item>
           <property name="text">
            <string>PC-1251</string>

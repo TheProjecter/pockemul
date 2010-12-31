@@ -5,6 +5,8 @@
 #include "lcc/lcpp.h"
 #include "lcc/lcc.h"
 
+
+
 DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 {
 
@@ -38,6 +40,10 @@ void DialogIDE::setupEditor()
 }
 
 void DialogIDE::start(void) {
+
+
+
+
     QString src = editor->toPlainText();
 
     QMap<QString,QByteArray> mapSRC;
@@ -45,11 +51,11 @@ void DialogIDE::start(void) {
     QMap<QString,QByteArray> mapASM;
     mapSRC["test"] = src.toAscii();
 
-    lcpp = new Clcpp(&mapSRC,&mapPP);
+    lcpp = new Clcpp(&mapSRC,&mapPP,this->modelCB->currentText());
 
     lcpp->run();
 
-    outputpp->setText(mapPP["test"]);
+    outputpp->setPlainText(mapPP["test"]);
 
 
     lcc = new Clcc(&mapPP,&mapASM);
@@ -57,8 +63,8 @@ void DialogIDE::start(void) {
 
     lcc->run();
 
-    outputstd->setText(mapASM["output"]);
-    outputasm->setText(mapASM["test.asm"]);
+    outputstd->setPlainText(mapASM["output"]);
+    outputasm->setPlainText(mapASM["test.asm"]);
 }
 
 void DialogIDE::output(QString f,QString s) {

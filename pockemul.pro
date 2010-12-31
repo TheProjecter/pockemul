@@ -129,8 +129,9 @@ HEADERS += src/core/Connect.h \
     src/core/expr/expression.h \
     src/core/lcc/parser.h \
     src/core/lcc/codegen.h \
-    resources/lcc/stdio/pc1350/stdio.h \
-    src/core/lcc/pasm.h
+    src/core/lcc/pasm.h \
+    src/core/lcc/stdlib.h \
+    resources/lcc/model/PC-1350/stdio.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -174,7 +175,8 @@ RESOURCES += resources/ext.qrc \
     resources/pc1425.qrc \
     resources/pc1460.qrc \
     resources/pc1280.qrc \
-    resources/keymap.qrc
+    resources/keymap.qrc \
+    resources/stdlibs.qrc
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
     src/core/Debug.cpp \
@@ -270,7 +272,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/mathexpr/mathexpr.cpp \
     src/core/lcc/parser.cpp \
     src/core/lcc/codegen.cpp \
-    src/core/lcc/pasm.cpp
+    src/core/lcc/pasm.cpp \
+    src/core/lcc/stdlib.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

@@ -55,8 +55,9 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
 
 
 void Clcc::writln(QString fname,QString s) {
+    if (fname !="LOG") {
     if (outfile) asmtext.append(s + "\r\n");
-    else addasm(s.toAscii());
+    else addasm(s.toAscii());}
 
 }
 
@@ -68,8 +69,10 @@ void Clcc::writeln(QString fname,QString s){
 void Clcc::write(QString fname,QString s){
     // emit signal ?
     // or fill an arraybuffer ?
+    if (fname !="LOG") {
     QByteArray actual = out->value(fname) +s.toAscii();
     out->insert(fname, actual);
+}
 //    emit outputSignal(fname,s);
 }
 
