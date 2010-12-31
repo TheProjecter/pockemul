@@ -3,29 +3,27 @@
 
 // implement putchar(int) and getchar()
 // test for PC-1350
-
+byte xram _lcd_dx at 0x7881;
+byte xram _lcd_dy at 0x7880;
 
 putchar(char c) {
-
-    byte xram dx at 0x7881;
-    byte xram dy at 0x7880;
 
     #asm
     CALL    0xE983
     #endasm
 
-    dx++;
-    if (dx>23) {
-        dx = 0;
-        dy++;
+    _lcd_dx++;
+    if (_lcd_dx>23) {
+        _lcd_dx = 0;
+        _lcd_dy++;
     }
-    if (dy >3) {
+    if (_lcd_dy >3) {
         //scroll up he screen
         #asm
             LIA     4
             CALL    0xE23C
         #endasm
-        dy = 3;
+        _lcd_dy = 3;
     }
 }
 

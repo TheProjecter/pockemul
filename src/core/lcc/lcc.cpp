@@ -55,7 +55,8 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
 
 
 void Clcc::writln(QString fname,QString s) {
-    if (fname !="LOG") {
+    if (fname !="LOG")
+    {
     if (outfile) asmtext.append(s + "\r\n");
     else addasm(s.toAscii());}
 
@@ -340,7 +341,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc) {
                     QMessageBox::about(mainwindow,"ERROR","Local vars can't have 'at' assignments!");
                 }
                 s = ExtrWord(&t);
-                if (t.indexOf('=') > 0) {
+                if (t.indexOf('=') >= 0) {
                     s = ExtrCust(&t, '=');
                     if (t.startsWith('(')) t = " " + t;
                     t = "=" + t;
@@ -1561,7 +1562,7 @@ writln("LOG",";Assignement:"+Tok);
     s = "";
     if (Look == '[') {
         s = Tok;
-        Tok.remove(0,Tok.indexOf("=")); Tok = Tok.trimmed();
+        Tok.remove(0,Tok.indexOf("=")+1); Tok = Tok.trimmed();
     }
     if (QByteArray("+-*/%&|><").contains(Look)) {
         temp = name + Look;
@@ -2361,7 +2362,7 @@ int    adr, size, value;
     }
 
         if (asmcnt > 0)
-                for (int i = 0;i<asmcnt;i++) write(f, asmlist[i]);
+                for (int i = 0;i<asmcnt;i++) writln(f, asmlist[i]);
 
 
         //{ Second pass: Optimize Code }

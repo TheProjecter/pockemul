@@ -131,6 +131,7 @@ HEADERS += src/core/Connect.h \
     src/core/lcc/codegen.h \
     src/core/lcc/pasm.h \
     src/core/lcc/stdlib.h \
+    resources/lcc/model/PC-1350/stdio.h \
     resources/lcc/model/PC-1350/stdio.h
 INCLUDEPATH += . \
     src/core \
