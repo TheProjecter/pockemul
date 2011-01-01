@@ -3,7 +3,7 @@
 
 enum en_type
 {
-    DELIMITER = 1,
+    DELIMITER,
     VARIABLE,
     NUMBER
 };

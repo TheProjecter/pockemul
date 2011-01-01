@@ -1,9 +1,11 @@
 #include <QtGui>
 
-#include "pasm.h"
-#include "parser.h"
 
-Cpasm::Cpasm() {
+#include "parser.h"
+#include "pasm.h"
+Cpasm::Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
+    this->sources = sources;
+    this->out = out;
     nlabp =-1;
     nlabcnt = 0;
 
@@ -14,6 +16,14 @@ Cpasm::Cpasm() {
     startadr = 0;
     symcnt = 0;
     opp = 0;
+    ccase = 0;
+
+    lcnt = 0;
+}
+
+void Cpasm::writeln(QString srcName,QString s) {
+    QByteArray locs = out->value(srcName);
+    out->insert(srcName,locs+"\r"+s.toAscii());
 }
 
 int Cpasm::mathparse(QByteArray s, int w) {
@@ -77,7 +87,7 @@ const QString Cpasm::opcode[] = {
     "CAL26","CAL27","CAL28","CAL29","CAL30",
     "CAL31"};
 
-const unsigned char nbargu [] = {
+const unsigned char Cpasm::nbargu [] = {
     2,2,2,2,1,
     1,1,1,1,1,
     1,1,1,1,1,
@@ -176,7 +186,7 @@ void Cpasm::addlabel(QString l) {
     l = l.toUpper();
 
     if (findlabel(l)) abort("Label " + l + " already defined!");
-    writeln("SYMBOL: " + l + tr(" - %1").arg(codpos + startadr));
+    writeln("OUTPUT","SYMBOL: " + l + tr(" - %1").arg(codpos + startadr));
     lab.append(l);
     labpos.append(codpos);
     labcnt++;
@@ -202,7 +212,7 @@ void Cpasm::addsymbol(QString s1, QString s2) {
     if (findsymbol(s1)) abort("Symbol " + s1 + " already defined!");
     sym.append(s1);
     symval.append(s2);
-    writeln("SYMBOL: " + s1 + " - " + s2);
+    writeln("OUTPUT","SYMBOL: " + s1 + " - " + s2);
     symcnt++;
 }
 
@@ -234,11 +244,11 @@ void Cpasm::extractop(QString s) {
     s.remove(0,i); s = s.trimmed();
     params = s;
 
-    if (s.contains(",")) s[s.indexOf(",")] = " ";
+    if (s.contains(",")) s[s.indexOf(",")] = ' ' ;
 
     i = 1; s.append(" ");
     while ((i < s.size()) && !QString(" \t").contains(s[i])) i++;
-    param = s.left(i-1).trimmed();
+    param1 = s.left(i-1).trimmed();
     s.remove(0,i); s = s.trimmed();
 
     if (!s.isEmpty()) param2 = s; else param2 = "";
@@ -254,12 +264,12 @@ int Cpasm::calcadr(void) {
     lf = false;
     while (i < params.length()) {
         if ((params[i] == '0') &&
-            ((i < length(params)-1) && (params[i+1].toUpper() == 'X'))) {
+            ((i < (params.length()-1)) && (params[i+1].toUpper() == 'X'))) {
             i+=2;
             while (QString("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(params[i])) i++;
         }
         if ((params[i] == '0') &&
-            ((i < length(params)-1) && (params[i+1].toUpper() == 'B'))) {
+            ((i < (params.length()-1)) && (params[i+1].toUpper() == 'B'))) {
             i+=2;
             while (QString("01").contains(params[i])) i++;
         }
@@ -284,8 +294,8 @@ int Cpasm::calcadr(void) {
         i++;
     }
     if (lf) result = 0;
-    else if (param2.isEmpty()) result = mathparse(param1, 16);
-    else result = mathparse(param1, 8) * 256 + mathparse(param2, 8);
+    else if (param2.isEmpty()) result = mathparse(param1.toAscii(), 16);
+    else result = mathparse(param1.toAscii(), 8) * 256 + mathparse(param2.toAscii(), 8);
 
     return result;
 }
@@ -311,436 +321,419 @@ const QList<char> Cpasm::JR = QList<char> ()<<JRNZP<<JRNCP<<JRP<<JRZP<<JRCP<<JRN
 void Cpasm::doasm(void) {
     int adr;
 
-        param1 = param1.trimmed();
-        if (!param1.isEmpty())
-           if (param1.right(1) == ",")
-              param1.chop(1);
-        param2 = param2.trimmed();
+    param1 = param1.trimmed();
+    if (!param1.isEmpty())
+        if (param1.right(1) == ",")
+            param1.chop(1);
+    param2 = param2.trimmed();
 
-        QList<char> l1 = QList<char> () << 120<<121<<16<<124<<125<<126<<127;
-        if (findop(op)) {
-            if (l1.contains(opp)) {
-                adr = calcadr;
-                if (adr > 0) {
-                     addcode(opp);
-                     addcode(adr / 256);
-                     addcode(adr % 256);
-                 }
-                else {
-                     addcode(NOP);
-                     addcode(NOP);
-                     addcode(NOP);
-                 }
+    QList<char> l1 = QList<char> () << 120<<121<<16<<124<<125<<126<<127;
+    if (findop(op)) {
+        if (l1.contains(opp)) {
+            adr = calcadr();
+            if (adr > 0) {
+                addcode(opp);
+                addcode(adr / 256);
+                addcode(adr % 256);
+            }
+            else {
+                addcode(NOP);
+                addcode(NOP);
+                addcode(NOP);
+            }
+        }
+        else
+            if (JR.contains(opp)) {              // relativ
+            adr = calcadr();
+            if (adr >= 8192) {
+                addcode(opp);
+                //                   if opp in JRPLUS then addcode(adr - codpos - startadr)
+                //                   else
+                addcode(abs(codpos + startadr - adr));
             }
             else
-                if (JR.contains(opp)) {              // relativ
-
-              adr = calcadr;
-              if (adr >= 8192) {
-                   addcode(opp);
-//                   if opp in JRPLUS then addcode(adr - codpos - startadr)
-//                   else
-                   addcode(abs(codpos + startadr - adr));
-               }
-              else
-                  if (adr > 0) {
-                   addcode(opp); addcode(adr);
-               }
-              else {
-                   addcode(NOP); addcode(NOP);
-               }
-          }
+                if (adr > 0) {
+                addcode(opp); addcode(adr);
+            }
             else {
-              addcode(opp);
-              if (NBARGU[opp] == 2) addcode(mathparse(param1, 8));
-              else if (NBARGU[opp] == 3) {
-                  if (param2.isEmpty()) {
-                    addcode((mathparse(param1, 16) << 8) & 0xFF);
-                    addcode((mathparse(param1, 16)) & 0xFF);
-                }
-                  else {
-                    addcode(mathparse(param1, 8));
-                    addcode(mathparse(param2, 8));
-                }
-              }
-          }
+                addcode(NOP); addcode(NOP);
+            }
         }
         else {
+            addcode(opp);
+            if (nbargu[opp] == 2) addcode(mathparse(param1.toAscii(), 8));
+            else if (nbargu[opp] == 3) {
+                if (param2.isEmpty()) {
+                    addcode((mathparse(param1.toAscii(), 16) << 8) & 0xFF);
+                    addcode((mathparse(param1.toAscii(), 16)) & 0xFF);
+                }
+                else {
+                    addcode(mathparse(param1.toAscii(), 8));
+                    addcode(mathparse(param2.toAscii(), 8));
+                }
+            }
+        }
+    }
+    else {
 
-            if (op == "LP") {
-           if (mathparse(param1, 8) > 63) abort("LP command exceeds range!");
-           addcode(128 + mathparse(param1, 8));
-       }
-            else
-        if (op == "RTN") addcode(55);
+        if (op == "LP") {
+            if (mathparse(param1.toAscii(), 8) > 63) abort("LP comm&& exceeds range!");
+            addcode(128 + mathparse(param1.toAscii(), 8));
+        }
+        else if (op == "RTN") addcode(55);
         else if (op == "SUBW") addcode(0x15);
         else if (op == "SUBC") addcode(0xC5);
-        else if (op == "ADDW") addcode($14);
-        else if (op == "ADDC") addcode($C4);
+        else if (op == "ADDW") addcode(0x14);
+        else if (op == "ADDC") addcode(0xC4);
         else if (op == "ADD") {
-           if ((param1 == "[P]") && (param2 == "A")) addcode(0x44);
-           else if (param1 == "[P]") { addcode(0x70); addcode(mathparse(param2, 8)); }
-           else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2, 8)); }
-       }
-        else if (op = "ADDB") {
-           if ((param1 = "[P]") && (param2 == "A")) addcode(0x0C);
-           else if ((param1 == "[P]") && (param2 == "[Q]")) addcode(0x0E);
-       }
-        else if (op = "SUB") {
-           if ((param1 = "[P]") && (param2 = "A")) addcode(0x45);
-           else if (param1 == "[P]") { addcode(0x71); addcode(mathparse(param2, 8)); }
-           else if (param1 = 'A') { addcode($74); addcode(mathparse(param2, 8)); }
-       }
+            if ((param1 == "[P]") && (param2 == "A")) addcode(0x44);
+            else if (param1 == "[P]") { addcode(0x70); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2.toAscii(), 8)); }
+        }
+        else if (op == "ADDB") {
+            if ((param1 == "[P]") && (param2 == "A")) addcode(0x0C);
+            else if ((param1 == "[P]") && (param2 == "[Q]")) addcode(0x0E);
+        }
+        else if (op == "SUB") {
+            if ((param1 == "[P]") && (param2 == "A")) addcode(0x45);
+            else if (param1 == "[P]") { addcode(0x71); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2.toAscii(), 8)); }
+        }
         else if (op == "SUBB") {
-           if ((param1 == "[P]") && (param2 == "A")) addcode(0x0D);
-           else if ((param1 == "[P]") && (param2 == "[Q]")) addcode(0x0F);
-       }
-        else if op = 'ROL' then
-           addcode($5A)
-        else if op = 'SLB' then
-           addcode($1D)
-        else if op = 'ROR' then
-           addcode(210)
-        else if op = 'SRB' then
-           addcode(28)
-        else if op = 'SWAP' then
-           addcode(88)
-        else if op = 'RC' then
-           addcode(209)
-        else if op = 'SC' then
-           addcode(208)
-        else if (op = 'OR') then
-        begin
-           if (param1 = '[P]') and (param2 = 'A') then addcode($47)
-           else if (param1 = '[P]') then begin addcode($61); addcode(mathparse(param2, 8)); end
-           else if (param1 = '[DP]') then begin addcode($D5); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'A') then begin addcode($65); addcode(mathparse(param2, 8)); end;
-        end
-        else if (op = 'AND') then
-        begin
-           if (param1 = '[P]') and (param2 = 'A') then addcode($46)
-           else if (param1 = '[P]') then begin addcode($60); addcode(mathparse(param2, 8)); end
-           else if (param1 = '[DP]') then begin addcode($D4); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'A') then begin addcode($64); addcode(mathparse(param2, 8)); end;
-        end
-        else if (op = 'OUT') then
-        begin
-           if (param1 = 'A') then addcode(93)
-           else if (param1 = 'B') then addcode(221)
-           else if (param1 = 'C') then addcode(223)
-           else if (param1 = 'F') then addcode(95);
-        end
-        else if (op = 'IN') then
-        begin
-           if (param1 = 'A') then addcode(76)
-           else if (param1 = 'B') then addcode(204);
-        end
-        else if (op = 'INC') then
-        begin
-           if (param1 = 'A') or (mathparse(param1, 8) = 2) then addcode(66)
-           else if (param1 = 'B') or (mathparse(param1, 8) = 3) then addcode(194)
-           else if (param1 = 'J') or (mathparse(param1, 8) = 1) then addcode(192)
-           else if (param1 = 'K') or (mathparse(param1, 8) = 8) then addcode(72)
-           else if (param1 = 'L') or (mathparse(param1, 8) = 9) then addcode(200)
-           else if (param1 = 'M') or (mathparse(param1, 8) = 10) then addcode(74)
-           else if (param1 = 'N') or (mathparse(param1, 8) = 11) then addcode(202)
-           else if (param1 = 'P') then addcode(80)
-           else if (param1 = 'X') or (mathparse(param1, 8) = 4) then addcode(4)
-           else if (param1 = 'Y') or (mathparse(param1, 8) = 6) then addcode(6)
-           else if (param1 = 'I') or (mathparse(param1, 8) = 0) then addcode(64);
-        end
-        else if (op = 'DEC') then
-        begin
-           if (param1 = 'A') or (mathparse(param1, 8) = 2) then addcode(67)
-           else if (param1 = 'B') or (mathparse(param1, 8) = 3) then addcode(195)
-           else if (param1 = 'J') or (mathparse(param1, 8) = 1) then addcode(193)
-           else if (param1 = 'K') or (mathparse(param1, 8) = 8) then addcode(73)
-           else if (param1 = 'L') or (mathparse(param1, 8) = 9) then addcode(201)
-           else if (param1 = 'M') or (mathparse(param1, 8) = 10) then addcode(75)
-           else if (param1 = 'N') or (mathparse(param1, 8) = 11) then addcode(203)
-           else if (param1 = 'P') then addcode(81)
-           else if (param1 = 'X') or (mathparse(param1, 8) = 4) then addcode(5)
-           else if (param1 = 'Y') or (mathparse(param1, 8) = 6) then addcode(7)
-           else if (param1 = 'I') or (mathparse(param1, 8) = 0) then addcode(65);
-        end
-        else if op = 'CALL' then
-        begin
-           adr := calcadr;
-           if adr > 0 then
-           begin
-                   if adr < 8192 then begin addcode($E0 + adr div 256); addcode(adr mod 256); end
-                   else begin addcode($78); addcode(adr div 256); addcode(adr mod 256); end;
-           end else
-           begin
-                   addcode(NOP); addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'JMP' then
-        begin
-           adr := calcadr;
-           if adr > 0 then
-           begin
-                   addcode(121); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'JPLO' then
-        begin
-           adr := calcadr;
-           if adr > 0 then
-           begin
-                   addcode(127); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'JPSH' then
-        begin
-           adr := calcadr;
-           if adr > 0 then
-           begin
-                   addcode(125); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'JPNE' then
-        begin
-           adr := calcadr;
-           if adr > 0 then
-           begin
-                   addcode(124); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'JPEQ' then
-        begin
-           adr := calcadr;
-           if adr > 0 then
-           begin
-                   addcode(126); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'RJMP' then
-        begin
-           adr := calcadr;
-           if adr >= 8192 then
-           begin
-               if abs(adr - startadr - codpos) <= 255 then
-               begin
-                   if adr > startadr + codpos then addcode(44)
-                   else addcode(45);
-                   addcode(abs(adr - startadr - codpos));
-               end else
-               begin
-                   addcode(121); addcode(adr div 256); addcode(adr mod 256);   // Do absolute jump then
-               end;
-           end else
-           if (adr >= 1) and (adr <= 255) then
-           begin
-                   addcode(44); addcode(adr);
-           end else
-           if (adr <= -1) and (adr >= -255) then
-           begin
-                   addcode(45); addcode(adr);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'BRLO' then
-        begin
-           adr := calcadr;
-           if adr >= 8192 then
-           begin
-               if abs(adr - startadr - codpos) <= 255 then
-               begin
-                   if adr > startadr + codpos then addcode(58)
-                   else addcode(59);
-                   addcode(abs(adr - startadr - codpos));
-               end else abort('Relative jump exceeds 255 bytes!');
-           end else
-           if (adr >= 1) and (adr <= 255) then
-           begin
-                   addcode(58); addcode(adr);
-           end else
-           if (adr <= -1) and (adr >= -255) then
-           begin
-                   addcode(59); addcode(adr);
-           end else
-           if (abs(adr) >= 256) and (abs(adr) < 8192) then
-           begin
-                   adr := startadr + codpos + adr;
-                   addcode(127); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'BRSH' then
-        begin
-           adr := calcadr;
-           if adr >= 8192 then
-           begin
-               if abs(adr - startadr - codpos) <= 255 then
-               begin
-                   if adr > startadr + codpos then addcode(42)
-                   else addcode(43);
-                   addcode(abs(adr - startadr - codpos));
-               end else abort('Relative jump exceeds 255 bytes!');
-           end else
-           if (adr >= 1) and (adr <= 255) then
-           begin
-                   addcode(42); addcode(adr);
-           end else
-           if (adr <= -1) and (adr >= -255) then
-           begin
-                   addcode(43); addcode(adr);
-           end else
-           if (abs(adr) >= 256) and (abs(adr) < 8192) then
-           begin
-                   adr := startadr + codpos + adr;
-                   addcode(125); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'BRNE' then
-        begin
-           adr := calcadr;
-           if adr >= 8192 then
-           begin
-               if abs(adr - startadr - codpos) <= 255 then
-               begin
-                   if adr > startadr + codpos then addcode(40)
-                   else addcode(40);
-                   addcode(abs(adr - startadr - codpos));
-               end else abort('Relative jump exceeds 255 bytes!');
-           end else
-           if (adr >= 1) and (adr <= 255) then
-           begin
-                   addcode(40); addcode(adr);
-           end else
-           if (adr <= -1) and (adr >= -255) then
-           begin
-                   addcode(41); addcode(adr);
-           end else
-           if (abs(adr) >= 256) and (abs(adr) < 8192) then
-           begin
-                   adr := startadr + codpos + adr;
-                   addcode(124); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if op = 'BREQ' then
-        begin
-           adr := calcadr;
-           if adr >= 8192 then
-           begin
-               if abs(adr - startadr - codpos) <= 255 then
-               begin
-                   if adr > startadr + codpos then addcode(56)
-                   else addcode(57);
-                   addcode(abs(adr - startadr - codpos));
-               end else abort('Relative jump exceeds 255 bytes!');
-           end else
-           if (adr >= 1) and (adr <= 255) then
-           begin
-                   addcode(56); addcode(adr);
-           end else
-           if (adr <= -1) and (adr >= -255) then
-           begin
-                   addcode(57); addcode(adr);
-           end else
-           if (abs(adr) >= 256) and (abs(adr) < 8192) then
-           begin
-                   adr := startadr + codpos + adr;
-                   addcode(126); addcode(adr div 256); addcode(adr mod 256);
-           end else
-           begin
-                   addcode(NOP); addcode(NOP);
-           end;
-        end
-        else if (op = 'CASE') then
-        begin
-           addcode(122);
-           mcase := true;
-           ccase := codpos;
-           casecnt := 0;
-           addcode(NOP); addcode(NOP); addcode(NOP);
-           addcode(105);
-        end
-        else if mcase then
-        begin
-           if (op = 'ENDCASE') then
-           begin
-              mcase := false;
-              adr := codpos;
-              codpos := ccase;
-              addcode(casecnt);
-              addcode((adr+startadr) div 256); addcode((adr+startadr) mod 256);
-              codpos := adr;
-           end else
-           begin
-              if op <> 'ELSE' then
-                 begin addcode(mathparse(op, 8)); inc(casecnt); end;
-              dec(codpos);
-              adr := calcadr;
-              inc(codpos);
-              if adr > 0 then
-                 begin addcode(adr div 256); addcode(adr mod 256); end
-              else
-                 begin addcode(NOP); addcode(NOP); end;
-           end;
-        end
-        else if op = 'MOV' then
-        begin
-           if (param1 = 'A') and (param2 = '[+X]') then addcode(36)
-           else if (param1 = 'A') and (param2 = '[-X]') then addcode(37)
-           else if (param1 = '[+Y]') and (param2 = 'A') then addcode(38)
-           else if (param1 = '[-Y]') and (param2 = 'A') then addcode(39)
-           else if (param1 = 'A') and (param2 = 'R') then addcode(34)
-           else if (param1 = 'R') and (param2 = 'A') then addcode(50)
-           else if (param1 = 'A') and (param2 = 'Q') then addcode(33)
-           else if (param1 = 'Q') and (param2 = 'A') then addcode(49)
-           else if (param1 = 'A') and (param2 = 'P') then addcode(32)
-           else if (param1 = 'P') and (param2 = 'A') then addcode(48)
-           else if (param1 = '[P]') and (param2 = '[DP]') then addcode(85)
-           else if (param1 = '[DP]') and (param2 = '[P]') then addcode(83)
-           else if (param1 = 'A') and (param2 = '[DP]') then addcode(87)
-           else if (param1 = '[DP]') and (param2 = 'A') then addcode(82)
-           else if (param1 = 'A') and (param2 = '[P]') then addcode(89)
-           else if (param1 = '[P]') and (param2 = 'A') then begin addcode(219); addcode(89); end
-           else if (param1 = 'A') then begin addcode(2); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'B') then begin addcode(3); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'I') then begin addcode(0); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'J') then begin addcode(1); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'P') then begin addcode(18); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'Q') then begin addcode(19); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'DPL') then begin addcode(17); addcode(mathparse(param2, 8)); end
-           else if (param1 = 'DP') then begin addcode(16); adr := mathparse(param2, 16); addcode(adr div 256); addcode(adr mod 256); end;
-        end
-        else if op = 'NOP' then
-        begin
-           if param1 = '' then addcode(NOP) else begin addcode(78); addcode(mathparse(param1, 8)); end;
-        end
+            if ((param1 == "[P]") && (param2 == "A")) addcode(0x0D);
+            else if ((param1 == "[P]") && (param2 == "[Q]")) addcode(0x0F);
+        }
+        else if (op == "ROL") addcode(0x5A);
+        else if (op == "SLB") addcode(0x1D);
+        else if (op == "ROR") addcode(210);
+        else if (op== "SRB") addcode(28);
+        else if (op == "SWAP") addcode(88);
+        else if (op == "RC") addcode(209);
+        else if (op == "SC") addcode(208);
+        else if (op == "OR") {
+            if ((param1 == "[P]") && (param2 == "A")) addcode(0x47);
+            else if (param1 == "[P]") { addcode(0x61); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "[DP]") { addcode(0xD5); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "A") { addcode(0x65); addcode(mathparse(param2.toAscii(), 8)); }
+        }
+        else if (op == "&&") {
+            if ((param1 == "[P]") && (param2 == "A")) addcode(0x46);
+            else if (param1 == "[P]") { addcode(0x60); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "[DP]") { addcode(0xD4); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "A") { addcode(0x64); addcode(mathparse(param2.toAscii(), 8)); }
+        }
+        else if (op == "OUT") {
+            if (param1 == "A") addcode(93);
+            else if (param1 == "B") addcode(221);
+            else if (param1 == "C") addcode(223);
+            else if (param1 == "F") addcode(95);
+        }
+        else if (op == "IN"){
+            if (param1 == "A")  addcode(76);
+            else if (param1 == "B") addcode(204);
+        }
+        else if (op == "INC") {
+            if ((param1 == "A") or (mathparse(param1.toAscii(), 8) == 2)) addcode(66);
+            else if ((param1 == "B") || (mathparse(param1.toAscii(), 8) == 3)) addcode(194);
+            else if ((param1 == "J") || (mathparse(param1.toAscii(), 8) == 1)) addcode(192);
+            else if ((param1 == "K") || (mathparse(param1.toAscii(), 8) == 8)) addcode(72);
+            else if ((param1 == "L") || (mathparse(param1.toAscii(), 8) == 9)) addcode(200);
+            else if ((param1 == "M") || (mathparse(param1.toAscii(), 8) == 10)) addcode(74);
+            else if ((param1 == "N") || (mathparse(param1.toAscii(), 8) == 11)) addcode(202);
+            else if (param1 == "P") addcode(80);
+            else if ((param1 == "X") || (mathparse(param1.toAscii(), 8) == 4)) addcode(4);
+            else if ((param1 == "Y") || (mathparse(param1.toAscii(), 8) == 6)) addcode(6);
+            else if ((param1 == "I") || (mathparse(param1.toAscii(), 8) == 0)) addcode(64);
+        }
+        else if (op == "DEC") {
+            if ((param1 == "A") || (mathparse(param1.toAscii(), 8) == 2)) addcode(67);
+            else if ((param1 == "B") || (mathparse(param1.toAscii(), 8) == 3)) addcode(195);
+            else if ((param1 == "J") || (mathparse(param1.toAscii(), 8) == 1)) addcode(193);
+            else if ((param1 == "K") || (mathparse(param1.toAscii(), 8) == 8)) addcode(73);
+            else if ((param1 == "L") || (mathparse(param1.toAscii(), 8) == 9)) addcode(201);
+            else if ((param1 == "M") || (mathparse(param1.toAscii(), 8) == 10)) addcode(75);
+            else if ((param1 == "N") || (mathparse(param1.toAscii(), 8) == 11)) addcode(203);
+            else if (param1 == "P") addcode(81);
+            else if ((param1 == "X") || (mathparse(param1.toAscii(), 8) == 4)) addcode(5);
+            else if ((param1 == "Y") || (mathparse(param1.toAscii(), 8) == 6)) addcode(7);
+            else if ((param1 == "I") || (mathparse(param1.toAscii(), 8) == 0)) addcode(65);
+        }
+        else if (op == "CALL") {
+            adr = calcadr();
+            if (adr > 0) {
+                if (adr < 8192) { addcode(0xE0 + adr / 256); addcode(adr % 256); }
+                else { addcode(0x78); addcode(adr / 256); addcode(adr % 256); }
+            }
+            else {
+                addcode(NOP); addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "JMP") {
+            adr = calcadr();
+            if (adr > 0) {
+                addcode(121); addcode(adr / 256); addcode(adr % 256);
+            }
+            else {
+                addcode(NOP); addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "JPLO") {
+            adr = calcadr();
+            if (adr > 0) {
+                addcode(127); addcode(adr / 256); addcode(adr % 256);
+            }
+            else {
+                addcode(NOP); addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "JPSH") {
+            adr = calcadr();
+            if (adr > 0) {
+                addcode(125); addcode(adr / 256); addcode(adr % 256);
+            }
+            else {
+                addcode(NOP); addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "JPNE") {
+            adr = calcadr();
+            if (adr > 0) {
+                addcode(124); addcode(adr / 256); addcode(adr % 256);
+            }
+            else {
+                addcode(NOP); addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "JPEQ") {
+            adr = calcadr();
+            if (adr > 0) {
+                addcode(126); addcode(adr / 256); addcode(adr % 256);
+            }
+            else {
+                addcode(NOP); addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "RJMP") {
+            adr = calcadr();
+            if (adr >= 8192) {
+                if (abs(adr - startadr - codpos) <= 255) {
+                    if (adr > startadr + codpos) addcode(44);
+                    else addcode(45);
+                    addcode(abs(adr - startadr - codpos));
+                }
+                else {
+                    addcode(121); addcode(adr / 256); addcode(adr % 256);   // Do absolute jump then
+                }
+            } else
+                if ((adr >= 1) && (adr <= 255)) {
+                addcode(44); addcode(adr);
+            }
+            else
+                if ((adr <= -1) && (adr >= -255)) {
+                addcode(45); addcode(adr);
+            } else {
+                addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "BRLO") {
+            adr = calcadr();
+            if (adr >= 8192) {
+                if (abs(adr - startadr - codpos) <= 255) {
+                    if (adr > startadr + codpos) addcode(58);
+                    else addcode(59);
+                    addcode(abs(adr - startadr - codpos));
+                } else abort("Relative jump exceeds 255 bytes!");
+            } else
+                if ((adr >= 1) && (adr <= 255)) {
+                addcode(58); addcode(adr);
+            } else
+                if ((adr <= -1) && (adr >= -255)) {
+                addcode(59); addcode(adr);
+            } else
+                if ((abs(adr) >= 256) && (abs(adr) < 8192)) {
+                adr = startadr + codpos + adr;
+                addcode(127); addcode(adr / 256); addcode(adr % 256);
+            } else
+            {
+                addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "BRSH") {
+            adr = calcadr();
+            if (adr >= 8192) {
+                if (abs(adr - startadr - codpos) <= 255) {
+                    if (adr > startadr + codpos) addcode(42);
+                    else addcode(43);
+                    addcode(abs(adr - startadr - codpos));
+                } else abort("Relative jump exceeds 255 bytes!");
+            } else
+                if ((adr >= 1) && (adr <= 255)) {
+                addcode(42); addcode(adr);
+            } else
+                if ((adr <= -1) && (adr >= -255)) {
+                addcode(43); addcode(adr);
+            } else
+                if ((abs(adr) >= 256) && (abs(adr) < 8192)){
+                adr = startadr + codpos + adr;
+                addcode(125); addcode(adr / 256); addcode(adr % 256);
+            } else
+            {
+                addcode(NOP); addcode(NOP);
+            };
+        }
+        else if (op == "BRNE") {
+            adr = calcadr();
+            if (adr >= 8192) {
+                if (abs(adr - startadr - codpos) <= 255) {
+                    if (adr > startadr + codpos) addcode(40);
+                    else addcode(40);
+                    addcode(abs(adr - startadr - codpos));
+                } else abort("Relative jump exceeds 255 bytes!");
+            } else
+                if ((adr >= 1) && (adr <= 255)) {
+                addcode(40); addcode(adr);
+            } else
+                if ((adr <= -1) && (adr >= -255)) {
+                addcode(41); addcode(adr);
+            } else
+                if ((abs(adr) >= 256) && (abs(adr) < 8192)) {
+                adr = startadr + codpos + adr;
+                addcode(124); addcode(adr / 256); addcode(adr % 256);
+            } else
+            {
+                addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "BREQ") {
+            adr = calcadr();
+            if (adr >= 8192) {
+                if (abs(adr - startadr - codpos) <= 255) {
+                    if (adr > startadr + codpos) addcode(56);
+                    else addcode(57);
+                    addcode(abs(adr - startadr - codpos));
+                } else abort("Relative jump exceeds 255 bytes!");
+            } else
+                if ((adr >= 1) && (adr <= 255)) {
+                addcode(56); addcode(adr);
+            } else
+                if ((adr <= -1) && (adr >= -255)) {
+                addcode(57); addcode(adr);
+            } else
+                if ((abs(adr) >= 256) && (abs(adr) < 8192)) {
+                adr = startadr + codpos + adr;
+                addcode(126); addcode(adr / 256); addcode(adr % 256);
+            } else
+            {
+                addcode(NOP); addcode(NOP);
+            }
+        }
+        else if (op == "CASE") {
+            addcode(122);
+            mcase = true;
+            ccase = codpos;
+            casecnt = 0;
+            addcode(NOP); addcode(NOP); addcode(NOP);
+            addcode(105);
+        }
+        else if (mcase) {
+            if (op == "ENDCASE") {
+                mcase = false;
+                adr = codpos;
+                codpos = ccase;
+                addcode(casecnt);
+                addcode((adr+startadr) / 256); addcode((adr+startadr) % 256);
+                codpos = adr;
+            } else
+            {
+                if (op != "ELSE") { addcode(mathparse(op.toAscii(), 8)); casecnt++; }
+                codpos--;
+                adr = calcadr();
+                codpos++;
+                if (adr > 0) { addcode(adr / 256); addcode(adr % 256); }
+                else
+                { addcode(NOP); addcode(NOP); }
+            }
+        }
+        else if (op == "MOV") {
+            if ((param1 == "A") && (param2 == "[+X]")) addcode(36);
+            else if ((param1 == "A") && (param2 == "[-X]")) addcode(37);
+            else if ((param1 == "[+Y]") && (param2 == "A")) addcode(38);
+            else if ((param1 == "[-Y]") && (param2 == "A")) addcode(39);
+            else if ((param1 == "A") && (param2 == "R")) addcode(34);
+            else if ((param1 == "R") && (param2 == "A")) addcode(50);
+            else if ((param1 == "A") && (param2 == "Q")) addcode(33);
+            else if ((param1 == "Q") && (param2 == "A")) addcode(49);
+            else if ((param1 == "A") && (param2 == "P")) addcode(32);
+            else if ((param1 == "P") && (param2 == "A")) addcode(48);
+            else if ((param1 == "[P]") && (param2 == "[DP]")) addcode(85);
+            else if ((param1 == "[DP]") && (param2 == "[P]")) addcode(83);
+            else if ((param1 == "A") && (param2 == "[DP]")) addcode(87);
+            else if ((param1 == "[DP]") && (param2 == "A")) addcode(82);
+            else if ((param1 == "A") && (param2 == "[P]")) addcode(89);
+            else if ((param1 == "[P]") && (param2 == "A")) { addcode(219); addcode(89); }
+            else if (param1 == "A") { addcode(2); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "B") { addcode(3); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "I") { addcode(0); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "J") { addcode(1); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "P") { addcode(18); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "Q") { addcode(19); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "DPL") { addcode(17); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "DP") { addcode(16); adr = mathparse(param2.toAscii(), 16); addcode(adr / 256); addcode(adr % 256); }
+        }
+        else if (op == "NOP") {
+            if (param1 == "")  addcode(NOP);
+            else { addcode(78); addcode(mathparse(param1.toAscii(), 8)); }
+        }
         else
-           abort('Unknown OP-code: '+op);
+            abort("Unknown OP-code: "+op);
 
-        end;
     }
+}
+
+QString Cpasm::readline(QStringListIterator *linesIter) {
+
+    bool c;
+    QString result;
+
+    do {
+        do {
+            if (linesIter->hasNext())
+                result = linesIter->next();
+            lcnt++;
+            cline = lcnt;
+            result = result.trimmed();
+        }
+        while (linesIter->hasNext() && result.isEmpty());
+        //until eof(datei) or (result <> '');
+        c = false;
+        for (int i = 0 ;i<result.length();i++) {
+            if ((result[i] == '\'') || (result[i] == '"')) c = ! c;
+            if ((not c) && ((result[i] == ';')||(result[i]=='#'))) {
+                result.remove(i, result.length());
+                break;
+            }
+        }
+        if (!result.isEmpty()) {
+            int i = result.indexOf(':');
+            if (i >= 0) {
+                addlabel(result.mid(0, i - 1).trimmed());
+                result.remove(0, i);
+                result = result.trimmed();
+            }
+        }
+        if (!result.isEmpty()) {
+            if (result.toLower().indexOf("ifdef") <0) {
+                if (symcnt > 0) for (int i = 0;i< symcnt;i++) result = replace_text(result, sym[i], symval[i]);
+                if (labcnt > 0) for (int i = 0;i< labcnt;i++) result = replace_text(result, lab[i], QString("%1").arg(labpos[i] + startadr));
+            }
+        }
+    }
+    //until eof(datei) or (result <> '');
+    while (linesIter->hasNext() && result.isEmpty());
+    result = result.trimmed();
+
+    return result;
+}
 
 
 #if 0
@@ -800,52 +793,7 @@ procedure parsefile(fname: string);
 var datei: textfile;
     lcnt: integer;
 
-function readline: string;
-var
-    i: integer;
-    c: boolean;
-begin
-    repeat
-    repeat
-        readln(datei, result);
-                inc(lcnt);
-                cline := lcnt;
-                result := trim(result);
-    until eof(datei) or (result <> '');
-    if eof(datei) and (result = '') then exit;
 
-    c := false;
-    for i := 1 to length(result) do
-    begin
-        if (result[i] = '''') or (result[i] = '"') then c := not c;
-        if (not c) and (result[i] in [';','#']) then
-        begin
-            delete(result, i, length(result));
-            break;
-        end;
-    end;
-        if result <> '' then
-        begin
-        i := pos(':', result);
-        if i > 0 then
-        begin
-        addlabel(trim(copy(result, 1, i - 1)));
-        delete(result, 1, i);
-                result := trim(result);
-            end;
-        end;
-        if result <> '' then
-        begin
-            if pos('ifdef', lowercase(result)) = 0 then
-            begin
-                if symcnt > 0 then for i := 0 to symcnt - 1 do
-                        result := replace_text(result, sym[i], symval[i]);
-                if labcnt > 0 then for i := 0 to labcnt - 1 do
-                        result := replace_text(result, lab[i], inttostr(labpos[i] + startadr));
-            end;
-        end;
-     until eof(datei) or (result <> '');
-end;
 
 begin
   if not fileexists(fname) then
@@ -891,17 +839,17 @@ begin
                         while pos(',', params) > 0 do
                         begin
                                 s := copy(params, 1, pos(',', params) - 1);
-                                addcode((mathparse(s, 16) shr 8) and $FF);
-                                addcode(mathparse(s, 16) and $FF);
+                                addcode((mathparse(s, 16) shr 8) && $FF);
+                                addcode(mathparse(s, 16) && $FF);
                                 delete(params, 1, pos(',', params));
                         end;
-                        addcode((mathparse(params, 16) shr 8) and $FF);
-                        addcode(mathparse(params, 16) and $FF);
+                        addcode((mathparse(params, 16) shr 8) && $FF);
+                        addcode(mathparse(params, 16) && $FF);
                 end
                 else if op = '.DS' then
                 begin
                         delete(params, 1, pos('"', params));
-                        while (params <> '') and (params[1] <> '"') do
+                        while (params <> '') && (params[1] <> '"') do
                         begin
                                 if params[1] = '\' then
                                 begin
@@ -921,7 +869,7 @@ begin
                 else if op = '.IFDEF' then
                 begin
                         if not findsymbol(param1) then
-                        while not eof(datei) and (op <> '.ENDIF') do
+                        while not eof(datei) && (op <> '.ENDIF') do
                         begin
                                 tok := readline;
                                 //extractop(tok);

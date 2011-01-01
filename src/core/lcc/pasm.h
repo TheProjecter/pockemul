@@ -7,7 +7,7 @@ class Cpasm:public QObject {
     Q_OBJECT
 public:
 
-    Cpasm();
+    Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out);
 
     int mathparse(QByteArray s, int w);
     static const QString opcode[];
@@ -30,6 +30,16 @@ public:
     void addcode(unsigned char b);
     void extractop(QString s);
     int calcadr(void);
+
+    void doasm(void);
+
+    QString readline(QStringListIterator *linesIter);
+
+    void writeln(QString srcName,QString s);
+
+    QMap<QString,QByteArray> *sources;
+    QMap<QString,QByteArray> *out;
+    QString model;
 
     int nlabp;
     int nlabcnt;
@@ -61,9 +71,12 @@ public:
     int opp;
     QString param1,param2;
 
-static const QList<char> JRPLUS;
-static const QList<char> JRMINUS;
-static const QList<char> JR;
+    static const QList<char> JRPLUS;
+    static const QList<char> JRMINUS;
+    static const QList<char> JR;
 
+    int ccase,casecnt;
+    int lcnt;
+};
 
 #endif // PASM_H
