@@ -22,8 +22,12 @@ Cpasm::Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
 }
 
 void Cpasm::writeln(QString srcName,QString s) {
+    write(srcName,s+"\r");
+}
+
+void Cpasm::write(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
-    out->insert(srcName,locs+"\r"+s.toAscii());
+    out->insert(srcName,locs+s.toAscii()+"\r");
 }
 
 int Cpasm::mathparse(QByteArray s, int w) {
@@ -735,6 +739,123 @@ QString Cpasm::readline(QStringListIterator *linesIter) {
     return result;
 }
 
+void Cpasm::savefile(QString fname) {
+    QString s;
+    int b;
+
+    if (fname == "DEC") {
+        for (int wr = 0; wr < code.size(); wr++) {
+            b = code[wr];
+            writeln("TXT", QString("%1").arg(b));
+        }
+    }
+    else if (fname == "BAS") {
+        int blcnt = 10;
+        s = "";
+        int i = 0;
+
+        for (int wr = 0; wr < code.size(); wr++) {
+            b = code[wr];
+            s.append(tr(",%1").arg(b));
+            if (s.length() >= 60) {
+                writeln("BAS", tr("%1 POKE %2").arg(blcnt).arg(startadr) + s);
+                s = "";
+                blcnt += 10;
+                startadr += i + 1;
+                i = -1;
+            }
+            i++;
+        }
+        if (!s.isEmpty()) writeln("BAS", tr("%1 POKE %2").arg(blcnt).arg(startadr) + s);
+    }
+    else
+    {
+        for (int wr = 0; wr < code.size(); wr++) {
+            b = code[wr];
+//            write("BIN", b);
+        }
+    }
+}
+
+
+void Cpasm::parsefile(QString fname,QString source) {
+
+    int lcnt;
+    QString s;
+
+    lcnt=0;
+    QStringList lines = source.split("\n");
+    QStringListIterator linesIter(lines);
+
+    tok = readline(&linesIter);
+    while ((linesIter.hasNext()) || !tok.isEmpty()) {
+
+        if (tok.indexOf(".endif") <0) {
+
+            extractop(tok);
+            if (op == ".ORG") {
+                startadr = mathparse(param1.toAscii(), 16);
+            }
+            else if (op == ".EQU") {
+                addsymbol(param1, param2);
+            }
+            else if (op == ".DB") {
+                while (params.indexOf(",") >= 0) {
+                    s = params.mid(0,params.indexOf(",") - 1);
+                    //if s[1] = '''' then addcode(ord(s[2])) else
+                    addcode(mathparse(s.toAscii(), 8));
+                    params.remove(0,params.indexOf(","));
+                }
+                params = params.trimmed();
+                //if params[1] = '''' then addcode(ord(params[2])) else
+                addcode(mathparse(params.toAscii(), 8));
+            }
+            else if (op == ".DW") {
+                while (params.indexOf(",") >= 0) {
+                    s = params.mid(0,params.indexOf(",") - 1);
+                    addcode((mathparse(s.toAscii(), 16) << 8) && 0xFF);
+                    addcode(mathparse(s.toAscii(), 16) && 0xFF);
+                    params.remove(9,params.indexOf(","));
+                }
+                addcode((mathparse(params.toAscii(), 16) << 8) && 0xFF);
+                addcode(mathparse(params.toAscii(), 16) && 0xFF);
+            }
+            else if (op == ".DS") {
+                params.remove(0,params.indexOf('"'));
+                while (!params.isEmpty() && (params[1] != '\"')) {
+                    if (params[1] == '\\') {
+//                        if (params[2] == "\\") addcode(ord("\\"));
+//                        else {
+//                            addcode(converthex(uppercase(copy(params, 3, 2))));
+//                            params.remove(0, 4);
+//                        }
+                    } else
+                    {
+//                        addcode(ord(params[1]));
+                        params.remove(0,1);
+                    }
+                }
+            }
+            else if (op == ".IFDEF") {
+                if (!findsymbol(param1)) {
+                    while (linesIter.hasNext() && (op != ".ENDIF")) {
+                        tok = readline(&linesIter);
+                        //extractop(tok);
+                        if (tok.toLower().indexOf(".endif") >= 0) op = ".ENDIF";
+                    }
+                }
+            }
+            else if (op == ".INCLUDE") {
+//                if (fileexists(params)) {
+//                    parsefile(params);
+//                } else abort("Include file " + params + " not found!");
+            }
+            else
+                doasm();
+        }
+        tok = readline(&linesIter); // Überspringt Leerzeilen und entfernt Kommentare
+    }
+}
 
 #if 0
 program pasm;
@@ -789,172 +910,7 @@ const
 
 
 
-procedure parsefile(fname: string);
-var datei: textfile;
-    lcnt: integer;
 
-
-
-begin
-  if not fileexists(fname) then
-  begin
-    writeln('File '+fname+' not found!');
-    halt;
-  end;
-    assignfile(datei, fname);
-    reset(datei);
-        cf := fname;
-        lcnt := 0;
-
-    tok := readline; // Überspringt Leerzeilen und entfernt Kommentare
-    while (not eof(datei)) or (tok <> '') do
-    begin
-            if pos('.endif', tok) = 0 then
-            begin
-
-        extractop(tok);
-        if op = '.ORG' then
-                begin
-                        startadr := mathparse(param1, 16);
-                end
-        else if op = '.EQU' then
-                begin
-                        addsymbol(param1, param2);
-                end
-                else if op = '.DB' then
-                begin
-                        while pos(',', params) > 0 do
-                        begin
-                                s := copy(params, 1, pos(',', params) - 1);
-                                //if s[1] = '''' then addcode(ord(s[2])) else
-                                addcode(mathparse(s, 8));
-                                delete(params, 1, pos(',', params));
-                        end;
-                        params := trim(params);
-                        //if params[1] = '''' then addcode(ord(params[2])) else
-                        addcode(mathparse(params, 8));
-                end
-                else if op = '.DW' then
-                begin
-                        while pos(',', params) > 0 do
-                        begin
-                                s := copy(params, 1, pos(',', params) - 1);
-                                addcode((mathparse(s, 16) shr 8) && $FF);
-                                addcode(mathparse(s, 16) && $FF);
-                                delete(params, 1, pos(',', params));
-                        end;
-                        addcode((mathparse(params, 16) shr 8) && $FF);
-                        addcode(mathparse(params, 16) && $FF);
-                end
-                else if op = '.DS' then
-                begin
-                        delete(params, 1, pos('"', params));
-                        while (params <> '') && (params[1] <> '"') do
-                        begin
-                                if params[1] = '\' then
-                                begin
-                                   if params[2] = '\' then addcode(ord('\'))
-                                   else
-                                   begin
-                                      addcode(converthex(uppercase(copy(params, 3, 2))));
-                                      delete(params, 1, 4);
-                                   end;
-                                end else
-                                begin
-                                   addcode(ord(params[1]));
-                                   delete(params, 1, 1);
-                                end;
-                        end;
-                end
-                else if op = '.IFDEF' then
-                begin
-                        if not findsymbol(param1) then
-                        while not eof(datei) && (op <> '.ENDIF') do
-                        begin
-                                tok := readline;
-                                //extractop(tok);
-                                if pos('.endif', lowercase(tok)) > 0 then
-                                   op := '.ENDIF';
-                        end;
-                end
-                else if op = '.INCLUDE' then
-                begin
-                        if fileexists(params) then
-                        begin
-                                parsefile(params);
-                        end else abort('Include file ' + params + ' not found!');
-                end
-                else
-                        doasm;
-            end;
-            tok := readline; // Überspringt Leerzeilen und entfernt Kommentare
-    end;
-
-    closefile(datei);
-end;
-
-
-procedure savefile(fname: string);
-var f: textfile;
-    f2: file of byte;
-    i, wr: integer;
-    s: string;
-    b: byte;
-
-begin
-        if uppercase(paramstr(3)) = 'DEC' then
-        begin
-            assignfile(f, fname);
-                rewrite(f);
-
-                for wr := 0 to codpos - 1 do
-                begin
-                        b := code[wr];
-                        writeln(f, inttostr(b));
-                end;
-
-            closefile(f);
-        end else
-        if uppercase(paramstr(3)) = 'BAS' then
-        begin
-            assignfile(f, paramstr(2));
-                rewrite(f);
-                blcnt := 10;
-                s := '';
-                i := 0;
-
-                for wr := 0 to codpos - 1 do
-                begin
-                        b := code[wr];
-                        s := s + ',' + inttostr(b);
-                        if length(s) >= 60 then
-                        begin
-                                writeln(f, inttostr(blcnt) + ' POKE ' + inttostr(startadr) + s);
-                                s := '';
-                                blcnt := blcnt + 10;
-                                startadr := startadr + i + 1;
-                                i := -1;
-                        end;
-                        inc(i);
-                end;
-                if s <> '' then
-                        writeln(f, inttostr(blcnt) + ' POKE ' + inttostr(startadr) + s);
-
-            closefile(f);
-        end else
-        begin
-            assignfile(f2, paramstr(2));
-                rewrite(f2);
-
-                for wr := 0 to codpos - 1 do
-                begin
-                        b := code[wr];
-                        write(f2, b);
-                end;
-
-            closefile(f2);
-        end;
-end;
 
 
 

@@ -36,6 +36,10 @@ public:
     QString readline(QStringListIterator *linesIter);
 
     void writeln(QString srcName,QString s);
+    void write(QString srcName,QString s);
+
+    void savefile(QString fname);
+    void parsefile(QString fname,QString source);
 
     QMap<QString,QByteArray> *sources;
     QMap<QString,QByteArray> *out;
