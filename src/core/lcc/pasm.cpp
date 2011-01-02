@@ -37,7 +37,7 @@ int Cpasm::mathparse(QByteArray s, int w) {
     return y;
 }
 
-const QString Cpasm::opcode[] = {
+const QString Cpasm::opcode[256] = {
     "LII","LIJ","LIA","LIB","IX",
     "DX","IY","DY","MVW","EXW",
     "MVB","EXB","ADN","SBN","ADW",
@@ -221,8 +221,14 @@ void Cpasm::addsymbol(QString s1, QString s2) {
 }
 
 bool Cpasm::findop(QString l) {
-    opp = opcode->indexOf(l);
-    return (opp>=0);
+    for (int i =0; i< 256;i++) {
+        if (opcode[i] == l) {
+            opp = i;
+            return true;
+        }
+    }
+    opp = -1;
+    return false;
 }
 
 void Cpasm::addcode(unsigned char b) {
@@ -235,12 +241,12 @@ void Cpasm::extractop(QString s) {
     int i;
 
     if (s.isEmpty()) return;
-    s.append(" ");
+    //s.append(" ");
 
     i = 1;
     //    while s[i] in [' ', #9] do inc(i);
     //    delete(s, 1, i - 1);
-    s = s.trimmed();
+    s = s.trimmed().append(" ");
 
     i = 0;
     while (! QString(" \t").contains(s[i])) i++;
@@ -252,7 +258,7 @@ void Cpasm::extractop(QString s) {
 
     i = 1; s.append(" ");
     while ((i < s.size()) && !QString(" \t").contains(s[i])) i++;
-    param1 = s.left(i-1).trimmed();
+    param1 = s.left(i).trimmed();
     s.remove(0,i); s = s.trimmed();
 
     if (!s.isEmpty()) param2 = s; else param2 = "";
@@ -741,7 +747,7 @@ QString Cpasm::readline(QStringListIterator *linesIter) {
 
 void Cpasm::savefile(QString fname) {
     QString s;
-    int b;
+    unsigned char b;
 
     if (fname == "DEC") {
         for (int wr = 0; wr < code.size(); wr++) {
@@ -801,10 +807,10 @@ void Cpasm::parsefile(QString fname,QString source) {
             }
             else if (op == ".DB") {
                 while (params.indexOf(",") >= 0) {
-                    s = params.mid(0,params.indexOf(",") - 1);
+                    s = params.mid(0,params.indexOf(",") );
                     //if s[1] = '''' then addcode(ord(s[2])) else
                     addcode(mathparse(s.toAscii(), 8));
-                    params.remove(0,params.indexOf(","));
+                    params.remove(0,params.indexOf(",")+1);
                 }
                 params = params.trimmed();
                 //if params[1] = '''' then addcode(ord(params[2])) else
@@ -812,10 +818,10 @@ void Cpasm::parsefile(QString fname,QString source) {
             }
             else if (op == ".DW") {
                 while (params.indexOf(",") >= 0) {
-                    s = params.mid(0,params.indexOf(",") - 1);
+                    s = params.mid(0,params.indexOf(","));
                     addcode((mathparse(s.toAscii(), 16) << 8) && 0xFF);
                     addcode(mathparse(s.toAscii(), 16) && 0xFF);
-                    params.remove(9,params.indexOf(","));
+                    params.remove(0,params.indexOf(",")+1);
                 }
                 addcode((mathparse(params.toAscii(), 16) << 8) && 0xFF);
                 addcode(mathparse(params.toAscii(), 16) && 0xFF);
@@ -846,6 +852,7 @@ void Cpasm::parsefile(QString fname,QString source) {
                 }
             }
             else if (op == ".INCLUDE") {
+// INLUDE LIB
 //                if (fileexists(params)) {
 //                    parsefile(params);
 //                } else abort("Include file " + params + " not found!");

@@ -10,7 +10,7 @@ public:
     Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out);
 
     int mathparse(QByteArray s, int w);
-    static const QString opcode[];
+    static const QString opcode[256];
     static const unsigned char nbargu[];
     static QString replace_text(QString text, QString such, QString ers);
 

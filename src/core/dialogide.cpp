@@ -4,6 +4,7 @@
 #include "ide/highlighter.h"
 #include "lcc/lcpp.h"
 #include "lcc/lcc.h"
+#include "lcc/pasm.h"
 
 
 
@@ -49,6 +50,7 @@ void DialogIDE::start(void) {
     QMap<QString,QByteArray> mapSRC;
     QMap<QString,QByteArray> mapPP;
     QMap<QString,QByteArray> mapASM;
+    QMap<QString,QByteArray> mapLM;
     mapSRC["test"] = src.toAscii();
 
     lcpp = new Clcpp(&mapSRC,&mapPP,this->modelCB->currentText());
@@ -65,6 +67,12 @@ void DialogIDE::start(void) {
 
     outputstd->setPlainText(mapASM["output"]);
     outputasm->setPlainText(mapASM["test.asm"]);
+
+    Cpasm * pasm = new Cpasm(&mapASM,&mapLM);
+
+    pasm->parsefile("BAS",mapASM["test.asm"]);
+    pasm->savefile("BAS");
+    outputlm->setPlainText(mapLM["BAS"]);
 }
 
 void DialogIDE::output(QString f,QString s) {

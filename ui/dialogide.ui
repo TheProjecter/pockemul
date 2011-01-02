@@ -58,7 +58,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -97,6 +97,16 @@
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
             <widget class="QPlainTextEdit" name="outputstd"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_5">
+          <attribute name="title">
+           <string>LM</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QPlainTextEdit" name="outputlm"/>
            </item>
           </layout>
          </widget>
