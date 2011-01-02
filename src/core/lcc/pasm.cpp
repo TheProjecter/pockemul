@@ -818,7 +818,7 @@ QString Cpasm::readline(QStringListIterator *linesIter) {
             int i = result.indexOf(':');
             if (i >= 0) {
                 addlabel(result.mid(0, i).trimmed());
-                result.remove(0, i);
+                result.remove(0, i+1);
                 result = result.trimmed();
             }
         }
