@@ -658,7 +658,7 @@ void Clcc::GetToken(int mode, QByteArray *s) {
             }
             if (QByteArray("])").contains(Tok[i]) && (Tok[i+1] != ' '))
             {
-                Tok.insert(i+1,' ');
+                Tok.insert(i,' ');
                 i++;
             }
             if (Ops2List.contains(Tok[i]) && (Tok[i+1] == ' '))
