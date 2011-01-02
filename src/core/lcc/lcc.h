@@ -148,7 +148,7 @@ public:
     QByteArray vardecl();
     bool FindVar(QByteArray t);
     bool FindProc(QByteArray t);
-    void AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc);
+    void AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc);
     void AddProc(QByteArray t, QByteArray c, QByteArray p, int pc, bool hr, bool wd,QList<QByteArray> partype,QList<QByteArray> parname);
 
     QMap<QString,QByteArray> *sources;

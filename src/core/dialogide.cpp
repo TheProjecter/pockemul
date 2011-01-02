@@ -73,6 +73,7 @@ void DialogIDE::start(void) {
     pasm->parsefile("BAS",mapASM["test.asm"]);
     pasm->savefile("BAS");
     outputlm->setPlainText(mapLM["BAS"]);
+    outputstd->appendPlainText("\r\r\r"+mapLM["output"]);
 }
 
 void DialogIDE::output(QString f,QString s) {

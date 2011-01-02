@@ -10,6 +10,7 @@ Cpasm::Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     nlabcnt = 0;
 
     labp = 0;
+    labcnt =0;
     codpos = 0;
     mcase = false;
 
@@ -19,6 +20,7 @@ Cpasm::Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     ccase = 0;
 
     lcnt = 0;
+    result="";
 }
 
 void Cpasm::writeln(QString srcName,QString s) {
@@ -27,15 +29,102 @@ void Cpasm::writeln(QString srcName,QString s) {
 
 void Cpasm::write(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
-    out->insert(srcName,locs+s.toAscii()+"\r");
+    out->insert(srcName,locs+s.toAscii());
 }
 
 int Cpasm::mathparse(QByteArray s, int w) {
+
+    QString sr = s;
+    // replace label
+    if (labcnt > 0)
+        for (int i = 0; i < lab.size(); i++)
+            sr = replace_text(sr, lab[i], QString("%1").arg(labpos[i] + startadr));
+
     parser op;
-    int y = op.evaluate_expression(s.data());
+    int y = op.evaluate_expression(sr.toAscii().data());
 
     return y;
 }
+
+#if 0
+int Cpasm::mathparse2(QString s, int w) {
+int i, p;
+QString c, s2, s3;
+bool lf;
+
+        if (labcnt > 0)
+            for (int i = 0; i< lab.size();i++)
+                s = replace_text(s, lab[i], QString("%1").arg(labpos[i] + startadr));
+        if (s.contains("\'")) {
+                i = 0;
+                while (i < s.length()) {
+                    if (s[i] == "\'") {
+//                        c = inttostr(ord(s[i+1]));
+                        s.remove(i,3);
+                        c.insert(i,s);
+                        i = i - 3 + c.length();
+                    }
+                    i++;
+                }
+            }
+
+        i = 0;
+        lf = false;
+        while (i < s.length()) {
+            if ((s[i] == '0') && ((i < s.length()-2) && (s[i+1].toUpper() == 'X'))) {
+                    i+=2;
+                    while (QString("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(s[i].toUpper())) i++;
+                }
+
+                if upcase(s[i]) in ['_','A'..'Z'] then
+                begin
+                    if (i > 1) and (s[i - 1] = '0') then inc(i)
+                    else begin
+                        s2 := '';
+                        while (i <= length(s)) and (upcase(s[i]) in ['0'..'9','_','A'..'Z']) do
+                        begin
+                                s2 := s2 + s[i];
+                                inc(i);
+                        end;
+                        if (uppercase(s2) <> 'LB') and
+                        (uppercase(s2) <> 'HB') and (uppercase(s2) <> 'NOT') and
+                        (uppercase(s2) <> 'SIN') and (uppercase(s2) <> 'TAN') and
+                        (uppercase(s2) <> 'COS') and (uppercase(s2) <> 'FAK') and
+                        (uppercase(s2) <> 'ABS') and (uppercase(s2) <> 'SQRT') and
+                        (uppercase(s2) <> 'SQR') and (uppercase(s2) <> 'LN') and
+                        (uppercase(s2) <> 'LOG') and (uppercase(s2) <> 'EXP') and
+                        (uppercase(s2) <> 'ARCTAN') and (uppercase(s2) <> 'PI') and
+                        (uppercase(s2) <> 'E') then
+                        begin
+                            if not findlabel(s2) then
+                            begin
+                                dec(codpos);
+                                addnlabel(s2);
+                                inc(codpos);
+                                lf := true;
+                            end else
+                            begin
+                                s3 := inttostr(startadr + labpos[labp]);
+                                s := replace_text(s, s2, s3);
+                                i := i - length(s2) + length(s3);
+                            end;
+                        end;
+                    end;
+                end;
+                inc(i);
+        end;
+        if lf then begin result := 0; exit; end;
+
+    Evaluate(s, w, i, p);
+    result := i;
+        if p <> 0 then
+        begin
+                writeln('Erroneous formula: ' + s);
+                abort('Formula error!');
+        end;
+    }
+
+#endif
 
 const QString Cpasm::opcode[256] = {
     "LII","LIJ","LIA","LIB","IX",
@@ -147,8 +236,9 @@ const unsigned char Cpasm::nbargu [] = {
 
 QString Cpasm::replace_text(QString text, QString such, QString ers) {
 
+    text = " "+text+" ";
     QString regex = "([^_0-9A-Za-z])("+such+")([^_0-9A-Za-z])";
-    return text.replace(QRegExp(regex),"\\1"+ers+"\\3");
+    return text.replace(QRegExp(regex),"\\1"+ers+"\\3").trimmed();
 }
 
 void Cpasm::abort(QString t) {
@@ -157,12 +247,12 @@ void Cpasm::abort(QString t) {
 }
 
 bool Cpasm::findnlabel(QString l) {
-    nlabp = nlab.indexOf(l.toUpper());
+    nlabp = nlab.indexOf(l);
     return (nlabp >=0);
 }
 
 void Cpasm::addnlabel(QString label) {
-    label = label.toUpper();
+    label = label;
     nlab.append(label);
 
     nlabpos.append(codpos);
@@ -179,7 +269,7 @@ void Cpasm::delnlabel(int l) {
 }
 
 bool Cpasm::findlabel(QString label) {
-    labp = lab.indexOf(label.toUpper());
+    labp = lab.indexOf(label);
     return (labp >=0);
 }
 
@@ -187,10 +277,10 @@ void Cpasm::addlabel(QString l) {
     int  tpos;
     bool bup;
 
-    l = l.toUpper();
+    //l = l.toUpper();
 
     if (findlabel(l)) abort("Label " + l + " already defined!");
-    writeln("OUTPUT","SYMBOL: " + l + tr(" - %1").arg(codpos + startadr));
+    writeln("output","SYMBOL: " + l + tr(" - %1").arg(codpos + startadr));
     lab.append(l);
     labpos.append(codpos);
     labcnt++;
@@ -214,9 +304,9 @@ bool Cpasm::findsymbol(QString l) {
 
 void Cpasm::addsymbol(QString s1, QString s2) {
     if (findsymbol(s1)) abort("Symbol " + s1 + " already defined!");
-    sym.append(s1);
+    sym.append(s1);//.toUpper());
     symval.append(s2);
-    writeln("OUTPUT","SYMBOL: " + s1 + " - " + s2);
+    writeln("output","SYMBOL: " + s1 + " - " + s2);
     symcnt++;
 }
 
@@ -232,7 +322,8 @@ bool Cpasm::findop(QString l) {
 }
 
 void Cpasm::addcode(unsigned char b) {
-    code.append(b);
+    if (code.size() == codpos) code.append(b);
+    else code[codpos] = b;
     codpos++;
     if ((codpos + startadr) >= 65536) abort("Code exceeds maximum memory!");
 }
@@ -703,7 +794,7 @@ void Cpasm::doasm(void) {
 QString Cpasm::readline(QStringListIterator *linesIter) {
 
     bool c;
-    QString result;
+   // QString result="";
 
     do {
         do {
@@ -726,7 +817,7 @@ QString Cpasm::readline(QStringListIterator *linesIter) {
         if (!result.isEmpty()) {
             int i = result.indexOf(':');
             if (i >= 0) {
-                addlabel(result.mid(0, i - 1).trimmed());
+                addlabel(result.mid(0, i).trimmed());
                 result.remove(0, i);
                 result = result.trimmed();
             }
@@ -759,12 +850,12 @@ void Cpasm::savefile(QString fname) {
         int blcnt = 10;
         s = "";
         int i = 0;
-
+        QChar fill = '0';
         for (int wr = 0; wr < code.size(); wr++) {
             b = code[wr];
-            s.append(tr(",%1").arg(b));
+            s.append(QString(",&%1").arg(b,2,16,fill).toUpper());
             if (s.length() >= 60) {
-                writeln("BAS", tr("%1 POKE %2").arg(blcnt).arg(startadr) + s);
+                writeln("BAS", QString("%1 POKE &%2").arg(blcnt).arg((int)startadr,2,16,fill).toUpper() + s);
                 s = "";
                 blcnt += 10;
                 startadr += i + 1;
@@ -772,7 +863,7 @@ void Cpasm::savefile(QString fname) {
             }
             i++;
         }
-        if (!s.isEmpty()) writeln("BAS", tr("%1 POKE %2").arg(blcnt).arg(startadr) + s);
+        if (!s.isEmpty()) writeln("BAS", QString("%1 POKE &%2").arg(blcnt).arg(startadr,4,16,fill).toUpper() + s);
     }
     else
     {

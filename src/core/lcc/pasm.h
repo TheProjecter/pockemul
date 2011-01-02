@@ -81,6 +81,8 @@ public:
 
     int ccase,casecnt;
     int lcnt;
+
+    QString result;
 };
 
 #endif // PASM_H

@@ -269,7 +269,8 @@ QByteArray Clcc::vardecl(void) {
         if (t.size()>0) name.append(" " + t);
         l = (level==0 ? false : true);
         //result.append(name);
-        AddVar(name, Typ, xr, p, l);  // Global var definition
+        //if l then varlist[varcount].locproc := currproc;
+        AddVar(name, Typ, xr, p, l,(l?currproc:0));  // Global var definition
     }
     while (Tok.size() >0);
 
@@ -300,7 +301,7 @@ void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, 
 
 //{ Add Variable Declaration }
 
-void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc) {
+void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc) {
 
     QByteArray litem;
     QByteArray s = ExtrWord(&t);
@@ -311,6 +312,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc) {
         v.pointer = pnt;
         v.xram = xr;
         v.local = loc;
+        v.locproc = proc;
         v.typ = typ;
         if (pnt) {
             v.pnttyp = typ;
