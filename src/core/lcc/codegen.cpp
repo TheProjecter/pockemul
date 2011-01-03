@@ -152,7 +152,7 @@ void Clcc::varrarr(QList<unsigned char> value,int adr, int size,QByteArray nm, Q
         }
         else s.append("0");
 
-        if (i < size) s.append(", ");
+        if (i < (size-1)) s.append(", ");
     }
 
     if (typ !="word") writln(outf,tr("\tLII\t%1").arg(size-1)+"\t; Variable "+nm+" = ("+s+")");

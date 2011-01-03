@@ -47,7 +47,7 @@ DisAsmTbl	AsmTbl_sc61860[]={
 		 1,"LDP",			"LDP",							/* 20h */
 		 1,"LDQ",			"LDQ",
 		 1,"LDR",			"LDR",
-		 1,"???   (23)",	"???   (23)",
+         1,"CLRA",          "CLRA",
 		 1,"IXL",			"IXL",
 		 1,"DXL",			"DXL",
 		 1,"IYS",			"IYS",

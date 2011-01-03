@@ -2334,7 +2334,7 @@ int    adr, size, value;
                 writln(f,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
             }
             writln(f,"");
-            writln(f,"MAIN:");
+            writln(f,"main:");
             dummy = proclist[i].ProcCode;
             currproc = i;
             level = 1;
@@ -2373,20 +2373,20 @@ int    adr, size, value;
         s3 = "\tDECA";
 // A REVOIR !!!!!!!!!!!!
 //        for (int i = 1 ;i <= 6; i++) {
-//            s = "\tLIA\t"+QString("%1").arg(i)+"\t; Load constant "+QString("%1").arg(i)+"\r\n\tEXAB\r\n\tLP\t3\r\n\tSBM\t\t; Subtraction\r\n\tEXAB";
+//            s = "\tLIA\t"+QString("%1").arg(i)+"\t; Load constant "+QString("%1").arg(i)+"\r\tEXAB\r\tLP\t3\r\tSBM\t\t; Subtraction\r\tEXAB";
 //            while (asmtext.contains(s)) {
 //                asmtext.remove(asmtext.indexOf(s), s.length());
 //                insert(s2, asmtext, pos(s, asmtext));
-//                s2 = s2 + "\r\n\tDECA";
+//                s2 = s2 + "\r\tDECA";
 //            }
-//         s := #9'LIA'#9+inttostr(i)+#9'; Load constant '+inttostr(i)+#13#10#9'LP\t3'#13#10#9'ADM\t\t; Addition'#13#10#9'EXAB';
-//         while pos(s, asmtext) > 0 do {
-//             delete(asmtext, pos(s, asmtext), length(s));
+//         s = "\tLIA\t"+QString("%1").arg(i)+"\t; Load constant "+QString("%1").arg(i)+"\r\tLP\t3\r\tADM\t\t; Addition\r\tEXAB";
+//         while (asmtext.contains(s)) {
+//             asmtext.remove(asmtext.indexOf(s), s.length());
 //             insert(s3, asmtext, pos(s, asmtext));
-//             s3 := s3 + #13#10#9'INCA';
+//             s3 = s3 + "\r\tINCA";
 //         }
 //     }
-        s = "\tEXAB\r\n\tEXAB\r\n";
+        s = "\tEXAB\r\tEXAB\r";
         while (asmtext.contains(s)) asmtext.remove(asmtext.indexOf(s), s.length());
 
 //        assignfile(f, 'temp.asm");
