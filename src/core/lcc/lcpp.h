@@ -6,7 +6,7 @@
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
 
-#include "stdlib.h"
+#include "cstdlib.h"
 
 class Clcpp:public QObject {
     Q_OBJECT

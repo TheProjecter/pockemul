@@ -14,7 +14,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     this->out = out;
     proccount = 0;
     VarCount = 0;
-    VarPos = 8;
+    VarPos = 16;
     level = 0;
     Look = 0;
 

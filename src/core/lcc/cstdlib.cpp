@@ -1,4 +1,4 @@
-#include "stdlib.h"
+#include "cstdlib.h"
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
