@@ -1,5 +1,5 @@
-#ifndef STDLIB_H
-#define STDLIB_H
+#ifndef CSTDLIB_H
+#define CSTDLIB_H
 
 #include <QtGui>
 
@@ -20,4 +20,4 @@ private:
 
 };
 
-#endif // STDLIB_H
+#endif // CSTDLIB_H
