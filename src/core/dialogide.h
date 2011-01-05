@@ -15,13 +15,21 @@ public:
     DialogIDE( QWidget * parent = 0, Qt::WFlags f = 0 );
 
     void setupEditor(void);
+    void fill_inject(void);
 
     Highlighter *highlighter;
-    Clcpp *lcpp;
-    Clcc *lcc;
+//    Clcpp *lcpp;
+//    Clcc *lcc;
+
+    QMap<QString,QByteArray> mapSRC;
+    QMap<QString,QByteArray> mapPP;
+    QMap<QString,QByteArray> mapASM;
+    QMap<QString,QByteArray> mapLM;
+
 private slots:
     void start(void);
     void output(QString,QString);
+    void inject(int);
 };
 
 

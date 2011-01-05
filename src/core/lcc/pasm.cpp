@@ -867,10 +867,7 @@ void Cpasm::savefile(QString fname) {
     }
     else
     {
-        for (int wr = 0; wr < code.size(); wr++) {
-            b = code[wr];
-//            write("BIN", b);
-        }
+        out->insert("BIN", code);
     }
 }
 

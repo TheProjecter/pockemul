@@ -176,6 +176,10 @@ int MainWindowPockemul::newsession()
                 dialoganalogic->fill_twWatchPoint();
                 dialoganalogic->update();
             }
+            if (dialogide) {
+                dialogide->fill_inject();
+                dialogide->update();
+            }
 		}
 
 	}

@@ -177,6 +177,8 @@ public:
     void DoLoad(void);
     void DoSave(void);
     void DoDoWhile(void);
+    void DoSaveState(void);
+    void DoRestoreState(void);
 
     void ProcCall();
 
@@ -299,6 +301,8 @@ public:
     int pushcnt;
 
     QString inpf,outf;
+
+    QByteArray LState;
 
 
 signals:

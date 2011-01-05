@@ -2005,7 +2005,9 @@ void Clcc::DoWhile(void) {
 
 void Clcc::DoFor(void) {
     QByteArray L1, L2, temp;
+    QByteArray afterop;
 
+    afterop ="";
     InnerLoop = "for";
     Tok.remove(0,5);
     writln(outf,"\t; For loop");
@@ -2022,7 +2024,8 @@ void Clcc::DoFor(void) {
         if (Tok.endsWith(')')) {
             Tok.remove(Tok.length()-1,1);//delete(tok, length(tok), 1);
             Tok = Tok.trimmed();
-            if (!Tok.isEmpty()) dummy = Tok +';'+ dummy;
+            afterop = Tok;
+            //if (!Tok.isEmpty()) dummy = Tok +';'+ dummy;
         }
         else {
             temp = ExtrCust(&Tok, ')');
@@ -2039,6 +2042,8 @@ void Clcc::DoFor(void) {
         }
     }
 
+    Block();
+    dummy = afterop+";";
     Block();
     writln(outf,"\tRJMP\t"+L1);
     PostLabel(L2);
@@ -2092,8 +2097,31 @@ void Clcc::DoDoWhile(void) {
     writln(outf,"\t; End of do..while");
 }
 
+void Clcc::DoSaveState(void) {
+    if (LState.isEmpty()) {
+        LState = NewLabel();
+    }
+    writln(outf,"\t; Save CPU state");
+    writln(outf,"\tLP\t0");
+    writln(outf,"\tLIDP\t"+LState);
+    writln(outf,"\tLII\t0x7F");
+    writln(outf,"\tEXWD");
+    writln(outf,"");
 
+}
 
+void Clcc::DoRestoreState(void) {
+    if (LState.isEmpty()) {
+        QMessageBox::about(mainwindow,"ERROR","Restore with no previous save!!!");
+        return;
+    }
+    writln(outf,"\tLP\t0");
+    writln(outf,"\tLIDP\t"+LState);
+    writln(outf,"\tLII\t0x7F");
+    writln(outf,"\tMVWD");
+    writln(outf,"");
+
+}
 
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Block }
@@ -2127,6 +2155,8 @@ void Clcc::Block(void) {
                   !Alpha.contains(toupper(Tok[3])))    DoDoWhile();
           else if (Tok == "break")              DoBreak();
           else if (Tok.startsWith("return"))    DoReturn();
+          else if (Tok.startsWith("#save"))     DoSaveState();
+          else if (Tok.startsWith("#restore"))  DoRestoreState();
           else if (Tok.startsWith("#asm")) {
                 Tok = ExtrCust(&dummy, 0x0d);
                 while (!Tok.startsWith("#endasm")) {
@@ -2332,6 +2362,13 @@ int    adr, size, value;
                 writln(f,"\tRTN");
                 writln(f,"");
                 writln(f,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
+            }
+            if (!LState.isEmpty()) {
+                // ADD the savestate memory array
+                QString state ="";
+                for (int i=0;i<0x40;i++) state.append("0,");
+                state.chop(1);
+                writln(f,LState+":\t.DW "+state);
             }
             writln(f,"");
             writln(f,"main:");

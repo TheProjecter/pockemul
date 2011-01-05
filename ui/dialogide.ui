@@ -127,6 +127,26 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Inject in the running</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="injectCB"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Origine Address:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="origEdit"/>
+       </item>
+       <item>
         <widget class="QPushButton" name="startButton">
          <property name="text">
           <string>Start</string>
@@ -135,16 +155,6 @@
        </item>
        <item>
         <widget class="QComboBox" name="modelCB">
-         <item>
-          <property name="text">
-           <string>PC-1251</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PC-1280</string>
-          </property>
-         </item>
          <item>
           <property name="text">
            <string>PC-1350</string>
