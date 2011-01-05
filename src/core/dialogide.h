@@ -29,7 +29,7 @@ public:
 private slots:
     void start(void);
     void output(QString,QString);
-    void inject(int);
+    void inject(void);
 };
 
 

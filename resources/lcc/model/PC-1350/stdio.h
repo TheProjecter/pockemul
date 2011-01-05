@@ -8,26 +8,32 @@ byte xram _lcd_dy at 0x7880;
 
 putchar(char c) {
 
-    #asm
-    LIDP    0x788F
-    ORID    0x01
-    CALL    0xE983
-    #endasm
+//    if ( c=='\n') {
+        #asm
+        LIDP    0x788F
+        ORID    0x01
+        CALL    0xE983
+        #endasm
 
-    _lcd_dx++;
-      if (_lcd_dx>23) {
-          _lcd_dx = 0;
-          _lcd_dy++;
-      }
-      if (_lcd_dy >3) {
-          //scroll up he screen
-          #asm
-              LIA     4
-              CALL    0xE23C
-          #endasm
-          _lcd_dy = 3;
-      }
+        _lcd_dx++;
+        if (_lcd_dx>23) {
+            _lcd_dx = 0;
+            _lcd_dy++;
+        }
+//    }
+//    else {
+//        _lcd_dx = 0;
+//        _lcd_dy++;
+//    }
 
+    if (_lcd_dy >3) {
+        //scroll up he screen
+        #asm
+        LIA     4
+        CALL    0xE23C
+        #endasm
+        _lcd_dy = 3;
+    }
 }
 
 char getchar() {

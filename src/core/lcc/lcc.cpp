@@ -763,10 +763,15 @@ void Clcc::Expression(void) {
     Tok.replace("++",QByteArray(1,PP));
     Tok.replace("--",QByteArray(1,MM));
 // A REVOIR !!!!!!!!!!!!!!!!!!
-//    while (i < (Tok.length()-1)) {
-//        if (Tok.at(i) == '\'') { c = copy(Tok, i+1,1)[1]; delete(Tok,i,3); insert(inttostr(ord(c)),Tok,i); i--; }
-//        else i++;
-//    }
+    while (i < (Tok.length()-1)) {
+        if (Tok.at(i) == '\'') {
+            char c = Tok.at(i);
+            Tok.remove(i,3);
+            Tok.insert(i,QByteArray::number(c));
+            i--;
+        }
+        else i++;
+    }
     rd(&Look, &Tok);
 
     SignedTerm();
@@ -1664,7 +1669,8 @@ writln("LOG",";Assignement:"+Tok);
             }
 
             LoadVariable(name);
-            if (! varlist[VarFound].pointer) Error("This var ("+name+") is not a pointer!");
+            if (! varlist[VarFound].pointer)
+                Error("This var ("+name+") is not a pointer!");
             if (varlist[VarFound].xram) {
                 writln(outf,"\tLP\t6\t; YL");
                 writln(outf,"\tEXAM");

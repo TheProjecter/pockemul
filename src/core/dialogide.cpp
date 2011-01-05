@@ -21,8 +21,7 @@ DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
     setupEditor();
 
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
-    connect(injectCB,SIGNAL(activated(int)),this,SLOT(inject(int)));
-    //textBrowser_2->setSource(QUrl("qrc:/POCKEMUL/pockemul/release_notes.html"));
+    connect(installPB,SIGNAL(clicked()),this,SLOT(inject()));
 
     this->setWindowFlags(Qt::Window);
 }
@@ -48,34 +47,31 @@ void DialogIDE::setupEditor()
 
 void DialogIDE::start(void) {
 
-
-
-
     QString src = editor->toPlainText();
 
+    mapSRC.clear();
+    mapPP.clear();
+    mapASM.clear();
+    mapLM.clear();
 
     mapSRC["test"] = src.toAscii();
 
     Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,this->modelCB->currentText());
-
     lcpp->run();
-
     outputpp->setPlainText(mapPP["test"]);
 
-
     Clcc *lcc = new Clcc(&mapPP,&mapASM);
-    connect(lcc,SIGNAL(outputSignal(QString,QString)),this,SLOT(output(QString,QString)));
-
+ //   connect(lcc,SIGNAL(outputSignal(QString,QString)),this,SLOT(output(QString,QString)));
     lcc->run();
 
     outputstd->setPlainText(mapASM["output"]);
     outputasm->setPlainText(mapASM["test.asm"]);
 
     Cpasm * pasm = new Cpasm(&mapASM,&mapLM);
-
     pasm->parsefile("BAS",mapASM["test.asm"]);
     pasm->savefile("BAS");
     pasm->savefile("BIN");
+
     outputlm->setPlainText(mapLM["BAS"]);
     outputstd->appendPlainText("\r\r\r"+mapLM["output"]);
 
@@ -97,8 +93,9 @@ void DialogIDE::fill_inject(void) {
     }
 }
 
-void DialogIDE::inject(int index) {
+void DialogIDE::inject(void) {
 
+    int index = injectCB->currentIndex();
     CpcXXXX *pc = (CpcXXXX *) injectCB->itemData(index).toString().toULongLong();
     bool ok;
     int orig = origEdit->text().toInt(&ok,16);
