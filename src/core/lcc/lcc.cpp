@@ -638,7 +638,7 @@ void Clcc::GetToken(int mode, QByteArray *s) {
 
     //i = 2;
     l = ' ';
-    for (int i = 1 ; i< Tok.size(); )
+    for (int i = 1 ; i< (Tok.size()-1); )
     {
         if (Tok[i] == '\'') {
             if (l == ' ')  l = '\'';
@@ -1872,6 +1872,7 @@ void Clcc::DoIf(void) {
     writln(outf,"\t; If block: Boolean expression");
     writln(outf,"");
     Tok.remove(0,4);//delete(Tok, 1, 4);
+    Tok = Tok.trimmed();
     BoolExpression();
     if (!Tok.isEmpty()) {
         dummy = Tok + ";}" + dummy;
