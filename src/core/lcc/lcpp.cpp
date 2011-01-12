@@ -144,6 +144,8 @@ QString Clcpp::parsefile(QString srcName,QString source) {
             else if (tok.startsWith("#org") ||
                      tok.startsWith("#asm") ||
                      tok.startsWith("#endasm") ||
+                     tok.startsWith("#save") ||
+                     tok.startsWith("#restore") ||
                      tok.startsWith("#nosave")) {
                 writeln( srcName,tok + ";");
             }

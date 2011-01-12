@@ -2112,10 +2112,11 @@ void Clcc::DoSaveState(void) {
     writln(outf,"\t; Save CPU state");
     writln(outf,"\tLP\t0");
     writln(outf,"\tLIDP\t"+LState);
-    writln(outf,"\tLII\t0x7F");
+    writln(outf,"\tLII\t0x5F");
     writln(outf,"\tEXWD");
     writln(outf,"");
-
+    Tok.remove(0,5).prepend("#restore");
+    DoRestoreState();
 }
 
 void Clcc::DoRestoreState(void) {
@@ -2125,9 +2126,10 @@ void Clcc::DoRestoreState(void) {
     }
     writln(outf,"\tLP\t0");
     writln(outf,"\tLIDP\t"+LState);
-    writln(outf,"\tLII\t0x7F");
+    writln(outf,"\tLII\t0x5F");
     writln(outf,"\tMVWD");
     writln(outf,"");
+    Tok.remove(0,8);
 
 }
 
@@ -2371,13 +2373,7 @@ int    adr, size, value;
                 writln(f,"");
                 writln(f,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
             }
-            if (!LState.isEmpty()) {
-                // ADD the savestate memory array
-                QString state ="";
-                for (int i=0;i<0x40;i++) state.append("0,");
-                state.chop(1);
-                writln(f,LState+":\t.DW "+state);
-            }
+
             writln(f,"");
             writln(f,"main:");
             dummy = proclist[i].ProcCode;
@@ -2406,6 +2402,13 @@ int    adr, size, value;
             writln(f,"\tRTN");
             writln(f,"");
         }
+    }
+    if (!LState.isEmpty()) {
+        // ADD the savestate memory array
+        QString state ="";
+        for (int i=0;i<0x40;i++) state.append("0,");
+        state.chop(1);
+        writln(f,LState+":\t.DW "+state);
     }
 
         if (asmcnt > 0)
