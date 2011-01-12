@@ -72,7 +72,7 @@ public:
     bool xram;
     bool pointer;
     bool at;
-    QList<unsigned char> inits;
+    QByteArray inits;//QList<unsigned char> inits;
     int initn;
 
     QByteArray getLabel() {
@@ -215,13 +215,16 @@ public:
     void removelocvars(QByteArray pn);
 
     void varxram(int value, int adr, int size, QByteArray nm);
-    void varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ);
+//    void varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ);
+    void varxarr(QByteArray value,int adr, int size,QByteArray nm, QByteArray typ);
     void load_x(QByteArray s);
     void load_y(QByteArray s);
     void varcode(int value, int adr, int size,QByteArray nm);
-    void varcarr(QList<unsigned char> value, int adr, int size,QByteArray nm, QByteArray typ);
+//    void varcarr(QList<unsigned char> value, int adr, int size,QByteArray nm, QByteArray typ);
+    void varcarr(QByteArray value, int adr, int size,QByteArray nm, QByteArray typ);
     void varreg(int value, int adr, int size, QByteArray nm);
-    void varrarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ);
+//    void varrarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ);
+    void varrarr(QByteArray value,int adr, int size,QByteArray nm, QByteArray typ);
 
     void CompGreater(void);
     void CompSmaller(void);

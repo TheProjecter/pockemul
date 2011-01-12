@@ -151,7 +151,7 @@ bool Clcc::IsVarAtAdr(int adr,int size) {
 void Clcc::printvarlist(QString out) {
     int  initn, adr, size, lproc;
     QByteArray s, name, typ;
-    QList<unsigned char> inits;
+    QByteArray inits;//QList<unsigned char> inits;
     bool xr, arr, loc;
 
     writeln(out,"");
@@ -181,9 +181,9 @@ void Clcc::printvarlist(QString out) {
             write(out,", INIT=");
             if (arr) {
                 if (typ == "char") {
-                    QString s = "";
-                    for (int i =0;i<inits.size();i++) s.append(inits[i]);
-                    writeln(out,'"'+s+'"');
+//                    QString s = "";
+//                    for (int i =0;i<inits.size();i++) s.append(inits[i]);
+                    writeln(out,'"'+inits+'"');
                 }
                 else if (typ == "byte") {
                     for (int c = 0; c<size;c++) {
@@ -762,10 +762,11 @@ void Clcc::Expression(void) {
     Tok.replace("<<","$").replace(">>","§");
     Tok.replace("++",QByteArray(1,PP));
     Tok.replace("--",QByteArray(1,MM));
+    Tok.replace("\\n","\n").replace("\\r","\r");
 // A REVOIR !!!!!!!!!!!!!!!!!!
     while (i < (Tok.length()-1)) {
         if (Tok.at(i) == '\'') {
-            char c = Tok.at(i);
+            char c = Tok.at(i+1);
             Tok.remove(i,3);
             Tok.insert(i,QByteArray::number(c));
             i--;

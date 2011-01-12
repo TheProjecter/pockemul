@@ -53,7 +53,8 @@ void Clcc::varxram(int value, int adr, int size, QByteArray nm) {
 //{--------------------------------------------------------------}
 //{ Generates init code for an array in xram }
 
-void Clcc::varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ) {
+//void Clcc::varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ) {
+void Clcc::varxarr(QByteArray value,int adr, int size,QByteArray nm, QByteArray typ) {
     //var i: integer;
     //    v, c: integer;
     //    s: string;
@@ -67,7 +68,7 @@ void Clcc::varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, Q
     s = "";
     for (int i = 0 ; i< size;i++) {
         if (i < value.length()) {
-            if (typ !="word") s.append(tr("%1").arg(value[i]));
+            if (typ !="word") s.append(tr("%1").arg((unsigned char)value.at(i)));
             else s.append(tr("%1").arg(256*value[i*2]+value[i*2+1]));
         }
         else s.append("0");
@@ -140,14 +141,17 @@ void Clcc::varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, Q
 //{--------------------------------------------------------------}
 //{ Generates init code for an array variable in a register }
 
-void Clcc::varrarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ) {
+//void Clcc::varrarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ) {
+void Clcc::varrarr(QByteArray value,int adr, int size,QByteArray nm, QByteArray typ) {
     QByteArray s;
 
     if (size == 0) return;
     s="";
+    // TODO : convert \n \t \r to corresponding char value
+    value.replace("\\n","\n").replace("\\r","\r");
     for (int i=0 ; i< size; i++) {
         if (i <= value.size()) {
-            if (typ !="word") s.append(tr("%1").arg(value[i]));
+            if (typ !="word") s.append(tr("%1").arg((unsigned char)value.at(i)));
             else s.append(tr("%1").arg(256*value[i*2]+value[i*2+1]));
         }
         else s.append("0");
@@ -207,15 +211,15 @@ void Clcc::varcode(int value, int adr, int size,QByteArray nm) {
 
 //{--------------------------------------------------------------}
 //{ Generates init code for an array in code space }
-
-void Clcc::varcarr(QList<unsigned char> value, int adr, int size,QByteArray nm, QByteArray typ) {
+//void Clcc::varcarr(QList<unsigned char> value, int adr, int size,QByteArray nm, QByteArray typ) {
+void Clcc::varcarr(QByteArray value, int adr, int size,QByteArray nm, QByteArray typ) {
     QByteArray s;
     if (size == 0) return;
 
     s ="";
     for (int i = 0; i< size;i++) {
         if (i < value.size()) {
-            if (typ !="word") s.append(tr("%1").arg(value[i]));
+            if (typ !="word") s.append(tr("%1").arg((unsigned char)value.at(i)));
             else s.append(tr("%1").arg(256*value[i*2]+value[i*2+1]));
         }
         else s.append("0");

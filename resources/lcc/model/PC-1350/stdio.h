@@ -8,7 +8,7 @@ byte xram _lcd_dy at 0x7880;
 
 putchar(char c) {
 
-//    if ( c=='\n') {
+    if ( c!='\n') {
         #asm
         LIDP    0x788F
         ORID    0x01
@@ -20,11 +20,11 @@ putchar(char c) {
             _lcd_dx = 0;
             _lcd_dy++;
         }
-//    }
-//    else {
-//        _lcd_dx = 0;
-//        _lcd_dy++;
-//    }
+    }
+    else {
+        _lcd_dx = 0;
+        _lcd_dy++;
+    }
 
     if (_lcd_dy >3) {
         //scroll up he screen
