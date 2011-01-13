@@ -285,7 +285,7 @@ bool Cpc1350::run(void)
 
 bool Cpc1350::Chk_Adr(DWORD *d,DWORD data)
 {
-if ( (*d>=0x7880) && (*d<=0x7881) )	{
+if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",*d,data,data);
 }
 
@@ -306,7 +306,7 @@ if ( (*d>=0x7880) && (*d<=0x7881) )	{
 }
 
 bool Cpc1350::Chk_Adr_R(DWORD *d,DWORD data) {
-    if ( (*d>=0x7880) && (*d<=0x7881) )	{
+if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]=%02x (%c)\n",*d,mem[*d],mem[*d]);
     }
     return(1);

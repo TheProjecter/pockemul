@@ -1,3 +1,4 @@
+#include "parser/parser.h"
 #include "lcc.h"
 
 
@@ -7,7 +8,7 @@
 
 
 
-#include "parser.h"
+
 
 int Clcc::mathparse(QByteArray s, int w) {
 //var i, p: integer;
@@ -20,8 +21,8 @@ int Clcc::mathparse(QByteArray s, int w) {
     int result=0;
 
 
-    parser op;
-    int y = op.evaluate_expression(s.data());
+    Parser op(s.data());
+    int y = op.Evaluate();
 
     return y;
 

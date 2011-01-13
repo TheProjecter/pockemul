@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>lcc/model/PC-1350/stdio.h</file>
+        <file>lcc/model/PC-1350/graph.h</file>
     </qresource>
 </RCC>

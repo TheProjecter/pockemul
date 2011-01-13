@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef PARSER2_H
+#define PARSER2_H
 
 enum en_type
 {
@@ -8,7 +8,7 @@ enum en_type
     NUMBER
 };
 
-class parser
+class parser2
 {
     char *expression_ptr; /* Ptr points to expression */
     char token[50];
@@ -24,7 +24,7 @@ class parser
     void serror(int error);
     int is_delim(char c);
 public:
-    parser();
+    parser2();
     double evaluate_expression(char *expression);
 };
 

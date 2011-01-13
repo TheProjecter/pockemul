@@ -1,7 +1,7 @@
 #include <QtGui>
 
 
-#include "parser.h"
+#include "parser/parser.h"
 #include "pasm.h"
 Cpasm::Cpasm(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     this->sources = sources;
@@ -40,8 +40,9 @@ int Cpasm::mathparse(QByteArray s, int w) {
         for (int i = 0; i < lab.size(); i++)
             sr = replace_text(sr, lab[i], QString("%1").arg(labpos[i] + startadr));
 
-    parser op;
-    int y = op.evaluate_expression(sr.toAscii().data());
+    Parser op(sr.toAscii().data());
+//    int y = op.evevaluate_expression(sr.toAscii().data());
+    int y = op.Evaluate();
 
     return y;
 }

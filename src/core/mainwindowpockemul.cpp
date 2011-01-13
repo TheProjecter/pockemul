@@ -44,7 +44,8 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 	setFocusPolicy(Qt::StrongFocus);
 	dialoglog = 0;
 	dialoganalogic = 0;
-	zoom = 100;
+    dialogide = 0;
+    zoom = 100;
 
 	startKeyDrag = false;
 	startPosDrag = false;

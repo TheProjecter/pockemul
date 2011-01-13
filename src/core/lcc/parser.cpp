@@ -8,13 +8,13 @@
 
 /* parser constructor */
 
-parser::parser()
+parser2::parser2()
 {
     expression_ptr = NULL;
 }
 
 
-double parser::evaluate_expression(char *expression)
+double parser2::evaluate_expression(char *expression)
 {
     double result;
 
@@ -55,7 +55,7 @@ double parser::evaluate_expression(char *expression)
     return result;
 }
 
-void parser::evaluate_expression2(double &result)
+void parser2::evaluate_expression2(double &result)
 {
     register char op;
     double temp;
@@ -76,7 +76,7 @@ void parser::evaluate_expression2(double &result)
     }
 }
 
-void parser::evaluate_expression3(double &result)
+void parser2::evaluate_expression3(double &result)
 {
     register char op;
     double temp;
@@ -100,7 +100,7 @@ void parser::evaluate_expression3(double &result)
     }
 }
 
-void parser::evaluate_expression4(double &result)
+void parser2::evaluate_expression4(double &result)
 {
     double temp, ex;
     register int t;
@@ -119,7 +119,7 @@ void parser::evaluate_expression4(double &result)
     }
 }
 
-void parser::evaluate_expression5(double &result)
+void parser2::evaluate_expression5(double &result)
 {
     register char op;
     op = 0;
@@ -132,7 +132,7 @@ void parser::evaluate_expression5(double &result)
     if(op=='-') result = -result;
 }
 
-void parser::evaluate_expression6(double &result)
+void parser2::evaluate_expression6(double &result)
 {
     if((*token == '('))
     {
@@ -146,7 +146,7 @@ void parser::evaluate_expression6(double &result)
 }
 
 
-void parser::atom(double &result)
+void parser2::atom(double &result)
 {
     switch(token_type)
     {
@@ -161,7 +161,7 @@ void parser::atom(double &result)
 
 /* Syntax error Display */
 
-void parser::serror(int error)
+void parser2::serror(int error)
 {
     static char *e[]= {
         "Syntax Error",
@@ -171,7 +171,7 @@ void parser::serror(int error)
     //cout << e[error] << endl;
 }
 
-void parser::get_token()
+void parser2::get_token()
 {
     register char *temp;
     token_type = 0;
@@ -198,7 +198,7 @@ void parser::get_token()
     *temp = '\0';
 }
 
-int parser::is_delim(char c)
+int parser2::is_delim(char c)
 {
     if(strchr(" +-/*%^=()", c) || c==9 || c=='\r' || c==0)
         return 1;

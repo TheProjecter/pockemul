@@ -1061,8 +1061,8 @@ void Clcc::StoreVariable(QByteArray name) {
                 }
                 else  {
                     writln(outf,"\tLIDP\t"+ var.getLabel()+"+1");
-                    writln(outf,"\tSTD\t\t; HB");
                 }
+                writln(outf,"\tSTD\t\t; HB");
             }
         }
     }
