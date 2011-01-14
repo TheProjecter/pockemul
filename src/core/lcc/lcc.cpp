@@ -2406,7 +2406,7 @@ int    adr, size, value;
     if (!LState.isEmpty()) {
         // ADD the savestate memory array
         QString state ="";
-        for (int i=0;i<0x40;i++) state.append("0,");
+        for (int i=0;i<0x30;i++) state.append("0,");
         state.chop(1);
         writln(f,LState+":\t.DW "+state);
     }

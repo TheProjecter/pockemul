@@ -37,6 +37,7 @@ void DialogIDE::setupEditor()
 
 
     editor->setFont(font);
+    editor->setTabStopWidth(40);
 
     highlighter = new Highlighter(editor->document());
 
