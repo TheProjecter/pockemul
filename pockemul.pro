@@ -125,8 +125,6 @@ HEADERS += src/core/Connect.h \
     src/core/dialogide.h \
     src/core/ide/highlighter.h \
     src/core/lcc/lcpp.h \
-    src/core/mathexpr/mathexpr.h \
-    src/core/expr/expression.h \
     src/core/lcc/codegen.h \
     src/core/lcc/pasm.h \
     resources/lcc/model/PC-1350/stdio.h \
@@ -139,9 +137,9 @@ INCLUDEPATH += . \
     src/cpu \
     src/machine
 mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
-win32:INCLUDEPATH += C:\Users\Remy\dev\fmodapi375win/api/inc
+win32:INCLUDEPATH += ../fmodapi375win/api/inc
 LANGUAGE += C++
-win32:LIBS += C:\Users\Remy\dev\fmodapi375win/api/lib/libfmod.a
+win32:LIBS += ../fmodapi375win/api/lib/libfmod.a
 mac:LIBS += /Users/svp/Library/fmodapi375mac/api/lib/libfmodx86.a
 LICENSE += GPL
 MOC_DIR += build/moc
@@ -271,7 +269,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/dialogide.cpp \
     src/core/ide/highlighter.cpp \
     src/core/lcc/lcpp.cpp \
-    src/core/mathexpr/mathexpr.cpp \
     src/core/lcc/codegen.cpp \
     src/core/lcc/pasm.cpp \
     src/core/lcc/cstdlib.cpp \
