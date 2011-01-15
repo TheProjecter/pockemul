@@ -137,9 +137,9 @@ INCLUDEPATH += . \
     src/cpu \
     src/machine
 mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
-win32:INCLUDEPATH += ../fmodapi375win/api/inc
+win32:INCLUDEPATH += ../../fmodapi375win/api/inc
 LANGUAGE += C++
-win32:LIBS += ../fmodapi375win/api/lib/libfmod.a
+win32:LIBS += ../../fmodapi375win/api/lib/libfmod.a
 mac:LIBS += /Users/svp/Library/fmodapi375mac/api/lib/libfmodx86.a
 LICENSE += GPL
 MOC_DIR += build/moc
