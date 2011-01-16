@@ -43,9 +43,10 @@ void DialogIDE::setupEditor()
 
     highlighter = new Highlighter(editor->document());
 
-    QFile file("mainwindow.h");
-    if (file.open(QFile::ReadOnly | QFile::Text))
-        editor->setPlainText(file.readAll());
+//    QFile file("mainwindow.h");
+//    if (file.open(QFile::ReadOnly | QFile::Text))
+//        editor->setPlainText(file.readAll());
+    refreshFileList();
 }
 
 void DialogIDE::start(void) {
@@ -112,4 +113,17 @@ void DialogIDE::inject(void) {
 
 void DialogIDE::save(void) {
 
+}
+
+void DialogIDE::refreshFileList(void) {
+    QDir dir;
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QFileInfoList list = dir.entryInfoList(QStringList("*.c"));
+    //QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        listWidget->addItem(fileInfo.fileName());
+    }
 }

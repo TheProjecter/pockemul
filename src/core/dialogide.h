@@ -16,6 +16,7 @@ public:
 
     void setupEditor(void);
     void fill_inject(void);
+    void refreshFileList(void);
 
     Highlighter *highlighter;
 //    Clcpp *lcpp;
