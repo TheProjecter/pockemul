@@ -2051,8 +2051,10 @@ void Clcc::DoFor(void) {
     }
 
     Block();
+    QByteArray savedummy = dummy;
     dummy = afterop+";";
     Block();
+    dummy = savedummy;
     writln(outf,"\tRJMP\t"+L1);
     PostLabel(L2);
     writln(outf,"\t; End of for");
@@ -2182,7 +2184,7 @@ void Clcc::Block(void) {
         dummy = dummy.trimmed();
     }
     //until (trim(dummy) = '') or (trim(dummy)[1] = '}');
-    while (! dummy.trimmed().isEmpty() && !dummy.trimmed().startsWith("}"));
+    while (!( dummy.trimmed().isEmpty() || dummy.trimmed().startsWith("}")));
     if (!dummy.isEmpty()) rd(&Look, &dummy);
     dummy = dummy.trimmed();
 }
