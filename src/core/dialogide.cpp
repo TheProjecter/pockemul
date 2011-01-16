@@ -9,6 +9,7 @@
 #include "pobject.h"
 #include "pcxxxx.h"
 
+
 extern QList<CPObject *> listpPObject;
 
 DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
@@ -22,6 +23,7 @@ DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
     connect(installPB,SIGNAL(clicked()),this,SLOT(inject()));
+    connect(savePB,SIGNAL(clicked()),this,SLOT(save()));
 
     this->setWindowFlags(Qt::Window);
 }
@@ -105,5 +107,9 @@ void DialogIDE::inject(void) {
     in.readRawData ((char *) &pc->mem[orig],
                     mapLM["BIN"].size() );
     QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(orig));
+
+}
+
+void DialogIDE::save(void) {
 
 }

@@ -30,6 +30,7 @@ private slots:
     void start(void);
     void output(QString,QString);
     void inject(void);
+    void save(void);
 };
 
 
