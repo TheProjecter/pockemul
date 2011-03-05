@@ -752,6 +752,10 @@ INLINE bool Cpc1600::lh5810_read(void)
     pPC->pCPU->imem[0x1E] = pLH5810->GetReg(LH5810_OPA);
     pPC->pCPU->imem[0x1F] = pLH5810->GetReg(LH5810_OPB);
 
+//    if (pPC->pCPU->imem[0x1F] == 0x20) {
+//        pPC->pCPU->imem[0x1F] = 0x20;
+//    }
+
     return(1);
 }
 

@@ -13,13 +13,13 @@ putchar(char c) {
     if ( c!='\n') {
         load c;
 
-//        #save
+        #save
         #asm
         LIDP    0x788F
         ORID    0x01
         CALL    0xE983
         #endasm
-//        #restore
+        #restore
         _lcd_dx++;
         if (_lcd_dx>23) {
             _lcd_dx = 0;

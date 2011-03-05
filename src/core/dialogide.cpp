@@ -24,6 +24,7 @@ DialogIDE::DialogIDE( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
     connect(installPB,SIGNAL(clicked()),this,SLOT(inject()));
     connect(savePB,SIGNAL(clicked()),this,SLOT(save()));
+    connect(listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(load(QListWidgetItem*)));
 
     this->setWindowFlags(Qt::Window);
 }
@@ -125,5 +126,15 @@ void DialogIDE::refreshFileList(void) {
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         listWidget->addItem(fileInfo.fileName());
+    }
+}
+
+void DialogIDE::load(QListWidgetItem* id) {
+    QFile file(id->text());
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    while (!file.atEnd()) {
+        editor->setPlainText(file.readAll());
     }
 }

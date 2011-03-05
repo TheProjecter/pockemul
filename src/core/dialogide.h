@@ -32,6 +32,7 @@ private slots:
     void output(QString,QString);
     void inject(void);
     void save(void);
+    void load(QListWidgetItem* id);
 };
 
 
