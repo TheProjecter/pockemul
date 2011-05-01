@@ -12,7 +12,7 @@ Cpotar::Cpotar(CPObject *parent )	: CPObject(this)
 {							//[constructor]
 
 
-    pADCONNECTOR = new Cconnector(this,8,"Digital connector 2 pins",true); publish(pADCONNECTOR);
+    pADCONNECTOR = new Cconnector(this,8,0,"Digital connector 2 pins",true,QPoint(20,0)); publish(pADCONNECTOR);
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/jack.png";
 

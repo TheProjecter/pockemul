@@ -8,6 +8,7 @@
 #include <QImage>
 #include <QMenu>
 #include <QAudioOutput>
+#include <QXmlStreamWriter>
 
 #include "common.h"
 
@@ -55,10 +56,11 @@ public:
     QString getcfgfname() { return cfgfname; }
     void	setcfgfname(QString s) { cfgfname = s; }
 	
-	int	posx();
-	int posy();
-	void setPosX(int);
-	void setPosY(int);
+    void serialize(QXmlStreamWriter *,int id);
+        float	posx();
+        float posy();
+        void setPosX(float);
+        void setPosY(float);
 	void Move(QPoint);
 	QPoint pos();
 	QImage* FinalImage;
@@ -100,6 +102,7 @@ public:
 	int		KeyMapLenght;
 	BYTE	LastKey;
     int     zoom;
+    bool	Front;
 	
 
 	virtual int initsound();
@@ -143,7 +146,7 @@ public:
 	void focusInEvent ( QFocusEvent * event ); 
 	void focusOutEvent ( QFocusEvent * event ); 
 	
-private slots:
+public slots:
     void audioStateChanged(QAudio::State state);
 	void contextMenuEvent ( QContextMenuEvent * event );
 	void slotExit();
@@ -162,7 +165,7 @@ private slots:
 
 	
 private:
-	int		PosX,PosY;
+        float		PosX,PosY;
 	int		Width,Height;
 
 	bool	startKeyDrag;
@@ -174,7 +177,7 @@ private:
 	QString Name;
 	QString cfgfname;				// configration file name
 	
-	bool	Front;
+
 	int		iChanIndex;
 	qint64	fillSoundBuffer_old_state;	
     QByteArray audioBuff;

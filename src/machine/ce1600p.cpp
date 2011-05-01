@@ -103,19 +103,19 @@ bool Cce1600p::run(void)
     if (pKEYB->LastKey==K_PRINT)
     {
         Print_Mode = ! Print_Mode;
-        PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],4,true);
+        if (pTIMER->pPC) PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],4,true);
         pKEYB->LastKey = 0;
     }
 
     ////////////////////////////////////////////////////////////////////
     //	PAPER FEED
     //////////////////////////////////////////////////////////////////
-    PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],1,(pKEYB->LastKey==K_PFEED));
+    if (pTIMER->pPC) PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],1,(pKEYB->LastKey==K_PFEED));
 
     ////////////////////////////////////////////////////////////////////
     //	REVERSE PAPER FEED
     //////////////////////////////////////////////////////////////////
-    PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],2,(pKEYB->LastKey==K_PBFEED));
+    if (pTIMER->pPC) PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],2,(pKEYB->LastKey==K_PBFEED));
 
 
     ////////////////////////////////////////////////////////////////////
@@ -218,7 +218,7 @@ bool Cce1600p::run(void)
 
 //    pTIMER->pPC->pCPU->imem[0x81] |= (Pen_X <= 0 ? 0x20 : 0x00);
     // Left position detection
-    PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],5,Pen_X <= 0);
+    if (pTIMER->pPC) PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],5,Pen_X <= 0);
 
     //---------------------------------------------------
     // Draw printer

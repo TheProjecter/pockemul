@@ -65,7 +65,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 	pCPU		= new CSC61860(this);
 	pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector11(this);		publish(pCONNECTOR);
-    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",false,QPoint(0,90));		publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(0,90));		publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"pc1250.map",scandef_pc1250);
 
 }

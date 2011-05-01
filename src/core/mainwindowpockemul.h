@@ -40,7 +40,9 @@ public:
     void slotUnlink(CPObject *);
 	
 	qint64	rawclk;
-
+        CPObject * LoadPocket(int result);
+        bool saveAll;
+float	zoom;
     //Audio audio;
 
 private slots:
@@ -50,9 +52,11 @@ private slots:
     void Analogic();
 	void CheckUpdates();
     void Minimize_All();
+    void resetZoom();
     void SelectPocket(QAction *);
 	int  newsession();
 	void opensession();
+        void saveassession();
 	void updateTimer();
 	void updateFrameTimer();
 	void updateTimeTimer();
@@ -71,6 +75,7 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent( QMouseEvent * event );
+        void wheelEvent(QWheelEvent *event);
 	void resizeEvent(QResizeEvent *);
     void closeEvent(QCloseEvent *event);
 
@@ -83,6 +88,7 @@ private:
 	QPoint KeyDrag;
 	bool startPosDrag;
 	QPoint PosDrag;
-	int	zoom;
+
+
 };
 #endif

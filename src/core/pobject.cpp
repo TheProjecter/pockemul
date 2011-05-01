@@ -28,7 +28,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		PosY	= 0;
 		Pc_DX	= 0;
 		Pc_DY	= 0;
-        zoom = 100;
+                zoom = 100;
 		pKEYB	= 0;
 		pTIMER	= 0;
 		pLCDC	= 0;
@@ -77,22 +77,42 @@ CPObject::~CPObject()
 	//delete extensionArray[4];
 }
 
+void CPObject::serialize(QXmlStreamWriter *xml,int id) {
+    xml->writeStartElement("object");
+    xml->writeAttribute("name", getName());
+    xml->writeAttribute("id", QString("%1").arg(id));
+    xml->writeAttribute("front",Front?"true":"false");
+    xml->writeAttribute("power",Power?"true":"false");
+        xml->writeStartElement("position");
+        xml->writeAttribute("x", QString("%1").arg(PosX));
+        xml->writeAttribute("y", QString("%1").arg(PosY));
+        xml->writeEndElement(); // position
+    xml->writeEndElement(); // object
 
-int	CPObject::posx()
+    // if power on and (CpcXXXX) class then save session
+    if (Power &&  dynamic_cast<CpcXXXX *>(this) )
+    {
+        ((CpcXXXX *)this)->Initial_Session_Save();
+    }
+}
+
+float	CPObject::posx()
 {
 	return PosX;
 }
-int CPObject::posy()
+float CPObject::posy()
 {
 	return PosY;
 }
-void CPObject::setPosX(int val)
+void CPObject::setPosX(float val)
 {
 	PosX = val;
+        QWidget::move(QPoint(PosX,PosY));
 }
-void CPObject::setPosY(int val)
+void CPObject::setPosY(float val)
 {
 	PosY = val;
+        QWidget::move(QPoint(PosX,PosY));
 }
 void CPObject::Move(QPoint p)
 {
@@ -342,7 +362,11 @@ void CPObject::SwitchFrontBack(QPoint point) {
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
 
-    if (event->button() != Qt::LeftButton) return;
+    if (event->button() != Qt::LeftButton) {
+        event->ignore();
+        return;
+    }
+
 	if (event->modifiers() == Qt::MetaModifier) return;
 		
 	QPoint pts(event->x() , event->y());
@@ -476,7 +500,7 @@ QList<Cconnector *> CPObject::nearConnectors(Cconnector *refConnector,qint8 snap
             Cconnector *c = ConnList.at(i);
             // ATTENTION : POSITIONN DE L'OBJECT + SNAP !!!!!!
             CPObject *p = refConnector->Parent;
-            qreal range = QLineF(p->pos()+refConnector->getSnap(),this->pos()+c->getSnap()).length();
+            qreal range = QLineF(p->pos()+refConnector->getSnap()*mainwindow->zoom/100,this->pos()+c->getSnap()*mainwindow->zoom/100).length();
             if (range < snaprange) {
                 retList.append(ConnList.at(i));
             }
@@ -511,7 +535,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                             {
                             case 0: // The user clicked the Yes button or pressed Enter
                             // Connect
-                                Move(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap() - pos() - nearList.at(r)->getSnap());
+                                Move(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
                                 mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
                                 mainwindow->pdirectLink->BConnList.append(nearList.at(r));
 

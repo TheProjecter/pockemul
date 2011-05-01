@@ -655,13 +655,10 @@ void Clcdc_pc1260::disp_symb(void)
 	
 void Clcdc_pc1260::disp(void)
 {
-
-	
 	BYTE b,data;
 	int x,y;
 	int ind;
 	WORD adr;
-
 
 	Refresh = FALSE;
 
@@ -677,7 +674,7 @@ void Clcdc_pc1260::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-			x =(ind*2) + (ind/5);			// +1 every 5 cols
+                        x =(ind*2) + (ind/5)*3;			// +1 every 5 cols
 			y = 0;
 			
 			for (b=0; b<7;b++)
@@ -700,7 +697,7 @@ void Clcdc_pc1260::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-			x =(ind*2) + (ind/5);			// +1 every 5 cols
+                        x =(ind*2) + (ind/5)*3;			// +1 every 5 cols
 			y = 15;
 	
 			for (b=0; b<7;b++)
@@ -723,7 +720,7 @@ void Clcdc_pc1260::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-			x = 132 + (ind*2) + (ind/5);			// +1 every 5 cols
+                        x = (12*2*5+3*12) + (ind*2) + (ind/5)*3;			// +1 every 5 cols
 			y = 0;
 			
 			for (b=0; b<7;b++)
@@ -746,7 +743,7 @@ void Clcdc_pc1260::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-			x = 132 + (ind*2) + (ind/5);			// +1 every 5 cols
+                        x = (12*2*5+3*12) + (ind*2) + (ind/5)*3;			// +1 every 5 cols
 			y = 15;
 	
 			for (b=0; b<7;b++)
@@ -759,7 +756,7 @@ void Clcdc_pc1260::disp(void)
 			}
 			DirtyBuf[adr-0x2000] = 0;				
 		}
-	}
+        }
 #endif
 	redraw = 0;
 	painter.end();

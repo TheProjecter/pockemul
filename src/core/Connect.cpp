@@ -7,10 +7,11 @@
 #include "pcxxxx.h"
 #include "Log.h"
 
-Cconnector::Cconnector(CPObject *parent , int nb, QString desc, bool newGender,QPoint snap)
+Cconnector::Cconnector(CPObject *parent , int nb, int id,QString desc, bool newGender,QPoint snap)
 {
 	Parent	= parent;
 	nbpins = nb;
+        Id = id;
 	gender = newGender;
 	Desc = desc;
 	values = 0;

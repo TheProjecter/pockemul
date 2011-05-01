@@ -39,9 +39,12 @@ BYTE Ckeyb::KeyClick(QPoint pts)
 {
 	// Keys iterator 
 	QList<CKey>::iterator i;
- 	for (i = Keys.begin(); i != Keys.end(); ++i)
- 	{
-		if ( i->Rect.contains(pts) ) return i->ScanCode;
+// 	for (i = Keys.begin(); i != Keys.end(); ++i)
+            for (int i=0;i<Keys.size();i++)
+        {
+                QRect r = Keys.at(i).Rect;
+                r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+height())*mainwindow->zoom/100);
+                if ( r.contains(pts) ) return Keys.at(i).ScanCode;
 	}
 	return(0);
 }

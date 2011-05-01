@@ -38,16 +38,16 @@ public:
 
 		Lcd_X		= 79;
 		Lcd_Y		= 37;
-		Lcd_DX		= 264;
+                Lcd_DX		= 312;
 		Lcd_DY		= 30;
-		Lcd_ratio_X	= 1.18;
-		Lcd_ratio_Y	= 1.18;
+                Lcd_ratio_X	= 1;//1.18;
+                Lcd_ratio_Y	= 1;//1.18;
 
 		Lcd_Symb_X	= 53;
 		Lcd_Symb_Y	= 40;
 		Lcd_Symb_DX	= 288;
 		Lcd_Symb_DY	= 33;
-        Lcd_Symb_ratio_X	= 1.18;
+        Lcd_Symb_ratio_X	= 1;//1.18;
 
 		delete pLCDC;	pLCDC = new Clcdc_pc1260(this);
 

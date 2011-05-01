@@ -148,7 +148,7 @@ bool CpcXXXX::InitDisplay(void)
 
 void CpcXXXX::TurnOFF(void)
 {
-    if (QMessageBox::question(mainwindow, "PockEmul",
+    if (mainwindow->saveAll || QMessageBox::question(mainwindow, "PockEmul",
                               "Do you want to save the session ?",
                               "Yes",
                               "No", 0, 0, 1) == 0) {

@@ -21,8 +21,8 @@ public:
 	{							//[constructor]
 		
 		
-        pCONNECTOR_A = new Cconnector(this,11,"11 pins Connector A",false); publish(pCONNECTOR_A);
-        pCONNECTOR_B = new Cconnector(this,11,"11 pins Connector B",false); publish(pCONNECTOR_B);
+        pCONNECTOR_A = new Cconnector(this,11,0,"11 pins Connector A",false); publish(pCONNECTOR_A);
+        pCONNECTOR_B = new Cconnector(this,11,1,"11 pins Connector B",false); publish(pCONNECTOR_B);
 		setfrequency( 0);
 		BackGroundFname	= ":/EXT/ext/cable.png";
 		

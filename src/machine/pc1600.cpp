@@ -87,9 +87,9 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     pLH5810		= new CLH5810_PC1600(this);
 
     pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,60,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
-    pSIOCONNECTOR=new Cconnector(this,15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
-    pADCONNECTOR= new Cconnector(this,8,"Digital connector 2 pins",false);	publish(pADCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
+    pSIOCONNECTOR=new Cconnector(this,15,1,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
+    pADCONNECTOR= new Cconnector(this,8,2,"Digital connector 2 pins",false,QPoint(679,20));	publish(pADCONNECTOR);
 
 
     pKEYB		= new Ckeyb(this,"pc1600.map",scandef_pc1600);
@@ -281,6 +281,7 @@ bool Cpc1600::LoadConfig(QFile *file)
     pHD61102_1->Load_Internal(file);
     pHD61102_2->Load_Internal(file);
     pLU57813P->Load_Internal(file);
+    pTC8576P->Load_Internal(file);
 
 
     //--	fread(&Extension,1,sizeof(TExtension),fp);
@@ -302,6 +303,7 @@ bool Cpc1600::SaveConfig(QFile *file)
     pHD61102_1->save_internal(file);
     pHD61102_2->save_internal(file);
     pLU57813P->save_internal(file);
+    pTC8576P->save_internal(file);
 
 
 

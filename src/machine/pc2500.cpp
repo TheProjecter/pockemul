@@ -31,7 +31,7 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     pKEYB		= new Ckeyb(this,"pc2500.map",scandef_pc2500);
     pCPU		= new CSC61860(this);
 
-    pTAPECONNECTOR	= new Cconnector(this,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,2,2,"Line in / Rec",false);	publish(pTAPECONNECTOR);
     pSIOCONNECTOR->setSnap(QPoint(960,480));
 
     remove(pCONNECTOR); // delete pCONNECTOR;

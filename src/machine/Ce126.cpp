@@ -46,8 +46,8 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	= new Cconnector(this,11,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
-    pTAPECONNECTOR	= new Cconnector(this,3,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
+    pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,3,1,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce126;
     KeyMapLenght= KeyMapce126Lenght;

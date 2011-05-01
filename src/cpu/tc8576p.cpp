@@ -7,10 +7,10 @@ CTC8576P::CTC8576P(CpcXXXX *parent, int clk)
 {
     pPC = parent;
 
-    xclk = clk;
+    r.xclk = clk;
 
-    psr=0;
-    ssr=0;
+    r.psr=0;
+    r.ssr=0;
 }
 
 bool CTC8576P::init(void)
@@ -26,42 +26,42 @@ bool CTC8576P::exit(void)
 void CTC8576P::Reset(void)
 {
     if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - RESET\n");
-    psr = ssr = 0;
+    r.psr = r.ssr = 0;
 
-    IntF = false;
-    XBUSY = false;
-    BUSY = false;
-    PRIME = false;
-    P5V = false;
-    PE = false;
-    SLCT = false;
-    FAULT = false;
-    IM1 = false;
-    IM2 = false;
+    r.IntF = false;
+    r.XBUSY = false;
+    r.BUSY = false;
+    r.PRIME = false;
+    r.P5V = false;
+    r.PE = false;
+    r.SLCT = false;
+    r.FAULT = false;
+    r.IM1 = false;
+    r.IM2 = false;
 
-    DSR = false;
-    RBRK = false;
-    FE = false;
-    OE = false;
-    PERR = false;
-    TxE = false;
-    RxRDY = false;
-    TxRDY = false;
+    r.DSR = false;
+    r.RBRK = false;
+    r.FE = false;
+    r.OE = false;
+    r.PERR = false;
+    r.TxE = false;
+    r.RxRDY = false;
+    r.TxRDY = false;
 
-    TxEN = false;
-    DTR = false;
-    RxEN = false;
-    SBRK = false;
-    ERS = false;
-    RTS = false;
+    r.TxEN = false;
+    r.DTR = false;
+    r.RxEN = false;
+    r.SBRK = false;
+    r.ERS = false;
+    r.RTS = false;
 
-    SO = false;
-    TxINTM = false;
-    CL = 5;
-    PEN = false;
-    EP = false;
-    ERINTM = false;
-    RXINTM = false;
+    r.SO = false;
+    r.TxINTM = false;
+    r.CL = 5;
+    r.PEN = false;
+    r.EP = false;
+    r.ERINTM = false;
+    r.RXINTM = false;
 
 
 }
@@ -76,7 +76,7 @@ bool CTC8576P::step(void)
     // Set prs
 //    psr = 0;
 
-    TxE = true;
+    r.TxE = true;
 //    BUSY = true;
 
     return true;
@@ -100,7 +100,7 @@ bool CTC8576P::instruction(BYTE cmd)
     case 0x03: // Parameter Address Set Register
                 if (cmd & 0x20) Reset();
                 else
-                    par = (cmd & 0x07);
+                    r.par = (cmd & 0x07);
                 break;
     }
 
@@ -109,48 +109,48 @@ bool CTC8576P::instruction(BYTE cmd)
 
 BYTE CTC8576P::get_psr(void)
 {
-    psr = 0;
+    r.psr = 0;
 
-    PUT_BIT(psr,7,IntF);
-    PUT_BIT(psr,6,XBUSY);
-    PUT_BIT(psr,5,BUSY);
-    PUT_BIT(psr,4,PRIME);
-    PUT_BIT(psr,3,P5V);
-    PUT_BIT(psr,2,PE);
-    PUT_BIT(psr,1,SLCT);
-    PUT_BIT(psr,0,FAULT);
+    PUT_BIT(r.psr,7,r.IntF);
+    PUT_BIT(r.psr,6,r.XBUSY);
+    PUT_BIT(r.psr,5,r.BUSY);
+    PUT_BIT(r.psr,4,r.PRIME);
+    PUT_BIT(r.psr,3,r.P5V);
+    PUT_BIT(r.psr,2,r.PE);
+    PUT_BIT(r.psr,1,r.SLCT);
+    PUT_BIT(r.psr,0,r.FAULT);
 
-    return psr;
+    return r.psr;
 }
 
 BYTE CTC8576P::get_ssr(void)
 {
-    ssr = 0;
+    r.ssr = 0;
 
-    PUT_BIT(ssr,7, DSR);
-    PUT_BIT(ssr,6,RBRK);
-    PUT_BIT(ssr,5,FE);
-    PUT_BIT(ssr,4,OE);
-    PUT_BIT(ssr,3,PERR);
-    PUT_BIT(ssr,2,TxE);
-    PUT_BIT(ssr,1,RxRDY);
-    PUT_BIT(ssr,0,TxRDY);
+    PUT_BIT(r.ssr,7, r.DSR);
+    PUT_BIT(r.ssr,6,r.RBRK);
+    PUT_BIT(r.ssr,5,r.FE);
+    PUT_BIT(r.ssr,4,r.OE);
+    PUT_BIT(r.ssr,3,r.PERR);
+    PUT_BIT(r.ssr,2,r.TxE);
+    PUT_BIT(r.ssr,1,r.RxRDY);
+    PUT_BIT(r.ssr,0,r.TxRDY);
 
     //if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - getSSR - %02x\n",ssr);
-    return ssr;
+    return r.ssr;
 }
 
 void CTC8576P::SCR(BYTE cmd)
 {
     //if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - SCR - %02x\n",cmd);
 
-    scr = cmd;
-    TxEN = READ_BIT(scr,0);
-    DTR = READ_BIT(scr,1);
-    RxEN = READ_BIT(scr,2);
-    SBRK = READ_BIT(scr,3);
-    ERS = READ_BIT(scr,4);
-    RTS = READ_BIT(scr,5);
+    r.scr = cmd;
+    r.TxEN = READ_BIT(r.scr,0);
+    r.DTR = READ_BIT(r.scr,1);
+    r.RxEN = READ_BIT(r.scr,2);
+    r.SBRK = READ_BIT(r.scr,3);
+    r.ERS = READ_BIT(r.scr,4);
+    r.RTS = READ_BIT(r.scr,5);
 
 }
 
@@ -158,46 +158,46 @@ void CTC8576P::PCR(BYTE cmd)
 {
     if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - PCR - %02x\n",cmd);
 
-    pcr = cmd;
+    r.pcr = cmd;
 
     switch (cmd & 0x07){
-    case 0: FAULT = 0; break;
-    case 1: SLCT = 0; break;
-    case 2: PE = 0; break;
-    case 3: P5V = 0; break;
-    case 4: PRIME = 1; break;
-    case 5: PRIME = 1; break;
-    case 6: PRIME = 0; break;
+    case 0: r.FAULT = 0; break;
+    case 1: r.SLCT = 0; break;
+    case 2: r.PE = 0; break;
+    case 3: r.P5V = 0; break;
+    case 4: r.PRIME = 1; break;
+    case 5: r.PRIME = 1; break;
+    case 6: r.PRIME = 0; break;
     case 7: break;
     }
 
-    IM1 = READ_BIT(cmd,5);
-    IM2 = READ_BIT(cmd,4);
+    r.IM1 = READ_BIT(cmd,5);
+    r.IM2 = READ_BIT(cmd,4);
 }
 
 void CTC8576P::SPR(void)
 {
-    SO = READ_BIT(pr[5],0);
-    TxINTM = READ_BIT(pr[5],1);
-    CL = ((pr[5]>> 2) & 0x03) + 5;
-    PEN = READ_BIT(pr[5],4);
-    EP = READ_BIT(pr[5],5);
-    ERINTM = READ_BIT(pr[5],6);
-    RXINTM = READ_BIT(pr[5],7);
+    r.SO = READ_BIT(r.pr[5],0);
+    r.TxINTM = READ_BIT(r.pr[5],1);
+    r.CL = ((r.pr[5]>> 2) & 0x03) + 5;
+    r.PEN = READ_BIT(r.pr[5],4);
+    r.EP = READ_BIT(r.pr[5],5);
+    r.ERINTM = READ_BIT(r.pr[5],6);
+    r.RXINTM = READ_BIT(r.pr[5],7);
 }
 
-#define NB_STOP_BITS    ((pr[5] & 0x01) ? 2 : 1)
-#define INT_CTRL_TxRDY  (!((pr[5]>>1) &0x01 ))
-#define CHAR_LENGTH     ( 5 + ((pr[5]>>2) & 0x03))
+#define NB_STOP_BITS    ((r.pr[5] & 0x01) ? 2 : 1)
+#define INT_CTRL_TxRDY  (!((r.pr[5]>>1) &0x01 ))
+#define CHAR_LENGTH     ( 5 + ((r.pr[5]>>2) & 0x03))
 
 
 bool CTC8576P::in(BYTE data)
 {
-    if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - IN - %02x, par=%i\n",data,par);
+    if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - IN - %02x, par=%i\n",data,r.par);
 
-    pr[par] = data;
+    r.pr[r.par] = data;
 
-    switch (par)
+    switch (r.par)
     {
     case 0x00: baud(data); break;       // Baud divider BL
     case 0x01: baud((data&0x0f) << 8); break;  // Baud divider BH
@@ -213,21 +213,36 @@ void CTC8576P::baud(qint16 data)
 {
 
 
-    int b = pr[0] + ((pr[1] & 0x0f) << 8); 
+    int b = r.pr[0] + ((r.pr[1] & 0x0f) << 8);
 
     switch (b) {
-        case 0: baudrate = fsysclk / 4096 / 8; break;
-        case 1: baudrate = 0; break;
-        default: baudrate = fsysclk / b / 8; break;
+        case 0: r.baudrate = r.fsysclk / 4096 / 8; break;
+        case 1: r.baudrate = 0; break;
+        default: r.baudrate = r.fsysclk / b / 8; break;
     }
-    if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - BAUD - %02x = %d\n",data,baudrate);
+    if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - BAUD - %02x = %d\n",data,r.baudrate);
 }
 
 void CTC8576P::prescaler(qint8 data)
 {
     switch (data){
-        case 0: fsysclk = xclk / 16; break;
-        default: fsysclk = xclk / data; break;
+        case 0: r.fsysclk = r.xclk / 16; break;
+        default: r.fsysclk = r.xclk / data; break;
     }
     if (pPC->fp_log) fprintf(pPC->fp_log,"TC8576P - PRESCALER - %02x\n",data);
+}
+
+void	CTC8576P::Load_Internal(QFile *file){
+    char t[16];
+    QDataStream in(file);
+
+    in.readRawData(t, 10);
+    in.readRawData((char*)&r,sizeof(r));
+}
+
+void	CTC8576P::save_internal(QFile *file){
+    QDataStream out(file);
+
+    out.writeRawData("TC8576PSTA", 10);					//header
+    out.writeRawData((char*)&r,sizeof(r));		//reg
 }

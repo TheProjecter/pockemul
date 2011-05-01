@@ -15,7 +15,7 @@ public:
 
 	bool	refresh;
 
-
+        int Id;
 	
 	QString	Desc;
 	
@@ -48,7 +48,7 @@ public:
 		gender = newGender;
 		values = 0;
     }
-    Cconnector(CPObject *parent , int nbpins, QString desc,bool newGender = false,QPoint snap=QPoint(0,0));
+    Cconnector(CPObject *parent , int nbpins, int Id, QString desc,bool newGender = false,QPoint snap=QPoint(0,0));
 
     virtual ~Cconnector(){}
 

@@ -46,17 +46,19 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 	dialoganalogic = 0;
     dialogide = 0;
     zoom = 100;
-
+    saveAll = false;
 	startKeyDrag = false;
 	startPosDrag = false;
 
     connect(actionAbout_PockEmul,	SIGNAL(triggered()), this, SLOT(about()));
     connect(actionNew,				SIGNAL(triggered()), this, SLOT(newsession()));
     connect(actionOpen,				SIGNAL(triggered()), this, SLOT(opensession()));
+    connect(actionSave_As,              SIGNAL(triggered()),this,SLOT(saveassession()));
     connect(actionLog_Messages,		SIGNAL(triggered()), this, SLOT(Log()));
  	connect(actionAnalogic_Port,	SIGNAL(triggered()), this, SLOT(Analogic()));    
  	connect(actionCheck_for_Updates,SIGNAL(triggered()), this, SLOT(CheckUpdates()));    
     connect(actionMinimize_All,     SIGNAL(triggered()), this, SLOT(Minimize_All()));
+    connect(actionReset_Zoom,           SIGNAL(triggered()),this, SLOT(resetZoom()));
     connect(menuPockets, SIGNAL(triggered( QAction *)), this, SLOT(SelectPocket( QAction *)));
 
     connect(actionEditor,SIGNAL(triggered()),this,SLOT(IDE()));
@@ -162,32 +164,40 @@ int MainWindowPockemul::newsession()
 {
     DialogStartup dialogstartup(this);
     int result = dialogstartup.exec();
+    LoadPocket(result);
+    return 1;
+}
+
+CPObject * MainWindowPockemul::LoadPocket(int result) {
+    CPObject *newpPC;
     if (result)	{
-		CPObject *newpPC = InitApp(result);
- 		if (! newpPC) MSG_ERROR("pPC is NULL in slotStart")
- 		else
- 		{
-            AddLog(LOG_MASTER,tr("%1").arg((long)newpPC));
- 			listpPObject.append(newpPC);
+                newpPC = InitApp(result);
+                if (! newpPC) MSG_ERROR("pPC is NULL in slotStart")
+                else
+                {
+                    AddLog(LOG_MASTER,tr("%1").arg((long)newpPC));
+                                listpPObject.append(newpPC);
 
-            QAction * actionDistConn = menuPockets->addAction(newpPC->getName());
-            actionDistConn->setData(tr("%1").arg((long)newpPC));
+                    QAction * actionDistConn = menuPockets->addAction(newpPC->getName());
+                    actionDistConn->setData(tr("%1").arg((long)newpPC));
 
-            if (dialoganalogic) {
-                dialoganalogic->fill_twWatchPoint();
-                dialoganalogic->update();
-            }
-            if (dialogide) {
-                dialogide->fill_inject();
-                dialogide->update();
-            }
-		}
+                    if (dialoganalogic) {
+                        dialoganalogic->fill_twWatchPoint();
+                        dialoganalogic->update();
+                    }
+                    if (dialogide) {
+                        dialogide->fill_inject();
+                        dialogide->update();
+                    }
+                    return newpPC;
+                }
 
-	}
-	else
-		QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
+        }
+        else
+                QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
 
-	return 1;
+        return 0;
+
 }
 
 void MainWindowPockemul::Minimize_All() {
@@ -201,6 +211,11 @@ void MainWindowPockemul::Minimize_All() {
         }
     }
 
+}
+
+void MainWindowPockemul::resetZoom() {
+    zoom = 100;
+    update();
 }
 
 void MainWindowPockemul::SelectPocket(QAction * action) {
@@ -248,6 +263,197 @@ void MainWindowPockemul::CheckUpdates()
     
 void MainWindowPockemul::opensession()
 {
+    QHash<QString, Models> objtable;
+
+    objtable["PC-1245"]=PC1245;
+    objtable["MC-2200"]=MC2200;
+    objtable["PC-1250"]=PC1250;
+    objtable["PC-1251"]=PC1251;
+    objtable["PC-1251H"]=PC1251H;
+    objtable["PC-1255"]=PC1255;
+    objtable["Tandy PC-3"]=TandyPC3;
+    objtable["Tandy PC-3 (4Ko)"]=TandyPC3EXT;
+
+    objtable["PC-1260"]=PC1260;
+    objtable["PC-1261"]=PC1261;
+    objtable["PC-1262"]=PC1262;
+    objtable["PC-1280"]=PC1280;
+
+    objtable["PC-1350"]=PC1350;
+    objtable["PC-1360"]=PC1360;
+    objtable["PC-1401"]=PC1401;
+    objtable["PC-1402"]=PC1402;
+    objtable["PC-1403"]=PC1403;
+    objtable["PC-1403H"]=PC1403H;
+    objtable["PC-1421"]=PC1421;
+    objtable["PC-1450"]=PC1450;
+    objtable["PC-1475"]=PC1475;
+
+    objtable["PC-1500"]=PC1500;
+    objtable["PC-1500A"]=PC1500A;
+    objtable["Tandy PC-2"]=TandyPC2;
+
+    objtable["PC-1600"]=PC1600;
+
+    objtable["PC-2500"]=PC2500;
+
+    objtable["CE-125"]=CE125;
+    objtable["MP-220"]=MP220;
+    objtable["CE-120P"]=CE120P;
+    objtable["CE-126P"]=CE126P;
+    objtable["CE-123P"]=CE123P;
+    objtable["CE-129P"]=CE129P;
+    objtable["CE-140P"]=CE140P;
+    objtable["CE-150"]= CE150;
+    objtable["CE-152"]= CE152;
+    objtable["26-3591"]=TANDY263591;
+
+    objtable["Serial Console"]=SerialConsole;
+    objtable["11Pins Cable"]=CABLE11Pins;
+    objtable["Potar"]=POTAR;
+
+    objtable["CE-1600P"]=CE1600P;
+
+
+    QMap<int,CPObject*> map;
+
+    QString fileName = QFileDialog::getOpenFileName(
+                                                                            mainwindow,
+                                                                            tr("Choose a file"),
+                                                                            ".",
+                                                                            tr("PockEmul sessions (*.pml)"));
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::warning(mainwindow,tr("PockEmul"),
+                                                            tr("Cannot read file %1:\n%2.")
+                                                            .arg(file.fileName())
+                                                            .arg(file.errorString()));
+            return ;
+    }
+
+    QXmlStreamReader xml;
+
+    xml.setDevice(&file);
+
+    if (xml.readNextStartElement()) {
+        if (xml.name() == "pml" && xml.attributes().value("version") == "1.0") {
+            zoom = xml.attributes().value("zoom").toString().toFloat();
+            if (zoom==0)zoom=100;
+            while (!xml.atEnd()) {
+                while (xml.readNextStartElement()) {
+                    QString eltname = xml.name().toString();
+                    CPObject * locPC;
+                    if (eltname == "object") {
+                        QString name = xml.attributes().value("name").toString();
+                        locPC = LoadPocket(objtable.value(name));
+                        int id = xml.attributes().value("id").toString().toInt();
+                        map.insert(id,locPC);
+                        locPC->Front = (xml.attributes().value("front")=="true") ?true:false;
+
+                        locPC->Power = (xml.attributes().value("power")=="true") ?true:false;
+                        if (locPC->Power) locPC->TurnON();
+
+                        while (xml.readNextStartElement()) {
+                            QString eltname = xml.name().toString();
+                            if (eltname == "position") {
+                                QString posX = xml.attributes().value("x").toString();
+                                QString posY = xml.attributes().value("y").toString();
+                                locPC->setPosX(posX.toFloat());
+                                locPC->setPosY(posY.toFloat());
+                                if (locPC->Front) {
+                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX,locPC->Pc_DY);
+                                }
+                                else {
+                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX/4,locPC->Pc_DY/4);
+                                }
+
+
+                            }
+                            else
+                                xml.skipCurrentElement();
+                        }
+             //           xml.readNextStartElement();
+                     }
+                    else if (eltname == "link") {
+                        int idpc1 = xml.attributes().value("idpcFrom").toString().toInt();
+                        int idco1 = xml.attributes().value("idcoFrom").toString().toInt();
+                        int idpc2 = xml.attributes().value("idpcTo").toString().toInt();
+                        int idco2 = xml.attributes().value("idcoTo").toString().toInt();
+                        CPObject * locpc1 = map.value(idpc1);
+                        CPObject * locpc2 = map.value(idpc2);
+                        Cconnector * locco1 = locpc1->ConnList.value(idco1);
+                        Cconnector * locco2 = locpc2->ConnList.value(idco2);
+                        mainwindow->pdirectLink->AConnList.append(locco1);
+                        mainwindow->pdirectLink->BConnList.append(locco2);
+
+                    }
+                    else
+                        xml.skipCurrentElement();
+
+
+                }
+            }
+        }
+        else
+            xml.raiseError(QObject::tr("The file is not an XBEL version 1.0 file."));
+    }
+}
+
+void MainWindowPockemul::saveassession()
+{
+    QMap<CPObject*,int> map;
+
+    saveAll = true;
+    QString s;
+    QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
+    xml->autoFormatting();
+    xml->writeStartElement("pml");
+    xml->writeAttribute("version", "1.0");
+    xml->writeAttribute("zoom",QString("%1").arg(zoom));
+
+    // Fetch all objects
+    for (int i=0;i<listpPObject.size();i++)
+    {
+        CPObject *po = listpPObject.at(i);
+        map.insert(po,i);
+        po->serialize(xml,i);
+    }
+
+    // Connectors
+    //xml->writeStartElement("links");
+
+    // fetch AConnList
+    for (int j = 0;j < mainwindow->pdirectLink->AConnList.size(); j++)
+    {
+        int idpc1 = map.value(mainwindow->pdirectLink->AConnList.at(j)->Parent);
+        int idco1 = mainwindow->pdirectLink->AConnList.at(j)->Parent->ConnList.indexOf(mainwindow->pdirectLink->AConnList.at(j));
+                //mainwindow->pdirectLink->AConnList.at(j)->Id;
+        int idpc2 = map.value(mainwindow->pdirectLink->BConnList.at(j)->Parent);
+        //int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Id;
+        int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Parent->ConnList.indexOf(mainwindow->pdirectLink->BConnList.at(j));
+
+        xml->writeStartElement("link");
+        xml->writeAttribute("idpcFrom",QString("%1").arg(idpc1));
+        xml->writeAttribute("idcoFrom",QString("%1").arg(idco1));
+        xml->writeAttribute("idpcTo",QString("%1").arg(idpc2));
+        xml->writeAttribute("idcoTo",QString("%1").arg(idco2));
+        xml->writeEndElement();
+    }
+
+
+
+    //xml->writeEndElement();  // links
+
+    xml->writeEndElement();  // pml
+    MSG_ERROR(s)
+    QFile f("test.pml");
+    if (f.open(QFile::WriteOnly | QFile::Truncate)) {
+        QTextStream out(&f);
+        out << s;
+    }
+
+    saveAll = false;
 }
 
 void MainWindowPockemul::paintEvent(QPaintEvent *event) {}
@@ -261,6 +467,30 @@ void MainWindowPockemul::updateTimer()
 	
 	rawclk += deltaTime;
 
+}
+
+void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
+    QPoint point = event->pos();
+
+    float delta = event->delta()/8;
+    if (((zoom >= 20) && (delta<0)) ||
+        ((zoom <=300) && (delta >0))){
+        zoom = zoom *(100+delta)/100;
+    }
+    else delta = 0;
+    this->setWindowTitle(QString("Delta=%1  zoom=%2").arg(delta).arg(zoom));
+
+    for (int i=0;i<listpPObject.size();i++) {
+        CPObject * locpc = listpPObject.at(i);
+
+        // calculate the new origine
+        float newposx = locpc->posx() + (locpc->posx()-point.x())*(delta)/100.0;
+        float newposy = locpc->posy() + (locpc->posy()-point.y())*(delta)/100.0;
+
+        locpc->setPosX(newposx);
+        locpc->setPosY(newposy);
+        locpc->setGeometry(newposx,newposy,locpc->Pc_DX*zoom/100,locpc->Pc_DY*zoom/100);
+    }
 }
 
 void  MainWindowPockemul::updateTimeTimer()
@@ -291,40 +521,40 @@ void  MainWindowPockemul::updateFrameTimer()
 		
  	for (int i = 0;i < listpPObject.size(); i++)
  	{
- 		CPObject* CurrentpPC = listpPObject.at(i);
+            CPObject* CurrentpPC = listpPObject.at(i);
+            if (CurrentpPC && CurrentpPC->pTIMER) {
+                Current_State = CurrentpPC->pTIMER->state;
 
-        Current_State = CurrentpPC->pTIMER->state;
+                CurrentpPC->pTIMER->nb_state += (Current_State - CurrentpPC->pTIMER->last_state);
+                CurrentpPC->pTIMER->last_state = Current_State;
 
-        CurrentpPC->pTIMER->nb_state += (Current_State - CurrentpPC->pTIMER->last_state);
-        CurrentpPC->pTIMER->last_state = Current_State;
+                // Update ToolTip only one time per second
+                if ( deltaTime >= 1000)
+                {
+                    QString str;
+                    if (CurrentpPC->getfrequency()) {
+                        //	AddLog(LOG_TIME,tr("Time Frame elapsed : %1 ms  nb=%2 cur=%3 last=%4").arg(deltaTime).arg(CurrentpPC->pTIMER->nb_state).arg(Current_State).arg(CurrentpPC->pTIMER->last_state));
+                        statepersec = (int) ( CurrentpPC->getfrequency());
+                        rate = (int) ((100L*CurrentpPC->pTIMER->nb_state)/((statepersec/1000)*deltaTime));
+                        CurrentpPC->pTIMER->nb_state=0;
 
-        // Update ToolTip only one time per second
-        if ( deltaTime >= 1000)
-        {
-            QString str;
-            if (CurrentpPC->getfrequency()) {
-                //	AddLog(LOG_TIME,tr("Time Frame elapsed : %1 ms  nb=%2 cur=%3 last=%4").arg(deltaTime).arg(CurrentpPC->pTIMER->nb_state).arg(Current_State).arg(CurrentpPC->pTIMER->last_state));
-                statepersec = (int) ( CurrentpPC->getfrequency());
-                rate = (int) ((100L*CurrentpPC->pTIMER->nb_state)/((statepersec/1000)*deltaTime));
-                CurrentpPC->pTIMER->nb_state=0;
+                        str.setNum((int)rate);
+                        str = ": "+str+tr("% original speed");
+                    }
+                    CurrentpPC->setToolTip(CurrentpPC->getName()+str);
+                }
 
-                str.setNum((int)rate);
-                str = ": "+str+tr("% original speed");
+                if (CurrentpPC->pLCDC)
+                {
+                            CurrentpPC->pLCDC->disp();
+                            if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
+                }
+                if ( CurrentpPC->Refresh_Display) {
+                    CurrentpPC->update();
+                    CurrentpPC->Refresh_Display= false;
+                }
             }
-            CurrentpPC->setToolTip(CurrentpPC->getName()+str);
         }
-
-		if (CurrentpPC->pLCDC) 
-		{
-			CurrentpPC->pLCDC->disp();
-			if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
-		}
-		if ( CurrentpPC->Refresh_Display) 
-		{
-			CurrentpPC->update();
-			CurrentpPC->Refresh_Display= false;
-		}
-	}
 	
 	if (OneSecTimer >= 1000) OneSecTimer=0;
 }
@@ -357,6 +587,7 @@ void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
     setCursor(Qt::ArrowCursor);
 
 }
+
 
 void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
 void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){}

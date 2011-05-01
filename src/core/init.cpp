@@ -18,6 +18,7 @@
 #include "dialoganalog.h"
 
 #include "pcxxxx.h" 
+
 #include "pc1245.h"
 #include "pc1250.h"
 #include "pc1251.h"
@@ -63,7 +64,6 @@ CWatchPoint WatchPoint;
 bool	UpdateDisplayRunning;
 CPocketThread* PcThread;
 QList<CPocketThread*> listPcThread;	
-
 
 
 CPObject * InitApp(int idPC )
@@ -179,7 +179,7 @@ void CPocketThread::run()
 
 				listpPObject.removeAt(i);
 				i--;
-				emit Destroy(pPC);
+                                emit Destroy(pPC);
 			}
         }
         if (pause) usleep(1);
