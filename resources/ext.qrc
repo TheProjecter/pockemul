@@ -29,5 +29,6 @@
         <file>ext/ce-125record.png</file>
         <file>ext/ce-140p.png</file>
         <file>ext/ce-120p.png</file>
+        <file>ext/ce-140f.png</file>
     </qresource>
 </RCC>

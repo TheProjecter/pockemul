@@ -131,15 +131,16 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/PC-1350/stdio.h \
     src/core/lcc/cstdlib.h \
     resources/lcc/model/PC-1350/graph.h \
-    src/core/lcc/parser/parser.h
+    src/core/lcc/parser/parser.h \
+    src/machine/ce140f.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
     src/machine
 mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
-win32:INCLUDEPATH += ../../fmodapi375win/api/inc
+win32:INCLUDEPATH += ../fmodapi375win/api/inc
 LANGUAGE += C++
-win32:LIBS += ../../fmodapi375win/api/lib/libfmod.a
+win32:LIBS += ../fmodapi375win/api/lib/libfmod.a
 mac:LIBS += /Users/svp/Library/fmodapi375mac/api/lib/libfmodx86.a
 LICENSE += GPL
 MOC_DIR += build/moc
@@ -272,7 +273,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/lcc/codegen.cpp \
     src/core/lcc/pasm.cpp \
     src/core/lcc/cstdlib.cpp \
-    src/core/lcc/parser/parser.cpp
+    src/core/lcc/parser/parser.cpp \
+    src/machine/ce140f.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

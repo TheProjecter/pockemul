@@ -304,6 +304,7 @@ void MainWindowPockemul::opensession()
     objtable["CE-123P"]=CE123P;
     objtable["CE-129P"]=CE129P;
     objtable["CE-140P"]=CE140P;
+    objtable["CE-140F"]=CE140F;
     objtable["CE-150"]= CE150;
     objtable["CE-152"]= CE152;
     objtable["26-3591"]=TANDY263591;

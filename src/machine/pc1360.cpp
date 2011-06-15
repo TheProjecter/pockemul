@@ -119,10 +119,11 @@ bool Cpc1360::Set_Connector(void)
 	pCONNECTOR->Set_pin(PIN_VGG		,1);
 	pCONNECTOR->Set_pin(PIN_BUSY	,READ_BIT(port1,0));
 	pCONNECTOR->Set_pin(PIN_D_OUT	,READ_BIT(port2,2));
-	pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port1,3));
+    pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
+    pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port1,3));
 	pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
 	pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));
-	pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
+
 
 	// MANAGE SERIAL CONNECTOR
 	pSIOCONNECTOR->Set_pin(SIO_SD	,GET_PORT_BIT(PORT_F,2));

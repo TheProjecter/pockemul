@@ -492,6 +492,15 @@
          </item>
          <item>
           <property name="text">
+           <string>CE-140F</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/ce-140f.png</normaloff>:/EXT/ext/ce-140f.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>CE-150</string>
           </property>
           <property name="icon">
