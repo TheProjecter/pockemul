@@ -74,7 +74,7 @@ private:
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;
-
+    int     code_transfer_step;
 
 };
 

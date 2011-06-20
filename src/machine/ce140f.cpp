@@ -210,6 +210,7 @@ bool Cce140f::init(void)
 AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1":"0"));
     Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
     Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
+    code_transfer_step = 0;
     time.start();
 
     run_oldstate = -1;
@@ -278,6 +279,7 @@ extern int LogLevel;
 // no bit stop
 void Cce140f::pulldownsignal(void)
 {
+
 #if 0
     SET_PIN(PIN_BUSY,DOWN);
     SET_PIN(PIN_D_OUT,DOWN);
@@ -298,8 +300,9 @@ bool Cce140f::run(void)
     pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? GET_PIN(PIN_SEL1):true));       // RMT
     pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));    // Out
     SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));      // In
-
-    pCONNECTOR_value = pCONNECTOR->Get_values();
+//SET_PIN(PIN_SEL2,UP);
+//SET_PIN(PIN_SEL1,UP);
+pCONNECTOR_value = pCONNECTOR->Get_values();
     pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
 #if 1
@@ -328,12 +331,85 @@ bool Cce140f::run(void)
 
 //	AddLog(LOG_PRINTER,tr("%1").arg(dump1));
 
+    bool PIN_BUSY_GoDown = ( ( GET_PIN(PIN_BUSY) == Previous_PIN_BUSY ) && (Previous_PIN_BUSY == DOWN)) ? true:false;
+    bool PIN_BUSY_Change = (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY ) ? true:false;
+    bool PIN_MT_OUT1_GoDown = ( ( GET_PIN(PIN_MT_OUT1) == Previous_PIN_MT_OUT1) &&	(Previous_PIN_MT_OUT1 == DOWN)) ? true:false;
+    bool PIN_MT_OUT1_GoUp = ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP )) ? true:false;
+
+
+    switch (code_transfer_step) {
+    case 0 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
+                    time.restart();
+                    code_transfer_step=1;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
+                }
+                break;
+    case 1 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
+                    if (time.elapsed() > 40) {
+                        // Code transfer sequence started
+                        // Raise ACK
+                        code_transfer_step = 2;
+                        SET_PIN(PIN_ACK,UP);
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 9;
+                    }
+                }
+                else {
+                    code_transfer_step=0;
+                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 7;
+                }
+                break;
+    case 2:     if (GET_PIN(PIN_BUSY) == UP )	//check for BUSY
+                {
+                    if(GET_PIN(PIN_D_OUT) == UP)
+                    {
+                        bit = true;;
+                    } else
+                    {
+                        bit = false;
+                    }
+                    t>>=1;
+                    if (bit) t|=0x80;
+                    if((c=(++c)&7)==0)
+                    {
+                        AddLog(LOG_PRINTER,tr("send char to printer : %1").arg(t,2,16) );
+                        Printer(t);
+                        SET_PIN(PIN_ACK,DOWN);
+                        code_transfer_step=4;
+                        //t=0; c=0;
+                    }
+                    else {
+                        SET_PIN(PIN_ACK,DOWN);
+                        code_transfer_step=3;
+                    }
+                }
+                break;
+    case 3:     code_transfer_step=2;
+                    // wait 2 ms and raise ACK
+                    SET_PIN(PIN_ACK,UP);
+
+                break;
+    case 4:     SET_PIN(PIN_ACK,UP);
+                code_transfer_step=5;
+                t=0; c=0;
+                break;
+    case 5:     if (GET_PIN(PIN_MT_OUT1) == DOWN) {
+                    SET_PIN(PIN_ACK,DOWN);
+                    code_transfer_step=0;
+                }
+                break;
+
+    }
+
+
+
+
+
     switch (ce140f_Mode)
     {
             case RECEIVE_MODE:
-#if 1
-                if ( (GET_PIN(PIN_BUSY) == Previous_PIN_BUSY ) && (Previous_PIN_BUSY == DOWN) &&
-                     (GET_PIN(PIN_MT_OUT1) == Previous_PIN_MT_OUT1) &&	(Previous_PIN_MT_OUT1 == DOWN) &&
+#if 0
+                if ( PIN_BUSY_GoDown &&
+                     PIN_MT_OUT1_GoDown &&
                      (GET_PIN(PIN_ACK) == UP) &&
                      (time.elapsed() > 30 ) )
                 {
@@ -342,8 +418,8 @@ bool Cce140f::run(void)
                     SET_PIN(PIN_ACK,DOWN);
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 1;
                 }
-#endif
-                if ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP ))
+
+                if ( PIN_MT_OUT1_GoUp)
                 {
                     Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
                     AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
@@ -352,7 +428,7 @@ bool Cce140f::run(void)
                     if (GET_PIN(PIN_BUSY) == DOWN )
                     {
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 2;
-                        time.restart();
+                        //time.restart();
                         SET_PIN(PIN_ACK,UP);
                         AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
                         Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
@@ -366,7 +442,7 @@ bool Cce140f::run(void)
                     c=0;
                 }
 
-                if (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY )	//check for BUSY  - F03
+                if (PIN_BUSY_Change )	//check for BUSY  - F03
                 {
                     AddLog(LOG_PRINTER,tr("PIN_BUSY CHANGE from %1 TO %2").arg(Previous_PIN_BUSY?"1":"0").arg(GET_PIN(PIN_BUSY)?"1":"0"));
                     Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
@@ -403,6 +479,7 @@ bool Cce140f::run(void)
 
                     }
                 }
+#endif
                 Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
                 Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
                 pulldownsignal();
