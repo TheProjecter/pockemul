@@ -388,16 +388,49 @@ pCONNECTOR_value = pCONNECTOR->Get_values();
                     SET_PIN(PIN_ACK,UP);
 
                 break;
-    case 4:     SET_PIN(PIN_ACK,UP);
-                code_transfer_step=5;
-                t=0; c=0;
-                break;
-    case 5:     if (GET_PIN(PIN_MT_OUT1) == DOWN) {
-                    SET_PIN(PIN_ACK,DOWN);
-                    code_transfer_step=0;
+    case 4:     if ((GET_PIN(PIN_BUSY) == DOWN)&&(GET_PIN(PIN_MT_OUT1) == DOWN)) {
+                    SET_PIN(PIN_ACK,UP);
+                    code_transfer_step=5;
+                    time.restart();
+                    t=0; c=0;
                 }
                 break;
+    case 5:     if (time.elapsed()>9) {
+                    SET_PIN(PIN_ACK,DOWN);
+                    code_transfer_step=10;
 
+                }
+                break;
+    case 10:    if (GET_PIN(PIN_BUSY) == UP) {
+                    // read the 4 bits
+
+                    t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+
+                    //AddLog(LOG_PRINTER,tr("send first 4bits to floppy : %1").arg(t,2,16) );
+                    SET_PIN(PIN_ACK,UP);
+                    code_transfer_step=11;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
+                }
+                break;
+    case 11:    if (GET_PIN(PIN_BUSY) == DOWN) {
+                    SET_PIN(PIN_ACK,DOWN);
+                    code_transfer_step=12;
+                }
+                break;
+    case 12:    if (GET_PIN(PIN_BUSY) == UP) {
+                    // read the 4 bits
+                    t += (GET_PIN(PIN_SEL1)<<4) + (GET_PIN(PIN_SEL2)<<5) + (GET_PIN(PIN_D_OUT)<<6) + (GET_PIN(PIN_D_IN)<<7);
+                    SET_PIN(PIN_ACK,UP);
+                    AddLog(LOG_PRINTER,tr("send char to floppy : %1 - %2").arg(t,2,16).arg(QChar(t)) );
+                    code_transfer_step=13;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 11;
+                }
+                break;
+    case 13:    if (GET_PIN(PIN_BUSY) == DOWN) {
+                    SET_PIN(PIN_ACK,DOWN);
+                    code_transfer_step=10;
+                }
+                break;
     }
 
 
