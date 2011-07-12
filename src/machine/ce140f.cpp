@@ -212,6 +212,7 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
     code_transfer_step = 0;
     device_code = 0;
+    wait_data_function=0;
     halfdata = false;
     halfdata_out = false;
     time.start();
@@ -299,19 +300,17 @@ BYTE Cce140f::Pop_out8(void) {
 BYTE Cce140f::Pop_out4(void) {
     BYTE t=0;
     if (halfdata_out) {
-        int t = data_out.takeFirst();
+        t = data_out.takeFirst();
         halfdata_out = false;
-        AddLog(LOG_PRINTER,tr("4bits from floppy : %1").arg(((t & 0xF0) >> 4),2,16) );
 
         AddLog(LOG_PRINTER,tr("byte from floppy : %1 - %2").arg(t,2,16).arg(QChar(t)) );
-        t = (t & 0xF0) >> 4;
+        t = (t >> 4);
     }
     else {
         halfdata_out = true;
         t = data_out.first() & 0x0F;
-        AddLog(LOG_PRINTER,tr("4bits from floppy : %1").arg(t,2,16) );
     }
-
+    //AddLog(LOG_PRINTER,tr("4bits from floppy : %1").arg((t >> 4),2,16) );
     return t;
 }
 
@@ -324,7 +323,7 @@ void Cce140f::Push4(BYTE b) {
         data.pop_back();
         data.append(t);
         halfdata = false;
-        AddLog(LOG_PRINTER,tr("byte to floppy : %1").arg(t,2,16) );
+        AddLog(LOG_PRINTER,tr("byte to floppy : %1 - %2").arg(t,2,16).arg(QChar(t)) );
     }
     else {
         data.append(b);
@@ -475,7 +474,7 @@ bool Cce140f::run(void)
 
             t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
 
-            AddLog(LOG_PRINTER,tr("4bits to floppy : %1").arg(t,2,16) );
+            //AddLog(LOG_PRINTER,tr("4bits to floppy : %1").arg(t,2,16) );
             Push4(t);
             SET_PIN(PIN_ACK,UP);
             time.restart();
@@ -492,9 +491,9 @@ bool Cce140f::run(void)
 
 else
 
-    if ( !data_out.empty() && (time.elapsed()>10) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
+    if ( !data_out.empty() && (time.elapsed()>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
         BYTE t = Pop_out4();
-        //t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+
         SET_PIN(PIN_SEL1,t&0x01);
         SET_PIN(PIN_SEL2,(t&0x02)>>1);
         SET_PIN(PIN_D_OUT,(t&0x04)>>2);
@@ -556,10 +555,26 @@ void Cce140f::processCommand(void) {
         checksum = (data.at(i)+checksum) & 0xff;
     }
     AddLog(LOG_PRINTER,tr("floppy command checksum = %1 compared to %2").arg(checksum,2,16).arg(data.last(),2,16));
+
+    if (wait_data_function >0) {
+        data.prepend(wait_data_function);
+        wait_data_function = 0;
+    }
+
     switch (data.first()) {
         case 0x05: process_FILES();break;
         case 0x06: process_FILES_LIST();break;
+        case 0x08: process_INIT(0);break;
+        case 0x09: process_INIT(1);break;
+        case 0x0E: process_LOAD(0);break;
+        case 0x17: process_LOAD(1);break;
+        case 0x12: process_LOAD(2);break;
+        case 0x10: process_SAVE(0);break;
+        case 0x11: process_SAVE(1);break;
+        case 0x16: process_SAVE(2);break;       // SAVE ASCII
         case 0x1D: process_DSKF(); break;
+        case 0xFE: process_SAVE(0xfe);break;    // Handle ascii saved data stream
+        case 0xFF: process_SAVE(0xff);break;    // Handle saved data stream
     }
 }
 
@@ -578,41 +593,158 @@ void Cce140f::process_DSKF(void) {
 void Cce140f::process_FILES(void) {
     AddLog(LOG_PRINTER,tr("Process FILES(%1)").arg(data.at(1)));
     data_out.append(0x00);
+    checksum = 0;
 
     // Send nb files
-    data_out.append(0x02);
-
+    data_out.append(CheckSum(0x02));
 
     // Send CheckSum
-    data_out.append(0x02);
+    data_out.append(checksum);
 
-    QString s ="ABS.12345678";
-   // sendString(s);
 }
 
 void Cce140f::process_FILES_LIST(void) {
     AddLog(LOG_PRINTER,tr("Process FILES_LIST"));
     data_out.append(0x00);
 
-    // Send nb files
-    data_out.append(0x02);
-    data_out.append(0x3A);
+    checksum=0;
 
     // Send filenames
-    QString s =" 12345678.123";
-    sendString(s);
-    data_out.append(0x0d);
-    s =" ABCDEFGH.IJK";
-    sendString(s);
+    sendString("X:TEST    .BAS ");
 
+    //sendString(" ");
 
     // Send CheckSum
-    data_out.append(0x02);
+    data_out.append(checksum);
 
+}
+
+void Cce140f::process_INIT(int cmd) {
+    switch (cmd) {
+    case 0:
+        AddLog(LOG_PRINTER,tr("Process INIT(%1)").arg(data.at(1)));
+        data_out.append(0x00);
+        break;
+    case 1:
+        AddLog(LOG_PRINTER,tr("Process INIT2(%1)").arg(data.at(1)));
+        data_out.append(0x00);
+        break;
+
+    }
+}
+
+void Cce140f::process_SAVE(int cmd) {
+    QString s = "";
+    switch (cmd) {
+
+    case 0:
+            // create file
+
+            for (int i=1;i<15;i++) {
+                s.append(QChar(data.at(i)));
+            }
+            AddLog(LOG_PRINTER,tr("process_SAVE file:%1").arg(s));
+
+
+            data_out.append(0x00);
+            break;
+    case 1:
+            for (int i=1;i<15;i++) {
+                s.append(QChar(data.at(i)));
+            }
+            AddLog(LOG_PRINTER,tr("process_SAVE file:%1").arg(s));
+
+            // transmet 4 bytes : the lenght ?
+            data_out.append(0x00);
+            wait_data_function = 0xff;
+            break;
+    case 2:
+            for (int i=1;i<15;i++) {
+                s.append(QChar(data.at(i)));
+            }
+            AddLog(LOG_PRINTER,tr("process_SAVE ASCIIfile:%1").arg(s));
+
+            // transmet 4 bytes : the lenght ?
+            data_out.append(0x00);
+            wait_data_function = 0xfe;
+            break;
+    case 0xfe: // received ascii data steam
+            //store data
+            AddLog(LOG_PRINTER,tr("retreived ascii data stream"));
+            data_out.append(0x00);
+
+            break;
+    case 0xff: // received data
+            //store data
+            AddLog(LOG_PRINTER,tr("retreived data stream"));
+            data_out.append(0x00);
+            break;
+        }
+}
+
+void Cce140f::process_LOAD(int cmd) {
+    QString s = "";
+    switch (cmd) {
+
+    case 0:
+            // open file
+
+            for (int i=1;i<15;i++) {
+                s.append(QChar(data.at(i)));
+            }
+            AddLog(LOG_PRINTER,tr("process_LOAD file:%1").arg(s));
+
+
+            data_out.append(0x00);
+            checksum = 0;
+            sendString(" ");
+
+            // Send size : 3 bytes + checksum
+            data_out.append(CheckSum(0x25));
+            data_out.append(CheckSum(0x00));
+            data_out.append(CheckSum(0x00));
+            data_out.append(checksum);
+            break;
+    case 1:
+
+
+            // transmet 4 bytes : the lenght ?
+            data_out.append(0x00);
+            checksum=0;
+            data_out.append(CheckSum(0x30));
+            data_out.append(checksum);
+            //wait_data_function = 0xfd;
+            break;
+    case 2:
+
+            // transmet 4 bytes : the lenght ?
+            data_out.append(0x00);
+            checksum=0;
+            data_out.append(CheckSum(0x1A));  // 0x1A pour fin de fichier
+            data_out.append(checksum);
+            data_out.append(0x00);
+            break;
+    case 0xfe: // received ascii data steam
+            //store data
+            AddLog(LOG_PRINTER,tr("retreived ascii data stream"));
+            data_out.append(0x00);
+
+            break;
+    case 0xff: // received data
+            //store data
+            AddLog(LOG_PRINTER,tr("retreived data stream"));
+            data_out.append(0x00);
+            break;
+        }
 }
 
 void Cce140f::sendString(QString s) {
     for (int i=0;i<s.size();i++){
-        data_out.append(s.at(i).toAscii());
+        data_out.append(CheckSum(s.at(i).toAscii()));
     }
+}
+
+BYTE Cce140f::CheckSum(BYTE b) {
+    checksum = (checksum + b) & 0xff;
+    return b;
 }

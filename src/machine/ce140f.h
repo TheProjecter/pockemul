@@ -60,9 +60,14 @@ int ce140f_Mode;
 
     void process_DSKF(void);
     void process_FILES(void);
+    void process_INIT(int cmd);
     void process_FILES_LIST(void);
+    void process_SAVE(int cmd);
+    void process_LOAD(int cmd);
+
 
     void sendString(QString s);
+    BYTE CheckSum(BYTE b);
 
     Cce140f(CPObject *parent = 0);
 
@@ -94,6 +99,8 @@ private:
     QList<BYTE> data_out;
     bool    halfdata;
     bool    halfdata_out;
+    int     checksum;
+    int     wait_data_function;
 };
 
 
