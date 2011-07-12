@@ -118,11 +118,11 @@ bool Cpc1360::Set_Connector(void)
 	pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
 	pCONNECTOR->Set_pin(PIN_VGG		,1);
 	pCONNECTOR->Set_pin(PIN_BUSY	,READ_BIT(port1,0));
-	pCONNECTOR->Set_pin(PIN_D_OUT	,READ_BIT(port2,2));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_OUT	,READ_BIT(port2,2));
     pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
-    pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port2,3));
-	pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
-	pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port2,3));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));
 
 
 	// MANAGE SERIAL CONNECTOR
@@ -140,6 +140,7 @@ bool Cpc1360::Get_Connector(void)
     Set_Port_Bit(PORT_B,2,pCONNECTOR->Get_pin(PIN_SEL2));	// DIN	:	IB2
     Set_Port_Bit(PORT_B,3,pCONNECTOR->Get_pin(PIN_D_OUT));	// DIN	:	IB2
     Set_Port_Bit(PORT_B,4,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB8
+
 	Set_Port_Bit(PORT_B,5,pCONNECTOR->Get_pin(PIN_ACK));	// ACK	:	IB7
 	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
 

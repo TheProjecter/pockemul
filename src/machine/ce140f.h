@@ -56,6 +56,14 @@ int ce140f_Mode;
     BYTE Pop_out8(void);
     BYTE Pop_out4(void);
 
+    void processCommand(void);
+
+    void process_DSKF(void);
+    void process_FILES(void);
+    void process_FILES_LIST(void);
+
+    void sendString(QString s);
+
     Cce140f(CPObject *parent = 0);
 
     ~Cce140f()
