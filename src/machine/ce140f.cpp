@@ -211,6 +211,8 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
     Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
     code_transfer_step = 0;
+    device_code = 0;
+    halfdata = false;
     time.start();
 
     run_oldstate = -1;
@@ -289,6 +291,42 @@ void Cce140f::pulldownsignal(void)
 #endif
 }
 
+BYTE Cce140f::Pop_out8(void) {
+    return data_out.takeFirst();
+}
+
+BYTE Cce140f::Pop_out4(void) {
+    BYTE t=0;
+    if (halfdata_out) {
+        int t = data_out.takeFirst() & 0xF0;
+        halfdata_out = false;
+        AddLog(LOG_PRINTER,tr("byte from floppy : %1").arg(t,2,16) );
+    }
+    else {
+        halfdata_out = true;
+        t = data_out.first() & 0x0F;
+    }
+
+    return t;
+}
+
+void Cce140f::Push8(BYTE b) {
+    data.append(b);
+}
+void Cce140f::Push4(BYTE b) {
+    if (halfdata) {
+        int t = data.last()+(b<<4);
+        data.pop_back();
+        data.append(t);
+        halfdata = false;
+        AddLog(LOG_PRINTER,tr("byte to floppy : %1").arg(t,2,16) );
+    }
+    else {
+        data.append(b);
+        halfdata = true;
+    }
+}
+
 #define CE126LATENCY (pTIMER->pPC->getfrequency()/3200)
 //#define CE126LATENCY (getfrequency()/3200)
 bool Cce140f::run(void)
@@ -331,11 +369,32 @@ pCONNECTOR_value = pCONNECTOR->Get_values();
 
 //	AddLog(LOG_PRINTER,tr("%1").arg(dump1));
 
-    bool PIN_BUSY_GoDown = ( ( GET_PIN(PIN_BUSY) == Previous_PIN_BUSY ) && (Previous_PIN_BUSY == DOWN)) ? true:false;
+    bool PIN_BUSY_GoDown = ( ( GET_PIN(PIN_BUSY) == DOWN ) && (Previous_PIN_BUSY == UP)) ? true:false;
+    bool PIN_BUSY_GoUp   = ( ( GET_PIN(PIN_BUSY) == UP ) && (Previous_PIN_BUSY == DOWN)) ? true:false;
     bool PIN_BUSY_Change = (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY ) ? true:false;
-    bool PIN_MT_OUT1_GoDown = ( ( GET_PIN(PIN_MT_OUT1) == Previous_PIN_MT_OUT1) &&	(Previous_PIN_MT_OUT1 == DOWN)) ? true:false;
+    bool PIN_MT_OUT1_GoDown = ( ( GET_PIN(PIN_MT_OUT1) == DOWN) &&	(Previous_PIN_MT_OUT1 == UP)) ? true:false;
     bool PIN_MT_OUT1_GoUp = ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP )) ? true:false;
+    bool PIN_MT_OUT1_Change = (GET_PIN(PIN_MT_OUT1) != Previous_PIN_MT_OUT1 ) ? true:false;
+    bool PIN_D_OUT_Change = (GET_PIN(PIN_D_OUT) != Previous_PIN_D_OUT ) ? true:false;
 
+//    if (   (GET_PIN(PIN_MT_OUT1) == UP)
+//        && (GET_PIN(PIN_D_OUT)==UP) ) {
+//        if (PIN_MT_OUT1_Change || PIN_D_OUT_Change) {
+//            time.restart();
+//            code_transfer_step=1;
+//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
+//        }
+//        if (time.elapsed() > 40) {
+//            // Code transfer sequence started
+//            // Raise ACK
+//            code_transfer_step = 2;
+//            SET_PIN(PIN_ACK,UP);
+//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 9;
+//        }
+//    }
+//    else {
+//        code_transfer_step=0;
+//    }
 
     switch (code_transfer_step) {
     case 0 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
@@ -371,8 +430,9 @@ pCONNECTOR_value = pCONNECTOR->Get_values();
                     if (bit) t|=0x80;
                     if((c=(++c)&7)==0)
                     {
-                        AddLog(LOG_PRINTER,tr("send char to printer : %1").arg(t,2,16) );
-                        Printer(t);
+                        AddLog(LOG_PRINTER,tr("device code : %1").arg(t,2,16) );
+                        device_code = t;
+                        //Printer(t);
                         SET_PIN(PIN_ACK,DOWN);
                         code_transfer_step=4;
                         //t=0; c=0;
@@ -397,50 +457,88 @@ pCONNECTOR_value = pCONNECTOR->Get_values();
                 break;
     case 5:     if (time.elapsed()>9) {
                     SET_PIN(PIN_ACK,DOWN);
-                    code_transfer_step=10;
+                    code_transfer_step=0;
+
 
                 }
                 break;
-    case 10:    if (GET_PIN(PIN_BUSY) == UP) {
-                    // read the 4 bits
+            }
 
-                    t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+    if ( (device_code == 0x41) && (code_transfer_step==0)) {
+        if (PIN_BUSY_GoUp && (GET_PIN(PIN_ACK)==DOWN)) {
+            // read the 4 bits
 
-                    //AddLog(LOG_PRINTER,tr("send first 4bits to floppy : %1").arg(t,2,16) );
-                    SET_PIN(PIN_ACK,UP);
-                    code_transfer_step=11;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
-                }
-                break;
-    case 11:    if (GET_PIN(PIN_BUSY) == DOWN) {
-                    SET_PIN(PIN_ACK,DOWN);
-                    code_transfer_step=12;
-                }
-                break;
-    case 12:    if (GET_PIN(PIN_BUSY) == UP) {
-                    // read the 4 bits
-                    t += (GET_PIN(PIN_SEL1)<<4) + (GET_PIN(PIN_SEL2)<<5) + (GET_PIN(PIN_D_OUT)<<6) + (GET_PIN(PIN_D_IN)<<7);
-                    SET_PIN(PIN_ACK,UP);
-                    AddLog(LOG_PRINTER,tr("send char to floppy : %1 - %2").arg(t,2,16).arg(QChar(t)) );
-                    code_transfer_step=13;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 11;
-                }
-                break;
-    case 13:    if (GET_PIN(PIN_BUSY) == DOWN) {
-                    SET_PIN(PIN_ACK,DOWN);
-                    code_transfer_step=10;
-                }
-                break;
+            t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+
+            AddLog(LOG_PRINTER,tr("4bits to floppy : %1").arg(t,2,16) );
+            Push4(t);
+            SET_PIN(PIN_ACK,UP);
+            time.restart();
+
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
+        }
+        if (PIN_BUSY_GoDown && (GET_PIN(PIN_ACK)==UP)) {
+            SET_PIN(PIN_ACK,DOWN);
+            time.restart();
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 11;
+        }
+    }
+
+    if (!data_out.empty()) {
+        if (time.elapsed()>10) {
+            BYTE t = Pop_out4();
+            //t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+            SET_PIN(PIN_SEL1,t&0x01);
+            SET_PIN(PIN_SEL2,(t&0x02)>>1);
+            SET_PIN(PIN_D_OUT,(t&0x04)>>2);
+            SET_PIN(PIN_D_IN,(t&0x08)>>3);
+
+        }
     }
 
 
+//    case 10:    if (GET_PIN(PIN_BUSY) == UP) {
+//                    // read the 4 bits
+
+//                    t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+
+//                    //AddLog(LOG_PRINTER,tr("send first 4bits to floppy : %1").arg(t,2,16) );
+//                    SET_PIN(PIN_ACK,UP);
+//                    code_transfer_step=11;
+//                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
+//                }
+//                break;
+//    case 11:    if (GET_PIN(PIN_BUSY) == DOWN) {
+//                    SET_PIN(PIN_ACK,DOWN);
+//                    code_transfer_step=12;
+//                }
+//                break;
+//    case 12:    if (GET_PIN(PIN_BUSY) == UP) {
+//                    // read the 4 bits
+//                    t += (GET_PIN(PIN_SEL1)<<4) + (GET_PIN(PIN_SEL2)<<5) + (GET_PIN(PIN_D_OUT)<<6) + (GET_PIN(PIN_D_IN)<<7);
+//                    SET_PIN(PIN_ACK,UP);
+//                    AddLog(LOG_PRINTER,tr("send char to floppy : %1 - %2").arg(t,2,16).arg(QChar(t)) );
+//                    code_transfer_step=13;
+//                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 11;
+//                }
+//                break;
+//    case 13:    if (GET_PIN(PIN_BUSY) == DOWN) {
+//                    SET_PIN(PIN_ACK,DOWN);
+//                    code_transfer_step=10;
+//                }
+//                break;
+//    }
 
 
+    Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
+    Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
+    Previous_PIN_D_OUT = GET_PIN(PIN_D_OUT);
 
+#if 0
     switch (ce140f_Mode)
     {
             case RECEIVE_MODE:
-#if 0
+
                 if ( PIN_BUSY_GoDown &&
                      PIN_MT_OUT1_GoDown &&
                      (GET_PIN(PIN_ACK) == UP) &&
@@ -512,13 +610,15 @@ pCONNECTOR_value = pCONNECTOR->Get_values();
 
                     }
                 }
-#endif
+
                 Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
                 Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
+                Previous_PIN_D_OUT = GET_PIN(PIN_D_OUT);
                 pulldownsignal();
 
 
     }
+#endif
 #if 0
     char dump11[20]="";
     static char dump12[20]="";

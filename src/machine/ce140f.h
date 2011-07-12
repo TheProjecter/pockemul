@@ -51,6 +51,11 @@ public:
     void	setposX(int value) { posX = value; }
 int ce140f_Mode;
 
+    void Push8(BYTE b);
+    void Push4(BYTE b);
+    BYTE Pop_out8(void);
+    BYTE Pop_out4(void);
+
     Cce140f(CPObject *parent = 0);
 
     ~Cce140f()
@@ -70,12 +75,17 @@ private:
     QByteArray	TextBuffer;
     bool	Previous_PIN_BUSY;
     bool	Previous_PIN_MT_OUT1;
+    bool	Previous_PIN_D_OUT;
     QTime	time;
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;
     int     code_transfer_step;
-
+    int     device_code;
+    QList<BYTE>   data;
+    QList<BYTE> data_out;
+    bool    halfdata;
+    bool    halfdata_out;
 };
 
 
