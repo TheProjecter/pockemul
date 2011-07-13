@@ -218,6 +218,8 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     time.start();
 
     run_oldstate = -1;
+
+
     return true;
 }
 
@@ -640,11 +642,16 @@ void Cce140f::process_SAVE(int cmd) {
     case 0:
             // create file
 
-            for (int i=1;i<15;i++) {
+            for (int i=3;i<15;i++) {
                 s.append(QChar(data.at(i)));
             }
             AddLog(LOG_PRINTER,tr("process_SAVE file:%1").arg(s));
 
+            file_save.setFileName(s);
+
+            if (!file_save.open(QIODevice::WriteOnly)) {
+                MSG_ERROR(tr("ERROR creatig file : %1").arg(s))
+            }
 
             data_out.append(0x00);
             break;
@@ -654,7 +661,14 @@ void Cce140f::process_SAVE(int cmd) {
             }
             AddLog(LOG_PRINTER,tr("process_SAVE file:%1").arg(s));
 
-            // transmet 4 bytes : the lenght ?
+            // transmet 5 bytes : the size ?
+            // 1 : 00
+            // 2 : Size 1
+            // 3 : Size 2
+            // 4 : Size 3
+            // 5 : checksum
+            file_size = data.at(2) + (data.at(3)<<2) + (data.at(4)<<4);
+            AddLog(LOG_PRINTER,tr("process_SAVE file SIZE: %1 ").arg(file_size));
             data_out.append(0x00);
             wait_data_function = 0xff;
             break;
@@ -675,7 +689,15 @@ void Cce140f::process_SAVE(int cmd) {
 
             break;
     case 0xff: // received data
+            // remove command from he stream
+            data.removeFirst();
             //store data
+            QDataStream out(&file_save);
+            for (int i=0;i<file_size;i++) {
+                out << (qint8) data.at(i);
+                AddLog(LOG_PRINTER,tr("retreived data stream %1 - %2 (%3)").arg(i).arg(data.at(i),2,16).arg(QChar(data.at(i))))
+            }
+            file_save.close();
             AddLog(LOG_PRINTER,tr("retreived data stream"));
             data_out.append(0x00);
             break;

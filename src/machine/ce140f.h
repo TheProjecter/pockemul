@@ -101,6 +101,9 @@ private:
     bool    halfdata_out;
     int     checksum;
     int     wait_data_function;
+    int     file_size;
+
+    QFile   file_save;
 };
 
 
