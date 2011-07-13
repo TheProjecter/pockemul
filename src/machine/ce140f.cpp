@@ -46,14 +46,14 @@ Cce140f::Cce140f(CPObject *parent):Cprinter(this)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
-    pTAPECONNECTOR	= new Cconnector(this,3,1,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
+    pCONNECTOR	   = new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(462,268));	publish(pCONNECTOR);
+    pCONNECTOR_Ext = new Cconnector(this,11,1,"Connector 11 pins Ext.",false,QPoint(6,255));	publish(pCONNECTOR_Ext);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140f;
     KeyMapLenght= KeyMapce140fLenght;
     pKEYB		= new Ckeyb(this,"ce140f.map");
-    Pc_DX	= 620;
-    Pc_DY	= 488;
+    Pc_DX	= 480;
+    Pc_DY	= 420;
     SnapPts = QPoint(594,145);
 
     setPaperPos(QRect(150,-3,207,149));
@@ -179,10 +179,10 @@ bool Cce140f::init(void)
     setfrequency( 0);
 
     WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
-    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
+    WatchPoint.add(&pCONNECTOR_Ext_value,64,11,this,"Ext 11pins connector");
 
 
-    AddLog(LOG_PRINTER,tr("PRT initializing..."));
+    AddLog(LOG_PRINTER,tr("CE-140F initializing..."));
 
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
@@ -215,7 +215,7 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     wait_data_function=0;
     halfdata = false;
     halfdata_out = false;
-    time.start();
+    //time.start();
 
     run_oldstate = -1;
 
@@ -230,7 +230,7 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
 /*****************************************************/
 bool Cce140f::exit(void)
 {
-    AddLog(LOG_PRINTER,"PRT Closing...");
+    AddLog(LOG_PRINTER,"CE-140F Closing...");
     AddLog(LOG_PRINTER,"done.");
     Cprinter::exit();
     return true;
@@ -238,7 +238,7 @@ bool Cce140f::exit(void)
 
 
 /*****************************************************/
-/* CE-126P PRINTER emulation						 */
+/* CE-140F PRINTER emulation						 */
 /*****************************************************/
 void Cce140f::Printer(qint8 d)
 {
@@ -341,13 +341,13 @@ bool Cce140f::run(void)
     bool bit = false;
     ce140f_Mode=RECEIVE_MODE;
 
-    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? GET_PIN(PIN_SEL1):true));       // RMT
-    pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));    // Out
-    SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));      // In
+//    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? GET_PIN(PIN_SEL1):true));       // RMT
+//    pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));    // Out
+//    SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));      // In
 
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
-    pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
+    pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
 
 #if 1
 // Try to introduce a latency
@@ -404,13 +404,13 @@ bool Cce140f::run(void)
 
     switch (code_transfer_step) {
     case 0 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
-                    time.restart();
+                    lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
                 }
                 break;
     case 1 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
-                    if (time.elapsed() > 40) {
+                    if (pTIMER->mselapsed(lastState) > 40) {
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
@@ -441,36 +441,43 @@ bool Cce140f::run(void)
                         //Printer(t);
                         SET_PIN(PIN_ACK,DOWN);
                         code_transfer_step=4;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 17;
                         //t=0; c=0;
                     }
                     else {
                         SET_PIN(PIN_ACK,DOWN);
                         code_transfer_step=3;
+                        lastState=pTIMER->state;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 18;
                     }
                 }
                 break;
-    case 3:     code_transfer_step=2;
+    case 3:     if (pTIMER->mselapsed(lastState)>2) {
+                    code_transfer_step=2;
                     // wait 2 ms and raise ACK
                     SET_PIN(PIN_ACK,UP);
-
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 16;
+                }
                 break;
     case 4:     if ((GET_PIN(PIN_BUSY) == DOWN)&&(GET_PIN(PIN_MT_OUT1) == DOWN)) {
                     SET_PIN(PIN_ACK,UP);
                     code_transfer_step=5;
-                    time.restart();
+                    lastState=pTIMER->state;//time.restart();
                     t=0; c=0;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 15;
                 }
                 break;
-    case 5:     if (time.elapsed()>9) {
+    case 5:     if (pTIMER->mselapsed(lastState)>9) {
                     SET_PIN(PIN_ACK,DOWN);
                     code_transfer_step=0;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 14;
 
 
                 }
                 break;
             }
 
-    //if ( (device_code == 0x41) && (code_transfer_step==0)) {
+    if ( (device_code == 0x41) && (code_transfer_step==0)) {
         if ((device_code >0) && (code_transfer_step==0)&&PIN_BUSY_GoUp && (GET_PIN(PIN_ACK)==DOWN)) {
             // read the 4 bits
 
@@ -479,21 +486,21 @@ bool Cce140f::run(void)
             //AddLog(LOG_PRINTER,tr("4bits to floppy : %1").arg(t,2,16) );
             Push4(t);
             SET_PIN(PIN_ACK,UP);
-            time.restart();
+            lastState=pTIMER->state; //time.restart();
 
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
         }
         else
         if ((device_code >0) && (code_transfer_step==0)&&PIN_BUSY_GoDown && (GET_PIN(PIN_ACK)==UP)) {
             SET_PIN(PIN_ACK,DOWN);
-            time.restart();
+            lastState=pTIMER->state;//time.restart();
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 11;
         }
-//    }
+
 
 else
 
-    if ( !data_out.empty() && (time.elapsed()>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
+    if ( !data_out.empty() &&  (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
         BYTE t = Pop_out4();
 
         SET_PIN(PIN_SEL1,t&0x01);
@@ -506,16 +513,18 @@ else
     }
 
 else
-    if ((GET_PIN(PIN_ACK)==UP) && PIN_BUSY_GoUp) {
+    if ( (code_transfer_step==0)&&(GET_PIN(PIN_ACK)==UP) && PIN_BUSY_GoUp) {
         SET_PIN(PIN_ACK,DOWN);
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 13;
     }
 else
-    if ((time.elapsed()>20) && !data.empty()) {
+    if ( (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>50) && !data.empty()) {
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 20;
         processCommand();
         data.clear();
     }
 
-
+    }
 
 
     Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
@@ -538,13 +547,15 @@ else
 #endif
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
-    pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
+    pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
 
+    pCONNECTOR_Ext->Set_values(pCONNECTOR->Get_values());
 
     return true;
 }
 
 void Cce140f::processCommand(void) {
+    if (data.isEmpty()) return;
     QString s ="";
     for (int i =0;i< data.size();i++) {
         s.append(QChar(data.at(i)));
@@ -571,6 +582,7 @@ void Cce140f::processCommand(void) {
         case 0x0E: process_LOAD(0);break;
         case 0x17: process_LOAD(1);break;
         case 0x12: process_LOAD(2);break;
+        case 0x0F: process_LOAD(3);break;
         case 0x10: process_SAVE(0);break;
         case 0x11: process_SAVE(1);break;
         case 0x16: process_SAVE(2);break;       // SAVE ASCII
@@ -650,16 +662,14 @@ void Cce140f::process_SAVE(int cmd) {
             file_save.setFileName(s);
 
             if (!file_save.open(QIODevice::WriteOnly)) {
-                MSG_ERROR(tr("ERROR creatig file : %1").arg(s))
+                MSG_ERROR(tr("ERROR creating file : %1").arg(s))
             }
 
             data_out.append(0x00);
             break;
     case 1:
-            for (int i=1;i<15;i++) {
-                s.append(QChar(data.at(i)));
-            }
-            AddLog(LOG_PRINTER,tr("process_SAVE file:%1").arg(s));
+
+            AddLog(LOG_PRINTER,tr("process_SAVE1"));
 
             // transmet 5 bytes : the size ?
             // 1 : 00
@@ -667,7 +677,7 @@ void Cce140f::process_SAVE(int cmd) {
             // 3 : Size 2
             // 4 : Size 3
             // 5 : checksum
-            file_size = data.at(2) + (data.at(3)<<2) + (data.at(4)<<4);
+            file_size = data.at(2) + (data.at(3)<<8) + (data.at(4)<<16);
             AddLog(LOG_PRINTER,tr("process_SAVE file SIZE: %1 ").arg(file_size));
             data_out.append(0x00);
             wait_data_function = 0xff;
@@ -692,58 +702,132 @@ void Cce140f::process_SAVE(int cmd) {
             // remove command from he stream
             data.removeFirst();
             //store data
+            // WARNING : received by 256Bytes paquet
             QDataStream out(&file_save);
-            for (int i=0;i<file_size;i++) {
+
+            for (int i=0;i<data.size();i++) {
                 out << (qint8) data.at(i);
                 AddLog(LOG_PRINTER,tr("retreived data stream %1 - %2 (%3)").arg(i).arg(data.at(i),2,16).arg(QChar(data.at(i))))
             }
-            file_save.close();
+            file_size -= data.size();
+            if (file_size>0) {
+                wait_data_function = 0xff;
+            }else {
+                file_save.close();
+            }
             AddLog(LOG_PRINTER,tr("retreived data stream"));
             data_out.append(0x00);
+            data.clear();
             break;
         }
 }
 
 void Cce140f::process_LOAD(int cmd) {
     QString s = "";
+    BYTE c=0;
+
     switch (cmd) {
 
     case 0:
             // open file
 
-            for (int i=1;i<15;i++) {
+            for (int i=3;i<15;i++) {
                 s.append(QChar(data.at(i)));
             }
             AddLog(LOG_PRINTER,tr("process_LOAD file:%1").arg(s));
 
+            file_load.setFileName(s);
 
+            if (!file_load.open(QIODevice::ReadOnly)) {
+                MSG_ERROR(tr("ERROR opening file : %1").arg(s))
+            }
+
+            file_size = file_load.size();
+            AddLog(LOG_PRINTER,tr("file size %1").arg(file_size));
             data_out.append(0x00);
             checksum = 0;
             sendString(" ");
 
             // Send size : 3 bytes + checksum
-            data_out.append(CheckSum(0x25));
-            data_out.append(CheckSum(0x00));
-            data_out.append(CheckSum(0x00));
+            data_out.append(CheckSum(file_size & 0xff));
+            data_out.append(CheckSum((file_size >> 8) & 0xff));
+            data_out.append(CheckSum((file_size >> 16) & 0xff));
             data_out.append(checksum);
+            ba_load = file_load.readAll();
             break;
     case 1:
-
-
-            // transmet 4 bytes : the lenght ?
             data_out.append(0x00);
             checksum=0;
-            data_out.append(CheckSum(0x30));
+
+            // Send first byte
+
+
+            //ba_load.remove(0,0x0f);            // remove first byte 'ff'
+
+            //ba_load.chop(1);
+            data_out.append(CheckSum(ba_load.at(0)));
+            ba_load.remove(0,0x01);
+            //data_out.append(CheckSum(0x0f));
             data_out.append(checksum);
+            //ba_load.remove(0,0x10);
             //wait_data_function = 0xfd;
             break;
     case 2:
 
-            // transmet 4 bytes : the lenght ?
+            // send data
             data_out.append(0x00);
             checksum=0;
-            data_out.append(CheckSum(0x1A));  // 0x1A pour fin de fichier
+
+
+            // Envoyer une ligne complete
+            // Until 0x0D
+            // EOF = 0x1A
+            // Start at 0x10
+
+#if 0
+            //data_out.append(CheckSum(0x0f));
+
+            //data_out.append(CheckSum(0xff));
+            data_out.append(CheckSum(0x00));
+            data_out.append(CheckSum(0x0A));
+            data_out.append(CheckSum(0x02));
+            data_out.append(CheckSum(0x41));
+            data_out.append(CheckSum(0x0D));
+#else
+            do {
+                c=ba_load.at(0);
+                data_out.append(CheckSum(c));  // 0x1A pour fin de fichier
+                ba_load.remove(0,1);
+            }
+            while ((ba_load.size()>0) && (c!=0x0d));
+
+            if (c!=0x0d) {
+                if (ba_load.isEmpty()) {
+                data_out.append(CheckSum(0x1A));  // 0x1A pour fin de fichier
+                }
+            }
+#endif
             data_out.append(checksum);
+            data_out.append(0x00);
+            break;
+    case 0x3:
+            data_out.append(0x00);
+            checksum=0;
+
+            file_size = ba_load.size();
+
+            for (int i=0;i<file_size;i++) {
+                c=ba_load.at(i);
+                data_out.append(CheckSum(c));
+                AddLog(LOG_PRINTER,tr("send to output %1").arg(i))
+                if (((i+1)%0x100)==0) {
+                   data_out.append(checksum);
+                   checksum=0;
+                   AddLog(LOG_PRINTER,tr("CHECKSUM "))
+                }
+                //AddLog(LOG_PRINTER,tr("send to output (%1) : %2 - %3").arg(i+j*0x100).arg(c,2,16).arg(QChar(c)));
+            }
+            if ((file_size%0x100)) data_out.append(checksum);
             data_out.append(0x00);
             break;
     case 0xfe: // received ascii data steam

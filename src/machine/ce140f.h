@@ -37,7 +37,7 @@ public:
     //virtual void resizeEvent ( QResizeEvent * );
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
-    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
+    Cconnector	*pCONNECTOR_Ext;	qint64 pCONNECTOR_Ext_value;
 
     QImage *ce140fbuf;
     QImage *ce140fdisplay;
@@ -89,7 +89,7 @@ private:
     bool	Previous_PIN_BUSY;
     bool	Previous_PIN_MT_OUT1;
     bool	Previous_PIN_D_OUT;
-    QTime	time;
+   // QTime	time;
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;
@@ -101,9 +101,12 @@ private:
     bool    halfdata_out;
     int     checksum;
     int     wait_data_function;
-    int     file_size;
+    qint64     file_size;
 
     QFile   file_save;
+    QFile   file_load;
+    QByteArray ba_load;
+    qint64  lastState;
 };
 
 

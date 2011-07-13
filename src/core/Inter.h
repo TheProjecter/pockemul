@@ -46,6 +46,7 @@ public:
     bool GetTP(int index);
     void deleteTP(int index);
 	void SetCPUspeed(float);
+    int     mselapsed(qint64 stateRef);
 
 	qint64	state;					//state counter
 	long	chkspeed;				//speed counter
