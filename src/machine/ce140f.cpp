@@ -348,6 +348,8 @@ bool Cce140f::run(void)
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
     pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
+    //pCONNECTOR->Set_pin(PIN_ACK,pCONNECTOR->Get_pin(PIN_ACK) || pCONNECTOR_Ext->Get_pin(PIN_ACK));
+
 
 #if 1
 // Try to introduce a latency
@@ -383,24 +385,6 @@ bool Cce140f::run(void)
     bool PIN_MT_OUT1_Change = (GET_PIN(PIN_MT_OUT1) != Previous_PIN_MT_OUT1 ) ? true:false;
     bool PIN_D_OUT_Change = (GET_PIN(PIN_D_OUT) != Previous_PIN_D_OUT ) ? true:false;
 
-//    if (   (GET_PIN(PIN_MT_OUT1) == UP)
-//        && (GET_PIN(PIN_D_OUT)==UP) ) {
-//        if (PIN_MT_OUT1_Change || PIN_D_OUT_Change) {
-//            time.restart();
-//            code_transfer_step=1;
-//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
-//        }
-//        if (time.elapsed() > 40) {
-//            // Code transfer sequence started
-//            // Raise ACK
-//            code_transfer_step = 2;
-//            SET_PIN(PIN_ACK,UP);
-//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 9;
-//        }
-//    }
-//    else {
-//        code_transfer_step=0;
-//    }
 
     switch (code_transfer_step) {
     case 0 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
@@ -440,7 +424,11 @@ bool Cce140f::run(void)
                         device_code = t;
                         //Printer(t);
                         SET_PIN(PIN_ACK,DOWN);
-                        code_transfer_step=4;
+                        if (device_code==0x41) {
+                            code_transfer_step=4;
+                        }
+                        else
+                            code_transfer_step = 0;
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 17;
                         //t=0; c=0;
                     }
@@ -532,25 +520,16 @@ else
     Previous_PIN_D_OUT = GET_PIN(PIN_D_OUT);
 
 
-#if 0
-    char dump11[20]="";
-    static char dump12[20]="";
 
-    pCONNECTOR->Dump_pin();
-    strcpy(dump11,pCONNECTOR->dump);
 
-    if (strcmp(dump11,dump12) != 0)
-    {
-        strcpy(dump12 ,dump11);
-        AddLog(LOG_PRINTER,tr("output printer %1").arg(dump11));
-    }
-#endif
+
+    pCONNECTOR_Ext->Set_values(pCONNECTOR->Get_values());
+    pCONNECTOR_Ext->Set_pin(10,false);  // not connexted
+    pCONNECTOR_Ext->Set_pin(11,false);  // not connexted
+    //pCONNECTOR_Ext->Set_pin(PIN_ACK, pCONNECTOR_Ext->Get_pin(PIN_ACK) || pCONNECTOR->Get_pin(PIN_ACK));
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
     pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
-
-    pCONNECTOR_Ext->Set_values(pCONNECTOR->Get_values());
-
     return true;
 }
 
