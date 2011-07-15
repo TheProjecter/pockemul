@@ -64,7 +64,8 @@ int ce140f_Mode;
     void process_FILES_LIST(void);
     void process_SAVE(int cmd);
     void process_LOAD(int cmd);
-
+    void process_CLOSE(int cmd);
+    void process_KILL(int cmd);
 
     void sendString(QString s);
     BYTE CheckSum(BYTE b);

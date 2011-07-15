@@ -90,6 +90,7 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
     xml->writeEndElement(); // object
 
     // if power on and (CpcXXXX) class then save session
+    // TO DO : save session in xml
     if (Power &&  dynamic_cast<CpcXXXX *>(this) )
     {
         ((CpcXXXX *)this)->Initial_Session_Save();

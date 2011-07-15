@@ -1,4 +1,4 @@
-#include <QtGui> 
+#include <QtGui>
 #include <QString>
 #include <QPainter>
  
@@ -448,7 +448,14 @@ void MainWindowPockemul::saveassession()
 
     xml->writeEndElement();  // pml
     MSG_ERROR(s)
-    QFile f("test.pml");
+
+            QString fn = QFileDialog::getSaveFileName(
+                    mainwindow,
+                    tr("Choose a filename to save session"),
+                    ".",
+                   tr("Session File (*.pml)"));
+
+    QFile f(fn);
     if (f.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&f);
         out << s;
@@ -473,12 +480,20 @@ void MainWindowPockemul::updateTimer()
 void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
     QPoint point = event->pos();
 
-    float delta = event->delta()/8;
+    float delta = event->delta()/12;
+
     if (((zoom >= 20) && (delta<0)) ||
         ((zoom <=300) && (delta >0))){
-        zoom = zoom *(100+delta)/100;
+        int d = (delta>0) ? 10 : -10;
+        //zoom+=delta;
+        //zoom = zoom *(100+delta)/100;
+        delta = ((zoom+d)/zoom - 1)*100;
+        zoom += d;
+        //zoom = zoom *(100+delta)/100;
     }
     else delta = 0;
+
+
     this->setWindowTitle(QString("Delta=%1  zoom=%2").arg(delta).arg(zoom));
 
     for (int i=0;i<listpPObject.size();i++) {

@@ -486,31 +486,31 @@ bool Cce140f::run(void)
         }
 
 
-else
+    else
 
-    if ( !data_out.empty() &&  (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
-        BYTE t = Pop_out4();
+        if ( !data_out.empty() &&  (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
+            BYTE t = Pop_out4();
 
-        SET_PIN(PIN_SEL1,t&0x01);
-        SET_PIN(PIN_SEL2,(t&0x02)>>1);
-        SET_PIN(PIN_D_OUT,(t&0x04)>>2);
-        SET_PIN(PIN_D_IN,(t&0x08)>>3);
+            SET_PIN(PIN_SEL1,t&0x01);
+            SET_PIN(PIN_SEL2,(t&0x02)>>1);
+            SET_PIN(PIN_D_OUT,(t&0x04)>>2);
+            SET_PIN(PIN_D_IN,(t&0x08)>>3);
 
-        SET_PIN(PIN_ACK,UP);
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 12;
-    }
+            SET_PIN(PIN_ACK,UP);
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 12;
+        }
 
-else
-    if ( (code_transfer_step==0)&&(GET_PIN(PIN_ACK)==UP) && PIN_BUSY_GoUp) {
-        SET_PIN(PIN_ACK,DOWN);
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 13;
-    }
-else
-    if ( (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>50) && !data.empty()) {
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 20;
-        processCommand();
-        data.clear();
-    }
+    else
+        if ( (code_transfer_step==0)&&(GET_PIN(PIN_ACK)==UP) && PIN_BUSY_GoUp) {
+            SET_PIN(PIN_ACK,DOWN);
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 13;
+        }
+    else
+        if ( (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>50) && !data.empty()) {
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 20;
+            processCommand();
+            data.clear();
+        }
 
     }
 
@@ -554,17 +554,19 @@ void Cce140f::processCommand(void) {
     }
 
     switch (data.first()) {
+        case 0x04: process_CLOSE(0);break;
         case 0x05: process_FILES();break;
         case 0x06: process_FILES_LIST();break;
-        case 0x08: process_INIT(0);break;
-        case 0x09: process_INIT(1);break;
-        case 0x0E: process_LOAD(0);break;
-        case 0x17: process_LOAD(1);break;
-        case 0x12: process_LOAD(2);break;
-        case 0x0F: process_LOAD(3);break;
-        case 0x10: process_SAVE(0);break;
-        case 0x11: process_SAVE(1);break;
-        case 0x16: process_SAVE(2);break;       // SAVE ASCII
+        case 0x08: process_INIT(0x08);break;
+        case 0x09: process_INIT(0x09);break;
+        case 0x0A: process_KILL(0x0A);break;
+        case 0x0E: process_LOAD(0x0E);break;
+        case 0x17: process_LOAD(0x17);break;
+        case 0x12: process_LOAD(0x12);break;
+        case 0x0F: process_LOAD(0x0F);break;
+        case 0x10: process_SAVE(0x10);break;
+        case 0x11: process_SAVE(0x11);break;
+        case 0x16: process_SAVE(0x16);break;       // SAVE ASCII
         case 0x1D: process_DSKF(); break;
         case 0xFE: process_SAVE(0xfe);break;    // Handle ascii saved data stream
         case 0xFF: process_SAVE(0xff);break;    // Handle saved data stream
@@ -614,11 +616,11 @@ void Cce140f::process_FILES_LIST(void) {
 
 void Cce140f::process_INIT(int cmd) {
     switch (cmd) {
-    case 0:
+    case 0x08:
         AddLog(LOG_PRINTER,tr("Process INIT(%1)").arg(data.at(1)));
         data_out.append(0x00);
         break;
-    case 1:
+    case 0x09:
         AddLog(LOG_PRINTER,tr("Process INIT2(%1)").arg(data.at(1)));
         data_out.append(0x00);
         break;
@@ -630,7 +632,7 @@ void Cce140f::process_SAVE(int cmd) {
     QString s = "";
     switch (cmd) {
 
-    case 0:
+    case 0x10:
             // create file
 
             for (int i=3;i<15;i++) {
@@ -646,7 +648,7 @@ void Cce140f::process_SAVE(int cmd) {
 
             data_out.append(0x00);
             break;
-    case 1:
+    case 0x11:
 
             AddLog(LOG_PRINTER,tr("process_SAVE1"));
 
@@ -661,7 +663,7 @@ void Cce140f::process_SAVE(int cmd) {
             data_out.append(0x00);
             wait_data_function = 0xff;
             break;
-    case 2:
+    case 0x16:
             for (int i=1;i<15;i++) {
                 s.append(QChar(data.at(i)));
             }
@@ -684,7 +686,7 @@ void Cce140f::process_SAVE(int cmd) {
             // WARNING : received by 256Bytes paquet
             QDataStream out(&file_save);
 
-            for (int i=0;i<data.size();i++) {
+            for (int i=0;i<data.size()-1;i++) {
                 out << (qint8) data.at(i);
                 AddLog(LOG_PRINTER,tr("retreived data stream %1 - %2 (%3)").arg(i).arg(data.at(i),2,16).arg(QChar(data.at(i))))
             }
@@ -694,6 +696,7 @@ void Cce140f::process_SAVE(int cmd) {
             }else {
                 file_save.close();
             }
+            // check the checksum!!!!!
             AddLog(LOG_PRINTER,tr("retreived data stream"));
             data_out.append(0x00);
             data.clear();
@@ -707,7 +710,7 @@ void Cce140f::process_LOAD(int cmd) {
 
     switch (cmd) {
 
-    case 0:
+    case 0x0E:
             // open file
 
             for (int i=3;i<15;i++) {
@@ -734,7 +737,7 @@ void Cce140f::process_LOAD(int cmd) {
             data_out.append(checksum);
             ba_load = file_load.readAll();
             break;
-    case 1:
+    case 0x17:
             data_out.append(0x00);
             checksum=0;
 
@@ -751,7 +754,7 @@ void Cce140f::process_LOAD(int cmd) {
             //ba_load.remove(0,0x10);
             //wait_data_function = 0xfd;
             break;
-    case 2:
+    case 0x12:
 
             // send data
             data_out.append(0x00);
@@ -789,7 +792,7 @@ void Cce140f::process_LOAD(int cmd) {
             data_out.append(checksum);
             data_out.append(0x00);
             break;
-    case 0x3:
+    case 0x0f:
             data_out.append(0x00);
             checksum=0;
 
@@ -809,18 +812,38 @@ void Cce140f::process_LOAD(int cmd) {
             if ((file_size%0x100)) data_out.append(checksum);
             data_out.append(0x00);
             break;
-    case 0xfe: // received ascii data steam
-            //store data
-            AddLog(LOG_PRINTER,tr("retreived ascii data stream"));
-            data_out.append(0x00);
 
-            break;
-    case 0xff: // received data
-            //store data
-            AddLog(LOG_PRINTER,tr("retreived data stream"));
-            data_out.append(0x00);
-            break;
         }
+}
+
+void Cce140f::process_KILL(int cmd) {
+    QString s = "";
+    switch (cmd) {
+    case 0x0A:
+        // delete file
+
+        for (int i=3;i<15;i++) {
+            s.append(QChar(data.at(i)));
+        }
+        AddLog(LOG_PRINTER,tr("process_KILL file:%1").arg(s));
+
+        QFile::remove(s);
+        data_out.append(0x00);
+        break;
+    }
+}
+
+void Cce140f::process_CLOSE(int cmd) {
+    QString s = "";
+    switch (cmd) {
+
+    case 0: // Close files open
+        // si 0xFF close all files
+        // si 0-8 close the corresponding file
+        data_out.append(0x00);
+        break;
+    }
+
 }
 
 void Cce140f::sendString(QString s) {
