@@ -22,13 +22,15 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
     connect(pbLoadBin, SIGNAL(clicked()), this, SLOT(LoadBin())); 
     connect(pbSaveBin, SIGNAL(clicked()), this, SLOT(SaveBin())); 
 
+#if 0
     hexeditor = new HexViewer(framedump);
     hexeditor->setFocus();
+#else
+    hextemp = new QHexEdit(framedump);
+    hextemp->setFocus();
+#endif
+      LoadSlot();
 
-	LoadSlot(); 
-
-//    hextemp = new QHexEdit(framedump);
-//    hextemp->setFocus();
 
 	resize( 605,400);
 }
@@ -122,25 +124,30 @@ void DialogDump::LoadSlot(void)
 void DialogDump::resizeEvent( QResizeEvent * event )
 {
 
-	hexeditor->resize( framedump->size() );
-//    hextemp->resize(framedump->size());
+    //hexeditor->resize( framedump->size() );
+    hextemp->resize(framedump->size());
 }
 
 void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previous)
 {
 	bool ok;
 	
+    // Check if dataChanged , ask then save (not in ROM !!!)
+    // Modify ROM ??? save ROM to file ... have to think about this
+
 	int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(&ok,16);
 	int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
-	hexeditor->setData("",&(pPC->mem[adr]), size, adr);
 
-//    QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]));
-//    hextemp->data().clear();
-//    hextemp->data().append((&(pPC->mem[adr]),size);
-//    for (int i = 0;i<size;i++) {
-//        hextemp->insert(i,pPC->mem[i+adr]);
-//    }
-//    hextemp->setFocus();
+#if 0
+    hexeditor->setData("",&(pPC->mem[adr]), size, adr);
+#else
+    QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
+    hextemp->data().clear();
+    hextemp->setAddressOffset(adr);
+    hextemp->setData(*ba);//data().append(&(pPC->mem[adr]),size);
+
+    hextemp->setFocus();
+#endif
 	update();
 
 }

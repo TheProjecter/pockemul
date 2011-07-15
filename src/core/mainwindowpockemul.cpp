@@ -483,13 +483,10 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
     float delta = event->delta()/12;
 
     if (((zoom >= 20) && (delta<0)) ||
-        ((zoom <=300) && (delta >0))){
+        ((zoom <300) && (delta >0))){
         int d = (delta>0) ? 10 : -10;
-        //zoom+=delta;
-        //zoom = zoom *(100+delta)/100;
         delta = ((zoom+d)/zoom - 1)*100;
         zoom += d;
-        //zoom = zoom *(100+delta)/100;
     }
     else delta = 0;
 

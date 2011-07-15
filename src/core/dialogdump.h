@@ -2,7 +2,7 @@
 #define DIALOGDUMP_H
 //
 #include "ui_dialogdump.h"
-//#include "qhexedit.h"
+#include "qhexedit.h"
 
 class HexViewer;
 class CpcXXXX;
@@ -15,7 +15,7 @@ public:
 
 
 	HexViewer *hexeditor;
-    //QHexEdit *hextemp;
+    QHexEdit *hextemp;
 
 private slots:
 	void slotDump( QTableWidgetItem * , QTableWidgetItem * );

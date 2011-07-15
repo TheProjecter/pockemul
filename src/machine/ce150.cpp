@@ -65,7 +65,7 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     Pc_DX	= 960;
     Pc_DY	= 320;
     SnapPts = QPoint(388,0);
-    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",true);	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",true,QPoint(390,60));	publish(pCONNECTOR);
     pTIMER		= new Ctimer(this);
     pLH5810		= new CLH5810(this);
     KeyMap		= KeyMapce150;

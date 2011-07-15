@@ -49,6 +49,7 @@ public:
 };
 
 class Cce515p:public Cprinter{
+Q_OBJECT
 public:
 
     virtual bool		run(void);

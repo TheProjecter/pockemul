@@ -2,11 +2,12 @@
 #include <QResource>
 
 #include "common.h"
+#include "ce515p.h"
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "clink.h"
 #include "dialoganalog.h"
-#include "ce515p.h"
+
 
 
 #define NO_MOVE	0
@@ -27,7 +28,8 @@
 
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/1200)
 
-#define PRINTER_TICKS	(pTIMER->pPC->getfrequency()/375)   // 75mm/s => 5*75 step/s
+// 75mm/s => 5*75 step/s
+#define PRINTER_TICKS	(pTIMER->pPC->getfrequency()/375)
 
 Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
 {
