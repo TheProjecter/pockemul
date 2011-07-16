@@ -23,6 +23,7 @@ public:
     void findAllObj(CPObject *, QList<CPObject *> *);
     bool isLinked(CPObject *);
     bool isLinked(Cconnector *);
+    Cconnector * Linked(Cconnector * search);
 	
 	
     void clearlog(void) {

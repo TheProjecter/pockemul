@@ -143,6 +143,7 @@ CPObject *pPC=0;
 	pPC->InitDisplay();
 
     pPC->Move(QPoint(0,0));
+    pPC->setGeometry(0,0,pPC->Pc_DX*mainwindow->zoom/100,pPC->Pc_DY*mainwindow->zoom/100);
 	pPC->show();
 
     return pPC;

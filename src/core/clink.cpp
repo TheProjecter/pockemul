@@ -65,6 +65,14 @@ bool CDirectLink::isLinked(Cconnector * search)
      return ((AConnList.indexOf(search)>=0) || (BConnList.indexOf(search)>=0)) ;
 }
 
+Cconnector * CDirectLink::Linked(Cconnector * search)
+{
+    int i = AConnList.indexOf(search);
+    if (i>=0) return BConnList.at(i);
+    i = BConnList.indexOf(search);
+    if (i>=0) return AConnList.at(i);
+}
+
 void CDirectLink::Output(CPObject* pPC)
 {
 	for (int i = 0;i < pPC->ConnList.size(); i++)

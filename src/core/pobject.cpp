@@ -409,6 +409,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	CPObject * ConnectedObj = 0;						// bring the Widget in front
     // fetch all conected objects
     // If gender = male, stackunder
+#if 0
     if (ConnectedObj=mainwindow->pdirectLink->findObj(this))		// Is this object connected to another ?
 	{
 		if (stackBehind)				// Is this object always behind the connected one ?
@@ -423,7 +424,10 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 		}
 	}
 	else raise();
-	
+#else
+    manageStackPos();
+
+#endif
     if ( (parentWidget() != mainwidget) //mainwindow
         && (parentWidget() != 0))
 	{
@@ -435,6 +439,23 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 		startPosDrag = true;
 		PosDrag = event->globalPos();
 	}
+}
+
+void CPObject::manageStackPos(void) {
+    // fetch connectors connected
+    // for each connector
+    //      if male then stackunder and recursive
+    //
+    for (int i=0;i < ConnList.size();i++) {
+        if (ConnList.at(i)->getGender() == true) {
+            Cconnector * conn = ConnList.at(i);
+            Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
+            CPObject * linkedPC = (CPObject *) (conn2->Parent);
+            stackUnder(linkedPC);
+            linkedPC->manageStackPos();
+        }
+    }
+
 }
 
 void CPObject::mouseMoveEvent( QMouseEvent * event )
