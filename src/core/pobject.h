@@ -132,7 +132,7 @@ public:
     void    SwitchFrontBack(QPoint);
     bool    isFront() {return Front;}
     QList<Cconnector *> nearConnectors(Cconnector *refConnector,qint8 snaprange);
-    void manageStackPos(void);
+    void manageStackPos(QList<CPObject *> *);
 
 		
 public:

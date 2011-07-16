@@ -425,7 +425,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 	else raise();
 #else
-    manageStackPos();
+    QList<CPObject *> list;
+    manageStackPos(&list);
 
 #endif
     if ( (parentWidget() != mainwidget) //mainwindow
@@ -441,18 +442,26 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 }
 
-void CPObject::manageStackPos(void) {
+void CPObject::manageStackPos(QList<CPObject *> *l) {
     // fetch connectors connected
     // for each connector
     //      if male then stackunder and recursive
     //
+    // Keep track of already compute objects
+    if (l->indexOf(this)>=0) return;
+    l->append(this);
+
     for (int i=0;i < ConnList.size();i++) {
+        Cconnector * conn = ConnList.at(i);
+        Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
+        CPObject * linkedPC = (CPObject *) (conn2->Parent);
         if (ConnList.at(i)->getGender() == true) {
-            Cconnector * conn = ConnList.at(i);
-            Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
-            CPObject * linkedPC = (CPObject *) (conn2->Parent);
             stackUnder(linkedPC);
-            linkedPC->manageStackPos();
+            linkedPC->manageStackPos(l);
+        }
+        else {
+            linkedPC->stackUnder(this);
+            linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
         }
     }
 

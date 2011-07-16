@@ -337,6 +337,8 @@ void MainWindowPockemul::opensession()
 
     xml.setDevice(&file);
 
+    CPObject * firstPC = 0;
+
     if (xml.readNextStartElement()) {
         if (xml.name() == "pml" && xml.attributes().value("version") == "1.0") {
             zoom = xml.attributes().value("zoom").toString().toFloat();
@@ -348,6 +350,7 @@ void MainWindowPockemul::opensession()
                     if (eltname == "object") {
                         QString name = xml.attributes().value("name").toString();
                         locPC = LoadPocket(objtable.value(name));
+                        if (firstPC == 0) firstPC = locPC;      // Store the first pocket to manage stack
                         int id = xml.attributes().value("id").toString().toInt();
                         map.insert(id,locPC);
                         locPC->Front = (xml.attributes().value("front")=="true") ?true:false;
@@ -363,7 +366,7 @@ void MainWindowPockemul::opensession()
                                 locPC->setPosX(posX.toFloat());
                                 locPC->setPosY(posY.toFloat());
                                 if (locPC->Front) {
-                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX,locPC->Pc_DY);
+                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX*zoom/100,locPC->Pc_DY*zoom/100);
                                 }
                                 else {
                                     locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX/4,locPC->Pc_DY/4);
@@ -399,6 +402,9 @@ void MainWindowPockemul::opensession()
         else
             xml.raiseError(QObject::tr("The file is not an XBEL version 1.0 file."));
     }
+    QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+    QApplication::sendEvent(firstPC, e);
+    delete e;
 }
 
 void MainWindowPockemul::saveassession()
