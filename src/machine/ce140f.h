@@ -22,7 +22,7 @@
 #define GET_PIN(n)		(pCONNECTOR->Get_pin(n))
 #define SET_PIN(n,v)	pCONNECTOR->Set_pin(n,v)
 
-class Cce140f:public Cprinter{
+class Cce140f:public CPObject{
 public:
 
     virtual bool init(void);				//initialize
@@ -39,8 +39,8 @@ public:
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
     Cconnector	*pCONNECTOR_Ext;	qint64 pCONNECTOR_Ext_value;
 
-    QImage *ce140fbuf;
-    QImage *ce140fdisplay;
+//    QImage *ce140fbuf;
+//    QImage *ce140fdisplay;
 
     void RefreshCe140f(qint8 data);
     QSound *bells;

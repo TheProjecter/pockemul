@@ -33,11 +33,11 @@ TransMap KeyMapce140f[]={
 };
 int KeyMapce140fLenght = 5;
 
-Cce140f::Cce140f(CPObject *parent):Cprinter(this)
+Cce140f::Cce140f(CPObject *parent):CPObject(parent)
 {								//[constructor]
     setfrequency( 0);
-    ce140fbuf	= 0;
-    ce140fdisplay= 0;
+    //ce140fbuf	= 0;
+    //ce140fdisplay= 0;
     bells		= 0;
     charTable = 0;
     ToDestroy	= false;
@@ -46,17 +46,17 @@ Cce140f::Cce140f(CPObject *parent):Cprinter(this)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	   = new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(462,268));	publish(pCONNECTOR);
-    pCONNECTOR_Ext = new Cconnector(this,11,1,"Connector 11 pins Ext.",false,QPoint(6,255));	publish(pCONNECTOR_Ext);
+    pCONNECTOR	   = new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(597,310));	publish(pCONNECTOR);
+    pCONNECTOR_Ext = new Cconnector(this,11,1,"Connector 11 pins Ext.",false,QPoint(6,295));	publish(pCONNECTOR_Ext);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140f;
     KeyMapLenght= KeyMapce140fLenght;
     pKEYB		= new Ckeyb(this,"ce140f.map");
-    Pc_DX	= 480;
-    Pc_DY	= 420;
+    Pc_DX	= 620;//480;
+    Pc_DY	= 488;//420;
     SnapPts = QPoint(594,145);
 
-    setPaperPos(QRect(150,-3,207,149));
+    //setPaperPos(QRect(150,-3,207,149));
 
     stackBehind = true;
 
@@ -112,7 +112,7 @@ void Cce140f::SaveAsText(void)
 
 void Cce140f::RefreshCe140f(qint8 data)
 {
-
+#if 0
     QPainter painter;
 
 //if (posX==0) bells->play();
@@ -152,7 +152,8 @@ void Cce140f::RefreshCe140f(qint8 data)
 
     Refresh_Display = true;
 
-    paperWidget->setOffset(QPoint(0,top));
+    //paperWidget->setOffset(QPoint(0,top));
+#endif
 
 }
 
@@ -162,13 +163,13 @@ void Cce140f::RefreshCe140f(qint8 data)
 /*****************************************************/
 void Cce140f::clearPaper(void)
 {
-    // Fill it blank
-    ce140fbuf->fill(PaperColor.rgba());
-    ce140fdisplay->fill(QColor(255,255,255,0).rgba());
-    settop(10);
-    setposX(0);
-    // empty TextBuffer
-    TextBuffer.clear();
+//    // Fill it blank
+//    ce140fbuf->fill(PaperColor.rgba());
+//    ce140fdisplay->fill(QColor(255,255,255,0).rgba());
+//    settop(10);
+//    setposX(0);
+//    // empty TextBuffer
+//    TextBuffer.clear();
 }
 
 
@@ -191,8 +192,8 @@ bool Cce140f::init(void)
 
     // Create CE-126 Paper Image
     // The final paper image is 207 x 149 at (277,0) for the ce125
-    ce140fbuf	= new QImage(QSize(207, 3000),QImage::Format_ARGB32);
-    ce140fdisplay= new QImage(QSize(207, 149),QImage::Format_ARGB32);
+    //ce140fbuf	= new QImage(QSize(207, 3000),QImage::Format_ARGB32);
+    //ce140fdisplay= new QImage(QSize(207, 149),QImage::Format_ARGB32);
 
     // Fill it blank
     clearPaper();
@@ -203,8 +204,8 @@ bool Cce140f::init(void)
 
 // Create a paper widget
 
-    paperWidget = new CpaperWidget(PaperPos(),ce140fbuf,this);
-    paperWidget->show();
+//    paperWidget = new CpaperWidget(PaperPos(),ce140fbuf,this);
+//    paperWidget->show();
 
 //	SET_PIN(PIN_ACK,DOWN);
 AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1":"0"));
@@ -232,7 +233,7 @@ bool Cce140f::exit(void)
 {
     AddLog(LOG_PRINTER,"CE-140F Closing...");
     AddLog(LOG_PRINTER,"done.");
-    Cprinter::exit();
+    CPObject::exit();//Cprinter::exit();
     return true;
 }
 

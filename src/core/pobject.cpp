@@ -407,6 +407,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	// NO KEY CLICK Global pobject drag mode
 
 	CPObject * ConnectedObj = 0;						// bring the Widget in front
+    // fetch all conected objects
+    // If gender = male, stackunder
     if (ConnectedObj=mainwindow->pdirectLink->findObj(this))		// Is this object connected to another ?
 	{
 		if (stackBehind)				// Is this object always behind the connected one ?
