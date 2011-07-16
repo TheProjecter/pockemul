@@ -426,12 +426,15 @@ bool Cce126::run(void)
 
 
 
-    if ((device_code == internal_device_code) && (code_transfer_step==0)) {
+    if (
+            //(device_code == internal_device_code) &&
+            (code_transfer_step==0)) {
 
     switch (device_code)
 	{
+            case 0x00:
             case 0x0f:
-#if 0
+#if 1
 				if ( (GET_PIN(PIN_BUSY) == Previous_PIN_BUSY ) && (Previous_PIN_BUSY == DOWN) &&
 					 (GET_PIN(PIN_MT_OUT1) == Previous_PIN_MT_OUT1) &&	(Previous_PIN_MT_OUT1 == DOWN) &&
 					 (GET_PIN(PIN_ACK) == UP) &&
