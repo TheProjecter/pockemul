@@ -20,6 +20,7 @@ DialogSimulator::DialogSimulator( QWidget * parent, Qt::WFlags f) : QDialog(pare
     connect(buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(clicked(QAbstractButton*)));
 
     currentIndex=0;
+    textEdit->setTabStopWidth(40);
 
     pCeSimu = (Ccesimu *) parent;
 
@@ -43,13 +44,27 @@ void DialogSimulator::clicked( QAbstractButton * button) {
     if ( buttonBox->standardButton(button) == QDialogButtonBox::Apply ) {
             // code pour Apply
 
-            QString header = "";//function main() {";
+            QString header = " \
+const MT_OUT2=1; \
+const GND=2; \
+const VGG=3; \
+const BUSY=4; \
+const D_OUT=5; \
+const MT_IN=6; \
+const MT_OUT1=7; \
+const D_IN=8; \
+const ACK=9; \
+const SEL2=10; \
+const SEL1=	11;";
             QString footer = "";// return 'OK';}";
             pCeSimu->script = new QScriptValue(pCeSimu->engine->evaluate(header + textEdit->toPlainText() + footer));
+            if (pCeSimu->script->isError()) {
+                    MSG_ERROR(pCeSimu->script->property("message").toString());
+                }
             pCeSimu->mainfunction = new QScriptValue(pCeSimu->engine->globalObject().property("run"));
-            //QString s = pCeSimu->mainfunction->call(QScriptValue()).toString();
+            QString s = pCeSimu->mainfunction->call(QScriptValue()).toString();
 
-            //MSG_ERROR(s);
+            MSG_ERROR(s);
 
         }
     else

@@ -22,6 +22,7 @@ public:
 
 
     Cconnector	*pCONNECTOR; qint64 pCONNECTOR_value;
+    Cconnector  *pSavedCONNECTOR;
 
     virtual bool run(void);
 
@@ -31,6 +32,13 @@ public:
     DialogSimulator *dialogconsole;
 
     Q_INVOKABLE void ScriptLog(QString s);
+    Q_INVOKABLE bool GoDown(int pin);
+    Q_INVOKABLE bool GoUp(int pin);
+    Q_INVOKABLE bool Change(int pin);
+    Q_INVOKABLE void timerInit(int id);
+    Q_INVOKABLE int timerMsElapsed(int id);
+    Q_INVOKABLE int timerUsElapsed(int id);
+    Q_INVOKABLE void setMarker(int markId);
 
     Ccesimu(CPObject *parent = 0);
 
@@ -47,12 +55,17 @@ public:
     QTextBrowser    *textbrowser;
     QHBoxLayout     *layout;
 
+    qint64  states[20];
+
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowDialog(void);
     void HideDialog(void);
     void HelpDialog(void);
 
+private:
+    qint64  run_oldstate;
+    qint64  latency;
 
 };
 

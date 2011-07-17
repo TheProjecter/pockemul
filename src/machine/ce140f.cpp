@@ -395,7 +395,7 @@ bool Cce140f::run(void)
                 }
                 break;
     case 1 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
-                    if (pTIMER->mselapsed(lastState) > 40) {
+                    if (pTIMER->msElapsed(lastState) > 40) {
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
@@ -441,7 +441,7 @@ bool Cce140f::run(void)
                     }
                 }
                 break;
-    case 3:     if (pTIMER->mselapsed(lastState)>2) {
+    case 3:     if (pTIMER->msElapsed(lastState)>2) {
                     code_transfer_step=2;
                     // wait 2 ms and raise ACK
                     SET_PIN(PIN_ACK,UP);
@@ -456,7 +456,7 @@ bool Cce140f::run(void)
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 15;
                 }
                 break;
-    case 5:     if (pTIMER->mselapsed(lastState)>9) {
+    case 5:     if (pTIMER->msElapsed(lastState)>9) {
                     SET_PIN(PIN_ACK,DOWN);
                     code_transfer_step=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 14;
@@ -489,7 +489,7 @@ bool Cce140f::run(void)
 
     else
 
-        if ( !data_out.empty() &&  (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
+        if ( !data_out.empty() &&  (code_transfer_step==0)&&(pTIMER->msElapsed(lastState)>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
             BYTE t = Pop_out4();
 
             SET_PIN(PIN_SEL1,t&0x01);
@@ -507,7 +507,7 @@ bool Cce140f::run(void)
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 13;
         }
     else
-        if ( (code_transfer_step==0)&&(pTIMER->mselapsed(lastState)>50) && !data.empty()) {
+        if ( (code_transfer_step==0)&&(pTIMER->msElapsed(lastState)>50) && !data.empty()) {
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 20;
             processCommand();
             data.clear();

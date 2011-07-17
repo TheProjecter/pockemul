@@ -52,12 +52,16 @@ void Ctimer::check(void)
 
 }
 
-int Ctimer::mselapsed(qint64 stateRef) {
+int Ctimer::msElapsed(qint64 stateRef) {
 
     qint64 r = (state - stateRef) * 1000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
+qint64 Ctimer::usElapsed(qint64 stateRef) {
 
+    qint64 r = (state - stateRef) * 1000000L / (CPUSpeed *pPC->getfrequency());
+    return r;
+}
 // return TP index
 int Ctimer::initTP(int frequency)
 {

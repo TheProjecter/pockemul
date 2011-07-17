@@ -4,6 +4,10 @@
 #include "Log.h"
 #include "cesimu.h"
 #include "dialogsimulator.h"
+#include "dialoganalog.h"
+
+#define DOWN	0
+#define UP		1
 
 Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
 {							//[constructor]
@@ -11,6 +15,7 @@ Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
     //ToDestroy = false;
 
     pCONNECTOR = new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(130,7)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,11,0,"Saved Connector 11 pins",true,QPoint(130,7));
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/simu.png";
 
@@ -66,6 +71,9 @@ bool Ccesimu::init(void){
 
     objectValue = engine->newQObject(this);
     engine->globalObject().setProperty("Simulator", objectValue);
+    mainfunction = 0;
+    run_oldstate = -1;
+    for (int i=0;i<20;i++) states[i]=0;
 }
 
 bool Ccesimu::exit(void){
@@ -73,10 +81,22 @@ bool Ccesimu::exit(void){
 }
 bool Ccesimu::run(void){
 
+
+// Try to introduce a latency
+    qint64			deltastate = 0;
+
+    if (run_oldstate == -1) run_oldstate = pTIMER->state;
+    deltastate = pTIMER->state - run_oldstate;
+//    if (deltastate < CESIMULATENCY ) return true;
+//    run_oldstate	= pTIMER->state;
+    if (pTIMER->usElapsed(run_oldstate)<1000) return true;
+    run_oldstate	= pTIMER->state;
+
+    if (mainfunction) {
     QString s = mainfunction->call(QScriptValue()).toString();
+    }
 
-
-
+    pSavedCONNECTOR->Set_values(pCONNECTOR->Get_values());
 }
 
 void Ccesimu::paintEvent(QPaintEvent *event)
@@ -87,4 +107,30 @@ void Ccesimu::paintEvent(QPaintEvent *event)
 
 void Ccesimu::ScriptLog(QString s) {
     AddLog(LOG_SIMULATOR,s)
+}
+
+bool Ccesimu::GoDown(int pin) {
+
+    return (( pCONNECTOR->Get_pin(pin) == DOWN ) && (pSavedCONNECTOR->Get_pin(pin) == UP)) ? true:false;
+}
+bool Ccesimu::GoUp(int pin) {
+
+    return (( pCONNECTOR->Get_pin(pin) == UP ) && (pSavedCONNECTOR->Get_pin(pin) == DOWN)) ? true:false;
+}
+bool Ccesimu::Change(int pin) {
+    return (pCONNECTOR->Get_pin(pin) != pSavedCONNECTOR->Get_pin(pin) ) ? true:false;
+}
+
+void Ccesimu::timerInit(int id) {
+    states[id] = pTIMER->state;
+}
+
+int Ccesimu::timerMsElapsed(int id) {
+    return pTIMER->msElapsed(states[id]);
+}
+int Ccesimu::timerUsElapsed(int id) {
+    return pTIMER->msElapsed(states[id]);
+}
+void Ccesimu::setMarker(int markId){
+    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = markId;
 }

@@ -342,7 +342,7 @@ bool Cce126::run(void)
                 }
                 break;
     case 1 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
-                    if (pTIMER->mselapsed(lastState) > 40) {
+                    if (pTIMER->msElapsed(lastState) > 40) {
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
@@ -391,7 +391,7 @@ bool Cce126::run(void)
                     }
                 }
                 break;
-    case 3:     if (pTIMER->mselapsed(lastState)>2) {
+    case 3:     if (pTIMER->msElapsed(lastState)>2) {
                     code_transfer_step=2;
                     // wait 2 ms and raise ACK
                     SET_PIN(PIN_ACK,UP);
@@ -406,7 +406,7 @@ bool Cce126::run(void)
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 15;
                 }
                 break;
-    case 5:     if (pTIMER->mselapsed(lastState)>9) {
+    case 5:     if (pTIMER->msElapsed(lastState)>9) {
                     SET_PIN(PIN_ACK,DOWN);
                     code_transfer_step=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 14;
@@ -414,7 +414,7 @@ bool Cce126::run(void)
 
                 }
                 break;
-    case 6:     if ((pTIMER->mselapsed(lastState)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
+    case 6:     if ((pTIMER->msElapsed(lastState)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
                     SET_PIN(PIN_ACK,DOWN);
                     code_transfer_step=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 19;
