@@ -54,6 +54,7 @@
 #include "ccable.h"
 
 #include "potar.h"
+#include "cesimu.h"
 
 
 
@@ -121,7 +122,8 @@ CPObject *pPC=0;
 
         case SerialConsole: pPC = new Csio;		pPC->setName("Serial Console");break;
         case CABLE11Pins: pPC = new Ccable;		pPC->setName("11Pins Cable");break;
-        case POTAR  : pPC = new Cpotar;		pPC->setName("Potar");break;
+        case POTAR      : pPC = new Cpotar;		pPC->setName("Potar");break;
+        case Simulator  : pPC = new Ccesimu;		pPC->setName("Simulator");break;
 
         case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
  		

@@ -74,6 +74,7 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "Serial Console")	result = SerialConsole;
     if (ItemText == "11Pins Cable")	result = CABLE11Pins;
     if (ItemText == "Potar")	result = POTAR;
+    if (ItemText == "Simulator")	result = Simulator;
 
     if (ItemText == "CE-1600P")	result = CE1600P;
 		

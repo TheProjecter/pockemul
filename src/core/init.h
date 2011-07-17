@@ -139,6 +139,7 @@ enum Models {
     SerialConsole,
     CABLE11Pins,
     POTAR,
+    Simulator,
 
     CE1600P
 };

@@ -454,14 +454,16 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
     for (int i=0;i < ConnList.size();i++) {
         Cconnector * conn = ConnList.at(i);
         Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
-        CPObject * linkedPC = (CPObject *) (conn2->Parent);
-        if (ConnList.at(i)->getGender() == true) {
-            stackUnder(linkedPC);
-            linkedPC->manageStackPos(l);
-        }
-        else {
-            linkedPC->stackUnder(this);
-            linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
+        if (conn2) {
+            CPObject * linkedPC = (CPObject *) (conn2->Parent);
+            if (ConnList.at(i)->getGender() == true) {
+                stackUnder(linkedPC);
+                linkedPC->manageStackPos(l);
+            }
+            else {
+                linkedPC->stackUnder(this);
+                linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
+            }
         }
     }
 

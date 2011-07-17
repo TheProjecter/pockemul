@@ -312,6 +312,7 @@ void MainWindowPockemul::opensession()
     objtable["Serial Console"]=SerialConsole;
     objtable["11Pins Cable"]=CABLE11Pins;
     objtable["Potar"]=POTAR;
+    objtable["Simulator"]=Simulator;
 
     objtable["CE-1600P"]=CE1600P;
 

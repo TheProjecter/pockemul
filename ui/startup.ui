@@ -615,6 +615,15 @@
             <normaloff>:/EXT/ext/potar.png</normaloff>:/EXT/ext/potar.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Simulator</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/simu.png</normaloff>:/EXT/ext/simu.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>

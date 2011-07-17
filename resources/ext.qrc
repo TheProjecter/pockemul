@@ -30,5 +30,6 @@
         <file>ext/ce-140p.png</file>
         <file>ext/ce-120p.png</file>
         <file>ext/ce-140f.png</file>
+        <file>ext/simu.png</file>
     </qresource>
 </RCC>
