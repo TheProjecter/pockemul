@@ -153,7 +153,8 @@ QT += core \
     network \
     opengl \
     xml \
-    multimedia
+    multimedia \
+    script
 RCC_DIR += build/rcc
 RESOURCES += resources/ext.qrc \
     resources/pc1245.qrc \
@@ -315,6 +316,7 @@ OTHER_FILES += \
     resources/keymap/263591.map \
     resources/keymap/ce140p.map \
     resources/weblinks.xml \
-    resources/notes.txt
+    resources/notes.txt \
+    resources/pockemul/script_help.html
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

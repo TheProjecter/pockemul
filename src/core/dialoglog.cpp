@@ -23,7 +23,8 @@ DialogLog::DialogLog( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 	addCkeckableItem("RAM",			LOG_RAM);
 	addCkeckableItem("Functions",	LOG_FUNC);
 	addCkeckableItem("11 Pins",		LOG_11PORT);
-	addCkeckableItem("Analogic",		LOG_ANALOG);
+    addCkeckableItem("Analogic",	LOG_ANALOG);
+    addCkeckableItem("Simulator",	LOG_SIMULATOR);
 
 	LogLevel = 0;
 }

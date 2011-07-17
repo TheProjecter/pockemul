@@ -126,7 +126,7 @@ CPObject *pPC=0;
         case Simulator  : pPC = new Ccesimu;		pPC->setName("Simulator");break;
 
         case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
- 		
+
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");

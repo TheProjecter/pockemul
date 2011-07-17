@@ -9,6 +9,7 @@
 
 class Cconnector:public QObject
 {
+    Q_OBJECT
 public:
 	CPObject *Parent;
 	
@@ -19,17 +20,17 @@ public:
 	
 	QString	Desc;
 	
-	virtual bool init(void){return true;};
-	virtual bool exit(void){return true;};
-	qint64	Get_values(void);
-    void	Set_values(qint64 val);
-	bool	Get_pin(qint8);
-	void	Set_pin(qint8 , bool);
+    virtual bool init(void){return true;}
+    virtual bool exit(void){return true;}
+    Q_INVOKABLE qint64	Get_values(void);
+    Q_INVOKABLE void	Set_values(qint64 val);
+    Q_INVOKABLE bool	Get_pin(qint8);
+    Q_INVOKABLE void	Set_pin(qint8 , bool);
 	void	Dump_pin(void);
 	char	dump[100];
 
-	bool	getGender();
-	void	setGender(bool);
+    Q_INVOKABLE bool	getGender();
+    Q_INVOKABLE void	setGender(bool);
 
 	void	ConnectTo(Cconnector *);
 

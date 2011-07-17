@@ -15,6 +15,7 @@
 #define LOG_FUNC		0x0800
 #define LOG_11PORT		0x1000
 #define LOG_ANALOG		0x2000
+#define LOG_SIMULATOR	0x4000
 
 
 //extern void AddLog(int ,QString);

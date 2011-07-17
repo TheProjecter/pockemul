@@ -2,6 +2,10 @@
 #define CESIMU_H
 
 #include <QMenu>
+#include <QtScript/QScriptEngine>
+#include <QTextBrowser>
+#include <QHBoxLayout>
+
 #include "Connect.h"
 #include "pobject.h"
 #include "Inter.h"
@@ -26,6 +30,8 @@ public:
 
     DialogSimulator *dialogconsole;
 
+    Q_INVOKABLE void ScriptLog(QString s);
+
     Ccesimu(CPObject *parent = 0);
 
     virtual ~Ccesimu(){
@@ -33,11 +39,19 @@ public:
     };
 public:
     void paintEvent(QPaintEvent *);
+    QScriptEngine   *engine;
+    QScriptValue    *script;
+    QScriptValue    *mainfunction;
+
+    QDialog         *helpDialog;
+    QTextBrowser    *textbrowser;
+    QHBoxLayout     *layout;
 
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowDialog(void);
     void HideDialog(void);
+    void HelpDialog(void);
 
 
 };
