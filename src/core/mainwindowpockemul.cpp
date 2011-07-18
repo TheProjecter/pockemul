@@ -252,6 +252,7 @@ void MainWindowPockemul::IDE()
 void MainWindowPockemul::Analogic()
 {
         dialoganalogic = new dialogAnalog(11,this);
+        dialoganalogic->setWindowTitle("Logic Analyser");
         dialoganalogic->show();
 }
 

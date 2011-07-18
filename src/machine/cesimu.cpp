@@ -65,6 +65,7 @@ void Ccesimu::HelpDialog(void) {
 bool Ccesimu::init(void){
     WatchPoint.add(&pCONNECTOR_value,64,15,this,"Connector 11 pins");
     dialogconsole = new DialogSimulator(this);
+    dialogconsole->setWindowTitle("Simulator Script Editor");
     dialogconsole->show();
     engine = new QScriptEngine(this);
     QScriptValue objectValue = engine->newQObject(pCONNECTOR);
