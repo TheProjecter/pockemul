@@ -63,6 +63,7 @@ void Ccesimu::HelpDialog(void) {
 }
 
 bool Ccesimu::init(void){
+    WatchPoint.add(&pCONNECTOR_value,64,15,this,"Connector 11 pins");
     dialogconsole = new DialogSimulator(this);
     dialogconsole->show();
     engine = new QScriptEngine(this);
@@ -74,10 +75,12 @@ bool Ccesimu::init(void){
     mainfunction = 0;
     run_oldstate = -1;
     for (int i=0;i<20;i++) states[i]=0;
+
+    return true;
 }
 
 bool Ccesimu::exit(void){
-
+    return true;
 }
 bool Ccesimu::run(void){
 
@@ -97,6 +100,7 @@ bool Ccesimu::run(void){
     }
 
     pSavedCONNECTOR->Set_values(pCONNECTOR->Get_values());
+    pCONNECTOR_value = pCONNECTOR->Get_values();
 }
 
 void Ccesimu::paintEvent(QPaintEvent *event)

@@ -105,6 +105,10 @@ const SEL1=	11;";
         }
 
     }
+    else
+    if ( buttonBox->standardButton(button) == QDialogButtonBox::Reset ) {
+        pCeSimu->pCONNECTOR->Set_values(0);
+    }
     else {
         // code pour Reset
     }
