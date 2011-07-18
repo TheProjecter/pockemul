@@ -404,9 +404,14 @@ void MainWindowPockemul::opensession()
         else
             xml.raiseError(QObject::tr("The file is not an XBEL version 1.0 file."));
     }
-    QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
-    QApplication::sendEvent(firstPC, e);
-    delete e;
+    for (int i=0;i <listpPObject.size();i++) {
+        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(listpPObject.at(i), e);
+        QMouseEvent *e2=new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(listpPObject.at(i), e2);
+        delete e;
+        delete e2;
+    }
 }
 
 void MainWindowPockemul::saveassession()

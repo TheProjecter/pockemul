@@ -425,6 +425,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 	else raise();
 #else
+    raise();
     QList<CPObject *> list;
     manageStackPos(&list);
 
