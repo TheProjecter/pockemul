@@ -8,6 +8,8 @@
 #include "slot.h"
 #include "Log.h"
 
+#include "bineditor/bineditor.h"
+
 //
 
 DialogDump::DialogDump( QWidget * parent, Qt::WFlags f) 
@@ -21,9 +23,13 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
     connect(twSlot, SIGNAL(currentItemChanged ( QTableWidgetItem * , QTableWidgetItem * )), this, SLOT(slotDump( QTableWidgetItem * , QTableWidgetItem * )));
     connect(pbLoadBin, SIGNAL(clicked()), this, SLOT(LoadBin())); 
     connect(pbSaveBin, SIGNAL(clicked()), this, SLOT(SaveBin())); 
+    connect(leFind,SIGNAL(returnPressed()),this,SLOT(Find()));
+    connect(pbFindPrevious,SIGNAL(clicked()),this,SLOT(FindPrevious()));
+    connect(pbFindNext,SIGNAL(clicked()),this,SLOT(FindNext()));
+    connect(leJump,SIGNAL(returnPressed()),this,SLOT(JumpTo()));
 
-#if 0
-    hexeditor = new HexViewer(framedump);
+#if 1
+    hexeditor = new BINEditor::BinEditor(framedump);
     hexeditor->setFocus();
 #else
     hextemp = new QHexEdit(framedump);
@@ -33,6 +39,24 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
 
 
 	resize( 605,400);
+}
+
+void DialogDump::Find(void) {
+    QString search = leFind->text();
+    hexeditor->highlightSearchResults(search.toAscii());
+    findpos = hexeditor->find(search.toAscii(),hexeditor->cursorPosition());
+}
+void DialogDump::JumpTo(void) {
+    bool ok;
+    hexeditor->jumpToAddress(leJump->text().toLongLong(&ok,16));
+}
+void DialogDump::FindPrevious(void) {
+    findpos = hexeditor->find(leFind->text().toAscii(),findpos-1,QTextDocument::FindBackward);
+}
+void DialogDump::FindNext(void) {
+    //MSG_ERROR("ok");
+    findpos = hexeditor->find(leFind->text().toAscii(),findpos+1);
+    //MSG_ERROR(tr("ok").arg(findpos));
 }
 
 void DialogDump::LoadBin(void)
@@ -123,9 +147,11 @@ void DialogDump::LoadSlot(void)
 
 void DialogDump::resizeEvent( QResizeEvent * event )
 {
-
-    //hexeditor->resize( framedump->size() );
+#if 1
+    hexeditor->resize( framedump->size() );
+#else
     hextemp->resize(framedump->size());
+#endif
 }
 
 void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previous)
@@ -138,8 +164,12 @@ void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previo
 	int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(&ok,16);
 	int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
 
-#if 0
-    hexeditor->setData("",&(pPC->mem[adr]), size, adr);
+#if 1
+    QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
+    hexeditor->data().clear();
+    hexeditor->setReadOnly(true);
+    hexeditor->setData(*ba);
+
 #else
     QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
     hextemp->data().clear();

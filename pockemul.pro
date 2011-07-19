@@ -135,7 +135,11 @@ HEADERS += src/core/Connect.h \
     src/core/lcc/parser/parser.h \
     src/machine/ce140f.h \
     src/machine/cesimu.h \
-    src/core/dialogsimulator.h
+    src/core/dialogsimulator.h \
+    src/core/bineditor/bineditor.h \
+    src/core/bineditor/texteditor_global.h \
+    src/core/bineditor/colorscheme.h \
+    src/core/bineditor/texteditorconstants.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -280,7 +284,9 @@ SOURCES += src/core/Connect.cpp \
     src/core/lcc/parser/parser.cpp \
     src/machine/ce140f.cpp \
     src/machine/cesimu.cpp \
-    src/core/dialogsimulator.cpp
+    src/core/dialogsimulator.cpp \
+    src/core/bineditor/bineditor.cpp \
+    src/core/bineditor/colorscheme.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

@@ -16,7 +16,7 @@
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
-#define NEW_SOUND 0
+#define NEW_SOUND 1
 extern QWidget* mainwidget;
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
