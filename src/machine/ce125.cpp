@@ -85,18 +85,17 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     setcfgfname("ce125");
 
 
-    Pc_DX_mm = 205;
-    Pc_DY_mm = 149;
-    Pc_DZ_mm = 23;
+    setDXmm(205);//Pc_DX_mm = 205;
+    setDYmm(149);//Pc_DY_mm = 149;
+    setDZmm(23);//Pc_DZ_mm = 23;
 
-    Pc_DX	= 731;
-    Pc_DY	= 532;
+    setDX(731);//Pc_DX	= 731;
+    setDY(532);//Pc_DY	= 532;
     SnapPts = QPoint(247,280);
     pCONNECTOR->setSnap(QPoint(247,370));
     remove(pTAPECONNECTOR);
     setPaperPos(QRect(377,0,207,149));
 
-    stackBehind = true;
     KeyMap		= KeyMapce125;
     KeyMapLenght= KeyMapce125Lenght;
     delete pKEYB; pKEYB=new Ckeyb(this,"ce125.map");
@@ -118,9 +117,9 @@ void Cce125::UpdateFinalImage(void) {
 }
 
 void Cce125::resizeEvent ( QResizeEvent * event ) {
-    float ratio = (float)this->width()/this->Pc_DX ;
+    float ratio = (float)this->width()/this->getDX() ;
 
-    QRect rect = QRect(0,0,pTAPE->Pc_DX,pTAPE->Pc_DY);
+    QRect rect = QRect(0,0,pTAPE->getDX(),pTAPE->getDY());
     pTAPE->setGeometry(rect.x()*ratio,
               rect.y()*ratio,
               rect.width()*ratio,

@@ -40,7 +40,6 @@ public:
 	QPoint		SnapPts;
 	qreal		RangeFrom(CPObject * target);
     virtual void ComputeKey(void){}
-	bool		stackBehind;		// if true then always stacked behind the connected object
 	CPObject	*Parent;
 	CpcXXXX		*pPC;
 	Ckeyb		*pKEYB;
@@ -69,8 +68,20 @@ public:
 	QImage* LcdImage;
 	QImage* SymbImage;
 
-	int		Pc_DX,Pc_DY;			
-	int		Pc_DX_mm,Pc_DY_mm,Pc_DZ_mm;		// PC size (mm)	
+    int     getDX() {return Pc_DX;}
+    int     getDY() {return Pc_DY;}
+    int     getDZ() {return 0;}
+    void    setDX(int v) {Pc_DX = v;}
+    void    setDY(int v) {Pc_DY = v;}
+    void    setDZ(int v) {}
+
+    int     getDXmm() {return Pc_DX_mm;}
+    int     getDYmm() {return Pc_DY_mm;}
+    int     getDZmm() {return Pc_DZ_mm;}
+    void    setDXmm(int v) {Pc_DX_mm = v;}
+    void    setDYmm(int v) {Pc_DY_mm = v;}
+    void    setDZmm(int v) {Pc_DZ_mm = v;}
+
 
 	QRect rect();
 	virtual	bool	init();			// initialize
@@ -182,6 +193,9 @@ private:
 	int		iChanIndex;
 	qint64	fillSoundBuffer_old_state;	
     QByteArray audioBuff;
+
+    int		Pc_DX,Pc_DY;
+    int		Pc_DX_mm,Pc_DY_mm,Pc_DZ_mm;		// PC size (mm)
 
 };
 

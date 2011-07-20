@@ -43,8 +43,8 @@ Cpc1475::Cpc1475(CPObject *parent)	: Cpc1360(parent)
     KeyMap = KeyMap1450;
     KeyMapLenght = KeyMap1450Lenght;
 
-    Pc_DX = 633;
-    Pc_DY = 252;
+    //Pc_DX = 633;
+    //Pc_DY = 252;
 
     delete pLCDC;		pLCDC		= new Clcdc_pc1475(this);
     delete pKEYB;		pKEYB		= new Ckeyb(this,"pc1450.map",scandef_pc1450);

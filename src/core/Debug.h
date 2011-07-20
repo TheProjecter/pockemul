@@ -5,8 +5,8 @@
 
 typedef	struct{
 	char	len;
-	char	*nim;
-	char	*descr;
+    const char	*nim;
+    const char	*descr;
 }	DisAsmTbl;
 
 extern 	DisAsmTbl	AsmTbl_sc61860[];

@@ -63,12 +63,12 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     Paper_Y = 100;
     //PaperWidgetRect = QRect(80,46,167,170);
 
-    Pc_DX_mm = 329;
-    Pc_DY_mm = 115;
-    Pc_DZ_mm = 48;
+    setDXmm(329);//Pc_DX_mm = 329;
+    setDYmm(115);//Pc_DY_mm = 115;
+    setDZmm(48);//Pc_DZ_mm = 48;
 
-    Pc_DX	= 960;
-    Pc_DY	= 320;
+    setDX(960);//Pc_DX	= 960;
+    setDY(320);//Pc_DY	= 320;
     SnapPts = QPoint(388,0);
     pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",true,QPoint(390,60));	publish(pCONNECTOR);
     pTIMER		= new Ctimer(this);
@@ -92,7 +92,6 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     ce150buf=0;
     ce150display=0;
     needRedraw = true;
-    stackBehind = true;
     setPaperPos(QRect(0,0,0,0));
 
 #ifndef NO_SOUND

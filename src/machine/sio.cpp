@@ -312,8 +312,8 @@ bool Csio::init(void)
 
 	CD = CS = ER = RD = RR = RS = SD = 0;
 
-	Pc_DX	= 195;
-	Pc_DY	= 145;
+    setDX(195);//Pc_DX	= 195;
+    setDY(145);//Pc_DY	= 145;
 
 	CPObject::init();
 

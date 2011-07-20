@@ -20,25 +20,22 @@ public:
 	Ccable(CPObject *parent = 0)	: CPObject(this)
 	{							//[constructor]
 		
-		
         pCONNECTOR_A = new Cconnector(this,11,0,"11 pins Connector A",false); publish(pCONNECTOR_A);
         pCONNECTOR_B = new Cconnector(this,11,1,"11 pins Connector B",false); publish(pCONNECTOR_B);
 		setfrequency( 0);
 		BackGroundFname	= ":/EXT/ext/cable.png";
 		
 		pTIMER		= new Ctimer(this);
-		Pc_DX	= 150;
-		Pc_DY	= 450;
-//		SnapPts = QPoint(672,150);
-		stackBehind = true;
- 	};
+        setDX(150);//Pc_DX	= 150;
+        setDY(450);//Pc_DY	= 450;
+    }
  
  
 	
 	virtual ~Ccable(){
 		delete(pCONNECTOR_A);
 		delete(pCONNECTOR_B);
-	};
+    }
 
 private:
 

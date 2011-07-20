@@ -41,12 +41,12 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 
 	Pc_Offset_X = Pc_Offset_Y = 0;
 
-    Pc_DX_mm = 195;
-    Pc_DY_mm = 86;
-    Pc_DZ_mm = 25;
+    setDXmm(195);//Pc_DX_mm = 195;
+    setDYmm(86);//Pc_DY_mm = 86;
+    setDZmm(25);//Pc_DZ_mm = 25;
 
-	Pc_DX		= 572;
-	Pc_DY		= 254;
+    setDX(572);//Pc_DX		= 572;
+    setDY(254);//Pc_DY		= 254;
 		
 	Lcd_X		= 80;
 	Lcd_Y		= 50;

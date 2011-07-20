@@ -135,7 +135,7 @@ CPObject *pPC=0;
 //	int l = mainwindow->menuBar()->height();
 //	mainwindow->resize(QSize(pPC->Pc_DX, pPC->Pc_DY+l));
 	
-	pPC->FinalImage = new QImage(QSize(pPC->Pc_DX, pPC->Pc_DY),QImage::Format_RGB32);
+    pPC->FinalImage = new QImage(QSize(pPC->getDX(), pPC->getDY()),QImage::Format_RGB32);
 	
 
 #define NBFRAMEPERSEC		20
@@ -145,7 +145,7 @@ CPObject *pPC=0;
 	pPC->InitDisplay();
 
     pPC->Move(QPoint(0,0));
-    pPC->setGeometry(0,0,pPC->Pc_DX*mainwindow->zoom/100,pPC->Pc_DY*mainwindow->zoom/100);
+    pPC->setGeometry(0,0,pPC->getDX()*mainwindow->zoom/100,pPC->getDY()*mainwindow->zoom/100);
 	pPC->show();
 
     return pPC;

@@ -52,13 +52,12 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     KeyMap      = KeyMapce140f;
     KeyMapLenght= KeyMapce140fLenght;
     pKEYB		= new Ckeyb(this,"ce140f.map");
-    Pc_DX	= 620;//480;
-    Pc_DY	= 488;//420;
-    SnapPts = QPoint(594,145);
+    setDX(620);//Pc_DX	= 620;//480;
+    setDY(488);//Pc_DY	= 488;//420;
+
 
     //setPaperPos(QRect(150,-3,207,149));
 
-    stackBehind = true;
 
     ctrl_char = false;
     t = 0;

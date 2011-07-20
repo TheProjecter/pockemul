@@ -39,12 +39,12 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     KeyMap = KeyMap1280;
     KeyMapLenght = KeyMap1280Lenght;
 
-    Pc_DX_mm = 135;
-    Pc_DY_mm = 141;
-    Pc_DZ_mm = 10;
+    setDXmm(135);//Pc_DX_mm = 135;
+    setDYmm(141);//Pc_DY_mm = 141;
+    setDZmm(10);//Pc_DZ_mm = 10;
 
-    Pc_DX = 483;
-    Pc_DY = 502;
+    setDX(483);//Pc_DX = 483;
+    setDY(502);//Pc_DY = 502;
 
     delete pLCDC;		pLCDC		= new Clcdc_pc1475(this);
     delete pKEYB;		pKEYB		= new Ckeyb(this,"pc1280.map",scandef_pc1280);

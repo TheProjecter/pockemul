@@ -44,7 +44,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		frequency	= 0;
 		setFocusPolicy(Qt::StrongFocus);	
 		Refresh_Display = false;
-		stackBehind = false;
+
 		
 		SnapPts = QPoint(0,0);
 		
@@ -56,7 +56,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		Power = false;
         audioBuff.clear();
 		
-	};
+    }
 
 
 CPObject::~CPObject()
@@ -158,7 +158,8 @@ void CPObject::audioStateChanged(QAudio::State state)
     if (state == QAudio::IdleState) {
 
     }
-    qWarning() << "state = " << state;
+    //AddLog(LOG_TEMP,tr("state = %1").arg(state))
+    //qWarning() << "state = " << state;
 }
 
 int CPObject::initsound()
@@ -260,7 +261,7 @@ void CPObject::fillSoundBuffer(BYTE val)
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
     if (delta_state >= wait)
     {
-        mainwindow->audioMutex.lock();
+        //mainwindow->audioMutex.lock();
         while (delta_state >= wait)
         {
 #if NEW_SOUND
@@ -285,7 +286,7 @@ void CPObject::fillSoundBuffer(BYTE val)
             fillSoundBuffer_old_state += wait;
             delta_state -= wait;
         }
-        mainwindow->audioMutex.unlock();
+        //mainwindow->audioMutex.unlock();
     }
 }
 

@@ -19,12 +19,12 @@ Cpc13XX::Cpc13XX(CPObject *parent)	: CpcXXXX(parent)
     setfrequency( (int) 768000/3);
     setcfgfname("pc1350");
 
-    Pc_DX_mm = 182;
-    Pc_DY_mm = 72;
-    Pc_DZ_mm = 16;
+    setDXmm(182);//Pc_DX_mm = 182;
+    setDYmm(72);//Pc_DY_mm = 72;
+    setDZmm(16);//Pc_DZ_mm = 16;
 
-    Pc_DX = 633;
-    Pc_DY = 252;
+    setDX(633);//Pc_DX = 633;
+    setDY(252);//Pc_DY = 252;
 
     Lcd_X		= 75;
     Lcd_Y		= 48;

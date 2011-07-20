@@ -111,17 +111,13 @@ public:
 		BackGroundFname	= ":/EXT/ext/serial.png";
 		
 		pTIMER		= new Ctimer(this);
-		Pc_DX	= 195;
-		Pc_DY	= 145;
-//		Pc_DX	= 85;
-//		Pc_DY	= 173;
-//		SnapPts = QPoint(672,150);
-		stackBehind = true;
- 	};
+        setDX(195);//Pc_DX	= 195;
+        setDY(145);//Pc_DY	= 145;
+    }
 	
 	virtual ~Csio(){
 		delete(pSIOCONNECTOR);
-	};
+    }
 public:
 	void paintEvent(QPaintEvent *);
 

@@ -86,13 +86,12 @@ public:
     {								//[constructor]
         BackGroundFname	= ":/EXT/ext/ce-120p.png";
         setcfgfname("ce120p");
-        Pc_DX	= 883;
-        Pc_DY	= 568;
+        setDX(883);//Pc_DX	= 883;
+        setDY(568);//Pc_DY	= 568;
         SnapPts = QPoint(402,43);
         pCONNECTOR->setSnap(QPoint(400,131));
         setPaperPos(QRect(89,185-149,207,149));
 
-        stackBehind = true;
         delete pKEYB; pKEYB=new Ckeyb(this,"ce120.map");
     }
 };
@@ -104,13 +103,12 @@ public:
 	{								//[constructor]
 		BackGroundFname	= ":/EXT/ext/ce-123p.jpg";
         setcfgfname("ce123p");
-		Pc_DX	= 708;
-		Pc_DY	= 566;
+        setDX(708);//Pc_DX	= 708;
+        setDY(566);//Pc_DY	= 566;
 		SnapPts = QPoint(215,307);
         pCONNECTOR->setSnap(QPoint(215,397));
         setPaperPos(QRect(89,185-149,207,149));
 
-		stackBehind = true;
         delete pKEYB; pKEYB=new Ckeyb(this,"ce123.map");
 	};
 };
@@ -122,15 +120,14 @@ public:
 	{								//[constructor]
 		BackGroundFname	= ":/EXT/ext/ce-129p.jpg";
         setcfgfname("ce129p");
-		Pc_DX	= 708;
-		Pc_DY	= 566;
+        setDX(708);//Pc_DX	= 708;
+        setDY(566);//Pc_DY	= 566;
         SnapPts = QPoint(88,288);
         pCONNECTOR->setSnap(QPoint(88,378));
         setPaperPos(QRect(89,185-149,207,149));
         delete pKEYB; pKEYB=new Ckeyb(this,"ce129.map");
 
-		stackBehind = true;
-	};
+    }
 };
 
 class C263591:public Cce126
@@ -141,15 +138,14 @@ public:
     {								//[constructor]
         BackGroundFname	= ":/EXT/ext/26-3591.jpg";
         setcfgfname("263591");
-        Pc_DX	= 854;
-        Pc_DY	= 349;
+        setDX(854);//Pc_DX	= 854;
+        setDY(349);//Pc_DY	= 349;
         SnapPts = QPoint(373,0);
         pCONNECTOR->setSnap(QPoint(373,90));
         setPaperPos(QRect(78,0,207,149));
 
-        stackBehind = true;
         delete pKEYB; pKEYB=new Ckeyb(this,"263591.map");
-    };
+    }
 
 private:
 };

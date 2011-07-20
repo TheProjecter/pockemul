@@ -26,15 +26,14 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     KeyMapLenght= KeyMapce140pLenght;
     delete pKEYB; pKEYB		= new Ckeyb(this,"ce140p.map");
 
-    Pc_DX_mm = 256;
-    Pc_DY_mm = 185;
-    Pc_DZ_mm = 42;
+    setDXmm(256);//Pc_DX_mm = 256;
+    setDYmm(185);//Pc_DY_mm = 185;
+    setDZmm(42);//Pc_DZ_mm = 42;
 
-    Pc_DX	= 895;
-    Pc_DY	= 615;
-    SnapPts = QPoint(0,360);
+    setDX(895);//Pc_DX	= 895;
+    setDY(615);//Pc_DY	= 615;
+
     setPaperPos(QRect(200,46,380,170));
-    stackBehind = true;
 
 }
 

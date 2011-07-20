@@ -20,13 +20,10 @@ Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
     BackGroundFname	= ":/EXT/ext/simu.png";
 
     pTIMER		= new Ctimer(this);
-    Pc_DX	= 160;
-    Pc_DY	= 160;
-//		Pc_DX	= 85;
-//		Pc_DY	= 173;
-//		SnapPts = QPoint(672,150);
-    stackBehind = true;
-};
+    setDX(160);//Pc_DX	= 160;
+    setDY(160);//Pc_DY	= 160;
+
+}
 
 void Ccesimu::contextMenuEvent ( QContextMenuEvent * event )
 {
@@ -102,6 +99,8 @@ bool Ccesimu::run(void){
 
     pSavedCONNECTOR->Set_values(pCONNECTOR->Get_values());
     pCONNECTOR_value = pCONNECTOR->Get_values();
+
+    return true;
 }
 
 void Ccesimu::paintEvent(QPaintEvent *event)

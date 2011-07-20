@@ -368,10 +368,10 @@ void MainWindowPockemul::opensession()
                                 locPC->setPosX(posX.toFloat());
                                 locPC->setPosY(posY.toFloat());
                                 if (locPC->Front) {
-                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX*zoom/100,locPC->Pc_DY*zoom/100);
+                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
                                 }
                                 else {
-                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->Pc_DX/4,locPC->Pc_DY/4);
+                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);
                                 }
 
 
@@ -515,7 +515,7 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
 
         locpc->setPosX(newposx);
         locpc->setPosY(newposy);
-        locpc->setGeometry(newposx,newposy,locpc->Pc_DX*zoom/100,locpc->Pc_DY*zoom/100);
+        locpc->setGeometry(newposx,newposy,locpc->getDX()*zoom/100,locpc->getDY()*zoom/100);
     }
 }
 

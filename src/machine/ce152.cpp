@@ -77,8 +77,8 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     info.ptrFd	= 0;
     pTAPECONNECTOR	= new Cconnector(this,3,0,"Line in / Rec / Rmt",true);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
-    Pc_DX		= 200;
-    Pc_DY		= 320;
+    setDX(200);//Pc_DX		= 200;
+    setDY(320);//Pc_DY		= 320;
     KeyMap		= KeyMapce152;
     KeyMapLenght= KeyMapce152Lenght;
     pKEYB		= new Ckeyb(this,"ce152.map");
@@ -86,7 +86,7 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     counter		= 0;
     GetWav_Val	= 0;
     previous_state_setwav = 0;
-};
+}
 
 
 /*********************************/

@@ -40,12 +40,12 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     pce515p     = new Cce515p(this);
     pce515p->pTIMER = pTIMER;
 
-    Pc_DX_mm = 297;
-    Pc_DY_mm = 210;
-    Pc_DZ_mm = 46;
+    setDXmm(297);//Pc_DX_mm = 297;
+    setDYmm(210);//Pc_DY_mm = 210;
+    setDZmm(46);//Pc_DZ_mm = 46;
 
-    Pc_DX = 960;
-    Pc_DY = 673;
+    setDX(960);//Pc_DX = 960;
+    setDY(673);//Pc_DY = 673;
 
     Lcd_X		= 560;
     Lcd_Y		= 70;
@@ -85,7 +85,7 @@ void Cpc2500::UpdateFinalImage(void) {
 }
 
 void Cpc2500::resizeEvent ( QResizeEvent * ) {
-    float ratio = (float)this->width()/this->Pc_DX ;
+    float ratio = (float)this->width()/this->getDX() ;
 
     QRect rect = pce515p->paperWidget->baseRect;
     pce515p->paperWidget->setGeometry(rect.x()*ratio,

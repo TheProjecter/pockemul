@@ -36,12 +36,12 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 	PowerSwitch	= 0;
 	Pc_Offset_X = Pc_Offset_Y = 0;
 
-	Pc_DX_mm = 135;
-	Pc_DY_mm = 70;
-	Pc_DZ_mm = 10;
+    setDXmm(135);//Pc_DX_mm = 135;
+    setDYmm(70);//Pc_DY_mm = 70;
+    setDZmm(10);//Pc_DZ_mm = 10;
 
-	Pc_DX		= 483;//409;
-	Pc_DY		= 252;//213;
+    setDX(483);//Pc_DX		= 483;//409;
+    setDY(252);//Pc_DY		= 252;//213;
 
 	Lcd_X		= (int) (45 * 1.18);
     Lcd_Y		= (int) (43 * 1.18);

@@ -40,8 +40,8 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
     Paper_X = 100;  Paper_DX = 320;
     Paper_Y = 100;
     //PaperWidgetRect = QRect(80,46,167,170);
-    Pc_DX	= 960;
-    Pc_DY	= 320;
+    setDX(960);//Pc_DX	= 960;
+    setDY(320);//Pc_DY	= 320;
     SnapPts = QPoint(388,0);
     //pCONNECTOR	= new Cconnector(this,5,"Internal connector 5 pins",true);	publish(pCONNECTOR);
     pTIMER		= new Ctimer(this);
@@ -66,7 +66,7 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
     ce515pbuf=0;
     ce515pdisplay=0;
     needRedraw = true;
-    stackBehind = true;
+
     setPaperPos(QRect(75,46,380,170));
 
 #ifndef NO_SOUND

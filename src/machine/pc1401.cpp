@@ -36,12 +36,12 @@ Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
     KeyMap		= KeyMap1401;
     KeyMapLenght= KeyMap1401Lenght;
 
-    Pc_DX_mm = 170;
-    Pc_DY_mm = 72;
-    Pc_DZ_mm = 10;
+    setDXmm(170);//Pc_DX_mm = 170;
+    setDYmm(72);//Pc_DY_mm = 72;
+    setDZmm(10);//Pc_DZ_mm = 10;
 
-    Pc_DX = 633;
-    Pc_DY = 252;
+    setDX(633);//Pc_DX = 633;
+    setDY(252);//Pc_DY = 252;
 
     cnt = 0;
 

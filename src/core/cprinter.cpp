@@ -19,7 +19,7 @@ Cprinter::~Cprinter()
 }
 
 void Cprinter::resizeEvent ( QResizeEvent * ) {
-    float ratio = (float)this->width()/this->Pc_DX ;
+    float ratio = (float)this->width()/getDX() ;
 
     QRect rect = this->paperWidget->baseRect;
     this->paperWidget->setGeometry( rect.x()*ratio,

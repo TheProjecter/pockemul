@@ -16,14 +16,10 @@ Cpotar::Cpotar(CPObject *parent )	: CPObject(this)
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/jack.png";
 
-    Pc_DX	= 75;
-    Pc_DY	= 20;
-//		Pc_DX	= 85;
-//		Pc_DY	= 173;
-//		SnapPts = QPoint(672,150);
-    stackBehind = true;
+    setDX(75);//Pc_DX	= 75;
+    setDY(20);//Pc_DY	= 20;
     value = 0;
-};
+}
 
 BYTE Cpotar::get_value(void) {
     return this->value;

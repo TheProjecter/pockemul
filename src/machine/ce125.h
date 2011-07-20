@@ -18,8 +18,8 @@ public:
         playImage = ":/EXT/ext/ce-125play.png";
         recordImage=":/EXT/ext/ce-125record.png";
         loadImage = ":/EXT/ext/ce-125load.png";
-		Pc_DX	= 249;
-		Pc_DY	= 299;
+        setDX(249);//Pc_DX	= 249;
+        setDY(299);//Pc_DY	= 299;
 		KeyMap		= KeyMapce125tape;
 		KeyMapLenght= KeyMapce125tapeLenght;
 		pKEYB		= new Ckeyb(this,"ce125tape.map");
