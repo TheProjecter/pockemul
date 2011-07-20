@@ -62,6 +62,11 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     Paper_X = 100;  Paper_DX = 320;
     Paper_Y = 100;
     //PaperWidgetRect = QRect(80,46,167,170);
+
+    Pc_DX_mm = 329;
+    Pc_DY_mm = 115;
+    Pc_DZ_mm = 48;
+
     Pc_DX	= 960;
     Pc_DY	= 320;
     SnapPts = QPoint(388,0);

@@ -525,9 +525,8 @@ void  MainWindowPockemul::updateTimeTimer()
 
 void  MainWindowPockemul::updateFrameTimer()
 {
-    static qint64 last_state = 0;
+
 	int statepersec;
-    static qint64 nb_state=0;
 	int rate=0;
 	static int OneSecTimer=0;
 	long Current_State;

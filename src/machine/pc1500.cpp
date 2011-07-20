@@ -41,6 +41,10 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 
 	Pc_Offset_X = Pc_Offset_Y = 0;
 
+    Pc_DX_mm = 195;
+    Pc_DY_mm = 86;
+    Pc_DZ_mm = 25;
+
 	Pc_DX		= 572;
 	Pc_DY		= 254;
 		
@@ -331,7 +335,7 @@ void Cpc15XX::ReadQuarterTape(void)
 	//		tmpL=((tmpL>>4)&0x0F) | ((tmpL&0x0F)<<4);
 
 
-	if (fp_tmp1) fprintf(fp_tmp1,"   ** LOAD QUARTER BIT : %02X\n",quarter<<4);
+    if (fp_tmp1) fprintf(fp_tmp1,"   ** LOAD QUARTER BIT : %02X\n",(uint) (quarter<<4));
 
  	((CLH5801 *)pCPU)->LDA(quarter<<4);
 	((CLH5801 *)pCPU)->UnSet_C() ;

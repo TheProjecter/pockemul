@@ -5,7 +5,13 @@
 
 #ifndef _CONNECT_H
 #define _CONNECT_H
+
+#define GET_PIN(n)		(pCONNECTOR->Get_pin(n))
+#define SET_PIN(n,v)	(pCONNECTOR->Set_pin(n,v))
+
 #include "pobject.h"
+
+
 
 class Cconnector:public QObject
 {

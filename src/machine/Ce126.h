@@ -18,8 +18,6 @@
 #include "Connect.h"
 #include "Inter.h"
 
-#define GET_PIN(n)		pCONNECTOR->Get_pin(n)
-#define SET_PIN(n,v)	pCONNECTOR->Set_pin(n,v)
 
 class Cce126:public Cprinter{
 public:

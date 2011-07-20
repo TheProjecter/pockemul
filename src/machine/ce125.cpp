@@ -84,6 +84,11 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     BackGroundFname	= ":/EXT/ext/ce-125.jpg";
     setcfgfname("ce125");
 
+
+    Pc_DX_mm = 205;
+    Pc_DY_mm = 149;
+    Pc_DZ_mm = 23;
+
     Pc_DX	= 731;
     Pc_DY	= 532;
     SnapPts = QPoint(247,280);

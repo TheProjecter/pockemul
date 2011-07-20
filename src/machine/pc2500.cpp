@@ -40,9 +40,9 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     pce515p     = new Cce515p(this);
     pce515p->pTIMER = pTIMER;
 
-    Pc_DX_mm = 182;
-    Pc_DY_mm = 72;
-    Pc_DZ_mm = 16;
+    Pc_DX_mm = 297;
+    Pc_DY_mm = 210;
+    Pc_DZ_mm = 46;
 
     Pc_DX = 960;
     Pc_DY = 673;
@@ -140,7 +140,7 @@ WORD Cpc2500::Get_16rPC(DWORD adr)
 bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
 {
     if (ProtectMemory) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE EXT [%04x]=%02x (%c)\n",*d,data,data);
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE EXT [%04x]=%02x (%c)\n",(uint)*d,(BYTE)data,(int)data);
         if ( (*d>=0x8000) && (*d<=0xFFFF) ){
 
             *d += 0x8000 ;
@@ -150,7 +150,7 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
     }
 
     if ( (*d>=0x7000) && (*d<=0x7BFF) ) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",*d,data,data);
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",(uint)*d,(BYTE)data,(int)data);
     }
     if ( (*d>=0x7100) && (*d<=0x71FF) )	{
         RomBank = data;
@@ -171,7 +171,7 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
         pKEYB->Set_KS( (pKEYB->Get_KS() & 0x0f) | (((BYTE) data & 0x0F )<<4));
         return(1);
     }
-    if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",*d,data,data);
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",(uint)*d,(BYTE)data,(int)data);
 
     if ( (*d>=0x2000) && (*d<=0x3FFF) && EXTENSION_CE201M_CHECK ) { *d+=0x2000;}										// 8Kb Ram Card Image
     if ( (*d>=0x2000) && (*d<=0x3FFF) )	{ return( EXTENSION_CE202M_CHECK | EXTENSION_CE203M_CHECK); }							// 16K
@@ -201,7 +201,7 @@ bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
         if ( (*d>=0x8000) && (*d<=0xFFFF) )	{
             *d += 0x8000 ;
             if (pCPU->fp_log) {
-                fprintf(pCPU->fp_log,"READ EXT ROM [%04x] : %c (%02x)\n",*d-0x8000,mem[*d],mem[*d]);
+                fprintf(pCPU->fp_log,"READ EXT ROM [%04x] : %c (%02x)\n",(uint)(*d-0x8000),mem[*d],mem[*d]);
             }
             return (1);
         }
@@ -209,7 +209,7 @@ bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
     }
     if ( (*d>=0x2000) && (*d<=0x3FFF) && EXTENSION_CE201M_CHECK ) { *d+=0x2000;}										// 8Kb Ram Card Image
 
-    if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]=%02x (%c)\n",*d,mem[*d],mem[*d]);
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]=%02x (%c)\n",(uint)*d,mem[*d],mem[*d]);
     if ( (*d>=0x0000) && (*d<=0x1FFF) ) { return(0);}
     return(1);
 }

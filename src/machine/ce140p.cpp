@@ -25,6 +25,11 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     KeyMap      = KeyMapce140p;
     KeyMapLenght= KeyMapce140pLenght;
     delete pKEYB; pKEYB		= new Ckeyb(this,"ce140p.map");
+
+    Pc_DX_mm = 256;
+    Pc_DY_mm = 185;
+    Pc_DZ_mm = 42;
+
     Pc_DX	= 895;
     Pc_DY	= 615;
     SnapPts = QPoint(0,360);

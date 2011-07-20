@@ -24,6 +24,7 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 	SlotList.append(CSlot(16, 0x4000 ,	":/PC1245/pc1245/bas-1245.rom"	, "pc1245/bas-1245.rom"	, ROM , "BASIC ROM"));
 	SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1245/R2-1245.ram" 	, RAM , "RAM"));
 
+
 	Lcd_X		= 50;
 	Lcd_Y		= 56;
 	Lcd_DX		= 96;

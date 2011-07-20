@@ -164,7 +164,7 @@ void CPObject::audioStateChanged(QAudio::State state)
 int CPObject::initsound()
 {
     int DataFrequencyHz = 8000;
-    int BufferSize      = 800;
+    //int BufferSize      = 800;
 #if NEW_SOUND
     QAudioDeviceInfo m_device(QAudioDeviceInfo::defaultOutputDevice());
     m_format.setFrequency(DataFrequencyHz);
@@ -269,7 +269,8 @@ void CPObject::fillSoundBuffer(BYTE val)
             int ps = m_audioOutput->periodSize();
             if (audioBuff.size() >= (ps)) {
                 m_output->write(audioBuff,ps);
-                audioBuff.clear();
+                //audioBuff.clear();
+                audioBuff.remove(0,ps);
             }
             else {
                 if((m_audioOutput->bufferSize()-m_audioOutput->bytesFree()) < ps) {
@@ -405,11 +406,11 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 
 	// NO KEY CLICK Global pobject drag mode
-
+#if 0
 	CPObject * ConnectedObj = 0;						// bring the Widget in front
     // fetch all conected objects
     // If gender = male, stackunder
-#if 0
+
     if (ConnectedObj=mainwindow->pdirectLink->findObj(this))		// Is this object connected to another ?
 	{
 		if (stackBehind)				// Is this object always behind the connected one ?
@@ -802,7 +803,7 @@ void CPObject::computeWebLinksMenu(QMenu * menu) {
     QXmlSimpleReader reader;
     reader.setContentHandler( new WebLinksParser(this) );
 
-    bool result = reader.parse( sourceRes );
+    reader.parse( sourceRes );
 
 
 }

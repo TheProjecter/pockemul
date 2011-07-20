@@ -39,6 +39,10 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     KeyMap = KeyMap1280;
     KeyMapLenght = KeyMap1280Lenght;
 
+    Pc_DX_mm = 135;
+    Pc_DY_mm = 141;
+    Pc_DZ_mm = 10;
+
     Pc_DX = 483;
     Pc_DY = 502;
 

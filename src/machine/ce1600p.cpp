@@ -35,6 +35,11 @@ Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
     setcfgfname(QString("ce1600p"));
     //SnapPts = QPoint(375,404);
     pCONNECTOR->setSnap(QPoint(424,536));
+
+    Pc_DX_mm = 317;
+    Pc_DY_mm = 222;
+    Pc_DZ_mm = 48;
+
     Paper_X = 192;
     Paper_Y = 50;
     Pc_DX	= 1100;

@@ -45,8 +45,11 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
-    Pc_DX_mm    = 195;
-    Pc_DY_mm    = 86;
+
+    Pc_DX_mm = 195;
+    Pc_DY_mm = 86;
+    Pc_DZ_mm = 25;
+
     Pc_DX		= 679; //572;
     Pc_DY		= 299;//254;
 
