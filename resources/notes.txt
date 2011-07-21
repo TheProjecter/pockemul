@@ -37,3 +37,14 @@ OUTSTAT &41
 
 INSTAT A
     0x77
+
+
+ROM
+---
+Recois 8 Byte et plante aprés le 9eme
+Le 9eme doit etre un CheckSUM.
+Checksom += (x & 0F) + ((x>>8)&0F) attention ajouter le Carry sur le premier &0x0F
+Attend 10 paquets de 8 bytes
+Le dernier bloc
+Si commence par 0x75 alors .... les 8 suivants représentent le mot de passe (voir quel codage)
+

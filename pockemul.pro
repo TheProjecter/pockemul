@@ -323,6 +323,7 @@ OTHER_FILES += \
     resources/keymap/ce140p.map \
     resources/weblinks.xml \
     resources/notes.txt \
-    resources/pockemul/script_help.html
+    resources/pockemul/script_help.html \
+    logitheque/serial1251.qs
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

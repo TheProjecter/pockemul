@@ -18,7 +18,7 @@ class Ccesimu:public CPObject{
 Q_OBJECT
 
 public:
-    const char*	GetClassName(){ return("Ccesimu");};
+    const char*	GetClassName(){ return("Ccesimu");}
 
 
     Cconnector	*pCONNECTOR; qint64 pCONNECTOR_value;

@@ -90,7 +90,7 @@ bool Ccesimu::run(void){
     deltastate = pTIMER->state - run_oldstate;
 //    if (deltastate < CESIMULATENCY ) return true;
 //    run_oldstate	= pTIMER->state;
-    if (pTIMER->usElapsed(run_oldstate)<1000) return true;
+    if (pTIMER->usElapsed(run_oldstate)<500) return true;
     run_oldstate	= pTIMER->state;
 
     if (mainfunction) {
