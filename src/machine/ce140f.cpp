@@ -223,7 +223,27 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     return true;
 }
 
+void Cce140f::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
 
+    BuildContextMenu(&menu);
+
+    menu.addSeparator();
+
+    menu.addAction(tr("Define Directory"),this,SLOT(definePath()));
+
+    menu.exec(event->globalPos () );
+}
+
+void Cce140f::definePath(void){
+    MSG_ERROR("test")
+    QString path = QFileDialog::getExistingDirectory (this, tr("Directory"));
+    if ( path.isNull() == false )
+    {
+        directory.setPath(path);
+    }
+}
 
 /*****************************************************/
 /* Exit PRINTER										 */
@@ -556,7 +576,8 @@ void Cce140f::processCommand(void) {
     switch (data.first()) {
         case 0x04: process_CLOSE(0);break;
         case 0x05: process_FILES();break;
-        case 0x06: process_FILES_LIST();break;
+        case 0x06: process_FILES_LIST(0);break;
+        case 0x07: process_FILES_LIST(1);break;
         case 0x08: process_INIT(0x08);break;
         case 0x09: process_INIT(0x09);break;
         case 0x0A: process_KILL(0x0A);break;
@@ -591,27 +612,66 @@ void Cce140f::process_FILES(void) {
     checksum = 0;
 
     // Send nb files
-    data_out.append(CheckSum(0x02));
+    QString s ="";
+    for (int i =3;i< 15;i++) {
+        s.append(QChar(data.at(i)));
+    }
+    fileList = directory.entryList( QStringList() << s.replace(" ",""),QDir::Files);
+    data_out.append(CheckSum(fileList.size()));
+    fileCount = -1;
 
     // Send CheckSum
     data_out.append(checksum);
 
 }
+QString Cce140f::cleanFileName(QString s) {
+    QString r = "X:";
+    r = r + s.left(s.indexOf(".")).leftJustified(8,' ',true) + s.mid(s.indexOf(".")).rightJustified(4,' ',true);
+    return r;
+}
 
-void Cce140f::process_FILES_LIST(void) {
-    AddLog(LOG_PRINTER,tr("Process FILES_LIST"));
-    data_out.append(0x00);
+void Cce140f::process_FILES_LIST(int cmd) {
+    QString fname;
+    switch (cmd) {
+    case 0:
+            AddLog(LOG_PRINTER,tr("Process FILES_LIST"));
+            data_out.append(0x00);
 
-    checksum=0;
+            checksum=0;
 
-    // Send filenames
-    sendString("X:TEST    .BAS ");
+            fileCount++;
+            fname = fileList.at(fileCount);
 
-    //sendString(" ");
+            AddLog(LOG_PRINTER,"**"+cleanFileName(fname)+"**");
+            // Send filenames
+            //sendString("X:TEST    .BAS ");
+            sendString(cleanFileName(fname));
+            sendString(" ");
 
-    // Send CheckSum
-    data_out.append(checksum);
+            // Send CheckSum
+            data_out.append(checksum);
+            break;
 
+    case 1:
+
+            AddLog(LOG_PRINTER,tr("Process FILES_LIST"));
+            data_out.append(0x00);
+
+            checksum=0;
+            fileCount--;
+            fname = fileList.at(fileCount);
+
+            AddLog(LOG_PRINTER,"**"+cleanFileName(fname)+"**");
+            // Send filenames
+            //sendString("X:TEST    .BAS ");
+            sendString(cleanFileName(fname));
+            sendString(" ");
+
+            // Send CheckSum
+            data_out.append(checksum);
+
+            break;
+    }
 }
 
 void Cce140f::process_INIT(int cmd) {

@@ -153,19 +153,19 @@ function pushArrayCheck(v) {
 function loadROM() {
     this.checksum = 0;
 
-    pushArrayCheck(0xff);
-    pushArrayCheck(0x37);
-    pushArrayCheck(0xc1);
-    pushArrayCheck(0xbd);
-    pushArrayCheck(0x1d);
-    pushArrayCheck(0xd3);
-    pushArrayCheck(0x60);
-    pushArrayCheck(0x00);
+    pushArrayCheck(0xe0);
+    pushArrayCheck(0x10);
+    pushArrayCheck(0xc9);
+    pushArrayCheck(0x1f);
+    pushArrayCheck(0x52);
+    pushArrayCheck(0x48);
+    pushArrayCheck(0x43);
+    pushArrayCheck(0x52);
     myByteArray.push(this.checksum);
 
-    pushArrayCheck(0xe0);
-    pushArrayCheck(0x11);
-    pushArrayCheck(0x95);
+    pushArrayCheck(0x00);
+    pushArrayCheck(0xff);
+    pushArrayCheck(0x37);
     pushArrayCheck(0x41);
     pushArrayCheck(0x40);
     pushArrayCheck(0x40);
@@ -243,15 +243,15 @@ function loadROM() {
     pushArrayCheck(0x00);
     myByteArray.push(this.checksum);
 
-    pushArrayCheck(0xf5);
-    pushArrayCheck(0x51);
-    pushArrayCheck(0x52);
-    pushArrayCheck(0x53);
-    pushArrayCheck(0x54);
-    pushArrayCheck(0x55);
-    pushArrayCheck(0x56);
-    pushArrayCheck(0x57);
-    myByteArray.push(this.checksum);
+//    pushArrayCheck(0xf5);
+//    pushArrayCheck(0x51);
+//    pushArrayCheck(0x52);
+//    pushArrayCheck(0x53);
+//    pushArrayCheck(0x54);
+//    pushArrayCheck(0x55);
+//    pushArrayCheck(0x56);
+//    pushArrayCheck(0x57);
+//    myByteArray.push(this.checksum);
 
 
 myByteArray.push(0x0d);

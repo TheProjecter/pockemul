@@ -12,6 +12,7 @@
 
 #include <QTime>
 #include <QSound>
+#include <QDir>
 
 
 #include "cprinter.h"
@@ -22,6 +23,7 @@
 
 
 class Cce140f:public CPObject{
+    Q_OBJECT
 public:
 
     virtual bool init(void);				//initialize
@@ -60,7 +62,7 @@ int ce140f_Mode;
     void process_DSKF(void);
     void process_FILES(void);
     void process_INIT(int cmd);
-    void process_FILES_LIST(void);
+    void process_FILES_LIST(int cmd);
     void process_SAVE(int cmd);
     void process_LOAD(int cmd);
     void process_CLOSE(int cmd);
@@ -68,6 +70,7 @@ int ce140f_Mode;
 
     void sendString(QString s);
     BYTE CheckSum(BYTE b);
+    QString cleanFileName(QString s);
 
     Cce140f(CPObject *parent = 0);
 
@@ -78,7 +81,12 @@ int ce140f_Mode;
 public:
     bool    rmtSwitch;
 
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
+    void definePath(void);
+
 private:
+    QDir    directory;
     void	Printer(qint8 d);			//printer emulator
     QImage *charTable;
     void	pulldownsignal(void);
@@ -107,6 +115,8 @@ private:
     QFile   file_load;
     QByteArray ba_load;
     qint64  lastState;
+    int     fileCount;
+    QStringList fileList;
 };
 
 

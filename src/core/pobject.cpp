@@ -261,7 +261,7 @@ void CPObject::fillSoundBuffer(BYTE val)
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
     if (delta_state >= wait)
     {
-        //mainwindow->audioMutex.lock();
+        mainwindow->audioMutex.lock();
         while (delta_state >= wait)
         {
 #if NEW_SOUND
@@ -286,7 +286,7 @@ void CPObject::fillSoundBuffer(BYTE val)
             fillSoundBuffer_old_state += wait;
             delta_state -= wait;
         }
-        //mainwindow->audioMutex.unlock();
+        mainwindow->audioMutex.unlock();
     }
 }
 
