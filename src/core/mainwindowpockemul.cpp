@@ -59,6 +59,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
  	connect(actionCheck_for_Updates,SIGNAL(triggered()), this, SLOT(CheckUpdates()));    
     connect(actionMinimize_All,     SIGNAL(triggered()), this, SLOT(Minimize_All()));
     connect(actionReset_Zoom,           SIGNAL(triggered()),this, SLOT(resetZoom()));
+    connect(actionClose_All,        SIGNAL(triggered()), this, SLOT(Close_All()));
     connect(menuPockets, SIGNAL(triggered( QAction *)), this, SLOT(SelectPocket( QAction *)));
 
     connect(actionEditor,SIGNAL(triggered()),this,SLOT(IDE()));
@@ -211,6 +212,14 @@ void MainWindowPockemul::Minimize_All() {
         }
     }
 
+}
+
+void MainWindowPockemul::Close_All() {
+    for (int k = 0; k < listpPObject.size(); k++)
+    {
+        CPObject *pc = listpPObject.at(k);
+        pc->slotExit();
+    }
 }
 
 void MainWindowPockemul::resetZoom() {

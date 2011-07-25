@@ -1,3 +1,5 @@
+//BUG  the RUN statement is not working. DEF"a" or RUN 10 are working
+
 #include <QtGui>
 #include "pc2500.h"
 #include "Keyb2500.h"

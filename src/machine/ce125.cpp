@@ -1,3 +1,5 @@
+//TODO  Take a look on the difference with the CE-126p
+
 #include <QPainter>
 
 #include "ce125.h"

@@ -1,3 +1,5 @@
+//TODO Migrate sound to QMultimedia
+
 #include <QPainter>
 #include <QResource>
 

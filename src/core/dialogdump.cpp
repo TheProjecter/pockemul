@@ -169,6 +169,7 @@ void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previo
     hexeditor->data().clear();
     hexeditor->setReadOnly(true);
     hexeditor->setData(*ba);
+    hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
 
 #else
     QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);

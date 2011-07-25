@@ -2,6 +2,7 @@
 
 #include "ccable.h"
 #include "init.h"
+//TODO Will never work because of timing accuracy. Have to think about it
 
 bool Ccable::init(void) {
     CPObject::init();

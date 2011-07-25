@@ -1,3 +1,5 @@
+//TODO  Paper positionning
+
 #include <QPainter>
 
 #include "ce140p.h"

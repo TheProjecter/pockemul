@@ -78,6 +78,7 @@
     </property>
     <addaction name="actionReset_Zoom"/>
     <addaction name="actionMinimize_All"/>
+    <addaction name="actionClose_All"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuIDE">
@@ -292,6 +293,11 @@
   <action name="actionReset_Zoom">
    <property name="text">
     <string>Reset Zoom</string>
+   </property>
+  </action>
+  <action name="actionClose_All">
+   <property name="text">
+    <string>Close All</string>
    </property>
   </action>
  </widget>

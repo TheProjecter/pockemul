@@ -7,7 +7,7 @@
  * COMMENTARY   :
  ********************************************************************************************************/
 
-//TODO: test
+//TODO: Finish to emulate all non essential functions
 
 #include <QPainter>
 #include <QTime>
