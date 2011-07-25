@@ -1,6 +1,7 @@
 #ifndef _CE125_H_
 #define _CE125_H_
 
+#include "common.h"
 #include "Ce126.h"
 #include "ce152.h"
 

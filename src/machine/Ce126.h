@@ -12,7 +12,7 @@
 #include <QTime>
 #include <QSound>
 
-
+#include "common.h"
 #include "cprinter.h"
 #include "Keyb.h"
 #include "Connect.h"
@@ -44,8 +44,8 @@ public:
 	
 	bool	ToDestroy;
 		
-	void	settop(int value){ top = value; };
-	void	setposX(int value) { posX = value; };
+    void	settop(int value){ top = value; }
+    void	setposX(int value) { posX = value; }
 int ce126_Mode;
 					
     Cce126(CPObject *parent = 0);
@@ -79,22 +79,7 @@ private:
 
 };
 
-class Cce120p:public Cce126
-{
-public:
-    Cce120p()
-    {								//[constructor]
-        BackGroundFname	= ":/EXT/ext/ce-120p.png";
-        setcfgfname("ce120p");
-        setDX(883);//Pc_DX	= 883;
-        setDY(568);//Pc_DY	= 568;
-        SnapPts = QPoint(402,43);
-        pCONNECTOR->setSnap(QPoint(400,131));
-        setPaperPos(QRect(89,185-149,207,149));
 
-        delete pKEYB; pKEYB=new Ckeyb(this,"ce120.map");
-    }
-};
 
 class Cce123:public Cce126
 {

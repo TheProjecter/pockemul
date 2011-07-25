@@ -6,6 +6,9 @@
  * LICENSE      : GPL
  * COMMENTARY   :
  ********************************************************************************************************/
+
+//TODO: test
+
 #include <QPainter>
 #include <QTime>
 #include <QSound>
@@ -591,6 +594,7 @@ void Cce140f::processCommand(void) {
         case 0x1D: process_DSKF(); break;
         case 0xFE: process_SAVE(0xfe);break;    // Handle ascii saved data stream
         case 0xFF: process_SAVE(0xff);break;    // Handle saved data stream
+    default: MSG_ERROR("CE-140F : Unknown command.")
     }
 }
 
@@ -887,7 +891,7 @@ void Cce140f::process_KILL(int cmd) {
         }
         AddLog(LOG_PRINTER,tr("process_KILL file:%1").arg(s));
 
-        QFile::remove(s);
+        QFile::remove(directory.absoluteFilePath(s));
         data_out.append(0x00);
         break;
     }

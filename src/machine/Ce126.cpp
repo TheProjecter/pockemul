@@ -432,7 +432,7 @@ bool Cce126::run(void)
 	{
             case 0x00:
             case 0x0f:
-#if 1
+
 				if ( (GET_PIN(PIN_BUSY) == Previous_PIN_BUSY ) && (Previous_PIN_BUSY == DOWN) &&
 					 (GET_PIN(PIN_MT_OUT1) == Previous_PIN_MT_OUT1) &&	(Previous_PIN_MT_OUT1 == DOWN) &&
 					 (GET_PIN(PIN_ACK) == UP) &&
@@ -443,7 +443,7 @@ bool Cce126::run(void)
 					SET_PIN(PIN_ACK,DOWN);
 					if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 1;
 				}
-
+#if 0
 				if ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP ))
 				{
 					Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);

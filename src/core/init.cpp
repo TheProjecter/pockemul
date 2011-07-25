@@ -47,6 +47,7 @@
 #include "ce152.h"
 #include "sio.h"
 #include "Ce126.h"
+#include "ce120p.h"
 #include "ce125.h"
 #include "ce140p.h"
 #include "ce140f.h"
