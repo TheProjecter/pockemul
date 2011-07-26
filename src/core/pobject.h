@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QAudioOutput>
 #include <QXmlStreamWriter>
+#include <QPixmap>
 
 #include "common.h"
 
@@ -135,6 +136,8 @@ public:
 
 	DialogKeyList	*dialogkeylist;
     DialogDump		*dialogdump;
+
+    QPixmap         mask;
 
 	void setCpu(int );
     virtual void TurnON() {}
