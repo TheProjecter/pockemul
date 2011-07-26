@@ -121,7 +121,7 @@ public:
 
 	virtual void Regs_Info(UINT8);
 	virtual void TurnON(void);
-	virtual void TurnOFF(void);
+    virtual void TurnOFF(void);
 	virtual void Reset();
 
 	virtual void UpdateFinalImage();

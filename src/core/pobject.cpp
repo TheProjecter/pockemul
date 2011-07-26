@@ -938,7 +938,7 @@ void CPObject::slotPower()
 	if (Power)
 		TurnON();
 	else
-		TurnOFF();
+        TurnOFF();
 }
 
 void CPObject::slotReset()		{ Reset(); }

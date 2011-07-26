@@ -1,4 +1,7 @@
+#ifndef KEYB1403_H
+#define KEYB1403_H
 
+//TODO  ADD {} in KeyMap1403 to avoid warning during compilation
 
 //
 // Same as the 1401 and 1402 but i'm not sure it is not different
@@ -112,3 +115,4 @@ TransMap KeyMap1403[]={
 };
 int KeyMap1403Lenght = 84;
 
+#endif

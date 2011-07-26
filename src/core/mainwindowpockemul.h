@@ -5,6 +5,8 @@
 #include <QPoint>
 //
 #include "ui_pockemul.h"
+#include "common.h"
+
 class DialogLog;
 class CpaperWidget;
 class dialogAnalog;
@@ -15,6 +17,7 @@ class CDirectLink;
 class CKey;
 class CpcXXXX;
 class Cconnector;
+
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -41,7 +44,7 @@ public:
 	
 	qint64	rawclk;
         CPObject * LoadPocket(int result);
-        bool saveAll;
+        ASKYN saveAll;
 float	zoom;
     //Audio audio;
 

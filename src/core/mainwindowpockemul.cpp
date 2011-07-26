@@ -46,7 +46,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 	dialoganalogic = 0;
     dialogide = 0;
     zoom = 100;
-    saveAll = false;
+    saveAll = ASK;
 	startKeyDrag = false;
 	startPosDrag = false;
 
@@ -215,6 +215,15 @@ void MainWindowPockemul::Minimize_All() {
 }
 
 void MainWindowPockemul::Close_All() {
+    switch(QMessageBox::question(mainwindow,
+                                 "PockEmul",
+                                 "Do you want to save all sessions ?",
+                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel)) {
+    case QMessageBox::Yes: saveAll = YES;break;
+    case QMessageBox::No: saveAll = NO;break;
+    case QMessageBox::Cancel: return;
+    }
+
     for (int k = 0; k < listpPObject.size(); k++)
     {
         CPObject *pc = listpPObject.at(k);
@@ -427,7 +436,7 @@ void MainWindowPockemul::saveassession()
 {
     QMap<CPObject*,int> map;
 
-    saveAll = true;
+    saveAll = YES;
     QString s;
     QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
     xml->autoFormatting();
@@ -483,7 +492,7 @@ void MainWindowPockemul::saveassession()
         out << s;
     }
 
-    saveAll = false;
+    saveAll = ASK;
 }
 
 void MainWindowPockemul::paintEvent(QPaintEvent *event) {}

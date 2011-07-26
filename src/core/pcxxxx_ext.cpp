@@ -25,7 +25,7 @@ void CpcXXXX::updateExtension(QAction *action)
 	for (int ind = 0; ind < 5; ind++){
 		if (extensionArray[ind]) updateExtension(extensionArray[ind],action);
 	}
-	TurnOFF();
+    TurnOFF();
 	InitDisplay();
 
 }

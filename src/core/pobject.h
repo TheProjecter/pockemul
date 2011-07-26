@@ -21,6 +21,7 @@ class CExtensionArray;
 class DialogKeyList;
 class DialogDump;
 
+
 struct URL {
     QString desc;
     QString url;

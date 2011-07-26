@@ -2,7 +2,7 @@
 
 
 // TODO Add support for extended 11 pins connector
-// BUG Some
+
 Cce120p::Cce120p()
 {								//[constructor]
     BackGroundFname	= ":/EXT/ext/ce-120p.png";

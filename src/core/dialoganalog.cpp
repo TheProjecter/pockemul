@@ -69,6 +69,10 @@ void dialogAnalog::fill_twWatchPoint(void)
 			}
 		}
 	}
+    if (twWatchPoint->topLevelItemCount()>3) {
+        twWatchPoint->collapseAll();
+    }
+    twWatchPoint->header()->hide();
 }
 
 void dialogAnalog::slotMarker(void)

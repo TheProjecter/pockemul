@@ -103,5 +103,9 @@ typedef long	ErrCode;
 typedef unsigned char uchar;
 typedef unsigned long ulong;
 
+enum ASKYN{
+    YES,NO,ASK
+};
+
 #endif // _COMMON_H
 
