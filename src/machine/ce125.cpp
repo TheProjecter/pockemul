@@ -94,7 +94,7 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     setDX(731);//Pc_DX	= 731;
     setDY(532);//Pc_DY	= 532;
     SnapPts = QPoint(247,280);
-    pCONNECTOR->setSnap(QPoint(247,370));
+    pCONNECTOR->setSnap(QPoint(247,367));
     remove(pTAPECONNECTOR);
     setPaperPos(QRect(377,0,207,149));
 

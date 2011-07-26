@@ -427,8 +427,15 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 	else raise();
 #else
+    // raise all connected object and then manage Z-order between them
     raise();
     QList<CPObject *> list;
+    mainwindow->pdirectLink->findAllObj(this,&list);
+    for (int i=0;i<list.size();i++) {
+        list.at(i)->raise();
+    }
+    list.clear();
+
     manageStackPos(&list);
 
 #endif
