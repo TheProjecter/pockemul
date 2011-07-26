@@ -572,22 +572,18 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                         // If not already linked
                         QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
                         for (int r=0; r<nearList.size();r++) {
-                            switch(QMessageBox::question(mainwindow, "PockEmul",
+                            if (QMessageBox::question(mainwindow, "PockEmul",
                                                     "Do you want to link those two materials ?\n"+
                                                     nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
                                                     "Yes",
-                                                    "No", 0, 0, 1))
-                            {
-                            case 0: // The user clicked the Yes button or pressed Enter
+                                                    "No", 0, 0, 1) == 0) {
+                             // The user clicked the Yes button or pressed Enter
                             // Connect
                                 Move(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
                                 mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
                                 mainwindow->pdirectLink->BConnList.append(nearList.at(r));
-
-                                break;
-                            case 1: // The user clicked the No or pressed Escape
-                                // exit
-                                break;
+                                QList<CPObject *> list;
+                                listpPObject.at(k)->manageStackPos(&list);
                             }
                         }
                     }
