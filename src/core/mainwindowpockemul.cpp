@@ -534,6 +534,7 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
         locpc->setPosX(newposx);
         locpc->setPosY(newposy);
         locpc->setGeometry(newposx,newposy,locpc->getDX()*zoom/100,locpc->getDY()*zoom/100);
+        locpc->setMask(QPixmap(locpc->BackGroundFname).scaled(locpc->getDX()*zoom/100,locpc->getDY()*zoom/100).mask());
     }
 }
 
