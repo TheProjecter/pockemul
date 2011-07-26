@@ -14,6 +14,8 @@
 #include <QSound>
 #include <QFileDialog>
 #include <QThread>
+#include <QPixmap>
+#include <QBitmap>
 
 #include "common.h"
 
@@ -46,6 +48,8 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     ToDestroy	= false;
     BackGroundFname	= ":/EXT/ext/ce-140f.png";
     setcfgfname("ce140f");
+
+
 
     settop(10);
     setposX(0);
