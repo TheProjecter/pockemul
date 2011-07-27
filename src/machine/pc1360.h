@@ -14,8 +14,9 @@
 class Cpc1360:public Cpc13XX{						//PC1360 emulator main class
 
 public:
-    const char*	GetClassName(){ return("Cpc1360");};
+    const char*	GetClassName(){ return("Cpc1360");}
 
+    virtual BYTE	Get_PortA(void);
     virtual BYTE	Get_PortB(void);
 //	virtual void	Set_PortB(BYTE data);
     virtual void	Set_PortF(BYTE data);
@@ -27,6 +28,7 @@ public:
 	virtual bool	Get_Connector(void);
 
     virtual void	initExtension(void);
+    virtual bool	run(void);
 
     Cpc1360(CPObject *parent = 0);
 	virtual ~Cpc1360()

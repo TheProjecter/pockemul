@@ -51,6 +51,24 @@ void Ctimer::check(void)
 {
 
 }
+bool Ctimer::resetTimer(int id) {
+    if ( (id <10) && (id >=0)) {
+        timerSate[id] = this->state;
+        return true;
+    }
+    return false;
+}
+
+int Ctimer::msElapsedId(int id) {
+
+    qint64 r = (state - timerSate[id]) * 1000L / (CPUSpeed *pPC->getfrequency());
+    return r;
+}
+qint64 Ctimer::usElapsedId(int id) {
+
+    qint64 r = (state - timerSate[id]) * 1000000L / (CPUSpeed *pPC->getfrequency());
+    return r;
+}
 
 int Ctimer::msElapsed(qint64 stateRef) {
 

@@ -82,6 +82,19 @@ void	Cpc1360::initExtension(void)
 	
 }
 
+BYTE	Cpc1360::Get_PortA(void)
+{
+    BYTE data = Cpc13XX::Get_PortA();
+    data |= ( pSIOCONNECTOR->Get_pin(12) ? 0x80 : 0x00);
+    return (data);
+}
+
+bool Cpc1360::run(void)
+{
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+
+    CpcXXXX::run();
+}
 
 // PIN_MT_OUT2	1
 // PIN_GND		2
@@ -131,6 +144,7 @@ bool Cpc1360::Set_Connector(void)
 	pSIOCONNECTOR->Set_pin(SIO_RS	,READ_BIT(port1,3));
 	pSIOCONNECTOR->Set_pin(SIO_ER	,READ_BIT(port1,1));
 
+    pSIOCONNECTOR->Set_pin(SIO_PRQ	,READ_BIT(port2,2) | READ_BIT(port2,3));
 	return(1);
 }
 
@@ -149,7 +163,9 @@ bool Cpc1360::Get_Connector(void)
 	Set_Port_Bit(PORT_B,6,pSIOCONNECTOR->Get_pin(SIO_RD));
 	Set_Port_Bit(PORT_B,7,pSIOCONNECTOR->Get_pin(SIO_CS));
 	Set_Port_Bit(PORT_B,8,pSIOCONNECTOR->Get_pin(SIO_CD));
-//	Set_Port_Bit(PORT_A,8,pSIO->pSIOCONNECTOR->Get_pin(SIO_PAK));		
+
+    // Set A8 if and only if PAK is Hight
+    if (pSIOCONNECTOR->Get_pin(SIO_PAK)) Set_Port_Bit(PORT_A,8,pSIOCONNECTOR->Get_pin(SIO_PAK));
 	// PAK
 
 	return(1);

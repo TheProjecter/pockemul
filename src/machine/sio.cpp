@@ -95,7 +95,7 @@ bool Csio::run(void)
 	SIO_SET_PIN(SIO_RD, Get_RD());
 	SIO_SET_PIN(SIO_CS, Get_CS());
 	SIO_SET_PIN(SIO_CD, Get_CD());
-	SIO_SET_PIN(SIO_PAK, 0);
+    //SIO_SET_PIN(SIO_PAK, 0);
 
 	return true;
 }

@@ -7,7 +7,7 @@
 
 class Ccable:public CPObject{
 public:
-    const char*	GetClassName(){ return("Ccable");};
+    const char*	GetClassName(){ return("Ccable");}
 
 		
     Cconnector	*pCONNECTOR_A;  qint64 pCONNECTOR_A_value;

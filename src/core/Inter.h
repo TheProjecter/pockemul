@@ -39,7 +39,7 @@ public:
 	float GetCPUspeed(void)
 	{			//get CPU speed by %
 		return(CPUSpeed);
-	};
+    }
 
     int  initTP(int frequency);
     void resetTP(int index);
@@ -48,6 +48,10 @@ public:
 	void SetCPUspeed(float);
     int     msElapsed(qint64 stateRef);
     qint64  usElapsed(qint64 stateRef);
+    int     msElapsedId(int id);
+    qint64  usElapsedId(int id);
+
+    bool    resetTimer(int);
 
 	qint64	state;					//state counter
 	long	chkspeed;				//speed counter
@@ -67,18 +71,22 @@ public:
         for (int i=0;i<10;i++)
         {
             previous_state_tp[i]=0;
+            timerSate[i] = 0;
             frequency_tp[i]=0;
             tp[i] = false;
         }
-	};
+    }
+
 	~Ctimer()
 	{
-	};
+    }
 
 private:
     qint64 previous_state_tp[10];
+    qint64 timerSate[10];
     int     frequency_tp[10];
     bool    tp[10];
+
 };
 
 

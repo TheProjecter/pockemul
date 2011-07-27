@@ -1,4 +1,7 @@
 //TODO  Paper positionning
+//FIXME Gérer correctement le commutateur SIO/PRN. Si sur SIO, l'imprimante intercepte les commande PRN
+//FIXME Lorsque les PRQ et PAK sont gérés, plus rien ne marche
+
 
 #include <QPainter>
 
@@ -57,9 +60,43 @@ bool Cce140p::init(void) {
     return true;
 }
 
+#define SIO_GNDP	1
+#define SIO_SD 		2
+#define SIO_RD		3
+#define SIO_RS		4
+#define SIO_CS		5
+
+#define SIO_GND		7
+#define SIO_CD		8
+#define SIO_VC1		10
+#define SIO_RR		11
+#define SIO_PAK		12
+#define SIO_VC2		13
+#define SIO_ER		14
+#define SIO_PRQ		15
+
 bool Cce140p::run(void) {
 
     if (pKEYB->LastKey == K_PFEED) { PaperFeed();}
+
+#if 0
+    if (!pSIOCONNECTOR->Get_pin(SIO_PAK)) {
+        if (pSIOCONNECTOR->Get_pin(SIO_PRQ)) {
+            pTIMER->resetTimer(0);
+            pSIOCONNECTOR->Set_pin(SIO_PAK,true);
+        }
+    }
+    else {
+         if (pTIMER->msElapsedId(0)>40) pSIOCONNECTOR->Set_pin(SIO_PAK,false);
+    }
+#else
+    if (pSIOCONNECTOR->Get_pin(SIO_PRQ)) {
+        pSIOCONNECTOR->Set_pin(SIO_PAK,true);
+    }
+    else {
+        pSIOCONNECTOR->Set_pin(SIO_PAK,false);
+    }
+#endif
 
     if (printerSwitch) {
         pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
