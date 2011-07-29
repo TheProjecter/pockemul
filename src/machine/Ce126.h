@@ -59,6 +59,7 @@ int ce126_Mode;
 
 public:
     bool    rmtSwitch;
+    int     internal_device_code;
 
 private:
 	void	Printer(qint8 d);			//printer emulator
@@ -77,7 +78,7 @@ private:
     int     code_transfer_step;
     int     device_code;
     qint64  lastState;
-    int     internal_device_code;
+
 
 public:
     bool MT_OUT2;

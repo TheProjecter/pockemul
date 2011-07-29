@@ -400,7 +400,8 @@ bool Cce126::run(void)
 
                         //Printer(t);
                         ACK = DOWN;
-                        if (t == internal_device_code) {
+                        device_code = t;
+                        if ((t == internal_device_code)) {
                             device_code = t;
                             code_transfer_step=4;
                         }
@@ -460,8 +461,9 @@ bool Cce126::run(void)
 
     switch (device_code)
 	{
-//            case 0x00:  // only ce-125 et ce-126p specific mode
+            //case 0x00:  // only ce-125 et ce-126p specific mode
             case 0x0f:
+            case 0x21:
 
                 if ( (BUSY == Previous_BUSY ) && (Previous_BUSY == DOWN) &&
                      (MT_OUT1 == Previous_MT_OUT1) &&	(Previous_MT_OUT1 == DOWN) &&
