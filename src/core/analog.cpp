@@ -8,7 +8,7 @@
 #include "Log.h"
 #include "analog.h"
 
-
+//TODO  Add the capability to record several marker at the same time or introduce a n steps latency between connected objects
 
 
 void CData::Clear(void)

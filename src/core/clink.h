@@ -18,6 +18,7 @@ public:
 	
     void outConnector(Cconnector* search);
     void Output(CPObject* pPC);
+    void updateConnectors(CPObject* pPC);
 	
     CPObject * findObj(CPObject *);
     void findAllObj(CPObject *, QList<CPObject *> *);

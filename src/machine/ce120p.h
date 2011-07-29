@@ -10,6 +10,9 @@ public:
     virtual bool exit(void);				//end
     virtual	bool run(void);					//check access
 
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+
     Cconnector	*pCONNECTOR_Ext;	qint64 pCONNECTOR_Ext_value;
 
     Cce120p();

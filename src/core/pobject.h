@@ -91,6 +91,9 @@ public:
 	virtual void	UpdateFinalImage(void);
     virtual	bool	run(void){ return true;}					// emulator main step
 	virtual bool	exit();					// exit
+    virtual bool	Set_Connector(void) { return true; }
+    virtual bool	Get_Connector(void) { return true; }
+
     int		getfrequency() { return frequency; }
     void	setfrequency(int f) { frequency = f; }
 

@@ -74,12 +74,22 @@ Cconnector * CDirectLink::Linked(Cconnector * search)
     return 0;
 }
 
+// Update all conectors of a CPOboject
+void CDirectLink::updateConnectors(CPObject* pPC) {
+    for (int i = 0;i < pPC->ConnList.size(); i++)
+    {
+        pPC->ConnList.at(i)->ConnectTo(Linked(pPC->ConnList.at(i)));
+    }
+}
+
 void CDirectLink::Output(CPObject* pPC)
 {
+
 	for (int i = 0;i < pPC->ConnList.size(); i++)
  	{
  		outConnector( pPC->ConnList.at(i) );
 	}
+
 }
 
 void CDirectLink::outConnector(Cconnector* search)
@@ -108,6 +118,7 @@ void CDirectLink::outConnector(Cconnector* search)
         {
 //				AddLog(LOG_TEMP,tr("Connector Chain with %1").arg(BConnList.at(found)->Parent->getName()));
             foundConnector->Parent->pTIMER = search->Parent->pTIMER;
+            updateConnectors(foundConnector->Parent);
             foundConnector->Parent->run();
             insertlog(foundConnector->Parent);
             Output( foundConnector->Parent );

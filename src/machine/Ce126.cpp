@@ -208,8 +208,8 @@ bool Cce126::init(void)
 	
 //	SET_PIN(PIN_ACK,DOWN);
 AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1":"0"));
-	Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
-	Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
+    Previous_BUSY = GET_PIN(PIN_BUSY);
+    Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
 	time.start();
 	
 	run_oldstate = -1;
@@ -291,16 +291,46 @@ void Cce126::pulldownsignal(void)
 #endif
 }
 
+bool Cce126::Get_Connector(void) {
+    MT_OUT2	= GET_PIN(PIN_MT_OUT2);
+    BUSY    = GET_PIN(PIN_BUSY);
+    D_OUT	= GET_PIN(PIN_D_OUT);
+    MT_IN	= GET_PIN(PIN_MT_IN);
+    MT_OUT1	= GET_PIN(PIN_MT_OUT1);
+    D_IN	= GET_PIN(PIN_D_IN);
+    ACK		= GET_PIN(PIN_ACK);
+    SEL2	= GET_PIN(PIN_SEL2);
+    SEL1	= GET_PIN(PIN_SEL1);
+
+    return true;
+}
+
+bool Cce126::Set_Connector(void) {
+    SET_PIN(PIN_MT_OUT2,MT_OUT2);
+    SET_PIN(PIN_BUSY,BUSY);
+    SET_PIN(PIN_D_OUT,D_OUT);
+    SET_PIN(PIN_MT_IN,MT_IN);
+    SET_PIN(PIN_MT_OUT1,MT_OUT1);
+    SET_PIN(PIN_D_IN,D_IN);
+    SET_PIN(PIN_ACK,ACK);
+    SET_PIN(PIN_SEL2,SEL2);
+    SET_PIN(PIN_SEL1,SEL1);
+
+    return true;
+}
+
 #define CE126LATENCY (pTIMER->pPC->getfrequency()/3200)
 //#define CE126LATENCY (getfrequency()/3200)
 bool Cce126::run(void)
 {
 
+    Get_Connector();
+
 	bool bit = false;
     ce126_Mode=0;//=RECEIVE_MODE;
 
-    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? GET_PIN(PIN_SEL1):true));       // RMT
-    pTAPECONNECTOR->Set_pin(2,GET_PIN(PIN_MT_OUT1));    // Out
+    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? SEL1:true));       // RMT
+    pTAPECONNECTOR->Set_pin(2,MT_OUT1);    // Out
     SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));      // In
 
 	pCONNECTOR_value = pCONNECTOR->Get_values();
@@ -333,18 +363,18 @@ bool Cce126::run(void)
 //	AddLog(LOG_PRINTER,tr("%1").arg(dump1));
 
     switch (code_transfer_step) {
-    case 0 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
+    case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
                     lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
                 }
                 break;
-    case 1 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
+    case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
                     if (pTIMER->msElapsed(lastState) > 40) {
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
-                        SET_PIN(PIN_ACK,UP);
+                        ACK = UP;
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 9;
                     }
                 }
@@ -353,9 +383,9 @@ bool Cce126::run(void)
                     //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 7;
                 }
                 break;
-    case 2:     if (GET_PIN(PIN_BUSY) == UP )	//check for BUSY
+    case 2:     if (BUSY == UP )	//check for BUSY
                 {
-                    if(GET_PIN(PIN_D_OUT) == UP)
+                    if(D_OUT == UP)
                     {
                         bit = true;;
                     } else
@@ -366,10 +396,10 @@ bool Cce126::run(void)
                     if (bit) t|=0x80;
                     if((c=(++c)&7)==0)
                     {
-                        AddLog(LOG_PRINTER,tr("device code : %1").arg(t,2,16) );
+                        AddLog(LOG_PRINTER,tr("device code printer : %1").arg(t,2,16) );
 
                         //Printer(t);
-                        SET_PIN(PIN_ACK,DOWN);
+                        ACK = DOWN;
                         if (t == internal_device_code) {
                             device_code = t;
                             code_transfer_step=4;
@@ -382,7 +412,7 @@ bool Cce126::run(void)
                         //t=0; c=0;
                     }
                     else {
-                        SET_PIN(PIN_ACK,DOWN);
+                        ACK = DOWN;
                         code_transfer_step=3;
                         lastState=pTIMER->state;
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 18;
@@ -392,12 +422,12 @@ bool Cce126::run(void)
     case 3:     if (pTIMER->msElapsed(lastState)>2) {
                     code_transfer_step=2;
                     // wait 2 ms and raise ACK
-                    SET_PIN(PIN_ACK,UP);
+                    ACK = UP;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 16;
                 }
                 break;
-    case 4:     if ((GET_PIN(PIN_BUSY) == DOWN)&&(GET_PIN(PIN_MT_OUT1) == DOWN)) {
-                    SET_PIN(PIN_ACK,UP);
+    case 4:     if ((BUSY == DOWN)&&(MT_OUT1 == DOWN)) {
+                    ACK = UP;
                     code_transfer_step=5;
                     lastState=pTIMER->state;//time.restart();
                     t=0; c=0;
@@ -405,7 +435,7 @@ bool Cce126::run(void)
                 }
                 break;
     case 5:     if (pTIMER->msElapsed(lastState)>9) {
-                    SET_PIN(PIN_ACK,DOWN);
+                    ACK = DOWN;
                     code_transfer_step=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 14;
 
@@ -413,7 +443,7 @@ bool Cce126::run(void)
                 }
                 break;
     case 6:     if ((pTIMER->msElapsed(lastState)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
-                    SET_PIN(PIN_ACK,DOWN);
+                    ACK = DOWN;
                     code_transfer_step=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 19;
 
@@ -430,17 +460,17 @@ bool Cce126::run(void)
 
     switch (device_code)
 	{
-            case 0x00:
+//            case 0x00:  // only ce-125 et ce-126p specific mode
             case 0x0f:
 
-				if ( (GET_PIN(PIN_BUSY) == Previous_PIN_BUSY ) && (Previous_PIN_BUSY == DOWN) &&
-					 (GET_PIN(PIN_MT_OUT1) == Previous_PIN_MT_OUT1) &&	(Previous_PIN_MT_OUT1 == DOWN) &&
-					 (GET_PIN(PIN_ACK) == UP) &&
+                if ( (BUSY == Previous_BUSY ) && (Previous_BUSY == DOWN) &&
+                     (MT_OUT1 == Previous_MT_OUT1) &&	(Previous_MT_OUT1 == DOWN) &&
+                     (ACK == UP) &&
 					 (time.elapsed() > 30 ) )
 				{
 					AddLog(LOG_PRINTER,tr("ACK timeout"));
 					time.restart();
-					SET_PIN(PIN_ACK,DOWN);
+                    ACK = DOWN;
 					if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 1;
 				}
 #if 0
@@ -461,32 +491,32 @@ bool Cce126::run(void)
 					}
 				}
 #endif
-                if (GET_PIN(PIN_SEL1) == UP )
+                if (SEL1 == UP )
                 {
                     t=0;
                     c=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 1;
                 }
 
-				if (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY )	//check for BUSY  - F03
+                if (BUSY != Previous_BUSY )	//check for BUSY  - F03
 				{
                     //AddLog(LOG_PRINTER,tr("PIN_BUSY CHANGE from %1 TO %2").arg(Previous_PIN_BUSY?"1":"0").arg(GET_PIN(PIN_BUSY)?"1":"0"));
-					Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
-					if (GET_PIN(PIN_ACK) == UP) //check for ACK  - F03
+                    Previous_BUSY = BUSY;
+                    if (ACK == UP) //check for ACK  - F03
 					{
-						SET_PIN(PIN_ACK,DOWN);
+                        ACK = DOWN;
 						if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 3;
 					}
 					else
 					{
-						SET_PIN(PIN_ACK,UP);
+                        ACK = UP;
 						if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 4;
 					}
                     //AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
 	
-					if (GET_PIN(PIN_BUSY) == UP )	//check for BUSY  - F03
+                    if (BUSY == UP )	//check for BUSY  - F03
 					{
-						if(GET_PIN(PIN_D_OUT) == UP)
+                        if(D_OUT == UP)
 						{
 							bit = true;;
 						} else
@@ -509,14 +539,16 @@ bool Cce126::run(void)
 	
 					} 
 				}
-				Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
-				Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
+                Previous_BUSY = BUSY;
+                Previous_MT_OUT1 = MT_OUT1;
 				pulldownsignal();
 				
 
 	}
 
-}
+
+
+    }
 #if 0
 	char dump11[20]="";
 	static char dump12[20]="";
@@ -534,6 +566,7 @@ bool Cce126::run(void)
 	pCONNECTOR_value = pCONNECTOR->Get_values();
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
+    Set_Connector();
 
 	return true;
 }

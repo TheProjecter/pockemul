@@ -26,6 +26,9 @@ public:
 	virtual bool exit(void);				//end
 	virtual	bool run(void);					//check access
 
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+
 	virtual void clearPaper(void);
 	virtual void SaveAsText(void);
 
@@ -65,8 +68,8 @@ private:
 	int		top;
 	int		posX;
 	QByteArray	TextBuffer;
-	bool	Previous_PIN_BUSY;
-	bool	Previous_PIN_MT_OUT1;
+    bool	Previous_BUSY;
+    bool	Previous_MT_OUT1;
 	QTime	time;
 	bool	ctrl_char;
 	BYTE	t,c;
@@ -76,6 +79,16 @@ private:
     qint64  lastState;
     int     internal_device_code;
 
+public:
+    bool MT_OUT2;
+    bool BUSY;
+    bool D_OUT;
+    bool MT_IN;
+    bool MT_OUT1;
+    bool D_IN;
+    bool ACK;
+    bool SEL2;
+    bool SEL1;
 
 };
 

@@ -89,7 +89,8 @@ bool Cce140p::run(void) {
     else {
          if (pTIMER->msElapsedId(0)>40) pSIOCONNECTOR->Set_pin(SIO_PAK,false);
     }
-#else
+#endif
+#if 0
     if (pSIOCONNECTOR->Get_pin(SIO_PRQ)) {
         pSIOCONNECTOR->Set_pin(SIO_PAK,true);
     }

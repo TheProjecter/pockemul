@@ -18,7 +18,7 @@
 #define UP_MOVE 1
 #define DN_MOVE 2
 
- 
+
 #define PA		(pLH5810->lh5810.r_opa)
 #define PA0		((PA & 0x01) ? TRUE : FALSE )
 #define PA1		((PA & 0x02) ? TRUE : FALSE )

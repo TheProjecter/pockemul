@@ -30,6 +30,9 @@ public:
     virtual bool exit(void);				//end
     virtual	bool run(void);					//check access
 
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+
     virtual void clearPaper(void);
     virtual void SaveAsText(void);
 
@@ -117,6 +120,16 @@ private:
     qint64  lastState;
     int     fileCount;
     QStringList fileList;
+
+    bool MT_OUT2;
+    bool BUSY;
+    bool D_OUT;
+    bool MT_IN;
+    bool MT_OUT1;
+    bool D_IN;
+    bool ACK;
+    bool SEL2;
+    bool SEL1;
 };
 
 

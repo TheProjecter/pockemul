@@ -360,10 +360,40 @@ void Cce140f::Push4(BYTE b) {
     }
 }
 
+bool Cce140f::Get_Connector(void) {
+    MT_OUT2	= GET_PIN(PIN_MT_OUT2);
+    BUSY    = GET_PIN(PIN_BUSY);
+    D_OUT	= GET_PIN(PIN_D_OUT);
+    MT_IN	= GET_PIN(PIN_MT_IN);
+    MT_OUT1	= GET_PIN(PIN_MT_OUT1);
+    D_IN	= GET_PIN(PIN_D_IN);
+    ACK		= GET_PIN(PIN_ACK);
+    SEL2	= GET_PIN(PIN_SEL2);
+    SEL1	= GET_PIN(PIN_SEL1);
+
+    return true;
+}
+
+bool Cce140f::Set_Connector(void) {
+    SET_PIN(PIN_MT_OUT2,MT_OUT2);
+    SET_PIN(PIN_BUSY,BUSY);
+    SET_PIN(PIN_D_OUT,D_OUT);
+    SET_PIN(PIN_MT_IN,MT_IN);
+    SET_PIN(PIN_MT_OUT1,MT_OUT1);
+    SET_PIN(PIN_D_IN,D_IN);
+    SET_PIN(PIN_ACK,ACK);
+    SET_PIN(PIN_SEL2,SEL2);
+    SET_PIN(PIN_SEL1,SEL1);
+
+    return true;
+}
+
 #define CE126LATENCY (pTIMER->pPC->getfrequency()/3200)
 //#define CE126LATENCY (getfrequency()/3200)
 bool Cce140f::run(void)
 {
+
+    Get_Connector();
 
     bool bit = false;
     ce140f_Mode=RECEIVE_MODE;
@@ -388,24 +418,11 @@ bool Cce140f::run(void)
     run_oldstate	= pTIMER->state;
 #endif
 
-#if 0
-    char dump1[20]="";
-    static char dump2[20]="";
-
-    pCONNECTOR->Dump_pin();
-    strcpy(dump1,pCONNECTOR->dump);
-
-    if (strcmp(dump1,dump2) != 0)
-    {
-        strcpy(dump2 ,dump1);
-        AddLog(LOG_PRINTER,tr("input printer %1").arg(dump1));
-    }
-#endif
 
 //	AddLog(LOG_PRINTER,tr("%1").arg(dump1));
 
-    bool PIN_BUSY_GoDown = ( ( GET_PIN(PIN_BUSY) == DOWN ) && (Previous_PIN_BUSY == UP)) ? true:false;
-    bool PIN_BUSY_GoUp   = ( ( GET_PIN(PIN_BUSY) == UP ) && (Previous_PIN_BUSY == DOWN)) ? true:false;
+    bool PIN_BUSY_GoDown = ( ( BUSY == DOWN ) && (Previous_PIN_BUSY == UP)) ? true:false;
+    bool PIN_BUSY_GoUp   = ( ( BUSY == UP ) && (Previous_PIN_BUSY == DOWN)) ? true:false;
 //    bool PIN_BUSY_Change = (GET_PIN(PIN_BUSY) != Previous_PIN_BUSY ) ? true:false;
 //    bool PIN_MT_OUT1_GoDown = ( ( GET_PIN(PIN_MT_OUT1) == DOWN) &&	(Previous_PIN_MT_OUT1 == UP)) ? true:false;
 //    bool PIN_MT_OUT1_GoUp = ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP )) ? true:false;
@@ -414,18 +431,18 @@ bool Cce140f::run(void)
 
 
     switch (code_transfer_step) {
-    case 0 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
+    case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
                     lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
                 }
                 break;
-    case 1 :    if ((GET_PIN(PIN_MT_OUT1) == UP) && (GET_PIN(PIN_D_OUT)==UP)) {
+    case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
                     if (pTIMER->msElapsed(lastState) > 40) {
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
-                        SET_PIN(PIN_ACK,UP);
+                        ACK = UP;
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 9;
                     }
                 }
@@ -434,9 +451,9 @@ bool Cce140f::run(void)
                     //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 7;
                 }
                 break;
-    case 2:     if (GET_PIN(PIN_BUSY) == UP )	//check for BUSY
+    case 2:     if (BUSY == UP )	//check for BUSY
                 {
-                    if(GET_PIN(PIN_D_OUT) == UP)
+                    if(D_OUT == UP)
                     {
                         bit = true;;
                     } else
@@ -447,45 +464,45 @@ bool Cce140f::run(void)
                     if (bit) t|=0x80;
                     if((c=(++c)&7)==0)
                     {
-                        AddLog(LOG_PRINTER,tr("device code : %1").arg(t,2,16) );
+                        AddLog(LOG_PRINTER,tr("device code ce-140f : %1").arg(t,2,16) );
                         device_code = t;
                         //Printer(t);
-                        SET_PIN(PIN_ACK,DOWN);
+                        ACK = DOWN;
                         if (device_code==0x41) {
                             code_transfer_step=4;
                         }
                         else
                             code_transfer_step = 0;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 17;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 37;
                         //t=0; c=0;
                     }
                     else {
-                        SET_PIN(PIN_ACK,DOWN);
+                        ACK = DOWN;
                         code_transfer_step=3;
                         lastState=pTIMER->state;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 18;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 38;
                     }
                 }
                 break;
     case 3:     if (pTIMER->msElapsed(lastState)>2) {
                     code_transfer_step=2;
                     // wait 2 ms and raise ACK
-                    SET_PIN(PIN_ACK,UP);
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 16;
+                    ACK = UP;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 36;
                 }
                 break;
-    case 4:     if ((GET_PIN(PIN_BUSY) == DOWN)&&(GET_PIN(PIN_MT_OUT1) == DOWN)) {
-                    SET_PIN(PIN_ACK,UP);
+    case 4:     if ((BUSY == DOWN)&&(MT_OUT1 == DOWN)) {
+                    ACK = UP;
                     code_transfer_step=5;
                     lastState=pTIMER->state;//time.restart();
                     t=0; c=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 15;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 35;
                 }
                 break;
     case 5:     if (pTIMER->msElapsed(lastState)>9) {
-                    SET_PIN(PIN_ACK,DOWN);
+                    ACK = DOWN;
                     code_transfer_step=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 14;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 34;
 
 
                 }
@@ -493,48 +510,51 @@ bool Cce140f::run(void)
             }
 
     if ( (device_code == 0x41) && (code_transfer_step==0)) {
-        if ((device_code >0) && (code_transfer_step==0)&&PIN_BUSY_GoUp && (GET_PIN(PIN_ACK)==DOWN)) {
+        if (PIN_BUSY_GoUp && (ACK==DOWN)) {
             // read the 4 bits
 
-            t = GET_PIN(PIN_SEL1) + (GET_PIN(PIN_SEL2)<<1) + (GET_PIN(PIN_D_OUT)<<2) + (GET_PIN(PIN_D_IN)<<3);
+            t = SEL1 + (SEL2<<1) + (D_OUT<<2) + (D_IN<<3);
 
             //AddLog(LOG_PRINTER,tr("4bits to floppy : %1").arg(t,2,16) );
             Push4(t);
-            SET_PIN(PIN_ACK,UP);
+            ACK = UP;
             lastState=pTIMER->state; //time.restart();
 
-            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 30;
         }
         else
-        if ((device_code >0) && (code_transfer_step==0)&&PIN_BUSY_GoDown && (GET_PIN(PIN_ACK)==UP)) {
-            SET_PIN(PIN_ACK,DOWN);
+        if (PIN_BUSY_GoDown && (ACK==UP)) {
+            ACK = DOWN;
             lastState=pTIMER->state;//time.restart();
-            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 11;
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 31;
         }
 
 
     else
 
-        if ( !data_out.empty() &&  (code_transfer_step==0)&&(pTIMER->msElapsed(lastState)>5) && (GET_PIN(PIN_BUSY)==DOWN) && (GET_PIN(PIN_ACK)==DOWN)) {
+        if ( !data_out.empty() &&
+             (pTIMER->msElapsed(lastState)>5) &&
+             (BUSY==DOWN) &&
+             (ACK==DOWN)) {
             BYTE t = Pop_out4();
 
-            SET_PIN(PIN_SEL1,t&0x01);
-            SET_PIN(PIN_SEL2,(t&0x02)>>1);
-            SET_PIN(PIN_D_OUT,(t&0x04)>>2);
-            SET_PIN(PIN_D_IN,(t&0x08)>>3);
+            SEL1 = (t&0x01);
+            SEL2 = ((t&0x02)>>1);
+            D_OUT= ((t&0x04)>>2);
+            D_IN = ((t&0x08)>>3);
 
-            SET_PIN(PIN_ACK,UP);
-            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 12;
+            ACK = UP;
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 32;
         }
 
     else
-        if ( (code_transfer_step==0)&&(GET_PIN(PIN_ACK)==UP) && PIN_BUSY_GoUp) {
-            SET_PIN(PIN_ACK,DOWN);
-            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 13;
+        if ( (ACK==UP) && PIN_BUSY_GoUp) {
+            ACK = DOWN;
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 33;
         }
     else
-        if ( (code_transfer_step==0)&&(pTIMER->msElapsed(lastState)>50) && !data.empty()) {
-            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 20;
+        if ( (pTIMER->msElapsed(lastState)>50) && !data.empty()) {
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 40;
             processCommand();
             data.clear();
         }
@@ -542,9 +562,9 @@ bool Cce140f::run(void)
     }
 
 
-    Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
-    Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
-    Previous_PIN_D_OUT = GET_PIN(PIN_D_OUT);
+    Previous_PIN_BUSY = BUSY;
+    Previous_PIN_MT_OUT1 = MT_OUT1;
+    Previous_PIN_D_OUT = D_OUT;
 
 
 
@@ -557,6 +577,9 @@ bool Cce140f::run(void)
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
     pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
+
+    Set_Connector();
+
     return true;
 }
 

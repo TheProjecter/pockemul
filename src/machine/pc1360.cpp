@@ -165,7 +165,7 @@ bool Cpc1360::Get_Connector(void)
 	Set_Port_Bit(PORT_B,8,pSIOCONNECTOR->Get_pin(SIO_CD));
 
     // Set A8 if and only if PAK is Hight
-    if (pSIOCONNECTOR->Get_pin(SIO_PAK)) Set_Port_Bit(PORT_A,8,pSIOCONNECTOR->Get_pin(SIO_PAK));
+    //if (pSIOCONNECTOR->Get_pin(SIO_PAK)) Set_Port_Bit(PORT_A,8,pSIOCONNECTOR->Get_pin(SIO_PAK));
 	// PAK
 
 	return(1);
