@@ -358,15 +358,7 @@ bool Cce140f::Set_Connector(void) {
 //    bool extSEL2	= pCONNECTOR_Ext->Get_pin(PIN_SEL2);
 //    bool extSEL1	= pCONNECTOR_Ext->Get_pin(PIN_SEL1);
 
-    pCONNECTOR->Set_pin(PIN_MT_OUT2,MT_OUT2);
-    pCONNECTOR->Set_pin(PIN_BUSY,BUSY);
-    pCONNECTOR->Set_pin(PIN_D_OUT,D_OUT || extD_OUT);
-    pCONNECTOR->Set_pin(PIN_MT_IN,MT_IN || extMT_IN);
-    pCONNECTOR->Set_pin(PIN_MT_OUT1,MT_OUT1);
-    pCONNECTOR->Set_pin(PIN_D_IN,D_IN || extD_IN);
-    pCONNECTOR->Set_pin(PIN_ACK,ACK || extACK);
-    pCONNECTOR->Set_pin(PIN_SEL2,SEL2);
-    pCONNECTOR->Set_pin(PIN_SEL1,SEL1);
+
 
     pCONNECTOR_Ext->Set_pin(PIN_MT_OUT2,MT_OUT2);
     pCONNECTOR_Ext->Set_pin(PIN_BUSY,BUSY);
@@ -378,6 +370,15 @@ bool Cce140f::Set_Connector(void) {
     pCONNECTOR_Ext->Set_pin(PIN_SEL2,false);
     pCONNECTOR_Ext->Set_pin(PIN_SEL1,false);
 
+    pCONNECTOR->Set_pin(PIN_MT_OUT2,MT_OUT2);
+    pCONNECTOR->Set_pin(PIN_BUSY,BUSY);
+    pCONNECTOR->Set_pin(PIN_D_OUT,D_OUT || extD_OUT);
+    pCONNECTOR->Set_pin(PIN_MT_IN,MT_IN || extMT_IN);
+    pCONNECTOR->Set_pin(PIN_MT_OUT1,MT_OUT1);
+    pCONNECTOR->Set_pin(PIN_D_IN,D_IN || extD_IN);
+    pCONNECTOR->Set_pin(PIN_ACK,ACK || extACK);
+    pCONNECTOR->Set_pin(PIN_SEL2,SEL2);
+    pCONNECTOR->Set_pin(PIN_SEL1,SEL1);
  #endif
     return true;
 }
@@ -536,6 +537,12 @@ bool Cce140f::run(void)
             SEL2 = ((t&0x02)>>1);
             D_OUT= ((t&0x04)>>2);
             D_IN = ((t&0x08)>>3);
+
+            //HACK  i have to pull down ext connector whent data output
+            pCONNECTOR_Ext->Set_pin(PIN_D_OUT,false);
+            pCONNECTOR_Ext->Set_pin(PIN_MT_IN,false);
+            pCONNECTOR_Ext->Set_pin(PIN_D_IN,false);
+            pCONNECTOR_Ext->Set_pin(PIN_ACK,false);
 
             ACK = UP;
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 32;
