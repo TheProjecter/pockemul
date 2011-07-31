@@ -1,6 +1,5 @@
 //TODO  Save session needs to be checked
 
-
 #include "common.h"
 #include "Log.h"
 

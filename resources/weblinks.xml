@@ -72,9 +72,7 @@
     <model value="trspc2">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/tandy/pc-2_e.html"/>
     </model>
-    <model value="ce140p">
-        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-140p_e.html"/>
-    </model>
+
     <model value="mc2200">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/seiko/mc-2200_e.html"/>
     </model>
@@ -96,5 +94,7 @@
     <model value="mp220">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/seiko/mp-220_e.html"/>
     </model>
-
+    <model value="ce140f">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-140f_e.html"/>
+    </model>
 </weblinks>

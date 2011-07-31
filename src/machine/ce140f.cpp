@@ -70,7 +70,7 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     t = 0;
     c = 0;
     rmtSwitch = false;
-};
+}
 
 void Cce140f::ComputeKey(void)
 {
@@ -118,48 +118,6 @@ void Cce140f::SaveAsText(void)
 
 void Cce140f::RefreshCe140f(qint8 data)
 {
-#if 0
-    QPainter painter;
-
-//if (posX==0) bells->play();
-
-// copy ce126buf to ce126display
-// The final paper image is 207 x 149 at (277,0) for the ce125
-
-// grab data char to byteArray
-    TextBuffer += data;
-
-    if (data == 0x0d){
-        top+=10;
-        posX=0;
-    }
-    else
-    {
-        painter.begin(ce140fbuf);
-        int x = ((data>>4) & 0x0F)*6;
-        int y = (data & 0x0F) * 8;
-        painter.drawImage(	QPointF( 25 + (7 * posX),top),
-                            *charTable,
-                            QRectF( x , y , 5,7));
-        posX++;
-        painter.end();
-    }
-
-
-    painter.begin(ce140fdisplay);
-
-    painter.drawImage(QRectF(0,MAX(149-top,0),207,MIN(top,149)),*ce140fbuf,QRectF(0,MAX(0,top-149),207,MIN(top,149)));
-
-// Draw printer head
-    painter.fillRect(QRect(0 , 147,207,2),QBrush(QColor(0,0,0)));
-    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
-
-    painter.end();
-
-    Refresh_Display = true;
-
-    //paperWidget->setOffset(QPoint(0,top));
-#endif
 
 }
 
@@ -226,6 +184,15 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
 
     run_oldstate = -1;
 
+    MT_OUT2	= false;
+    BUSY    = false;
+    D_OUT	= false;
+    MT_IN	= false;
+    MT_OUT1	= false;
+    D_IN	= false;
+    ACK		= false;
+    SEL2	= false;
+    SEL1	= false;
 
     return true;
 }
@@ -313,13 +280,6 @@ extern int LogLevel;
 void Cce140f::pulldownsignal(void)
 {
 
-#if 0
-    SET_PIN(PIN_BUSY,DOWN);
-    SET_PIN(PIN_D_OUT,DOWN);
-    SET_PIN(PIN_D_IN,DOWN);
-    SET_PIN(PIN_SEL2,DOWN);
-    SET_PIN(PIN_SEL1,DOWN);
-#endif
 }
 
 BYTE Cce140f::Pop_out8(void) {
@@ -346,6 +306,7 @@ BYTE Cce140f::Pop_out4(void) {
 void Cce140f::Push8(BYTE b) {
     data.append(b);
 }
+
 void Cce140f::Push4(BYTE b) {
     if (halfdata) {
         int t = data.last()+(b<<4);
@@ -367,7 +328,7 @@ bool Cce140f::Get_Connector(void) {
     MT_IN	= GET_PIN(PIN_MT_IN);
     MT_OUT1	= GET_PIN(PIN_MT_OUT1);
     D_IN	= GET_PIN(PIN_D_IN);
-    ACK		= GET_PIN(PIN_ACK);
+    //ACK		= GET_PIN(PIN_ACK);
     SEL2	= GET_PIN(PIN_SEL2);
     SEL1	= GET_PIN(PIN_SEL1);
 
@@ -375,6 +336,7 @@ bool Cce140f::Get_Connector(void) {
 }
 
 bool Cce140f::Set_Connector(void) {
+#if 0
     SET_PIN(PIN_MT_OUT2,MT_OUT2);
     SET_PIN(PIN_BUSY,BUSY);
     SET_PIN(PIN_D_OUT,D_OUT);
@@ -384,7 +346,39 @@ bool Cce140f::Set_Connector(void) {
     SET_PIN(PIN_ACK,ACK);
     SET_PIN(PIN_SEL2,SEL2);
     SET_PIN(PIN_SEL1,SEL1);
+#else
 
+    //MT_OUT2	= GET_PIN(PIN_MT_OUT2);
+    //BUSY    = GET_PIN(PIN_BUSY);
+    bool extD_OUT	= pCONNECTOR_Ext->Get_pin(PIN_D_OUT);
+    bool extMT_IN	= pCONNECTOR_Ext->Get_pin(PIN_MT_IN);
+    //MT_OUT1	= GET_PIN(PIN_MT_OUT1);
+    bool extD_IN	= pCONNECTOR_Ext->Get_pin(PIN_D_IN);
+    bool extACK		= pCONNECTOR_Ext->Get_pin(PIN_ACK);
+//    bool extSEL2	= pCONNECTOR_Ext->Get_pin(PIN_SEL2);
+//    bool extSEL1	= pCONNECTOR_Ext->Get_pin(PIN_SEL1);
+
+    pCONNECTOR->Set_pin(PIN_MT_OUT2,MT_OUT2);
+    pCONNECTOR->Set_pin(PIN_BUSY,BUSY);
+    pCONNECTOR->Set_pin(PIN_D_OUT,D_OUT || extD_OUT);
+    pCONNECTOR->Set_pin(PIN_MT_IN,MT_IN || extMT_IN);
+    pCONNECTOR->Set_pin(PIN_MT_OUT1,MT_OUT1);
+    pCONNECTOR->Set_pin(PIN_D_IN,D_IN || extD_IN);
+    pCONNECTOR->Set_pin(PIN_ACK,ACK || extACK);
+    pCONNECTOR->Set_pin(PIN_SEL2,SEL2);
+    pCONNECTOR->Set_pin(PIN_SEL1,SEL1);
+
+    pCONNECTOR_Ext->Set_pin(PIN_MT_OUT2,MT_OUT2);
+    pCONNECTOR_Ext->Set_pin(PIN_BUSY,BUSY);
+    pCONNECTOR_Ext->Set_pin(PIN_D_OUT,D_OUT);
+    pCONNECTOR_Ext->Set_pin(PIN_MT_IN,MT_IN);
+    pCONNECTOR_Ext->Set_pin(PIN_MT_OUT1,MT_OUT1);
+    pCONNECTOR_Ext->Set_pin(PIN_D_IN,D_IN);
+    //pCONNECTOR_Ext->Set_pin(PIN_ACK,ACK || extACK);
+    pCONNECTOR_Ext->Set_pin(PIN_SEL2,false);
+    pCONNECTOR_Ext->Set_pin(PIN_SEL1,false);
+
+ #endif
     return true;
 }
 
@@ -568,18 +562,9 @@ bool Cce140f::run(void)
 
 
 
-
-
-    pCONNECTOR_Ext->Set_values(pCONNECTOR->Get_values());
-    pCONNECTOR_Ext->Set_pin(10,false);  // not connexted
-    pCONNECTOR_Ext->Set_pin(11,false);  // not connexted
-    //pCONNECTOR_Ext->Set_pin(PIN_ACK, pCONNECTOR_Ext->Get_pin(PIN_ACK) || pCONNECTOR->Get_pin(PIN_ACK));
-
+    Set_Connector();
     pCONNECTOR_value = pCONNECTOR->Get_values();
     pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
-
-    Set_Connector();
-
     return true;
 }
 

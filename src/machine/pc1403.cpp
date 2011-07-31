@@ -104,17 +104,18 @@ bool Cpc1403::Set_Connector(void)
 	pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
 	pCONNECTOR->Set_pin(PIN_VGG		,1);
 	pCONNECTOR->Set_pin(PIN_BUSY	,GET_PORT_BIT(PORT_F,3));		// F03
-	pCONNECTOR->Set_pin(PIN_D_OUT	,READ_BIT(port1,2));		// F02
-	pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port1,3));		// F02
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_OUT	,READ_BIT(port1,2));		// F02
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port1,3));		// F02
 	pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
-	pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port1,1));		// B06
-	pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port1,0));		// B05
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port1,1));		// B06
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port1,0));		// B05
 
 	return(1);
 }
 
 bool Cpc1403::Get_Connector(void)
 {
+#if 0
 	int port;
 
 	port = Get_8(0x3A00);
@@ -134,7 +135,17 @@ bool Cpc1403::Get_Connector(void)
 	port = Get_8(0x3A00);
 	PUT_BIT(port,0,pCONNECTOR->Get_pin(PIN_SEL1));
 	Set_8(0x3A00,port);
+#else
 
+    Set_Port_Bit(PORT_B,5,pCONNECTOR->Get_pin(PIN_SEL1));	// DIN	:	IB1
+    Set_Port_Bit(PORT_B,6,pCONNECTOR->Get_pin(PIN_SEL2));	// DIN	:	IB2
+    Set_Port_Bit(PORT_B,7,pCONNECTOR->Get_pin(PIN_D_OUT));	// DIN	:	IB2
+    Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB8
+
+    int port = Get_8(0x3C00);
+    PUT_BIT(port,7,pCONNECTOR->Get_pin(PIN_ACK));
+    Set_8(0x3C00,port);
+#endif
 	return(1);
 }
 

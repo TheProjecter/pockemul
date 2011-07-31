@@ -217,6 +217,16 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     code_transfer_step = 0;
     device_code = 0;
 
+    MT_OUT2	= false;
+    BUSY    = false;
+    D_OUT	= false;
+    MT_IN	= false;
+    MT_OUT1	= false;
+    D_IN	= false;
+    ACK		= false;
+    SEL2	= false;
+    SEL1	= false;
+
 	return true;
 }
 
@@ -237,8 +247,10 @@ bool Cce126::exit(void)
 /*****************************************************/
 /* CE-126P PRINTER emulation						 */
 /*****************************************************/
+//FIXME two space 0x20 , only one printed
 void Cce126::Printer(qint8 d)
 {
+#if 0
 	if(ctrl_char && d==0x20)
         ctrl_char=false;
 	else
@@ -250,6 +262,11 @@ void Cce126::Printer(qint8 d)
             RefreshCe126(d);
 		}
 	}
+#else
+    if(d!=0xf && d!=0xe) {
+        RefreshCe126(d);
+    }
+#endif
 }
 
 //********************************************************/
@@ -331,7 +348,7 @@ bool Cce126::run(void)
 
     pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? SEL1:true));       // RMT
     pTAPECONNECTOR->Set_pin(2,MT_OUT1);    // Out
-    SET_PIN(PIN_MT_IN,pTAPECONNECTOR->Get_pin(1));      // In
+    MT_IN = pTAPECONNECTOR->Get_pin(1);      // In
 
 	pCONNECTOR_value = pCONNECTOR->Get_values();
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
@@ -461,7 +478,7 @@ bool Cce126::run(void)
 
     switch (device_code)
 	{
-            //case 0x00:  // only ce-125 et ce-126p specific mode
+            case 0x00:  // only ce-125 et ce-126p specific mode
             case 0x0f:
             case 0x21:
 

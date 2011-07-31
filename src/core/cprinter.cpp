@@ -5,6 +5,7 @@
 #include "cprinter.h"
 #include "paperwidget.h"
 
+//TODO  Lorsque pointeur positionné sur papier, afficher scroolbar verticale et gerer mousewheel
 Cprinter::Cprinter(CPObject *parent):CPObject(parent)
 {
 	PaperColor = QColor(255,255,255);

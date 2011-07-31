@@ -505,11 +505,9 @@ void CpcXXXX::Mem_Save(QFile *file,BYTE s)
 void CpcXXXX::Mem_Save_XML(QFile *file,BYTE s)
 {
     QDataStream out(file);
-    int len = SlotList[s].getSize() * 1024;
-    for (int i=0 ; i < len ; i++) {
 
-    }
-    out.writeRawData( (char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+    QByteArray ba((char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+    out.writeRawData(ba.toBase64().data(),ba.size());
 }
 
 void CpcXXXX::Mem_Save(BYTE s)
@@ -541,7 +539,7 @@ bool CpcXXXX::SaveSession_XML(QFile *file)
     pCPU->save_internal(file);							// Save cpu status
     for (int s=0; s<SlotList.size(); s++)				// Save Memory
     {
-        if (SlotList[s].getType() == RAM)	Mem_Save(file,s);
+        if (SlotList[s].getType() == RAM)	Mem_Save_XML(file,s);
     }
 
     //SaveExtra(&xw);									// Save all other data  (virtual)

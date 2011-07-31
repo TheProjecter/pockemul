@@ -6,6 +6,7 @@ Devices code recherchés au boot :
 1475 : 41
 1360 : aucun
 1403H: 45
+1403 : 45
 
 Devices code recherchés au passage en mode calc:
 1280 : 41
