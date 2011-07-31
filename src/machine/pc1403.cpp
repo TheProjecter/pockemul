@@ -115,27 +115,6 @@ bool Cpc1403::Set_Connector(void)
 
 bool Cpc1403::Get_Connector(void)
 {
-#if 0
-	int port;
-
-	port = Get_8(0x3A00);
-	PUT_BIT(port,3,pCONNECTOR->Get_pin(PIN_D_IN));
-	Set_8(0x3A00,port);
-
-	port = Get_8(0x3C00);
-	PUT_BIT(port,7,pCONNECTOR->Get_pin(PIN_ACK));
-	Set_8(0x3C00,port);
-	
-	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
-
-	port = Get_8(0x3A00);
-	PUT_BIT(port,1,pCONNECTOR->Get_pin(PIN_SEL2));
-	Set_8(0x3A00,port);
-
-	port = Get_8(0x3A00);
-	PUT_BIT(port,0,pCONNECTOR->Get_pin(PIN_SEL1));
-	Set_8(0x3A00,port);
-#else
 
     pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
 
@@ -147,7 +126,7 @@ bool Cpc1403::Get_Connector(void)
     int port = Get_8(0x3C00);
     PUT_BIT(port,7,pCONNECTOR->Get_pin(PIN_ACK));
     Set_8(0x3C00,port);
-#endif
+
 	return(1);
 }
 
