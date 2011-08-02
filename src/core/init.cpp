@@ -163,8 +163,10 @@ void CPocketThread::run()
 		for (int i=0;i<listpPObject.size();i++)
 		{
 			CPObject *pPC = listpPObject.at(i);
+            // si objet maitre
 			if (pPC->getfrequency() != 0)
 			{
+                // test si en retard
 				if (pPC->pTIMER->CheckSpeed())
                 {
 					pPC->run();

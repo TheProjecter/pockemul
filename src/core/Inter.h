@@ -52,6 +52,7 @@ public:
     qint64  usElapsedId(int id);
 
     bool    resetTimer(int);
+    qint64  currentState(void);
 
 	qint64	state;					//state counter
 	long	chkspeed;				//speed counter

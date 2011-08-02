@@ -3,6 +3,7 @@
 #include "ccable.h"
 #include "init.h"
 //TODO Will never work because of timing accuracy. Have to think about it
+//TODO The cable has acces to both TIMER & frequency. It has to buffer data ...
 
 Ccable::Ccable(CPObject *parent)	: CPObject(this)
 {							//[constructor]
@@ -27,9 +28,25 @@ bool Ccable::init(void) {
     WatchPoint.add(&pCONNECTOR_B_value,64,11,this,"11pins connector B");
     return true;
 }
-
+//********************************************************/
+// PIN_MT_OUT2	1
+// PIN_GND		2
+// PIN_VGG		3
+// PIN_BUSY		4
+// PIN_D_OUT	5
+// PIN_MT_IN	6
+// PIN_MT_OUT1	7
+// PIN_D_IN		8
+// PIN_ACK		9
+// PIN_SEL2		10
+// PIN_SEL1		11
+//********************************************************/
 bool Ccable::run(void)
 {
+    // access both timer by connectors
+    // the run function is fired by the fastest one
+
+
     // Invert pins
     // Identification input/output pins
     // 6 : tape in
@@ -39,6 +56,12 @@ bool Ccable::run(void)
 //    Cconnector loc_B(this,11,"Connector 11 pins",false);
 //    loc_A.values = pCONNECTOR_A->values;
 //    loc_B.values = pCONNECTOR_B->values;
+
+    pCONNECTOR_A->Set_pin(4,pCONNECTOR_B->Get_pin(9));
+    pCONNECTOR_B->Set_pin(4,pCONNECTOR_A->Get_pin(9));
+
+    pCONNECTOR_A->Set_pin(8,pCONNECTOR_B->Get_pin(5));
+    pCONNECTOR_B->Set_pin(8,pCONNECTOR_A->Get_pin(5));
 
     pCONNECTOR_A->Set_pin(6,pCONNECTOR_B->Get_pin(7));
     pCONNECTOR_B->Set_pin(6,pCONNECTOR_A->Get_pin(7));

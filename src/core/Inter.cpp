@@ -17,12 +17,15 @@ UINT nTimerId;
 WORD wTimerRes;
 
 void Ctimer::SetCPUspeed(float t)
-	{		
-		//set CPU speed by %
-		CPUSpeed = t ;
-		if (t<100) state=( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
-	};
+{
+    //set CPU speed by %
+    CPUSpeed = t ;
+    if (t<100) state = currentState();// mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+}
 
+qint64 Ctimer::currentState(void) {
+    return (qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+}
 
 bool Ctimer::init(void)
 {
@@ -43,7 +46,7 @@ bool Ctimer::exit(void)
 
 bool Ctimer::CheckSpeed(void)
 {
-	qint64 r = (qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+    qint64 r = currentState();//qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
     return (state < r);
 }
 

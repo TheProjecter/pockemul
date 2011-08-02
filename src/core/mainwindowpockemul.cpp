@@ -173,7 +173,9 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
     CPObject *newpPC;
     if (result)	{
                 newpPC = InitApp(result);
-                if (! newpPC) MSG_ERROR("pPC is NULL in slotStart")
+                if (! newpPC) {
+ //                   MSG_ERROR("pPC is NULL in slotStart")
+                }
                 else
                 {
                     AddLog(LOG_MASTER,tr("%1").arg((long)newpPC));
@@ -201,6 +203,7 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
 
 }
 
+//TODO Minimize should be transform to fit all pocket into screen
 void MainWindowPockemul::Minimize_All() {
     // Fetch listpPObject and minimize if not minimized
     for (int k = 0; k < listpPObject.size(); k++)
@@ -539,11 +542,11 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
     }
 }
 
-void  MainWindowPockemul::updateTimeTimer()
+void MainWindowPockemul::updateTimeTimer()
 {
 }
 
-void  MainWindowPockemul::updateFrameTimer()
+void MainWindowPockemul::updateFrameTimer()
 {
 
 	int statepersec;
@@ -633,9 +636,10 @@ void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
 
 }
 
-
 void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
+
 void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){}
+
 void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){}
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
@@ -668,7 +672,6 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
     pObject->exit();
 	pObject->deleteLater();
 }
-
 
 void MainWindowPockemul::closeEvent(QCloseEvent *event)
 {
