@@ -57,7 +57,7 @@
 #include "potar.h"
 #include "cesimu.h"
 
-
+//#define NEWTIMER 1
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -152,47 +152,118 @@ CPObject *pPC=0;
     return pPC;
 }
 
-
+#if 0
 void CPocketThread::run()
 {
 	bool pause = true;
 
+    QElapsedTimer timer;
+    timer.start();
+
 	while(true)
 	{
-		pause = true;
-		for (int i=0;i<listpPObject.size();i++)
-		{
-			CPObject *pPC = listpPObject.at(i);
-            // si objet maitre
-			if (pPC->getfrequency() != 0)
-			{
-                // test si en retard
-				if (pPC->pTIMER->CheckSpeed())
+        int j=0;
+        //while ((j++) < 20)
+        {
+            pause = true;
+            for (int i=0;i<listpPObject.size();i++)
+            {
+                CPObject *pPC = listpPObject.at(i);
+                // si objet maitre
+                if (pPC->getfrequency() != 0)
                 {
-					pPC->run();
-					// WRITE the LINK BOX Connector
-                    mainwindow->pdirectLink->clearlog();
-                    mainwindow->pdirectLink->Output(pPC);
+                    // test si en retard
+                    if (pPC->pTIMER->CheckSpeed())
+                    {
+                        pPC->run();
+                        // WRITE the LINK BOX Connector
+                        mainwindow->pdirectLink->clearlog();
+                        mainwindow->pdirectLink->Output(pPC);
 
-					pause = false;
+                        pause = false;
+                    }
+                    if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
+                        mainwindow->dialoganalogic->captureData();
+                    }
                 }
-                if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
-                    mainwindow->dialoganalogic->captureData();
-                }
-			}
-			if (pPC->toDestroy)
-			{
-                // Unlink before destroy
-                mainwindow->slotUnlink(pPC);
+                if (pPC->toDestroy)
+                {
+                    // Unlink before destroy
+                    mainwindow->slotUnlink(pPC);
 
-				listpPObject.removeAt(i);
-				i--;
-                                emit Destroy(pPC);
-			}
+                    listpPObject.removeAt(i);
+                    i--;
+                    emit Destroy(pPC);
+                }
+            }
         }
-        if (pause) usleep(1);
+        if (pause) usleep(5);
+#ifdef NEWTIMER
+        mainwindow->rawclk += timer.nsecsElapsed();
+        timer.restart();
+#endif
     }
 }
+#else
+void CPocketThread::run()
+{
+    bool pause = true;
+
+    QElapsedTimer timer;
+    timer.start();
+
+    while(true)
+    {
+        int j=0;
+        //while ((j++) < 20)
+        {
+            pause = true;
+            for (int i=0;i<listpPObject.size();i++)
+            {
+                CPObject *pPC = listpPObject.at(i);
+                // si objet maitre
+                int f = pPC->getfrequency();
+                if ( f != 0)
+                {
+                    // test si en retard
+                    qint64 cs = pPC->pTIMER->currentState();
+                    if (pPC->pTIMER->state < cs)
+                    {
+                        qint64 t = pPC->pTIMER->state;
+                        int step = MIN(f / pPC->ioFreq - pPC->pTIMER->deltaStep,cs-pPC->pTIMER->state);
+                        pPC->pTIMER->deltaStep = pPC->runRange(step) - step;
+
+                        // WRITE the LINK BOX Connector
+                        mainwindow->pdirectLink->clearlog();
+                        mainwindow->pdirectLink->Output(pPC);
+
+                        pause = false;
+
+                        if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
+                            mainwindow->dialoganalogic->captureData();
+                        }
+
+                    }
+                }
+                if (pPC->toDestroy)
+                {
+                    // Unlink before destroy
+                    mainwindow->slotUnlink(pPC);
+
+                    listpPObject.removeAt(i);
+                    i--;
+                    emit Destroy(pPC);
+                }
+            }
+        }
+        if (pause) usleep(1);
+#ifdef NEWTIMER
+        mainwindow->rawclk += timer.nsecsElapsed();
+        timer.restart();
+#endif
+    }
+}
+#endif
 
 void CPocketThread::SendSignal_AddLogItem(QString str)
 {

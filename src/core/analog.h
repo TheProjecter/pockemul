@@ -1,6 +1,6 @@
 #ifndef ANALOG_H
 #define ANALOG_H
-
+#include <QList>
 
 typedef	struct 
 {
@@ -22,7 +22,7 @@ class CData:public QObject
 		qint64			Read_state(int);
 		qint8			Read_marker(int);
 		qint64			nb_data;
-		int				size(void){ return values.size(); }
+        int				size(void){ return dataset.size(); }
 
 		int				Save(void);
 		int				Load(void);
@@ -38,9 +38,8 @@ class CData:public QObject
     	int maxSize;
     	float				timeUnit;
     	qint8				Marker;
-		QList<qint64>		values;
-		QList<qint64>		state;
-		QList<qint8>		marker;
+private:
+        QList<TAnalog_Data> dataset;
 		
 	friend class dialogAnalog;
 };

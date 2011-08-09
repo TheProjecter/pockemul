@@ -6,6 +6,8 @@
 #include "fmod.h"
 #endif
 
+//#define NEWTIMER 1
+
 #include "mainwindowpockemul.h"
 
 #include "dialoganalog.h"
@@ -506,9 +508,10 @@ void MainWindowPockemul::updateTimer()
 	
 	if (deltaTime == -1) {	t.start(); }
 	deltaTime = t.restart();	
-	
-	rawclk += deltaTime;
 
+#ifndef NEWTIMER
+    rawclk += deltaTime*1000000L;
+#endif
 }
 
 void MainWindowPockemul::wheelEvent(QWheelEvent *event) {

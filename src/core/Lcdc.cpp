@@ -366,16 +366,16 @@ void Clcdc_pc1360::disp(void)
 static const struct {
 	int x,y;
 } pc1250_pos[11]={
-	{210,0},	// SHIFT
-	{40, 0},	// DEF
-	{68, 0},	// PRO
-	{83, 0},	// RUN
-	{98, 0},	// RESERVE
-	{134,0},	// DE
-	{142,0},	// G
-	{147,0},	// RAD
-	{240,0},	// E
-	{25,0},		// P
+    {250,0},	// SHIFT
+    {48, 0},	// DEF
+    {72, 0},	// PRO
+    {100, 0},	// RUN
+    {118, 0},	// RESERVE
+    {158,0},	// DE
+    {166,0},	// G
+    {171,0},	// RAD
+    {290,0},	// E
+    {30,0},		// P
 	{0,0}		// BUSY
 };
 
@@ -444,7 +444,7 @@ void Clcdc_pc1250::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-			x =ind + (ind/5);			// +1 every 5 cols
+            x =ind + (ind/5)*2;			// +2 every 5 cols
 			y = 0;
 			
 			for (b=0; b<7;b++)
@@ -463,7 +463,7 @@ void Clcdc_pc1250::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-			x = 142 - ind - (ind/5);			// +1 every 5 cols
+            x = 165 - ind - (ind/5)*2;			// +2 every 5 cols
 			y = 0;
 	
 			for (b=0; b<7;b++)

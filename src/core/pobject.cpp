@@ -55,6 +55,8 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		dialogdump		= 0;
 		Power = false;
         audioBuff.clear();
+
+        ioFreq = 0;
 		
     }
 
@@ -149,6 +151,23 @@ bool CPObject::exit()
 
 	return true;
 }
+
+int CPObject::runRange(qint64 step) {
+    if (pTIMER) {
+        qint64 t = pTIMER->state;
+        while (pTIMER->state - t < step) {
+            run();
+        }
+        return (pTIMER->state - t);
+    }
+    else
+    {
+        run();
+        return 0;
+    }
+    return 0;
+}
+
 
 #define SAMPLERATE 8000
 #define BUFFLEN 500
@@ -927,7 +946,7 @@ void CPObject::slotCpu(QAction* action) {
     if (action->text() == tr("200%")) setCpu(2);
     if (action->text() == tr("300%")) setCpu(3);
     if (action->text() == tr("500%")) setCpu(5);
-    if (action->text() == tr("Maximum")) setCpu(1000);
+    if (action->text() == tr("Maximum")) setCpu(75);
 }
 
 void CPObject::slotContrast(QAction * action) {

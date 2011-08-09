@@ -1,15 +1,21 @@
 #include <QPainter>
 
+#include "mainwindowpockemul.h"
+#include "dialoganalog.h"
+
 #include "ccable.h"
 #include "init.h"
-//TODO Will never work because of timing accuracy. Have to think about it
-//TODO The cable has acces to both TIMER & frequency. It has to buffer data ...
+
+//FIXME works between 1251 & 1262 but not with same frequency ... strange
+
+
+extern MainWindowPockemul *mainwindow;
 
 Ccable::Ccable(CPObject *parent)	: CPObject(this)
 {							//[constructor]
 
-    pCONNECTOR_A = new Cconnector(this,11,0,"11 pins Connector A",false); publish(pCONNECTOR_A);
-    pCONNECTOR_B = new Cconnector(this,11,1,"11 pins Connector B",false); publish(pCONNECTOR_B);
+    pCONNECTOR_A = new Cconnector(this,11,0,"11 pins Connector A",true,QPoint(135,6)); publish(pCONNECTOR_A);
+    pCONNECTOR_B = new Cconnector(this,11,1,"11 pins Connector B",true,QPoint(135,300)); publish(pCONNECTOR_B);
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/cable.png";
 
@@ -22,7 +28,6 @@ Ccable::Ccable(CPObject *parent)	: CPObject(this)
 bool Ccable::init(void) {
     CPObject::init();
 
-    setfrequency( 0);
 
     WatchPoint.add(&pCONNECTOR_A_value,64,11,this,"11pins connector A");
     WatchPoint.add(&pCONNECTOR_B_value,64,11,this,"11pins connector B");
@@ -69,6 +74,8 @@ bool Ccable::run(void)
     pCONNECTOR_A_value = pCONNECTOR_A->Get_values();
     pCONNECTOR_B_value = pCONNECTOR_B->Get_values();
 
+    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
+//    pTIMER->state+=1;
 	return true;
 }
 

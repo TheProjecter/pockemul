@@ -20,17 +20,20 @@ void Ctimer::SetCPUspeed(float t)
 {
     //set CPU speed by %
     CPUSpeed = t ;
-    if (t<100) state = currentState();// mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+//    if (t<100)
+        state = currentState();// mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
 }
 
 qint64 Ctimer::currentState(void) {
-    return (qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+//    return (qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+    return (qint64) (( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) )/1000000L);
 }
 
 bool Ctimer::init(void)
 {
 	AddLog(LOG_MASTER,tr("Timer init..."));
 	wTimerRes = 0;
+    deltaStep = 0;
 	SetCPUspeed(1);
 
 

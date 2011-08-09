@@ -43,18 +43,18 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
     setDX(483);//Pc_DX		= 483;//409;
     setDY(252);//Pc_DY		= 252;//213;
 
-	Lcd_X		= (int) (45 * 1.18);
-    Lcd_Y		= (int) (43 * 1.18);
-	Lcd_DX		= 144 ;
-	Lcd_DY		= 8;
-	Lcd_ratio_X	= 2 * 1.18;
-	Lcd_ratio_Y	= 2 * 1.18;
+    Lcd_X		= 55;
+    Lcd_Y		= 47;
+    Lcd_DX		= 168;//144 ;
+    Lcd_DY		= 7;
+    Lcd_ratio_X	= 2;// * 1.18;
+    Lcd_ratio_Y	= 3;// * 1.18;
 
-	Lcd_Symb_X	= (int) (45 * 1.18);
-	Lcd_Symb_Y	= (int) (35 * 1.18);
-	Lcd_Symb_DX	= 288;
+    Lcd_Symb_X	= 55;//(int) (45 * 1.18);
+    Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
+    Lcd_Symb_DX	= 339;
 	Lcd_Symb_DY	= 5;
-    Lcd_Symb_ratio_X	= 1.18;
+    Lcd_Symb_ratio_X	= 1;//1.18;
 
 //		DialogExtensionID = IDD_EXT_PROPERTIES_12XX;
 

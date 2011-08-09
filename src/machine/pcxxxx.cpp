@@ -73,6 +73,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	setPosX(0);
 	setPosY(0);
 
+    ioFreq = 16000;
 }
 
 void CpcXXXX::UpdateFinalImage(void)
@@ -475,7 +476,7 @@ bool CpcXXXX::run(void)
 		}
 #endif
 	}
-    else pTIMER->state = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+    else pTIMER->state+=100;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
 
 
 

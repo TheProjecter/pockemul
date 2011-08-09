@@ -61,6 +61,7 @@ public:
 	bool	Suspend;
 
 	qint64 last_state,nb_state;
+    int deltaStep;
 	
 	Ctimer(CPObject *parent = 0)	: CPObject(parent)
 	{						//[constructor]

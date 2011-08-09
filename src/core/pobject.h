@@ -47,9 +47,11 @@ public:
 	Ckeyb		*pKEYB;
 	Ctimer		*pTIMER;
 	Clcdc		*pLCDC;					// create LCDC object
-	QString	BackGroundFname;
+    QString BackGroundFname;
 	QString	LcdFname;
 	QString	SymbFname;
+
+    int     ioFreq;
 	
     void setName(QString val){ Name = val;	}
     QString getName(){ return Name;	}
@@ -57,13 +59,13 @@ public:
     QString getcfgfname() { return cfgfname; }
     void	setcfgfname(QString s) { cfgfname = s; }
 	
-    void serialize(QXmlStreamWriter *,int id);
-        float	posx();
-        float posy();
-        void setPosX(float);
-        void setPosY(float);
-	void Move(QPoint);
-	QPoint pos();
+    void    serialize(QXmlStreamWriter *,int id);
+    float	posx();
+    float   posy();
+    void    setPosX(float);
+    void    setPosY(float);
+    void    Move(QPoint);
+    QPoint   pos();
 	QImage* FinalImage;
 	QImage* BackgroundImageBackup;
 	QImage* BackgroundImage;
@@ -90,6 +92,7 @@ public:
 	virtual bool	InitDisplay(void);
 	virtual void	UpdateFinalImage(void);
     virtual	bool	run(void){ return true;}					// emulator main step
+            int     runRange(qint64);
 	virtual bool	exit();					// exit
     virtual bool	Set_Connector(void) { return true; }
     virtual bool	Get_Connector(void) { return true; }

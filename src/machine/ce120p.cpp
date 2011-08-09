@@ -1,7 +1,7 @@
 #include "ce120p.h"
 #include "dialoganalog.h"
 
-// TODO Add support for extended 11 pins connector
+
 
 Cce120p::Cce120p()
 {								//[constructor]

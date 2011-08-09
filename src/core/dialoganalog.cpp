@@ -193,7 +193,7 @@ void dialogAnalog::updatecapture(int state)
 	{
 		setCapture(false);
 		// Store timeref
-		dataplot.timeUnit = ( pPC->pTIMER->CPUSpeed * pPC->getfrequency() / 1000L );
+        dataplot.timeUnit = ( pPC->pTIMER->CPUSpeed * pPC->getfrequency() );
 		ComputeScrollBar();
 		
 		pbZoomIn->setEnabled(true);
@@ -266,6 +266,8 @@ void dialogAnalog::fillPixmap(CData *data, QPen *dataPen)
 
     QVector< QVector<QPoint> > polyline(64);
 
+    Qt::CheckState csMarker = chkBShowMarker->checkState();
+
     for (int j=1;j<data->size();j++)
 	{
 		plot = data->Read(j-1);
@@ -291,22 +293,22 @@ void dialogAnalog::fillPixmap(CData *data, QPen *dataPen)
                 polyline[jj].append( QPoint(X2,Y1) );
                 current += heightPerField;
             }
+
+            // plot the Markers
+            // Need to optimize
+            if ( plot.marker && (csMarker == Qt::Checked) ) {
+                QPen pen((Qt::white));
+                pen.setStyle(Qt::DotLine);
+                painter.setPen(pen);
+                painter.drawLine(X1,12,X1,height());
+                // set font ------------------------------------------------------------------------------------
+                QFont textFont;
+                textFont.setPixelSize(10);
+                painter.setFont(textFont);
+                painter.drawText(X1, 11, QString::number(plot.marker));
+                painter.setPen(*dataPen);
+            }
         }
-        // plot the Markers
-        // Need to optimize
-		if ( plot.marker && (chkBShowMarker->checkState() == Qt::Checked) )
-			{
-				QPen pen((Qt::white));
-				pen.setStyle(Qt::DotLine);
-				painter.setPen(pen);
-				painter.drawLine(X1,12,X1,height());
-			    // set font ------------------------------------------------------------------------------------
-			    QFont textFont;
-			    textFont.setPixelSize(10);
-			    painter.setFont(textFont);
-				painter.drawText(X1, 11, QString::number(plot.marker));
-				painter.setPen(*dataPen);
-			}
 	}
     if (polyline.size()) {
         for (int jj=0;jj<NbBits;jj++)
@@ -420,7 +422,7 @@ void dialogAnalog::ComputeMarkersLength(void)
 
 	long deltaState = qAbs(RMarkerState - LMarkerState);
 	
-	MarkersLength = deltaState / dataplot.timeUnit;
+    MarkersLength = deltaState / dataplot.timeUnit * 1000.0f;
 	
 	labelLength->setText(tr("%1 ms").arg(MarkersLength,0,'f',5));
 }
