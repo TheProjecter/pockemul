@@ -124,6 +124,17 @@ void CPObject::Move(QPoint p)
 	QWidget::move(QPoint(PosX,PosY));
 }
 
+void CPObject::MoveWithLinked(QPoint p) {
+    // Search all conected objects then move them
+    QList<CPObject *> ConList;
+    ConList.append(this);
+    mainwindow->pdirectLink->findAllObj(this,&ConList);
+    for (int i=0;i<ConList.size();i++)
+    {
+        ConList.at(i)->Move(p);
+    }
+}
+
 QPoint CPObject::pos()
 {
 	return QPoint(PosX,PosY);
@@ -426,26 +437,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 	}
 
 	// NO KEY CLICK Global pobject drag mode
-#if 0
-	CPObject * ConnectedObj = 0;						// bring the Widget in front
-    // fetch all conected objects
-    // If gender = male, stackunder
 
-    if (ConnectedObj=mainwindow->pdirectLink->findObj(this))		// Is this object connected to another ?
-	{
-		if (stackBehind)				// Is this object always behind the connected one ?
-		{
-			ConnectedObj->raise();
-			stackUnder(ConnectedObj);
-		}
-		else
-		{
-			 raise();
-			 ConnectedObj->stackUnder(this);
-		}
-	}
-	else raise();
-#else
     // raise all connected object and then manage Z-order between them
     raise();
     QList<CPObject *> list;
@@ -457,7 +449,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
     manageStackPos(&list);
 
-#endif
+
     if ( (parentWidget() != mainwidget) //mainwindow
         && (parentWidget() != 0))
 	{
@@ -476,8 +468,8 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
     // for each connector
     //      if male then stackunder and recursive
     //
-    // Keep track of already compute objects
-    if (l->indexOf(this)>=0) return;
+    // Keep track of already computed objects
+    if (l->contains(this)) return;
     l->append(this);
 
     for (int i=0;i < ConnList.size();i++) {
@@ -485,7 +477,8 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
         Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
         if (conn2) {
             CPObject * linkedPC = (CPObject *) (conn2->Parent);
-            if (ConnList.at(i)->getGender() == true) {
+            if (conn->getGender() == true) {    // If Male
+                linkedPC->stackUnder(this);
                 stackUnder(linkedPC);
                 linkedPC->manageStackPos(l);
             }
@@ -515,17 +508,9 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 	
 	if (startPosDrag)
 	{
-		QPoint delta(event->globalPos() - PosDrag);
-		
-		// Search all conected objects then move them
-		QList<CPObject *> ConList;
-		ConList.append(this);
-        mainwindow->pdirectLink->findAllObj(this,&ConList);
-		for (int i=0;i<ConList.size();i++)
-		{
-			ConList.at(i)->Move(delta);
-		}
-		
+        // Move all conected objects
+        QPoint delta(event->globalPos() - PosDrag);
+        MoveWithLinked(delta);
 		PosDrag = event->globalPos();
 		repaint();
 		return;
@@ -579,7 +564,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	// if an object with free connector is "near"
 	// propose to autolink
 
-#if 1
+
         // Fetch all object
 		for (int k = 0; k < listpPObject.size(); k++)
 		{
@@ -598,7 +583,8 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                                                     "No", 0, 0, 1) == 0) {
                              // The user clicked the Yes button or pressed Enter
                             // Connect
-                                Move(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
+
+                                MoveWithLinked(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
                                 mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
                                 mainwindow->pdirectLink->BConnList.append(nearList.at(r));
                                 QList<CPObject *> list;
@@ -610,38 +596,6 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
             }
         }
 
-
-
-#else
-    if (! mainwindow->pdirectLink->isLinked(this))
-    {
-        for (int k = 0; k < listpPObject.size(); k++)
-        {
-			if ( (listpPObject.at(k) != this) && 
-                !mainwindow->pdirectLink->isLinked(listpPObject.at(k)) &&
-				(RangeFrom(listpPObject.at(k)) < SNAPRANGE) )
-			{
-				// Propose to Autolink
-				switch(QMessageBox::question(mainwindow, "PockEmul",
-	                                    "Do you want to link those two materials ?",
-	                                    "Yes",
-	                                    "No", 0, 0, 1))
-	            { 
-	        	case 0: // The user clicked the Yes again button or pressed Enter
-	            // try again
-					Move(listpPObject.at(k)->pos() + listpPObject.at(k)->SnapPts - pos() - SnapPts);
-                    mainwindow->pdirectLink->AConnList.append(ConnList.at(0));
-                    mainwindow->pdirectLink->BConnList.append(listpPObject.at(k)->ConnList.at(0));
-
-	        	    break;
-	        	case 1: // The user clicked the No or pressed Escape
-	        	    // exit
-	        	    break;
-	        	}
-			}
-		}
-    }
-#endif
 	
 	
     startKeyDrag = false;

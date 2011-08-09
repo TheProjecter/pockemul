@@ -65,6 +65,7 @@ public:
     void    setPosX(float);
     void    setPosY(float);
     void    Move(QPoint);
+    void    MoveWithLinked(QPoint);
     QPoint   pos();
 	QImage* FinalImage;
 	QImage* BackgroundImageBackup;

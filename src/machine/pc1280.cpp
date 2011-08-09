@@ -1,4 +1,5 @@
 //TODO  Save session needs to be checked
+//TODO  resize screen to avoid aliasing
 
 #include "common.h"
 #include "Log.h"

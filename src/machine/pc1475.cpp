@@ -1,3 +1,6 @@
+//TODO  resize screen to avoid aliasing
+
+
 #include "common.h"
 #include "Log.h"
 #include "Connect.h"

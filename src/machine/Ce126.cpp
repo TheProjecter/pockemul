@@ -250,12 +250,14 @@ bool Cce126::exit(void)
 //FIXME two space 0x20 , only one printed
 void Cce126::Printer(qint8 d)
 {
-#if 0
-	if(ctrl_char && d==0x20)
+#if 1
+    if(ctrl_char && d==0x20) {
         ctrl_char=false;
+        RefreshCe126(d);
+    }
 	else
 	{
-		if(d==0xf || d==0xe)
+        if(d==0xf || d==0xe || d==0x03)
 			ctrl_char=true;
 		else
 		{

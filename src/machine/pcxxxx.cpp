@@ -73,7 +73,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	setPosX(0);
 	setPosY(0);
 
-    ioFreq = 16000;
+    ioFreq = 24000;
 }
 
 void CpcXXXX::UpdateFinalImage(void)
