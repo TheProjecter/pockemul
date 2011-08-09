@@ -538,7 +538,7 @@ bool Cce140f::run(void)
             D_OUT= ((t&0x04)>>2);
             D_IN = ((t&0x08)>>3);
 
-            //HACK  i have to pull down ext connector whent data output
+            //NOTE  i have to pull down ext connector when data output
             pCONNECTOR_Ext->Set_pin(PIN_D_OUT,false);
             pCONNECTOR_Ext->Set_pin(PIN_MT_IN,false);
             pCONNECTOR_Ext->Set_pin(PIN_D_IN,false);

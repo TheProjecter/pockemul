@@ -100,7 +100,7 @@ void CpcXXXX::UpdateFinalImage(void)
 //		if (pPC->pLCDC->On)
 		{
 			painter.begin(FinalImage);
-
+            //painter.setRenderHint(QPainter::Antialiasing);
 			x = Lcd_Symb_X + Pc_Offset_X;
 			y = Lcd_Symb_Y + Pc_Offset_Y;
             z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio_X);

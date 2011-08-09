@@ -6,8 +6,6 @@
 #include "ccable.h"
 #include "init.h"
 
-//FIXME works between 1251 & 1262 but not with same frequency ... strange
-
 
 extern MainWindowPockemul *mainwindow;
 
@@ -57,11 +55,6 @@ bool Ccable::run(void)
     // 6 : tape in
     // 7 : tape out
 
-//    Cconnector loc_A(this,11,"Connector 11 pins",false);
-//    Cconnector loc_B(this,11,"Connector 11 pins",false);
-//    loc_A.values = pCONNECTOR_A->values;
-//    loc_B.values = pCONNECTOR_B->values;
-
     pCONNECTOR_A->Set_pin(4,pCONNECTOR_B->Get_pin(9));
     pCONNECTOR_B->Set_pin(4,pCONNECTOR_A->Get_pin(9));
 
@@ -74,8 +67,8 @@ bool Ccable::run(void)
     pCONNECTOR_A_value = pCONNECTOR_A->Get_values();
     pCONNECTOR_B_value = pCONNECTOR_B->Get_values();
 
-    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
-//    pTIMER->state+=1;
+//    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
+
 	return true;
 }
 
