@@ -57,7 +57,6 @@
 #include "potar.h"
 #include "cesimu.h"
 
-//#define NEWTIMER 1
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -198,10 +197,7 @@ void CPocketThread::run()
             }
         }
         if (pause) usleep(5);
-#ifdef NEWTIMER
-        mainwindow->rawclk += timer.nsecsElapsed();
-        timer.restart();
-#endif
+
     }
 }
 #else

@@ -9,8 +9,7 @@
 #include "analog.h"
 
 //TODO  Add the capability to record several marker at the same time or introduce a n steps latency between connected objects
-//TODO only use a single List of TAnalog_Data
-//FIXME datastream input / Output
+
 
 void CData::Clear(void)
 {
@@ -81,10 +80,12 @@ int CData::Load(void){ return 1;}
 
 QDataStream &operator<<(QDataStream &out, const CData &dataplot)
 {
-#if 0
+#if 1
 	out << dataplot.timeUnit;
-    for (int i=0;i < dataplot.size();i++) {
-        TAnalog_Data d = dataplot.Read(i);
+    qint16 size = dataplot.dataset.size();
+    out << size;
+    for (int i=0;i < size;i++) {
+        TAnalog_Data d = dataplot.dataset.at(i);
         out << d.values << d.state << d.marker;
     }
 #endif
@@ -93,10 +94,17 @@ QDataStream &operator<<(QDataStream &out, const CData &dataplot)
 
 QDataStream &operator>>(QDataStream &in, CData &dataplot)
 {
-#if 0
     in >> dataplot.timeUnit;
-    in >> dataplot.dataset;
-#endif
+    qint16 size=0;
+    in >> size;
+    for (int i=0;i < size;i++) {
+        qint64 v,s;
+        qint8 m;
+        in >> v >> s >> m;
+        TAnalog_Data d = { v , s , m };
+        dataplot.dataset.append(d);
+    }
+
     return in;
 }
 

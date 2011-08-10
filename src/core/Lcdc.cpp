@@ -600,12 +600,12 @@ void Clcdc_pc1245::disp(void)
 static const struct {
 	int x,y;
 } pc1260_pos[11]={
-	{22, 31},	// BUSY
-	{55, 31},	// PRINT
-	{90, 31},	// DEG
-	{115,31},	// RAD
-	{140,31},	// GRAD
-	{165,31},	// ERROR
+    {27, 31},	// BUSY
+    {67, 31},	// PRINT
+    {107, 31},	// DEG
+    {133,31},	// RAD
+    {160,31},	// GRAD
+    {200,31},	// ERROR
 	{0,0},		// JAP
 	{0,8},		// SMALL
 	{0,16},		// SHIFT

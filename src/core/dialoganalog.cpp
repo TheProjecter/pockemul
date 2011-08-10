@@ -1,3 +1,5 @@
+//TODO  Several tabs to record different input at the same time
+
 #include <QPainter> 
 #include <QMouseEvent>
 #include <QFileDialog>
@@ -78,6 +80,14 @@ void dialogAnalog::fill_twWatchPoint(void)
 void dialogAnalog::slotMarker(void)
 {
 	dataplot.Marker = 1;
+}
+
+void    dialogAnalog::setMarker(qint8 val) {
+    dataplot.Marker = val;
+}
+
+qint8   dialogAnalog::getMarker(void) {
+    return dataplot.Marker;
 }
 
 void dialogAnalog::slotSave(void)

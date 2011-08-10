@@ -392,9 +392,11 @@ void MainWindowPockemul::opensession()
                                 locPC->setPosY(posY.toFloat());
                                 if (locPC->Front) {
                                     locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
+                                    locPC->setMask(locPC->mask.scaled(locPC->getDX()*zoom/100,locPC->getDY()*zoom/100).mask());
                                 }
                                 else {
                                     locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);
+
                                 }
 
 
@@ -509,9 +511,8 @@ void MainWindowPockemul::updateTimer()
 	if (deltaTime == -1) {	t.start(); }
 	deltaTime = t.restart();	
 
-#ifndef NEWTIMER
     rawclk += deltaTime*1000000L;
-#endif
+
 }
 
 void MainWindowPockemul::wheelEvent(QWheelEvent *event) {

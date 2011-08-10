@@ -34,11 +34,12 @@ class CData:public QObject
 		}
         virtual ~CData() {}
         
-//    private:
+
     	int maxSize;
     	float				timeUnit;
-    	qint8				Marker;
 private:
+    	qint8				Marker;
+public:
         QList<TAnalog_Data> dataset;
 		
 	friend class dialogAnalog;

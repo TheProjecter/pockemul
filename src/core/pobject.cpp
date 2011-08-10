@@ -92,7 +92,7 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
     xml->writeEndElement(); // object
 
     // if power on and (CpcXXXX) class then save session
-    // TO DO : save session in xml
+    // TODO : save session in xml
     if (Power &&  dynamic_cast<CpcXXXX *>(this) )
     {
         ((CpcXXXX *)this)->Initial_Session_Save();
@@ -839,7 +839,7 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 QImage * CPObject::LoadImage(QSize size,QString fname)
 {
 	QImage *tempImage;
-	QImage loc = QImage(fname).scaled(size);
+    QImage loc = QImage(fname).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 	tempImage = new QImage(loc);
 	return tempImage;
 }

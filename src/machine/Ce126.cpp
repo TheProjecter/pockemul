@@ -385,7 +385,7 @@ bool Cce126::run(void)
     case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
                     lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 8;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
                 }
                 break;
     case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
@@ -394,12 +394,12 @@ bool Cce126::run(void)
                         // Raise ACK
                         code_transfer_step = 2;
                         ACK = UP;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 9;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(9);
                     }
                 }
                 else {
                     code_transfer_step=0;
-                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 7;
+                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(7);
                 }
                 break;
     case 2:     if (BUSY == UP )	//check for BUSY
@@ -428,14 +428,14 @@ bool Cce126::run(void)
                             code_transfer_step = 6;
                             lastState = pTIMER->state;
                         }
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 17;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(17);
                         //t=0; c=0;
                     }
                     else {
                         ACK = DOWN;
                         code_transfer_step=3;
                         lastState=pTIMER->state;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 18;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(18);
                     }
                 }
                 break;
@@ -443,7 +443,7 @@ bool Cce126::run(void)
                     code_transfer_step=2;
                     // wait 2 ms and raise ACK
                     ACK = UP;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 16;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(16);
                 }
                 break;
     case 4:     if ((BUSY == DOWN)&&(MT_OUT1 == DOWN)) {
@@ -451,20 +451,20 @@ bool Cce126::run(void)
                     code_transfer_step=5;
                     lastState=pTIMER->state;//time.restart();
                     t=0; c=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 15;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(15);
                 }
                 break;
     case 5:     if (pTIMER->msElapsed(lastState)>9) {
                     ACK = DOWN;
                     code_transfer_step=0;
                     lastState=pTIMER->state;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 14;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(14);
                 }
                 break;
     case 6:     if ((pTIMER->msElapsed(lastState)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
                     ACK = DOWN;
                     code_transfer_step=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 19;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(19);
 
 
                 }
@@ -492,7 +492,7 @@ bool Cce126::run(void)
 					AddLog(LOG_PRINTER,tr("ACK timeout"));
                     lastState=pTIMER->state;//time.restart();
                     ACK = DOWN;
-					if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 1;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
 				}
 #if 0
 				if ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP ))
@@ -503,7 +503,7 @@ bool Cce126::run(void)
                     c=0;
 					if (GET_PIN(PIN_BUSY) == DOWN )
 					{
-						if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 2;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
 						time.restart();
 						SET_PIN(PIN_ACK,UP);
 						AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
@@ -516,7 +516,7 @@ bool Cce126::run(void)
                 {
                     t=0;
                     c=0;
-                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 10;
+                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
                 }
 
                 if (BUSY != Previous_BUSY )	//check for BUSY  - F03
@@ -526,13 +526,13 @@ bool Cce126::run(void)
                     if (ACK == UP) //check for ACK  - F03
 					{
                         ACK = DOWN;
-						if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 3;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(3);
 					}
 					else
 					{
                         ACK = UP;
                         lastState=pTIMER->state;
-						if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 4;
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(4);
 					}
                     //AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
 	
@@ -552,10 +552,10 @@ bool Cce126::run(void)
 							AddLog(LOG_PRINTER,tr("send char to printer : %1").arg(t,2,16) );
 							Printer(t);
 							t=0; c=0;
-                            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 5;
+                            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(5);
 						}
                         else {
-                            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = 6;
+                            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(6);
                         }
 
 	

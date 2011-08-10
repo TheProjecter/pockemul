@@ -136,5 +136,5 @@ int Ccesimu::timerUsElapsed(int id) {
     return pTIMER->msElapsed(states[id]);
 }
 void Ccesimu::setMarker(int markId){
-    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->dataplot.Marker = markId;
+    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(markId);
 }
