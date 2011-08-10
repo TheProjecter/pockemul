@@ -444,7 +444,7 @@ void Clcdc_pc1250::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-            x =ind + (ind/5)*2;			// +2 every 5 cols
+            x =ind + (ind/5);			// +1 every 5 cols
 			y = 0;
 			
 			for (b=0; b<7;b++)
@@ -463,7 +463,7 @@ void Clcdc_pc1250::disp(void)
 			Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
-            x = 165 - ind - (ind/5)*2;			// +2 every 5 cols
+            x = 142 - ind - (ind/5);			// +2 every 5 cols
 			y = 0;
 	
 			for (b=0; b<7;b++)

@@ -286,7 +286,7 @@ bool Cce515p::init(void)
     paperWidget->show();
 
     Sii_wait = 0;
-    Pen_Y=-100;
+    Pen_Y=20;//-100;
     charSize = 2;
     escMode = false;
     mode = TEXT;

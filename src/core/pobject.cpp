@@ -626,7 +626,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 	painter.begin(this);	
 	if (FinalImage)
 	{
-		painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio));
+        painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 	}
 		
 	if (dialogkeylist)
@@ -878,7 +878,7 @@ void CPObject::UpdateFinalImage(void)
 	if ( (BackgroundImage) )
 	{
 		painter.begin(FinalImage);
-		painter.drawImage(QPoint(0,0),*BackgroundImage);
+        painter.drawImage(QPoint(0,0),*BackgroundImage);
 		painter.end();
 	}
 	Refresh_Display = false;

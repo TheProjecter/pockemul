@@ -27,6 +27,7 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
 #endif
 
     setfrequency( (int) 3500000);
+    ioFreq = 0;
     setcfgfname(QString("pc1600"));
 
     SessionHeader	= "PC1600PKM";

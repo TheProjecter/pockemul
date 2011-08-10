@@ -44,11 +44,11 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
     setDY(252);//Pc_DY		= 252;//213;
 
     Lcd_X		= 55;
-    Lcd_Y		= 47;
-    Lcd_DX		= 168;//144 ;
-    Lcd_DY		= 7;
-    Lcd_ratio_X	= 2;// * 1.18;
-    Lcd_ratio_Y	= 3;// * 1.18;
+    Lcd_Y		= 49;
+    Lcd_DX		= 144;//168;//144 ;
+    Lcd_DY		= 8;
+    Lcd_ratio_X	= 2 * 1.18;
+    Lcd_ratio_Y	= 2 * 1.18;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);

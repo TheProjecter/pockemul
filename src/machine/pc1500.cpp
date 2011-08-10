@@ -23,6 +23,7 @@ extern bool	UpdateDisplayRunning;
 Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
 	setfrequency( (int) 2600000/2);
+    ioFreq = 500000;
 	setcfgfname(QString("pc1500"));
 
 	SessionHeader	= "PC1500PKM";

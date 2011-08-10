@@ -229,10 +229,14 @@ void CPocketThread::run()
                     qint64 cs = pPC->pTIMER->currentState();
                     if (pPC->pTIMER->state < cs)
                     {
-                        qint64 t = pPC->pTIMER->state;
-                        int step = MIN(f / pPC->ioFreq - pPC->pTIMER->deltaStep,cs-pPC->pTIMER->state);
-                        pPC->pTIMER->deltaStep = pPC->runRange(step) - step;
-
+                        if (pPC->ioFreq > 0) {
+                            qint64 t = pPC->pTIMER->state;
+                            int step = MIN(f / pPC->ioFreq - pPC->pTIMER->deltaStep,cs-pPC->pTIMER->state);
+                            pPC->pTIMER->deltaStep = pPC->runRange(step) - step;
+                        }
+                        else {
+                            pPC->run();
+                        }
                         // WRITE the LINK BOX Connector
                         mainwindow->pdirectLink->clearlog();
                         mainwindow->pdirectLink->Output(pPC);
