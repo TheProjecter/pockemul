@@ -427,7 +427,7 @@ void MainWindowPockemul::opensession()
             }
         }
         else
-            xml.raiseError(QObject::tr("The file is not an XBEL version 1.0 file."));
+            xml.raiseError(QObject::tr("The file is not a PML version 1.0 file."));
     }
     for (int i=0;i <listpPObject.size();i++) {
         QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
@@ -446,7 +446,7 @@ void MainWindowPockemul::saveassession()
     saveAll = YES;
     QString s;
     QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
-    xml->autoFormatting();
+    xml->setAutoFormatting(true);
     xml->writeStartElement("pml");
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
@@ -485,7 +485,7 @@ void MainWindowPockemul::saveassession()
     //xml->writeEndElement();  // links
 
     xml->writeEndElement();  // pml
-    MSG_ERROR(s)
+    //MSG_ERROR(s)
 
             QString fn = QFileDialog::getSaveFileName(
                     mainwindow,
@@ -529,7 +529,7 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
     else delta = 0;
 
 
-    this->setWindowTitle(QString("Delta=%1  zoom=%2").arg(delta).arg(zoom));
+    this->setWindowTitle(QString("  Zoom=%2%").arg(zoom));
 
     for (int i=0;i<listpPObject.size();i++) {
         CPObject * locpc = listpPObject.at(i);

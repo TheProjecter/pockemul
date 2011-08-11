@@ -219,7 +219,7 @@ const double DoMax (const double arg1, const double arg2)
 const double DoFmod (const double arg1, const double arg2)
   {
   if (arg2 == 0.0)
-    throw std::runtime_error ("Divide by zero in mod");
+    //throw std::runtime_error ("Divide by zero in mod");
   
   return fmod (arg1, arg2);
   }
@@ -317,8 +317,9 @@ const Parser::TokenType Parser::GetToken (const bool ignoreSign)
   // look out for unterminated statements and things
   if (*pWord_ == 0 &&  // we have EOF
       type_ == END)  // after already detecting it
-    throw std::runtime_error ("Unexpected end of expression.");
-
+    {
+        //throw std::runtime_error ("Unexpected end of expression.");
+    }
   unsigned char cFirstCharacter = *pWord_;        // first character in new word_
   
   if (cFirstCharacter == 0)    // stop at end of file
@@ -365,8 +366,9 @@ const Parser::TokenType Parser::GetToken (const bool ignoreSign)
     // parse std::string into double value
     is >> value_;
       
-    if (is.fail () || !is.eof ())
-      throw std::runtime_error ("Bad numeric literal: " + word_);
+    if (is.fail () || !is.eof ()) {
+//      throw std::runtime_error ("Bad numeric literal: " + word_);
+    }
     return type_ = NUMBER;
     }   // end of number found
 
@@ -437,10 +439,10 @@ const Parser::TokenType Parser::GetToken (const bool ignoreSign)
       {
       std::ostringstream s;
       s << "Unexpected character (decimal " << int (cFirstCharacter) << ")";
-      throw std::runtime_error (s.str ());    
+      //throw std::runtime_error (s.str ());
       }
-    else
-      throw std::runtime_error ("Unexpected character: " + std::string (1, cFirstCharacter));
+    //else
+      //throw std::runtime_error ("Unexpected character: " + std::string (1, cFirstCharacter));
     }
   
   // we have a word (starting with A-Z) - pull it out
@@ -516,7 +518,7 @@ const double Parser::Primary (const bool get)   // primary (base) tokens
           return ti->second (v1, v2, v3); // evaluate function
           }
         
-        throw std::runtime_error ("Function '" + word + "' not implemented.");
+        //throw std::runtime_error ("Function '" + word + "' not implemented.");
         }
       
       // not a function? must be a symbol in the symbol table
@@ -532,8 +534,9 @@ const double Parser::Primary (const bool get)   // primary (base) tokens
         case ASSIGN_DIV: 
             {
             double d = Expression (true); 
-            if (d == 0.0)
-              throw std::runtime_error ("Divide by zero");
+            if (d == 0.0) {
+              //throw std::runtime_error ("Divide by zero");
+            }
             v /= d;
             break;   // change table entry with expression
             } // end of ASSIGN_DIV
@@ -556,8 +559,8 @@ const double Parser::Primary (const bool get)   // primary (base) tokens
       return v;
       }
     
-    default:   
-      throw std::runtime_error ("Unexpected token: " + word_);
+    default:   break;
+      //throw std::runtime_error ("Unexpected token: " + word_);
     
     } // end of switch on type
   
@@ -575,8 +578,9 @@ const double Parser::Term (const bool get)    // multiply and divide
       case DIVIDE: 
           {
           double d = Primary (true);
-          if (d == 0.0)
-            throw std::runtime_error ("Divide by zero");
+          if (d == 0.0)  {
+            //throw std::runtime_error ("Divide by zero");
+          }
           left /= d; 
           break;
           }
@@ -659,8 +663,9 @@ const double Parser::Evaluate ()  // get result
   pWord_    = program_.c_str ();
   type_     = NONE;
   double v = CommaList (true);
-  if (type_ != END)
-    throw std::runtime_error ("Unexpected text at end of expression: " + std::string (pWordStart_));
+  if (type_ != END) {
+//    throw std::runtime_error ("Unexpected text at end of expression: " + std::string (pWordStart_));
+  }
   return v;  
   }
 

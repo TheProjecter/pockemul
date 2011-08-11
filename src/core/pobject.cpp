@@ -866,7 +866,7 @@ bool CPObject::InitDisplay(void)
 	BackgroundImage  =  LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
 	FinalImage  =  LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
 
-    mask = QPixmap(BackGroundFname).scaled(getDX(),getDY());
+    mask = QPixmap(BackGroundFname).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
     setMask(mask.mask());
 
 	return(1);

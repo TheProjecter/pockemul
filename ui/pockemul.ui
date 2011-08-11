@@ -57,12 +57,9 @@
     </property>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
-    <addaction name="separator"/>
-    <addaction name="actionSkin_Editor"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

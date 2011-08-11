@@ -107,7 +107,7 @@ void ConvertBinHex(void);
       {
       std::ostringstream s;
       s << "'" << static_cast <char> (wanted) << "' expected.";
-      throw std::runtime_error (s.str ());    
+      //throw std::runtime_error (s.str ());
       }
     }
   };  // end of Parser

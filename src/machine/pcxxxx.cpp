@@ -131,14 +131,16 @@ bool CpcXXXX::CompleteDisplay(void)
 
 bool CpcXXXX::InitDisplay(void)
 {
+    CPObject::InitDisplay();
+
 	Refresh_Display = true;
 	UpdateDisplayRunning = FALSE;
     global_w = getDX();
     global_h = getDY();
 	
-    BackgroundImageBackup	= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
-    BackgroundImage			= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
-    FinalImage				= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
+//    BackgroundImageBackup	= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
+//    BackgroundImage			= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
+//    FinalImage				= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
 	
 	LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
 	SymbImage				= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
