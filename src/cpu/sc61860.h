@@ -94,7 +94,8 @@ public:
 
 	void	Load_Internal(QFile *file);
 	void	save_internal(QFile *file);
-//	void	save_internal(void);
+    void	Load_Internal(QXmlStreamReader *);
+    void	save_internal(QXmlStreamWriter *);
 	
 	bool	Get_Xin(void);
 	void	Set_Xin(bool);

@@ -190,6 +190,29 @@ void CLH5801::save_internal(QFile *file)
     out.writeRawData((char*)imem,IMEM_LEN);			//i-mem
 }
 
+void CLH5801::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "lh5801")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &lh5801,ba_reg.data(),sizeof(lh5801));
+            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+            memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
+        }
+    }
+}
+
+void CLH5801::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","lh5801");
+        QByteArray ba_reg((char*)&lh5801,sizeof(lh5801));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+        QByteArray ba_imem((char*)imem,IMEM_LEN);
+        xmlOut->writeAttribute("iMem",ba_imem.toBase64());
+    xmlOut->writeEndElement();
+}
 
 DWORD	CLH5801::get_mem(DWORD adr,int size)
 {

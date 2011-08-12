@@ -174,7 +174,9 @@ public:
 	virtual void	Set_PortT(BYTE data);
 
 	virtual bool	LoadConfig(QFile *);	// Load PC Configuration
+    virtual bool	LoadConfig(QXmlStreamReader *);	// Load PC Configuration
 	virtual bool	SaveConfig(QFile *);	// Save PC Configuration
+    virtual bool	SaveConfig(QXmlStreamWriter *);	// Save PC Configuration
 
 	virtual bool	LoadExtra(QFile *);
 	virtual bool	SaveExtra(QFile *);
@@ -183,8 +185,8 @@ public:
 	virtual	bool	init(void);				// initialize
 	virtual	bool	run(void);					// emulator main
 	virtual bool	exit(void);					// exit
-	virtual bool	Set_Connector(void) { return (1); };
-	virtual bool	Get_Connector(void) { return (1); };
+    virtual bool	Set_Connector(void) { return (1); }
+    virtual bool	Get_Connector(void) { return (1); }
 
 
 	void	ClearRam(BYTE data) {	memset((void *)mem ,data,memsize); }	//initialize memory
@@ -209,15 +211,19 @@ public:
 
 	void	SaveSession(void);
 	bool	SaveSession_File(QFile *);
-    bool	SaveSession_XML(QFile *);
+    bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+
     void	LoadSession(void);
 	bool	LoadSession_File(QFile *);
+    bool	LoadSession_File(QXmlStreamReader *);
 
 	void	Mem_Load(QFile *file,BYTE s);
+    void    Mem_Load(QXmlStreamReader *xmlIn,BYTE s);
 	bool	Mem_Load(BYTE s);
+
 	void	Mem_Save(QFile *file,BYTE s);
+    void    Mem_Save(QXmlStreamWriter *xmlOut,BYTE s);
 	void	Mem_Save(BYTE s);
-    void    Mem_Save_XML(QFile *, BYTE);
 
     qint64	old_state;
 

@@ -52,12 +52,14 @@ public:
 	void	Reset(void);
 	virtual bool	step(void);
 
-    void	Load_Internal(QFile *file);
-    void	save_internal(QFile *file);
+    void	Load_Internal(QFile *);
+    void	save_internal(QFile *);
+    void	Load_Internal(QXmlStreamReader *);
+    void	save_internal(QXmlStreamWriter *);
 
 	void	Regs_Info(UINT8);
 
-    const char*	GetClassName(){ return("CLH5810");};
+    const char*	GetClassName(){ return("CLH5810");}
 
 	UINT8	GetReg(LH5810_REGS);
 	UINT8	SetReg(LH5810_REGS,UINT8);	// return the value written

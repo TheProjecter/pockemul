@@ -66,6 +66,8 @@ public:
 
 	void	Load_Internal(QFile *file);
 	void	save_internal(QFile *file);
+    void	Load_Internal(QXmlStreamReader *);
+    void	save_internal(QXmlStreamWriter *);
 //	void	save_internal(void);
 
 	DWORD	get_mem(DWORD adr,int size);		//get memory

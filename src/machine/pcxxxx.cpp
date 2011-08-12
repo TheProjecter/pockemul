@@ -138,10 +138,6 @@ bool CpcXXXX::InitDisplay(void)
     global_w = getDX();
     global_h = getDY();
 	
-//    BackgroundImageBackup	= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
-//    BackgroundImage			= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
-//    FinalImage				= LoadImage(QSize(getDX(), getDY()),BackGroundFname);
-	
 	LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
 	SymbImage				= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
 
@@ -505,12 +501,14 @@ void CpcXXXX::Mem_Save(QFile *file,BYTE s)
 	out.writeRawData( (char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
 }
 
-void CpcXXXX::Mem_Save_XML(QFile *file,BYTE s)
+void CpcXXXX::Mem_Save(QXmlStreamWriter *xmlOut,BYTE s)
 {
-    QDataStream out(file);
-
-    QByteArray ba((char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
-    out.writeRawData(ba.toBase64().data(),ba.size());
+    xmlOut->writeStartElement("bank");
+        xmlOut->writeAttribute("label",SlotList[s].getLabel());
+        xmlOut->writeAttribute("id",QString("%1").arg(s));
+        QByteArray ba((char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+        xmlOut->writeTextElement("data",ba.toBase64());
+    xmlOut->writeEndElement();
 }
 
 void CpcXXXX::Mem_Save(BYTE s)
@@ -525,28 +523,21 @@ void CpcXXXX::Mem_Save(BYTE s)
 	}
 }
 
-bool CpcXXXX::SaveSession_XML(QFile *file)
-{
 
-    XmlWriter xw(file);
-
-
-    xw.setAutoNewLine( true );
-    xw.writeRaw( "<!DOCTYPE PKM>");
-    xw.writeRaw("<PKM version=\"1.0\">" );
-    xw.newLine();
-    xw.writeTaggedString( "model", SessionHeader );
-    xw.writeOpenTag( "config" );
-
-    //SaveConfig(&xw);									// Write PC configuration
-    pCPU->save_internal(file);							// Save cpu status
-    for (int s=0; s<SlotList.size(); s++)				// Save Memory
-    {
-        if (SlotList[s].getType() == RAM)	Mem_Save_XML(file,s);
-    }
-
-    //SaveExtra(&xw);									// Save all other data  (virtual)
-    return(1);
+bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
+    xmlOut->writeStartElement("session");
+        xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeAttribute("model", SessionHeader );
+        SaveConfig(xmlOut);
+        pCPU->save_internal(xmlOut);
+        xmlOut->writeStartElement("memory");
+            for (int s=0; s<SlotList.size(); s++)				// Save Memory
+            {
+                if (SlotList[s].getType() == RAM)	Mem_Save(xmlOut,s);
+            }
+        xmlOut->writeEndElement();  // memory
+    xmlOut->writeEndElement();  // session
+    //    //SaveExtra(&xw);									// Save all other data  (virtual)
 }
 
 bool CpcXXXX::SaveSession_File(QFile *file)
@@ -563,6 +554,27 @@ bool CpcXXXX::SaveSession_File(QFile *file)
 	
 	SaveExtra(file);									// Save all other data  (virtual)
 	return(1);
+}
+
+bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name() == "session") &&
+             (xmlIn->attributes().value("version") == "1.0") &&
+             (xmlIn->attributes().value("model") == SessionHeader) ) {
+            if (!LoadConfig(xmlIn)) return false;
+
+            pCPU->Load_Internal(xmlIn);
+            if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
+                for (int s=0; s<SlotList.size(); s++)				// Save Memory
+                {
+                    if (SlotList[s].getType() == RAM) {
+                        Mem_Load(xmlIn,s);
+                    }
+                }
+            }
+        }
+    }
+    return true;
 }
 
 bool CpcXXXX::LoadSession_File(QFile *file)
@@ -619,9 +631,32 @@ bool CpcXXXX::LoadConfig(QFile *file)
 	return true;
 }
 
-// Save PC Configuration
-bool CpcXXXX::SaveConfig(QFile *file)
+bool CpcXXXX::LoadConfig(QXmlStreamReader *xmlIn)
 {
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "config" && xmlIn->attributes().value("version") == "1.0") {
+            if (xmlIn->readNextStartElement() && xmlIn->name() == "internal" ) {
+                QString s= xmlIn->attributes().value("IO_A").toString();
+                IO_A = s.toInt(0,16);
+                IO_B = xmlIn->attributes().value("IO_B").toString().toInt(0,16);
+                IO_C = xmlIn->attributes().value("IO_C").toString().toInt(0,16);
+                IO_F = xmlIn->attributes().value("IO_F").toString().toInt(0,16);
+                RomBank = xmlIn->attributes().value("RomBank").toString().toInt(0,16);
+                RamBank = xmlIn->attributes().value("RamBank").toString().toInt(0,16);
+                ProtectMemory = xmlIn->attributes().value("ProtectMemory").toString().toInt(0,16);
+                //Japan = xml->attributes().value("ProtectMemory").toString().toInt(0,16);
+                xmlIn->skipCurrentElement();
+            }
+
+        }
+        xmlIn->skipCurrentElement();
+    }
+
+    return true;
+}
+
+// Save PC Configuration
+bool CpcXXXX::SaveConfig(QFile *file) {
 	QDataStream out(file);
 		
 	out << (qint8)IO_A << (qint8)IO_B << (qint8)IO_C << (qint8)IO_F;
@@ -631,6 +666,25 @@ bool CpcXXXX::SaveConfig(QFile *file)
 
 	return true;
 }	
+
+bool CpcXXXX::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("config");
+    xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeStartElement("internal");
+            xmlOut->writeAttribute("IO_A",QString("%1").arg(IO_A,2,16));
+            xmlOut->writeAttribute("IO_B",QString("%1").arg(IO_B,2,16));
+            xmlOut->writeAttribute("IO_C",QString("%1").arg(IO_C,2,16));
+            xmlOut->writeAttribute("IO_F",QString("%1").arg(IO_F,2,16));
+            xmlOut->writeAttribute("RomBank",QString("%1").arg(RomBank,2,16));
+            xmlOut->writeAttribute("RamBank",QString("%1").arg(RamBank,2,16));
+            xmlOut->writeAttribute("ProtectMemory",QString("%1").arg(ProtectMemory));
+            xmlOut->writeAttribute("Japan",QString("%1").arg(Japan));
+        xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
+
+    return true;
+}
 
 bool CpcXXXX::LoadExtra(QFile *file) 	{ return true; }
 bool CpcXXXX::SaveExtra(QFile *file)	{ return true; }
@@ -652,7 +706,15 @@ void CpcXXXX::LoadSession(void)
 		return ;
 	}
 
+#if 1
+    QXmlStreamReader xmlIn;
+
+    xmlIn.setDevice(&file);
+    if (LoadSession_File(&xmlIn)) pLCDC->Update();
+
+#else
 	if (LoadSession_File(&file)) pLCDC->Update();
+#endif
 	file.close();							// Close the file
 
 }
@@ -664,8 +726,21 @@ QString fileName = QFileDialog::getSaveFileName(
                     tr("Choose a file"),
                     ".",
                     tr("PockEmul sessions (*.pkm)"));
-                    
-	QFile file(fileName);
+    QFile file(fileName);
+
+#if 1
+
+    if (file.open(QFile::WriteOnly | QFile::Truncate)) {
+        QString s;
+        QXmlStreamWriter *xmlOut = new QXmlStreamWriter(&s);
+        xmlOut->setAutoFormatting(true);
+        SaveSession_File(xmlOut);
+        QTextStream out(&file);
+        out << s;
+    }
+
+#else
+
 	if (!file.open(QIODevice::WriteOnly)) {
 		QMessageBox::warning(mainwindow,tr("PockEmul"),
 								tr("Cannot write file %1:\n%2.")
@@ -675,7 +750,7 @@ QString fileName = QFileDialog::getSaveFileName(
 	}
 
 	SaveSession_File(&file);
-
+#endif
 	file.close();							// Close the file
 }
 
@@ -700,6 +775,19 @@ void CpcXXXX::Mem_Load(QFile *file,BYTE s)
 {
 	QDataStream in(file);	
 	in.readRawData ((char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+}
+
+void CpcXXXX::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
+{
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "bank" && xmlIn->attributes().value("id").toString().toInt() == s) {
+            if (xmlIn->readNextStartElement() && (xmlIn->name()=="data") ) {
+                QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toAscii());
+                memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+            }
+        }
+        xmlIn->skipCurrentElement();
+    }
 }
 
 bool CpcXXXX::Mem_Load(BYTE s)

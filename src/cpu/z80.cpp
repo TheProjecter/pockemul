@@ -2962,6 +2962,30 @@ void	CZ80::save_internal(QFile *file){
     out.writeRawData((char*)imem,IMEM_LEN);			//i-mem
 }
 
+void CZ80::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "z80")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &z80,ba_reg.data(),sizeof(z80));
+            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+            memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
+        }
+    }
+}
+
+void CZ80::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","z80");
+        QByteArray ba_reg((char*)&z80,sizeof(z80));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+        QByteArray ba_imem((char*)imem,IMEM_LEN);
+        xmlOut->writeAttribute("iMem",ba_imem.toBase64());
+    xmlOut->writeEndElement();
+}
+
 INLINE DWORD	CZ80::get_mem(DWORD adr,int size)
 {
     switch(size)

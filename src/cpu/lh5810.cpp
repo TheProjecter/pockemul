@@ -28,8 +28,8 @@ CLH5810::~CLH5810(){			//[destructor]
 };
 
 
-bool	CLH5810::init(void){return true;};						//initialize
-bool	CLH5810::exit(void){return true;};						//end
+bool	CLH5810::init(void){return true;}					//initialize
+bool	CLH5810::exit(void){return true;}						//end
 void	CLH5810::Load_Internal(QFile *file){
     char t[16];
     QDataStream in(file);
@@ -43,6 +43,26 @@ void	CLH5810::save_internal(QFile *file){
 
     out.writeRawData("LH5810STA", 9);					//header
     out.writeRawData((char*)&lh5810,sizeof(lh5810));		//reg
+}
+
+void CLH5810::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "lh5810")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &lh5810,ba_reg.data(),sizeof(lh5810));
+        }
+    }
+}
+
+void CLH5810::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","lh5810");
+        QByteArray ba_reg((char*)&lh5810,sizeof(lh5810));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+    xmlOut->writeEndElement();
 }
 
 void	CLH5810::Reset(void)
