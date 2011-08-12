@@ -134,39 +134,7 @@ public:
 	bool Chk_Adr_R(DWORD *d,DWORD data);
 	bool Mem_Mirror(DWORD *d); 
 
-	Cpc1500A(CPObject *parent = 0)	: Cpc15XX(this)
-	{								//[constructor]
-		setfrequency( (int) 2600000/2);
-        setcfgfname("pc1500a");
-
-		SessionHeader	= "PC1500APKM";
-		SessionHeaderLen= 10;
-		Initial_Session_Fname ="pc1500A.pkm";
-		BackGroundFname	= ":/PC1500A/pc1500A/pc1500A.jpg";
-		LcdFname		= ":/PC1500A/pc1500A/1500Alcd.jpg";
-		SymbFname		= ":/PC1500A/pc1500A/1500Asymb.jpg";
-		memsize			= 0x26000;
-//		NbSlot		= 10;
-
-		SlotList.clear();
-		SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , RAM , "RAM"));
-		SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(16, 0x4000 ,	""								, "" , RAM , "RAM"));
-		SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , NOTUSED , "NOT USED"));
-		SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(16, 0xC000 ,	":/PC1500A/pc1500A/SYS1500A.ROM", "" , ROM , "SYSTEM ROM"));
-		SlotList.append(CSlot(64, 0x10000 ,	""								, "" , RAM , "RAM"));
-		SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(8 , 0x24000 ,	":/PC1500A/pc1500A/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
-
-		delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
-
-		Lcd_X		= 80;
-		Lcd_Y		= 52;
-		Lcd_Symb_X	= 80;
-		Lcd_Symb_Y	= 45;
-	}
+    Cpc1500A(CPObject *parent = 0);
 
 	~Cpc1500A()
 	{								//[constructor]
@@ -179,27 +147,7 @@ class Ctrspc2:public Cpc1500{
 public:
     const char*	GetClassName(){ return("Ctrspc2");}
 
-    Ctrspc2(CPObject *parent = 0)	: Cpc1500(this)
-	{								//[constructor]
-        setcfgfname("trspc2");
-
-		SessionHeader	= "TRSPC-2PKM";
-		SessionHeaderLen= 10;
-		Initial_Session_Fname ="trspc2.pkm";
-		BackGroundFname	= ":/TRSPC2/pc1500/trspc2.jpg";
-		LcdFname		= ":/TRSPC2/pc1500/pc2lcd.jpg";
-		SymbFname		= ":/TRSPC2/pc1500/pc2symb.jpg";
-
-		Lcd_X		= 152 ;
-		Lcd_Y		= 52 ;
-		Lcd_Symb_X	= 152;
-		Lcd_Symb_Y	= 45 ;
-		
-		delete pLCDC;	
-		pLCDC = new Clcdc_trspc2(this);
-        pKEYB->fn_KeyMap = "trspc2.map";
-
-	}
+    Ctrspc2(CPObject *parent = 0);
 
 	~Ctrspc2()
 	{								//[constructor]

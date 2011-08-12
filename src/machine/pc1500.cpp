@@ -46,20 +46,20 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     setDYmm(86);//Pc_DY_mm = 86;
     setDZmm(25);//Pc_DZ_mm = 25;
 
-    setDX(572);//Pc_DX		= 572;
-    setDY(254);//Pc_DY		= 254;
+    setDX(679);//Pc_DX		= 572;
+    setDY(299);//Pc_DY		= 254;
 		
-	Lcd_X		= 80;
-	Lcd_Y		= 50;
+    Lcd_X		= 93;//80;
+    Lcd_Y		= 61;//50;
 	Lcd_DX		= 156;
 	Lcd_DY		= 8;
-	Lcd_ratio_X	= 2;
-	Lcd_ratio_Y	= 2;
+    Lcd_ratio_X	= 2*1.18;
+    Lcd_ratio_Y	= 2*1.18;
 
-	Lcd_Symb_X	= 80;
-	Lcd_Symb_Y	= 43;
-	Lcd_Symb_DX	= 316;
-	Lcd_Symb_DY	= 5;
+    Lcd_Symb_X	= 95;//80;
+    Lcd_Symb_Y	= 53;//43;
+    Lcd_Symb_DX	= 316*1.18;
+    Lcd_Symb_DY	= 5*1.18;
 
 	DialogExtensionID = 0;//IDD_EXT_PROPERTIES_1500;
 
@@ -71,7 +71,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new CLH5801(this); pCPU->logsw=false;
 	pLH5810		= new CLH5810_PC1500(this);
 	pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",false,QPoint(0,72));	publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"pc1500.map",scandef_pc1500);
 	pce152		= new Cce152_PC15XX(this);
 	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
@@ -84,6 +84,56 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	extensionArray[1] = ext_MemSlot1;
 }
 
+Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
+{								//[constructor]
+    setfrequency( (int) 2600000/2);
+    setcfgfname("pc1500a");
+
+    SessionHeader	= "PC1500APKM";
+    SessionHeaderLen= 10;
+    Initial_Session_Fname ="pc1500A.pkm";
+    BackGroundFname	= ":/PC1500A/pc1500A/pc1500A.jpg";
+    LcdFname		= ":/PC1500A/pc1500A/1500Alcd.jpg";
+    SymbFname		= ":/PC1500A/pc1500A/1500Asymb.jpg";
+    memsize			= 0x26000;
+
+    SlotList.clear();
+    SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	""								, "" , RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0xC000 ,	":/PC1500A/pc1500A/SYS1500A.ROM", "" , ROM , "SYSTEM ROM"));
+    SlotList.append(CSlot(64, 0x10000 ,	""								, "" , RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , ROM , "ROM"));
+    SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , ROM , "ROM"));
+    SlotList.append(CSlot(8 , 0x24000 ,	":/PC1500A/pc1500A/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
+
+    delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
+
+}
+
+Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
+{								//[constructor]
+    setcfgfname("trspc2");
+
+    SessionHeader	= "TRSPC-2PKM";
+    SessionHeaderLen= 10;
+    Initial_Session_Fname ="trspc2.pkm";
+    BackGroundFname	= ":/TRSPC2/pc1500/trspc2.jpg";
+    LcdFname		= ":/TRSPC2/pc1500/pc2lcd.jpg";
+    SymbFname		= ":/TRSPC2/pc1500/pc2symb.jpg";
+
+    Lcd_X		= 181;//152 ;
+    Lcd_Y		= 62;//52 ;
+    Lcd_Symb_X	= 181;//152;
+    Lcd_Symb_Y	= 53;//45 ;
+
+    delete pLCDC;
+    pLCDC = new Clcdc_trspc2(this);
+    pKEYB->fn_KeyMap = "trspc2.map";
+
+}
 
 void Cpc15XX::TurnON(void)
 {

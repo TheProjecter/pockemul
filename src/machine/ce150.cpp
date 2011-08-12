@@ -61,18 +61,18 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     BackGroundFname	= ":/EXT/ext/ce-150.jpg";
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce150"));
-    Paper_X = 100;  Paper_DX = 320;
-    Paper_Y = 100;
+    Paper_X = 120;  Paper_DX = 382;//320;
+    Paper_Y = 110;
     //PaperWidgetRect = QRect(80,46,167,170);
 
     setDXmm(329);//Pc_DX_mm = 329;
     setDYmm(115);//Pc_DY_mm = 115;
     setDZmm(48);//Pc_DZ_mm = 48;
 
-    setDX(960);//Pc_DX	= 960;
-    setDY(320);//Pc_DY	= 320;
-    SnapPts = QPoint(388,0);
-    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",true,QPoint(390,60));	publish(pCONNECTOR);
+    setDX(1146);//Pc_DX	= 960;
+    setDY(382);//Pc_DY	= 320;
+
+    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",true,QPoint(465,72));	publish(pCONNECTOR);
     pTIMER		= new Ctimer(this);
     pLH5810		= new CLH5810(this);
     KeyMap		= KeyMapce150;
@@ -101,6 +101,42 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
 #endif
     StartRot = false;
     Change_Color = true;
+}
+
+bool Cce150::init(void)
+{
+    CPObject::init();
+
+#ifndef NO_SOUND
+    QResource res(":/EXT/ext/clac2.wav");
+    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
+#endif
+
+    setfrequency( 0);
+
+    WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
+    WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");
+    WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opb),8,8,this,"LH5810 Port B");
+    WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
+
+    AddLog(LOG_PRINTER,tr("PRT initializing..."));
+
+    if(pKEYB)	pKEYB->init();
+    if(pTIMER)	pTIMER->init();
+
+    // Create CE-150 Paper Image
+    ce150buf	= new QImage(QSize(320, 3000),QImage::Format_ARGB32);
+    ce150display= new QImage(QSize(320, 567),QImage::Format_ARGB32);
+    ce150pen	= new QImage(":/EXT/ext/ce-150pen.png");
+    // Fill it blank
+    clearPaper();
+
+    // Create a paper widget
+    paperWidget = new CpaperWidget(QRect(95,25,200,202),ce150buf,this);
+    paperWidget->show();
+
+    return(1);
+
 }
 
 INLINE bool Cce150::lh5810_write(void)
@@ -318,47 +354,13 @@ bool Cce150::exit(void)
     return true;
 }
 
-bool Cce150::init(void)
-{
-	CPObject::init();
-	
-#ifndef NO_SOUND
-    QResource res(":/EXT/ext/clac2.wav");
-    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
-#endif
 
-	setfrequency( 0);
-
-	WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
-	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");
-	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opb),8,8,this,"LH5810 Port B");
-	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
-
-	AddLog(LOG_PRINTER,tr("PRT initializing..."));
-
-	if(pKEYB)	pKEYB->init();
-    if(pTIMER)	pTIMER->init();
-
-	// Create CE-150 Paper Image
-    ce150buf	= new QImage(QSize(320, 3000),QImage::Format_ARGB32);
-    ce150display= new QImage(QSize(320, 567),QImage::Format_ARGB32);
-	ce150pen	= new QImage(":/EXT/ext/ce-150pen.png");
-	// Fill it blank
-	clearPaper();		
-
-	// Create a paper widget
-	paperWidget = new CpaperWidget(QRect(80,46,167,170),ce150buf,this);
-	paperWidget->show();
-
-	return(1);
-
-}
 
 void Cce150::Print(void)
 {	
 	QPainter painter;
 
-	pPC->Refresh_Display = true;
+    //pPC->Refresh_Display = true;
 	
 	if (Pen_Status==PEN_DOWN)
 	{
