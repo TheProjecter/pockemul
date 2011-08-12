@@ -89,14 +89,18 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
         xml->writeAttribute("x", QString("%1").arg(PosX));
         xml->writeAttribute("y", QString("%1").arg(PosY));
         xml->writeEndElement(); // position
+            if (dynamic_cast<CpcXXXX *>(this) )
+            {
+                ((CpcXXXX *)this)->SaveSession_File(xml);//Initial_Session_Save();
+            }
     xml->writeEndElement(); // object
 
     // if power on and (CpcXXXX) class then save session
     // TODO : save session in xml
-    if (Power &&  dynamic_cast<CpcXXXX *>(this) )
-    {
-        ((CpcXXXX *)this)->Initial_Session_Save();
-    }
+//    if (Power &&  dynamic_cast<CpcXXXX *>(this) )
+//    {
+//        ((CpcXXXX *)this)->Initial_Session_Save();
+//    }
 }
 
 float	CPObject::posx()

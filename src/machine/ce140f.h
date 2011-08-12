@@ -33,8 +33,7 @@ public:
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);
 
-    virtual void clearPaper(void);
-    virtual void SaveAsText(void);
+    virtual void UpdateFinalImage(void);
 
     virtual void ComputeKey(void);
 
@@ -90,8 +89,7 @@ protected slots:
 
 private:
     QDir    directory;
-    void	Printer(qint8 d);			//printer emulator
-    QImage *charTable;
+
     void	pulldownsignal(void);
 
     int		top;
@@ -120,6 +118,8 @@ private:
     qint64  lastState;
     int     fileCount;
     QStringList fileList;
+    qint64  lastRunState;
+    bool    busyLed;
 
     bool MT_OUT2;
     bool BUSY;

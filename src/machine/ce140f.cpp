@@ -38,13 +38,14 @@ TransMap KeyMapce140f[]={
 };
 int KeyMapce140fLenght = 5;
 
+
+
 Cce140f::Cce140f(CPObject *parent):CPObject(parent)
 {								//[constructor]
     setfrequency( 0);
     //ce140fbuf	= 0;
     //ce140fdisplay= 0;
     bells		= 0;
-    charTable = 0;
     ToDestroy	= false;
     BackGroundFname	= ":/EXT/ext/ce-140f.png";
     setcfgfname("ce140f");
@@ -70,6 +71,21 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     t = 0;
     c = 0;
     rmtSwitch = false;
+    busyLed = false;
+}
+
+void Cce140f::UpdateFinalImage(void) {
+    CPObject::UpdateFinalImage();
+// Busy led
+    if (busyLed) {
+        QPainter painter;
+        painter.begin(FinalImage);
+        painter.fillRect(411,390,20,7,QColor(Qt::green));
+        painter.end();
+    }
+
+
+
 }
 
 void Cce140f::ComputeKey(void)
@@ -85,36 +101,6 @@ void Cce140f::ComputeKey(void)
     }
 }
 
-//void Cce140f::resizeEvent ( QResizeEvent * ) {
-//    float ratio = (float)this->width()/this->Pc_DX ;
-
-//    QRect rect = paperWidget->baseRect;
-//    paperWidget->setGeometry( rect.x()*ratio,
-//                              rect.y()*ratio,
-//                              rect.width()*ratio,
-//                              rect.height()*ratio);
-//}
-
-
-void Cce140f::SaveAsText(void)
-{
-    mainwindow->releaseKeyboard();
-
-    QString s = QFileDialog::getSaveFileName(
-                    mainwindow,
-                    tr("Choose a filename to save under"),
-                    ".",
-                   tr("Text File (*.txt)"));
-
-    QFile file(s);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
-
-    file.write(TextBuffer);
-
-    mainwindow->grabKeyboard();
-        AddLog(LOG_PRINTER,TextBuffer.data());
-}
 
 void Cce140f::RefreshCe140f(qint8 data)
 {
@@ -122,19 +108,6 @@ void Cce140f::RefreshCe140f(qint8 data)
 }
 
 
-/*****************************************************/
-/* Initialize PRINTER								 */
-/*****************************************************/
-void Cce140f::clearPaper(void)
-{
-//    // Fill it blank
-//    ce140fbuf->fill(PaperColor.rgba());
-//    ce140fdisplay->fill(QColor(255,255,255,0).rgba());
-//    settop(10);
-//    setposX(0);
-//    // empty TextBuffer
-//    TextBuffer.clear();
-}
 
 
 bool Cce140f::init(void)
@@ -151,18 +124,6 @@ bool Cce140f::init(void)
 
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
-
-
-
-    // Create CE-126 Paper Image
-    // The final paper image is 207 x 149 at (277,0) for the ce125
-    //ce140fbuf	= new QImage(QSize(207, 3000),QImage::Format_ARGB32);
-    //ce140fdisplay= new QImage(QSize(207, 149),QImage::Format_ARGB32);
-
-    // Fill it blank
-    clearPaper();
-
-    charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
 
 //	bells	 = new QSound("ce.wav");
 
@@ -183,6 +144,7 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
     //time.start();
 
     run_oldstate = -1;
+    lastRunState = 0;
 
     MT_OUT2	= false;
     BUSY    = false;
@@ -230,24 +192,6 @@ bool Cce140f::exit(void)
     return true;
 }
 
-
-/*****************************************************/
-/* CE-140F PRINTER emulation						 */
-/*****************************************************/
-void Cce140f::Printer(qint8 d)
-{
-    if(ctrl_char && d==0x20)
-        ctrl_char=false;
-    else
-    {
-        if(d==0xf || d==0xe)
-            ctrl_char=true;
-        else
-        {
-            RefreshCe140f(d);
-        }
-    }
-}
 
 //********************************************************/
 //* Check for E-PORT and Get data						 */
@@ -424,6 +368,9 @@ bool Cce140f::run(void)
 //    bool PIN_MT_OUT1_Change = (GET_PIN(PIN_MT_OUT1) != Previous_PIN_MT_OUT1 ) ? true:false;
 //    bool PIN_D_OUT_Change = (GET_PIN(PIN_D_OUT) != Previous_PIN_D_OUT ) ? true:false;
 
+    if (code_transfer_step >0) {
+        lastRunState = pTIMER->state;
+    }
 
     switch (code_transfer_step) {
     case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
@@ -506,6 +453,7 @@ bool Cce140f::run(void)
 
     if ( (device_code == 0x41) && (code_transfer_step==0)) {
         if (PIN_BUSY_GoUp && (ACK==DOWN)) {
+            lastRunState = pTIMER->state;
             // read the 4 bits
 
             t = SEL1 + (SEL2<<1) + (D_OUT<<2) + (D_IN<<3);
@@ -519,6 +467,7 @@ bool Cce140f::run(void)
         }
         else
         if (PIN_BUSY_GoDown && (ACK==UP)) {
+            lastRunState = pTIMER->state;
             ACK = DOWN;
             lastState=pTIMER->state;//time.restart();
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(31);
@@ -531,6 +480,7 @@ bool Cce140f::run(void)
              (pTIMER->msElapsed(lastState)>5) &&
              (BUSY==DOWN) &&
              (ACK==DOWN)) {
+            lastRunState = pTIMER->state;
             BYTE t = Pop_out4();
 
             SEL1 = (t&0x01);
@@ -550,11 +500,13 @@ bool Cce140f::run(void)
 
     else
         if ( (ACK==UP) && PIN_BUSY_GoUp) {
+            lastRunState = pTIMER->state;
             ACK = DOWN;
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(33);
         }
     else
         if ( (pTIMER->msElapsed(lastState)>50) && !data.empty()) {
+            lastRunState = pTIMER->state;
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(40);
             processCommand();
             data.clear();
@@ -567,8 +519,19 @@ bool Cce140f::run(void)
     Previous_PIN_MT_OUT1 = MT_OUT1;
     Previous_PIN_D_OUT = D_OUT;
 
+    if (pTIMER->msElapsed(lastRunState)<3000) {
 
-
+        if (!busyLed) {
+            busyLed = true;
+            update();
+        }
+    }
+    else {
+        if (busyLed) {
+            busyLed = false;
+            update();
+        }
+    }
     Set_Connector();
     pCONNECTOR_value = pCONNECTOR->Get_values();
     pCONNECTOR_Ext_value = pCONNECTOR_Ext->Get_values();
