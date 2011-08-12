@@ -128,7 +128,12 @@ bool Cpc15XX::InitDisplay(void)
 	return(1);
 }
 
+bool Cpc15XX::LoadConfig(QXmlStreamReader *xmlIn)
+{
 
+
+    return true;
+}
 
 bool Cpc15XX::LoadConfig(QFile *file)
 {
@@ -144,6 +149,13 @@ bool Cpc15XX::SaveConfig(QFile *file)
 
 //--	fwrite(&Extension,1,sizeof(TExtension),fp);
 	return(1);
+}
+
+bool Cpc15XX::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+
+
+    return true;
 }
 
 bool Cpc15XX::init(void)				// initialize

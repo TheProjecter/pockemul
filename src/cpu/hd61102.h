@@ -45,6 +45,8 @@ public:
 
     void	Load_Internal(QFile *);
     void	save_internal(QFile *);
+    void	Load_Internal(QXmlStreamReader *);
+    void	save_internal(QXmlStreamWriter *);
 
     CHD61102(CpcXXXX *parent);
 //    ~CHD61102();

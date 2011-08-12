@@ -37,8 +37,10 @@ public:
     void	increment_day(void);
     void	increment_month(void);
 
-    void	Load_Internal(QFile *file);
-    void	save_internal(QFile *file);
+    void	Load_Internal(QFile *);
+    void	save_internal(QFile *);
+    void	Load_Internal(QXmlStreamReader *);
+    void	save_internal(QXmlStreamWriter *);
 
     void	Regs_Info(UINT8 Type);
 

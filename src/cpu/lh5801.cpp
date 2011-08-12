@@ -200,6 +200,7 @@ void CLH5801::Load_Internal(QXmlStreamReader *xmlIn)
             QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
             memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
         }
+        xmlIn->skipCurrentElement();
     }
 }
 

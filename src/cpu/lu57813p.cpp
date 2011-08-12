@@ -30,6 +30,29 @@ void	CLU57813P::save_internal(QFile *file){
     out << (qint8) sp;
 }
 
+void CLU57813P::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "lu57813")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &imem,ba_reg.data(),sizeof(imem));
+            sp = xmlIn->attributes().value("stackpointer").toString().toInt(0,16);
+        }
+        xmlIn->skipCurrentElement();
+    }
+}
+
+void CLU57813P::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","lu57813");
+        QByteArray ba_reg((char*)&imem,sizeof(imem));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+        xmlOut->writeAttribute("stackpointer",QString("%1").arg(sp,2,16));
+    xmlOut->writeEndElement();
+}
+
 bool	CLU57813P::exit(void)						//end
 {
     return true;

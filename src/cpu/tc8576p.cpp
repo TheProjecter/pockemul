@@ -246,3 +246,24 @@ void	CTC8576P::save_internal(QFile *file){
     out.writeRawData("TC8576PSTA", 10);					//header
     out.writeRawData((char*)&r,sizeof(r));		//reg
 }
+
+void CTC8576P::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "tc8576")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &r,ba_reg.data(),sizeof(r));
+        }
+        xmlIn->skipCurrentElement();
+    }
+}
+
+void CTC8576P::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","tc8576");
+        QByteArray ba_reg((char*)&r,sizeof(r));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+    xmlOut->writeEndElement();
+}

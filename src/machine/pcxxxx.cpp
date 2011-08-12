@@ -537,7 +537,7 @@ bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
             }
         xmlOut->writeEndElement();  // memory
     xmlOut->writeEndElement();  // session
-    //    //SaveExtra(&xw);									// Save all other data  (virtual)
+    //SaveExtra(&xw);									// Save all other data  (virtual)
 }
 
 bool CpcXXXX::SaveSession_File(QFile *file)
@@ -833,7 +833,9 @@ bool CpcXXXX::Initial_Session_Load()
 
 	if (file.open(QIODevice::ReadOnly))
 	{
-        if (LoadSession_File(&file))
+        QXmlStreamReader xmlIn;
+        xmlIn.setDevice(&file);
+        if (LoadSession_File(&xmlIn))
             pLCDC->Update();
 		file.close();	
 		return true;
@@ -847,7 +849,14 @@ bool CpcXXXX::Initial_Session_Save()
 	QFile file(Initial_Session_Fname);
 	if (file.open(QIODevice::WriteOnly))
 	{
-		SaveSession_File(&file);
+        QString s;
+        QXmlStreamWriter *xmlOut = new QXmlStreamWriter(&s);
+        xmlOut->setAutoFormatting(true);
+        SaveSession_File(xmlOut);
+        QTextStream out(&file);
+        out << s;
+
+        //SaveSession_File(&file);
 		file.close();	
 		return true;
 	}

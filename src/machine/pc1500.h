@@ -49,6 +49,8 @@ public:
 	void	ReadQuarterTape(void);
 	bool	LoadConfig(QFile *file);
 	bool	SaveConfig(QFile *file);
+    bool	LoadConfig(QXmlStreamReader *);
+    bool	SaveConfig(QXmlStreamWriter *);
 	bool	InitDisplay(void);
 	bool	CompleteDisplay(void);
 

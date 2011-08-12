@@ -292,6 +292,32 @@ bool Cpc1600::LoadConfig(QFile *file)
     return(1);
 }
 
+bool Cpc1600::LoadConfig(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "config" && xmlIn->attributes().value("version") == "1.0") {
+            if (xmlIn->readNextStartElement() && xmlIn->name() == "internal" ) {
+                bank1 = xmlIn->attributes().value("bank1").toString().toInt(0,16);
+                bank2 = xmlIn->attributes().value("bank2").toString().toInt(0,16);
+                bank3 = xmlIn->attributes().value("bank3").toString().toInt(0,16);
+                bank4 = xmlIn->attributes().value("bank4").toString().toInt(0,16);
+                cpuSwitchPending = xmlIn->attributes().value("cpuSwitchPending").toString().toInt(0,16);
+                masterCPU = xmlIn->attributes().value("masterCPU").toString().toInt(0,16);
+                pCPU = (masterCPU ? (CCPU *)pZ80 : (CCPU *)pLH5803);
+                xmlIn->skipCurrentElement();
+            }
+        }
+        xmlIn->skipCurrentElement();
+    }
+    pZ80->Load_Internal(xmlIn);
+    pLH5803->Load_Internal(xmlIn);
+    pLH5810->Load_Internal(xmlIn);
+    pHD61102_1->Load_Internal(xmlIn);
+    pHD61102_2->Load_Internal(xmlIn);
+    pLU57813P->Load_Internal(xmlIn);
+    pTC8576P->Load_Internal(xmlIn);
+    return true;
+}
 bool Cpc1600::SaveConfig(QFile *file)
 {
     AddLog(LOG_FUNC,"Cpc1600::SaveConfig");
@@ -313,6 +339,31 @@ bool Cpc1600::SaveConfig(QFile *file)
 
 //--	fwrite(&Extension,1,sizeof(TExtension),fp);
     return(1);
+}
+
+bool Cpc1600::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("config");
+    xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeStartElement("internal");
+            xmlOut->writeAttribute("bank1",QString("%1").arg(bank1,2,16));
+            xmlOut->writeAttribute("bank2",QString("%1").arg(bank2,2,16));
+            xmlOut->writeAttribute("bank3",QString("%1").arg(bank3,2,16));
+            xmlOut->writeAttribute("bank4",QString("%1").arg(bank4,2,16));
+            xmlOut->writeAttribute("cpuSwitchPending",QString("%1").arg(cpuSwitchPending,2,16));
+            xmlOut->writeAttribute("masterCPU",QString("%1").arg(masterCPU,2,16));
+        xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
+
+    pZ80->save_internal(xmlOut);
+    pLH5803->save_internal(xmlOut);
+    pLH5810->save_internal(xmlOut);
+    pHD61102_1->save_internal(xmlOut);
+    pHD61102_2->save_internal(xmlOut);
+    pLU57813P->save_internal(xmlOut);
+    pTC8576P->save_internal(xmlOut);
+
+    return true;
 }
 
 bool Cpc1600::init(void)				// initialize

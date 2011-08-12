@@ -137,3 +137,23 @@ void	CHD61102::save_internal(QFile *file){
     out.writeRawData((char*)&info,sizeof(info));		//reg
 }
 
+void CHD61102::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "hd61102")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &info,ba_reg.data(),sizeof(info));
+        }
+        xmlIn->skipCurrentElement();
+    }
+}
+
+void CHD61102::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","hd61102");
+        QByteArray ba_reg((char*)&info,sizeof(info));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+    xmlOut->writeEndElement();
+}

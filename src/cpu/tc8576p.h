@@ -121,6 +121,8 @@ public:
 
     void	Load_Internal(QFile *file);
     void	save_internal(QFile *file);
+    void	Load_Internal(QXmlStreamReader *);
+    void	save_internal(QXmlStreamWriter *);
 
     CTC8576P(CpcXXXX *parent,int clk);
 //    ~CTC8576P();

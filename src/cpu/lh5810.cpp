@@ -53,6 +53,7 @@ void CLH5810::Load_Internal(QXmlStreamReader *xmlIn)
             QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
             memcpy((char *) &lh5810,ba_reg.data(),sizeof(lh5810));
         }
+        xmlIn->skipCurrentElement();
     }
 }
 
