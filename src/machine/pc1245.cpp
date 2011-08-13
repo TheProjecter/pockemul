@@ -1,3 +1,5 @@
+#include <QPainter>
+
 #include "common.h"
 
 #include "pc1245.h"
@@ -40,6 +42,41 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 	
 	delete pLCDC;	pLCDC		= new Clcdc_pc1245(this);
 
+}
+
+void Cpc1245::UpdateFinalImage(void)
+{
+    CpcXXXX::UpdateFinalImage();
+
+    // Draw
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    QPoint ptPower(448,32);
+
+
+    switch (PowerSwitch)
+    {
+    case PS_RUN :	painter.drawImage(ptPower,iPowerRUN); break;
+    case PS_PRO :	painter.drawImage(ptPower,iPowerPRO); break;
+    //case PS_OFF :	painter.drawImage(ptPower,iPowerOFF); break;
+    }
+
+    painter.end();
+
+
+}
+
+bool Cpc1245::InitDisplay(void)
+{
+
+    CpcXXXX::InitDisplay();
+
+    iPowerOFF.load( ":/PC1245/pc1245/powerOFF.png");
+    iPowerRUN.load( ":/PC1245/pc1245/powerRUN.png");
+    iPowerPRO.load( ":/PC1245/pc1245/powerPRO.png");
+
+    return(1);
 }
 
 BYTE	Cpc1245::Get_PortB(void)

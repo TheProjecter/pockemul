@@ -8,5 +8,8 @@
         <file>pc1245/mc2200.png</file>
         <file>pc1245/mc2200lcd.png</file>
         <file>pc1245/mc2200symb.png</file>
+        <file>pc1245/powerOFF.png</file>
+        <file>pc1245/powerPRO.png</file>
+        <file>pc1245/powerRUN.png</file>
     </qresource>
 </RCC>

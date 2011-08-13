@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <QImage>
+
 #include "extension.h"
 #include "pcxxxx.h"
 #include "sc61860.h"
@@ -32,8 +34,9 @@ public:
     virtual BYTE	Get_PortA(void);
 	virtual BYTE	Get_PortB(void);
 
-	bool	InitDisplay(void);
-	bool	CompleteDisplay(void);
+    virtual bool	InitDisplay(void);
+    //bool	CompleteDisplay(void);
+    virtual void UpdateFinalImage(void);
 
 	bool	Mem_Mirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
@@ -52,6 +55,11 @@ public:
 	}
 protected:
 	BYTE previous_key;
+
+    QImage iPowerOFF;
+    QImage iPowerRUN;
+    QImage iPowerPRO;
+    QImage iPowerRSV;
 };
 
 

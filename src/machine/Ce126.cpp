@@ -64,7 +64,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     rmtSwitch = false;
 
     internal_device_code = 0x0f;
-};
+}
 
 void Cce126::ComputeKey(void)
 {
@@ -78,16 +78,6 @@ void Cce126::ComputeKey(void)
         rmtSwitch = false;
     }
 }
-
-//void Cce126::resizeEvent ( QResizeEvent * ) {
-//    float ratio = (float)this->width()/this->Pc_DX ;
-
-//    QRect rect = paperWidget->baseRect;
-//    paperWidget->setGeometry( rect.x()*ratio,
-//                              rect.y()*ratio,
-//                              rect.width()*ratio,
-//                              rect.height()*ratio);
-//}
 
 
 void Cce126::SaveAsText(void)
@@ -181,13 +171,10 @@ bool Cce126::init(void)
 	WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
 	WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
 
-
 	AddLog(LOG_PRINTER,tr("PRT initializing..."));
 
 	if(pKEYB)	pKEYB->init();
 	if(pTIMER)	pTIMER->init();
-
-
 
 	// Create CE-126 Paper Image
 	// The final paper image is 207 x 149 at (277,0) for the ce125
@@ -205,9 +192,7 @@ bool Cce126::init(void)
 
     paperWidget = new CpaperWidget(PaperPos(),ce126buf,this);
 	paperWidget->show();
-	
-//	SET_PIN(PIN_ACK,DOWN);
-AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1":"0"));
+
     Previous_BUSY = GET_PIN(PIN_BUSY);
     Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
 	time.start();
@@ -250,7 +235,6 @@ bool Cce126::exit(void)
 
 void Cce126::Printer(qint8 d)
 {
-#if 1
     if(ctrl_char && d==0x20) {
         ctrl_char=false;
         RefreshCe126(d);
@@ -264,11 +248,6 @@ void Cce126::Printer(qint8 d)
             RefreshCe126(d);
 		}
 	}
-#else
-    if(d!=0xf && d!=0xe) {
-        RefreshCe126(d);
-    }
-#endif
 }
 
 //********************************************************/
@@ -301,13 +280,6 @@ extern int LogLevel;
 // no bit stop
 void Cce126::pulldownsignal(void)
 {
-#if 0
-	SET_PIN(PIN_BUSY,DOWN);
-	SET_PIN(PIN_D_OUT,DOWN);
-	SET_PIN(PIN_D_IN,DOWN);
-	SET_PIN(PIN_SEL2,DOWN);
-	SET_PIN(PIN_SEL1,DOWN);
-#endif
 }
 
 bool Cce126::Get_Connector(void) {
@@ -355,31 +327,17 @@ bool Cce126::run(void)
 	pCONNECTOR_value = pCONNECTOR->Get_values();
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
-#if 1
+
 // Try to introduce a latency 
-	qint64			deltastate = 0;
+    qint64	deltastate = 0;
 	
 	if (run_oldstate == -1) run_oldstate = pTIMER->state;
 	deltastate = pTIMER->state - run_oldstate;
 	if (deltastate < CE126LATENCY ) return true;
 	run_oldstate	= pTIMER->state;
-#endif
 
-#if 0
-	char dump1[20]="";
-	static char dump2[20]="";
 
-	pCONNECTOR->Dump_pin();
-	strcpy(dump1,pCONNECTOR->dump);
-
-	if (strcmp(dump1,dump2) != 0) 
-	{
-		strcpy(dump2 ,dump1); 
-		AddLog(LOG_PRINTER,tr("input printer %1").arg(dump1));
-	}
-#endif
 	
-//	AddLog(LOG_PRINTER,tr("%1").arg(dump1));
 
     switch (code_transfer_step) {
     case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
@@ -477,8 +435,8 @@ bool Cce126::run(void)
             //(device_code == internal_device_code) &&
             (code_transfer_step==0)) {
 
-    switch (device_code)
-	{
+        switch (device_code)
+        {
             case 0x00:  // only ce-125 et ce-126p specific mode
             case 0xff:
             case 0x0f:
@@ -566,24 +524,10 @@ bool Cce126::run(void)
 				pulldownsignal();
 				
 
-	}
-
-
+        }
 
     }
-#if 0
-	char dump11[20]="";
-	static char dump12[20]="";
 
-	pCONNECTOR->Dump_pin();
-	strcpy(dump11,pCONNECTOR->dump);
-
-	if (strcmp(dump11,dump12) != 0) 
-	{
-		strcpy(dump12 ,dump11); 
-		AddLog(LOG_PRINTER,tr("output printer %1").arg(dump11));
-	}
-#endif
 
 	pCONNECTOR_value = pCONNECTOR->Get_values();
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();

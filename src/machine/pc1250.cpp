@@ -1,5 +1,6 @@
   
 #include	<stdlib.h>
+#include <QPainter>
 
 #include	"common.h"
 #include	"pc1250.h"
@@ -70,40 +71,39 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 
 }
 
-bool Cpc1250::CompleteDisplay(void)
+void Cpc1250::UpdateFinalImage(void)
 {
-	CpcXXXX::CompleteDisplay();
-		
-#if 0
-    RECT	CLRRect,RUNRect,PRORect,RSVRect;
-    HRESULT	hRet;
-	////////////////////////////////////////////////////
-	// Deal with the Mode Switch
-	////////////////////////////////////////////////////
+    CpcXXXX::UpdateFinalImage();
 
-	SetRect(&CLRRect, Pc_Offset_X+379, Pc_Offset_Y+27, Pc_Offset_X+379 + 14, Pc_Offset_Y+27 + 7);
-	SetRect(&RUNRect, Pc_Offset_X+379, Pc_Offset_Y+41, Pc_Offset_X+379 + 14, Pc_Offset_Y+41 + 7);
-	SetRect(&PRORect, Pc_Offset_X+379, Pc_Offset_Y+34, Pc_Offset_X+379 + 14, Pc_Offset_Y+34 + 7);
-	SetRect(&RSVRect, Pc_Offset_X+379, Pc_Offset_Y+27, Pc_Offset_X+379 + 14, Pc_Offset_Y+27 + 7);
+    // Draw
+    QPainter painter;
+    painter.begin(FinalImage);
 
-	hRet = pDDSurface->Blt(&RUNRect, g_pDDSOne, &CLRRect, DDBLT_WAIT, NULL);
-	hRet = pDDSurface->Blt(&PRORect, g_pDDSOne, &CLRRect, DDBLT_WAIT, NULL);
-	hRet = pDDSurface->Blt(&RSVRect, g_pDDSOne, &CLRRect, DDBLT_WAIT, NULL);
-	switch (PowerSwitch)
-	{
-	case PS_RUN :	hRet = pDDSurface->Blt(&RUNRect, g_pDDSOne, &RUNRect, DDBLT_WAIT, NULL);	break;
-	case PS_PRO :	hRet = pDDSurface->Blt(&PRORect, g_pDDSOne, &RUNRect, DDBLT_WAIT, NULL);	break;
-	case PS_RSV :	hRet = pDDSurface->Blt(&RSVRect, g_pDDSOne, &RUNRect, DDBLT_WAIT, NULL);	break;
-	}
-#endif
-	
-	return TRUE;
+    QPoint ptPower(446,28);
+
+
+    switch (PowerSwitch)
+    {
+    case PS_RUN :	painter.drawImage(ptPower,iPowerRUN); break;
+    case PS_PRO :	painter.drawImage(ptPower,iPowerPRO); break;
+    case PS_RSV :	painter.drawImage(ptPower,iPowerRSV); break;
+    //case PS_OFF :	painter.drawImage(ptPower,iPowerOFF); break;
+    }
+
+    painter.end();
+
+
 }
 
 bool Cpc1250::InitDisplay(void)
 {
 
 	CpcXXXX::InitDisplay();
+
+    iPowerOFF.load( ":/PC1250/pc1250/powerOFF.png");
+    iPowerRUN.load( ":/PC1250/pc1250/powerRUN.png");
+    iPowerPRO.load( ":/PC1250/pc1250/powerPRO.png");
+    iPowerRSV.load( ":/PC1250/pc1250/powerRSV.png");
 
 	return(1);
 }

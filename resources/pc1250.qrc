@@ -9,5 +9,9 @@
         <file>pc1250/pc1250.png</file>
         <file>pc1250/trspc3.png</file>
         <file>pc1250/pc31k.png</file>
+        <file>pc1250/powerOFF.png</file>
+        <file>pc1250/powerPRO.png</file>
+        <file>pc1250/powerRSV.png</file>
+        <file>pc1250/powerRUN.png</file>
     </qresource>
 </RCC>
