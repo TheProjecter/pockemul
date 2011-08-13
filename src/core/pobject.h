@@ -28,6 +28,11 @@ struct URL {
     QString url;
 };
 
+#define PS_OFF	0
+#define PS_RUN	1
+#define PS_RSV	2
+#define PS_PRO	3
+
 class CPObject:public QWidget
 {
 
@@ -150,6 +155,7 @@ public:
     virtual void TurnON() {}
     virtual void TurnOFF() {}
 	bool	Power;
+    qint8		PowerSwitch;
     virtual void Reset() {}
     void    SwitchFrontBack(QPoint);
     bool    isFront() {return Front;}

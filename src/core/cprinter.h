@@ -3,8 +3,9 @@
 
 #include <QColor>
 #include "pobject.h"
-#include "paperwidget.h"
+//#include "paperwidget.h"
 
+class CpaperWidget;
 
 class Cprinter:public CPObject{
 

@@ -162,6 +162,7 @@ void CpcXXXX::TurnOFF(void)
 
 
 	off = 1;
+    PowerSwitch = PS_OFF;
 	pLCDC->TurnOFF();
     InitDisplay();
 }
@@ -171,6 +172,7 @@ void CpcXXXX::TurnON(void)
 {
 	Initial_Session_Load();
 	off = 0;
+    PowerSwitch = PS_RUN;
 	pLCDC->TurnON();
 }
 

@@ -59,7 +59,7 @@ void Cpc1245::UpdateFinalImage(void)
     {
     case PS_RUN :	painter.drawImage(ptPower,iPowerRUN); break;
     case PS_PRO :	painter.drawImage(ptPower,iPowerPRO); break;
-    //case PS_OFF :	painter.drawImage(ptPower,iPowerOFF); break;
+    case PS_OFF :	painter.drawImage(ptPower,iPowerOFF); break;
     }
 
     painter.end();

@@ -4,8 +4,8 @@
 
 #include "common.h"
 #include "Connect.h"
-#include "pcxxxx.h"
-#include "Log.h"
+
+class CPObject;
 
 Cconnector::Cconnector(CPObject *parent , int nb, int id,QString desc, bool newGender,QPoint snap)
 {

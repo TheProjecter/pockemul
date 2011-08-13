@@ -12,10 +12,7 @@
 #include "Keyb.h"
 #include "Connect.h"
 
-#define PS_OFF	0
-#define PS_RUN	0
-#define PS_RSV	1
-#define PS_PRO	2
+
 
 // WARNING -- TO MODIFY !!!!!!!!!!!!!
 //#define KEY(c)	( asfocus && ( GetAsyncKeyState(c) || (toupper(pPC->pKEYB->LastKey)==toupper(c)) || pPC->pKEYB->LastKey == c) )
@@ -24,7 +21,7 @@
 class Cpc1250:public CpcXXXX{						//PC1250 emulator main class
 
 public:
-    const char*	GetClassName(){ return("Cpc1250");};
+    const char*	GetClassName(){ return("Cpc1250");}
 
 	void	TurnON(void);
 
@@ -41,10 +38,10 @@ public:
 	bool	Mem_Mirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
-    UINT8 in(UINT8 address){return(1);};
-    UINT8 out(UINT8 address,UINT8 value){return(1);};
+    UINT8 in(UINT8 address){return(1);}
+    UINT8 out(UINT8 address,UINT8 value){return(1);}
 
-	qint8		PowerSwitch;
+
 	virtual bool	LoadExtra(QFile *);
 	virtual bool	SaveExtra(QFile *);
 

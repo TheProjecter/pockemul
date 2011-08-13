@@ -87,7 +87,7 @@ void Cpc1250::UpdateFinalImage(void)
     case PS_RUN :	painter.drawImage(ptPower,iPowerRUN); break;
     case PS_PRO :	painter.drawImage(ptPower,iPowerPRO); break;
     case PS_RSV :	painter.drawImage(ptPower,iPowerRSV); break;
-    //case PS_OFF :	painter.drawImage(ptPower,iPowerOFF); break;
+    case PS_OFF :	painter.drawImage(ptPower,iPowerOFF); break;
     }
 
     painter.end();
@@ -282,7 +282,7 @@ BYTE	Cpc1250::Get_PortB(void)
 		{
 		case PS_RUN : PowerSwitch = PS_PRO; break;
 		case PS_PRO : PowerSwitch = PS_RSV; break;
-		case PS_RSV : PowerSwitch = PS_OFF; break;
+        case PS_RSV : PowerSwitch = PS_RUN; break;
 		}
 	}
 	previous_key = pKEYB->LastKey;
