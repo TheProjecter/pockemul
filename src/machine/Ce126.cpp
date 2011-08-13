@@ -327,7 +327,7 @@ bool Cce126::run(void)
 	pCONNECTOR_value = pCONNECTOR->Get_values();
 	pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
-
+#if 1
 // Try to introduce a latency 
     qint64	deltastate = 0;
 	
@@ -335,7 +335,7 @@ bool Cce126::run(void)
 	deltastate = pTIMER->state - run_oldstate;
 	if (deltastate < CE126LATENCY ) return true;
 	run_oldstate	= pTIMER->state;
-
+#endif
 
 	
 
@@ -445,7 +445,7 @@ bool Cce126::run(void)
                 if ( (BUSY == Previous_BUSY ) && (Previous_BUSY == DOWN) &&
                      (MT_OUT1 == Previous_MT_OUT1) &&	(Previous_MT_OUT1 == DOWN) &&
                      (ACK == UP) &&
-                     (pTIMER->msElapsed(lastState) > 3 ) )
+                     (pTIMER->msElapsed(lastState) > 2 ) )
 				{
 					AddLog(LOG_PRINTER,tr("ACK timeout"));
                     lastState=pTIMER->state;//time.restart();
