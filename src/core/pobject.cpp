@@ -16,7 +16,7 @@
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
-#define NEW_SOUND 0
+#define NEW_SOUND 1
 extern QWidget* mainwidget;
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
@@ -28,7 +28,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		PosY	= 0;
 		Pc_DX	= 0;
 		Pc_DY	= 0;
-                zoom = 100;
+
 		pKEYB	= 0;
 		pTIMER	= 0;
 		pLCDC	= 0;
@@ -193,7 +193,7 @@ void CPObject::audioStateChanged(QAudio::State state)
 
     }
     //AddLog(LOG_TEMP,tr("state = %1").arg(state))
-    //qWarning() << "state = " << state;
+    qWarning() << "state = " << state;
 }
 
 int CPObject::initsound()
@@ -207,7 +207,7 @@ int CPObject::initsound()
     m_format.setSampleSize(8);
     m_format.setCodec("audio/pcm");
     m_format.setByteOrder(QAudioFormat::LittleEndian);
-    m_format.setSampleType(QAudioFormat::SignedInt);
+    m_format.setSampleType(QAudioFormat::UnSignedInt);
 
     QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
     if (!info.isFormatSupported(m_format)) {
@@ -219,7 +219,7 @@ int CPObject::initsound()
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
     //connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
     connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(audioStateChanged(QAudio::State)));
-   // m_audioOutput->setBufferSize(BufferSize);
+    m_audioOutput->setBufferSize(4000);
 
     m_output = m_audioOutput->start();
     int p = m_audioOutput->periodSize();
@@ -262,18 +262,21 @@ signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream,
     {
         if (! pPC->soundBuffer.isEmpty())
         {
-            *mono8bitbuffer++ =  pPC->soundBuffer.at(0)-128;
-            pPC->soundBuffer.removeAt(0);
+            *mono8bitbuffer++ =  pPC->soundBuffer.takeFirst()-128;
+            //pPC->soundBuffer.removeAt(0);
 		}
-		else *mono8bitbuffer++ = 0-128;
+        else {
+            *mono8bitbuffer++ = 0;//-128;
+            AddLog(LOG_TEMP,"Buffer audio empty")
+        }
     }
 //	fprintf(fp_tmp,"\n%s\n",tr("%1 : buffersize = %2 len=%3 stream=%4 buff=%5").arg(pPC->getName()).arg(pPC->soundBuffer.size()).arg(len).arg((int)stream).arg((int)buff).toLocal8Bit().data());
 
 	// Purge buffer for resync
     if ( (pPC->soundBuffer.size() > BUFFLEN) && (pPC->soundBuffer.indexOf(0xff) == -1) )
-	{
-		pPC->soundBuffer.clear();
-	}
+    {
+        pPC->soundBuffer.clear();
+    }
 
     mainwindow->audioMutex.unlock();
 	return 1;
@@ -288,38 +291,55 @@ void CPObject::fillSoundBuffer(BYTE val)
 	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
 		
 	new_state = pTIMER->state;
-	delta_state = new_state - fillSoundBuffer_old_state;
+    delta_state = pTIMER->state - fillSoundBuffer_old_state;
     if (delta_state < 0) fillSoundBuffer_old_state=new_state;
 	// Calculate nb of state to skip corresponding to the CPU frequency
     qint64 wait = ((pTIMER->CPUSpeed*getfrequency()) / SAMPLERATE );
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
     if (delta_state >= wait)
     {
+        //AddLog(LOG_TEMP,tr("delta:%1   wait:%2").arg(delta_state).arg(wait));
         mainwindow->audioMutex.lock();
-        while (delta_state >= wait)
+        while ((pTIMER->state - fillSoundBuffer_old_state) >= wait)
         {
 #if NEW_SOUND
             audioBuff.append(val);
-            if (val) { AddLog(LOG_MASTER,tr("SOUND:%1").arg(val))}
-            int ps = m_audioOutput->periodSize();
-            if (audioBuff.size() >= (ps)) {
-                m_output->write(audioBuff,ps);
-                //audioBuff.clear();
-                audioBuff.remove(0,ps);
-            }
-            else {
-                if((m_audioOutput->bufferSize()-m_audioOutput->bytesFree()) < ps) {
-                    QByteArray fill(ps,0);
-                    m_output->write(fill,ps);
-                }
-            }
+//            if (fp_tmp==NULL)
+//                fp_tmp=fopen("LOGsound.bin","wb");
+//            //fputc(val,fp_tmp);
+//            fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5 ").arg(val).arg(wait).arg(delta_state).arg(pTIMER->state).arg(fillSoundBuffer_old_state).toLocal8Bit().data());
+
+            //if (val) { AddLog(LOG_MASTER,tr("SOUND:%1").arg(val))}
+
 #else
             //if (soundBuffer.size() < BUFFLEN)
                 soundBuffer.append(val);
 #endif
             fillSoundBuffer_old_state += wait;
-            delta_state -= wait;
+            //delta_state -= wait;
         }
+
+#if NEW_SOUND
+        int ps = m_audioOutput->periodSize();
+        //AddLog(LOG_TEMP,tr("buff:%1   ps:%2").arg(audioBuff.size()).arg(ps));
+
+        if (audioBuff.size() >= (2*ps)) {
+            m_output->write(audioBuff.constData(),ps);
+            AddLog(LOG_TEMP,tr("audiobuffsize:%1  outbuffer:%2").arg(audioBuff.size()).arg(m_audioOutput->bufferSize()-m_audioOutput->bytesFree()));
+            //audioBuff.clear();
+            audioBuff.remove(0,ps);
+        }
+        else {
+            //FIXME buffer underrun
+#if 0
+            if((m_audioOutput->bufferSize()-m_audioOutput->bytesFree()) < ps) {
+                AddLog(LOG_TEMP,tr("sound1 size:%1    free:%2   diff:%3   ps:%4").arg(m_audioOutput->bufferSize()).arg(m_audioOutput->bytesFree()).arg(m_audioOutput->bufferSize()-m_audioOutput->bytesFree()).arg(ps));
+                QByteArray fill(ps-(m_audioOutput->bufferSize()-m_audioOutput->bytesFree()),0);
+                m_output->write(fill.constData(),fill.size());
+            }
+#endif
+        }
+#endif
         mainwindow->audioMutex.unlock();
     }
 }
@@ -340,13 +360,13 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 
     if (parentWidget() == mainwidget)
     {
-        // Search all conected objects then move them
-        QList<CPObject *> ConList;
-        ConList.append(this);
-        mainwindow->pdirectLink->findAllObj(this,&ConList);
-        for (int i=0;i<ConList.size();i++)
+        // Search all conected objects then compute them
+        QList<CPObject *> LinkedList;
+        LinkedList.append(this);
+        mainwindow->pdirectLink->findAllObj(this,&LinkedList);
+        for (int i=0;i<LinkedList.size();i++)
         {
-            ConList.at(i)->SwitchFrontBack(this->pos());
+            LinkedList.at(i)->SwitchFrontBack(this->pos());
             // Move object at the correct origine
         }
 
@@ -362,11 +382,11 @@ void CPObject::SwitchFrontBack(QPoint point) {
         // calculate the new origine
         int newposx = point.x() + (pos().x()-point.x())/4;
         int newposy = point.y() + (pos().y()-point.y())/4;
-        zoom = 25;
+
         QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
         animation->setDuration(1000);
         animation->setStartValue(this->rect());
-        animation->setEndValue(QRect(newposx,newposy,Pc_DX/4,Pc_DY/4));
+        animation->setEndValue(QRect(newposx,newposy,getDX()*mainwindow->zoom/4,getDY()*mainwindow->zoom/4));
         animation->setEasingCurve(QEasingCurve::OutBounce);
         animation->start();
         this->setPosX(newposx);
@@ -378,14 +398,14 @@ void CPObject::SwitchFrontBack(QPoint point) {
         // calculate the new origine
         int newposx = point.x() + (pos().x()-point.x())*4;
         int newposy = point.y() + (pos().y()-point.y())*4;
-        zoom = 100;
+
 //        QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
 //        animation->setDuration(1000);
 //        animation->setStartValue(this->rect());
 //        animation->setEndValue(QRect(newposx,newposy,Pc_DX,Pc_DY));
 //        animation->setEasingCurve(QEasingCurve::OutBounce);
 //        animation->start();
-        setGeometry(newposx,newposy,Pc_DX,Pc_DY);
+        setGeometry(newposx,newposy,getDX()*mainwindow->zoom,getDY()*mainwindow->zoom);
         this->setPosX(newposx);
         this->setPosY(newposy);
 //            QPoint newpos = pos() - mainwindow->pos();

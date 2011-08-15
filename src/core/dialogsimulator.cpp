@@ -64,7 +64,7 @@ const SEL1=	11;";
             pCeSimu->mainfunction = new QScriptValue(pCeSimu->engine->globalObject().property("run"));
             QString s = pCeSimu->mainfunction->call(QScriptValue()).toString();
 
-            MSG_ERROR(s);
+            TRACE("Script loaded.");
 
         }
     else

@@ -4,7 +4,7 @@ CONFIG += build_all \
     resources \
     thread \
     warn_on
-DEFINES +=
+DEFINES += NO_SOUND
 FORMS += ui/about.ui \
     ui/dialoganalog.ui \
     ui/dialogconnectorlink.ui \

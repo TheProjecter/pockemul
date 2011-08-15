@@ -126,7 +126,6 @@ public:
 	TransMap *KeyMap;
 	int		KeyMapLenght;
 	BYTE	LastKey;
-    int     zoom;
     bool	Front;
 	
 

@@ -3,6 +3,7 @@
 #include <QtGui>
 #include "pc2500.h"
 #include "Keyb2500.h"
+#include "paperwidget.h"
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 

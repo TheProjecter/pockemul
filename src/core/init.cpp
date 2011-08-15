@@ -136,7 +136,7 @@ CPObject *pPC=0;
 //	mainwindow->resize(QSize(pPC->Pc_DX, pPC->Pc_DY+l));
 	
     pPC->FinalImage = new QImage(QSize(pPC->getDX(), pPC->getDY()),QImage::Format_RGB32);
-	
+
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)

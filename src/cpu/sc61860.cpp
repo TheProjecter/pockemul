@@ -93,7 +93,7 @@ void Csc::Set_Xout(bool data)
 {
 	Xout = data;
 }
-
+extern FILE	*fp_tmp;
 INLINE void Csc::compute_xout(void)
 {
 	qint64 delta;
@@ -123,7 +123,8 @@ INLINE void Csc::compute_xout(void)
                         Xout = true;
 					}
 					delta = pPC->pTIMER->state - start2khz;
-                    while ((pPC->pTIMER->state - start2khz) >= wait2khz){
+                    //while
+                    if ((pPC->pTIMER->state - start2khz) >= wait2khz){
                         Xout = !Xout;
                         start2khz += wait2khz;
                         if (fp_log) fprintf(fp_log,"XOUT 2Khz switch\n");
@@ -140,10 +141,14 @@ INLINE void Csc::compute_xout(void)
                         Xout = true;
 					}
 					delta = pPC->pTIMER->state - start4khz;
-                    while (( pPC->pTIMER->state - start4khz) >= wait4khz)
+                    //while
+                    if (( pPC->pTIMER->state - start4khz) >= wait4khz)
 					{
 						Xout = !Xout;
                         start4khz += wait4khz;
+//                        if (fp_tmp) fprintf(fp_tmp,"%s\n",tr("switch XOUT to %1 : wait = %2  -  delta=%3  new:%4 - old:%5 ").arg(Xout).arg(wait4khz).arg(pPC->pTIMER->state - start4khz).arg(pPC->pTIMER->state).arg(start4khz).toLocal8Bit().data());
+
+
                         if (fp_log) fprintf(fp_log,"XOUT 4Khz switch\n");
 					}
 					break;
@@ -2165,7 +2170,7 @@ INLINE void Csc::Op_df(void)
 {
 	pPC->Set_Port(PORT_C , Get_i8(IMEM_IC) );
 	reg.r.q = IMEM_IC;
-
+    AddState(2);
 	disp_on = (pPC->Get_Port(PORT_C) & 1);
     if (!disp_on)
 	{
@@ -2180,11 +2185,11 @@ INLINE void Csc::Op_df(void)
     //if ((pPC->Get_Port(PORT_C) & 2)
     start2khz = start4khz = 0;
 
-    compute_xout();
+    //compute_xout();
 
     if (fp_log) fprintf(fp_log,"check outc %lld %d\n",pPC->pTIMER->state,pPC->Get_Port(PORT_C)>>4)
 	AddLog(LOG_CPU,"OUTC");
-    AddState(2);
+
 }
 //----------------------------
 // OUTA

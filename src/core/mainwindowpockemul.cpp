@@ -31,9 +31,10 @@ extern	MainWindowPockemul* mainwindow;
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
-#define TIMER_RES			5
+#define TIMER_RES			20
 
 QTime t,tf;
+QElapsedTimer et;
 QTimer *timer;
 QList<CPObject *> listpPObject; 
  
@@ -506,12 +507,13 @@ void MainWindowPockemul::paintEvent(QPaintEvent *event) {}
 
 void MainWindowPockemul::updateTimer()
 {
-	static int deltaTime = -1;
+    static qint64 deltaTime = -1;
 	
-	if (deltaTime == -1) {	t.start(); }
-	deltaTime = t.restart();	
+    if (deltaTime == -1) {	t.start();}
+    deltaTime = t.restart();
 
     rawclk += deltaTime*1000000L;
+    //AddLog(LOG_TEMP,tr("temps:%1").arg(deltaTime));
 
 }
 
@@ -540,9 +542,8 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
 
         locpc->setPosX(newposx);
         locpc->setPosY(newposy);
-        locpc->setGeometry(newposx,newposy,locpc->getDX()*zoom/100,locpc->getDY()*zoom/100);
-        locpc->setMask(locpc->mask.scaled(locpc->getDX()*zoom/100,locpc->getDY()*zoom/100).mask());
-        //locpc->setMask(QPixmap(locpc->BackGroundFname).scaled(locpc->getDX()*zoom/100,locpc->getDY()*zoom/100).mask());
+        locpc->setGeometry(newposx,newposy,locpc->getDX()*zoom/100/(locpc->Front?1:4),locpc->getDY()*zoom/100/(locpc->Front?1:4));
+        locpc->setMask(locpc->mask.scaled(locpc->getDX()*zoom/100/(locpc->Front?1:4),locpc->getDY()*zoom/100/(locpc->Front?1:4)).mask());
     }
 }
 
