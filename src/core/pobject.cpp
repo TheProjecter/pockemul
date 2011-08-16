@@ -385,8 +385,8 @@ void CPObject::SwitchFrontBack(QPoint point) {
 
         QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
         animation->setDuration(1000);
-        animation->setStartValue(this->rect());
-        animation->setEndValue(QRect(newposx,newposy,getDX()*mainwindow->zoom/4,getDY()*mainwindow->zoom/4));
+        animation->setStartValue(QRect(PosX,PosY,getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100));
+        animation->setEndValue(QRect(newposx,newposy,getDX()*mainwindow->zoom/100/4,getDY()*mainwindow->zoom/100/4));
         animation->setEasingCurve(QEasingCurve::OutBounce);
         animation->start();
         this->setPosX(newposx);
@@ -405,7 +405,7 @@ void CPObject::SwitchFrontBack(QPoint point) {
 //        animation->setEndValue(QRect(newposx,newposy,Pc_DX,Pc_DY));
 //        animation->setEasingCurve(QEasingCurve::OutBounce);
 //        animation->start();
-        setGeometry(newposx,newposy,getDX()*mainwindow->zoom,getDY()*mainwindow->zoom);
+        setGeometry(newposx,newposy,getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
         this->setPosX(newposx);
         this->setPosY(newposy);
 //            QPoint newpos = pos() - mainwindow->pos();
