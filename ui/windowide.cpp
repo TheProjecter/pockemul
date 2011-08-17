@@ -85,16 +85,18 @@ void WindowIDE::setupEditor()
 
 void WindowIDE::compile(void) {
 #if 1
-    QString source = ((CEditorWidget*)ui->tabWidget->currentWidget())->m_editControl->editor()->text();
+
     mapSRC.clear();
     mapPP.clear();
     mapASM.clear();
+
+    QString source = ((CEditorWidget*)ui->tabWidget->currentWidget())->m_editControl->editor()->text();
     QString sourcefname=((CEditorWidget*)ui->tabWidget->currentWidget())->m_editControl->editor()->fileName();
+
     mapSRC[sourcefname] = source.toAscii();
     Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,this->ui->modelCB->currentText());
     lcpp->run();
     Clcc *lcc = new Clcc(&mapPP,&mapASM);
- //   connect(lcc,SIGNAL(outputSignal(QString,QString)),this,SLOT(output(QString,QString)));
     lcc->run();
     //ui->outputstd->setPlainText(mapASM["output"]);
     //ui->outputasm->setPlainText(mapASM["test.asm"]);
@@ -177,7 +179,7 @@ void WindowIDE::refreshFileList(void) {
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Size | QDir::Reversed);
 
-    QFileInfoList list = dir.entryInfoList(QStringList("*.c"));
+    QFileInfoList list = dir.entryInfoList(QStringList("*.c;*.asm"));
     //QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);

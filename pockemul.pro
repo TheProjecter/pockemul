@@ -247,8 +247,7 @@ RESOURCES += resources/ext.qrc \
     resources/pc1460.qrc \
     resources/pc1280.qrc \
     resources/keymap.qrc \
-    resources/stdlibs.qrc \
-    resources/example/example.qrc
+    resources/stdlibs.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
