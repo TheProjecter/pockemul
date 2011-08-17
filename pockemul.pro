@@ -1,3 +1,5 @@
+
+
 CONFIG += build_all \
     debug_and_release \
     qt \
@@ -16,7 +18,14 @@ FORMS += ui/about.ui \
     ui/startup.ui \
     ui/dialogpotar.ui \
     ui/dialogide.ui \
-    ui/simulatorconsole.ui
+    ui/simulatorconsole.ui \
+    qcodeedit/widgets/searchreplace.ui \
+    qcodeedit/widgets/gotolinedialog.ui \
+    qcodeedit/widgets/gotoline.ui \
+    qcodeedit/widgets/formatconfig.ui \
+    qcodeedit/widgets/editconfig.ui \
+    qcodeedit/snippets/snippetedit.ui \
+    ui/windowide.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -140,16 +149,68 @@ HEADERS += src/core/Connect.h \
     src/core/bineditor/texteditor_global.h \
     src/core/bineditor/colorscheme.h \
     src/core/bineditor/texteditorconstants.h \
-    src/machine/ce120p.h
+    src/machine/ce120p.h \
+    qcodeedit/qreliablefilewatch.h \
+    qcodeedit/qpanellayout.h \
+    qcodeedit/qlinemarksinfocenter.h \
+    qcodeedit/qlanguagefactory.h \
+    qcodeedit/qlanguagedefinition.h \
+    qcodeedit/qformatscheme.h \
+    qcodeedit/qformatfactory.h \
+    qcodeedit/qformat.h \
+    qcodeedit/qeditsession.h \
+    qcodeedit/qeditorinputbindinginterface.h \
+    qcodeedit/qeditorinputbinding.h \
+    qcodeedit/qeditorfactory.h \
+    qcodeedit/qeditor.h \
+    qcodeedit/qcodeedit.h \
+    qcodeedit/qcodecompletionengine.h \
+    qcodeedit/qce-config.h \
+    qcodeedit/document/qdocumentsearch.h \
+    qcodeedit/document/qdocumentline_p.h \
+    qcodeedit/document/qdocumentline.h \
+    qcodeedit/document/qdocumentcursor_p.h \
+    qcodeedit/document/qdocumentcursor.h \
+    qcodeedit/document/qdocumentcommand.h \
+    qcodeedit/document/qdocumentbuffer.h \
+    qcodeedit/document/qdocument_p.h \
+    qcodeedit/document/qdocument.h \
+    qcodeedit/qnfa/qnfadefinition.h \
+    qcodeedit/qnfa/qnfa.h \
+    qcodeedit/qnfa/light_vector.h \
+    qcodeedit/snippets/qsnippetpatternloader.h \
+    qcodeedit/snippets/qsnippetmanager.h \
+    qcodeedit/snippets/qsnippetedit.h \
+    qcodeedit/snippets/qsnippetbinding.h \
+    qcodeedit/snippets/qsnippet_p.h \
+    qcodeedit/snippets/qsnippet.h \
+    qcodeedit/widgets/qstatuspanel.h \
+    qcodeedit/widgets/qsimplecolorpicker.h \
+    qcodeedit/widgets/qsearchreplacepanel.h \
+    qcodeedit/widgets/qpanel.h \
+    qcodeedit/widgets/qlinenumberpanel.h \
+    qcodeedit/widgets/qlinemarkpanel.h \
+    qcodeedit/widgets/qlinechangepanel.h \
+    qcodeedit/widgets/qgotolinepanel.h \
+    qcodeedit/widgets/qgotolinedialog.h \
+    qcodeedit/widgets/qformatconfig.h \
+    qcodeedit/widgets/qfoldpanel.h \
+    qcodeedit/widgets/qeditconfig.h \
+    qcodeedit/widgets/qcalltip.h \
+    src/core/ide/editorwidget.h \
+    ui/windowide.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
-    src/machine
-mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
-win32:INCLUDEPATH += ../fmodapi375win/api/inc
+    src/machine \
+    src/qmdilib
+#DEPENDPATH += . document language widgets qnfa
+INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa
+#mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
+#win32:INCLUDEPATH += ../fmodapi375win/api/inc
 LANGUAGE += C++
-win32:LIBS += ../fmodapi375win/api/lib/libfmod.a
-mac:LIBS += /Users/svp/Library/fmodapi375mac/api/lib/libfmodx86.a
+#win32:LIBS += ../fmodapi375win/api/lib/libfmod.a
+#mac:LIBS += /Users/svp/Library/fmodapi375mac/api/lib/libfmodx86.a
 LICENSE += GPL
 MOC_DIR += build/moc
 OPENEDFILES += 
@@ -186,7 +247,9 @@ RESOURCES += resources/ext.qrc \
     resources/pc1460.qrc \
     resources/pc1280.qrc \
     resources/keymap.qrc \
-    resources/stdlibs.qrc
+    resources/stdlibs.qrc \
+    resources/example/example.qrc
+
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
     src/core/Debug.cpp \
@@ -288,7 +351,47 @@ SOURCES += src/core/Connect.cpp \
     src/core/dialogsimulator.cpp \
     src/core/bineditor/bineditor.cpp \
     src/core/bineditor/colorscheme.cpp \
-    src/machine/ce120p.cpp
+    src/machine/ce120p.cpp \
+    qcodeedit/qreliablefilewatch.cpp \
+    qcodeedit/qpanellayout.cpp \
+    qcodeedit/qlinemarksinfocenter.cpp \
+    qcodeedit/qlanguagefactory.cpp \
+    qcodeedit/qlanguagedefinition.cpp \
+    qcodeedit/qformatscheme.cpp \
+    qcodeedit/qeditsession.cpp \
+    qcodeedit/qeditorinputbinding.cpp \
+    qcodeedit/qeditorfactory.cpp \
+    qcodeedit/qeditor.cpp \
+    qcodeedit/qcodeedit.cpp \
+    qcodeedit/qcodecompletionengine.cpp \
+    qcodeedit/document/qdocumentsearch.cpp \
+    qcodeedit/document/qdocumentline.cpp \
+    qcodeedit/document/qdocumentcursor.cpp \
+    qcodeedit/document/qdocumentcommand.cpp \
+    qcodeedit/document/qdocumentbuffer.cpp \
+    qcodeedit/document/qdocument.cpp \
+    qcodeedit/qnfa/xml2qnfa.cpp \
+    qcodeedit/qnfa/qnfadefinition.cpp \
+    qcodeedit/qnfa/qnfa.cpp \
+    qcodeedit/snippets/qsnippetmanager.cpp \
+    qcodeedit/snippets/qsnippetedit.cpp \
+    qcodeedit/snippets/qsnippetbinding.cpp \
+    qcodeedit/snippets/qsnippet.cpp \
+    qcodeedit/widgets/qstatuspanel.cpp \
+    qcodeedit/widgets/qsimplecolorpicker.cpp \
+    qcodeedit/widgets/qsearchreplacepanel.cpp \
+    qcodeedit/widgets/qpanel.cpp \
+    qcodeedit/widgets/qlinenumberpanel.cpp \
+    qcodeedit/widgets/qlinemarkpanel.cpp \
+    qcodeedit/widgets/qlinechangepanel.cpp \
+    qcodeedit/widgets/qgotolinepanel.cpp \
+    qcodeedit/widgets/qgotolinedialog.cpp \
+    qcodeedit/widgets/qformatconfig.cpp \
+    qcodeedit/widgets/qfoldpanel.cpp \
+    qcodeedit/widgets/qeditconfig.cpp \
+    qcodeedit/widgets/qcalltip.cpp \
+    src/core/ide/editorwidget.cpp \
+    ui/windowide.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

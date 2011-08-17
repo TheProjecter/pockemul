@@ -2667,8 +2667,9 @@ void Clcc::run() {
     while (i.hasNext()) {
         i.next();
         inpf = i.key();
+        QFileInfo fInfo(inpf);
         if (inpf != "output") {
-            outf = i.key()+".asm";
+            outf = fInfo.baseName()+".asm";
             FirstScan(i.value());
             SecondScan();
         }

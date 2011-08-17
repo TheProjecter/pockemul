@@ -17,6 +17,7 @@ class CDirectLink;
 class CKey;
 class CpcXXXX;
 class Cconnector;
+class WindowIDE;
 
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
@@ -31,7 +32,7 @@ public:
 
 	DialogLog		*dialoglog;
 	dialogAnalog	*dialoganalogic;
-    DialogIDE       *dialogide;
+    WindowIDE       *windowide;
 	
 //	CpaperWidget	*paperWidget;
 	

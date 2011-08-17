@@ -60,8 +60,6 @@
 
 #define RGB(r,g,b)	((COLORREF)(((BYTE)(r) | ((WORD)((BYTE)(g))<<8)) | (((DWORD)(BYTE)(b))<<16)))
 
-#include "fmod.h"
-//#include "fmod_errors.h"
 
 #include "global.h"
 

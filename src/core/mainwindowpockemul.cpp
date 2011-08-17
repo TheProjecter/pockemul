@@ -2,9 +2,9 @@
 #include <QString>
 #include <QPainter>
  
-#ifndef NO_SOUND
-#include "fmod.h"
-#endif
+//#ifndef NO_SOUND
+//#include "fmod.h"
+//#endif
 
 //#define NEWTIMER 1
 
@@ -14,7 +14,7 @@
 #include "dialogabout.h"
 #include "dialogstartup.h"
 #include "dialoglog.h"
-#include "dialogide.h"
+#include "ui/windowide.h"
 #include "hexviewer.h"
 #include "autoupdater.h"
 
@@ -24,6 +24,10 @@
 #include "pcxxxx.h"
 #include "pc1500.h"
 #include "clink.h"
+
+#include "ide/window.h"
+
+Window *idewindow;
 
 //#include "lfhex/hexGui.h"
 
@@ -47,7 +51,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 	setFocusPolicy(Qt::StrongFocus);
 	dialoglog = 0;
 	dialoganalogic = 0;
-    dialogide = 0;
+    windowide = 0;
     zoom = 100;
     saveAll = ASK;
 	startKeyDrag = false;
@@ -191,9 +195,9 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
                         dialoganalogic->fill_twWatchPoint();
                         dialoganalogic->update();
                     }
-                    if (dialogide) {
-                        dialogide->fill_inject();
-                        dialogide->update();
+                    if (windowide) {
+                        windowide->fill_inject();
+                        windowide->update();
                     }
                     return newpPC;
                 }
@@ -228,6 +232,7 @@ void MainWindowPockemul::Close_All() {
     case QMessageBox::Yes: saveAll = YES;break;
     case QMessageBox::No: saveAll = NO;break;
     case QMessageBox::Cancel: return;
+    default: return;
     }
 
     for (int k = 0; k < listpPObject.size(); k++)
@@ -269,8 +274,11 @@ void MainWindowPockemul::Log()
 
 void MainWindowPockemul::IDE()
 {
-        dialogide = new DialogIDE(this);
-        dialogide->show();
+//    idewindow = new Window();
+//    idewindow->show();
+
+        if (windowide==0) windowide = new WindowIDE(this);
+        windowide->show();
 }
 
 void MainWindowPockemul::Analogic()
