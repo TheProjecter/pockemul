@@ -25,9 +25,6 @@
 #include "pc1500.h"
 #include "clink.h"
 
-#include "ide/window.h"
-
-Window *idewindow;
 
 //#include "lfhex/hexGui.h"
 

@@ -179,7 +179,7 @@ void WindowIDE::refreshFileList(void) {
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     dir.setSorting(QDir::Size | QDir::Reversed);
 
-    QFileInfoList list = dir.entryInfoList(QStringList("*.c;*.asm"));
+    QFileInfoList list = dir.entryInfoList(QStringList() << "*.c" << "*.asm");
     //QFileInfoList list = dir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
