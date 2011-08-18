@@ -247,7 +247,8 @@ RESOURCES += resources/ext.qrc \
     resources/pc1460.qrc \
     resources/pc1280.qrc \
     resources/keymap.qrc \
-    resources/stdlibs.qrc
+    resources/stdlibs.qrc \
+    qcodeedit/qxs/qxs.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -428,6 +429,33 @@ OTHER_FILES += \
     resources/weblinks.xml \
     resources/notes.txt \
     resources/pockemul/script_help.html \
-    logitheque/serial1251.qs
+    logitheque/serial1251.qs \
+    qcodeedit/qxs/marks.qxm \
+    qcodeedit/qxs/xml.qxf \
+    qcodeedit/qxs/tex.qxf \
+    qcodeedit/qxs/qtscript.qxf \
+    qcodeedit/qxs/python.qxf \
+    qcodeedit/qxs/pro.qxf \
+    qcodeedit/qxs/php.qxf \
+    qcodeedit/qxs/formats.qxf \
+    qcodeedit/qxs/dox.qxf \
+    qcodeedit/qxs/css.qxf \
+    qcodeedit/qxs/csharp.qxf \
+    qcodeedit/qxs/cpp.qxf \
+    qcodeedit/qxs/bibtex.qxf \
+    qcodeedit/qxs/xml.qnfa \
+    qcodeedit/qxs/tex.qnfa \
+    qcodeedit/qxs/snippet.qnfa \
+    qcodeedit/qxs/qtscript.qnfa \
+    qcodeedit/qxs/python.qnfa \
+    qcodeedit/qxs/pro.qnfa \
+    qcodeedit/qxs/php.qnfa \
+    qcodeedit/qxs/dox.qnfa \
+    qcodeedit/qxs/css.qnfa \
+    qcodeedit/qxs/csharp.qnfa \
+    qcodeedit/qxs/cpp.qnfa \
+    qcodeedit/qxs/coldfusion.qnfa \
+    qcodeedit/qxs/bibtex.qnfa \
+    qcodeedit/qxs/asm.qnfa
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

@@ -57,13 +57,13 @@ WindowIDE::~WindowIDE()
 void WindowIDE::setupEditor()
 {
 
-    m_formats = new QFormatScheme("qxs/formats.qxf", this);
+    m_formats = new QFormatScheme(":/QXS/formats.qxf", this);
     QDocument::setDefaultFormatScheme(m_formats);
 
-    QLineMarksInfoCenter::instance()->loadMarkTypes("qxs/marks.qxm");
+    QLineMarksInfoCenter::instance()->loadMarkTypes(":QXS/marks.qxm");
 
     m_languages = new QLanguageFactory(m_formats, this);
-    m_languages->addDefinitionPath("qxs");
+    m_languages->addDefinitionPath(":QXS");
 
 
     fill_inject();
