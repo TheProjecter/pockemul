@@ -10,7 +10,6 @@
 class DialogLog;
 class CpaperWidget;
 class dialogAnalog;
-class DialogIDE;
 #include "dialogkeylist.h"
 class CPObject;
 class CDirectLink;

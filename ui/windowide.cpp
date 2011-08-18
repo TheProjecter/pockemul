@@ -18,6 +18,7 @@
 #include "qeditor.h"
 #include "qcodeedit.h"
 #include "qlanguagefactory.h"
+#include "qlanguagedefinition.h"
 
 extern QList<CPObject *> listpPObject;
 
@@ -90,25 +91,54 @@ void WindowIDE::compile(void) {
     mapPP.clear();
     mapASM.clear();
 
-    QString source = ((CEditorWidget*)ui->tabWidget->currentWidget())->m_editControl->editor()->text();
-    QString sourcefname=((CEditorWidget*)ui->tabWidget->currentWidget())->m_editControl->editor()->fileName();
+    CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
 
-    mapSRC[sourcefname] = source.toAscii();
-    Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,this->ui->modelCB->currentText());
-    lcpp->run();
-    Clcc *lcc = new Clcc(&mapPP,&mapASM);
-    lcc->run();
-    //ui->outputstd->setPlainText(mapASM["output"]);
-    //ui->outputasm->setPlainText(mapASM["test.asm"]);
-    CEditorWidget *locEditorWidget = new CEditorWidget();
-    QFileInfo fInfo(sourcefname);
-    ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".asm");
+    QString source = locEditorWidget->m_editControl->editor()->text();
+    QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
 
-    m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".asm");
-    locEditorWidget->m_editControl->editor()->setText(mapASM[fInfo.baseName()+".asm"]);
-    editorMap.insert(fInfo.baseName()+".asm",locEditorWidget);
-    ui->tabWidget->setCurrentIndex(0);
+    if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
+        mapSRC[sourcefname] = source.toAscii();
+        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,this->ui->modelCB->currentText());
+        lcpp->run();
+        Clcc *lcc = new Clcc(&mapPP,&mapASM);
+        lcc->run();
+        //ui->outputstd->setPlainText(mapASM["output"]);
+        //ui->outputasm->setPlainText(mapASM["test.asm"]);
+        CEditorWidget *locEditorWidget = new CEditorWidget();
+        QFileInfo fInfo(sourcefname);
+        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".asm");
 
+        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".asm");
+        locEditorWidget->m_editControl->editor()->setText(mapASM[fInfo.baseName()+".asm"]);
+        editorMap.insert(fInfo.baseName()+".asm",locEditorWidget);
+        ui->tabWidget->setCurrentIndex(0);
+    }
+
+    if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {
+        QFileInfo fInfo(sourcefname);
+        mapSRC[sourcefname] = source.toAscii();
+        Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
+        pasm->parsefile("BAS",mapASM[sourcefname]);
+        pasm->savefile("BAS");
+        pasm->savefile("BIN");
+        pasm->savefile("DEC");
+
+        CEditorWidget *locEditorWidget = new CEditorWidget();
+        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".bas");
+        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".bas");
+        locEditorWidget->m_editControl->editor()->setText(mapLM["BAS"]);
+        editorMap.insert(fInfo.baseName()+".bas",locEditorWidget);
+        ui->tabWidget->setCurrentIndex(0);
+
+        locEditorWidget = new CEditorWidget();
+        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".hex");
+        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".hex");
+        locEditorWidget->m_editControl->editor()->setText(mapLM["DEC"]);
+        editorMap.insert(fInfo.baseName()+".hex",locEditorWidget);
+        ui->tabWidget->setCurrentIndex(0);
+//        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".bin");
+//        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".bin");
+    }
 #else
     QString src = ui->editor->toPlainText();
 

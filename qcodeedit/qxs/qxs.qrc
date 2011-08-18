@@ -1,30 +1,13 @@
 <RCC>
     <qresource prefix="/QXS">
         <file>xml.qnfa</file>
-        <file>tex.qnfa</file>
         <file>snippet.qnfa</file>
         <file>qtscript.qnfa</file>
-        <file>python.qnfa</file>
-        <file>pro.qnfa</file>
-        <file>php.qnfa</file>
-        <file>dox.qnfa</file>
-        <file>css.qnfa</file>
-        <file>csharp.qnfa</file>
         <file>cpp.qnfa</file>
-        <file>coldfusion.qnfa</file>
-        <file>bibtex.qnfa</file>
         <file>xml.qxf</file>
-        <file>tex.qxf</file>
         <file>qtscript.qxf</file>
-        <file>python.qxf</file>
-        <file>pro.qxf</file>
-        <file>php.qxf</file>
         <file>formats.qxf</file>
-        <file>dox.qxf</file>
-        <file>css.qxf</file>
-        <file>csharp.qxf</file>
         <file>cpp.qxf</file>
-        <file>bibtex.qxf</file>
         <file>marks.qxm</file>
         <file>asm.qnfa</file>
         <file>asm.qxf</file>

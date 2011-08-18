@@ -15,25 +15,7 @@
         <underline>false</underline>
         <strikeout>false</strikeout>
         <waveUnderline>false</waveUnderline>
-        <foreground>#008000</foreground>
-    </format>
-    <format id="doxygen/keyword" >
-        <bold>true</bold>
-        <italic>false</italic>
-        <overline>false</overline>
-        <underline>false</underline>
-        <strikeout>false</strikeout>
-        <waveUnderline>false</waveUnderline>
-        <foreground>#ff00ff</foreground>
-    </format>
-    <format id="doxygen" >
-        <bold>false</bold>
-        <italic>true</italic>
-        <overline>false</overline>
-        <underline>false</underline>
-        <strikeout>false</strikeout>
-        <waveUnderline>false</waveUnderline>
-        <foreground>#a0a0a4</foreground>
+        <foreground>#000080</foreground>
     </format>
     <format id="comment" >
         <bold>false</bold>
@@ -42,7 +24,16 @@
         <underline>false</underline>
         <strikeout>false</strikeout>
         <waveUnderline>false</waveUnderline>
-        <foreground>#000080</foreground>
+        <foreground>#008000</foreground>
+    </format>
+    <format id="label" >
+        <bold>true</bold>
+        <italic>false</italic>
+        <overline>false</overline>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+        <waveUnderline>false</waveUnderline>
+        <foreground>#800000</foreground>
     </format>
     <format id="keyword" >
         <bold>true</bold>
@@ -51,7 +42,7 @@
         <underline>false</underline>
         <strikeout>false</strikeout>
         <waveUnderline>false</waveUnderline>
-        <foreground>#000000</foreground>
+        <foreground>#808000</foreground>
     </format>
     <format id="extra-keyword" >
         <bold>true</bold>

@@ -271,9 +271,6 @@ void MainWindowPockemul::Log()
 
 void MainWindowPockemul::IDE()
 {
-//    idewindow = new Window();
-//    idewindow->show();
-
         if (windowide==0) windowide = new WindowIDE(this);
         windowide->show();
 }

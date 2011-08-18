@@ -17,7 +17,6 @@ FORMS += ui/about.ui \
     ui/serialconsole.ui \
     ui/startup.ui \
     ui/dialogpotar.ui \
-    ui/dialogide.ui \
     ui/simulatorconsole.ui \
     qcodeedit/widgets/searchreplace.ui \
     qcodeedit/widgets/gotolinedialog.ui \
@@ -132,7 +131,6 @@ HEADERS += src/core/Connect.h \
     src/core/weblinksparser.h \
     src/core/wavfile.h \
     src/core/lcc/lcc.h \
-    src/core/dialogide.h \
     src/core/ide/highlighter.h \
     src/core/lcc/lcpp.h \
     src/core/lcc/codegen.h \
@@ -339,7 +337,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/wavfile.cpp \
     src/core/lcc/lcc.cpp \
     src/core/lcc/calcunit.cpp \
-    src/core/dialogide.cpp \
     src/core/ide/highlighter.cpp \
     src/core/lcc/lcpp.cpp \
     src/core/lcc/codegen.cpp \
@@ -456,6 +453,7 @@ OTHER_FILES += \
     qcodeedit/qxs/cpp.qnfa \
     qcodeedit/qxs/coldfusion.qnfa \
     qcodeedit/qxs/bibtex.qnfa \
-    qcodeedit/qxs/asm.qnfa
+    qcodeedit/qxs/asm.qnfa \
+    qcodeedit/qxs/asm.qxf
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

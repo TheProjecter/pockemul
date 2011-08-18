@@ -1,6 +1,6 @@
 <!DOCTYPE QNFA>
 <QNFA language="C++" extensions="c;cc;cxx;cpp;h;hxx;hpp" defaultLineMark="breakpoint">
-	<embed target="Doxygen"/>
+
 	
 	<context id="comment/multi" format="comment">
 		<start parenthesis="cppcomment:open" indent="1" fold="1">/\*</start>
@@ -63,18 +63,8 @@
 	</list>
 	
 	<list id="keywords/data" format="keyword">
-		<word>signed</word>
-		<word>unsigned</word>
-		<word>bool</word>
-		<word>char</word>
-		<word>int</word>
-		<word>long</word>
-		<word>float</word>
-		<word>double</word>
-		<word>enum</word>
-		<word>union</word>
-		<word>wchar_t</word>
-		<word>void</word>
+        <word>byte</word>
+        <word>word</word>
 	</list>
 	
 	<list id="keywords/blocks" format="keyword">

@@ -1,6 +1,6 @@
 <!DOCTYPE QNFA>
 <QNFA language="ASM" extensions="asm" defaultLineMark="breakpoint">
-	<embed target="Doxygen"/>
+	<!-- <embed target="Doxygen"/> -->
 	
 	<context id="comment/multi" format="comment">
 		<start parenthesis="cppcomment:open" indent="1" fold="1">/\*</start>
@@ -19,7 +19,7 @@
 	</context>
 	
 	<context id="preprocessor" format="preprocessor" transparency="true" stayOnLine="true" >
-		<start>#</start>
+        <start>\.</start>
 		<stop exclusive="false">\n</stop>
 		<escape>\\</escape>
 	</context>
@@ -89,7 +89,7 @@
 <word>LDP</word>
 <word>LDQ</word>
 <word>LDR</word>
-<word>CLRA</word>
+<word>RA</word>
 <word>IXL</word>
 <word>DXL</word>
 <word>IYS</word>
@@ -100,6 +100,7 @@
 <word>JRNCM</word>
 <word>JRP</word>
 <word>JRM</word>
+<word>RJMP</word>
 <word>LOOP</word>
 <word>STP</word>
 <word>STQ</word>
@@ -175,19 +176,19 @@
 <word>DECL</word>
 <word>INCN</word>
 <word>DECN</word>
-<word>IN B </word>
+<word>IN B</word>
 <word>NOPT</word>
-<word>SC  </word>
-<word>RC  </word>
-<word>SR  </word>
+<word>SC</word>
+<word>RC</word>
+<word>SR</word>
 <word>ANID</word>
 <word>ORID</word>
 <word>TSID</word>
-<word>LEAVE","LEAVE</word>
-<word>EXAB","EXAB</word>
-<word>EXAM","EXAM</word>
-<word>OUT B","OUT B</word>
-<word>OUT C","OUT C</word>
+<word>LEAVE</word>
+<word>EXAB</word>
+<word>EXAM</word>
+<word>OUT B</word>
+<word>OUT C</word>
 <word>CAL</word>
 	</list>
 	
@@ -195,19 +196,8 @@
 	
 	
 	<list id="keywords/Qt" format="extra-keyword">
-		<word>foreach</word>
-		<word>forever</word>
-		<word>emit</word>
-		<word>signals</word>
-		<word>slots</word>
-		<word>connect</word>
-		<word>SIGNAL</word>
-		<word>SLOT</word>
-		<word>Q_OBJECT</word>
-		<word>Q_ENUM</word>
-		<word>Q_PROPERTY</word>
-		<word>Q_SIGNALS</word>
-		<word>Q_SLOTS</word>
+        <word>HB</word>
+        <word>LB</word>
 	</list>
 	
 	<list id="ansi/trigraph" format="extra-keyword">
@@ -229,4 +219,6 @@
 	<word id="data/hexadecimal" format="numbers">0[xX][0-9a-fA-F]+[ulUL]*</word>
 	<word id="data/octal" format="numbers">0[0-7]+</word>
 	<word id="data/decimal" format="numbers">-?[0-9]+[ulUL]*</word>
+
+    <word id="label" format="label">[0-9a-zA-Z]+:</word>
 </QNFA>
