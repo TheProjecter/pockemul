@@ -193,7 +193,7 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
                         dialoganalogic->update();
                     }
                     if (windowide) {
-                        windowide->fill_inject();
+                        windowide->addtargetCB(newpPC);
                         windowide->update();
                     }
                     return newpPC;

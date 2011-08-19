@@ -841,33 +841,43 @@ void Cpasm::savefile(QString fname) {
     QString s;
     unsigned char b;
 
+
+
     if (fname == "DEC") {
         for (int wr = 0; wr < code.size(); wr++) {
             b = code[wr];
-            writeln("TXT", QString("%1").arg(b));
+            writeln("DEC", QString("%1").arg(b));
         }
     }
-    else if (fname == "BAS") {
+    else if ((fname == "BAS") || (fname == "HEX")) {
         int blcnt = 10;
+        int locadr = startadr;
         s = "";
         int i = 0;
         QChar fill = '0';
         for (int wr = 0; wr < code.size(); wr++) {
             b = code[wr];
-            s.append(QString(",&%1").arg(b,2,16,fill).toUpper());
-            if (s.length() >= 60) {
-                writeln("BAS", QString("%1 POKE &%2").arg(blcnt).arg((int)startadr,2,16,fill).toUpper() + s);
+            s.append((fname=="BAS") ?   QString(",&%1").arg(b,2,16,fill).toUpper() :
+                                        QString(" %1").arg(b,2,16,fill).toUpper());
+            if (s.length() >= ((fname=="BAS") ? 64:48)) {
+                writeln(fname, (fname=="BAS")?  QString("%1 POKE &%2").arg(blcnt).arg((int)locadr,4,16,fill).toUpper() + s :
+                                                QString("%2").arg((int)locadr,4,16,fill).toUpper() +":"+ s);
+
                 s = "";
                 blcnt += 10;
-                startadr += i + 1;
+                locadr += i + 1;
                 i = -1;
             }
             i++;
         }
-        if (!s.isEmpty()) writeln("BAS", QString("%1 POKE &%2").arg(blcnt).arg(startadr,4,16,fill).toUpper() + s);
+        if (!s.isEmpty()) {
+            writeln(fname, (fname=="BAS")?  QString("%1 POKE &%2").arg(blcnt).arg((int)locadr,4,16,fill).toUpper() + s :
+                                            QString("%2").arg((int)locadr,4,16,fill).toUpper() +":"+ s);
+        }
     }
     else
     {
+        writeln("_ORG",QString("%1").arg(startadr));
         out->insert("BIN", code);
     }
 }

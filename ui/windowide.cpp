@@ -11,7 +11,6 @@
 #include "pobject.h"
 #include "pcxxxx.h"
 
-
 #include "qformatscheme.h"
 #include "qdocument.h"
 #include "qlinemarksinfocenter.h"
@@ -19,6 +18,7 @@
 #include "qcodeedit.h"
 #include "qlanguagefactory.h"
 #include "qlanguagedefinition.h"
+#include "qhexpanel.h"
 
 extern QList<CPObject *> listpPObject;
 
@@ -34,8 +34,8 @@ WindowIDE::WindowIDE(QWidget *parent) :
     setupEditor();
 
     connect(ui->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
-    connect(ui->installPB,SIGNAL(clicked()),this,SLOT(inject()));
-    connect(ui->savePB,SIGNAL(clicked()),this,SLOT(save()));
+//    connect(ui->installPB,SIGNAL(clicked()),this,SLOT(inject()));
+//    connect(ui->savePB,SIGNAL(clicked()),this,SLOT(save()));
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(load(QListWidgetItem*)));
     connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
 
@@ -67,18 +67,12 @@ void WindowIDE::setupEditor()
     m_languages->addDefinitionPath(":QXS");
 
 
-    fill_inject();
 
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(10);
 
-
-    ui->editor->setFont(font);
-    ui->editor->setTabStopWidth(40);
-
-    highlighter = new Highlighter(ui->editor->document());
 
     refreshFileList();
 }
@@ -90,6 +84,7 @@ void WindowIDE::compile(void) {
     mapSRC.clear();
     mapPP.clear();
     mapASM.clear();
+    mapLM.clear();
 
     CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
 
@@ -98,46 +93,47 @@ void WindowIDE::compile(void) {
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
-        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,this->ui->modelCB->currentText());
+        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,"PC-1350");
         lcpp->run();
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->run();
         //ui->outputstd->setPlainText(mapASM["output"]);
         //ui->outputasm->setPlainText(mapASM["test.asm"]);
-        CEditorWidget *locEditorWidget = new CEditorWidget();
-        QFileInfo fInfo(sourcefname);
-        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".asm");
 
-        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".asm");
-        locEditorWidget->m_editControl->editor()->setText(mapASM[fInfo.baseName()+".asm"]);
-        editorMap.insert(fInfo.baseName()+".asm",locEditorWidget);
-        ui->tabWidget->setCurrentIndex(0);
+        QFileInfo fInfo(sourcefname);
+        createTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
     }
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {
-        QFileInfo fInfo(sourcefname);
+        CEditorWidget *currentWidget = locEditorWidget;
+
         mapSRC[sourcefname] = source.toAscii();
         Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
-        pasm->parsefile("BAS",mapASM[sourcefname]);
+        pasm->parsefile("BAS",mapSRC[sourcefname]);
         pasm->savefile("BAS");
         pasm->savefile("BIN");
-        pasm->savefile("DEC");
+        pasm->savefile("HEX");
 
-        CEditorWidget *locEditorWidget = new CEditorWidget();
-        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".bas");
-        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".bas");
-        locEditorWidget->m_editControl->editor()->setText(mapLM["BAS"]);
-        editorMap.insert(fInfo.baseName()+".bas",locEditorWidget);
-        ui->tabWidget->setCurrentIndex(0);
+        QFileInfo fInfo(sourcefname);
+        createTab(fInfo.baseName()+".bas",mapLM["BAS"]);
 
-        locEditorWidget = new CEditorWidget();
-        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".hex");
-        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".hex");
-        locEditorWidget->m_editControl->editor()->setText(mapLM["DEC"]);
-        editorMap.insert(fInfo.baseName()+".hex",locEditorWidget);
-        ui->tabWidget->setCurrentIndex(0);
-//        ui->tabWidget->insertTab(0,locEditorWidget,fInfo.baseName()+".bin");
-//        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fInfo.baseName()+".bin");
+        createTab(fInfo.baseName()+".hex",mapLM["HEX"]);
+
+        //createTab(fInfo.baseName()+".bin",mapLM["BIN"]);
+        ui->tabWidget->setCurrentWidget(currentWidget);
+        QHexPanel *hexpanel = new QHexPanel();
+
+
+        currentWidget->m_editControl
+                ->addPanel(hexpanel, QCodeEdit::South, true);
+        hexpanel->hexeditor->setData(mapLM["BIN"]);
+        hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
+        connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
+
+        hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
+
+//        MSG_ERROR("*"+mapLM["_ORG"]+"*");
+//        MSG_ERROR(QString("%1").arg(hexpanel->startadr));
     }
 #else
     QString src = ui->editor->toPlainText();
@@ -170,34 +166,34 @@ void WindowIDE::compile(void) {
 #endif
 }
 
+
+void WindowIDE::createTab(QString fname, QString text) {
+    CEditorWidget *locEditorWidget = new CEditorWidget();
+    ui->tabWidget->insertTab(0,locEditorWidget,fname);
+    m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fname);
+    locEditorWidget->m_editControl->editor()->setText(text);
+    locEditorWidget->m_editControl->editor()->setFileName(fname);
+    editorMap.insert(fname,locEditorWidget);
+    ui->tabWidget->setCurrentIndex(0);
+}
+
 void WindowIDE::output(QString f,QString s) {
-    ui->outputstd->insertPlainText(s);
-    //outputstd->append(s);
-    ui->outputstd->update();
+
 }
 
-void WindowIDE::fill_inject(void) {
-    // update the injectCB ComboBox
-    ui->injectCB->clear();
-    for (int i = 0; i < listpPObject.size();i++) {
-        CPObject *p = listpPObject.at(i);
-        p->getName();
-        ui->injectCB->addItem(p->getName(),tr("%1").arg((long)p));
-    }
+
+
+void WindowIDE::addtargetCB(CPObject *pc) {
+    emit newEmulatedPocket(pc);
 }
 
-void WindowIDE::inject(void) {
 
-    int index = ui->injectCB->currentIndex();
-    CpcXXXX *pc = (CpcXXXX *) ui->injectCB->itemData(index).toString().toULongLong();
-    bool ok;
-    int orig = ui->origEdit->text().toInt(&ok,16);
+void WindowIDE::installTo(CpcXXXX * pc,qint32 adr, QByteArray data ) {
 
-    QDataStream in(mapLM["BIN"]);
-    in.readRawData ((char *) &pc->mem[orig],
-                    mapLM["BIN"].size() );
-    QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(orig));
-
+    QDataStream in(data);
+    in.readRawData ((char *) &pc->mem[adr],
+                    data.size() );
+    QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(adr));
 }
 
 void WindowIDE::save(void) {

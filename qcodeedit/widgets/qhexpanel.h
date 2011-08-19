@@ -1,0 +1,45 @@
+#ifndef QHEXPANEL_H
+#define QHEXPANEL_H
+
+#include "qpanel.h"
+#include "bineditor/bineditor.h"
+
+class QDocumentLine;
+class CPObject;
+class QComboBox;
+
+class QCE_EXPORT QHexPanel : public QPanel
+{
+    Q_OBJECT
+
+public:
+    Q_PANEL(QHexPanel, "Hex Panel")
+
+    QHexPanel(QWidget *p = 0);
+    virtual ~QHexPanel();
+
+    virtual QString type() const;
+    BINEditor::BinEditor *hexeditor;
+    qint32 startadr;
+
+    void filltargetCB();
+protected:
+    virtual void editorChange(QEditor *e);
+    virtual bool paint(QPainter *p, QEditor *e);
+
+    virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+
+public slots:
+    void newPocket(CPObject *);
+    void install();
+
+private:
+    int m_conflictSpot;
+    QComboBox *cbinstallTo;
+
+
+};
+
+
+#endif // QHEXPANEL_H

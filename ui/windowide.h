@@ -27,8 +27,9 @@ public:
     ~WindowIDE();
 
     void setupEditor(void);
-    void fill_inject(void);
     void refreshFileList(void);
+
+    void createTab(QString fname, QString text);
 
     Highlighter *highlighter;
 
@@ -39,13 +40,19 @@ public:
 
     QMap<QString,CEditorWidget *> editorMap;
 
+    void installTo(CpcXXXX *pc, qint32 adr, QByteArray data);
+
+    void addtargetCB(CPObject *pc);
+
 private slots:
     void compile(void);
     void output(QString,QString);
-    void inject(void);
     void save(void);
     void load(QListWidgetItem* id);
     void closeTab(int);
+
+signals:
+    void newEmulatedPocket(CPObject *);
 
 protected:
 
