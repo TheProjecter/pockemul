@@ -106,11 +106,16 @@ void WindowIDE::compile(void) {
 
         createTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
 
+#if 1
+        //ui->outputText->setText(mapASM["output"]);
+        createOutputTab("C Compiler :"+fInfo.fileName(),mapASM["output"]);
+#else
         CEditorWidget *currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
         QOutPanel *outpanel = new QOutPanel();
         currentWidget->m_editControl
                 ->addPanel(outpanel, QCodeEdit::South, true);
         outpanel->out->setText(mapASM["output"]);
+#endif
     }
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {
@@ -125,7 +130,9 @@ void WindowIDE::compile(void) {
 
         createTab(fInfo.baseName()+".bas",mapLM["BAS"]);
 
-        createTab(fInfo.baseName()+".output",mapLM["output"]);
+        //createTab(fInfo.baseName()+".output",mapLM["output"]);
+        //ui->outputText->setText(mapLM["output"]);
+        createOutputTab("ASM Compiler :"+fInfo.fileName(),mapLM["output"]);
 
         //createTab(fInfo.baseName()+".bin",mapLM["BIN"]);
         //ui->tabWidget->setCurrentWidget(currentWidget);
@@ -184,6 +191,13 @@ void WindowIDE::createTab(QString fname, QString text) {
     locEditorWidget->m_editControl->editor()->setFileName(fname);
     editorMap.insert(fname,locEditorWidget);
     ui->tabWidget->setCurrentIndex(0);
+}
+
+void WindowIDE::createOutputTab(QString fname, QString text) {
+    QTextEdit *locTextEdit = new QTextEdit();
+    ui->outputtabWidget->insertTab(0,locTextEdit,fname);
+    locTextEdit->setText(text);
+    ui->outputtabWidget->setCurrentIndex(0);
 }
 
 void WindowIDE::output(QString f,QString s) {

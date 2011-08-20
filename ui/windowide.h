@@ -44,6 +44,7 @@ public:
 
     void addtargetCB(CPObject *pc);
 
+    void createOutputTab(QString fname, QString text);
 private slots:
     void compile(void);
     void output(QString,QString);
