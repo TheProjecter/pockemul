@@ -3,7 +3,8 @@
 
 #include <QtGui>
 
-#include "mainwindowpockemul.h"
+//#include "mainwindowpockemul.h"
+class MainWindowPockemul;
 extern MainWindowPockemul *mainwindow;
 
 #include "cstdlib.h"
@@ -12,14 +13,7 @@ class Clcpp:public QObject {
     Q_OBJECT
 public:
 
-    Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model) {
-        this->sources = sources;
-        this->out = out;
-        this->model = model;
-        symcnt = 0;
-        pStdLibs = new Cstdlib();
-        pStdLibs->setModel(model);
-    }
+    Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model);
 
     void run();
 

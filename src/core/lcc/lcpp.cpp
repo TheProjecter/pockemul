@@ -1,4 +1,5 @@
 #include "QString"
+#include <QMessageBox>
 
 #include "lcpp.h"
 
@@ -8,7 +9,7 @@
 
 
 void Clcpp::abort(QString t) {
-    QMessageBox::about(mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + inpf);
+    QMessageBox::about((QWidget*)mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + inpf);
 }
 
 
@@ -20,10 +21,15 @@ QString Clcpp::replace_text(QString text, QString such, QString ers) {
 
 
 bool Clcpp::findsymbol(QString l) {
+#if 1
+    return sym.contains(l);
+#else
     for (int i = 0 ; i< sym.size();i++) {
         if (sym[i] == l) return true;
     }
+
     return false;
+#endif
 }
 
 
@@ -79,15 +85,14 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
             cline = lcnt;
             result = result.trimmed();
             if (lcom) {
-                if (result.startsWith("*/")) result = "";
+                if (result.indexOf("*/")==-1) result = "";
                 else {
-                    result.remove(0,result.indexOf("*/")+1);
+                    result.remove(0,result.indexOf("*/")+2);
                     lcom = false;
                 }
             }
         }
         while (linesIter->hasNext() && result.isEmpty());
-        //until eof(datei) or (result <> '');
         c = ' ';
         for (int i = 0 ;i <result.length();i++) {
             if (QString("'\"").contains(result[i])) {
@@ -99,9 +104,12 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
                 break;
             }
             if ((c == ' ') && result.mid(i).startsWith("/*")) {
-                if (result.indexOf("*/") > i) result.remove(i, result.indexOf("*/") - i + 1);
-                else result=result.left(i);
-                lcom = true;
+                if (result.indexOf("*/") > i)
+                    result.remove(i, result.indexOf("*/") - i + 2);
+                else {
+                    result=result.left(i);
+                    lcom = true;
+                }
                 break;
             }
         }
@@ -211,6 +219,16 @@ void Clcpp::run() {
 void Clcpp::writeln(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
     out->insert(srcName,locs+"\r"+s.toAscii());
+}
+
+Clcpp::Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model) {
+    this->sources = sources;
+    this->out = out;
+    this->model = model;
+    symcnt = 0;
+    pStdLibs = new Cstdlib();
+    pStdLibs->setModel(model);
+    lcom=false;
 }
 
 #endif

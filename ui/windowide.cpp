@@ -90,17 +90,19 @@ void WindowIDE::compile(void) {
 
     QString source = locEditorWidget->m_editControl->editor()->text();
     QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
-
+    QFileInfo fInfo(sourcefname);
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,"PC-1350");
         lcpp->run();
+        createTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->run();
         //ui->outputstd->setPlainText(mapASM["output"]);
+
         //ui->outputasm->setPlainText(mapASM["test.asm"]);
 
-        QFileInfo fInfo(sourcefname);
+
         createTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
     }
 
@@ -114,13 +116,13 @@ void WindowIDE::compile(void) {
         pasm->savefile("BIN");
         pasm->savefile("HEX");
 
-        QFileInfo fInfo(sourcefname);
         createTab(fInfo.baseName()+".bas",mapLM["BAS"]);
 
-        createTab(fInfo.baseName()+".hex",mapLM["HEX"]);
+        createTab(fInfo.baseName()+".output",mapLM["output"]);
 
         //createTab(fInfo.baseName()+".bin",mapLM["BIN"]);
-        ui->tabWidget->setCurrentWidget(currentWidget);
+        //ui->tabWidget->setCurrentWidget(currentWidget);
+        currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
         QHexPanel *hexpanel = new QHexPanel();
 
 
