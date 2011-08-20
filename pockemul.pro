@@ -197,7 +197,8 @@ HEADERS += src/core/Connect.h \
     qcodeedit/widgets/qcalltip.h \
     src/core/ide/editorwidget.h \
     ui/windowide.h \
-    qcodeedit/widgets/qhexpanel.h
+    qcodeedit/widgets/qhexpanel.h \
+    qcodeedit/widgets/qoutpanel.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -390,7 +391,8 @@ SOURCES += src/core/Connect.cpp \
     qcodeedit/widgets/qcalltip.cpp \
     src/core/ide/editorwidget.cpp \
     ui/windowide.cpp \
-    qcodeedit/widgets/qhexpanel.cpp
+    qcodeedit/widgets/qhexpanel.cpp \
+    qcodeedit/widgets/qoutpanel.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

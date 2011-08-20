@@ -19,6 +19,7 @@
 #include "qlanguagefactory.h"
 #include "qlanguagedefinition.h"
 #include "qhexpanel.h"
+#include "qoutpanel.h"
 
 extern QList<CPObject *> listpPObject;
 
@@ -104,6 +105,12 @@ void WindowIDE::compile(void) {
 
 
         createTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
+
+        CEditorWidget *currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+        QOutPanel *outpanel = new QOutPanel();
+        currentWidget->m_editControl
+                ->addPanel(outpanel, QCodeEdit::South, true);
+        outpanel->out->setText(mapASM["output"]);
     }
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {
