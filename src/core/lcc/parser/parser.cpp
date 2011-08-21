@@ -42,7 +42,100 @@ Thanks to various posters on my forum for suggestions. The relevant post is curr
 #include "parser.h"
 
 
-// returns a number from 0 up to, but excluding x
+/*!
+  \class Parser
+
+Expression-evaluator
+--------------------
+
+Author: Nick Gammon
+-------------------
+
+
+Example usage:
+
+    Parser p ("2 + 2 * (3 * 5) + nick");
+
+    p.symbols_ ["nick"] = 42;
+
+    double v = p.Evaluate ();
+
+    double v1 = p.Evaluate ("5 + 6");   // supply new expression and evaluate it
+
+Syntax:
+
+  You can use normal algebraic syntax.
+
+  Multiply and divide has higher precedence than add and subtract.
+
+  You can use parentheses (eg. (2 + 3) * 5 )
+
+  Variables can be assigned, and tested. eg. a=24+a*2
+
+  Variables can be preloaded:
+
+    p.symbols_ ["abc"] = 42;
+    p.symbols_ ["def"] = 42;
+
+  Afterwards they can be retrieved:
+
+    x = p.symbols_ ["abc"];
+
+  There are 2 predefined symbols, "pi" and "e".
+
+  You can use the comma operator to load variables and then use them, eg.
+
+    a=42, b=a+6
+
+  You can use predefined functions, see below for examples of writing your own.
+
+    42 + sqrt (64)
+
+
+  Comparisons
+  -----------
+
+  Comparisons work by returning 1.0 if true, 0.0 if false.
+
+  Thus, 2 > 3 would return 0.0
+        3 > 2 would return 1.0
+
+  Similarly, tests for truth (eg. a && b) test whether the values are 0.0 or not.
+
+  If test
+  -------
+
+  There is a ternary function: if (truth-test, true-value, false-value)
+
+  eg.  if (1 < 2, 22, 33)  returns 22
+
+
+  Precedence
+  ----------
+
+  ( )  =   - nested brackets, including function calls like sqrt (x), and assignment
+  * /      - multiply, divide
+  + -      - add and subtract
+  < <= > >= == !=  - comparisons
+  && ||    - AND and OR
+  ,        - comma operator
+
+    Credits:
+
+    Based in part on a simple calculator described in "The C++ Programming Language"
+    by Bjarne Stroustrup, however with considerable enhancements by me, and also based
+    on my earlier experience in writing Pascal compilers, which had a similar structure.
+*/
+
+
+//
+/*!
+ \brief returns a number from 0 up to, but excluding x
+
+ \fn getrandom
+ \param x
+ \return const int
+*/
 const int getrandom (const int x)
 {
 	if (x <= 0)
@@ -54,6 +147,14 @@ const int getrandom (const int x)
 
 }   // end of getrandom
 
+/*!
+ \brief
+
+ \fn roll
+ \param howmany
+ \param die
+ \return const int
+*/
 const int roll (const int howmany, const int die)
 {
 	int count;
@@ -69,6 +170,13 @@ const int roll (const int howmany, const int die)
 
 // returns true if a x% probability exists
 // eg. percent (80) will be true 80% of the time
+/*!
+ \brief
+
+ \fn percent
+ \param prob
+ \return const bool
+*/
 const bool percent (const int prob)
   {
   if (prob <= 0)
@@ -80,6 +188,12 @@ const bool percent (const int prob)
 
   }
 
+/*!
+ \brief
+
+ \fn initRandom
+ \return int
+*/
 static int initRandom ()
   {
   srand   (time (NULL));
@@ -90,7 +204,7 @@ static int initRandom ()
   }
 
 // initialise random number generator
-static int someNumber = initRandom ();
+static int someNumber = initRandom (); /*!< TODO */
 
 /*
 
@@ -179,25 +293,60 @@ Syntax:
 
 // functions we can call from an expression
 
+/*!
+ \brief
+
+ \fn DoLB
+ \param arg
+ \return double
+*/
 double DoLB (double arg)
   {
   return ((int) arg % 256);   // drop fractional part
   }
+/*!
+ \brief
+
+ \fn DoHB
+ \param arg
+ \return double
+*/
 double DoHB (double arg)
   {
   return ((int) arg / 256);   // drop fractional part
   }
 
+/*!
+ \brief
+
+ \fn DoInt
+ \param arg
+ \return double
+*/
 double DoInt (double arg)
   {
   return (int) arg;   // drop fractional part
   }
 
+/*!
+ \brief
+
+ \fn DoRandom
+ \param arg
+ \return double
+*/
 double DoRandom (double arg)
   {
   return getrandom (static_cast <int> (arg));  // random number in range 0 to arg
   }
 
+/*!
+ \brief
+
+ \fn DoPercent
+ \param arg
+ \return double
+*/
 double DoPercent (double arg)
   {
   if (percent (static_cast <int> (arg)))  // true x% of the time
@@ -206,16 +355,40 @@ double DoPercent (double arg)
     return 0.0;
   }
 
+/*!
+ \brief
+
+ \fn DoMin
+ \param arg1
+ \param arg2
+ \return const double
+*/
 const double DoMin (const double arg1, const double arg2)
   {
   return (arg1 < arg2 ? arg1 : arg2);
   }
 
+/*!
+ \brief
+
+ \fn DoMax
+ \param arg1
+ \param arg2
+ \return const double
+*/
 const double DoMax (const double arg1, const double arg2)
   {
   return (arg1 > arg2 ? arg1 : arg2);
   }
 
+/*!
+ \brief
+
+ \fn DoFmod
+ \param arg1
+ \param arg2
+ \return const double
+*/
 const double DoFmod (const double arg1, const double arg2)
   {
   if (arg2 == 0.0)
@@ -224,16 +397,41 @@ const double DoFmod (const double arg1, const double arg2)
   return fmod (arg1, arg2);
   }
 
+/*!
+ \brief
+
+ \fn DoPow
+ \param arg1
+ \param arg2
+ \return const double
+*/
 const double DoPow (const double arg1, const double arg2)
   {
   return pow (arg1, arg2);
   }
 
+/*!
+ \brief
+
+ \fn DoRoll
+ \param arg1
+ \param arg2
+ \return const double
+*/
 const double DoRoll (const double arg1, const double arg2)
   {
   return roll (static_cast <int> (arg1), static_cast <int> (arg2));
   }
 
+/*!
+ \brief
+
+ \fn DoIf
+ \param arg1
+ \param arg2
+ \param arg3
+ \return const double
+*/
 const double DoIf (const double arg1, const double arg2, const double arg3)
   {
   if (arg1 != 0.0)
@@ -242,18 +440,36 @@ const double DoIf (const double arg1, const double arg2, const double arg3)
     return arg3;
   }
 
+/*!
+ \brief
+
+ \typedef OneArgFunction*/
 typedef double (*OneArgFunction)  (double arg);
+/*!
+ \brief
+
+ \typedef TwoArgFunction*/
 typedef const double (*TwoArgFunction)  (const double arg1, const double arg2);
+/*!
+ \brief
+
+ \typedef ThreeArgFunction*/
 typedef const double (*ThreeArgFunction)  (const double arg1, const double arg2, const double arg3);
 
 // maps of function names to functions
-static std::map<std::string, OneArgFunction>    OneArgumentFunctions;
-static std::map<std::string, TwoArgFunction>    TwoArgumentFunctions;
-static std::map<std::string, ThreeArgFunction>  ThreeArgumentFunctions;
+static std::map<std::string, OneArgFunction>    OneArgumentFunctions; /*!< TODO */
+static std::map<std::string, TwoArgFunction>    TwoArgumentFunctions; /*!< TODO */
+static std::map<std::string, ThreeArgFunction>  ThreeArgumentFunctions; /*!< TODO */
 
 // for standard library functions
 #define STD_FUNCTION(arg) OneArgumentFunctions [#arg] = arg
 
+/*!
+ \brief
+
+ \fn LoadOneArgumentFunctions
+ \return int
+*/
 static int LoadOneArgumentFunctions ()
   {
   OneArgumentFunctions ["abs"] = fabs;
@@ -288,6 +504,12 @@ static int LoadOneArgumentFunctions ()
   return 0;
   } // end of LoadOneArgumentFunctions
 
+/*!
+ \brief
+
+ \fn LoadTwoArgumentFunctions
+ \return int
+*/
 static int LoadTwoArgumentFunctions ()
   {
   TwoArgumentFunctions ["min"]  = DoMin;
@@ -298,12 +520,25 @@ static int LoadTwoArgumentFunctions ()
   return 0;
   } // end of LoadTwoArgumentFunctions
 
+/*!
+ \brief
+
+ \fn LoadThreeArgumentFunctions
+ \return int
+*/
 static int LoadThreeArgumentFunctions ()
   {
   ThreeArgumentFunctions ["if"]  = DoIf;
   return 0;
   } // end of LoadThreeArgumentFunctions
 
+/*!
+ \brief
+
+ \fn Parser::GetToken
+ \param ignoreSign
+ \return const Parser::TokenType
+*/
 const Parser::TokenType Parser::GetToken (const bool ignoreSign)
   {
   word_.erase (0, std::string::npos);
@@ -454,10 +689,17 @@ const Parser::TokenType Parser::GetToken (const bool ignoreSign)
   }   // end of Parser::GetToken
 
 // force load of functions at static initialisation time
-static int doLoadOneArgumentFunctions = LoadOneArgumentFunctions ();
-static int doLoadTwoArgumentFunctions = LoadTwoArgumentFunctions ();
-static int doLoadThreeArgumentFunctions = LoadThreeArgumentFunctions ();
+static int doLoadOneArgumentFunctions = LoadOneArgumentFunctions (); /*!< TODO */
+static int doLoadTwoArgumentFunctions = LoadTwoArgumentFunctions (); /*!< TODO */
+static int doLoadThreeArgumentFunctions = LoadThreeArgumentFunctions (); /*!< TODO */
 
+/*!
+ \brief
+
+ \fn Parser::Primary
+ \param get
+ \return const double
+*/
 const double Parser::Primary (const bool get)   // primary (base) tokens
   {
   
@@ -566,6 +808,13 @@ const double Parser::Primary (const bool get)   // primary (base) tokens
   
   } // end of Parser::Primary 
 
+/*!
+ \brief
+
+ \fn Parser::Term
+ \param get
+ \return const double
+*/
 const double Parser::Term (const bool get)    // multiply and divide
   {
   double left = Primary (get);
@@ -589,6 +838,13 @@ const double Parser::Term (const bool get)    // multiply and divide
     }   // end of loop
   } // end of Parser::Term
 
+/*!
+ \brief
+
+ \fn Parser::AddSubtract
+ \param get
+ \return const double
+*/
 const double Parser::AddSubtract (const bool get)  // add and subtract
   {
   double left = Term (get);
@@ -603,6 +859,13 @@ const double Parser::AddSubtract (const bool get)  // add and subtract
     }   // end of loop
   } // end of Parser::AddSubtract
 
+/*!
+ \brief
+
+ \fn Parser::Comparison
+ \param get
+ \return const double
+*/
 const double Parser::Comparison (const bool get)  // LT, GT, LE, EQ etc.
   {
   double left = AddSubtract (get);
@@ -621,6 +884,13 @@ const double Parser::Comparison (const bool get)  // LT, GT, LE, EQ etc.
     }   // end of loop
   } // end of Parser::Comparison
 
+/*!
+ \brief
+
+ \fn Parser::Expression
+ \param get
+ \return const double
+*/
 const double Parser::Expression (const bool get)  // AND and OR
   {
   double left = Comparison (get);
@@ -645,6 +915,13 @@ const double Parser::Expression (const bool get)  // AND and OR
     }   // end of loop
   } // end of Parser::Expression
 
+/*!
+ \brief
+
+ \fn Parser::CommaList
+ \param get
+ \return const double
+*/
 const double Parser::CommaList (const bool get)  // expr1, expr2
   {
   double left = Expression (get);
@@ -658,6 +935,12 @@ const double Parser::CommaList (const bool get)  // expr1, expr2
     }   // end of loop
   } // end of Parser::CommaList
 
+/*!
+ \brief
+
+ \fn Parser::Evaluate
+ \return const double
+*/
 const double Parser::Evaluate ()  // get result
   {
   pWord_    = program_.c_str ();
@@ -670,6 +953,13 @@ const double Parser::Evaluate ()  // get result
   }
 
 // change program and evaluate it
+/*!
+ \brief
+
+ \fn Parser::Evaluate
+ \param program
+ \return const double
+*/
 const double Parser::Evaluate (const std::string & program)  // get result
   {
   program_  = program;
@@ -677,6 +967,11 @@ const double Parser::Evaluate (const std::string & program)  // get result
   return Evaluate ();
   }
 
+/*!
+ \brief
+
+ \fn Parser::ConvertBinHex
+*/
 void Parser::ConvertBinHex(void) {
     // convert hex
     QString s(program_.data());

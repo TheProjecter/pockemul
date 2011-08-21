@@ -7,8 +7,17 @@
 
 #include "lcc.h"
 
-const QByteArray Alpha="_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const QByteArray Alpha="_ABCDEFGHIJKLMNOPQRSTUVWXYZ"; /*!< TODO */
 
+/*!
+ \brief
+
+ \fn Clcc::Clcc
+ \param QMap<QString
+ \param sources
+ \param QMap<QString
+ \param out
+*/
 Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     this->sources = sources;
     this->out = out;
@@ -54,6 +63,13 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcc::writln
+ \param fname
+ \param s
+*/
 void Clcc::writln(QString fname,QString s) {
     if (fname !="LOG")
     {
@@ -64,9 +80,23 @@ void Clcc::writln(QString fname,QString s) {
 
 
 
+/*!
+ \brief
+
+ \fn Clcc::writeln
+ \param fname
+ \param s
+*/
 void Clcc::writeln(QString fname,QString s){
     write(fname,s+"\r\n");
 }
+/*!
+ \brief
+
+ \fn Clcc::write
+ \param fname
+ \param s
+*/
 void Clcc::write(QString fname,QString s){
     // emit signal ?
     // or fill an arraybuffer ?
@@ -80,6 +110,12 @@ void Clcc::write(QString fname,QString s){
 //{--------------------------------------------------------------}
 //{ Write error Message and Halt }
 
+/*!
+ \brief
+
+ \fn Clcc::Error
+ \param s
+*/
 void Clcc::Error(QString s) {
   if (!Tok.isEmpty()) s.append("\r\nToken: "+Tok);
   if (!dummy.isEmpty())s.append("\r\nCode: "+dummy);
@@ -90,23 +126,36 @@ void Clcc::Error(QString s) {
 //{--------------------------------------------------------------}
 //{ Write "<something> Expected" }
 
+/*!
+ \brief
+
+ \fn Clcc::Expected
+ \param s
+*/
 void Clcc::Expected(QString s) {
     Error(s + " Expected");
 }
 
 
-const int MODEKEYB = 0;
-const int MODEFILE = 1;
-const int MODESTR = 2;
+const int MODEKEYB = 0; /*!< TODO */
+const int MODEFILE = 1; /*!< TODO */
+const int MODESTR = 2; /*!< TODO */
 
 
-QList<char> SpacesList = QList<char> () << ' ' << 0x09 << 0x0A << 0x0B << 0x0C << 0x0D << 0x0E;
-QList<char> OpsList = QList<char> () << '<' << '>' << '+' << '-' << '*' << '/' << '~' << '&' << '|' << '!' << '%' << '^';
-QList<char> Ops2List = QList<char> () << '<' << '>' << '+' << '-' << '*' << '/' << '~' << '&' << '|' << '!' << '%' << '^' << '=';
-QList<char> HexList = QList<char> () << 'A' << 'B' << 'C' << 'D' << 'E' << 'F';
-QList<char> NumList = QList<char> () << '0' << '1' << '2' << '3' << '4' << '5' << '6' << '7' << '8' << '9';
+QList<char> SpacesList = QList<char> () << ' ' << 0x09 << 0x0A << 0x0B << 0x0C << 0x0D << 0x0E; /*!< TODO */
+QList<char> OpsList = QList<char> () << '<' << '>' << '+' << '-' << '*' << '/' << '~' << '&' << '|' << '!' << '%' << '^'; /*!< TODO */
+QList<char> Ops2List = QList<char> () << '<' << '>' << '+' << '-' << '*' << '/' << '~' << '&' << '|' << '!' << '%' << '^' << '='; /*!< TODO */
+QList<char> HexList = QList<char> () << 'A' << 'B' << 'C' << 'D' << 'E' << 'F'; /*!< TODO */
+QList<char> NumList = QList<char> () << '0' << '1' << '2' << '3' << '4' << '5' << '6' << '7' << '8' << '9'; /*!< TODO */
 
 
+/*!
+ \brief
+
+ \fn Clcc::FindProc
+ \param t
+ \return bool
+*/
 bool Clcc::FindProc(QByteArray t) {
     bool result = false;
     for (int i = 0; i < proclist.size(); i++) {
@@ -120,6 +169,13 @@ bool Clcc::FindProc(QByteArray t) {
     return result;
 }
 
+/*!
+ \brief
+
+ \fn Clcc::FindVar
+ \param t
+ \return bool
+*/
 bool Clcc::FindVar(QByteArray t) {
     bool result = false;
     for (int i = 0 ; i< varlist.size(); i++) {
@@ -137,6 +193,14 @@ bool Clcc::FindVar(QByteArray t) {
 { Test if variable is at address }
 */
 
+/*!
+ \brief
+
+ \fn Clcc::IsVarAtAdr
+ \param adr
+ \param size
+ \return bool
+*/
 bool Clcc::IsVarAtAdr(int adr,int size) {
     VarFound = -1;
     for (int i = 0; i< varlist.size(); i++) {
@@ -148,6 +212,12 @@ bool Clcc::IsVarAtAdr(int adr,int size) {
     return false;
 }
 
+/*!
+ \brief
+
+ \fn Clcc::printvarlist
+ \param out
+*/
 void Clcc::printvarlist(QString out) {
     int  initn, adr, size, lproc;
     QByteArray s, name, typ;
@@ -218,6 +288,12 @@ void Clcc::printvarlist(QString out) {
 /*{--------------------------------------------------------------}
 { Print Proc Table }
 */
+/*!
+ \brief
+
+ \fn Clcc::printproclist
+ \param out
+*/
 void Clcc::printproclist(QString out) {
 
     writeln(out,"");
@@ -238,6 +314,12 @@ void Clcc::printproclist(QString out) {
     writeln(out,"");
 }
 
+/*!
+ \brief
+
+ \fn Clcc::vardecl
+ \return QByteArray
+*/
 QByteArray Clcc::vardecl(void) {
 
 //var Name, Typ, t: string;
@@ -277,6 +359,19 @@ QByteArray Clcc::vardecl(void) {
     return name;
 }
 
+/*!
+ \brief
+
+ \fn Clcc::AddProc
+ \param t
+ \param c
+ \param par
+ \param pc
+ \param hr
+ \param wd
+ \param partyp
+ \param parname
+*/
 void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, bool wd,QList<QByteArray> partyp,QList<QByteArray> parname) {
 
     QByteArray s = ExtrWord(&t);
@@ -301,6 +396,17 @@ void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, 
 
 //{ Add Variable Declaration }
 
+/*!
+ \brief
+
+ \fn Clcc::AddVar
+ \param t
+ \param typ
+ \param xr
+ \param pnt
+ \param loc
+ \param proc
+*/
 void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc) {
 
     QByteArray litem;
@@ -443,6 +549,13 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
 
 //{ Split String in Words }
 
+/*!
+ \brief
+
+ \fn Clcc::ExtrWord
+ \param word
+ \return QByteArray
+*/
 QByteArray Clcc::ExtrWord(QByteArray *word) {
 
     char c;
@@ -470,6 +583,14 @@ QByteArray Clcc::ExtrWord(QByteArray *word) {
 
 //{ Split String in Words }
 
+/*!
+ \brief
+
+ \fn Clcc::ExtrCust
+ \param word
+ \param c
+ \return QByteArray
+*/
 QByteArray Clcc::ExtrCust(QByteArray *word,char c) {
     char sc;
     QByteArray result = "";
@@ -498,6 +619,13 @@ QByteArray Clcc::ExtrCust(QByteArray *word,char c) {
 
 //{ Split List }
 
+/*!
+ \brief
+
+ \fn Clcc::ExtrList
+ \param list
+ \return QByteArray
+*/
 QByteArray Clcc::ExtrList(QByteArray *list) {
 
     QByteArray result = "";
@@ -523,6 +651,16 @@ QByteArray Clcc::ExtrList(QByteArray *list) {
 
 //{ Allocate Variable Declaration }
 
+/*!
+ \brief
+
+ \fn Clcc::AllocVar
+ \param xr
+ \param at
+ \param size
+ \param adr
+ \return int
+*/
 int Clcc::AllocVar(bool xr,bool at,int  size, int adr) {
     QByteArray s;
     int result;
@@ -563,10 +701,23 @@ int Clcc::AllocVar(bool xr,bool at,int  size, int adr) {
     return result;
 }
 
+/*!
+ \brief
+
+ \fn Clcc::Read
+ \return char
+*/
 char Clcc::Read(void) {
     return 0;
 }
 
+/*!
+ \brief
+
+ \fn Clcc::rd
+ \param c
+ \param s
+*/
 void Clcc::rd(char *c, QByteArray *s) {
     if (md == 0) *c=Read();
     else
@@ -597,6 +748,13 @@ void Clcc::rd(char *c, QByteArray *s) {
 
 }
 
+/*!
+ \brief
+
+ \fn Clcc::GetToken
+ \param mode
+ \param s
+*/
 void Clcc::GetToken(int mode, QByteArray *s) {
 
     Tok="";
@@ -681,6 +839,12 @@ void Clcc::GetToken(int mode, QByteArray *s) {
 //{--------------------------------------------------------------}
 //{ Get an Identifier }
 
+/*!
+ \brief
+
+ \fn Clcc::GetName
+ \return QByteArray
+*/
 QByteArray Clcc::GetName(void) {
     QByteArray n;
 
@@ -695,12 +859,28 @@ QByteArray Clcc::GetName(void) {
     return (n);
 }
 
+/*!
+ \brief
+
+ \fn Clcc::skiphex
+ \param hs
+ \param hi
+ \return int
+*/
 int Clcc::skiphex(QByteArray hs,int hi) {
     while ( (hi < hs.length()) && QByteArray("0123456789ABCDEFabcdef").contains(hs[hi])) {
         hi++;
     }
     return hi;
 }
+/*!
+ \brief
+
+ \fn Clcc::skipbin
+ \param hs
+ \param hi
+ \return int
+*/
 int Clcc::skipbin(QByteArray hs,int hi) {
     while ( (hi < hs.length()) && QByteArray("0123456789").contains(hs[hi])) {
         hi++;
@@ -710,6 +890,14 @@ int Clcc::skipbin(QByteArray hs,int hi) {
 
 //{--------------------------------------------------------------}
 
+/*!
+ \brief
+
+ \fn Clcc::find_text
+ \param such
+ \param text
+ \return int
+*/
 int Clcc::find_text(QByteArray such, QByteArray text) {
     int i;
     char c;
@@ -737,11 +925,23 @@ int Clcc::find_text(QByteArray such, QByteArray text) {
 
 //{--------------------------------------------------------------}
 //{ Recognize an Addition Operator }
+/*!
+ \brief
+
+ \fn Clcc::IsAddop
+ \param c
+ \return bool
+*/
 bool Clcc::IsAddop(char c) {
     return (QByteArray("+-|~$§").contains(c));
 }
 
 //{--------------------------------------------------------------}
+/*!
+ \brief
+
+ \fn Clcc::Expression
+*/
 void Clcc::Expression(void) {
     int i;
 
@@ -791,6 +991,13 @@ void Clcc::Expression(void) {
 //{--------------------------------------------------------------}
 //{ Recognize a Numeric Character }
 
+/*!
+ \brief
+
+ \fn Clcc::IsDigit
+ \param c
+ \return bool
+*/
 bool Clcc::IsDigit(char c) {
     return ( (c >='0') && (c<='9') );
 }
@@ -798,6 +1005,12 @@ bool Clcc::IsDigit(char c) {
 //{--------------------------------------------------------------}
 //{ Get a Number }
 
+/*!
+ \brief
+
+ \fn Clcc::GetNumber
+ \return QByteArray
+*/
 QByteArray Clcc::GetNumber(void) {
 QByteArray n;
 int p;
@@ -839,6 +1052,12 @@ bool isbin, ishex, ischr;
 //{--------------------------------------------------------------}
 //{ Load a Variable to the Primary Register }
 
+/*!
+ \brief
+
+ \fn Clcc::LoadVariable
+ \param name
+*/
 void Clcc::LoadVariable(QByteArray name) {
     QByteArray typ;
     bool xr,arr,loc;
@@ -987,6 +1206,12 @@ void Clcc::LoadVariable(QByteArray name) {
 /*
 {--------------------------------------------------------------}
 { Store the Primary Register to a Variable }
+*/
+/*!
+ \brief
+
+ \fn Clcc::StoreVariable
+ \param name
 */
 void Clcc::StoreVariable(QByteArray name) {
 
@@ -1146,6 +1371,11 @@ void Clcc::StoreVariable(QByteArray name) {
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Factor }
 
+/*!
+ \brief
+
+ \fn Clcc::Factor
+*/
 void Clcc::Factor(void) {
     //var s{, temp}: string;
     QByteArray s;
@@ -1238,6 +1468,11 @@ void Clcc::Factor(void) {
 
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Factor with Optional "Not" }
+/*!
+ \brief
+
+ \fn Clcc::NotFactor
+*/
 void Clcc::NotFactor(void) {
     if (Look == '!') {
         rd(&Look, &Tok);
@@ -1267,6 +1502,11 @@ void Clcc::NotFactor(void) {
 
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Term }
+/*!
+ \brief
+
+ \fn Clcc::Term
+*/
 void Clcc::Term(void) {
     NotFactor();
     while (QByteArray("*/&%").contains(Look)) {
@@ -1281,6 +1521,11 @@ void Clcc::Term(void) {
 
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Factor with Optional Sign }
+/*!
+ \brief
+
+ \fn Clcc::SignedTerm
+*/
 void Clcc::SignedTerm(void) {
     char Sign;
     Sign = Look;
@@ -1295,6 +1540,11 @@ void Clcc::SignedTerm(void) {
 //{--------------------------------------------------------------}
 //{ Parse and Translate an Addition Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::Add
+*/
 void Clcc::Add() {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1306,6 +1556,11 @@ void Clcc::Add() {
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Subtraction Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::Subtract
+*/
 void Clcc::Subtract(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1318,6 +1573,11 @@ void Clcc::Subtract(void) {
 //{--------------------------------------------------------------}
 //{ Parse and Translate an Multiply Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::Multiply
+*/
 void Clcc::Multiply(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1330,6 +1590,11 @@ void Clcc::Multiply(void) {
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Divide Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::Divide
+*/
 void Clcc::Divide(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1341,6 +1606,11 @@ void Clcc::Divide(void) {
 
 //{ Parse and Translate a Subtraction Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::_Or
+*/
 void Clcc::_Or(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1351,6 +1621,11 @@ void Clcc::_Or(void) {
 
 //{ Parse and Translate a Shift Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::ShiftR
+*/
 void Clcc::ShiftR(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1361,6 +1636,11 @@ void Clcc::ShiftR(void) {
 
 //{ Parse and Translate a Shift Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::ShiftL
+*/
 void Clcc::ShiftL(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1371,6 +1651,11 @@ void Clcc::ShiftL(void) {
 
 //{ Parse and Translate a Subtraction Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::_Xor
+*/
 void Clcc::_Xor(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1382,6 +1667,11 @@ void Clcc::_Xor(void) {
 
 //{ Parse and Translate a Boolean And Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::_And
+*/
 void Clcc::_And(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1393,6 +1683,11 @@ void Clcc::_And(void) {
 
 //{ Parse and Translate a Modulo Operation }
 
+/*!
+ \brief
+
+ \fn Clcc::_Mod
+*/
 void Clcc::_Mod(void) {
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
@@ -1406,6 +1701,11 @@ void Clcc::_Mod(void) {
 //{-------------------------------------------------------------}
 //{ Procedure Call }
 
+/*!
+ \brief
+
+ \fn Clcc::ProcCall
+*/
 void Clcc::ProcCall() {
     int i, c, a;
     QByteArray temp;
@@ -1499,6 +1799,11 @@ void Clcc::ProcCall() {
 
 
 
+/*!
+ \brief
+
+ \fn Clcc::repadr
+*/
 void Clcc::repadr(void) {
     int lc, pc, m, a;
     QByteArray name;
@@ -1544,6 +1849,11 @@ void Clcc::repadr(void) {
 //{--------------------------------------------------------------}
 //{ Parse and Translate an Assignment Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::Assignment
+*/
 void Clcc::Assignment(void) {
     QByteArray name,temp,s;
     bool fv;
@@ -1717,6 +2027,11 @@ writln("LOG",";Assignement:"+Tok);
 //{---------------------------------------------------------------}
 //{ Parse and Translate a Boolean Expression }
 
+/*!
+ \brief
+
+ \fn Clcc::BoolExpression
+*/
 void Clcc::BoolExpression(void) {
     int i;
     i = 0;
@@ -1755,6 +2070,11 @@ void Clcc::BoolExpression(void) {
 //{--------------------------------------------------------------}
 //{ Recognize and Translate a Boolean OR }
 
+/*!
+ \brief
+
+ \fn Clcc::BoolOr
+*/
 void Clcc::BoolOr(void) {
    rd(&Look, &Tok); Tok = Tok.trimmed();
    NotCompTerm();
@@ -1764,12 +2084,22 @@ void Clcc::BoolOr(void) {
 //{--------------------------------------------------------------}
 //{ Recognize and Translate a Boolean OR }
 
+/*!
+ \brief
+
+ \fn Clcc::BoolAnd
+*/
 void Clcc::BoolAnd(void) {
    rd(&Look, &Tok); Tok=Tok.trimmed();
    NotCompTerm();
    PopAnd();
 }
 
+/*!
+ \brief
+
+ \fn Clcc::NotCompTerm
+*/
 void Clcc::NotCompTerm(void) {
 char Sign;
 
@@ -1782,6 +2112,11 @@ char Sign;
 }
 
 
+/*!
+ \brief
+
+ \fn Clcc::CompTerm
+*/
 void Clcc::CompTerm(void) {
     char compOp;
     if (Look =='(') {
@@ -1809,6 +2144,12 @@ void Clcc::CompTerm(void) {
 //{--------------------------------------------------------------}
 //{ Generate a Unique Label }
 
+/*!
+ \brief
+
+ \fn Clcc::NewLabel
+ \return QByteArray
+*/
 QByteArray Clcc::NewLabel(void) {
    LCount++;
    return "LB" + QByteArray::number(LCount-1);
@@ -1817,6 +2158,12 @@ QByteArray Clcc::NewLabel(void) {
 //{--------------------------------------------------------------}
 //{ Post a Label To Output }
 
+/*!
+ \brief
+
+ \fn Clcc::PostLabel
+ \param L
+*/
 void Clcc::PostLabel(QByteArray L) {
    writln(outf,"  "+L+":");
 }
@@ -1825,6 +2172,11 @@ void Clcc::PostLabel(QByteArray L) {
 //{-------------------------------------------------------------}
 //{ Switch Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoSwitch
+*/
 void Clcc::DoSwitch(void) {
     QByteArray L1, temp;
     bool iselse;
@@ -1866,6 +2218,11 @@ void Clcc::DoSwitch(void) {
 
 //{-------------------------------------------------------------}
 //{ If Statement }
+/*!
+ \brief
+
+ \fn Clcc::DoIf
+*/
 void Clcc::DoIf(void) {
     QByteArray L1, L2;
 
@@ -1908,6 +2265,11 @@ void Clcc::DoIf(void) {
 //{-------------------------------------------------------------}
 //{ Goto Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoGoto
+*/
 void Clcc::DoGoto(void) {
     Tok.remove(0,5); Tok = Tok.trimmed();
     writln(outf, "\tRJMP\t"+Tok+"\t; Goto");
@@ -1918,6 +2280,11 @@ void Clcc::DoGoto(void) {
 //{-------------------------------------------------------------}
 //{ Label Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoLabel
+*/
 void Clcc::DoLabel(void) {
     Tok.remove(0,6); Tok = Tok.trimmed();//delete(tok, 1, 6); tok := trim(tok);
     if (FindVar(Tok) || FindProc(Tok)) Error(Tok+": This label name is already used!");
@@ -1929,6 +2296,11 @@ void Clcc::DoLabel(void) {
 //{-------------------------------------------------------------}
 //{ Break Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoBreak
+*/
 void Clcc::DoBreak(void) {
     if (InnerLoop == "loop") writln(outf,"\tLEAVE\t\t; Break");
     else writln(outf,"\tRJMP\t"+ExitLabel+"\t; Break");
@@ -1939,6 +2311,11 @@ void Clcc::DoBreak(void) {
 //{-------------------------------------------------------------}
 //{ Exit Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoReturn
+*/
 void Clcc::DoReturn(void) {
     Tok.remove(0,6); Tok = Tok.trimmed();
     if (!Tok.isEmpty()) {
@@ -1954,6 +2331,11 @@ void Clcc::DoReturn(void) {
 //{-------------------------------------------------------------}
 //{ Loop Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoLoop
+*/
 void Clcc::DoLoop(void) {
     QByteArray L1,L2;
 
@@ -1983,6 +2365,11 @@ void Clcc::DoLoop(void) {
 //{-------------------------------------------------------------}
 //{ While Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoWhile
+*/
 void Clcc::DoWhile(void) {
     QByteArray L1,L2;
 
@@ -2011,6 +2398,11 @@ void Clcc::DoWhile(void) {
 //{-------------------------------------------------------------}
 //{ For Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoFor
+*/
 void Clcc::DoFor(void) {
     QByteArray L1, L2, temp;
     QByteArray afterop;
@@ -2061,6 +2453,11 @@ void Clcc::DoFor(void) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcc::DoLoad
+*/
 void Clcc::DoLoad(void) {
     Tok.remove(0,5);
     rd(&Look, &Tok);
@@ -2068,6 +2465,11 @@ void Clcc::DoLoad(void) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcc::DoSave
+*/
 void Clcc::DoSave(void) {
     QByteArray name;
 
@@ -2079,6 +2481,11 @@ void Clcc::DoSave(void) {
 //{-------------------------------------------------------------}
 //{ Do..While Statement }
 
+/*!
+ \brief
+
+ \fn Clcc::DoDoWhile
+*/
 void Clcc::DoDoWhile(void) {
     QByteArray L1, L2;
 
@@ -2107,6 +2514,11 @@ void Clcc::DoDoWhile(void) {
     writln(outf,"\t; End of do..while");
 }
 
+/*!
+ \brief
+
+ \fn Clcc::DoSaveState
+*/
 void Clcc::DoSaveState(void) {
     if (LState.isEmpty()) {
         LState = NewLabel();
@@ -2121,6 +2533,11 @@ void Clcc::DoSaveState(void) {
     DoRestoreState();
 }
 
+/*!
+ \brief
+
+ \fn Clcc::DoRestoreState
+*/
 void Clcc::DoRestoreState(void) {
     if (LState.isEmpty()) {
         QMessageBox::about(mainwindow,"ERROR","Restore with no previous save!!!");
@@ -2138,6 +2555,11 @@ void Clcc::DoRestoreState(void) {
 //{--------------------------------------------------------------}
 //{ Parse and Translate a Block }
 
+/*!
+ \brief
+
+ \fn Clcc::Block
+*/
 void Clcc::Block(void) {
     QByteArray name;
 
@@ -2192,6 +2614,12 @@ void Clcc::Block(void) {
 
 
 
+/*!
+ \brief
+
+ \fn Clcc::removelocvars
+ \param pn
+*/
 void Clcc::removelocvars(QByteArray pn) {
     int i, c;
 
@@ -2212,6 +2640,12 @@ void Clcc::removelocvars(QByteArray pn) {
 
 /*{--------------------------------------------------------------}
 { Do First Scan }
+*/
+/*!
+ \brief
+
+ \fn Clcc::FirstScan
+ \param filen
 */
 void Clcc::FirstScan(QByteArray filen) {
     QByteArray name, name2, t, temp, s;
@@ -2301,6 +2735,11 @@ void Clcc::FirstScan(QByteArray filen) {
 
 
 
+/*!
+ \brief
+
+ \fn Clcc::SecondScan
+*/
 void Clcc::SecondScan(void) {
 QByteArray name, typ, s, s2, s3;
 bool    at, arr;
@@ -2429,21 +2868,19 @@ int    adr, size, value;
 //                insert(s2, asmtext, pos(s, asmtext));
 //                s2 = s2 + "\r\tDECA";
 //            }
-//         s = "\tLIA\t"+QString("%1").arg(i)+"\t; Load constant "+QString("%1").arg(i)+"\r\tLP\t3\r\tADM\t\t; Addition\r\tEXAB";
-//         while (asmtext.contains(s)) {
-//             asmtext.remove(asmtext.indexOf(s), s.length());
-//             insert(s3, asmtext, pos(s, asmtext));
-//             s3 = s3 + "\r\tINCA";
-//         }
-//     }
+//            s = "\tLIA\t"+QString("%1").arg(i)+"\t; Load constant "+QString("%1").arg(i)+"\r\tLP\t3\r\tADM\t\t; Addition\r\tEXAB";
+//            while (asmtext.contains(s)) {
+//                asmtext.remove(asmtext.indexOf(s), s.length());
+//                insert(s3, asmtext, pos(s, asmtext));
+//                s3 = s3 + "\r\tINCA";
+//            }
+//        }
         s = "\tEXAB\r\tEXAB\r";
         while (asmtext.contains(s)) asmtext.remove(asmtext.indexOf(s), s.length());
 
-//        assignfile(f, 'temp.asm");
-//        rewrite(f);
         writeln(f, asmtext);
         writeln(f, libtext);
-//        closefile(f);
+
 
 #if 0
         {
@@ -2660,6 +3097,11 @@ int    adr, size, value;
 //{--------------------------------------------------------------}
 
 
+/*!
+ \brief
+
+ \fn Clcc::run
+*/
 void Clcc::run() {
 
     // Fetch all sources and precomp
