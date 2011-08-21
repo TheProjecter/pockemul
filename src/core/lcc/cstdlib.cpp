@@ -1,13 +1,35 @@
 #include "cstdlib.h"
 
 #include "mainwindowpockemul.h"
-extern MainWindowPockemul *mainwindow;
+extern MainWindowPockemul *mainwindow; /*!< TODO */
 
+/*!
+ \brief  ctor
+
+ \fn Cstdlib::Cstdlib
+*/
 Cstdlib::Cstdlib(void) {
 
 }
 
+/*!
+ \brief ctor
+    create the object and load the corresponding libs
 
+ \fn Cstdlib::Cstdlib
+ \param targetmodel
+*/
+Cstdlib::Cstdlib(QString targetmodel) {
+    this->model = targetmodel;
+    LoadLibs();
+}
+
+/*!
+ \brief
+
+ \fn Cstdlib::setModel
+ \param m
+*/
 void Cstdlib::setModel(QString m) {
     model = m;
 
@@ -15,7 +37,14 @@ void Cstdlib::setModel(QString m) {
 }
 
 
+/*!
+ \brief
+
+ \fn Cstdlib::LoadLibs
+*/
 void Cstdlib::LoadLibs(void) {
+    libmap.clear();
+
     // Fetch all libs available for the current model
     //
     QDir dir(":/lcc/model/"+model);
@@ -34,4 +63,12 @@ void Cstdlib::LoadLibs(void) {
         }
         libmap[fileInfo.fileName()]=line;
     }
+}
+
+bool Cstdlib::contains(QString op) {
+    return libmap.contains(op);
+}
+
+QByteArray Cstdlib::getLib(QString op) {
+    return libmap.value(op);
 }

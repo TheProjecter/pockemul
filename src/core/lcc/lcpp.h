@@ -16,14 +16,17 @@ public:
     Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model);
 
     void run();
+    QString parsefile(QString srcName,QString source);
+    QString getModel(void);
 
+private:
     void abort(QString t);
     QString replace_text(QString text, QString such, QString ers);
     bool findsymbol(QString l);
     void addsymbol(QString s1, QString s2);
     QString extractparam(QString s,int p) ;
     QString readline(QStringListIterator *linesIter);
-    QString parsefile(QString srcName,QString source);
+
     void writeln(QString srcName,QString s);
 
     QMap<QString,QByteArray> *sources;

@@ -8,11 +8,37 @@
 #if ENABLE_COMPILATION
 
 
+
+
+
+/*!
+ \brief C PreProcessor Class
+
+ \class Clcpp
+
+*/
+
+
+/*!
+ \brief
+
+ \fn Clcpp::abort
+ \param t
+*/
 void Clcpp::abort(QString t) {
     QMessageBox::about((QWidget*)mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + inpf);
 }
 
 
+/*!
+ \brief
+
+ \fn Clcpp::replace_text
+ \param text
+ \param such
+ \param ers
+ \return QString
+*/
 QString Clcpp::replace_text(QString text, QString such, QString ers) {
 
     QString regex = "([^_0-9A-Za-z])("+such+")([^_0-9A-Za-z])";
@@ -20,6 +46,13 @@ QString Clcpp::replace_text(QString text, QString such, QString ers) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcpp::findsymbol
+ \param l
+ \return bool
+*/
 bool Clcpp::findsymbol(QString l) {
 #if 1
     return sym.contains(l);
@@ -33,6 +66,13 @@ bool Clcpp::findsymbol(QString l) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcpp::addsymbol
+ \param s1
+ \param s2
+*/
 void Clcpp::addsymbol(QString s1, QString s2) {
     if (findsymbol(s1)) {
         abort("Symbol " + s1 + " already defined!");
@@ -45,6 +85,14 @@ void Clcpp::addsymbol(QString s1, QString s2) {
 
 
 
+/*!
+ \brief
+
+ \fn Clcpp::extractparam
+ \param s
+ \param p
+ \return QString
+*/
 QString Clcpp::extractparam(QString s,int p) {
 
 #if 1
@@ -72,6 +120,13 @@ QString Clcpp::extractparam(QString s,int p) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcpp::readline
+ \param linesIter
+ \return QString
+*/
 QString Clcpp::readline(QStringListIterator *linesIter) {
 
     char c;
@@ -130,6 +185,14 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
     return result;
 }
 
+/*!
+ \brief Pre-Compile hthe source code and store the result into the out MAP with the srcName
+
+ \fn Clcpp::parsefile
+ \param srcName
+ \param source
+ \return QString
+*/
 QString Clcpp::parsefile(QString srcName,QString source) {
 //var datei: textfile;
 //    lcnt: integer;
@@ -190,8 +253,8 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                 if (op.startsWith('<')) {
                     op.remove('<').remove('>');
 
-                    if (pStdLibs->libmap.contains(op)) {
-                        parsefile(srcName,pStdLibs->libmap.value(op));
+                    if (pStdLibs->contains(op)) {
+                        parsefile(srcName,pStdLibs->getLib(op));
                     }
                 }
             }
@@ -204,6 +267,11 @@ QString Clcpp::parsefile(QString srcName,QString source) {
 }
 
 
+/*!
+ \brief
+
+ \fn Clcpp::run
+*/
 void Clcpp::run() {
 
     // Fetch all sources and precomp
@@ -216,11 +284,26 @@ void Clcpp::run() {
 
 }
 
+/*!
+ \brief
+
+ \fn Clcpp::writeln
+ \param srcName
+ \param s
+*/
 void Clcpp::writeln(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
     out->insert(srcName,locs+"\r"+s.toAscii());
 }
 
+/*!
+ \brief ctor
+
+ \fn Clcpp::Clcpp
+ \param sources     Sources MAP
+ \param out         Out MAP
+ \param model       Target model used to include correct libary
+*/
 Clcpp::Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model) {
     this->sources = sources;
     this->out = out;
@@ -229,6 +312,16 @@ Clcpp::Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QSt
     pStdLibs = new Cstdlib();
     pStdLibs->setModel(model);
     lcom=false;
+}
+
+/*!
+ \brief retrieve the target model used
+
+ \fn Clcpp::getModel
+ \return QString
+*/
+QString Clcpp::getModel(void) {
+    return model;
 }
 
 #endif
