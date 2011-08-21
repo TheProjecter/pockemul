@@ -35,7 +35,15 @@ public:
     virtual	void	save_internal(QXmlStreamWriter *) =0;
 			void	save(void);
 
-	virtual	DWORD	get_mem(DWORD adr,int size) =0;		//get memory
+/*!
+ \brief Get data from memory
+
+ \fn get_mem
+ \param adr     address
+ \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
+ \return DWORD  value
+*/
+    virtual	DWORD	get_mem(DWORD adr,int size) =0;		//get memory
 	virtual	void	set_mem(DWORD adr,int size,DWORD data) =0;	//set memory
 	
 	virtual	bool	Get_Xin(void) =0;

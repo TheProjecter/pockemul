@@ -4,7 +4,6 @@
 #include <QMainWindow>
 
 
-#include "ide/highlighter.h"
 #include "lcc/lcpp.h"
 #include "lcc/lcc.h"
 
@@ -26,12 +25,10 @@ public:
     explicit WindowIDE(QWidget *parent = 0);
     ~WindowIDE();
 
-    void setupEditor(void);
+
     void refreshFileList(void);
 
-    void createTab(QString fname, QString text);
-
-    Highlighter *highlighter;
+    void createEditorTab(QString fname, QString text,bool = false);
 
     QMap<QString,QByteArray> mapSRC;
     QMap<QString,QByteArray> mapPP;
@@ -45,12 +42,16 @@ public:
     void addtargetCB(CPObject *pc);
 
     void createOutputTab(QString fname, QString text);
+
+public slots:
+    void saveAll(void);
+
 private slots:
     void compile(void);
-    void output(QString,QString);
     void save(void);
     void load(QListWidgetItem* id);
     void closeTab(int);
+    void newFile(void);
 
 signals:
     void newEmulatedPocket(CPObject *);
@@ -64,6 +65,8 @@ protected:
 
 
 private:
+    void setupEditor(void);
+
     Ui::WindowIDE *ui;
 };
 

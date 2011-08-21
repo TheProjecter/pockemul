@@ -17,22 +17,22 @@ public:
 	};
 	
 	int		getSize()		  { return Size; }
-	void	setSize(int size) { Size = size; };	
+    void	setSize(int size) { Size = size; }
 	
 	int		getAdr()		{ return Adr; }
-	void	setAdr(int adr)	{ Adr = adr; };
+    void	setAdr(int adr)	{ Adr = adr; }
 	
 	QString getResID() { return ResID; }
-	void	setResID(QString resid)	{ ResID = resid; };
+    void	setResID(QString resid)	{ ResID = resid; }
 	
 	QString getFileName() { return FileName; }
-	void	setFileName(QString filename)	{ FileName = filename; };
+    void	setFileName(QString filename)	{ FileName = filename; }
 	
 	QString getLabel() { return Label; }
-	void	setLabel(QString label)	{ Label = label; };
+    void	setLabel(QString label)	{ Label = label; }
 
 	int		getType() { return Type; }
-	void	setType(int type)	{ Type = type; };
+    void	setType(int type)	{ Type = type; }
 	
 private:
 	int		Size;

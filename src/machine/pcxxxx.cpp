@@ -906,3 +906,17 @@ void CpcXXXX::manageExtensions(QAction * action)
 
 }
 
+/*!
+ \brief
+
+ \fn CpcXXXX::loadMem
+ \param adr
+ \param data
+ \return bool
+*/
+bool CpcXXXX::Mem_Load(qint32 adr, QByteArray data ) {
+
+    QDataStream in(data);
+    in.readRawData ((char *) mem[adr], data.size() );
+    return true;
+}

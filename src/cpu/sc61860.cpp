@@ -2890,11 +2890,15 @@ DWORD Csc::get_reg(REGNAME regname)
 	}
 	return(0);
 }
-/*****************************************************************************/
-/* Set data to register														 */
-/*  ENTRY :REGNAME regname=REG_xx, DWORD data=value							 */
-/*  RETURN:none																 */
-/*****************************************************************************/
+
+
+/*!
+ \brief Set data to register
+
+ \fn Csc::set_reg
+ \param regname REG_xx
+ \param data    value
+*/
 void Csc::set_reg(REGNAME regname,DWORD data)
 {
 	switch(regname)
@@ -2916,11 +2920,15 @@ void Csc::set_reg(REGNAME regname,DWORD data)
 
 	}
 }
-/*****************************************************************************/
-/* Get data from memory														 */
-/*  ENTRY :DOWRD adr=address, int size=SIZE_xx								 */
-/*  RETURN:DWORD value														 */
-/*****************************************************************************/
+
+/*!
+ \brief Get data from memory
+
+ \fn Csc::get_mem
+ \param adr     address
+ \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
+ \return DWORD  value
+*/
 DWORD Csc::get_mem(DWORD adr,int size)
 {
 	switch(size)

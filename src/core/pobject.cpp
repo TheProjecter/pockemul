@@ -962,3 +962,4 @@ void CPObject::Dump()
 	dialogdump->show();
 }
 
+

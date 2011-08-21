@@ -1,3 +1,7 @@
+/*!
+    \file windowide.cpp
+    \brief Implementation of the WindowIDE class
+*/
 
 #include <QFile>
 
@@ -21,8 +25,20 @@
 #include "qhexpanel.h"
 #include "qoutpanel.h"
 
-extern QList<CPObject *> listpPObject;
+extern QList<CPObject *> listpPObject; /*!< TODO */
 
+/*!
+    \class WindowIDE
+    \brief IDE main class
+
+    The WindowIDE class ...
+*/
+
+/*!
+ \brief IDE main class constructor
+
+ \param parent
+*/
 WindowIDE::WindowIDE(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::WindowIDE)
@@ -35,13 +51,18 @@ WindowIDE::WindowIDE(QWidget *parent) :
     setupEditor();
 
     connect(ui->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
-//    connect(ui->installPB,SIGNAL(clicked()),this,SLOT(inject()));
-//    connect(ui->savePB,SIGNAL(clicked()),this,SLOT(save()));
+    connect(ui->actionSave,SIGNAL(triggered()),this,SLOT(save()));
+    connect(ui->actionSave_All,SIGNAL(triggered()),this,SLOT(saveAll()));
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(load(QListWidgetItem*)));
     connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
+    connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(newFile()));
 
 }
 
+/*!
+ \brief desctructeur
+
+*/
 WindowIDE::~WindowIDE()
 {
     delete m_formats;
@@ -56,6 +77,10 @@ WindowIDE::~WindowIDE()
 
 
 
+/*!
+ \brief
+
+*/
 void WindowIDE::setupEditor()
 {
 
@@ -67,20 +92,20 @@ void WindowIDE::setupEditor()
     m_languages = new QLanguageFactory(m_formats, this);
     m_languages->addDefinitionPath(":QXS");
 
-
-
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(10);
 
-
     refreshFileList();
 }
 
 
+/*!
+ \brief lance le processus de compilation adéquate en fonction de l'extension du fichier
+
+*/
 void WindowIDE::compile(void) {
-#if 1
 
     mapSRC.clear();
     mapPP.clear();
@@ -92,30 +117,18 @@ void WindowIDE::compile(void) {
     QString source = locEditorWidget->m_editControl->editor()->text();
     QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
     QFileInfo fInfo(sourcefname);
+
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,"PC-1350");
         lcpp->run();
-        createTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
+        createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->run();
-        //ui->outputstd->setPlainText(mapASM["output"]);
 
-        //ui->outputasm->setPlainText(mapASM["test.asm"]);
+        createEditorTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
 
-
-        createTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
-
-#if 1
-        //ui->outputText->setText(mapASM["output"]);
         createOutputTab("C Compiler :"+fInfo.fileName(),mapASM["output"]);
-#else
-        CEditorWidget *currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
-        QOutPanel *outpanel = new QOutPanel();
-        currentWidget->m_editControl
-                ->addPanel(outpanel, QCodeEdit::South, true);
-        outpanel->out->setText(mapASM["output"]);
-#endif
     }
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {
@@ -128,14 +141,10 @@ void WindowIDE::compile(void) {
         pasm->savefile("BIN");
         pasm->savefile("HEX");
 
-        createTab(fInfo.baseName()+".bas",mapLM["BAS"]);
+        createEditorTab(fInfo.baseName()+".bas",mapLM["BAS"]);
 
-        //createTab(fInfo.baseName()+".output",mapLM["output"]);
-        //ui->outputText->setText(mapLM["output"]);
         createOutputTab("ASM Compiler :"+fInfo.fileName(),mapLM["output"]);
 
-        //createTab(fInfo.baseName()+".bin",mapLM["BIN"]);
-        //ui->tabWidget->setCurrentWidget(currentWidget);
         currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
         QHexPanel *hexpanel = new QHexPanel();
 
@@ -151,48 +160,36 @@ void WindowIDE::compile(void) {
 //        MSG_ERROR("*"+mapLM["_ORG"]+"*");
 //        MSG_ERROR(QString("%1").arg(hexpanel->startadr));
     }
-#else
-    QString src = ui->editor->toPlainText();
 
-    mapSRC.clear();
-    mapPP.clear();
-    mapASM.clear();
-    mapLM.clear();
-
-    mapSRC["test"] = src.toAscii();
-
-    Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,this->ui->modelCB->currentText());
-    lcpp->run();
-    ui->outputpp->setPlainText(mapPP["test"]);
-
-    Clcc *lcc = new Clcc(&mapPP,&mapASM);
- //   connect(lcc,SIGNAL(outputSignal(QString,QString)),this,SLOT(output(QString,QString)));
-    lcc->run();
-
-    ui->outputstd->setPlainText(mapASM["output"]);
-    ui->outputasm->setPlainText(mapASM["test.asm"]);
-
-    Cpasm * pasm = new Cpasm(&mapASM,&mapLM);
-    pasm->parsefile("BAS",mapASM["test.asm"]);
-    pasm->savefile("BAS");
-    pasm->savefile("BIN");
-
-    ui->outputlm->setPlainText(mapLM["BAS"]);
-    ui->outputstd->appendPlainText("\r\r\r"+mapLM["output"]);
-#endif
 }
 
 
-void WindowIDE::createTab(QString fname, QString text) {
+/*!
+ \brief Add a new tab to the Editor panel
+
+ \param fname   Filename of the new document
+ \param text    document content
+ \param load    if true then load the text from disk
+*/
+void WindowIDE::createEditorTab(QString fname, QString text,bool load) {
     CEditorWidget *locEditorWidget = new CEditorWidget();
-    ui->tabWidget->insertTab(0,locEditorWidget,fname);
+    ui->tabWidget->insertTab(0,locEditorWidget,QFileInfo(fname).fileName());
+    ui->tabWidget->setTabToolTip(0,QFileInfo(fname).absoluteFilePath());
     m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fname);
     locEditorWidget->m_editControl->editor()->setText(text);
     locEditorWidget->m_editControl->editor()->setFileName(fname);
+    if (load) locEditorWidget->m_editControl->editor()->load(fname);
     editorMap.insert(fname,locEditorWidget);
     ui->tabWidget->setCurrentIndex(0);
+
 }
 
+/*!
+ \brief Add a new tab to the Output Panel
+
+ \param fname   The tab name
+ \param text    Text displayed into the new tab
+*/
 void WindowIDE::createOutputTab(QString fname, QString text) {
     QTextEdit *locTextEdit = new QTextEdit();
     ui->outputtabWidget->insertTab(0,locTextEdit,fname);
@@ -200,29 +197,61 @@ void WindowIDE::createOutputTab(QString fname, QString text) {
     ui->outputtabWidget->setCurrentIndex(0);
 }
 
-void WindowIDE::output(QString f,QString s) {
 
-}
+/*!
+ \brief
 
-
-
+ \param pc
+*/
 void WindowIDE::addtargetCB(CPObject *pc) {
     emit newEmulatedPocket(pc);
 }
 
 
+/*!
+ \brief Charge le binaire data dans la mémoire du Pocket émulé.
+
+ \param pc      Le pocket cible.
+ \param adr     Adresse de chargement des données.
+ \param data    Données binaires à charger.
+*/
 void WindowIDE::installTo(CpcXXXX * pc,qint32 adr, QByteArray data ) {
 
-    QDataStream in(data);
-    in.readRawData ((char *) &pc->mem[adr],
-                    data.size() );
-    QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(adr));
+    if (pc->Mem_Load(adr,data)) {
+        QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(adr));
+    }
 }
 
+/*!
+ \brief Sauvegarde le fichier sur disque.
+
+*/
 void WindowIDE::save(void) {
-
+    CEditorWidget *locEditorWidget = (CEditorWidget*)ui->tabWidget->currentWidget();
+    if (locEditorWidget->m_editControl->editor()->isContentModified()) {
+        // save it
+        locEditorWidget->m_editControl->editor()->save();
+    }
 }
 
+/*!
+ \brief Sauvegarde tous les fichiers ouverts sur disque.
+
+ \fn WindowIDE::saveAll
+*/
+void WindowIDE::saveAll(void) {
+    for (int i=0; i < ui->tabWidget->count();i++) {
+        CEditorWidget *locEditorWidget = (CEditorWidget*)ui->tabWidget->widget(i);
+        if (locEditorWidget->m_editControl->editor()->isContentModified()) {
+            // save it
+            locEditorWidget->m_editControl->editor()->save();
+        }
+    }
+}
+/*!
+ \brief
+
+*/
 void WindowIDE::refreshFileList(void) {
     QDir dir;
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -236,6 +265,11 @@ void WindowIDE::refreshFileList(void) {
     }
 }
 
+/*!
+ \brief
+
+ \param id
+*/
 void WindowIDE::load(QListWidgetItem* id) {
 
     // check if file still open
@@ -244,30 +278,52 @@ void WindowIDE::load(QListWidgetItem* id) {
     }
     else {
     // If not create a new tab
-        CEditorWidget *locEditorWidget = new CEditorWidget();
-        ui->tabWidget->insertTab(0,locEditorWidget,id->text());
+        createEditorTab(id->text(),"",true);
 
-        m_languages->setLanguage(locEditorWidget->m_editControl->editor(), id->text());
-        locEditorWidget->m_editControl->editor()->load(id->text());
-        editorMap.insert(id->text(),locEditorWidget);
-        ui->tabWidget->setCurrentIndex(0);
     }
 }
 
+/*!
+ \brief
+
+ \param index
+*/
 void WindowIDE::closeTab(int index) {
     CEditorWidget *locEditorWidget = (CEditorWidget*)ui->tabWidget->widget(index);
-        if (locEditorWidget->m_editControl->editor()->isContentModified()) {
-            // save it
-            locEditorWidget->m_editControl->editor()->save();
-        }
+    if (locEditorWidget->m_editControl->editor()->isContentModified()) {
+        // save it
+        locEditorWidget->m_editControl->editor()->save();
+    }
     ui->tabWidget->removeTab(index);
     editorMap.remove(locEditorWidget->m_editControl->editor()->fileName());
 }
 
+/*!
+ \brief
+
+ \param event
+*/
 void WindowIDE::closeEvent(QCloseEvent *event)
 {
     //Check unsaved data
     mainwindow->windowide = 0;
     event->accept();
+
+}
+
+/*!
+ \brief
+
+*/
+void WindowIDE::newFile()
+{
+    QString fileName = QFileDialog::getSaveFileName(
+                        this,
+                        tr("Choose a file"),
+                        ".",
+                        tr("C source (*.c *.h);;ASM source (*.asm)"),
+                        new QString("(*.c)"));
+
+    createEditorTab(fileName,"");
 
 }
