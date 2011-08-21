@@ -45,6 +45,7 @@ WindowIDE::WindowIDE(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    tabifyDockWidget(ui->projectDockWidget,ui->filesDockWidget);
     this->setWindowTitle(tr("Integrated Development Environment"));
     this->setAttribute(Qt::WA_DeleteOnClose,true);
 
@@ -54,7 +55,8 @@ WindowIDE::WindowIDE(QWidget *parent) :
     connect(ui->actionSave,SIGNAL(triggered()),this,SLOT(save()));
     connect(ui->actionSave_All,SIGNAL(triggered()),this,SLOT(saveAll()));
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(load(QListWidgetItem*)));
-    connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
+    connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeEditorTab(int)));
+    connect(ui->outputtabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeOutputTab(int)));
     connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(newFile()));
 
 }
@@ -112,6 +114,8 @@ void WindowIDE::compile(void) {
     mapASM.clear();
     mapLM.clear();
 
+    save();
+
     CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
 
     QString source = locEditorWidget->m_editControl->editor()->text();
@@ -120,7 +124,7 @@ void WindowIDE::compile(void) {
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
-        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,"PC-1350");
+        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
         lcpp->run();
         createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
@@ -288,7 +292,7 @@ void WindowIDE::load(QListWidgetItem* id) {
 
  \param index
 */
-void WindowIDE::closeTab(int index) {
+void WindowIDE::closeEditorTab(int index) {
     CEditorWidget *locEditorWidget = (CEditorWidget*)ui->tabWidget->widget(index);
     if (locEditorWidget->m_editControl->editor()->isContentModified()) {
         // save it
@@ -298,6 +302,15 @@ void WindowIDE::closeTab(int index) {
     editorMap.remove(locEditorWidget->m_editControl->editor()->fileName());
 }
 
+/*!
+ \brief
+
+ \fn WindowIDE::closeOutputTab
+ \param index
+*/
+void WindowIDE::closeOutputTab(int index) {
+    ui->outputtabWidget->removeTab(index);
+}
 /*!
  \brief
 

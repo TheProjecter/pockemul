@@ -951,10 +951,12 @@ void Cpasm::parsefile(QString fname,QString source) {
                 }
             }
             else if (op == ".INCLUDE") {
-// INLUDE LIB
-//                if (fileexists(params)) {
-//                    parsefile(params);
-//                } else abort("Include file " + params + " not found!");
+            // INLUDE LIB
+                QFile f(":/asmlibs/sc61860/"+params);
+                f.open(QFile::ReadOnly);
+                if (f.exists()) {
+                    parsefile(params,f.readAll());
+                } else abort("Include file " + params + " not found!");
             }
             else
                 doasm();

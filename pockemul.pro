@@ -459,6 +459,22 @@ OTHER_FILES += \
     qcodeedit/qxs/coldfusion.qnfa \
     qcodeedit/qxs/bibtex.qnfa \
     qcodeedit/qxs/asm.qnfa \
-    qcodeedit/qxs/asm.qxf
+    qcodeedit/qxs/asm.qxf \
+    resources/asmlibs/sc61860/xor16.lib \
+    resources/asmlibs/sc61860/xor8.lib \
+    resources/asmlibs/sc61860/sr16.lib \
+    resources/asmlibs/sc61860/sr8.lib \
+    resources/asmlibs/sc61860/sl16.lib \
+    resources/asmlibs/sc61860/sl8.lib \
+    resources/asmlibs/sc61860/mul16.lib \
+    resources/asmlibs/sc61860/mul8.lib \
+    resources/asmlibs/sc61860/divmod8.lib \
+    resources/asmlibs/sc61860/cpse16.lib \
+    resources/asmlibs/sc61860/cps16.lib \
+    resources/asmlibs/sc61860/cpne16.lib \
+    resources/asmlibs/sc61860/cpge16.lib \
+    resources/asmlibs/sc61860/cpg16.lib \
+    resources/asmlibs/sc61860/cpeq16.lib \
+    resources/asmlibs/sc61860/cpe16.lib
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

@@ -50,8 +50,9 @@ private slots:
     void compile(void);
     void save(void);
     void load(QListWidgetItem* id);
-    void closeTab(int);
+    void closeEditorTab(int);
     void newFile(void);
+    void closeOutputTab(int index);
 
 signals:
     void newEmulatedPocket(CPObject *);

@@ -1,4 +1,5 @@
 LIB_MUL16:		; B:A = J:I*B:A (M2*M1)
+                ; look http://sgate.emt.bme.hu/patai/publications/z80guide/part4.html
 	LP	6	; E = 0
 	ANIM	0
 	LP	7
