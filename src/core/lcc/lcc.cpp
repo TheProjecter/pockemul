@@ -7,6 +7,195 @@
 
 #include "lcc.h"
 
+
+/*!
+  \brief Little C Compiler transorm a C source code to SC61860 ASM code.
+  \class Clcc
+
+<B>Writing Code in littleC</B>
+
+General code layout:
+\code
+#org <start address>
+
+[#nosave]	// No register saves (Only if you know what you're doing! In certain cases this will crash your Pocket Computer!)
+
+[#include ..]	// Includes
+
+[#define .. ..]	// Defines
+
+[byte | char | word <varlist>]	// Var declarations
+
+function1()	// Function declarations
+{
+    ...
+}
+
+...
+
+main()
+{
+    ...
+}
+\endcode
+
+<B>Differences from big (ANSI) C:</B>
+- Do not use the word void! It will produce errors.
+- Do not create names beginning with variable type names like charout() bytefetch() etc!
+- Pointer can't be used for parameters, sorry!
+- for loops will execute the third argument before the inner part of the loop!
+- You can assign variables to register and memory addresses using "at".
+- Names for local variables have to be global unique!
+- Pointers can point to RAM card or CPU mem, use xram to point to xram. The compiler doesn't know to what kind
+- You can't change the address of a variable using a pointer!
+- No signed types.
+- Operator priorities: [( )] >> [! && ||] >> [== != > < >= <=] >> [* / % &] >> [+ - << >> ~ |]
+- Type conversion: A word assigned to a byte will store the LB of the word, a byte assigned to a word will get the byte into the LB of the word.
+- Maximum array size is 256 for byte and 128 for word arrays.
+- Local variables and function parameters can't be arrays.
+- Function parameter declaration must be as follows: [type] function(type name, type name, ...) {...}
+- You can't use comparisons in assignments.
+- Every block must be enclosed with {..} but you need not if there is only one statement inside. (Example: "if (a>0) b++;")
+- The for (;;) can hold three or two of its parts. Three statements: "for(a=1;a<100;a++)", two: "for(a=1;a<100;)". You must place two ';' inside the brackets!
+- NO ADDITIONAL LIBRARIES, you can't use fancy stuff like printf, getc, strcpy, strcmp, ... and even the math ops * / % won't work because I have no code written for this! Feel free to help me out...
+- Variable & function names are case sensitive but the assembler is not, so you can't name different vars or functions like "Afunction" and "afunction". Each name will have a label so don't create labels with the same name!
+- Some libs are using own labels and the compiler will generate labels LB1, LB2, etc. Make sure you don't get a conflict!
+
+Notice: Go through the delivered demo c code files to get a feeling for littleC, compile them and look at the assembler code produced!
+  If something's not working correctly, please send me your files and tell me what result you've expected (contact info at the bottom of this file).
+
+<B>Preprocessor commands:</B>
+- #define (as you know it, but without parameters)
+- #include (without the ".." or <..>)
+- #ifdef .. #endif (without #else)
+- #org (to define the start address of your program in your pocket computer)
+- #asm .. #endasm (inline assembler)
+
+<B>Supported methods and statements are:</B>
+- Variable declarations (the known types are byte, char, word)
+- Local variable restrictions: no arrays, no "at" and no init values!
+- Preload variables (Examples: byte a = 10; char s[8]="String!"; byte array[4]=(1,2,3,4);)
+- Assign register address: byte pbuf at 8; word y at 6 = 60400;
+- Assign variables in ram card memory: word xram baspnt at 0xFFD7;
+- Pointer declaration: xram will make a pointer point to a xram address (the pointer will be also in xram), no xram will have the pointer to point to CPU memory and the pointer itself is also there. You can't init a pointer with a value!
+- Declare functions with "[type] name([parameters]) {}", [type] is "word", "char", "byte" or nothing.
+- Call functions with "name();"
+- if (condition) {} [else {}]
+- while (condition) {}
+- do {} while(condition);
+- for (start; condition [; assignments]) {}
+- loop (counter value from expression or constant) {} // will loop value + 1 times
+  Never jump out of loop without "pop"
+- break; // leaves the innermost loop
+- return[ expression or constant]; // exits the current function, in the main program it end the whole program
+- switch (expression) {value: procedure(); [value: procedure(); ...] [else: procedure();] }
+- goto labelname; // jumps to label
+- label labelname; // places a label
+- Assignments are like this: "var = expression;" or "var += expression" (allowed are += -= *= /= <<= >>= %= |= &=)
+- Expressions are formulas or constants, can contain variables and functions
+- Operators are + - * / & | % ! ~ << >>
+- conditions are similar and have these operators: == != < > >= <=
+Please notice that you always must define a main function "main()"!
+
+
+
+<B>Adding Libraries:</B>
+You can write any code and store it as a file in the directory to include it in your programs.
+However, some internal functions for 8bit and 16bit math need libraries which are included dynamically when the desired operation occurs.
+These file names are:
+
+8bit math:
+- Multiplication: mul8.lib
+- Division and Modulo: divmod8.lib
+- XOR: xor8.lib
+- Shift left: sl8.lib
+- Shift right: sr8.lib
+
+16bit math:
+o Modulo: mod16.lib
+- Multiplication: mul16.lib
+o Division: div16.lib
+- Shift left: sl16.lib
+- Shift right: sr16.lib
+- XOR: xor16.lib
+- Compare equal: cpe16.lib
+- Compare not equal: cpne16.lib
+- Compare greater or equal: cpge16.lib
+- Compare smaller or equal: cpse16.lib
+- Compare greater: cpg16.lib
+- Compare smaller: cps16.lib
+
+Legend:
+o = not coded yet
+- = available
+
+Library call 8bit:
+Register A holds the first operand and B the second, as: A * B, the result must come back in A.
+Then the routine is called. The name of the label must be like "LIB_MUL8:", replace MUL8 with the lib file names.
+
+Library call 16bit:
+Register A:B holds HB:LB of the second operand and J:I the first, the result must come back in B:A.
+Then the routine is called. The name of the label must be like "LIB_MUL16:", replace MUL16 with the lib file names.
+Comparisons must return the result in A as 255 for "true" and 0 for "false".
+
+
+
+<B>Memory Management:</B>
+
+littleC fills the CPU register space bottom->up with variables and top->down with stack.
+Word variables are LB lower register address and HB higher address.
+
+CPU memory:
+\code
++-----+--------------+
+|Addr.|	Name         |
++-----+--------------+
+|0    |	Register I   |
+|1    |	Register J   |
+|2    |	Register A   |
+|3    |	Register B   |
+|4    |	Register XL  |
+|5    |	Register XH  |
+|6    |	Register YL  |
+|7    |	Register YH  |
+|8    |	Register K   |	<- littleC starts assigning register variables and arrays here
+|9    |	Register L   |
+|10   |	Register M   |
+|11   |	Register N   |
+|12   |	free	     |
+|...  |	...	     |
+|90   |	Stack memory |
+|91   |	Stack top    |  <- The stack increases downwards
+|92   |	Port A	     |
+|93   |	Port B	     |
+|94   |	Port F	     |
+|95   |	Port C	     |
++-----+--------------+
+\endcode
+<B>Local variables and parameters:</B>
+They will be pushed onto the stack, first the parameters and then the local variables.
+Then the function is called. You can even do recursive calls! (But a stack overflow will crash your little PC :-)
+
+
+
+<B>Warning:</B>
+Please notice that littleC is not as powerful and safe as a big C compiler!
+littleC is still at an early development state and it is not assured that the produced code will be fully operational!
+Also it won't point out coding mistakes like assigning a value to an array without giving an array index.
+Even if there is an error detected in a statement, lcc won't give you the line number because littleC makes a "line-less" compilation using several passes.
+And surely NO guarantee for always correctly working software, sorry :-)
+
+
+
+<B>Contact:</B>
+Visit my homepage "www.pocket.2xs.de" or mail me directly at "simpc@gmx.de"!
+
+
+
+
+  */
+
+
 const QByteArray Alpha="_ABCDEFGHIJKLMNOPQRSTUVWXYZ"; /*!< TODO */
 
 /*!
@@ -124,10 +313,10 @@ void Clcc::Error(QString s) {
 }
 
 //{--------------------------------------------------------------}
-//{ Write "<something> Expected" }
+//{  }
 
 /*!
- \brief
+ \brief Write "<something> Expected"
 
  \fn Clcc::Expected
  \param s
@@ -190,11 +379,11 @@ bool Clcc::FindVar(QByteArray t) {
 }
 
 /*{--------------------------------------------------------------}
-{ Test if variable is at address }
+{  }
 */
 
 /*!
- \brief
+ \brief Test if variable is at address
 
  \fn Clcc::IsVarAtAdr
  \param adr
@@ -286,10 +475,10 @@ void Clcc::printvarlist(QString out) {
     }
 }
 /*{--------------------------------------------------------------}
-{ Print Proc Table }
+{  }
 */
 /*!
- \brief
+ \brief Print Proc Table
 
  \fn Clcc::printproclist
  \param out
@@ -397,7 +586,7 @@ void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, 
 //{ Add Variable Declaration }
 
 /*!
- \brief
+ \brief Add Variable Declaration
 
  \fn Clcc::AddVar
  \param t
@@ -547,10 +736,10 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
 }
 
 
-//{ Split String in Words }
+//{  }
 
 /*!
- \brief
+ \brief Split String in Words
 
  \fn Clcc::ExtrWord
  \param word
@@ -617,10 +806,10 @@ QByteArray Clcc::ExtrCust(QByteArray *word,char c) {
     return result;
 }
 
-//{ Split List }
+//{  }
 
 /*!
- \brief
+ \brief Split List
 
  \fn Clcc::ExtrList
  \param list
@@ -649,10 +838,10 @@ QByteArray Clcc::ExtrList(QByteArray *list) {
     return result;
 }
 
-//{ Allocate Variable Declaration }
+//{  }
 
 /*!
- \brief
+ \brief Allocate Variable Declaration
 
  \fn Clcc::AllocVar
  \param xr
@@ -837,10 +1026,10 @@ void Clcc::GetToken(int mode, QByteArray *s) {
 
 
 //{--------------------------------------------------------------}
-//{ Get an Identifier }
+//{  }
 
 /*!
- \brief
+ \brief Get an Identifier
 
  \fn Clcc::GetName
  \return QByteArray
@@ -989,10 +1178,10 @@ void Clcc::Expression(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Recognize a Numeric Character }
+//{  }
 
 /*!
- \brief
+ \brief Recognize a Numeric Character
 
  \fn Clcc::IsDigit
  \param c
@@ -1050,10 +1239,10 @@ bool isbin, ishex, ischr;
 
 
 //{--------------------------------------------------------------}
-//{ Load a Variable to the Primary Register }
+//{  }
 
 /*!
- \brief
+ \brief Load a Variable to the Primary Register
 
  \fn Clcc::LoadVariable
  \param name
@@ -1205,10 +1394,10 @@ void Clcc::LoadVariable(QByteArray name) {
 
 /*
 {--------------------------------------------------------------}
-{ Store the Primary Register to a Variable }
+{  }
 */
 /*!
- \brief
+ \brief Store the Primary Register to a Variable
 
  \fn Clcc::StoreVariable
  \param name
@@ -1369,10 +1558,10 @@ void Clcc::StoreVariable(QByteArray name) {
 
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Factor }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Factor
 
  \fn Clcc::Factor
 */
@@ -1467,9 +1656,9 @@ void Clcc::Factor(void) {
 
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Factor with Optional "Not" }
+//{  }
 /*!
- \brief
+ \brief Parse and Translate a Factor with Optional "Not"
 
  \fn Clcc::NotFactor
 */
@@ -1501,9 +1690,9 @@ void Clcc::NotFactor(void) {
 
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Term }
+//{  }
 /*!
- \brief
+ \brief Parse and Translate a Term
 
  \fn Clcc::Term
 */
@@ -1520,9 +1709,9 @@ void Clcc::Term(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Factor with Optional Sign }
+//{  }
 /*!
- \brief
+ \brief Parse and Translate a Factor with Optional Sign
 
  \fn Clcc::SignedTerm
 */
@@ -1538,10 +1727,10 @@ void Clcc::SignedTerm(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate an Addition Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate an Addition Operation
 
  \fn Clcc::Add
 */
@@ -1554,10 +1743,10 @@ void Clcc::Add() {
 }
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Subtraction Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Subtraction Operation
 
  \fn Clcc::Subtract
 */
@@ -1571,10 +1760,10 @@ void Clcc::Subtract(void) {
 
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate an Multiply Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate an Multiply Operation
 
  \fn Clcc::Multiply
 */
@@ -1588,10 +1777,10 @@ void Clcc::Multiply(void) {
 
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Divide Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Divide Operation
 
  \fn Clcc::Divide
 */
@@ -1619,10 +1808,10 @@ void Clcc::_Or(void) {
     PopOr();
 }
 
-//{ Parse and Translate a Shift Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Shift Operation
 
  \fn Clcc::ShiftR
 */
@@ -1634,10 +1823,10 @@ void Clcc::ShiftR(void) {
     PopSr();
 }
 
-//{ Parse and Translate a Shift Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Shift Operation
 
  \fn Clcc::ShiftL
 */
@@ -1649,10 +1838,10 @@ void Clcc::ShiftL(void) {
     PopSl();
 }
 
-//{ Parse and Translate a Subtraction Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Subtraction Operation
 
  \fn Clcc::_Xor
 */
@@ -1665,10 +1854,10 @@ void Clcc::_Xor(void) {
 }
 
 
-//{ Parse and Translate a Boolean And Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Boolean And Operation
 
  \fn Clcc::_And
 */
@@ -1681,10 +1870,10 @@ void Clcc::_And(void) {
 }
 
 
-//{ Parse and Translate a Modulo Operation }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Modulo Operation
 
  \fn Clcc::_Mod
 */
@@ -1699,10 +1888,10 @@ void Clcc::_Mod(void) {
 //{--------------------------------------------------------------}
 
 //{-------------------------------------------------------------}
-//{ Procedure Call }
+//{  }
 
 /*!
- \brief
+ \brief Procedure Call
 
  \fn Clcc::ProcCall
 */
@@ -1847,10 +2036,10 @@ void Clcc::repadr(void) {
 
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate an Assignment Statement }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate an Assignment Statement
 
  \fn Clcc::Assignment
 */
@@ -1870,11 +2059,12 @@ writln("LOG",";Assignement:"+Tok);
     rd(&Look, &Tok); Tok = Tok.trimmed();
     name = GetName();
     if (FindVar(name)) {
+        Cvar var = varlist[VarFound];
         if (p == ptrREF) {
-            if (! varlist[VarFound].pointer && (varlist[VarFound].typ == "word")) isword = true;
-            if (varlist[VarFound].pointer && (varlist[VarFound].pnttyp == "word")) isword = true;
+            if (! var.pointer && (var.typ == "word")) isword = true;
+            if (var.pointer && (var.pnttyp == "word")) isword = true;
         }
-        else if (varlist[VarFound].typ == "word") isword = true;
+        else if (var.typ == "word") isword = true;
     }
     else Error("Var "+name+" not declared!");
     s = "";
@@ -1889,7 +2079,7 @@ writln("LOG",";Assignement:"+Tok);
             temp = temp + Look;
             //Rd(Look, Tok); Tok := trim(Tok);
         }
-        else if ((Look =='+') || (Look='-')) {
+        else if ((Look =='+') || (Look=='-')) {
             if (FindVar(name) && !(varlist[VarFound].typ == "word")) {
                 if (Look == '+') writln(outf,"\t; "+name+"++");
                 else writln(outf,"\t; "+name+"--");
@@ -2025,10 +2215,10 @@ writln("LOG",";Assignement:"+Tok);
 
 
 //{---------------------------------------------------------------}
-//{ Parse and Translate a Boolean Expression }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Boolean Expression
 
  \fn Clcc::BoolExpression
 */
@@ -2068,10 +2258,10 @@ void Clcc::BoolExpression(void) {
 
 
 //{--------------------------------------------------------------}
-//{ Recognize and Translate a Boolean OR }
+//{  }
 
 /*!
- \brief
+ \brief Recognize and Translate a Boolean OR
 
  \fn Clcc::BoolOr
 */
@@ -2082,10 +2272,10 @@ void Clcc::BoolOr(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Recognize and Translate a Boolean OR }
+//{  }
 
 /*!
- \brief
+ \brief Recognize and Translate a Boolean AND
 
  \fn Clcc::BoolAnd
 */
@@ -2142,10 +2332,10 @@ void Clcc::CompTerm(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Generate a Unique Label }
+//{  }
 
 /*!
- \brief
+ \brief Generate a Unique Label
 
  \fn Clcc::NewLabel
  \return QByteArray
@@ -2156,10 +2346,10 @@ QByteArray Clcc::NewLabel(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Post a Label To Output }
+//{  }
 
 /*!
- \brief
+ \brief Post a Label To Output
 
  \fn Clcc::PostLabel
  \param L
@@ -2170,10 +2360,10 @@ void Clcc::PostLabel(QByteArray L) {
 
 
 //{-------------------------------------------------------------}
-//{ Switch Statement }
+//{  }
 
 /*!
- \brief
+ \brief Switch Statement
 
  \fn Clcc::DoSwitch
 */
@@ -2217,9 +2407,9 @@ void Clcc::DoSwitch(void) {
 
 
 //{-------------------------------------------------------------}
-//{ If Statement }
+//{  }
 /*!
- \brief
+ \brief If Statement
 
  \fn Clcc::DoIf
 */
@@ -2263,10 +2453,10 @@ void Clcc::DoIf(void) {
 
 
 //{-------------------------------------------------------------}
-//{ Goto Statement }
+//{  }
 
 /*!
- \brief
+ \brief Goto Statement
 
  \fn Clcc::DoGoto
 */
@@ -2278,10 +2468,10 @@ void Clcc::DoGoto(void) {
 
 
 //{-------------------------------------------------------------}
-//{ Label Statement }
+//{  }
 
 /*!
- \brief
+ \brief Label Statement
 
  \fn Clcc::DoLabel
 */
@@ -2294,10 +2484,10 @@ void Clcc::DoLabel(void) {
 
 
 //{-------------------------------------------------------------}
-//{ Break Statement }
+//{  }
 
 /*!
- \brief
+ \brief Break Statement
 
  \fn Clcc::DoBreak
 */
@@ -2309,10 +2499,10 @@ void Clcc::DoBreak(void) {
 
 
 //{-------------------------------------------------------------}
-//{ Exit Statement }
+//{  }
 
 /*!
- \brief
+ \brief Exit Statement
 
  \fn Clcc::DoReturn
 */
@@ -2329,10 +2519,10 @@ void Clcc::DoReturn(void) {
 
 
 //{-------------------------------------------------------------}
-//{ Loop Statement }
+//{  }
 
 /*!
- \brief
+ \brief Loop Statement
 
  \fn Clcc::DoLoop
 */
@@ -2363,10 +2553,10 @@ void Clcc::DoLoop(void) {
 
 
 //{-------------------------------------------------------------}
-//{ While Statement }
+//{  }
 
 /*!
- \brief
+ \brief While Statement
 
  \fn Clcc::DoWhile
 */
@@ -2396,10 +2586,10 @@ void Clcc::DoWhile(void) {
 
 
 //{-------------------------------------------------------------}
-//{ For Statement }
+//{  }
 
 /*!
- \brief
+ \brief For Statement
 
  \fn Clcc::DoFor
 */
@@ -2479,10 +2669,10 @@ void Clcc::DoSave(void) {
 }
 
 //{-------------------------------------------------------------}
-//{ Do..While Statement }
+//{  }
 
 /*!
- \brief
+ \brief Do..While Statement
 
  \fn Clcc::DoDoWhile
 */
@@ -2553,10 +2743,10 @@ void Clcc::DoRestoreState(void) {
 }
 
 //{--------------------------------------------------------------}
-//{ Parse and Translate a Block }
+//{  }
 
 /*!
- \brief
+ \brief Parse and Translate a Block
 
  \fn Clcc::Block
 */
@@ -2605,7 +2795,6 @@ void Clcc::Block(void) {
       }
         dummy = dummy.trimmed();
     }
-    //until (trim(dummy) = '') or (trim(dummy)[1] = '}');
     while (!( dummy.trimmed().isEmpty() || dummy.trimmed().startsWith("}")));
     if (!dummy.isEmpty()) rd(&Look, &dummy);
     dummy = dummy.trimmed();
@@ -2639,10 +2828,10 @@ void Clcc::removelocvars(QByteArray pn) {
 
 
 /*{--------------------------------------------------------------}
-{ Do First Scan }
+{  }
 */
 /*!
- \brief
+ \brief Do First Scan
 
  \fn Clcc::FirstScan
  \param filen

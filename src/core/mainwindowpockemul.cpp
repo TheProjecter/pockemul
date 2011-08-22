@@ -8,6 +8,18 @@
 
 //#define NEWTIMER 1
 
+/** \mainpage
+PockEmul is a Sharp Pocket Computer Emulator.
+
+\version Version 0.9.3
+\image html hexedit.png
+*/
+
+
+
+
+
+
 #include "mainwindowpockemul.h"
 
 #include "dialoganalog.h"
