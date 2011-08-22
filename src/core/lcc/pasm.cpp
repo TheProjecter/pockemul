@@ -445,7 +445,7 @@ void Cpasm::doasm(void) {
             }
         }
         else
-            if (JR.contains(opp)) {              // relativ
+        if (JR.contains(opp)) {              // relativ
             adr = calcadr();
             if (adr >= 8192) {
                 addcode(opp);
@@ -454,7 +454,7 @@ void Cpasm::doasm(void) {
                 addcode(abs(codpos + startadr - adr));
             }
             else
-                if (adr > 0) {
+            if (adr > 0) {
                 addcode(opp); addcode(adr);
             }
             else {

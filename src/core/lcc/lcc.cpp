@@ -215,6 +215,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     VarPos = 16;
     level = 0;
     Look = 0;
+    nosave = false;
 
 
     outfile = true;

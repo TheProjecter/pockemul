@@ -25,10 +25,10 @@ LIB_MUL16:		; B:A = J:I*B:A (M2*M1)
 	EXAB
 	LP	0	; if (M1 == 0) then complete;
 	CPIM	0
-	JRNZP	LM16
+    JRNZM	LM16
 	LP	1
 	CPIM	0
-	JRNZP	LM16
+    JRNZM	LM16
 	
 	LP	7	; B:A = E
 	EXAM

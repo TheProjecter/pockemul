@@ -16,6 +16,7 @@ line(word x1,word y1, word x2, word y2) {
     _grfx_graph = 1;
 #save
 #asm
+    LIJ     01
     CALL    0xEAEB
 #endasm
 #restore
@@ -37,6 +38,7 @@ pset(word px1,word py1) {
 cls() {
 #save
 #asm
+    _grfx_graph = 1;
     CALL    0xDBA8
 #endasm
 #restore
