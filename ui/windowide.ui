@@ -301,6 +301,9 @@
    <property name="text">
     <string>Compile</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
   </action>
   <action name="actionInstall">
    <property name="text">
