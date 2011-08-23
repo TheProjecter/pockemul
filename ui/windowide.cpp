@@ -158,6 +158,8 @@ void WindowIDE::compile(void) {
         hexpanel->hexeditor->setData(mapLM["BIN"]);
         hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
         connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
+        connect(this,SIGNAL(removeEmulatedPocket(CPObject*)),hexpanel,SLOT(removePocket(CPObject*)));
+
 
         hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
 
@@ -211,6 +213,9 @@ void WindowIDE::addtargetCB(CPObject *pc) {
     emit newEmulatedPocket(pc);
 }
 
+void WindowIDE::removetargetCB(CPObject *pc) {
+    emit removeEmulatedPocket(pc);
+}
 
 /*!
  \brief Charge le binaire data dans la mémoire du Pocket émulé.

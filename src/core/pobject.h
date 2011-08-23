@@ -210,6 +210,7 @@ private:
 	int		iChanIndex;
 	qint64	fillSoundBuffer_old_state;	
     QByteArray audioBuff;
+    QByteArray tempBuff;
 
     int		Pc_DX,Pc_DY;
     int		Pc_DX_mm,Pc_DY_mm,Pc_DZ_mm;		// PC size (mm)

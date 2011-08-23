@@ -45,6 +45,7 @@ Thanks to various posters on my forum for suggestions. The relevant post is curr
 /*!
   \class Parser
 
+  \code
 Expression-evaluator
 --------------------
 
@@ -125,6 +126,7 @@ Syntax:
     Based in part on a simple calculator described in "The C++ Programming Language"
     by Bjarne Stroustrup, however with considerable enhancements by me, and also based
     on my earlier experience in writing Pascal compilers, which had a similar structure.
+\endcode
 */
 
 

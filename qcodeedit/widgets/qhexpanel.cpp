@@ -178,6 +178,11 @@ void QHexPanel::newPocket(CPObject *pc)
     cbinstallTo->addItem(pc->getName(),tr("%1").arg((long)pc));
 }
 
+void QHexPanel::removePocket(CPObject *pc)
+{
+    cbinstallTo->removeItem(cbinstallTo->findData(tr("%1").arg((long)pc)));
+}
+
 void QHexPanel::install()
 {
     int index = cbinstallTo->currentIndex();

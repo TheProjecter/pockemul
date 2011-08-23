@@ -32,6 +32,7 @@ protected:
 
 public slots:
     void newPocket(CPObject *);
+    void removePocket(CPObject *);
     void install();
 
 private:

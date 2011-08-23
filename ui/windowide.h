@@ -40,8 +40,10 @@ public:
     void installTo(CpcXXXX *pc, qint32 adr, QByteArray data);
 
     void addtargetCB(CPObject *pc);
+    void removetargetCB(CPObject *pc);
 
     void createOutputTab(QString fname, QString text);
+
 
 public slots:
     void saveAll(void);
@@ -56,6 +58,7 @@ private slots:
 
 signals:
     void newEmulatedPocket(CPObject *);
+    void removeEmulatedPocket(CPObject *);
 
 protected:
 

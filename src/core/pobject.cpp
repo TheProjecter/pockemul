@@ -283,6 +283,7 @@ signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream,
 }
 #endif
 
+//FIXME The piezo doesn't produce sounf for frequency < 1Khz
 void CPObject::fillSoundBuffer(BYTE val)
 {
 
@@ -303,7 +304,25 @@ void CPObject::fillSoundBuffer(BYTE val)
         while ((pTIMER->state - fillSoundBuffer_old_state) >= wait)
         {
 #if NEW_SOUND
+#if 0
+
+            switch (val) {
+            case 0xff:
+                tempBuff.append(val);
+                if (tempBuff.size()>20) {
+                    audioBuff.append(0x00,10);
+                    tempBuff.remove(0,10);
+                }
+                break;
+            case 0x00:
+                audioBuff.append(tempBuff);
+                audioBuff.append(val);
+                tempBuff.clear();
+                break;
+            }
+#else
             audioBuff.append(val);
+#endif
 //            if (fp_tmp==NULL)
 //                fp_tmp=fopen("LOGsound.bin","wb");
 //            //fputc(val,fp_tmp);

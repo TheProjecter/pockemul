@@ -38,7 +38,7 @@ pset(word px1,word py1) {
 cls() {
 #save
 #asm
-    _grfx_graph = 1;
+    LIJ     01
     CALL    0xDBA8
 #endasm
 #restore
