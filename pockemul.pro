@@ -198,7 +198,9 @@ HEADERS += src/core/Connect.h \
     src/core/ide/editorwidget.h \
     ui/windowide.h \
     qcodeedit/widgets/qhexpanel.h \
-    qcodeedit/widgets/qoutpanel.h
+    qcodeedit/widgets/qoutpanel.h \
+    resources/lcc/model/PC-1350/sound.h \
+    resources/lcc/model/__sound.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \

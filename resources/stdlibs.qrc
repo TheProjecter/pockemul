@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>lcc/model/PC-1350/stdio.h</file>
         <file>lcc/model/PC-1350/graph.h</file>
+        <file>lcc/model/__sound.h</file>
+        <file>lcc/model/PC-1350/sound.h</file>
     </qresource>
 </RCC>

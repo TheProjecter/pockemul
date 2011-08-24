@@ -47,10 +47,15 @@ void Cstdlib::LoadLibs(void) {
 
     // Fetch all libs available for the current model
     //
-    QDir dir(":/lcc/model/"+model);
+    QDir dir(":/lcc/model/");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 
     QFileInfoList list = dir.entryInfoList();
+
+    dir.setPath(":/lcc/model/"+model);
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+
+    list << dir.entryInfoList();
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
