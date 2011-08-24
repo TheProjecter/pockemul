@@ -2003,7 +2003,7 @@ void Clcc::ProcCall() {
             }
         }
         //                Tok := s;
-        if (Tok.startsWith(')')) Tok.remove(0,1);
+        if (Tok.startsWith(')')) Tok.remove(0,1);Tok = Tok.trimmed();
         rd(&Look, &Tok);
         writln("LOG",";ProCall(after FindProc):"+Tok);
     }

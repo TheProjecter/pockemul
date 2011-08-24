@@ -388,7 +388,7 @@ int Cpasm::calcadr(void) {
             }else {
                 s2 = QString("%1").arg(startadr + labpos[labp]);
                 params = replace_text(params, s, s2);
-                param1 = s;
+                param1 = params;
                 param2 = "";
                 i = i - s.length() + s2.length();
             }

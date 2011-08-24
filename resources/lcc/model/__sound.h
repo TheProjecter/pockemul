@@ -1,8 +1,8 @@
 #ifndef __SOUND_H
 #define __SOUND_H
 
-byte _snd_freq at 2;
-byte _snd_dur  at 3;
+byte _snd_freq at 8;
+byte _snd_dur  at 9;
 
 __beep(byte __beep_freq,byte __beep_duration) {
     _snd_freq = __beep_freq;
@@ -11,6 +11,14 @@ __beep(byte __beep_freq,byte __beep_duration) {
 #save
 #asm
 
+    LP 9
+    LDM
+    EXAB
+    LP 8
+    LDM
+    ;POP     ; READ B
+    ;EXAB
+    ;POP     ; READ A
     LIDP lb2603+1		; set length of
     STD			;  wait intervals
 
