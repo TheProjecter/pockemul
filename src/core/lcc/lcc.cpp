@@ -7,6 +7,7 @@
 
 #include "lcc.h"
 
+//FIXME if ( iiii[0] > 0 ) { return;}
 
 /*!
   \brief Little C Compiler transorm a C source code to SC61860 ASM code.
@@ -263,8 +264,10 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
 void Clcc::writln(QString fname,QString s) {
     if (fname !="LOG")
     {
-    if (outfile) asmtext.append(s + "\r\n");
-    else addasm(s.toAscii());}
+        if (outfile) asmtext.append(s + "\r\n");
+        else addasm(s.toAscii());
+    }
+    else writeln(fname,s);
 
 }
 
@@ -290,10 +293,11 @@ void Clcc::writeln(QString fname,QString s){
 void Clcc::write(QString fname,QString s){
     // emit signal ?
     // or fill an arraybuffer ?
-    if (fname !="LOG") {
-    QByteArray actual = out->value(fname) +s.toAscii();
-    out->insert(fname, actual);
-}
+//    if (fname !="LOG")
+    {
+        QByteArray actual = out->value(fname) +s.toAscii();
+        out->insert(fname, actual);
+    }
 //    emit outputSignal(fname,s);
 }
 
@@ -306,10 +310,12 @@ void Clcc::write(QString fname,QString s){
  \fn Clcc::Error
  \param s
 */
-void Clcc::Error(QString s) {
+void Clcc::Error(QString t) {
+    QString s;
   if (!Tok.isEmpty()) s.append("\r\nToken: "+Tok);
   if (!dummy.isEmpty())s.append("\r\nCode: "+dummy);
-  QMessageBox::about(mainwindow,"ERROR",s);
+  writeln("LOG","ERROR:"+t+"-"+s);
+  QMessageBox::about(mainwindow,t,s);
 
 }
 
@@ -947,6 +953,7 @@ void Clcc::rd(char *c, QByteArray *s) {
 */
 void Clcc::GetToken(int mode, QByteArray *s) {
 
+    writln("LOG",";GetToken:"+Tok);
     Tok="";
     l = ' ';
     md = mode;
@@ -984,9 +991,10 @@ void Clcc::GetToken(int mode, QByteArray *s) {
     //        if (Tok.right(1) == ' ' ) delete(Tok, length(Tok), 1);
     Tok = Tok.trimmed();
 
-    //i = 2;
+    int i = 1;
     l = ' ';
-    for (int i = 1 ; i< (Tok.size()-1); )
+    //for (int i = 1 ; i< (Tok.size()-1); )
+    while (i<Tok.size()-1)
     {
         if (Tok[i] == '\'') {
             if (l == ' ')  l = '\'';
@@ -1006,7 +1014,7 @@ void Clcc::GetToken(int mode, QByteArray *s) {
             }
             if (QByteArray("])").contains(Tok[i]) && (Tok[i+1] != ' '))
             {
-                Tok.insert(i,' ');
+                Tok.insert(i+1,' ');
                 i++;
             }
             if (Ops2List.contains(Tok[i]) && (Tok[i+1] == ' '))
@@ -1022,7 +1030,7 @@ void Clcc::GetToken(int mode, QByteArray *s) {
         }
         i++;
     }
-
+writln("LOG",";GetToken(end):"+Tok);
 }
 
 
@@ -1143,7 +1151,7 @@ void Clcc::Expression(void) {
             else if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
         }
     }
-    i = 1;
+    i = 0;
 
     // replace << by $
     // replace >> by §
@@ -1153,6 +1161,8 @@ void Clcc::Expression(void) {
     Tok.replace("++",QByteArray(1,PP));
     Tok.replace("--",QByteArray(1,MM));
     Tok.replace("\\n","\n").replace("\\r","\r");
+//    else if copy(Tok,i,1) = '''' then
+//         begin c := copy(tok, i+1,1)[1]; delete(tok,i,3); insert(inttostr(ord(c)),tok,i); dec(i); end
 // A REVOIR !!!!!!!!!!!!!!!!!!
     while (i < (Tok.length()-1)) {
         if (Tok.at(i) == '\'') {
@@ -1253,6 +1263,7 @@ void Clcc::LoadVariable(QByteArray name) {
     bool xr,arr,loc;
     int adr;
 
+    writln("LOG",";LoadVariable:"+name);
     if (!FindVar(name)) Error("Variable not defined: "+name);
     typ = varlist[VarFound].typ;
     adr = varlist[VarFound].address;
@@ -1584,9 +1595,13 @@ void Clcc::Factor(void) {
     else if (Alpha.contains(toupper(Look))) {
         s = GetName();
         if (Look == '[') {
+            writln("LOG",";Factor(found[):"+Tok);
             rd(&Look, &Tok);
            Tok = Tok.trimmed();
             Expression();
+            rd(&Look, &Tok);
+           Tok = Tok.trimmed();
+           writln("LOG",";Factor(found[2):"+Tok);
             //Push;
         }
         if (FindVar(s)) {
@@ -1651,6 +1666,8 @@ void Clcc::Factor(void) {
         }
     }
     else Error("Unrecognized character " + Look);
+
+    writln("LOG",";Factor(end):"+Tok);
 }
 //{--------------------------------------------------------------}
 
@@ -1664,6 +1681,7 @@ void Clcc::Factor(void) {
  \fn Clcc::NotFactor
 */
 void Clcc::NotFactor(void) {
+    writln("LOG",";NotFactor:"+Tok);
     if (Look == '!') {
         rd(&Look, &Tok);
         Tok = Tok.trimmed();
@@ -1904,6 +1922,7 @@ void Clcc::ProcCall() {
     if (Tok.isEmpty()) return;
 
     temp = ExtrWord(&Tok);
+    writln("LOG",";ProCall(after extrWord):"+Tok);
     //        s := Tok;          // Nur den Parameterblock der ersten Funktion extrahieren!!!
     a = 0;
     rd(&Look, &Tok);
@@ -1933,6 +1952,9 @@ void Clcc::ProcCall() {
             while (Look == ',');
             if (c != proclist[ProcFound].ParCnt) Error("Wrong number of parameters for "+proclist[ProcFound].ProcName);
         }
+        else {
+
+        }
         i = proclist[ProcFound].LocCnt;
         if (i > 0) {
             for (c = 0; c < i;i++) {
@@ -1958,7 +1980,7 @@ void Clcc::ProcCall() {
                 writln(outf,"\tEXAM");
             }
             else
-                if (proclist[ProcFound].hasreturn) {
+            if (proclist[ProcFound].hasreturn) {
                 writln(outf,"\tEXAB");
                 writln(outf,"\tLDR");
                 writln(outf,tr("\tADIA\t%1").arg(a)); pushcnt-=a;
@@ -1966,10 +1988,11 @@ void Clcc::ProcCall() {
                 writln(outf,"\tEXAB");
             }
             else {
-                if (a < 4)
+                if (a < 4) {
                     for (int i = 0 ; i<a; i++)
                     {
-                    writln(outf,"\tPOP"); pushcnt--;
+                        writln(outf,"\tPOP"); pushcnt--;
+                    }
                 }
                 else
                 {
@@ -1980,10 +2003,14 @@ void Clcc::ProcCall() {
             }
         }
         //                Tok := s;
+        if (Tok.startsWith(')')) Tok.remove(0,1);
         rd(&Look, &Tok);
+        writln("LOG",";ProCall(after FindProc):"+Tok);
     }
     else
         Expected("procedure call");
+
+    writln("LOG",";ProCall(End):"+Tok);
 }
 //{-------------------------------------------------------------}
 
@@ -2226,7 +2253,8 @@ writln("LOG",";Assignement:"+Tok);
 void Clcc::BoolExpression(void) {
     int i;
     i = 0;
-    while (i < Tok.length()) {
+    writln("LOG",";BoolExpression:"+Tok);
+    while (i < (Tok.length()-1)) {
         if (Tok.mid(i,2) == "||") {
             Tok.remove(i,1); Tok[i]=BO;
         }
@@ -2294,6 +2322,7 @@ void Clcc::BoolAnd(void) {
 void Clcc::NotCompTerm(void) {
 char Sign;
 
+    writln("LOG",";NotCompTerm:"+Tok);
     Sign = Look;
     if (Look == '!') {
                 rd(&Look, &Tok); Tok = Tok.trimmed();
@@ -2310,6 +2339,7 @@ char Sign;
 */
 void Clcc::CompTerm(void) {
     char compOp;
+    writln("LOG",";CompTerm:"+Tok);
     if (Look =='(') {
         //Rd(Look, tok); tok := trim(tok);
         BoolExpression();

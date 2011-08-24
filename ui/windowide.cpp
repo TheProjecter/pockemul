@@ -129,6 +129,7 @@ void WindowIDE::compile(void) {
         createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->run();
+        createEditorTab(fInfo.baseName()+".log",mapASM["LOG"]);
 
         createEditorTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
 

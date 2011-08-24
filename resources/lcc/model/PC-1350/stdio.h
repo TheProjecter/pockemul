@@ -5,6 +5,7 @@
 // test for PC-1350
 byte xram _lcd_dx at 0x7881;
 byte xram _lcd_dy at 0x7880;
+byte _reg_a at 2;
 
 putchar(char c) {
 
@@ -53,10 +54,21 @@ char getchar() {
     JPC getchar_key:
     RA
 getchar_key:
-    RTN
 
 #endasm
 #restore
+    return _reg_a;
+}
+
+byte onbreak() {
+#asm
+    RA
+    TEST 08
+    JRZP onbreak_end
+    LIA 0xff
+onbreak_end:
+#endasm
+    return _reg_a;
 }
 
 #endif // _STDIO_H
