@@ -7,12 +7,12 @@ byte xram _lcd_dx at 0x7881;
 byte xram _lcd_dy at 0x7880;
 byte _reg_a at 2;
 
-putchar(char c) {
+putchar(char l_putchar_c) {
 
     if (_lcd_dy < 0) _lcd_dy = 0;
 
-    if ( c!='\n') {
-        load c;
+    if ( l_putchar_c!='\n') {
+        load l_putchar_c;
 
         #save
         #asm
@@ -44,29 +44,38 @@ putchar(char c) {
     }
 }
 
-
+char xram l_getchar_ret;
 char getchar() {
+
 #save
 #asm
 
     CALL 0x0436
 
-    JPC getchar_key:
+    JRCP lb_getchar_key
     RA
-getchar_key:
-
+    JRP lb_getchar_ascii
+lb_getchar_key:
+    ADIA  0x03
+    LIB   0x84
+    CALL 0x0297
+    IXL
+lb_getchar_ascii:
+    LIDP l_getchar_ret
+    STD
 #endasm
+
 #restore
-    return _reg_a;
+    return l_getchar_ret;
 }
 
 byte onbreak() {
 #asm
     RA
     TEST 08
-    JRZP onbreak_end
+    JRZP lb_onbreak_end
     LIA 0xff
-onbreak_end:
+lb_onbreak_end:
 #endasm
     return _reg_a;
 }
