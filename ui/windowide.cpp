@@ -118,7 +118,7 @@ void WindowIDE::compile(void) {
 
     CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
 
-    QString source = locEditorWidget->m_editControl->editor()->text();
+    QString source = "#include <internal.h>\r\n"+locEditorWidget->m_editControl->editor()->text();
     QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
     QFileInfo fInfo(sourcefname);
 

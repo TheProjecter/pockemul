@@ -200,7 +200,8 @@ HEADERS += src/core/Connect.h \
     qcodeedit/widgets/qhexpanel.h \
     qcodeedit/widgets/qoutpanel.h \
     resources/lcc/model/PC-1350/sound.h \
-    resources/lcc/model/__sound.h
+    resources/lcc/model/__sound.h \
+    resources/lcc/model/PC-1350/internal.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
