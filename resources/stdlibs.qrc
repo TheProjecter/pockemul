@@ -5,5 +5,9 @@
         <file>lcc/model/__sound.h</file>
         <file>lcc/model/PC-1350/sound.h</file>
         <file>lcc/model/PC-1350/internal.h</file>
+        <file>lcc/model/PC-1251/internal.h</file>
+        <file>lcc/model/PC-1251/sound.h</file>
+        <file>lcc/model/__stdio.h</file>
+        <file>lcc/model/PC-1251/stdio.h</file>
     </qresource>
 </RCC>

@@ -19,6 +19,7 @@ public:
     QString parsefile(QString srcName,QString source);
     QString getModel(void);
 
+    void doDefine(QString tok);
 private:
     void abort(QString t);
     QString replace_text(QString text, QString such, QString ers);

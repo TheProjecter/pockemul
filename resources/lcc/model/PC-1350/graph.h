@@ -1,3 +1,4 @@
+//TODO add screen inverter
 #ifndef GRAPH_H
 #define GRAPH_H
 

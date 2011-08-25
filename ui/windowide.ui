@@ -249,6 +249,15 @@
          </item>
          <item>
           <property name="text">
+           <string>PC-1251</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1251.qrc">
+            <normaloff>:/PC1251/pc1251/pc1251.png</normaloff>:/PC1251/pc1251/pc1251.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>PC-1250</string>
           </property>
           <property name="icon">
@@ -323,6 +332,7 @@
  </widget>
  <resources>
   <include location="../resources/pc1250.qrc"/>
+  <include location="../resources/pc1251.qrc"/>
   <include location="../resources/pc1350.qrc"/>
  </resources>
  <connections/>

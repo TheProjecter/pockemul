@@ -1,3 +1,6 @@
+// TODO ADD #define XXXX replace string  capability. paameters ????
+
+
 #include "QString"
 #include <QMessageBox>
 
@@ -40,9 +43,13 @@ void Clcpp::abort(QString t) {
  \return QString
 */
 QString Clcpp::replace_text(QString text, QString such, QString ers) {
-
+QString s = text;
+#if 0
     QString regex = "([^_0-9A-Za-z])("+such+")([^_0-9A-Za-z])";
     return text.replace(QRegExp(regex),"\\1"+ers+"\\3");
+#else
+    return s.replace(such,ers);
+#endif
 }
 
 
@@ -172,7 +179,9 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
             if (!result.toLower().startsWith("#ifdef")) {
                 if (sym.size() > 0) {
                     for (int i = 0 ; i< sym.size();i++) {
-                        result = replace_text(result, sym[i], symval[i]);
+                        //result = replace_text(result, sym[i], symval[i]);
+                        if (!symval[i].isEmpty())
+                            result.replace(sym[i], symval[i]);
                     }
                 }
             }
@@ -183,6 +192,10 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
     result = result.trimmed();
 
     return result;
+}
+
+void Clcpp::doDefine(QString tok) {
+    addsymbol(extractparam(tok, 1), extractparam(tok, 2));
 }
 
 /*!
@@ -211,7 +224,7 @@ QString Clcpp::parsefile(QString srcName,QString source) {
         //            if pos('#endif', tok) = 0 then
         {
 
-            if (tok.startsWith("#define")) addsymbol(extractparam(tok, 1), extractparam(tok, 2));
+            if (tok.startsWith("#define")) {doDefine(tok);}
             else if (tok.startsWith("#org") ||
                      tok.startsWith("#asm") ||
                      tok.startsWith("#endasm") ||
@@ -225,7 +238,7 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                     while (linesIter.hasNext() && (op !="#endif"))
                     {
                         tok = readline(&linesIter);
-                        if (tok.indexOf("#endif") > 0) op = "#endif";
+                        if (tok.indexOf("#endif") >= 0) op = "#endif";
                     }
                 }
             }
@@ -234,7 +247,7 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                     while (linesIter.hasNext() && (op !="#endif"))
                     {
                         tok = readline(&linesIter);
-                        if (tok.indexOf("#endif") > 0) op = "#endif";
+                        if (tok.indexOf("#endif") >= 0) op = "#endif";
                     }
                 }
             }

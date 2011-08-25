@@ -22,7 +22,10 @@ __beep(byte __beep_freq,byte __beep_duration) {
     LIDP lb2603+1		; set length of
     STD			;  wait intervals
 
-
+#ifdef __PC_RESONATOR_768K__
+    LIDP    lb2604+1
+    STD
+#endif
     LIDP    lb2605+1
     STD
     LIDP    lb2606+1
@@ -44,6 +47,12 @@ lb2602:
 
 lb2603:
     WAIT 0x00		; 6 + B
+
+#ifdef __PC_RESONATOR_768K__
+lb2604:
+    WAIT 0x00		; 6 + B
+    WAIT 0x02		; 8
+#endif
 
     ORIM 0x10;PORT_C_BEEP_FREQ	; 4
     OUTC			; 2

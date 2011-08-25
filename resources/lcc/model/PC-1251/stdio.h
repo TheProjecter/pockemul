@@ -1,13 +1,11 @@
 #ifndef STDIO_H
 #define STDIO_H
 
-// PC-1350
+// PC-1251
 
 #include <__stdio.h>
 
 
-// implement putchar(int) and getchar()
-// test for PC-1350
 byte xram _lcd_dx at 0x7881;
 byte xram _lcd_dy at 0x7880;
 
@@ -79,4 +77,3 @@ byte onbreak() {
 }
 
 #endif // _STDIO_H
-
