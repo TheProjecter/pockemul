@@ -21,6 +21,7 @@ public:
 
     void doDefine(QString tok);
     void doInclude(QString, QString);
+    Cstdlib *pStdLibs;
 private:
     void abort(QString t);
     QString replace_text(QString text, QString such, QString ers);
@@ -35,7 +36,7 @@ private:
     QMap<QString,QByteArray> *out;
     QString model;
 
-    Cstdlib *pStdLibs;
+
 
     int cline;
     int lcnt;

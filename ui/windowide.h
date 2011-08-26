@@ -56,6 +56,7 @@ private slots:
     void closeEditorTab(int);
     void newFile(void);
     void closeOutputTab(int index);
+    void targetChange(QString);
 
 signals:
     void newEmulatedPocket(CPObject *);

@@ -664,6 +664,7 @@ INLINE void Csc::Op_14(void)
 
 	Chk_Flag(t,SIZE_16);
 	Set_i16(reg.r.p, (WORD) t);
+    reg.r.p++;	reg.r.p &= 0x7F;
 	AddLog(LOG_CPU,"ADB");
 
 	AddState(5);
@@ -678,6 +679,7 @@ INLINE void Csc::Op_15(void)
 	t = Get_i16(reg.r.p) - ( I_REG_A|(I_REG_B<<8) );
 	Chk_Flag(t,SIZE_16);
 	Set_i16(reg.r.p, (WORD) t);
+    reg.r.p++;	reg.r.p &= 0x7F;
 	AddLog(LOG_CPU,"SBB");
 
 	AddState(5);

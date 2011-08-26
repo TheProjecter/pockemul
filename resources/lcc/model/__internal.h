@@ -43,4 +43,23 @@
 #define TEST_XIN         0x80         // Xin port
 
 
+byte _reg_i at 0;
+byte _reg_j at 1;
+byte _reg_a at 2;
+byte _reg_b at 3;
+//word _regw_ab at 2;
+byte _reg_xl at 4;
+byte _reg_xh at 5;
+//word _regw_x at 4;
+byte _reg_yl at 6;
+byte _reg_yh at 7;
+//word _regw_y at 6;
+byte _reg_k at 8;
+byte _reg_l at 9;
+byte _reg_m at 10;
+byte _reg_n at 11;
+
+
+
+
 #endif // __INTERNAL_H

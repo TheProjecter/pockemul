@@ -76,7 +76,7 @@ public:
     int initn;
 
     QByteArray getLabel() {
-        return (address ? QByteArray::number(address) : varname);
+        return ((address>=0) ? (QByteArray::number(address)) : varname);
     }
 };
 

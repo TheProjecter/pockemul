@@ -1,12 +1,9 @@
 #ifndef __SOUND_H
 #define __SOUND_H
 
-byte _snd_freq at 8;
-byte _snd_dur  at 9;
-
 __beep(byte __beep_freq,byte __beep_duration) {
-    _snd_freq = __beep_freq;
-    _snd_dur  = __beep_duration;
+    _reg_k = __beep_freq;
+    _reg_l  = __beep_duration;
 
 #save
 #asm

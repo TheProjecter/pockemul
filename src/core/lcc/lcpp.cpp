@@ -256,11 +256,13 @@ QString Clcpp::parsefile(QString srcName,QString source) {
             }
             else if (tok.startsWith("#ifdef")) {
                 if (! findsymbol(extractparam(tok, 1))) {
+                    op="";
                     while (linesIter.hasNext() && (op !="#endif"))
                     {
                         tok = readline(&linesIter);
                         if (tok.indexOf("#endif") >= 0) op = "#endif";
                     }
+
                 }
             }
             else if (tok.startsWith("#ifndef")) {

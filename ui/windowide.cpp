@@ -126,6 +126,7 @@ void WindowIDE::compile(void) {
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
+        lcpp->pStdLibs->LoadLibs();
         lcpp->run();
         createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
 #if 1
@@ -358,5 +359,10 @@ void WindowIDE::newFile()
                         new QString("(*.c)"));
 
     createEditorTab(fileName,"");
+
+}
+
+void WindowIDE::targetChange(QString m)
+{
 
 }

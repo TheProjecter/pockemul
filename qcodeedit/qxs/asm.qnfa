@@ -24,6 +24,15 @@
 		<escape>\\</escape>
 	</context>
 	
+    <sequence parenthesis="ifdef:open" indent="1" fold="1">#ifn?def</sequence>
+    <sequence parenthesis="ifdef:close" indent="1" fold="1">#endif</sequence>
+
+    <context id="preprocessorC" format="preprocessor" transparency="true" stayOnLine="true" >
+        <start exclusive="false">#</start>
+        <stop exclusive="false">\n</stop>
+        <escape>\\</escape>
+    </context>
+
 	<context id="data/string" format="text" >
 		<start>&quot;</start>
 		<stop>&quot;</stop>
@@ -45,8 +54,7 @@
 	<sequence parenthesis="square:open">\[</sequence>
 	<sequence parenthesis="square:close">\]</sequence>
 	
-    <sequence parenthesis="ifdef:open" indent="1" fold="1">#ifn?def</sequence>
-    <sequence parenthesis="ifdef:close" indent="1" fold="1">#endif</sequence>
+
 
 <!-- 	<list id="keywords/visibility" format="keyword">
 		<word parenthesis="visibility:boundary" fold="1" indent="1">public</word>
