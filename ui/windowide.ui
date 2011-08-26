@@ -209,11 +209,11 @@
          </property>
          <item>
           <property name="text">
-           <string>PC-1350</string>
+           <string>PC-1250</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1350.qrc">
-            <normaloff>:/PC1350/pc1350/pc1350.png</normaloff>:/PC1350/pc1350/pc1350.png</iconset>
+           <iconset resource="../resources/pc1250.qrc">
+            <normaloff>:/PC1250/pc1250/pc1250.png</normaloff>:/PC1250/pc1250/pc1250.png</iconset>
           </property>
          </item>
          <item>
@@ -227,11 +227,20 @@
          </item>
          <item>
           <property name="text">
-           <string>PC-1250</string>
+           <string>PC-1262</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1250.qrc">
-            <normaloff>:/PC1250/pc1250/pc1250.png</normaloff>:/PC1250/pc1250/pc1250.png</iconset>
+           <iconset resource="../resources/pc1262.qrc">
+            <normaloff>:/PC1262/pc1262/pc1262.jpg</normaloff>:/PC1262/pc1262/pc1262.jpg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC-1350</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1350.qrc">
+            <normaloff>:/PC1350/pc1350/pc1350.png</normaloff>:/PC1350/pc1350/pc1350.png</iconset>
           </property>
          </item>
         </widget>
@@ -302,6 +311,7 @@
  <resources>
   <include location="../resources/pc1250.qrc"/>
   <include location="../resources/pc1251.qrc"/>
+  <include location="../resources/pc1262.qrc"/>
   <include location="../resources/pc1350.qrc"/>
  </resources>
  <connections/>

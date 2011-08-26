@@ -128,6 +128,7 @@ void WindowIDE::compile(void) {
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
         lcpp->run();
         createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
+#if 1
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->run();
         createEditorTab(fInfo.baseName()+".log",mapASM["LOG"]);
@@ -135,6 +136,7 @@ void WindowIDE::compile(void) {
         createEditorTab(fInfo.baseName()+".asm",mapASM[fInfo.baseName()+".asm"]);
 
         createOutputTab("C Compiler :"+fInfo.fileName(),mapASM["output"]);
+#endif
     }
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {

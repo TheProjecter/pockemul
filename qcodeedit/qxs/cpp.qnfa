@@ -1,7 +1,15 @@
 <!DOCTYPE QNFA>
-<QNFA language="C++" extensions="c;cc;cxx;cpp;h;hxx;hpp" defaultLineMark="breakpoint">
+<QNFA language="C++" extensions="c;cc;cxx;cpp;h;hxx;hpp;pp" defaultLineMark="breakpoint">
 
+
+
+    <context id="asm" format="asm">
+        <start parenthesis="asm:open" indent="1" fold="1">#asm</start>
+        <stop parenthesis="asm:close" indent="1" fold="1">#endasm</stop>
+        <embed target="ASM" />
+    </context>
 	
+
 	<context id="comment/multi" format="comment">
 		<start parenthesis="cppcomment:open" indent="1" fold="1">/\*</start>
 		<stop parenthesis="cppcomment:close" indent="1" fold="1">\*/</stop>
@@ -17,6 +25,8 @@
 			<escape>\\</escape>
 		</context>
 	</context>
+
+
 	
 	<context id="preprocessor" format="preprocessor" transparency="true" stayOnLine="true" >
 		<start>#</start>
@@ -44,7 +54,11 @@
 	<sequence parenthesis="curly:close" indent="1" fold="1">}</sequence>
 	<sequence parenthesis="square:open">\[</sequence>
 	<sequence parenthesis="square:close">\]</sequence>
+    <sequence parenthesis="ifdef:open" indent="1" fold="1">#ifn?def</sequence>
+    <sequence parenthesis="ifdef:close" indent="1" fold="1">#endif</sequence>
 	
+
+
 	<list id="keywords/visibility" format="keyword">
 		<word parenthesis="visibility:boundary" fold="1" indent="1">public</word>
 		<word parenthesis="visibility:boundary" fold="1" indent="1">protected</word>
