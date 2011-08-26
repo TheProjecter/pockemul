@@ -20,6 +20,7 @@ public:
     QString getModel(void);
 
     void doDefine(QString tok);
+    void doInclude(QString, QString);
 private:
     void abort(QString t);
     QString replace_text(QString text, QString such, QString ers);

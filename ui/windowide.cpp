@@ -54,7 +54,8 @@ WindowIDE::WindowIDE(QWidget *parent) :
     connect(ui->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
     connect(ui->actionSave,SIGNAL(triggered()),this,SLOT(save()));
     connect(ui->actionSave_All,SIGNAL(triggered()),this,SLOT(saveAll()));
-    connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(load(QListWidgetItem*)));
+    //connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(load(QListWidgetItem*)));
+    connect(ui->treeView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(load(QModelIndex)));
     connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeEditorTab(int)));
     connect(ui->outputtabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeOutputTab(int)));
     connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(newFile()));
@@ -263,16 +264,26 @@ void WindowIDE::saveAll(void) {
 
 */
 void WindowIDE::refreshFileList(void) {
-    QDir dir;
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    dir.setSorting(QDir::Size | QDir::Reversed);
+//    QDir dir;
+//    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+//    dir.setSorting(QDir::Size | QDir::Reversed);
 
-    QFileInfoList list = dir.entryInfoList(QStringList() << "*.c" << "*.asm");
-    //QFileInfoList list = dir.entryInfoList();
-    for (int i = 0; i < list.size(); ++i) {
-        QFileInfo fileInfo = list.at(i);
-        ui->listWidget->addItem(fileInfo.fileName());
-    }
+//    QFileInfoList list = dir.entryInfoList(QStringList() << "*.c" << "*.asm");
+//    //QFileInfoList list = dir.entryInfoList();
+//    for (int i = 0; i < list.size(); ++i) {
+//        QFileInfo fileInfo = list.at(i);
+//        ui->listWidget->addItem(fileInfo.fileName());
+//    }
+    model = new QFileSystemModel;
+    model->setRootPath(QDir::currentPath());
+    model->setNameFilters(QStringList() << "*.c" << "*.asm" << "*.h");
+    model->setNameFilterDisables(false);
+    ui->treeView->setModel(model);
+    ui->treeView->hideColumn(1);
+    ui->treeView->hideColumn(2);
+    ui->treeView->hideColumn(3);
+    ui->treeView->header()->hide();
+    ui->treeView->setRootIndex(model->index(QDir::currentPath()));
 }
 
 /*!
@@ -280,17 +291,18 @@ void WindowIDE::refreshFileList(void) {
 
  \param id
 */
-void WindowIDE::load(QListWidgetItem* id) {
-
+void WindowIDE::load(QModelIndex index) {
+    //QMessageBox::about(this,"test",model->fileName(index)+" - "+model->filePath(index));
     // check if file still open
-    if (editorMap.contains(id->text())) {
-            ui->tabWidget->setCurrentWidget(editorMap.value(id->text()));
+    if (editorMap.contains(model->filePath(index))) {
+            ui->tabWidget->setCurrentWidget(editorMap.value(model->filePath(index)));
     }
     else {
     // If not create a new tab
-        createEditorTab(id->text(),"",true);
+        createEditorTab(model->filePath(index),"",true);
 
     }
+
 }
 
 /*!

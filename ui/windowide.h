@@ -45,13 +45,14 @@ public:
     void createOutputTab(QString fname, QString text);
 
 
+
 public slots:
     void saveAll(void);
 
 private slots:
     void compile(void);
     void save(void);
-    void load(QListWidgetItem* id);
+    void load(QModelIndex index);
     void closeEditorTab(int);
     void newFile(void);
     void closeOutputTab(int index);
@@ -72,6 +73,7 @@ private:
     void setupEditor(void);
 
     Ui::WindowIDE *ui;
+    QFileSystemModel *model;
 };
 
 #endif // WINDOWIDE_H

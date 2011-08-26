@@ -45,7 +45,7 @@ void Cstdlib::setModel(QString m) {
 void Cstdlib::LoadLibs(void) {
     libmap.clear();
 
-    // Fetch all libs available for the current model
+    // Fetch all libs available start with ressources then current filesystem
     //
     QDir dir(":/lcc/model/");
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -54,7 +54,14 @@ void Cstdlib::LoadLibs(void) {
 
     dir.setPath(":/lcc/model/"+model);
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    list << dir.entryInfoList();
 
+    dir.setPath("lcc/model/");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    list << dir.entryInfoList();
+
+    dir.setPath("lcc/model/"+model);
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     list << dir.entryInfoList();
 
     for (int i = 0; i < list.size(); ++i) {

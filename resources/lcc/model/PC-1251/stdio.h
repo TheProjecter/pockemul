@@ -5,70 +5,52 @@
 
 #include <__stdio.h>
 
+/*
+Chartable commence en 0x4464
+5 byte par char
+dans l'ordre
 
-byte xram _lcd_dx at 0x7881;
-byte xram _lcd_dy at 0x7880;
+disp ram F800 -> F83B    F87B <- F840
 
-putchar(char l_putchar_c) {
+*/
 
-    if (_lcd_dy < 0) _lcd_dy = 0;
+byte xram _lcd_x;
+byte xram _lcd_y;
 
-    if ( l_putchar_c!='\n') {
-        load l_putchar_c;
+setcurpos(byte setpos_x,byte setpos_y) {
+    _lcd_x = setpos_x;
+    _lcd_y = setpos_y;
+}
 
-        #save
-        #asm
-        LIDP    0x788F
-        ORID    0x01
-        CALL    0xE983
-        #endasm
-        #restore
-        _lcd_dx++;
-        if (_lcd_dx>23) {
-            _lcd_dx = 0;
-            _lcd_dy++;
-        }
+byte xram _chartable1 at 0x4464;
+byte xram _chartable2 at 0x4564;
+byte xram _chartable3 at 0x4664;
+byte xram _chartable4 at 0x4764;
+byte xram _chartable5 at 0x4864;
+
+byte xram _disp_ram at 0xF800;
+
+byte _grxcalc_dispadr()  {
+    if (_lcd_x<=0x3B) {
+        return _lcd_x;
     }
     else {
-        _lcd_dx = 0;
-        _lcd_dy++;
-    }
-
-    if (_lcd_dy >3) {
-        //scroll up the screen
-        #save
-        #asm
-        LIA     4
-        CALL    0xE23C
-        #endasm
-        #restore
-        _lcd_dy = 3;
+        return (0xBB - _lcd_x);
     }
 }
 
-char xram l_getchar_ret;
-char getchar() {
+drawchar(char _drawchar_c) {
+    for (i=0;i<5;i++) {
+        switch (_drawchar_c / 5) {
+            0 : b =_chartable1[5*_drawchar_c+1];
+        }
 
-#save
-#asm
-
-    CALL 0x0436
-
-    JRCP lb_getchar_key
-    RA
-    JRP lb_getchar_ascii
-lb_getchar_key:
-    ADIA  0x03
-    LIB   0x84
-    CALL 0x0297
-    IXL
-lb_getchar_ascii:
-    LIDP l_getchar_ret
-    STD
-#endasm
-
-#restore
-    return l_getchar_ret;
+        if (_drawchar_c <= 51) _adr = _drawchar_c;
+        else if (_drawchar_c <= 51) _adr = _drawchar_c;
+        _disp_ram[_grxcalc_dispadr()] = _chartable[5*_drawchar_c+i];
+        _lcd_x++;
+    }
+    if (_lcd_x > 119 ) _lcd_x = 0;
 }
 
 byte onbreak() {

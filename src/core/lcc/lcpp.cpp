@@ -198,6 +198,27 @@ void Clcpp::doDefine(QString tok) {
     addsymbol(extractparam(tok, 1), extractparam(tok, 2));
 }
 
+void Clcpp::doInclude(QString srcName,QString tok) {
+    QString op = extractparam(tok, 1);
+    // Two case : "filename", look in standard sources set
+    //             <filename>, look in library
+    if (op.startsWith('"')) {
+        op.remove('"');
+        if (sources->contains(op)) {
+                parsefile(srcName,sources->value(op));
+            }
+        else
+            abort("Include file " + op + " not found!");
+    }
+    if (op.startsWith('<')) {
+        op.remove('<').remove('>');
+
+        if (pStdLibs->contains(op)) {
+            parsefile(srcName,pStdLibs->getLib(op));
+        }
+    }
+}
+
 /*!
  \brief Pre-Compile hthe source code and store the result into the out MAP with the srcName
 
@@ -252,24 +273,25 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                 }
             }
             else if (tok.startsWith("#include")) {
-                op = extractparam(tok, 1);
-                // Two case : "filename", look in standard sources set
-                //             <filename>, look in library
-                if (op.startsWith('"')) {
-                    op.remove('"');
-                    if (sources->contains(op)) {
-                            parsefile(srcName,sources->value(op));
-                        }
-                    else
-                        abort("Include file " + op + " not found!");
-                }
-                if (op.startsWith('<')) {
-                    op.remove('<').remove('>');
+                doInclude(srcName,tok);
+//                op = extractparam(tok, 1);
+//                // Two case : "filename", look in standard sources set
+//                //             <filename>, look in library
+//                if (op.startsWith('"')) {
+//                    op.remove('"');
+//                    if (sources->contains(op)) {
+//                            parsefile(srcName,sources->value(op));
+//                        }
+//                    else
+//                        abort("Include file " + op + " not found!");
+//                }
+//                if (op.startsWith('<')) {
+//                    op.remove('<').remove('>');
 
-                    if (pStdLibs->contains(op)) {
-                        parsefile(srcName,pStdLibs->getLib(op));
-                    }
-                }
+//                    if (pStdLibs->contains(op)) {
+//                        parsefile(srcName,pStdLibs->getLib(op));
+//                    }
+//                }
             }
             else if (tok.indexOf("#endif")<0) writeln(srcName,tok);
         }
