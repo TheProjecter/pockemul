@@ -12,6 +12,7 @@
 #include "dialogkeylist.h"
 #include "dialogdump.h"
 #include "weblinksparser.h"
+#include "sc61860.h"
  
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
@@ -172,6 +173,26 @@ int CPObject::runRange(qint64 step) {
         qint64 t = pTIMER->state;
         while (pTIMER->state - t < step) {
             run();
+
+            if (pLCDC)
+            {
+                bool disp_on=true;
+                if (dynamic_cast<CpcXXXX *>(this) )
+                {
+                    CpcXXXX *tmpPC = (CpcXXXX*)this;
+                    if (dynamic_cast<Csc *>(tmpPC->pCPU)) {
+                        Csc * tmpsc = (Csc*)(tmpPC->pCPU);
+                        disp_on = tmpsc->getDisp();
+                    }
+
+                }
+
+                if (disp_on) {
+                    pLCDC->disp();
+                    if (pLCDC->Refresh) Refresh_Display = true;
+                }
+            }
+
         }
         return (pTIMER->state - t);
     }

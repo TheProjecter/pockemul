@@ -94,8 +94,8 @@ void CpcXXXX::UpdateFinalImage(void)
         painter.drawImage(QPoint(0,0),*BackgroundImage);
 		painter.end();		
 	
-		if (pLCDC->Refresh)
-			pLCDC->disp();
+//		if (pLCDC->Refresh)
+//			pLCDC->disp();
 
 //		if (pPC->pLCDC->On)
 		{

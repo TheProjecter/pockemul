@@ -232,6 +232,7 @@ void CPocketThread::run()
                         }
                         else {
                             pPC->run();
+
                         }
                         // WRITE the LINK BOX Connector
                         mainwindow->pdirectLink->clearlog();

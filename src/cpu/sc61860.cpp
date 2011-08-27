@@ -2176,7 +2176,7 @@ INLINE void Csc::Op_df(void)
 	disp_on = (pPC->Get_Port(PORT_C) & 1);
     if (!disp_on)
 	{
-//		AddLog(0x80,"BUSY");
+        AddLog(0x80,"BUSY");
 	}
     if (pPC->Get_Port(PORT_C) & 2)
 	{
