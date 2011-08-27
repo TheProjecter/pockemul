@@ -174,25 +174,20 @@ int CPObject::runRange(qint64 step) {
         while (pTIMER->state - t < step) {
             run();
 
+#if 0
+            // refresh display when disp_on switch to 1
             if (pLCDC)
             {
-                bool disp_on=true;
                 if (dynamic_cast<CpcXXXX *>(this) )
                 {
                     CpcXXXX *tmpPC = (CpcXXXX*)this;
-                    if (dynamic_cast<Csc *>(tmpPC->pCPU)) {
-                        Csc * tmpsc = (Csc*)(tmpPC->pCPU);
-                        disp_on = tmpsc->getDisp();
+                    if (tmpPC->getdisp_onRaised()) {
+                        pLCDC->disp();
+                        if (pLCDC->Refresh) Refresh_Display = true;
                     }
-
-                }
-
-                if (disp_on) {
-                    pLCDC->disp();
-                    if (pLCDC->Refresh) Refresh_Display = true;
                 }
             }
-
+#endif
         }
         return (pTIMER->state - t);
     }
@@ -1000,6 +995,18 @@ void CPObject::Dump()
 {
 	dialogdump = new DialogDump(this);
 	dialogdump->show();
+}
+
+bool CPObject::getdisp_onRaised()
+{
+    return disp_onRaised;
+}
+
+void CPObject::setDisp_on(bool v)
+{
+    if (v && !disp_on) disp_onRaised=true;
+    else disp_onRaised = false;
+    disp_on = v;
 }
 
 

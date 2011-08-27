@@ -56,6 +56,8 @@ public:
 	QString	LcdFname;
 	QString	SymbFname;
 
+    void setDisp_on(bool v);
+    bool getdisp_onRaised();
     int     ioFreq;
 	
     void setName(QString val){ Name = val;	}
@@ -214,6 +216,9 @@ private:
 
     int		Pc_DX,Pc_DY;
     int		Pc_DX_mm,Pc_DY_mm,Pc_DZ_mm;		// PC size (mm)
+
+    bool disp_on;
+    bool disp_onRaised;
 
 };
 

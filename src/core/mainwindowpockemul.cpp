@@ -612,24 +612,26 @@ void MainWindowPockemul::updateFrameTimer()
                     CurrentpPC->setToolTip(CurrentpPC->getName()+str);
                 }
                 bool disp_on = true;
-//                if (CurrentpPC->pLCDC)
-//                {
+#if 1
+                if (CurrentpPC->pLCDC)
+                {
 
-//                    if (dynamic_cast<CpcXXXX *>(CurrentpPC) )
-//                    {
-//                        CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
-//                        if (dynamic_cast<Csc *>(tmpPC->pCPU)) {
-//                            Csc * tmpsc = (Csc*)(tmpPC->pCPU);
-//                            disp_on = tmpsc->getDisp();
-//                        }
+                    if (dynamic_cast<CpcXXXX *>(CurrentpPC) )
+                    {
+                        CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
+                        if (dynamic_cast<Csc *>(tmpPC->pCPU)) {
+                            Csc * tmpsc = (Csc*)(tmpPC->pCPU);
+                            disp_on = tmpsc->getDisp();
+                        }
 
-//                    }
+                    }
 
-//                    if (disp_on) {
-//                        CurrentpPC->pLCDC->disp();
-//                        if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
-//                    }
-//                }
+                    if (disp_on) {
+                        CurrentpPC->pLCDC->disp();
+                        if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
+                    }
+                }
+#endif
                 if ( CurrentpPC->Refresh_Display) {
                     CurrentpPC->update();
                     CurrentpPC->Refresh_Display= false;

@@ -2173,11 +2173,8 @@ INLINE void Csc::Op_df(void)
 	pPC->Set_Port(PORT_C , Get_i8(IMEM_IC) );
 	reg.r.q = IMEM_IC;
     AddState(2);
-	disp_on = (pPC->Get_Port(PORT_C) & 1);
-    if (!disp_on)
-	{
-        //AddLog(0x80,"BUSY");
-	}
+    pPC->setDisp_on((pPC->Get_Port(PORT_C) & 1));
+
     if (pPC->Get_Port(PORT_C) & 2)
 	{
         ticks = ticks2 = 0;
