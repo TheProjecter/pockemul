@@ -3,7 +3,7 @@
 
 #include <__internal.h>
 
-#define __PC_1262__
+#define __PC_1262__		1
 
 #define __PC_RESONATOR_768K__
 #define __PC_DEFAULT_ORG__      0x4080

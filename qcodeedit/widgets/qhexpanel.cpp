@@ -188,9 +188,10 @@ void QHexPanel::install()
     int index = cbinstallTo->currentIndex();
     CpcXXXX *pc = (CpcXXXX *) cbinstallTo->itemData(index).toString().toULongLong();
 
-    QDataStream in(hexeditor->data());
-    in.readRawData ((char *) &pc->mem[startadr],hexeditor->data().size() );
-    QMessageBox::about(this,"Transfert",tr("LM stored at %1").arg(startadr));
+    emit installTo(pc,startadr,hexeditor->data());
+//    QDataStream in(hexeditor->data());
+//    in.readRawData ((char *) &pc->mem[startadr],hexeditor->data().size() );
+//    QMessageBox::about(this,"Transfert",tr("LM stored at %1").arg(startadr));
 }
 
 void QHexPanel::filltargetCB(void) {

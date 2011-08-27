@@ -37,7 +37,7 @@ public:
 
     QMap<QString,CEditorWidget *> editorMap;
 
-    void installTo(CpcXXXX *pc, qint32 adr, QByteArray data);
+
 
     void addtargetCB(CPObject *pc);
     void removetargetCB(CPObject *pc);
@@ -57,6 +57,7 @@ private slots:
     void newFile(void);
     void closeOutputTab(int index);
     void targetChange(QString);
+    void installTo(CpcXXXX *pc, qint32 adr, QByteArray data);
 
 signals:
     void newEmulatedPocket(CPObject *);

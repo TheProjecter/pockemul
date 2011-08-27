@@ -13,5 +13,9 @@
         <file>lcc/model/PC-1262/internal.h</file>
         <file>lcc/model/PC-1262/sound.h</file>
         <file>lcc/model/PC-1262/stdio.h</file>
+        <file>lcc/model/PC-1360/graph.h</file>
+        <file>lcc/model/PC-1360/internal.h</file>
+        <file>lcc/model/PC-1360/sound.h</file>
+        <file>lcc/model/PC-1360/stdio.h</file>
     </qresource>
 </RCC>

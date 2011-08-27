@@ -22,6 +22,8 @@ public:
     void doDefine(QString tok);
     void doInclude(QString, QString);
     Cstdlib *pStdLibs;
+
+    QString computeDefine(QString result);
 private:
     void abort(QString t);
     QString replace_text(QString text, QString such, QString ers);

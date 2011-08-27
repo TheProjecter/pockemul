@@ -209,7 +209,11 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/__internal.h \
     resources/lcc/model/PC-1262/stdio.h \
     resources/lcc/model/PC-1262/sound.h \
-    resources/lcc/model/PC-1262/internal.h
+    resources/lcc/model/PC-1262/internal.h \
+    resources/lcc/model/PC-1360/stdio.h \
+    resources/lcc/model/PC-1360/sound.h \
+    resources/lcc/model/PC-1360/internal.h \
+    resources/lcc/model/PC-1360/graph.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \

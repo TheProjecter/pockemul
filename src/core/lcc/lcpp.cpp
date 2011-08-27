@@ -4,6 +4,7 @@
 #include "QString"
 #include <QMessageBox>
 
+#include "parser/parser.h"
 #include "lcpp.h"
 
 #define ENABLE_COMPILATION 1
@@ -82,7 +83,11 @@ bool Clcpp::findsymbol(QString l) {
 */
 void Clcpp::addsymbol(QString s1, QString s2) {
     if (findsymbol(s1)) {
-        abort("Symbol " + s1 + " already defined!");
+        //abort("Symbol " + s1 + " already defined!");
+        int i = sym.indexOf(s1);
+        sym.removeAt(i);
+        symval.removeAt(i);
+        symcnt--;
     }
     sym.append(s1);
     symval.append(s2);
@@ -176,14 +181,9 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
             }
         }
         if (!result.isEmpty()) {
-            if (!result.toLower().startsWith("#ifdef")) {
-                if (sym.size() > 0) {
-                    for (int i = 0 ; i< sym.size();i++) {
-                        //result = replace_text(result, sym[i], symval[i]);
-                        if (!symval[i].isEmpty())
-                            result.replace(sym[i], symval[i]);
-                    }
-                }
+            if ( (!result.toLower().startsWith("#ifdef")) &&
+                 (!result.toLower().startsWith("#define"))){
+                result = computeDefine(result);
             }
         }
     }
@@ -195,7 +195,19 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
 }
 
 void Clcpp::doDefine(QString tok) {
-    addsymbol(extractparam(tok, 1), extractparam(tok, 2));
+    addsymbol(extractparam(tok, 1), computeDefine(extractparam(tok, 2)));
+}
+
+QString Clcpp::computeDefine(QString result) {
+    QString s = result;
+    if (sym.size() > 0) {
+        for (int i = 0 ; i< sym.size();i++) {
+            //result = replace_text(result, sym[i], symval[i]);
+            if (!symval[i].isEmpty())
+                s.replace(sym[i], symval[i]);
+        }
+    }
+    return s;
 }
 
 void Clcpp::doInclude(QString srcName,QString tok) {
@@ -218,6 +230,8 @@ void Clcpp::doInclude(QString srcName,QString tok) {
         }
     }
 }
+
+
 
 /*!
  \brief Pre-Compile hthe source code and store the result into the out MAP with the srcName
@@ -267,6 +281,19 @@ QString Clcpp::parsefile(QString srcName,QString source) {
             }
             else if (tok.startsWith("#ifndef")) {
                 if ( findsymbol(extractparam(tok, 1))) {
+                    op="";
+                    while (linesIter.hasNext() && (op !="#endif"))
+                    {
+                        tok = readline(&linesIter);
+                        if (tok.indexOf("#endif") >= 0) op = "#endif";
+                    }
+                }
+            }
+            else if(tok.startsWith("#if")) {
+                Parser calc(tok.remove(0,4).toAscii().data());
+                int y = calc.Evaluate();
+                if (y<=0 ) {
+                    op="";
                     while (linesIter.hasNext() && (op !="#endif"))
                     {
                         tok = readline(&linesIter);
@@ -276,24 +303,6 @@ QString Clcpp::parsefile(QString srcName,QString source) {
             }
             else if (tok.startsWith("#include")) {
                 doInclude(srcName,tok);
-//                op = extractparam(tok, 1);
-//                // Two case : "filename", look in standard sources set
-//                //             <filename>, look in library
-//                if (op.startsWith('"')) {
-//                    op.remove('"');
-//                    if (sources->contains(op)) {
-//                            parsefile(srcName,sources->value(op));
-//                        }
-//                    else
-//                        abort("Include file " + op + " not found!");
-//                }
-//                if (op.startsWith('<')) {
-//                    op.remove('<').remove('>');
-
-//                    if (pStdLibs->contains(op)) {
-//                        parsefile(srcName,pStdLibs->getLib(op));
-//                    }
-//                }
             }
             else if (tok.indexOf("#endif")<0) writeln(srcName,tok);
         }

@@ -24,7 +24,7 @@
 		<escape>\\</escape>
 	</context>
 	
-    <sequence parenthesis="ifdef:open" indent="1" fold="1">#ifn?def</sequence>
+    <sequence parenthesis="ifdef:open" indent="1" fold="1">#if</sequence>
     <sequence parenthesis="ifdef:close" indent="1" fold="1">#endif</sequence>
 
     <context id="preprocessorC" format="preprocessor" transparency="true" stayOnLine="true" >

@@ -129,6 +129,18 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="projectDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>274</width>
+     <height>190</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>Project</string>
    </property>
@@ -243,6 +255,15 @@
             <normaloff>:/PC1350/pc1350/pc1350.png</normaloff>:/PC1350/pc1350/pc1350.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>PC-1360</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1360.qrc">
+            <normaloff>:/PC1360/pc1360/pc1360.jpg</normaloff>:/PC1360/pc1360/pc1360.jpg</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -252,10 +273,13 @@
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>40</height>
+         <height>20</height>
         </size>
        </property>
       </spacer>
@@ -313,6 +337,7 @@
   <include location="../resources/pc1251.qrc"/>
   <include location="../resources/pc1262.qrc"/>
   <include location="../resources/pc1350.qrc"/>
+  <include location="../resources/pc1360.qrc"/>
  </resources>
  <connections/>
 </ui>

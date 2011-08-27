@@ -7,6 +7,7 @@
 class QDocumentLine;
 class CPObject;
 class QComboBox;
+class CpcXXXX;
 
 class QCE_EXPORT QHexPanel : public QPanel
 {
@@ -34,6 +35,8 @@ public slots:
     void newPocket(CPObject *);
     void removePocket(CPObject *);
     void install();
+signals:
+    void installTo(CpcXXXX *,qint32 adr, QByteArray data);
 
 private:
     int m_conflictSpot;

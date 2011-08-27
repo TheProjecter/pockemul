@@ -4,7 +4,7 @@
 #include <__internal.h>
 
 // SHARP PC-1350
-#define __PC_1350__
+#define __PC_1350__		1
 
 #define __PC_RESONATOR_768K__
 #define __PC_DEFAULT_ORG__      0x4000
@@ -43,8 +43,5 @@
 #define __MEM_CHARTAB_OFF__ 0
 #define __INVERS_CHARTAB__
 
-#define __INT_ROM_CLRSCR__  0x1E0C  // Clear screen buffer
-#define __INT_ROM_DISP__    0x1DCF  // Display screen buffer
-#define __EXT_ROM_SCROLL__  0xE23C
 
 #endif // INTERNAL_H

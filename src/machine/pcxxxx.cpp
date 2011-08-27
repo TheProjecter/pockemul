@@ -917,6 +917,7 @@ void CpcXXXX::manageExtensions(QAction * action)
 bool CpcXXXX::Mem_Load(qint32 adr, QByteArray data ) {
 
     QDataStream in(data);
-    in.readRawData ((char *) mem[adr], data.size() );
+    int p =data.size();
+    in.readRawData ((char *) &mem[adr], p );
     return true;
 }

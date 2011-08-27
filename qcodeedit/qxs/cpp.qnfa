@@ -54,7 +54,7 @@
 	<sequence parenthesis="curly:close" indent="1" fold="1">}</sequence>
 	<sequence parenthesis="square:open">\[</sequence>
 	<sequence parenthesis="square:close">\]</sequence>
-    <sequence parenthesis="ifdef:open" indent="1" fold="1">#ifn?def</sequence>
+    <sequence parenthesis="ifdef:open" indent="1" fold="1">#if</sequence>
     <sequence parenthesis="ifdef:close" indent="1" fold="1">#endif</sequence>
 	
 

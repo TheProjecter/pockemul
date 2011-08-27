@@ -15,11 +15,45 @@ lb__stdio__onbreak_end:
     return _reg_a;
 }
 
+/*; -----------------------------------------------
+//; Wait BA ms
+//; label prefix __sdtio15
+//; -----------------------------------------------*/
+ps_wait(word _var_ps_wait_nb) {
+	load _var_ps_wait_nb;
+#asm
+	PUSH	; push A
+lb__sdtio1501:
+#ifdef __PC_RESONATOR_768K__
+	WAIT 0xF0
+#endif
+#ifdef __PC_RESONATOR_576K__
+	WAIT 0xB6
+#endif
+	LOOP lb__sdtio1501
+	
+	EXAB
+	PUSH
+lb__sdtio1502:
+	LIA 0xFF
+	PUSH
+lb__sdtio1503:
+#ifdef __PC_RESONATOR_768K__
+	WAIT 0xF0
+#endif
+#ifdef __PC_RESONATOR_576K__
+	WAIT 0xB6
+#endif
+	LOOP lb__sdtio1503
+	LOOP lb__sdtio1502
+#endasm
+}
+
 ps_disp_off() {
 #asm
-ps_disp_off:
+fct_ps_disp_off:
 	LIP  95
-	ANIM 0xFF-PORT_C_DISPLAY
+	ANIM 0xFE
 	OUTC
 #endasm
 }
@@ -28,7 +62,7 @@ ps_disp_on() {
 #asm
 fct_ps_disp_on:
 	LIP  95
-	ORIM PORT_C_DISPLAY
+	ORIM 1
 	OUTC
 #endasm
 }
@@ -42,11 +76,26 @@ byte xram ps_cur_y;
 //; Used Registers: A,B,X,Y
 //; label prefix __sdtio01
 //; -----------------------------------------------*/
+byte xram var_ps_putchar_con_rombank;
 ps_putchar_con(char ps_putchar_con_c) {
 	load ps_putchar_con_c;
 	
 #asm
 fct_ps_putchar_con:
+		
+#ifdef __PC_IS_BANKSWITCHED__
+	; if this is a bankswiched pocket, we
+	; switch to the rom with the character table
+	PUSH
+	LIDP  __MEM_BANKSWITCH__
+	LDD
+	LIDP var_ps_putchar_con_rombank
+	STD
+	LIDP  __MEM_BANKSWITCH__
+	LIA   __MEM_BS_IND_CHARTAB__
+	STD
+	POP
+#endif
 	
 	CALL  fct_ps_ctabadr
 	CALL  fct_ps_xcur2xgcur
@@ -73,6 +122,9 @@ lb__sdtio0101:                       ; copy the 5 (or 6) pixmaps
 	IXL
 #endif
 	DY
+	; introduce here invert char flag
+	; 255 -A -> A
+		
 	IYS 
 	LOOP lb__sdtio0101
 	
@@ -99,6 +151,16 @@ lb__sdtio0101:                       ; copy the 5 (or 6) pixmaps
 	
 lb__sdtio0102:
 
+#ifdef __PC_IS_BANKSWITCHED__
+	; if this is a bankswiched pocket, we
+	; restore to the initial rom bank
+	PUSH
+	LIDP var_ps_putchar_con_rombank
+	LDD
+	LIDP  __MEM_BANKSWITCH__
+	STD
+	POP
+#endif
 #endasm
 }
 
@@ -116,7 +178,7 @@ ps_inv() {
 fct_ps_inv:
 
 	CALL fct_ps_disp_off
-#ifdef __PC_1350__
+#if __PC_1350__ || __PC_1360__
 	; copy L2C1 en L1C1
 	; copy L3C1 en L2C1
 	; copy L4C1 en L3C1
@@ -207,6 +269,149 @@ lb__sdtio0702:
 		
 #endif
 
+#if __PC_1262__
+	; copy L2C1 en L1C1
+	; copy L3C1 en L2C1
+	; copy L4C1 en L3C1
+	; erase L4C1 
+	LIB 0
+	LIA 2
+	PUSH
+lb__sdtio0701:	
+	
+	LP REG_XH
+	LIA		HB(__MEM_LCD_L1C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_XL
+	LIA		LB(__MEM_LCD_L1C1__-1)
+	EXAM
+	LP REG_YH
+	LIA		HB(__MEM_LCD_L1C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_YL
+	LIA		LB(__MEM_LCD_L1C1__-1)
+	EXAM	
+	LIA 59
+	PUSH
+	
+	lb__sdtio0702:
+	IXL
+	; 255 -A -> A
+	LII 0xFF
+	LP 0
+	SBM
+	LDM
+	
+	IYS
+	LOOP lb__sdtio0702
+	
+	LP REG_B
+	ADIM 8
+	LOOP lb__sdtio0701	
+
+	LIB 0
+	LIA 2
+	PUSH
+	lb__sdtio0703:	
+	
+	LP REG_XH
+	LIA		HB(__MEM_LCD_L2C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_XL
+	LIA		LB(__MEM_LCD_L2C1__-1)
+	EXAM
+	LP REG_YH
+	LIA		HB(__MEM_LCD_L2C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_YL
+	LIA		LB(__MEM_LCD_L2C1__-1)
+	EXAM	
+	LIA 59
+	PUSH
+	
+	lb__sdtio0704:
+	IXL
+	; 255 -A -> A
+	LII 0xFF
+	LP 0
+	SBM
+	LDM
+	
+	IYS
+	LOOP lb__sdtio0704
+	
+	LP REG_B
+	ADIM 8
+	LOOP lb__sdtio0703	
+#endif
+
+#if __PC_1251__
+
+	LP REG_XH
+	LIA		HB(__MEM_LCD_L1C1__-1)
+	EXAM
+	LP REG_XL
+	LIA		LB(__MEM_LCD_L1C1__-1)
+	EXAM
+	LP REG_YH
+	LIA		HB(__MEM_LCD_L1C1__-1)
+	EXAM
+	LP REG_YL
+	LIA		LB(__MEM_LCD_L1C1__-1)
+	EXAM	
+	LIA 59
+	PUSH
+	
+	lb__sdtio0702:
+	IXL
+	; 255 -A -> A
+	LII 0xFF
+	LP 0
+	SBM
+	LDM
+	
+	IYS
+	LOOP lb__sdtio0702
+	
+	LP REG_XH
+	LIA		HB(__MEM_LCD_L1C2__-1)
+	EXAM
+	LP REG_XL
+	LIA		LB(__MEM_LCD_L1C2__-1)
+	EXAM
+	LP REG_YH
+	LIA		HB(__MEM_LCD_L1C2__-1)
+	EXAM
+	LP REG_YL
+	LIA		LB(__MEM_LCD_L1C2__-1)
+	EXAM	
+	LIA 59
+	PUSH
+	
+	lb__sdtio0704:
+	IXL
+	; 255 -A -> A
+	LII 0xFF
+	LP 0
+	SBM
+	LDM
+	
+	IYS
+	LOOP lb__sdtio0704
+
+#endif
 	CALL fct_ps_disp_on
 #endasm
 }
@@ -225,7 +430,7 @@ ps_scroll() {
 #asm
 	fct_ps_scroll:
 	
-#ifdef __PC_1350__
+#if __PC_1350__ || __PC_1360__
 	; copy L2C1 en L1C1
 	; copy L3C1 en L2C1
 	; copy L4C1 en L3C1
@@ -367,7 +572,7 @@ lb__sdtio0503:
 	FILD
 #endif
 	
-#ifdef __PC_1262__
+#if __PC_1262__
 	; copy L2C1 en L1C1
 	; copy L2C2 en L1C2
 	; erase L2C1 et L2C2
@@ -421,7 +626,7 @@ lb__sdtio0501:
 	FILD
 #endif
 	
-#ifdef __PC_1251__
+#if __PC_1251__
 	CALL fct_ps_clrscr
 #endif
 
@@ -446,28 +651,28 @@ ps_clrscr() {
 #asm
 fct_ps_clrscr:
 	
-#ifdef __PC_1403__
+#if __PC_1251__
 	
 	; ensure, that LIDL can be uses instead of LIDP one time
 	;.assume >MEM_LCD_PART1 - >MEM_LCD_PART2
 	
-	LIDP  MEM_LCD_PART1
+	LIDP __MEM_LCD_L1C1__
 	LII  12*__LCD_CHAR_WIDTH__-1
 	RA
 	FILD
 	
-	LIDL <MEM_LCD_PART2
+	LIDL __MEM_LCD_L1C2__
 	LII  12*__LCD_CHAR_WIDTH__-1
 	FILD
 #endif
 
-#ifdef __PC_1350__
+#if __PC_1350__ || __PC_1360__
 	
 	CAL __INT_ROM_CLRSCR__
 	CAL __INT_ROM_DISP__
 #endif
 
-#ifdef __PC_1262__
+#if __PC_1262__
 	
 	; aaa ensure, that LIDL can be uses instead of LIDP two times
 	;.assume >MEM_LCD_L1C1 - >MEM_LCD_L2C1
@@ -519,7 +724,7 @@ ps_xcur2xgcur(){
 #asm	
 fct_ps_xcur2xgcur:
 	
-#ifdef __PC_1262__        
+#if __PC_1262__        
 	LIDP ps_cur_x          ; Load x cursor position
 	LDD                    ; into A and B
 	EXAB
@@ -531,7 +736,7 @@ fct_ps_xcur2xgcur:
 	EXAB
 #endif
 	
-#ifdef __PC_1350__ //| __PC_1360__
+#if __PC_1350__ || __PC_1360__
 	
 	LIDP ps_cur_x          ; Load left shifted x cursor
 	LDD                    ; position into A and B
@@ -570,7 +775,7 @@ ps_dispadr() {
 #asm
 fct_ps_dispadr:
 	
-#ifdef __PC_1262__
+#if __PC_1262__
 	
 	; -----------------------------------------------
 	
@@ -621,7 +826,7 @@ lb__sdtio0402:
 	
 #endif
 	
-#ifdef __PC_1350__ //| __PC_1360__
+#if __PC_1350__ || __PC_1360__
 
 ; -----------------------------------------------
 

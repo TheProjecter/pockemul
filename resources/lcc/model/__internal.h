@@ -1,6 +1,11 @@
 #ifndef __INTERNAL_H
 #define __INTERNAL_H
 
+#define __PC_1251__	0
+#define __PC_1262__	0
+#define __PC_1350__	0
+#define __PC_1360__	0
+
 // CPU registers
 
 #define REG_I	    0x00               // index register

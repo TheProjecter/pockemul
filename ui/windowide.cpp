@@ -164,6 +164,7 @@ void WindowIDE::compile(void) {
         hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
         connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
         connect(this,SIGNAL(removeEmulatedPocket(CPObject*)),hexpanel,SLOT(removePocket(CPObject*)));
+        connect(hexpanel,SIGNAL(installTo(CpcXXXX*,qint32,QByteArray)),this,SLOT(installTo(CpcXXXX*,qint32,QByteArray)));
 
 
         hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
@@ -230,9 +231,12 @@ void WindowIDE::removetargetCB(CPObject *pc) {
  \param data    Données binaires à charger.
 */
 void WindowIDE::installTo(CpcXXXX * pc,qint32 adr, QByteArray data ) {
-
-    if (pc->Mem_Load(adr,data)) {
-        QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(adr));
+qint32 targetAdr = adr;
+    if (!(ui->adrLineEdit->text().isEmpty())) {
+        targetAdr = ui->adrLineEdit->text().toLong(0,16);
+    }
+    if (pc->Mem_Load(targetAdr,data)) {
+        QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(targetAdr));
     }
 }
 
