@@ -18,10 +18,10 @@
 
 // Ports
 
-#define PORT_A  92
-#define PORT_B  93
-#define PORT_F  94
-#define PORT_C  95
+#define PORT_A_adr  92
+#define PORT_B_adr  93
+#define PORT_F_adr  94
+#define PORT_C_adr  95
 
 // Port C mask
 

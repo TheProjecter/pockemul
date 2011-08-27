@@ -120,10 +120,10 @@ public:
 
 	void	Reset(void);
 
-	DWORD	get_PC(void){return(get_reg(REG_PC));};					//get Program Counter
+    DWORD	get_PC(void){return(get_reg(REG_PC));}				//get Program Counter
 	void	Regs_Info(UINT8);
-
-    virtual const char*	GetClassName(){ return("Csc");};
+    bool    getDisp() { return disp_on;}
+    virtual const char*	GetClassName(){ return("Csc");}
 
 	Csc(CPObject *parent)	: CCPU(parent)
 	{				//[constructor]

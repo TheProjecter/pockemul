@@ -36,6 +36,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "pcxxxx.h"
 #include "pc1500.h"
 #include "clink.h"
+#include "sc61860.h"
 
 
 //#include "lfhex/hexGui.h"
@@ -613,8 +614,20 @@ void MainWindowPockemul::updateFrameTimer()
 
                 if (CurrentpPC->pLCDC)
                 {
+                    bool disp_on = true;
+                    if (dynamic_cast<CpcXXXX *>(CurrentpPC) )
+                    {
+                        CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
+                        if (dynamic_cast<Csc *>(tmpPC->pCPU)) {
+                            Csc * tmpsc = (Csc*)(tmpPC->pCPU);
+                            disp_on = tmpsc->getDisp();
+                        }
+
+                    }
+                    if (disp_on){
                             CurrentpPC->pLCDC->disp();
                             if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
+                    }
                 }
                 if ( CurrentpPC->Refresh_Display) {
                     CurrentpPC->update();

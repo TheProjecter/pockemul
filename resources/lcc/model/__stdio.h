@@ -15,6 +15,24 @@ lb__stdio__onbreak_end:
     return _reg_a;
 }
 
+ps_disp_off() {
+#asm
+ps_disp_off:
+	LIP  95
+	ANIM 0xFF-PORT_C_DISPLAY
+	OUTC
+#endasm
+}
+
+ps_disp_on() {
+#asm
+fct_ps_disp_on:
+	LIP  95
+	ORIM PORT_C_DISPLAY
+	OUTC
+#endasm
+}
+
 byte xram ps_cur_x;
 byte xram ps_cur_y;
 
@@ -85,6 +103,116 @@ lb__sdtio0102:
 }
 
 /*; -----------------------------------------------
+//; invert the display one line.
+//; for pockets with only on line it is 
+//; simple - just delete the display
+//; (procedure isn't assembled then and
+//; ps_scroll is the same as ps_clrscr
+//; label prefix __sdtio07
+//; -----------------------------------------------*/
+ps_inv() {
+	
+#asm
+fct_ps_inv:
+
+	CALL fct_ps_disp_off
+#ifdef __PC_1350__
+	; copy L2C1 en L1C1
+	; copy L3C1 en L2C1
+	; copy L4C1 en L3C1
+	; erase L4C1 
+	LIB 0
+	LIA 4
+	PUSH
+lb__sdtio0701:	
+	
+	
+	LP REG_XH
+	LIA		HB(__MEM_LCD_L1C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_XL
+	LIA		LB(__MEM_LCD_L1C1__-1)
+	EXAM
+	LP REG_YH
+	LIA		HB(__MEM_LCD_L1C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_YL
+	LIA		LB(__MEM_LCD_L1C1__-1)
+	EXAM	
+	LIA 59
+	PUSH
+	
+lb__sdtio0702:
+	IXL
+	; 255 -A -> A
+	LII 0xFF
+	LP 0
+	SBM
+	LDM
+	
+	IYS
+	LOOP lb__sdtio0702
+	
+	LP REG_B
+	ADIM 2
+	LOOP lb__sdtio0701
+
+	LIB 0
+	LIA 4
+	PUSH
+	lb__sdtio0703:	
+	
+	
+	LP REG_XH
+	LIA		HB(__MEM_LCD_L2C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_XL
+	LIA		LB(__MEM_LCD_L2C1__-1)
+	EXAM
+	LP REG_YH
+	LIA		HB(__MEM_LCD_L2C1__-1)
+	EXAM
+	EXAB
+	ADM
+	EXAB
+	LP REG_YL
+	LIA		LB(__MEM_LCD_L2C1__-1)
+	EXAM	
+	LIA 59
+	PUSH
+	
+	lb__sdtio0704:
+	IXL
+	; 255 -A -> A
+	LII 0xFF
+	LP 0
+	SBM
+	LDM
+	
+	IYS
+	LOOP lb__sdtio0704
+	
+	LP REG_B
+	ADIM 2
+	LOOP lb__sdtio0703
+		
+#endif
+
+	CALL fct_ps_disp_on
+#endasm
+}
+
+
+/*; -----------------------------------------------
 //; Scrolls the display one line.
 //; for pockets with only on line it is 
 //; simple - just delete the display
@@ -126,7 +254,7 @@ lb__sdtio0501:
 	LP REG_YL
 	LIA		LB(__MEM_LCD_L1C1__-1)
 	EXAM	
-	LIA 30
+	LIA 29
 	PUSH
 	
 lb__sdtio0502:
@@ -166,7 +294,7 @@ lb__sdtio0503:
 	LP REG_YL
 	LIA		LB(__MEM_LCD_L2C1__-1)
 	EXAM	
-	LIA 30
+	LIA 29
 	PUSH
 	
 	lb__sdtio0504:
@@ -206,7 +334,7 @@ lb__sdtio0503:
 	LP REG_YL
 	LIA		LB(__MEM_LCD_L3C1__-1)
 	EXAM	
-	LIA 30
+	LIA 29
 	PUSH
 	
 	lb__sdtio0506:
@@ -222,20 +350,20 @@ lb__sdtio0503:
 
 	; erase last row
 	LIDP  __MEM_LCD_L4C1__
-	LII  5*__LCD_CHAR_WIDTH__-1
+	LII  30-1
 	RA
 	FILD
 	LIDP  __MEM_LCD_L4C2__
-	LII  5*__LCD_CHAR_WIDTH__-1
+	LII  30-1
 	FILD
 	LIDP  __MEM_LCD_L4C3__
-	LII  5*__LCD_CHAR_WIDTH__-1
+	LII  30-1
 	FILD
 	LIDP  __MEM_LCD_L4C4__
-	LII  5*__LCD_CHAR_WIDTH__-1
+	LII  30-1
 	FILD
 	LIDP  __MEM_LCD_L4C5__
-	LII  5*__LCD_CHAR_WIDTH__-1
+	LII  30-1
 	FILD
 #endif
 	
