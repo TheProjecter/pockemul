@@ -129,6 +129,7 @@ void WindowIDE::compile(void) {
         lcpp->pStdLibs->LoadLibs();
         lcpp->run();
         createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
+        createOutputTab("PP Compiler :"+fInfo.fileName(),mapPP["output"]);
 #if 1
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->run();

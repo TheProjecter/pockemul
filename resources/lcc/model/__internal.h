@@ -5,6 +5,7 @@
 #define __PC_1262__	0
 #define __PC_1350__	0
 #define __PC_1360__	0
+#define __PC_1403__	0
 
 // CPU registers
 

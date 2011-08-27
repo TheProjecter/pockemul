@@ -19,6 +19,7 @@
 #define __MEM_LCD_L2C2__    0x2840
 
 #define __LCD_CHAR_WIDTH__  5
+#define __LCD_COL_WIDTH__   5
 #define __MEM_CHARTAB__     0x7FAB
 #define __MEM_CHARTAB_OFF__ 0
 #define __INVERS_CHARTAB__

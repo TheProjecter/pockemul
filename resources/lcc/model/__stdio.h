@@ -82,6 +82,7 @@ ps_putchar_con(char ps_putchar_con_c) {
 	
 #asm
 fct_ps_putchar_con:
+	CALL fct_ps_disp_off
 		
 #ifdef __PC_IS_BANKSWITCHED__
 	; if this is a bankswiched pocket, we
@@ -161,6 +162,9 @@ lb__sdtio0102:
 	STD
 	POP
 #endif
+
+	CALL fct_ps_disp_on;
+	
 #endasm
 }
 
@@ -724,7 +728,7 @@ ps_xcur2xgcur(){
 #asm	
 fct_ps_xcur2xgcur:
 	
-#if __PC_1262__        
+#if (__LCD_COL_WIDTH__ == 5) 
 	LIDP ps_cur_x          ; Load x cursor position
 	LDD                    ; into A and B
 	EXAB
@@ -736,7 +740,7 @@ fct_ps_xcur2xgcur:
 	EXAB
 #endif
 	
-#if __PC_1350__ || __PC_1360__
+#if (__LCD_COL_WIDTH__ == 6) 
 	
 	LIDP ps_cur_x          ; Load left shifted x cursor
 	LDD                    ; position into A and B
@@ -774,6 +778,112 @@ fct_ps_xcur2xgcur:
 ps_dispadr() {
 #asm
 fct_ps_dispadr:
+
+#if __PC_1251__
+	
+	; -----------------------------------------------
+	
+	EXAB                    ; copy A to B
+	LP  REG_B
+	LDM        
+	CPIA 60			; Char 1-12 ?
+	JRCP lb__sdtio0402		; Jump to positive offset calculation
+	
+	; Calculate negative offsets
+
+	LIB  0xB7               ; LSB is 0xB7 - REG_A
+	LP   REG_B
+	RC
+	SBM
+	
+	; Calculate positive offsets
+	
+lb__sdtio0402: 
+	
+	EXAB		        ; Copy B to YL
+	LP REG_YL
+	EXAM
+	
+	LIA HB(__MEM_LCD_L1C1__)      ; Copy constant hi byte to YH
+	LP REG_YH
+	EXAM
+	; -------------------AA----------------------------
+	
+#endif
+
+
+#if __PC_1403__
+
+; ----------------------BB-------------------------
+
+	EXAB                    ; copy A to B
+	LP  REG_B
+	LDM        
+	CPIA 60			; Char 1-12 ?
+	JRCP lb0__sdtio402		; Jump to positive offset calculation
+
+; Calculate negative offsets
+
+;.ifdef __RANGE_CHECK__
+;	CPIA 120		; Valid char range ( < 25) ?
+;	JRCP lb__sdtio0403
+;	LIA  119                ; default: most right x position
+;lb__sdtio0403: 
+;.endif
+
+	CPIA 90			; If not char 19-24, jump ahead
+	JRCP lb__sdtio0404
+	LIB  0xB7               ; LSB is 0xB7 - REG_A
+	JRP  lb__sdtio0406		; "break"
+lb__sdtio0404: 
+	CPIA 75			; If not char 16-18, jump ahead
+	JRCP lb__sdtio0405
+	LIB  0xC6               ; LSB is &C6 - REG_A
+	JRP  lb__sdtio0406		; "break"
+; Assert char position is in the range 13-15 
+lb__sdtio0405: 
+	LIB  0xA8               ; LSB is 0xA8 - REG_A
+
+lb__sdtio0406: 
+	LP   REG_B
+	RC
+	SBM
+
+	JRP  lb__sdtio0409		; Jump over positive offset calculation
+
+; Calculate positive offsets
+
+lb__sdtio0402: 
+	CPIA 45			; If not char 10-12, jump ahead
+	JRCP lb__sdtio0407
+	LP   REG_B              ; LSB is REG_B - 0x0F
+	SBIM 0x0F              
+	JRP  lb__sdtio0409		; "break"
+lb__sdtio0407:	
+	CPIA 30			; If not char 7-9, jump ahead
+	JRCP lb__sdtio0408
+	LP   REG_B              ; LSB is REG_B + 0x0F
+	ADIM 0x0F              
+; Next line not nessesary, because handling of range 1-6
+;  does nothing
+;       JRP  lb0409		; "break"
+
+; Assert char position is in the range 1-6 
+lb__sdtio0408:				; LSB is REG_B - do nothing !
+
+; Write result to memory
+
+lb__sdtio0409:	
+	EXAB		        ; Copy B to YL
+	LP REG_YL
+	EXAM
+
+	LIA HB(__MEM_LCD_L1C1__)      ; Copy constant hi byte to YH
+	LP REG_YH
+	EXAM
+; -----------------------------------------------
+	
+#endif
 	
 #if __PC_1262__
 	

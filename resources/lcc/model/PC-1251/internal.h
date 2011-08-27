@@ -18,7 +18,8 @@
 #define __MEM_LCD_L1C2__    0xF840
 
 #define __LCD_CHAR_WIDTH__  5
-#define __MEM_CHARTAB__     0x4464
-#define __INVERS_CHARTAB__
+#define __LCD_COL_WIDTH__   5
+#define __MEM_CHARTAB__     0x4414
+//#define __INVERS_CHARTAB__
 
 #endif // INTERNAL_H
