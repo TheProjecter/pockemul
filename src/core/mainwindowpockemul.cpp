@@ -619,7 +619,8 @@ void MainWindowPockemul::updateFrameTimer()
                     if (dynamic_cast<CpcXXXX *>(CurrentpPC) )
                     {
                         CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
-                        if (tmpPC->getDisp_on()) {
+                        if (tmpPC->getDisp_on())
+                        {
                             CurrentpPC->pLCDC->disp();
                             if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
                         }

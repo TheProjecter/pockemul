@@ -182,12 +182,8 @@ int CPObject::runRange(qint64 step) {
                 {
                     CpcXXXX *tmpPC = (CpcXXXX*)this;
                     if (tmpPC->getdisp_onRaised()) {
-                        pLCDC->disp();
+                        tmpPC->pLCDC->disp();
                         if (pLCDC->Refresh) Refresh_Display = true;
-//                        if ( Refresh_Display) {
-//                            update();
-//                            Refresh_Display= false;
-//                        }
                     }
                 }
             }

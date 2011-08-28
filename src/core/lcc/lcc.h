@@ -54,7 +54,7 @@ public:
         locproc=0;
         size=0;
         local=false;
-        arr=false;
+        array=false;
         xram=false;
         pointer=false;
         at=false;
@@ -68,7 +68,7 @@ public:
     int locproc;
     int size;
     bool local;
-    bool arr;
+    bool array;
     bool xram;
     bool pointer;
     bool at;

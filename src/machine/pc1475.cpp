@@ -30,7 +30,7 @@ Cpc1475::Cpc1475(CPObject *parent)	: Cpc1360(parent)
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	":/PC1475/pc1475/cpu-1475.rom"	, "pc-1475/cpu-1475.rom" ,ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1475/R1-1475.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	":/PC1475/pc1475/b0-1475.rom"	, "pc-1475/b0-1475.rom" , ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x4000 ,	":/PC1475/pc1475/b0-1475.rom"	, "pc-1475/b0-1475.rom" , ROM , "ROM"));
     SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1475/R2-1475.ram" , RAM , "RAM"));
     SlotList.append(CSlot(16, 0x10000 ,	":/PC1475/pc1475/b0-1475.rom"	, "pc-1475/b0-1475.rom" , ROM , "BANK 0"));
     SlotList.append(CSlot(16, 0x14000 ,	":/PC1475/pc1475/b1-1475.rom"	, "pc-1475/b1-1475.rom" , ROM , "BANK 1"));

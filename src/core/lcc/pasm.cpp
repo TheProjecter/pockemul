@@ -35,15 +35,46 @@ void Cpasm::write(QString srcName,QString s) {
 
 int Cpasm::mathparse(QByteArray s, int w) {
 
+    int y=0;
+    bool lf=false;
+
     QString sr = s;
     // replace label
     if (labcnt > 0)
         for (int i = 0; i < lab.size(); i++)
             sr = replace_text(sr, lab[i], QString("%1").arg(labpos[i] + startadr));
 
-    Parser op(sr.toAscii().data());
-//    int y = op.evevaluate_expression(sr.toAscii().data());
-    int y = op.Evaluate();
+    /*
+parcourir la formule pour trouver des labels inconnus
+si oui, renvoyer 0 et fair un addnlabel
+Fonctions connues:
+    HB,LB,
+
+*/
+    QStringList mathOp;
+    mathOp << "HB" << "LB";
+
+    QStringList list = QString(sr).split(QRegExp("\\W+"), QString::SkipEmptyParts);
+    QString cout="";
+    for (int i = 0; i < list.size(); ++i) {
+        QString locToken=list.at(i);
+        cout += locToken + " : ";
+        if ( (QString("_ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(locToken.at(0).toUpper())) &&
+             (!mathOp.contains(locToken))){
+            if (!findlabel(locToken)) {
+                addnlabel(locToken);
+                lf = true;
+            }
+        }
+    }
+    if (lf) {
+        QMessageBox::about(0,"LOG",tr("%1[%2]  - %3").arg(sr).arg(codpos).arg(cout));
+    }
+    else {
+        Parser op(sr.toAscii().data());
+        //    int y = op.evevaluate_expression(sr.toAscii().data());
+        y = op.Evaluate();
+    }
 
     return y;
 }
@@ -463,6 +494,33 @@ void Cpasm::doasm(void) {
             }
         }
         else {
+#if 1
+
+            if (nbargu[opp] == 2)
+            {
+                int loc1 = mathparse(param1.toAscii(), 8);
+                addcode(opp);
+                addcode(loc1);
+            }
+            else if (nbargu[opp] == 3) {
+                if (param2.isEmpty()) {
+                    int loc1 = (mathparse(param1.toAscii(), 16) << 8) & 0xFF;
+                    int loc2 = (mathparse(param1.toAscii(), 16)) & 0xFF;
+                    addcode(opp);
+                    addcode(loc1);
+                    addcode(loc2);
+                }
+                else {
+                    int loc1 = (mathparse(param1.toAscii(), 8));
+                    int loc2 = (mathparse(param2.toAscii(), 8));
+                    addcode(opp);
+                    addcode(loc1);
+                    addcode(loc2);
+                }
+            }
+            else
+                addcode(opp);
+#else
             addcode(opp);
             if (nbargu[opp] == 2) addcode(mathparse(param1.toAscii(), 8));
             else if (nbargu[opp] == 3) {
@@ -475,6 +533,7 @@ void Cpasm::doasm(void) {
                     addcode(mathparse(param2.toAscii(), 8));
                 }
             }
+#endif
         }
     }
     else {

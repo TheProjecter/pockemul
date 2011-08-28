@@ -372,6 +372,7 @@ bool Clcc::FindProc(QByteArray t) {
  \param t
  \return bool
 */
+//TODO Ajouter la possibilité d'avoir plusieurs variables de meme nom dans des contextes différents
 bool Clcc::FindVar(QByteArray t) {
     bool result = false;
     for (int i = 0 ; i< varlist.size(); i++) {
@@ -428,7 +429,7 @@ void Clcc::printvarlist(QString out) {
         name = v.varname;
         typ = v.typ;
         xr = v.xram;
-        arr = v.arr;
+        arr = v.array;
         adr = v.address;
         size = v.size;
         initn = v.initn;
@@ -624,17 +625,21 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
         if ((typ == "byte") || (typ == "char")) v.size = 1;
         else if (typ == "word") v.size = 2;
 
-        v.arr = false;
+        v.array = false;
         if (t.startsWith('[')) {
 
             QByteArray s = ExtrCust(&t, ']');
             //if s[1] <> '[' then Expected('[size]");
-            s.remove(0,1);
-            int arsize = mathparse(s, 16);
-            //val(s, arsize, temp);
-            //                                if arsize >= 256 then Error('Array too big!");
-            v.size = arsize;
-            v.arr = true;
+            if (s=="[") {
+                v.size  = 0;
+            }
+            else {
+                s.remove(0,1);
+                int arraysize = mathparse(s, 16);
+                if (arraysize >= 256) QMessageBox::about(mainwindow,"ERROR","Array too big! 256 bytes max.");
+                v.size = arraysize;
+            }
+            v.array = true;
         }
         v.at = false;
 
@@ -680,25 +685,29 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
                 if (loc) QMessageBox::about(mainwindow,"ERROR","Local vars cant have init values!");
                 if (pnt) QMessageBox::about(mainwindow,"ERROR","pointers cant have init values!");
                 t.remove(0,1);
-                if (v.arr && (typ == "char") ) {
+                if (v.array && (typ == "char") ) {
                     t.remove(0,1);
-                    t.remove(t.length()-1,1);//delete(t, length(t), 1);
-                    //VarList[VarCount].inits := stringparse(t, size);
-                    for (int i=0;i<t.length();i++) v.inits.append(t[i]);//+chr(0);
-                    v.initn = 0;
-                }
-                else if (v.arr && (typ == "byte") ) {
-                    t.remove(0,2);
-                    t.remove(t.length()-1,1);//delete(t, length(t), 1);
-                    t = t + ',';
-                    while ((litem = ExtrList(&t)) != "") {
-                        v.inits.append((char)mathparse(litem, 8));
-                        //val(litem, temp, c);
-                        //VarList[VarCount].inits := VarList[VarCount].inits + chr(temp);
+                    t.remove(t.length()-1,1);
+                    for (int i=0;i<t.length();i++) v.inits.append(t[i]);
+                    if (v.size == 0) {
+                        v.size = t.length()+1;
+                        v.inits.append(QChar(0));
+                    }
+                    if (v.size != (t.length()+1)) {
+                        QMessageBox::about(mainwindow,"ERROR","Array size different from initial value size");
                     }
                     v.initn = 0;
                 }
-                else if (v.arr && (typ == "word")) {
+                else if (v.array && (typ == "byte") ) {
+                    t.remove(0,2);
+                    t.remove(t.length()-1,1);
+                    t = t + ',';
+                    while ((litem = ExtrList(&t)) != "") {
+                        v.inits.append((char)mathparse(litem, 8));
+                    }
+                    v.initn = 0;
+                }
+                else if (v.array && (typ == "word")) {
                     t.remove(0,2);
                     t.remove(t.length()-1,1);//delete(t, length(t), 1);
                     t = t + ',';
@@ -1268,7 +1277,7 @@ void Clcc::LoadVariable(QByteArray name) {
     typ = varlist[VarFound].typ;
     adr = varlist[VarFound].address;
     loc = varlist[VarFound].local;
-    arr = varlist[VarFound].arr;
+    arr = varlist[VarFound].array;
     xr = varlist[VarFound].xram;
 
     if (! arr) {
@@ -1421,7 +1430,7 @@ void Clcc::StoreVariable(QByteArray name) {
     if (! FindVar(name)) { QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
     var = varlist.at(VarFound);
 
-    if (!var.arr) {
+    if (!var.array) {
         if ( (var.typ=="char") || (var.typ=="byte") ) {
 //                if isword then
 //                        writln(#9'EXAB'#9#9'; Store only HB in byte var!');
@@ -2996,7 +3005,7 @@ int    adr, size, value;
         value = v.initn;
         typ = v.typ;
         at = v.at;
-        arr = v.arr;
+        arr = v.array;
 
         if (v.xram) {
             if (at) {
