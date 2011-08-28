@@ -68,7 +68,7 @@ Fonctions connues:
         }
     }
     if (lf) {
-        QMessageBox::about(0,"LOG",tr("%1[%2]  - %3").arg(sr).arg(codpos).arg(cout));
+        //QMessageBox::about(0,"LOG",tr("%1[%2]  - %3").arg(sr).arg(codpos).arg(cout));
     }
     else {
         Parser op(sr.toAscii().data());
