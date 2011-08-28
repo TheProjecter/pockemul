@@ -58,6 +58,7 @@ public:
 
     void setDisp_on(bool v);
     bool getdisp_onRaised();
+    bool getDisp_on(void);
     int     ioFreq;
 	
     void setName(QString val){ Name = val;	}

@@ -13,7 +13,7 @@
 #include "dialogdump.h"
 #include "weblinksparser.h"
 #include "sc61860.h"
- 
+
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
@@ -184,6 +184,10 @@ int CPObject::runRange(qint64 step) {
                     if (tmpPC->getdisp_onRaised()) {
                         pLCDC->disp();
                         if (pLCDC->Refresh) Refresh_Display = true;
+//                        if ( Refresh_Display) {
+//                            update();
+//                            Refresh_Display= false;
+//                        }
                     }
                 }
             }
@@ -1007,6 +1011,11 @@ void CPObject::setDisp_on(bool v)
     if (v && !disp_on) disp_onRaised=true;
     else disp_onRaised = false;
     disp_on = v;
+}
+
+bool CPObject::getDisp_on()
+{
+    return disp_on;
 }
 
 
