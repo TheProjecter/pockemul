@@ -79,7 +79,14 @@ byte xram ps_cur_y;
 byte xram var_ps_putchar_con_rombank;
 ps_putchar_con(char ps_putchar_con_c) {
 	load ps_putchar_con_c;
-	
+
+_LCC_DEPEND(ps_disp_off);
+_LCC_DEPEND(ps_ctabadr);
+_LCC_DEPEND(ps_xcur2xgcur);
+_LCC_DEPEND(ps_dispadr);	
+_LCC_DEPEND(ps_scroll);
+_LCC_DEPEND(ps_disp_on);
+
 #asm
 fct_ps_putchar_con:
 	CALL fct_ps_disp_off
@@ -178,6 +185,9 @@ lb__sdtio0102:
 //; -----------------------------------------------*/
 ps_inv() {
 	
+_LCC_DEPEND(ps_disp_off);
+_LCC_DEPEND(ps_disp_on);
+	
 #asm
 fct_ps_inv:
 
@@ -273,7 +283,7 @@ lb__sdtio0702:
 		
 #endif
 
-#if __PC_1262__
+#if __PC_1260__ || __PC_1261__ || __PC_1262__ || __PC_1475__
 	; copy L2C1 en L1C1
 	; copy L3C1 en L2C1
 	; copy L4C1 en L3C1
@@ -361,7 +371,7 @@ lb__sdtio0701:
 	LOOP lb__sdtio0703	
 #endif
 
-#if __PC_1251__
+#if __PC_1250__ || __PC_1251__ || __PC_12555__
 
 	LP REG_XH
 	LIA		HB(__MEM_LCD_L1C1__-1)
@@ -430,6 +440,8 @@ lb__sdtio0701:
 //; label prefix __sdtio05
 //; -----------------------------------------------*/
 ps_scroll() {
+
+_LCC_DEPEND(ps_clrscr);
 	
 #asm
 	fct_ps_scroll:
@@ -576,7 +588,7 @@ lb__sdtio0503:
 	FILD
 #endif
 	
-#if __PC_1262__
+#if __PC_1260__ || __PC_1261__ || __PC_1262__ || __PC_1475__
 	; copy L2C1 en L1C1
 	; copy L2C2 en L1C2
 	; erase L2C1 et L2C2
@@ -630,7 +642,7 @@ lb__sdtio0501:
 	FILD
 #endif
 	
-#if __PC_1251__
+#if __PC_1250__ || __PC_1251__ || __PC_12555__
 	CALL fct_ps_clrscr
 #endif
 
@@ -655,7 +667,7 @@ ps_clrscr() {
 #asm
 fct_ps_clrscr:
 	
-#if __PC_1251__
+#if __PC_1250__ || __PC_1251__ || __PC_12555__
 	
 	; ensure, that LIDL can be uses instead of LIDP one time
 	;.assume >MEM_LCD_PART1 - >MEM_LCD_PART2
@@ -676,7 +688,7 @@ fct_ps_clrscr:
 	CAL __INT_ROM_DISP__
 #endif
 
-#if __PC_1262__
+#if __PC_1260__ || __PC_1261__ || __PC_1262__ || __PC_1475__
 	
 	; aaa ensure, that LIDL can be uses instead of LIDP two times
 	;.assume >MEM_LCD_L1C1 - >MEM_LCD_L2C1
@@ -779,7 +791,7 @@ ps_dispadr() {
 #asm
 fct_ps_dispadr:
 
-#if __PC_1251__
+#if __PC_1250__ || __PC_1251__ || __PC_12555__
 	
 	; -----------------------------------------------
 	
@@ -885,7 +897,7 @@ lb__sdtio0409:
 	
 #endif
 	
-#if __PC_1262__
+#if __PC_1260__ || __PC_1261__ || __PC_1262__ || __PC_1475__
 	
 	; -----------------------------------------------
 	
@@ -1070,6 +1082,11 @@ fct_ps_ctabadr:
 //; label prefix __sdtio14
 //; -----------------------------------------------
 ps_gprint() {
+	
+_LCC_DEPEND(ps_xcur2xgcur);
+_LCC_DEPEND(ps_dispadr);
+
+
 #asm
 fct_ps_gprint:
 	PUSH

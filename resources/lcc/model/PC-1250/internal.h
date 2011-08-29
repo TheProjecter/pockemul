@@ -6,7 +6,7 @@
 #define __PC_1250__		1
 
 #define __PC_RESONATOR_576K__
-#define __PC_DEFAULT_ORG__      0xB830
+#define __PC_DEFAULT_ORG__      0xC030
 
 //#define __PC_HAS_MULTI_LINE_LCD__
 #define __DISP_CH_COLS__    24

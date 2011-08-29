@@ -98,7 +98,7 @@ public:
         this->ReturnIsWord = false;
         this->ParCnt = 0;
         this->LocCnt = 0;
-
+        this->called = false;
     }
 
     QByteArray ProcName;
@@ -112,6 +112,7 @@ public:
     QList<QByteArray> LocTyp;
     QList<QByteArray> partyp;
     QList<QByteArray> parname;
+    bool called;
 };
 
 class Clcc : public QObject{
@@ -308,6 +309,9 @@ public:
     QByteArray LState;
 
 
+    void generateProcCode(QString f, int i);
+    QList<int> calledProc;
+    QList<int> insertedProc;
 signals:
     void outputSignal(QString,QString);
 };

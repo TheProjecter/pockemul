@@ -213,7 +213,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
     this->out = out;
     proccount = 0;
     VarCount = 0;
-    VarPos = 16;
+    VarPos = 16;        // Start adr assigning cpu variable
     level = 0;
     Look = 0;
     nosave = false;
@@ -866,10 +866,10 @@ QByteArray Clcc::ExtrList(QByteArray *list) {
  \param adr
  \return int
 */
-int Clcc::AllocVar(bool xr,bool at,int  size, int adr) {
+int Clcc::AllocVar(bool xram,bool at,int  size, int adr) {
     QByteArray s;
     int result;
-    if (!xr) {
+    if (!xram) {
         if (at) {
             result = adr;
             if (IsVarAtAdr(result, size)) {
@@ -1936,6 +1936,21 @@ void Clcc::ProcCall() {
     a = 0;
     rd(&Look, &Tok);
     Tok = Tok.trimmed();
+    if (temp == "_LCC_DEPEND") {
+        QByteArray name2 = ExtrWord(&Tok);
+        name2.chop(1);
+        if (FindProc(name2)) {
+            // FIXME Pas le droit d'inserer alors que je fetch deja la liste !!!!
+            if (! calledProc.contains(ProcFound) && !insertedProc.contains(ProcFound)) {
+                QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ QString("%1").arg(ProcFound));
+                calledProc.append(ProcFound);
+            }
+        }
+        else {
+            QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ name2+"' undefined");
+        }
+    }
+    else
     if (FindProc(temp)) {
         i = proclist[ProcFound].ParCnt;
         if (i > 0) {
@@ -2015,6 +2030,12 @@ void Clcc::ProcCall() {
         if (Tok.startsWith(')')) Tok.remove(0,1);Tok = Tok.trimmed();
         rd(&Look, &Tok);
         writln("LOG",";ProCall(after FindProc):"+Tok);
+
+        // Keep trace of the call o integrate only called procedure
+
+        //proclist[ProcFound].called = true;
+        if (! calledProc.contains(ProcFound) && !insertedProc.contains(ProcFound))
+            calledProc.append(ProcFound);
     }
     else
         Expected("procedure call");
@@ -2195,7 +2216,8 @@ writln("LOG",";Assignement:"+Tok);
         Expression();
     }
     if (p == 0) StoreVariable(name);
-    else if (p == ptrREF) {
+    else
+    if (p == ptrREF) {
         if (FindVar(name)) {
             if (varlist[VarFound].pnttyp != "word") {
                 writln(outf,"\tPUSH"); pushcnt++;
@@ -2829,7 +2851,9 @@ void Clcc::Block(void) {
                     }
             }
           else if (Tok.contains("=")) Assignment();
-          else if (Tok.contains("(")) ProcCall();
+          else if (Tok.contains("(")) {
+              ProcCall();
+          }
           else Assignment();
           writln(outf,"");
       }
@@ -2958,11 +2982,38 @@ void Clcc::FirstScan(QByteArray filen) {
     if (!FindProc("main")) {
         QMessageBox::about(mainwindow,"ERROR","main not found!");
     }
+
     printvarlist("output");
     printproclist("output");
 }
 
+void Clcc::generateProcCode(QString f,int i) {
+    insertedProc.append(i);
+    writln(f,"");
+    writln( f,proclist[i].ProcName+":\t; Procedure");
+    dummy = proclist[i].ProcCode;
+    level = 1;
+    currproc = i;
+    pushcnt = 0; firstp = true;
+    Block();
+    if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
+    removelocvars(proclist[i].ProcName);
+    if (proclist[i].ProcName == "main") {
+        writln(f, " EOP:\tRTN");
+    }
+    else {
+        writln(f,"\tRTN");
+    }
+    writln(f,"");
 
+
+    for (int j=0;j<calledProc.size();j++) {
+        if (!insertedProc.contains(calledProc[j])) {
+            generateProcCode(f,calledProc[j]);
+        }
+    }
+    //calledProc.clear();
+}
 
 /*!
  \brief
@@ -3027,52 +3078,64 @@ int    adr, size, value;
         }
     }
 
+#if 1
+    // Insert main
+    insertedProc.clear();
+    calledProc.clear();
+    FindProc("main");
+    generateProcCode(f,ProcFound);
+#else
 //        { Process procedures }
     for (int i = 0; i< proclist.size();i++) {
         if (proclist[i].ProcName == "main") {
-            writln(f,"");
-            //writln(outf,"\tCALL\tMAIN");
-            if (!nosave) {
-                Tok = "main ()";
-                ProcCall();
-                writln(f,"\tLP\t0");
-                writln(f,"\tLIDP\tSREG");
-                writln(f,"\tLII\t11");
-                writln(f,"\tMVWD");
-                writln(f,"\tRTN");
-                writln(f,"");
-                writln(f,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
-            }
+            generateProcCode(f,i);
+//            writln(f,"");
+//            //writln(outf,"\tCALL\tMAIN");
+//            if (!nosave) {
+//                Tok = "main ()";
+//                ProcCall();
+//                writln(f,"\tLP\t0");
+//                writln(f,"\tLIDP\tSREG");
+//                writln(f,"\tLII\t11");
+//                writln(f,"\tMVWD");
+//                writln(f,"\tRTN");
+//                writln(f,"");
+//                writln(f,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
+//            }
 
-            writln(f,"");
-            writln(f,"main:");
-            dummy = proclist[i].ProcCode;
-            currproc = i;
-            level = 1;
-            pushcnt = 0; firstp = true;
-            Block();
-            if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
-            removelocvars("main");
-            writln(f, " EOP:\tRTN");
-            writln(f,"");
+//            writln(f,"");
+//            writln(f,"main:");
+//            dummy = proclist[i].ProcCode;
+//            currproc = i;
+//            level = 1;
+//            pushcnt = 0; firstp = true;
+//            Block();
+//            if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
+//            removelocvars("main");
+//            writln(f, " EOP:\tRTN");
+//            writln(f,"");
             break;
         }
     }
     for (int i = 0; i<proclist.size();i++) {
-        if (proclist[i].ProcName != "main") {
-            writln(f,"");
-            writln( f,proclist[i].ProcName+":\t; Procedure");
-            dummy = proclist[i].ProcCode;
-            level = 1;
-            currproc = i;
-            pushcnt = 0; firstp = true;
-            Block();
-            if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
-            removelocvars(proclist[i].ProcName);
-            writln(f,"\tRTN");
-            writln(f,"");
+        if ( (proclist[i].ProcName != "main") &&
+              proclist[i].called)   {
+
+            generateProcCode(f,i);
+//            writln(f,"");
+//            writln( f,proclist[i].ProcName+":\t; Procedure");
+//            dummy = proclist[i].ProcCode;
+//            level = 1;
+//            currproc = i;
+//            pushcnt = 0; firstp = true;
+//            Block();
+//            if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
+//            removelocvars(proclist[i].ProcName);
+//            writln(f,"\tRTN");
+//            writln(f,"");
         }
     }
+ #endif
     if (!LState.isEmpty()) {
         // ADD the savestate memory array
         QString state ="";

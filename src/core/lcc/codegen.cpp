@@ -53,12 +53,8 @@ void Clcc::varxram(int value, int adr, int size, QByteArray nm) {
 //{--------------------------------------------------------------}
 //{ Generates init code for an array in xram }
 
-//void Clcc::varxarr(QList<unsigned char> value,int adr, int size,QByteArray nm, QByteArray typ) {
+
 void Clcc::varxarr(QByteArray value,int adr, int size,QByteArray nm, QByteArray typ) {
-    //var i: integer;
-    //    v, c: integer;
-    //    s: string;
-    //begin
 
     int v,c;
     QByteArray s;
