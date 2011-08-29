@@ -12,6 +12,8 @@
 
 class QFormatScheme;
 class QLanguageFactory;
+class CCompletion;
+
 
 namespace Ui {
     class WindowIDE;
@@ -46,6 +48,7 @@ public:
 
 
 
+    void completionScan();
 public slots:
     void saveAll(void);
 
@@ -76,6 +79,7 @@ private:
 
     Ui::WindowIDE *ui;
     QFileSystemModel *model;
+    CCompletion *e;
 };
 
 #endif // WINDOWIDE_H

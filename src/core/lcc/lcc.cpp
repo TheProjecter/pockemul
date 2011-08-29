@@ -1940,9 +1940,9 @@ void Clcc::ProcCall() {
         QByteArray name2 = ExtrWord(&Tok);
         name2.chop(1);
         if (FindProc(name2)) {
-            // FIXME Pas le droit d'inserer alors que je fetch deja la liste !!!!
+
             if (! calledProc.contains(ProcFound) && !insertedProc.contains(ProcFound)) {
-                QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ QString("%1").arg(ProcFound));
+                //QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ QString("%1").arg(ProcFound));
                 calledProc.append(ProcFound);
             }
         }
@@ -3410,5 +3410,6 @@ void Clcc::run() {
     }
 
 }
+
 
 #endif

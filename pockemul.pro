@@ -213,7 +213,10 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/PC-1360/stdio.h \
     resources/lcc/model/PC-1360/sound.h \
     resources/lcc/model/PC-1360/internal.h \
-    resources/lcc/model/PC-1360/graph.h
+    resources/lcc/model/PC-1360/graph.h \
+    qcodeedit/ccompletion.h \
+    qcodeedit/qcodecompletionwidget_p.h \
+    qcodeedit/qcodecompletionwidget.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -408,7 +411,9 @@ SOURCES += src/core/Connect.cpp \
     src/core/ide/editorwidget.cpp \
     ui/windowide.cpp \
     qcodeedit/widgets/qhexpanel.cpp \
-    qcodeedit/widgets/qoutpanel.cpp
+    qcodeedit/widgets/qoutpanel.cpp \
+    qcodeedit/ccompletion.cpp \
+    qcodeedit/qcodecompletionwidget.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

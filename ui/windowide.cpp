@@ -24,6 +24,7 @@
 #include "qlanguagedefinition.h"
 #include "qhexpanel.h"
 #include "qoutpanel.h"
+#include "ccompletion.h"
 
 extern QList<CPObject *> listpPObject; /*!< TODO */
 
@@ -103,6 +104,32 @@ void WindowIDE::setupEditor()
     refreshFileList();
 }
 
+void WindowIDE::completionScan() {
+    QMap<QString,QByteArray> mapSRC;
+    QMap<QString,QByteArray> mapPP;
+    QMap<QString,QByteArray> mapASM;
+    CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+
+    QString source = "#include <internal.h>\r\n"+locEditorWidget->m_editControl->editor()->text();
+    QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
+    QFileInfo fInfo(sourcefname);
+
+    if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
+        mapSRC[sourcefname] = source.toAscii();
+        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
+        lcpp->pStdLibs->LoadLibs();
+        lcpp->run();
+        //createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
+        //createOutputTab("PP Compiler :"+fInfo.fileName(),mapPP["output"]);
+        Clcc *lcc = new Clcc(&mapPP,&mapASM);
+        lcc->run();
+
+        // recuperer var et proc
+        //lcc->varlist
+        //lcc->proclist
+
+    }
+}
 
 /*!
  \brief lance le processus de compilation adéquate en fonction de l'extension du fichier
@@ -185,10 +212,19 @@ void WindowIDE::compile(void) {
  \param load    if true then load the text from disk
 */
 void WindowIDE::createEditorTab(QString fname, QString text,bool load) {
+
     CEditorWidget *locEditorWidget = new CEditorWidget();
     ui->tabWidget->insertTab(0,locEditorWidget,QFileInfo(fname).fileName());
     ui->tabWidget->setTabToolTip(0,QFileInfo(fname).absoluteFilePath());
     m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fname);
+
+    e = new CCompletion();
+    e->triggerAction()->setShortcut(tr("Ctrl+Space"));
+
+    //e->setEditor(locEditorWidget->m_editControl->editor());
+    m_languages->addCompletionEngine(e);
+    locEditorWidget->m_editControl->editor()->setCompletionEngine(e->clone());
+
     locEditorWidget->m_editControl->editor()->setText(text);
     locEditorWidget->m_editControl->editor()->setFileName(fname);
     if (load) locEditorWidget->m_editControl->editor()->load(fname);
