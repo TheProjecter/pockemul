@@ -847,6 +847,7 @@ QByteArray Clcc::ExtrList(QByteArray *list) {
         }
         result.append(list->at(0));
         list->remove(0,1);//delete(list, 1, 1);
+        if (list->isEmpty()) return "";
     }
     list->remove(0,1);//delete(list, 1, 1);
     result = result.trimmed();
@@ -935,20 +936,21 @@ void Clcc::rd(char *c, QByteArray *s) {
         else *c = 27;
         s->remove(0,1);
     }
-    if (l == ' ')
+
+    if (currentQuote == ' ')
     {
         if (*c == '}') level--;
         if (*c == '{') level++;
     }
     if (*c == '\'')
     {
-        if (l == ' ') l = '\'';
-        else if (l == '\'') l = ' ';
+        if (currentQuote == ' ') currentQuote = '\'';
+        else if (currentQuote == '\'') currentQuote = ' ';
     }
     if (*c == '"')
     {
-        if (l == ' ') l = '"';
-        else if (l == '"') l = ' ';
+        if (currentQuote == ' ') currentQuote = '"';
+        else if (currentQuote == '"') currentQuote = ' ';
     }
 
 }
@@ -964,7 +966,7 @@ void Clcc::GetToken(int mode, QByteArray *s) {
 
     writln("LOG",";GetToken:"+Tok);
     Tok="";
-    l = ' ';
+    currentQuote = ' ';
     md = mode;
 
     do {
@@ -974,25 +976,28 @@ void Clcc::GetToken(int mode, QByteArray *s) {
     while (SpacesList.contains(Look) || QByteArray("{}").contains(Look));
 
     //for  ( ; (l != ' ') || !QString(";{}").contains(Look) ; )
-    while((l != ' ') || !QByteArray(";{}").contains(Look))
+    while((currentQuote != ' ') || !QByteArray(";{}").contains(Look))// || (Look!=27))
     {
-        if (l == ' ')
+        if (currentQuote == ' ')
         {
             if ( !SpacesList.contains(Look) && !QByteArray("{}").contains(Look))
             {
                 Tok = Tok + Look;
                 rd(&Look,s);
+                if (Look == 27) return;
             } else
             {
                 Tok = Tok + ' ';
                 while (SpacesList.contains(Look)) {
                     rd(&Look, s);
+                    if (Look == 27) return;
                 }
             }
         } else
         {
             Tok = Tok + Look;
             rd(&Look, s);
+            if (Look == 27) return;
         }
     }
 
@@ -1001,20 +1006,20 @@ void Clcc::GetToken(int mode, QByteArray *s) {
     Tok = Tok.trimmed();
 
     int i = 1;
-    l = ' ';
+    currentQuote = ' ';
     //for (int i = 1 ; i< (Tok.size()-1); )
     while (i<Tok.size()-1)
     {
         if (Tok[i] == '\'') {
-            if (l == ' ')  l = '\'';
-            else if (l == '\'') l = ' ';
+            if (currentQuote == ' ')  currentQuote = '\'';
+            else if (currentQuote == '\'') currentQuote = ' ';
         }
         if (Tok[i] == '"') {
-            if (l == ' ') l = '"';
-            else if (l == '"') l = ' ';
+            if (currentQuote == ' ') currentQuote = '"';
+            else if (currentQuote == '"') currentQuote = ' ';
 
         }
-        if (l == ' ')
+        if (currentQuote == ' ')
         {
             if ((Tok[i-1] != ' ') && (QByteArray("[(=").contains(Tok[i])))
             {
@@ -2970,7 +2975,7 @@ void Clcc::FirstScan(QByteArray filen) {
                 //QByteArray src = "dummy";
                 rd(&Look, &filen);
                 t = t + Look;
-            } while ( level != 0);
+            } while ( (level != 0) && (Look != 27));
             t.remove(t.size()-1,1);//delete(t, length(t), 1);
             AddProc(name, t.trimmed(), temp, i, hasret, isword,loc_partyp,loc_parname);
         }

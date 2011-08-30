@@ -30,7 +30,7 @@ public:
 
     void refreshFileList(void);
 
-    void createEditorTab(QString fname, QString text,bool = false);
+    CEditorWidget * createEditorTab(QString fname, QString text,bool = false);
 
     QMap<QString,QByteArray> mapSRC;
     QMap<QString,QByteArray> mapPP;
@@ -49,6 +49,7 @@ public:
 
 
     void completionScan();
+    QStringList getProc(QString s);
 public slots:
     void saveAll(void);
 
@@ -80,6 +81,9 @@ private:
     Ui::WindowIDE *ui;
     QFileSystemModel *model;
     CCompletion *e;
+
+    QList<Cvar> varlist;
+    QList<Cproc> proclist;
 };
 
 #endif // WINDOWIDE_H

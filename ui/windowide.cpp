@@ -102,6 +102,8 @@ void WindowIDE::setupEditor()
     font.setPointSize(10);
 
     refreshFileList();
+
+
 }
 
 void WindowIDE::completionScan() {
@@ -122,13 +124,46 @@ void WindowIDE::completionScan() {
         //createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
         //createOutputTab("PP Compiler :"+fInfo.fileName(),mapPP["output"]);
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
-        lcc->run();
+        lcc->FirstScan(mapPP[sourcefname]);
+        //lcc->run();
 
         // recuperer var et proc
         //lcc->varlist
+
         //lcc->proclist
+        lcc->printvarlist("variables");
+        lcc->printproclist("procedures");
+
+        this->varlist.clear();
+        this->proclist.clear();
+
+        this->varlist = lcc->varlist;
+        this->proclist = lcc->proclist;
+
+
+
+
+        ui->vartextEdit->setText(mapASM["variables"]);
+        ui->proctextEdit->setText(mapASM["procedures"]);
 
     }
+}
+
+QStringList WindowIDE::getProc(QString s) {
+    QString sr = "";
+    for (int i= 0; i< proclist.size();i++) {
+        if (proclist.at(i).ProcName == s) {
+            if (proclist.at(i).hasreturn) {
+                if (proclist.at(i).ReturnIsWord) sr+="word ";
+                else sr+="byte ";
+            }
+            sr += proclist.at(i).ProcName+"( ";
+
+            if (proclist.at(i).ParCnt > 0) s+=proclist.at(i).Params;
+            return QStringList() << sr;
+        }
+    }
+    return QStringList();
 }
 
 /*!
@@ -211,7 +246,7 @@ void WindowIDE::compile(void) {
  \param text    document content
  \param load    if true then load the text from disk
 */
-void WindowIDE::createEditorTab(QString fname, QString text,bool load) {
+CEditorWidget * WindowIDE::createEditorTab(QString fname, QString text,bool load) {
 
     CEditorWidget *locEditorWidget = new CEditorWidget();
     ui->tabWidget->insertTab(0,locEditorWidget,QFileInfo(fname).fileName());
@@ -231,6 +266,7 @@ void WindowIDE::createEditorTab(QString fname, QString text,bool load) {
     editorMap.insert(fname,locEditorWidget);
     ui->tabWidget->setCurrentIndex(0);
 
+    return locEditorWidget;
 }
 
 /*!

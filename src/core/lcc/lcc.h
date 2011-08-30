@@ -282,7 +282,7 @@ public:
 
     int Posf;
     char Ch;
-    int l;
+    int currentQuote;
     int md;
     QByteArray Tok;
     QByteArray dummy;

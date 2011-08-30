@@ -15,6 +15,7 @@ public:
 
     virtual QString language() const ;
     virtual QStringList extensions() const;
+    QString getLastToken(const QDocumentCursor &c);
 signals:
 
 public slots:

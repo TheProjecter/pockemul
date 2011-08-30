@@ -22,8 +22,8 @@
 #include "qdocumentline.h"
 #include "qdocumentcursor.h"
 
-//#include "qcodenode.h"
-//#include "qcodemodel.h"
+#include "qcodemodel2/qcodenode.h"
+#include "qcodemodel2/qcodemodel.h"
 
 #include <QRegExp>
 #include <QKeyEvent>
@@ -558,11 +558,12 @@ int QCodeCompletionModel::rowCount(const QModelIndex& parent) const
 	
 	return parent.isValid() ? 0 : m_visibles.count();
 }
-
+#if 0
 bool QCodeCompletionModel::match(QCodeNode *n, QCodeCompletionWidget::Filter filter,
 							const QByteArray& prefix)
 {
-#if 0
+
+
 	QByteArray bcxt = n->parent->qualifiedName(),
 				bnn = n->role(QCodeNode::Name);
 	
@@ -658,8 +659,9 @@ bool QCodeCompletionModel::match(QCodeNode *n, QCodeCompletionWidget::Filter fil
 		//qDebug("node %s mismatched display conditions [Ox%x]", name, int(filter));
 		return false;
 	}
-#endif
+
 	//qDebug("node %s matched display conditions", name);
 	
 	return true;
 }
+#endif

@@ -216,7 +216,22 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/PC-1360/graph.h \
     qcodeedit/ccompletion.h \
     qcodeedit/qcodecompletionwidget_p.h \
-    qcodeedit/qcodecompletionwidget.h
+    qcodeedit/qcodecompletionwidget.h \
+    resources/lcc/model/PC-1261/stdio.h \
+    resources/lcc/model/PC-1261/sound.h \
+    resources/lcc/model/PC-1261/internal.h \
+    resources/lcc/model/PC-1250/stdio.h \
+    resources/lcc/model/PC-1250/sound.h \
+    resources/lcc/model/PC-1250/internal.h \
+    resources/lcc/model/PC-1255/stdio.h \
+    resources/lcc/model/PC-1255/sound.h \
+    resources/lcc/model/PC-1255/internal.h \
+    resources/lcc/model/PC-1260/stdio.h \
+    resources/lcc/model/PC-1260/sound.h \
+    resources/lcc/model/PC-1260/internal.h \
+    resources/lcc/model/PC-1475/stdio.h \
+    resources/lcc/model/PC-1475/sound.h \
+    resources/lcc/model/PC-1475/internal.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
