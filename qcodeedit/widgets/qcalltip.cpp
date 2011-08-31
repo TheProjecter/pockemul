@@ -66,7 +66,7 @@ void QCallTip::paintEvent(QPaintEvent *e)
 	bool bPrev = m_index, bNext = (m_index + 1) < m_tips.count();
 	int offset = 3, whalf = arrowWidth / 2 - 3; //, hhalf = height() / 2;
 	
-	QRect bg(0, 0, fm.width(m_tips.at(m_index)) + 6, fm.height());
+    QRect bg(0, 0, fm.width(m_tips.at(m_index)) + 6, fm.height()+3);
 	
 	if ( bPrev )
 	{

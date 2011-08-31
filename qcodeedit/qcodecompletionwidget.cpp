@@ -43,10 +43,10 @@ QCodeCompletionWidget::QCodeCompletionWidget(QEditor *p)
 	setEditTriggers(NoEditTriggers);
 	setSelectionMode(SingleSelection);
 	QWidget::setCursor(Qt::ArrowCursor);
-	
+
 	// just to get rid of warnings...
 	qRegisterMetaType<QItemSelection>("QItemSelection");
-	
+
 	hide();
 	setEditor(p);
 	
@@ -464,7 +464,7 @@ void QCodeCompletionModel::forceUpdate() const
 	//qDebug("updating model");
 	
 	m_visibles.clear();
- #if 0
+ #if 1
 	foreach ( QCodeNode *n, m_nodes )
 	{
 		foreach ( QCodeNode *c, n->children )
@@ -526,7 +526,7 @@ QVariant QCodeCompletionModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-#if 0
+#if 1
 	QCodeNode *n = m_visibles.at(row);
 	int type = n->type();
 	
@@ -558,7 +558,7 @@ int QCodeCompletionModel::rowCount(const QModelIndex& parent) const
 	
 	return parent.isValid() ? 0 : m_visibles.count();
 }
-#if 0
+#if 1
 bool QCodeCompletionModel::match(QCodeNode *n, QCodeCompletionWidget::Filter filter,
 							const QByteArray& prefix)
 {

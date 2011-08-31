@@ -45,8 +45,8 @@ class QCodeCompletionModel : public QAbstractListModel
 		QList<QCodeNode*> focusNodes() const;
 		void setFocusNodes(const QList<QCodeNode*>& node);
 		
-//		static bool match(	QCodeNode *node, QCodeCompletionWidget::Filter filter,
-//							const QByteArray& prefix = QByteArray());
+        static bool match(	QCodeNode *node, QCodeCompletionWidget::Filter filter,
+                            const QByteArray& prefix = QByteArray());
 		
 		QVariant data(const QModelIndex& index, int role) const;
 		Qt::ItemFlags flags(const QModelIndex& index) const;

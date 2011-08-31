@@ -13,7 +13,7 @@
 class QFormatScheme;
 class QLanguageFactory;
 class CCompletion;
-
+class QCodeNode;
 
 namespace Ui {
     class WindowIDE;
@@ -48,7 +48,7 @@ public:
 
 
 
-    void completionScan();
+    QList<QCodeNode *> completionScan();
     QStringList getProc(QString s);
 public slots:
     void saveAll(void);

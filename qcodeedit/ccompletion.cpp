@@ -8,8 +8,8 @@
 
 //#include "mainwindowpockemul.h"
 #include "ui/windowide.h"
+#include "qcodemodel2/qcodenode.h"
 
-//extern MainWindowPockemul *mainwindow;
 
 CCompletion::CCompletion(QObject *p)
 : QCodeCompletionEngine(p),pPopup(0)
@@ -62,42 +62,15 @@ QString CCompletion::getLastToken(const QDocumentCursor &c) {
 
 void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
 {
-    if ( pPopup && pPopup->editor() != editor() )
-    {
-        delete pPopup;
-        pPopup = 0;
-    }
-
-    if ( !pPopup )
-    {
-        pPopup = new QCodeCompletionWidget(editor());
-    }
-
-    pPopup->clear();
-    pPopup->setCursor(editor()->cursor());
-
-    QTime time;
-    time.start();
-
-    mainwindow->windowide->completionScan();
-
-
-
-
-    //pPopup->setCompletions(nodes);
-
-    pPopup->popup();
-
-#if 1
     if ( trigger == "(" )
     {
         QStringList tips;
 
         //qDebug("fn %s", fn.constData());
+        QList<QCodeNode*> nodes = mainwindow->windowide->completionScan();
 
         tips = mainwindow->windowide->getProc(getLastToken(c));
 
-        //tips <<"deux";
         if ( tips.count() )
         {
             QRect r = editor()->cursorRect();
@@ -118,6 +91,37 @@ void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
             #endif
         }
     }
+    else {
+    if ( pPopup && pPopup->editor() != editor() )
+    {
+        delete pPopup;
+        pPopup = 0;
+    }
+
+    if ( !pPopup )
+    {
+        pPopup = new QCodeCompletionWidget(editor());
+    }
+
+    pPopup->clear();
+    pPopup->setCursor(editor()->cursor());
+
+    QTime time;
+    time.start();
+
+    QList<QCodeNode*> nodes = mainwindow->windowide->completionScan();
+
+
+    pPopup->setPrefix(getLastToken(c));
+
+
+    pPopup->setCompletions(nodes);
+
+    pPopup->update();
+    pPopup->popup();
+}
+#if 1
+
 #endif
 
 }

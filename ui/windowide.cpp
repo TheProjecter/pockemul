@@ -26,6 +26,8 @@
 #include "qoutpanel.h"
 #include "ccompletion.h"
 
+#include "qcodemodel2/qcodenode.h"
+
 extern QList<CPObject *> listpPObject; /*!< TODO */
 
 /*!
@@ -106,7 +108,7 @@ void WindowIDE::setupEditor()
 
 }
 
-void WindowIDE::completionScan() {
+QList<QCodeNode *> WindowIDE::completionScan() {
     QMap<QString,QByteArray> mapSRC;
     QMap<QString,QByteArray> mapPP;
     QMap<QString,QByteArray> mapASM;
@@ -140,12 +142,49 @@ void WindowIDE::completionScan() {
         this->varlist = lcc->varlist;
         this->proclist = lcc->proclist;
 
+        QList<QCodeNode *> nodes;
 
+        QCodeNode *n = new QCodeNode();
 
+        for (int i=0;i<varlist.size();i++) {
+            Cvar v = varlist.at(i);
+            QCodeNode *vn = new QCodeNode();
+            vn->roles = "v@"+v.varname+"@"+v.typ;
+            vn->attach(n);
+        }
+
+        //    fct->roles = QByteArray("f@")
+        //                + name
+        //                + "@"
+        //                + retval
+        //                + "@"
+        //                + QByteArray::number(visibility)
+        //                + "@"
+        //                ;
+
+        for (int i=0;i<proclist.size();i++) {
+            Cproc p = proclist.at(i);
+            QCodeNode *pn = new QCodeNode();
+            //name
+            pn->roles = "f@"+p.ProcName+"@";
+            //return
+            if (p.hasreturn) {
+                if (p.ReturnIsWord) pn->roles+="word";
+                else pn->roles+="byte";
+            }
+            //visibility + template
+            pn->roles+="@@@";
+            //arguments
+            if (p.ParCnt > 0) pn->roles+=p.Params+"@";
+
+            pn->attach(n);
+        }
+        nodes.append(n);
 
         ui->vartextEdit->setText(mapASM["variables"]);
         ui->proctextEdit->setText(mapASM["procedures"]);
 
+        return nodes;
     }
 }
 
@@ -159,7 +198,8 @@ QStringList WindowIDE::getProc(QString s) {
             }
             sr += proclist.at(i).ProcName+"( ";
 
-            if (proclist.at(i).ParCnt > 0) s+=proclist.at(i).Params;
+            if (proclist.at(i).ParCnt > 0) sr+=proclist.at(i).Params;
+            sr+=")";
             return QStringList() << sr;
         }
     }
