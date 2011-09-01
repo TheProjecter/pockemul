@@ -9,6 +9,12 @@
 
 
 
+/*! 
+ \brief Return 0xff if the On/Break key is pressed, 0x00 otherwise.
+ 
+ \fn onbreak 
+ \return byte 
+*/
 byte onbreak() {
 
     return __onbreak();

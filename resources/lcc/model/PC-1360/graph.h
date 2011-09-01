@@ -14,6 +14,23 @@ word xram _grfx_y2 at 0x6F69;
 #define GBOX    8
 #define GBOXF   16
 
+/*! 
+ \brief Draw a Line from (x1,y1) to (x2,y2)
+ The lineflag can take those values :
+ - GSET : Pixels are set
+ - GRESET : Pixels are reset
+ - GINV : Pixels are inverted
+ - GBOX : A box is drawn
+ - GBOXF : A filled box is drawn
+ 
+ \fn line 
+
+ \param x1 (0-149)
+ \param y1 (0-31)
+ \param x2 
+ \param y2 
+ \param lineflag 
+*/
 line(word x1,word y1, word x2, word y2,byte lineflag) {
     _grfx_x1 = x1;
     _grfx_y1 = y1;
@@ -29,6 +46,18 @@ line(word x1,word y1, word x2, word y2,byte lineflag) {
 #restore
 }
 
+/*! 
+ \brief Draw pixel on (x,y)
+  The psetflag can take those values :
+  - GSET : Pixels are set
+  - GRESET : Pixels are reset
+  - GINV : Pixels are inverted
+
+ \fn pset 
+ \param px1 
+ \param py1 
+ \param psetflag 
+*/
 pset(word px1,word py1,byte psetflag) {
     _grfx_x1 = px1;
     _grfx_y1 = py1;
@@ -43,6 +72,11 @@ pset(word px1,word py1,byte psetflag) {
 #restore
 }
 
+/*! 
+ \brief Clear the screen
+ 
+ \fn cls 
+*/
 cls() {
     _grfx_graph = 1;
 #save

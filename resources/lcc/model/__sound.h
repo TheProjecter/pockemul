@@ -1,9 +1,16 @@
 #ifndef __SOUND_H
 #define __SOUND_H
 
-__beep(byte __beep_freq,byte __beep_duration) {
-    _reg_k = __beep_freq;
-    _reg_l  = __beep_duration;
+/*! 
+ \brief Produce a Sound with specific frequecy and duration.
+ 
+ \fn beep 
+ \param beep_freq the requested frequency
+ \param beep_duration the duration
+*/
+beep(byte beep_freq,byte beep_duration) {
+    _reg_k = beep_freq;
+    _reg_l = beep_duration;
 
 #save
 #asm

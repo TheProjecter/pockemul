@@ -23,7 +23,7 @@ class Clcpp:public QObject {
     Q_OBJECT
 public:
 
-    Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model);
+    Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model,bool showErrors=true);
 
     void run();
     QString parsefile(QString srcName,QString source);
@@ -37,7 +37,6 @@ public:
     void initDOxygen(QString line);
     void closeDOxygen(QString line);
     void addDOxygen(QString line);
-    void closePreviousTag();
     QList<CDOxyItem*> getDoxygenList();
 
 private:
@@ -68,6 +67,8 @@ private:
     QString currentTag;
     CDOxyItem *currentDoxyItem;
     QList<CDOxyItem*> doxygenlist;
+
+    bool showErrors;
 
 };
 

@@ -208,15 +208,17 @@ const QByteArray Alpha="_ABCDEFGHIJKLMNOPQRSTUVWXYZ"; /*!< TODO */
  \param QMap<QString
  \param out
 */
-Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out) {
+Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool showErrors) {
     this->sources = sources;
     this->out = out;
+    this->showErrors = showErrors;
     proccount = 0;
     VarCount = 0;
     VarPos = 16;        // Start adr assigning cpu variable
     level = 0;
     Look = 0;
     nosave = false;
+    showErrors = true;
 
 
     outfile = true;
@@ -315,7 +317,7 @@ void Clcc::Error(QString t) {
   if (!Tok.isEmpty()) s.append("\r\nToken: "+Tok);
   if (!dummy.isEmpty())s.append("\r\nCode: "+dummy);
   writeln("LOG","ERROR:"+t+"-"+s);
-  QMessageBox::about(mainwindow,t,s);
+  if (showErrors) QMessageBox::about(mainwindow,t,s);
 
 }
 
@@ -588,7 +590,7 @@ void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, 
         //                writeln('Proc add: NAME: ' + s);
     }
     else
-        QMessageBox::about(mainwindow,"ERROR","Procedure already declared: " + s);
+        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Procedure already declared: " + s);
 }
 
 //{ Add Variable Declaration }
@@ -636,7 +638,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
             else {
                 s.remove(0,1);
                 int arraysize = mathparse(s, 16);
-                if (arraysize >= 256) QMessageBox::about(mainwindow,"ERROR","Array too big! 256 bytes max.");
+                if (arraysize >= 256) if (showErrors) QMessageBox::about(mainwindow,"ERROR","Array too big! 256 bytes max.");
                 v.size = arraysize;
             }
             v.array = true;
@@ -647,7 +649,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
         if (!loc) {
             if (t.startsWith("at")) {
                 if (loc) {
-                    QMessageBox::about(mainwindow,"ERROR","Local vars can't have 'at' assignments!");
+                    if (showErrors) QMessageBox::about(mainwindow,"ERROR","Local vars can't have 'at' assignments!");
                 }
                 s = ExtrWord(&t);
                 if (t.indexOf('=') >= 0) {
@@ -682,8 +684,8 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
                     v.address = AllocVar(xr, v.at, v.size, -1);
             }
             if (t.startsWith('=')) {
-                if (loc) QMessageBox::about(mainwindow,"ERROR","Local vars cant have init values!");
-                if (pnt) QMessageBox::about(mainwindow,"ERROR","pointers cant have init values!");
+                if (loc) if (showErrors) QMessageBox::about(mainwindow,"ERROR","Local vars cant have init values!");
+                if (pnt) if (showErrors) QMessageBox::about(mainwindow,"ERROR","pointers cant have init values!");
                 t.remove(0,1);
                 if (v.array && (typ == "char") ) {
                     t.remove(0,1);
@@ -694,7 +696,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
                         v.inits.append(QChar(0));
                     }
                     if (v.size != (t.length()+1)) {
-                        QMessageBox::about(mainwindow,"ERROR","Array size different from initial value size");
+                        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Array size different from initial value size");
                     }
                     v.initn = 0;
                 }
@@ -747,7 +749,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
         varlist.append(v);
     }
     else {
-        QMessageBox::about(mainwindow,"ERROR","Variable already declared: " + s);
+        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable already declared: " + s);
     }
 }
 
@@ -876,7 +878,7 @@ int Clcc::AllocVar(bool xram,bool at,int  size, int adr) {
             if (IsVarAtAdr(result, size)) {
                 if (varlist[VarFound].at) {
                     s= QByteArray::number(varlist[VarFound].address);
-                    QMessageBox::about(mainwindow,"ERROR","Previous var "+varlist[VarFound].varname+" at "+s+" already declared!");
+                    if (showErrors) QMessageBox::about(mainwindow,"ERROR","Previous var "+varlist[VarFound].varname+" at "+s+" already declared!");
                 }
                 varlist[VarFound].address = VarPos;
                 VarPos += varlist[VarFound].size;
@@ -884,7 +886,7 @@ int Clcc::AllocVar(bool xram,bool at,int  size, int adr) {
                     if (IsVarAtAdr(result+1, 1)) {
                         if (varlist[VarFound].at) {
                             s= QByteArray::number(varlist[VarFound].address);
-                            QMessageBox::about(mainwindow,"ERROR","Overlap with "+varlist[VarFound].varname+" at "+s+"!");
+                            if (showErrors) QMessageBox::about(mainwindow,"ERROR","Overlap with "+varlist[VarFound].varname+" at "+s+"!");
                         }
                         varlist[VarFound].address = VarPos;
                         VarPos += varlist[VarFound].size;
@@ -1036,7 +1038,7 @@ void Clcc::GetToken(int mode, QByteArray *s) {
                 Tok.remove(i+1, 1);
                 i--;
             }
-            if ((Tok[i-1] == ' ') && OpsList.contains(Tok[i]))
+            else if ((Tok[i-1] == ' ') && OpsList.contains(Tok[i]))
             {
                 Tok.remove(i-1, 1);
                 i--;
@@ -1432,7 +1434,7 @@ void Clcc::StoreVariable(QByteArray name) {
 
     Cvar var;
 
-    if (! FindVar(name)) { QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
+    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
     var = varlist.at(VarFound);
 
     if (!var.array) {
@@ -1952,7 +1954,7 @@ void Clcc::ProcCall() {
             }
         }
         else {
-            QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ name2+"' undefined");
+            if (showErrors) QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ name2+"' undefined");
         }
     }
     else
@@ -2797,7 +2799,7 @@ void Clcc::DoSaveState(void) {
 */
 void Clcc::DoRestoreState(void) {
     if (LState.isEmpty()) {
-        QMessageBox::about(mainwindow,"ERROR","Restore with no previous save!!!");
+        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Restore with no previous save!!!");
         return;
     }
     writln(outf,"\tLP\t0");
@@ -2984,8 +2986,8 @@ void Clcc::FirstScan(QByteArray filen) {
     }
     //closefile(f);
 
-    if (!FindProc("main")) {
-        QMessageBox::about(mainwindow,"ERROR","main not found!");
+    if (showErrors && !FindProc("main")) {
+        if (showErrors) QMessageBox::about(mainwindow,"ERROR","main not found!");
     }
 
     printvarlist("output");

@@ -3,7 +3,13 @@
 
 
 
-byte __onbreak() {
+/*! 
+ \brief Return 0xff if the On/Break key is pressed, 0x00 otherwise.
+ 
+ \fn __onbreak 
+ \return byte 
+*/
+byte __onbreak() { 
 #asm
     RA	;test
     TEST 08
@@ -15,15 +21,12 @@ lb__stdio__onbreak_end:
     return _reg_a;
 }
 
-/*; -----------------------------------------------
-//; Wait BA ms
-//; label prefix __sdtio15
-//; -----------------------------------------------*/
-/*!
- \brief
 
- \fn ps_wait
- \param _var_ps_wait_nb
+/*! 
+ \brief Do nothing during a n milliseconds laptime. 
+ 
+ \fn ps_wait 
+ \param _var_ps_wait_nb Number of milliseconds to wait
 */
 ps_wait(word _var_ps_wait_nb) {
 	load _var_ps_wait_nb;
@@ -55,6 +58,12 @@ lb__sdtio1503:
 #endasm
 }
 
+
+/*! 
+ \brief Turn display refresh off.
+ 
+ \fn ps_disp_off 
+*/
 ps_disp_off() {
 #asm
 fct_ps_disp_off:
@@ -64,6 +73,11 @@ fct_ps_disp_off:
 #endasm
 }
 
+/*! 
+ \brief Turn display refresh on.
+ 
+ \fn ps_disp_on 
+*/
 ps_disp_on() {
 #asm
 fct_ps_disp_on:
@@ -83,6 +97,12 @@ byte xram ps_cur_y;
 //; label prefix __sdtio01
 //; -----------------------------------------------*/
 byte xram var_ps_putchar_con_rombank;
+/*! 
+ \brief Writes a character at the (ps_cur_x,ps_cur_y) char coordinates.
+ 
+ \fn ps_putchar_con 
+ \param ps_putchar_con_c The Char to display
+*/
 ps_putchar_con(char ps_putchar_con_c) {
 	load ps_putchar_con_c;
 
@@ -182,13 +202,15 @@ lb__sdtio0102:
 }
 
 /*; -----------------------------------------------
-//; invert the display one line.
-//; for pockets with only on line it is 
-//; simple - just delete the display
-//; (procedure isn't assembled then and
+//; invert the display .
 //; ps_scroll is the same as ps_clrscr
 //; label prefix __sdtio07
 //; -----------------------------------------------*/
+/*! 
+ \brief Invert the display.
+ 
+ \fn ps_inv 
+*/
 ps_inv() {
 	
 _LCC_DEPEND(ps_disp_off);
@@ -437,14 +459,14 @@ lb__sdtio0701:
 }
 
 
-/*; -----------------------------------------------
-//; Scrolls the display one line.
-//; for pockets with only on line it is 
-//; simple - just delete the display
-//; (procedure isn't assembled then and
-//; ps_scroll is the same as ps_clrscr
-//; label prefix __sdtio05
-//; -----------------------------------------------*/
+/*! 
+ \brief 
+ 	Scrolls the display one line.
+	for pockets with only on line it is 
+	simple - just delete the display.
+ 
+ \fn ps_scroll
+*/
 ps_scroll() {
 
 _LCC_DEPEND(ps_clrscr);
@@ -663,12 +685,12 @@ lb__sdtio0501:
 #endasm
 }
 
-//; -----------------------------------------------
-//; Deletes all lines of the display
-//; Used Registers: Various, for models which
-//;   provide a suitable ROM call
-//; label prefix 02
-//; -----------------------------------------------
+
+/*! 
+ \brief Deletes all lines of the display
+ 
+ \fn ps_clrscr
+*/
 ps_clrscr() {
 #asm
 fct_ps_clrscr:
@@ -733,15 +755,12 @@ fct_ps_clrscr:
 #endasm
 }
 
-/*; -----------------------------------------------
-//; Converts x cursor position to graphics
-//; cursor position
-//;
-//; Used Registers: A,B
-//; Input value: A
-//; Return value: A
-//; label prefix __sdtio03
-//; -----------------------------------------------*/
+
+/*! 
+ \brief Converts x cursor position to graphics cursor position.
+ 
+ \fn ps_xcur2xgcur 
+*/
 ps_xcur2xgcur(){
 #asm	
 fct_ps_xcur2xgcur:
@@ -778,21 +797,24 @@ fct_ps_xcur2xgcur:
 #endasm
 }
 
-/*; -----------------------------------------------
-//; Calculates the display adress of a
-//; given graphics cursor location.
-//
-//; Positions that are to big to fit in
-//; the display return the adress of the
-//; most right display column if __RANGE_CHECK__
-//; is on, otherwise the behaviour is undefined
-//; (most likely crash).
-//
-//; Used Registers: A,B,Y
-//; Input A (graph. cur. x), B (graph. cur. y)
-//; Return value: Y
-//; label prefix __sdtio04
-//; -----------------------------------------------*/
+
+/*! 
+ \brief 
+ Calculates the display adress of a
+given graphics cursor location.
+
+Positions that are to big to fit in
+the display return the adress of the
+most right display column if __RANGE_CHECK__
+is on, otherwise the behaviour is undefined
+(most likely crash).
+
+Used Registers: A,B,Y
+Input A (graph. cur. x), B (graph. cur. y)
+Return value: Y
+ 
+ \fn ps_dispadr 
+*/
 ps_dispadr() {
 #asm
 fct_ps_dispadr:
@@ -1040,6 +1062,17 @@ lb__sdtio0405:
 //; Return value: X
 //; label prefix __sdtio06
 //; -----------------------------------------------
+/*! 
+ \brief 
+Calculates the address of a given character
+(Register A) in the character table
+The character stays in A
+
+Used Registers: A,B,X
+Return value: X
+ 
+ \fn ps_ctabadr 
+*/
 ps_ctabadr() {
 	
 #asm

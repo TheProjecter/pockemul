@@ -105,6 +105,8 @@ void WindowIDE::setupEditor()
 
     refreshFileList();
 
+    ui->vardockWidget->hide();
+    ui->procdockWidget->hide();
 
 }
 
@@ -120,13 +122,13 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
 
     if (e->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
-        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
+        Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText(),false);
         lcpp->pStdLibs->LoadLibs();
         lcpp->run();
         this->doxygenlist = lcpp->getDoxygenList();
         //createEditorTab(fInfo.baseName()+".xml",mapPP["DOxygen"]);
         //createOutputTab("PP Compiler :"+fInfo.fileName(),mapPP["output"]);
-        Clcc *lcc = new Clcc(&mapPP,&mapASM);
+        Clcc *lcc = new Clcc(&mapPP,&mapASM,false);
         lcc->FirstScan(mapPP[sourcefname]);
         //lcc->run();
 
@@ -499,7 +501,7 @@ Cproc WindowIDE::getProcObj(QString s)
 CDOxyItem * WindowIDE::getDOxygenInfo(QString s)
 {
     for (int i=0;i< doxygenlist.size();i++) {
-        if (doxygenlist.at(i)->fn==s) return doxygenlist.at(i);
+        if (doxygenlist.at(i)->fn.trimmed()==s) return doxygenlist.at(i);
     }
     return 0;
 }

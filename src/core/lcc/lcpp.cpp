@@ -30,7 +30,7 @@
  \param t
 */
 void Clcpp::abort(QString t) {
-    QMessageBox::about((QWidget*)mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + inpf);
+    if (showErrors) QMessageBox::about((QWidget*)mainwindow,"ERROR","Line " + QString("%1").arg(cline+1) + ": " + t + " in file " + inpf);
 }
 
 
@@ -133,32 +133,23 @@ QString Clcpp::extractparam(QString s,int p) {
 
 void Clcpp::initDOxygen(QString line = "") {
     currentDoxyItem = new CDOxyItem();
-    writeln("DOxygen","<DOxygen>");
     currentTag = "";
     addDOxygen(line);
 }
 void Clcpp::closeDOxygen(QString line = "") {
     addDOxygen(line);
-    closePreviousTag();
-    writeln("DOxygen","</DOxygen>");
     doxygenlist.append(currentDoxyItem);
 }
-void Clcpp::closePreviousTag() {
-    if (!currentTag.isEmpty()) {
-        writeln("DOxygen",QString("</")+currentTag+">");
-    }
-}
-
-
 
 void Clcpp::addDOxygen(QString line) {
     QStringList tag;
+    if (line.isEmpty()) return;
     tag << "\\brief" << "\\return" << "\\fn" << "\\param";
 
     QString Token = line.trimmed().split(" ").at(0);
     if (tag.contains(Token)) {
         currentTag = Token;
-        line = line.replace(Token+" ","");
+        line = line.replace(Token,"").trimmed();
     }
     else {
         line = QString("\n")+line;
@@ -212,9 +203,10 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
                     result = "";
                 }
                 else {
-                    closeDOxygen(result.left(result.indexOf("*/")));
+                    if (doxycom) closeDOxygen(result.left(result.indexOf("*/")));
                     result.remove(0,result.indexOf("*/")+2);
                     lcom = false;
+                    doxycom=false;
                 }
             }
         }
@@ -419,10 +411,11 @@ void Clcpp::writeln(QString srcName,QString s) {
  \param out         Out MAP
  \param model       Target model used to include correct libary
 */
-Clcpp::Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model) {
+Clcpp::Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QString model,bool showErrors) {
     this->sources = sources;
     this->out = out;
     this->model = model;
+    this->showErrors = showErrors;
     symcnt = 0;
     pStdLibs = new Cstdlib();
     pStdLibs->setModel(model);

@@ -5,18 +5,15 @@
 
 #include <__stdio.h>
 
-/*
-Chartable commence en 0x4464
-5 byte par char
-dans l'ordre
 
-disp ram F800 -> F83B    F87B <- F840
 
+
+/*! 
+ \brief Return 0xff if the On/Break key is pressed, 0x00 otherwise.
+ 
+ \fn onbreak 
+ \return byte 
 */
-
-
-
-
 byte onbreak() {
 
     return __onbreak();

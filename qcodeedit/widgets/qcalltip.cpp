@@ -12,7 +12,7 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 **
 ****************************************************************************/
-
+// FIXME le multi  ligne et la taille
 #include "qcalltip.h"
 
 /*!
@@ -65,8 +65,10 @@ void QCallTip::paintEvent(QPaintEvent *e)
 	
 	bool bPrev = m_index, bNext = (m_index + 1) < m_tips.count();
 	int offset = 3, whalf = arrowWidth / 2 - 3; //, hhalf = height() / 2;
-    int nbline = m_tips.at(m_index).count("\n") + 1;
-    QRect bg(0, 0, fm.width(m_tips.at(m_index)) + 6, fm.height()*nbline+3);
+    int nbline = m_tips.at(m_index).count("\n")+ 1;
+    int wd = fm.width(m_tips.at(m_index));
+    //if (wd > fm.width(QString(40,'W'))) wd =  fm.width(QString(40,'W'));
+    QRect bg(0, 0, wd + 6, fm.height()*nbline+3);
 	
 	if ( bPrev )
 	{
@@ -81,17 +83,7 @@ void QCallTip::paintEvent(QPaintEvent *e)
 	p.fillRect(bg, QColor(0xca, 0xff, 0x70));
 	//p.drawRect(bg);
 	
-	p.save();
-	
-	p.setPen(QColor(0x00, 0x00, 0x00));
-	p.drawLine(0, height() - 1, bg.width() - 1, height() - 1);
-	p.drawLine(bg.width() - 1, height() - 1, bg.width() - 1, 0);
-	
-	p.setPen(QColor(0xc0, 0xc0, 0xc0));
-	p.drawLine(0, height() - 1, 0, 0);
-	p.drawLine(0, 0, bg.width() - 1, 0);
-	
-	p.restore();
+
 	
 	int top = height() / 3, bottom = height() - height() / 3;
 	
@@ -128,8 +120,23 @@ void QCallTip::paintEvent(QPaintEvent *e)
 	}
 	
 //	p.drawText(offset, fm.ascent() + 2, m_tips.at(m_index));
-    p.drawText(offset, 2,bg.width(),bg.height(),Qt::AlignLeft|Qt::AlignTop,m_tips.at(m_index));
-	setFixedSize(bg.size() + QSize(1, 1));
+    QRect *BoundingRect = new QRect();
+    p.drawText(offset, 2,bg.width(),bg.height(),Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap,m_tips.at(m_index),BoundingRect);
+
+    //setFixedSize(bg.size() + QSize(1, 1));
+    setFixedSize(BoundingRect->width()+offset,BoundingRect->height()+2);
+
+    p.save();
+
+    p.setPen(QColor(0x00, 0x00, 0x00));
+    p.drawLine(0, height() - 1, bg.width() - 1, height() - 1);
+    p.drawLine(bg.width() - 1, height() - 1, bg.width() - 1, 0);
+
+    p.setPen(QColor(0xc0, 0xc0, 0xc0));
+    p.drawLine(0, height() - 1, 0, 0);
+    p.drawLine(0, 0, bg.width() - 1, 0);
+
+    p.restore();
 }
 
 void QCallTip::keyPressEvent(QKeyEvent *e)

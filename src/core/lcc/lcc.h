@@ -119,7 +119,7 @@ public:
 class Clcc : public QObject{
     Q_OBJECT
 public:
-    Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out);
+    Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool showErrors=true);
 
 
 
@@ -313,8 +313,12 @@ public:
     void generateProcCode(QString f, int i);
     QList<int> calledProc;
     QList<int> insertedProc;
+
 signals:
     void outputSignal(QString,QString);
+
+private:
+    bool showErrors;
 };
 
 #endif // LCC_H

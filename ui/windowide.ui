@@ -323,7 +323,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="vardockWidget">
    <property name="windowTitle">
     <string>var</string>
    </property>
@@ -338,7 +338,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="procdockWidget">
    <property name="windowTitle">
     <string>proc</string>
    </property>
