@@ -123,7 +123,8 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
         lcpp->pStdLibs->LoadLibs();
         lcpp->run();
-        //createEditorTab(fInfo.baseName()+".pp",mapPP[sourcefname]);
+        this->doxygenlist = lcpp->getDoxygenList();
+        //createEditorTab(fInfo.baseName()+".xml",mapPP["DOxygen"]);
         //createOutputTab("PP Compiler :"+fInfo.fileName(),mapPP["output"]);
         Clcc *lcc = new Clcc(&mapPP,&mapASM);
         lcc->FirstScan(mapPP[sourcefname]);
@@ -141,6 +142,7 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
 
         this->varlist = lcc->varlist;
         this->proclist = lcc->proclist;
+
 
         QList<QCodeNode *> nodes;
 
@@ -492,4 +494,12 @@ Cproc WindowIDE::getProcObj(QString s)
         }
     }
     return Cproc();
+}
+
+CDOxyItem * WindowIDE::getDOxygenInfo(QString s)
+{
+    for (int i=0;i< doxygenlist.size();i++) {
+        if (doxygenlist.at(i)->fn==s) return doxygenlist.at(i);
+    }
+    return 0;
 }

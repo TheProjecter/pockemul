@@ -131,7 +131,60 @@ QString Clcpp::extractparam(QString s,int p) {
 #endif
 }
 
+void Clcpp::initDOxygen(QString line = "") {
+    currentDoxyItem = new CDOxyItem();
+    writeln("DOxygen","<DOxygen>");
+    currentTag = "";
+    addDOxygen(line);
+}
+void Clcpp::closeDOxygen(QString line = "") {
+    addDOxygen(line);
+    closePreviousTag();
+    writeln("DOxygen","</DOxygen>");
+    doxygenlist.append(currentDoxyItem);
+}
+void Clcpp::closePreviousTag() {
+    if (!currentTag.isEmpty()) {
+        writeln("DOxygen",QString("</")+currentTag+">");
+    }
+}
 
+
+
+void Clcpp::addDOxygen(QString line) {
+    QStringList tag;
+    tag << "\\brief" << "\\return" << "\\fn" << "\\param";
+
+    QString Token = line.trimmed().split(" ").at(0);
+    if (tag.contains(Token)) {
+        currentTag = Token;
+        line = line.replace(Token+" ","");
+    }
+    else {
+        line = QString("\n")+line;
+    }
+
+    if (currentTag == "\\brief") {
+        if (currentDoxyItem) currentDoxyItem->brief += line;
+    }
+    else if (currentTag == "\\fn") {
+        if (currentDoxyItem) currentDoxyItem->fn += line;
+    }
+    else if (currentTag == "\\return") {
+        if (currentDoxyItem) currentDoxyItem->returnTyp += line;
+    }
+    else if (currentTag == "\\param") {
+        if (currentDoxyItem) {
+            // Create a new param in the list if new param
+            if (Token == "\\param") {
+                currentDoxyItem->params.append("");
+            }
+            QString locparam = currentDoxyItem->params.last()+line;
+            currentDoxyItem->params.removeLast();
+            currentDoxyItem->params.append(locparam);
+        }
+    }
+}
 /*!
  \brief
 
@@ -152,8 +205,14 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
             cline = lcnt;
             result = result.trimmed();
             if (lcom) {
-                if (result.indexOf("*/")==-1) result = "";
+                if (result.indexOf("*/")==-1) {
+                    if (doxycom) {
+                        addDOxygen(result);
+                    }
+                    result = "";
+                }
                 else {
+                    closeDOxygen(result.left(result.indexOf("*/")));
                     result.remove(0,result.indexOf("*/")+2);
                     lcom = false;
                 }
@@ -171,9 +230,19 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
                 break;
             }
             if ((c == ' ') && result.mid(i).startsWith("/*")) {
-                if (result.indexOf("*/") > i)
+                if (result.mid(i).startsWith("/*!")) {
+                    doxycom = true;
+                    initDOxygen();
+                }
+
+                if (result.indexOf("*/") > i) {
+                    addDOxygen(result.mid(i+3,result.indexOf("*/")-i-3));
                     result.remove(i, result.indexOf("*/") - i + 2);
+                    closeDOxygen();
+                    doxycom = false;
+                }
                 else {
+                    if (doxycom) addDOxygen(result.mid(i+3));
                     result=result.left(i);
                     lcom = true;
                 }
@@ -368,6 +437,11 @@ Clcpp::Clcpp(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,QSt
 */
 QString Clcpp::getModel(void) {
     return model;
+}
+
+QList<CDOxyItem *> Clcpp::getDoxygenList()
+{
+    return doxygenlist;
 }
 
 #endif

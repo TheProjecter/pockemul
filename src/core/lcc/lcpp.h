@@ -2,12 +2,22 @@
 #define LCPP_H
 
 #include <QtGui>
+#include <QMap>
 
 //#include "mainwindowpockemul.h"
 class MainWindowPockemul;
 extern MainWindowPockemul *mainwindow;
 
 #include "cstdlib.h"
+
+class CDOxyItem {
+
+public:
+    QString brief;
+    QString fn;
+    QList<QString> params;
+    QString returnTyp;
+};
 
 class Clcpp:public QObject {
     Q_OBJECT
@@ -24,6 +34,12 @@ public:
     Cstdlib *pStdLibs;
 
     QString computeDefine(QString result);
+    void initDOxygen(QString line);
+    void closeDOxygen(QString line);
+    void addDOxygen(QString line);
+    void closePreviousTag();
+    QList<CDOxyItem*> getDoxygenList();
+
 private:
     void abort(QString t);
     QString replace_text(QString text, QString such, QString ers);
@@ -44,10 +60,14 @@ private:
     int lcnt;
     QString inpf,outf;
     bool lcom;
+    bool doxycom;
 
     QList<QString> sym;
     QList<QString> symval;
     int symcnt;
+    QString currentTag;
+    CDOxyItem *currentDoxyItem;
+    QList<CDOxyItem*> doxygenlist;
 
 };
 

@@ -65,8 +65,8 @@ void QCallTip::paintEvent(QPaintEvent *e)
 	
 	bool bPrev = m_index, bNext = (m_index + 1) < m_tips.count();
 	int offset = 3, whalf = arrowWidth / 2 - 3; //, hhalf = height() / 2;
-	
-    QRect bg(0, 0, fm.width(m_tips.at(m_index)) + 6, fm.height()+3);
+    int nbline = m_tips.at(m_index).count("\n") + 1;
+    QRect bg(0, 0, fm.width(m_tips.at(m_index)) + 6, fm.height()*nbline+3);
 	
 	if ( bPrev )
 	{
@@ -127,8 +127,8 @@ void QCallTip::paintEvent(QPaintEvent *e)
 		offset += arrowWidth;
 	}
 	
-	p.drawText(offset, fm.ascent() + 2, m_tips.at(m_index));
-	
+//	p.drawText(offset, fm.ascent() + 2, m_tips.at(m_index));
+    p.drawText(offset, 2,bg.width(),bg.height(),Qt::AlignLeft|Qt::AlignTop,m_tips.at(m_index));
 	setFixedSize(bg.size() + QSize(1, 1));
 }
 

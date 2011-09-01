@@ -51,6 +51,8 @@ public:
     QList<QCodeNode *> completionScan(QEditor*);
     QStringList getProc(QString s);
     Cproc getProcObj(QString s);
+    CDOxyItem * getDOxygenInfo(QString);
+
 public slots:
     void saveAll(void);
 
@@ -85,6 +87,7 @@ private:
 
     QList<Cvar> varlist;
     QList<Cproc> proclist;
+    QList<CDOxyItem*> doxygenlist;
 };
 
 #endif // WINDOWIDE_H

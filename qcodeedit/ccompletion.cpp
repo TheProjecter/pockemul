@@ -87,6 +87,11 @@ void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
 
         if ( tips.count() )
         {
+            CDOxyItem * di = mainwindow->windowide->getDOxygenInfo(getLastToken(c));
+            if (di) {
+
+                tips[0] += QString("\n")+di->brief+"\n Return :"+di->returnTyp;
+            }
             QRect r = editor()->cursorRect();
             QDocumentCursor cursor = editor()->cursor();
             QDocumentLine line = cursor.line();
