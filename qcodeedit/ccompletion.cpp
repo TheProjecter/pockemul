@@ -46,6 +46,13 @@ QCodeCompletionEngine * CCompletion::clone()
     return e;
 }
 
+/*!
+ \brief
+
+ \fn CCompletion::getLastToken
+ \param c
+ \return QString
+*/
 QString CCompletion::getLastToken(const QDocumentCursor &c) {
     QString line = c.line().text();
     QString Token = "";
@@ -60,6 +67,13 @@ QString CCompletion::getLastToken(const QDocumentCursor &c) {
     return Token;
 }
 
+/*!
+ \brief
+
+ \fn CCompletion::complete
+ \param c
+ \param trigger
+*/
 void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
 {
     if ( trigger == "(" )
@@ -67,7 +81,7 @@ void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
         QStringList tips;
 
         //qDebug("fn %s", fn.constData());
-        QList<QCodeNode*> nodes = mainwindow->windowide->completionScan();
+        QList<QCodeNode*> nodes = mainwindow->windowide->completionScan(editor());
 
         tips = mainwindow->windowide->getProc(getLastToken(c));
 
@@ -109,7 +123,7 @@ void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
     QTime time;
     time.start();
 
-    QList<QCodeNode*> nodes = mainwindow->windowide->completionScan();
+    QList<QCodeNode*> nodes = mainwindow->windowide->completionScan(editor());
 
 
     pPopup->setPrefix(getLastToken(c));

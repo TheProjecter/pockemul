@@ -94,6 +94,7 @@ class Cproc {
 public:
     Cproc() {
 
+        this->ProcName = "";
         this->hasreturn = false;
         this->ReturnIsWord = false;
         this->ParCnt = 0;

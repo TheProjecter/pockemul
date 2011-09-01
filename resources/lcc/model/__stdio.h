@@ -19,6 +19,12 @@ lb__stdio__onbreak_end:
 //; Wait BA ms
 //; label prefix __sdtio15
 //; -----------------------------------------------*/
+/*!
+ \brief
+
+ \fn ps_wait
+ \param _var_ps_wait_nb
+*/
 ps_wait(word _var_ps_wait_nb) {
 	load _var_ps_wait_nb;
 #asm

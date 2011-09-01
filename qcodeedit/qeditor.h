@@ -236,6 +236,7 @@ class QCE_EXPORT QEditor : public QAbstractScrollArea
 		
 		void commentSelection();
 		void uncommentSelection();
+        void doxygenSelection();
 		
 		void setLineWrapping(bool on);
 		
@@ -393,7 +394,9 @@ class QCE_EXPORT QEditor : public QAbstractScrollArea
 		void clearCursorMirrors();
 		void addCursorMirror(const QDocumentCursor& c);
 		
-	protected slots:
+
+        void emitTextEdited(QKeyEvent *e);
+protected slots:
 		void documentWidthChanged(int newWidth);
 		void documentHeightChanged(int newWidth);
 		

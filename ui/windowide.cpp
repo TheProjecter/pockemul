@@ -108,17 +108,17 @@ void WindowIDE::setupEditor()
 
 }
 
-QList<QCodeNode *> WindowIDE::completionScan() {
+QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
     QMap<QString,QByteArray> mapSRC;
     QMap<QString,QByteArray> mapPP;
     QMap<QString,QByteArray> mapASM;
-    CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+    //CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
 
-    QString source = "#include <internal.h>\r\n"+locEditorWidget->m_editControl->editor()->text();
-    QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
+    QString source = "#include <internal.h>\r\n"+e->text();
+    QString sourcefname=e->fileName();
     QFileInfo fInfo(sourcefname);
 
-    if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
+    if (e->languageDefinition()->language()=="C++") {
         mapSRC[sourcefname] = source.toAscii();
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
         lcpp->pStdLibs->LoadLibs();
@@ -288,7 +288,7 @@ void WindowIDE::compile(void) {
 */
 CEditorWidget * WindowIDE::createEditorTab(QString fname, QString text,bool load) {
 
-    CEditorWidget *locEditorWidget = new CEditorWidget();
+    CEditorWidget *locEditorWidget = new CEditorWidget(this);
     ui->tabWidget->insertTab(0,locEditorWidget,QFileInfo(fname).fileName());
     ui->tabWidget->setTabToolTip(0,QFileInfo(fname).absoluteFilePath());
     m_languages->setLanguage(locEditorWidget->m_editControl->editor(), fname);
@@ -482,4 +482,14 @@ void WindowIDE::newFile()
 void WindowIDE::targetChange(QString m)
 {
 
+}
+
+Cproc WindowIDE::getProcObj(QString s)
+{
+    for (int i= 0; i< proclist.size();i++) {
+        if (proclist.at(i).ProcName == s) {
+            return proclist.at(i);
+        }
+    }
+    return Cproc();
 }

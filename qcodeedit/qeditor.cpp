@@ -59,6 +59,8 @@
 #include <QApplication>
 #include <QActionGroup>
 
+#include "ui/windowide.h"
+
 //#define Q_GL_EDITOR
 
 #ifdef _QMDI_
@@ -654,6 +656,14 @@ void QEditor::init(bool actions)
 				this, SLOT  ( uncommentSelection() ) );
 		
 		addAction(a, "&Edit", "Edit");
+
+        a = new QAction(QIcon(":/uncomment.png"), tr("DOxygen comment"), this);
+        a->setObjectName("doxygen");
+        //Q_SHORTCUT(a, "Ctrl+Shift+D", "Edit");
+        connect(a	, SIGNAL( triggered() ),
+                this, SLOT  ( doxygenSelection() ) );
+
+        addAction(a, "&Edit", "Edit");
 		
 		sep = new QAction(this);
 		sep->setSeparator(true);
@@ -2072,6 +2082,10 @@ void QEditor::setCursorPosition(const QPoint& p)
 	}
 }
 
+void QEditor::emitTextEdited(QKeyEvent *e) {
+    emit textEdited(e);
+}
+
 /*!
 	\brief Emitted whenever the position of the cursor changes
 */
@@ -2186,6 +2200,13 @@ void QEditor::paste()
 		insertFromMimeData(d);
 }
 
+/*!
+ \brief
+
+ \fn unindent
+ \param cur
+ \return bool
+*/
 static bool unindent(const QDocumentCursor& cur)
 {
 	QDocumentLine beg(cur.line());
@@ -2317,6 +2338,55 @@ void QEditor::unindentSelection()
 		
 		m_doc->endMacro();
 	}
+}
+
+/*!
+ \brief
+
+ \fn QEditor::doxygenSelection
+*/
+
+/*!
+ \brief
+
+ \fn unindent
+ \param cur
+ \return bool
+*/
+void QEditor::doxygenSelection()
+{
+    if ( !m_definition )
+        return;
+    if ( m_cursor.hasSelection() ) {
+        if ( !protectedCursor(m_cursor) ) {
+            QDocumentSelection s = m_cursor.selection();
+
+            //trigger completionEngine
+            //((WindowIDE *)(this->parent()))->completionScan(this);
+            WindowIDE *wide =mainwindow->windowide;//((WindowIDE *)(this->parent()));
+            wide->completionScan(this);
+
+            Cproc p = wide->getProcObj(m_cursor.selectedText());
+            if (!p.ProcName.isEmpty()) {
+                QString txt = "/*! \n";
+                txt += " \\brief \n";
+                txt += " \n";
+                txt += QString(" \\fn ")+p.ProcName+" \n";
+                for (int i=0;i<p.parname.size();i++) {
+                        txt +=" \\param "+ p.parname.at(i)+" \n";
+                }
+                if (p.hasreturn) {
+                    txt += QString(" \\return ")+ (p.ReturnIsWord ? "word":"byte")+ " \n";
+                }
+                txt += "*/\n";
+                QDocumentCursor c(m_doc, s.startLine);
+                c.setSilent(true);
+                c.beginEditBlock();
+                c.insertText(txt);
+                c.endEditBlock();
+            }
+        }
+    }
 }
 
 /*!

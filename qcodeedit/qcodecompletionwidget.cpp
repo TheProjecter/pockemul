@@ -241,10 +241,11 @@ void QCodeCompletionWidget::complete(const QModelIndex& index)
 	int pb = txt.indexOf('('),
 		pe = txt.lastIndexOf(')');
 	
-	if ( pb < (pe - 1) )
+    if ( pb < (pe ) )
 	{
 		back = true;
-		txt.remove(pb + 1, pe - pb - 1);
+        //txt.remove(pb + 1, pe - pb - 1);
+        txt.remove(pb + 1, pe - pb);
 	}
 	
 	txt.remove(QRegExp("(\\bconst\\s*)?(=\\s*0)?$"));
@@ -253,15 +254,20 @@ void QCodeCompletionWidget::complete(const QModelIndex& index)
 		txt.remove(0, prefix.count());
 	
 	//c.insertText(txt);
-	e->write(txt);
-	
+    e->write(txt);
+    e->setFocus();
+    if (txt.endsWith("(")) {
+        QKeyEvent *k = new QKeyEvent(QEvent::KeyPress,Qt::Key_BracketLeft,Qt::NoModifier,"(");
+        e->emitTextEdited(k);
+    }
+
 	if ( back )
 	{
 		// TODO : move back generically...
 		//c.movePosition(1, QDocumentCursor::PreviousCharacter);
 	}
 	
-	e->setFocus();
+
 }
 
 void QCodeCompletionWidget::showEvent(QShowEvent *e)

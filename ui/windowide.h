@@ -48,8 +48,9 @@ public:
 
 
 
-    QList<QCodeNode *> completionScan();
+    QList<QCodeNode *> completionScan(QEditor*);
     QStringList getProc(QString s);
+    Cproc getProcObj(QString s);
 public slots:
     void saveAll(void);
 
