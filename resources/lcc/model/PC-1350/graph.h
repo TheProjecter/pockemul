@@ -10,12 +10,16 @@ word xram _grfx_y1 at 0x6F65;
 word xram _grfx_x2 at 0x6F67;
 word xram _grfx_y2 at 0x6F69;
 
-#define GSET    1
-#define GRESET  2
-#define GINV    4
-#define GBOX    8
-#define GBOXF   16
-
+/*! 
+ \brief [ROM CALL PC-1350]draw a line
+ 
+ \fn line 
+ \param x1 
+ \param y1 
+ \param x2 
+ \param y2 
+ \param lineflag GSET, GRESET, GINV, GBOX, GBOXF
+*/
 line(word x1,word y1, word x2, word y2,byte lineflag) {
     _grfx_x1 = x1;
     _grfx_y1 = y1;
@@ -33,6 +37,15 @@ line(word x1,word y1, word x2, word y2,byte lineflag) {
 
 
 
+/*! 
+ \brief [ROM CALL PC-1350] set or reset a pixel
+ USE PS_PSET instead which is platform independent.
+ 
+ \fn pset 
+ \param px1 
+ \param py1 
+ \param psetflag GSET,GRESET,GINV
+*/
 pset(word px1,word py1,byte psetflag) {
     _grfx_x1 = px1;
     _grfx_y1 = py1;
@@ -47,6 +60,13 @@ pset(word px1,word py1,byte psetflag) {
 #restore
 }
 
+
+/*! 
+ \brief [ROM CALL PC-1350] clear screen
+ USE PS_CLRSCR instead which is platform independent.
+ 
+ \fn cls 
+*/
 cls() {
     _grfx_graph = 1;
 #save
