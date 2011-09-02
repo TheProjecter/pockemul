@@ -89,17 +89,11 @@ fct_ps_disp_on:
 
 byte xram ps_cur_x;
 byte xram ps_cur_y;
-
-/*; -----------------------------------------------
-//; Writes a character in A to the display
-//; label prefix 01
-//; Used Registers: A,B,X,Y
-//; label prefix __sdtio01
-//; -----------------------------------------------*/
 byte xram var_ps_putchar_con_rombank;
 /*! 
  \brief Writes a character at the (ps_cur_x,ps_cur_y) char coordinates.
- 
+ asm: Writes a character in A to the display
+ Used Registers: A,B,X,Y
  \fn ps_putchar_con 
  \param ps_putchar_con_c The Char to display
 */
@@ -201,11 +195,7 @@ lb__sdtio0102:
 #endasm
 }
 
-/*; -----------------------------------------------
-//; invert the display .
-//; ps_scroll is the same as ps_clrscr
-//; label prefix __sdtio07
-//; -----------------------------------------------*/
+
 /*! 
  \brief Invert the display.
  

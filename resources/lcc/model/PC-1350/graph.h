@@ -2,6 +2,8 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <__graph.h>
+
 byte xram _grfx_graph at 0x6F62;
 word xram _grfx_x1 at 0x6F63;
 word xram _grfx_y1 at 0x6F65;
@@ -28,6 +30,8 @@ line(word x1,word y1, word x2, word y2,byte lineflag) {
 #endasm
 #restore
 }
+
+
 
 pset(word px1,word py1,byte psetflag) {
     _grfx_x1 = px1;
