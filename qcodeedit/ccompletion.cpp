@@ -54,14 +54,17 @@ QCodeCompletionEngine * CCompletion::clone()
  \return QString
 */
 QString CCompletion::getLastToken(const QDocumentCursor &c) {
+
     QString line = c.line().text();
-    QString Token = "";
-    if (line.size()>1) {
-        int i = c.columnNumber()-1;
-        while (QString("_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(line.at(i).toUpper())) {
-            Token = line.at(i)+Token;
-            i--;
-            if (i<0) break;
+    QString Token = c.selectedText();
+    if (Token.isEmpty()) {
+        if (line.size()>1) {
+            int i = c.columnNumber()-1;
+            while (QString("_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(line.at(i).toUpper())) {
+                Token = line.at(i)+Token;
+                i--;
+                if (i<0) break;
+            }
         }
     }
     return Token;
@@ -76,7 +79,13 @@ QString CCompletion::getLastToken(const QDocumentCursor &c) {
 */
 void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
 {
-    if ( trigger == "(" )
+    // test if there is selected text
+    // etendre le texte selectionner au mot complet
+    // si il a pour next char une ( alors afficher un calltips
+
+
+
+    if ( (trigger == "(" ) || !c.selectedText().isEmpty())
     {
         QStringList tips;
 
@@ -91,6 +100,11 @@ void CCompletion::complete(const QDocumentCursor &c, const QString &trigger)
             if (di) {
 
                 tips[0] += QString("\n")+di->brief;
+                if (di->params.count()) {
+                    for (int j=0;j<di->params.size();j++) {
+                        tips[0] += QString("\n")+di->params.at(j);
+                    }
+                }
                 if (!(di->returnTyp.isEmpty())) tips[0]+=QString("\nReturn value : ")+di->returnTyp;
                 if (tips[0].right(1)=="\n") tips[0].chop(1);
             }

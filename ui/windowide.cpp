@@ -300,6 +300,8 @@ CEditorWidget * WindowIDE::createEditorTab(QString fname, QString text,bool load
     e = new CCompletion();
     e->triggerAction()->setShortcut(tr("Ctrl+Space"));
 
+    //connect(locEditorWidget->m_editControl->editor(),SIGNAL(cursorPositionChanged()),e,SLOT(complete()));
+
     //e->setEditor(locEditorWidget->m_editControl->editor());
     m_languages->addCompletionEngine(e);
     locEditorWidget->m_editControl->editor()->setCompletionEngine(e->clone());
