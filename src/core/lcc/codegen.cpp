@@ -455,7 +455,8 @@ void Clcc::Branch(QByteArray L){
 
 void Clcc::BranchFalse(QByteArray L) {
     writln(outf,"\tTSIA\t255\t; Branch if false");
-    writln(outf,"\tJRZP\t"+L);
+//    writln(outf,"\tJRZP\t"+L);
+    writln(outf,"\tJPZ\t"+L);
     writln(outf,"");
 }
 

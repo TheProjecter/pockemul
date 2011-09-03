@@ -1163,6 +1163,7 @@ void Clcc::Expression(void) {
     writln("LOG",";Expression:"+Tok);
     for (int i= 0 ; i<varlist.size(); i++) {
         if (find_text(varlist[i].varname, Tok) > 0) {
+//            isword = false;
             if (varlist[i].typ == "word") isword = true;
             else if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
         }
@@ -1726,6 +1727,7 @@ void Clcc::NotFactor(void) {
 
 //{--------------------------------------------------------------}
 //{  }
+//FIXME Mod a un problème. A checker
 /*!
  \brief Parse and Translate a Term
 
@@ -2182,10 +2184,21 @@ writln("LOG",";Assignement:"+Tok);
                     else writln(outf,"\tDECN");
                 }
                 else {
-                    LoadVariable(name);
-                    if (Look == '+') writln(outf,"\tINCA");
-                    else writln(outf,"\tDECA");
-                    StoreVariable(name);
+                    // Si var in cpu
+                    // alors LP x   ADIM 1
+                    Cvar lvar = varlist[VarFound];
+                    if (!lvar.array && !lvar.xram && !lvar.local &&(lvar.typ=="char" || lvar.typ=="byte")) {
+                        if (lvar.address < 64) writln(outf,tr("\tLP\t%1").arg(lvar.address)+"\t; Load variable "+name);
+                        else writln(outf,tr("\tLIP\t%1").arg(lvar.address)+"\t; Load variable "+name);
+                        if (Look == '+') writln(outf,"\tADIM\t1");
+                        else writln(outf,"\tSBIM\t1");
+                    }
+                    else {
+                        LoadVariable(name);
+                        if (Look == '+') writln(outf,"\tINCA");
+                        else writln(outf,"\tDECA");
+                        StoreVariable(name);
+                    }
                 }
                 return;
             }
@@ -2668,7 +2681,7 @@ void Clcc::DoFor(void) {
 
     afterop ="";
     InnerLoop = "for";
-    Tok.remove(0,5);
+    Tok.remove(0,5); Tok = Tok.trimmed();
     writln(outf,"\t; For loop");
     Assignment();
     L1 = NewLabel();

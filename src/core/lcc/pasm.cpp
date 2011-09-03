@@ -481,6 +481,7 @@ void Cpasm::doasm(void) {
             adr = calcadr();
             if (adr >= 8192) {
                 addcode(opp);
+                //FIXME
                 //                   if opp in JRPLUS then addcode(adr - codpos - startadr)
                 //                   else
                 addcode(abs(codpos + startadr - adr));
