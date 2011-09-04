@@ -375,6 +375,7 @@ bool Clcc::FindProc(QByteArray t) {
  \return bool
 */
 //TODO Ajouter la possibilité d'avoir plusieurs variables de meme nom dans des contextes différents
+#if 0
 bool Clcc::FindVar(QByteArray t) {
     bool result = false;
     for (int i = 0 ; i< varlist.size(); i++) {
@@ -387,7 +388,39 @@ bool Clcc::FindVar(QByteArray t) {
     }
     return result;
 }
+#else
+bool Clcc::FindVarCurrProc(QByteArray t) {
+    bool result = false;
+    for (int i = 0 ; i< varlist.size(); i++) {
+        if ( (varlist.at(i).varname.toLower()== t.toLower()) &&
+             varlist.at(i).local &&
+             varlist.at(i).locproc == currproc) {
 
+            result = true;
+            VarFound = i;
+            return result;
+        }
+    }
+    return result;
+}
+
+bool Clcc::FindVar(QByteArray t) {
+    bool result = false;
+    // Mzke a local search and if not found a global search.
+
+    if (FindVarCurrProc(t)) return true;
+
+    for (int i = 0 ; i< varlist.size(); i++) {
+        if ( (varlist.at(i).varname.toLower()== t.toLower()) &&
+              !varlist.at(i).local) {
+            result = true;
+            VarFound = i;
+            return result;
+        }
+    }
+    return result;
+}
+#endif
 /*{--------------------------------------------------------------}
 {  }
 */
@@ -551,7 +584,7 @@ QByteArray Clcc::vardecl(void) {
         l = (level==0 ? false : true);
         //result.append(name);
         //if l then varlist[varcount].locproc := currproc;
-        AddVar(name, Typ, xr, p, l,(l?currproc:0));  // Global var definition
+        AddVar(name, Typ, xr, p, l,(l?currproc:-1));  // Global var definition
     }
     while (Tok.size() >0);
 
@@ -611,7 +644,7 @@ void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int p
     QByteArray litem;
     QByteArray s = ExtrWord(&t);
     // Test if var still exist
-    if (! FindVar(s)) {
+    if (! FindVarCurrProc(s)) {
         Cvar v;
         v.varname = s;
         v.pointer = pnt;

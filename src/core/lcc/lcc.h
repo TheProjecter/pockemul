@@ -152,6 +152,7 @@ public:
     QByteArray GetName(void);
     QByteArray vardecl();
     bool FindVar(QByteArray t);
+    bool FindVarCurrProc(QByteArray t);
     bool FindProc(QByteArray t);
     void AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc);
     void AddProc(QByteArray t, QByteArray c, QByteArray p, int pc, bool hr, bool wd,QList<QByteArray> partype,QList<QByteArray> parname);
@@ -316,6 +317,7 @@ public:
     void generateProcCode(QString f, int i);
     QList<int> calledProc;
     QList<int> insertedProc;
+
 
 signals:
     void outputSignal(QString,QString);
