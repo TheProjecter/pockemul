@@ -276,6 +276,7 @@ QString Cpasm::replace_text(QString text, QString such, QString ers) {
 
 void Cpasm::abort(QString t) {
     writeln("ERROR",tr("Line %1: ").arg(cline+1) + t + " in file " + cf);
+    QMessageBox::about(0,"ERROR",tr("Line %1: \n").arg(cline+1)+t);
  // halt;
 }
 
@@ -943,6 +944,17 @@ void Cpasm::savefile(QString fname) {
     }
 }
 
+void Cpasm::run(QString fname,QString source) {
+    parsefile(fname,source);
+    if (nlabcnt > 0) {
+        QString s="";
+        for (int i=0;i< nlab.size();i++) {
+            s +=QString("In line '") + nlabasm.at(i) + '": ' + nlab.at(i)+"\n";
+
+        }
+        abort("Labels were not available!"+s);
+    }
+}
 
 void Cpasm::parsefile(QString fname,QString source) {
 
@@ -1022,8 +1034,9 @@ void Cpasm::parsefile(QString fname,QString source) {
             else
                 doasm();
         }
-        tok = readline(&linesIter); // Überspringt Leerzeilen und entfernt Kommentare
+        tok = readline(&linesIter);
     }
+
 }
 
 #if 0
@@ -1069,18 +1082,6 @@ const
         JRPLUS = [JRNZP,JRNCP,JRP,JRZP,JRCP];
         JRMINUS = [JRNZM,JRNCM,JRM,LOOP,JRZM,JRCM];
         JR = [JRNZP,JRNCP,JRP,JRZP,JRCP,JRNZM,JRNCM,JRM,LOOP,JRZM,JRCM];
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 begin

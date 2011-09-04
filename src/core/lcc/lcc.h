@@ -100,6 +100,8 @@ public:
         this->ParCnt = 0;
         this->LocCnt = 0;
         this->called = false;
+        this->start = -1;
+        this->end = -1;
     }
 
     QByteArray ProcName;
@@ -114,6 +116,7 @@ public:
     QList<QByteArray> partyp;
     QList<QByteArray> parname;
     bool called;
+    int start,end;
 };
 
 class Clcc : public QObject{

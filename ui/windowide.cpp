@@ -252,7 +252,7 @@ void WindowIDE::compile(void) {
 
         mapSRC[sourcefname] = source.toAscii();
         Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
-        pasm->parsefile("BAS",mapSRC[sourcefname]);
+        pasm->run("BAS",mapSRC[sourcefname]);
         pasm->savefile("BAS");
         pasm->savefile("BIN");
         pasm->savefile("HEX");

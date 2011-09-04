@@ -40,6 +40,7 @@ public:
 
     void savefile(QString fname);
     void parsefile(QString fname,QString source);
+    void run(QString fname, QString source);
 
     QMap<QString,QByteArray> *sources;
     QMap<QString,QByteArray> *out;
@@ -83,6 +84,7 @@ public:
     int lcnt;
 
     QString result;
+
 };
 
 #endif // PASM_H
