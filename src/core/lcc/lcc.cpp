@@ -1350,11 +1350,11 @@ void Clcc::LoadVariable(QByteArray name) {
                 }
                 else {// Local word
                     writln(outf,"\tLDR");
-                    writln(outf,tr("\tADIA\t%1").arg(adr+2+pushcnt));
+                    writln(outf,tr("\tADIA\t%1").arg(adr+1+pushcnt));
                     writln(outf,"\tSTP");
                     writln(outf,"\tLDM\t; HB - Load variable "+name);
                     writln(outf,"\tEXAB");
-                    writln(outf,"\tDECP");
+                    writln(outf,"\tINCP");
                     writln(outf,"\tLDM\t; LB");
                 }
             }
@@ -1519,6 +1519,7 @@ void Clcc::StoreVariable(QByteArray name) {
                     //FIXME ???? INCP or DECP
                     writln(outf,"\tINCP");
                     writln(outf,"\tEXAM\t; HB");
+                    //writln(outf,"\tEXAB");
                 }
             }
             else {
@@ -2015,7 +2016,7 @@ void Clcc::ProcCall() {
         i = proclist[ProcFound].LocCnt;
         if (i > 0) {
             for (c = 0; c < i;c++) {
-                if (proclist[ProcFound].LocTyp[c] != "word") {
+                if (proclist.at(ProcFound).LocTyp.at(c) != "word") {
                     isword = false;
                     a++;
                 }
@@ -2028,7 +2029,7 @@ void Clcc::ProcCall() {
         }
         writln(outf,"\tCALL\t"+temp+"\t; Call procedure "+temp);
         if (a > 0) {
-            if (proclist[ProcFound].ReturnIsWord) {
+            if (proclist.at(ProcFound).ReturnIsWord) {
                 writln(outf,"\tLP\t0");
                 writln(outf,"\tEXAM");
                 writln(outf,"\tLDR");
@@ -2065,10 +2066,6 @@ void Clcc::ProcCall() {
         writln("LOG",";ProCall(after FindProc):"+Tok);
 
         // Keep trace of the call o integrate only called procedure
-
-        //proclist[ProcFound].called = true;
-//        if (! calledProc.contains(ProcFound) );//&& !insertedProc.contains(ProcFound))
-//            calledProc.append(ProcFound);
         calledProc.insertMulti(currproc,ProcFound);
     }
     else
@@ -2086,27 +2083,32 @@ void Clcc::ProcCall() {
  \fn Clcc::repadr
 */
 void Clcc::repadr(void) {
-    int lc, pc, m, a;
+    int nbLocale, nbParams, m, a;
     QByteArray name;
 
     writln("LOG",";repadr:");
-    lc = proclist[currproc].LocCnt;
-    pc = proclist[currproc].ParCnt;
-    if ((lc == 0) && (pc == 0)) return;
-    if (lc > 0) name = proclist[currproc].LocName[lc - 1];
-    else name = proclist[currproc].parname[pc - 1];
+    nbLocale = proclist[currproc].LocCnt;
+    nbParams = proclist[currproc].ParCnt;
+
+    if ((nbLocale == 0) && (nbParams == 0)) return;
+
+    if (nbLocale > 0) name = proclist.at(currproc).LocName.at(nbLocale - 1);
+    else name = proclist[currproc].parname[nbParams - 1];
     if (! FindVarCurrProc(name)) Error("Var "+name+" not declared!");
     if (! varlist[VarFound].local) Error("Var "+name+" not local!");
+
     m = 0;
-    if (pc > 0)
-        for (int i = 0; i < pc; i++)
+    if (nbParams > 0)
+        for (int i = 0; i < nbParams; i++)
             if (proclist[currproc].partyp[i] == "word") m+=2; else m++;
-    if (lc > 0)
-        for (int i=0; i< lc; i++)
+
+    if (nbLocale > 0)
+        for (int i=0; i< nbLocale; i++)
             if (proclist[currproc].LocTyp[i] == "word") m+=2; else m++;
+
     a = 1;
-    if (pc > 0) {
-        for (int i= 0; i< pc;i++) {
+    if (nbParams > 0) {
+        for (int i= 0; i< nbParams;i++) {
             name = proclist[currproc].parname[i];
             if (! FindVarCurrProc(name)) Error("Var "+name+" not declared!");
             if (! varlist[VarFound].local) Error("Var "+name+" not local!");
@@ -2115,8 +2117,8 @@ void Clcc::repadr(void) {
             if (proclist[currproc].partyp[i] == "word") a++;
         }
     }
-    if (lc > 0) {
-        for (int i = 0; i< lc; i++) {
+    if (nbLocale > 0) {
+        for (int i = 0; i< nbLocale; i++) {
             name = proclist[currproc].LocName[i];
             if (! FindVar(name)) Error("Var "+name+" not declared!");
             if (! varlist[VarFound].local) Error("Var "+name+" not local!");
