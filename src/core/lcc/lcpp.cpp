@@ -332,21 +332,23 @@ QString Clcpp::parsefile(QString srcName,QString source) {
             else if (tok.startsWith("#ifdef")) {
                 if (! findsymbol(extractparam(tok, 1))) {
                     op="";
-                    while (linesIter.hasNext() && (op !="#endif"))
+                    int level = 1;
+                    while (linesIter.hasNext() && (level != 0))
                     {
                         tok = readline(&linesIter);
-                        if (tok.indexOf("#endif") >= 0) op = "#endif";
+                        if (tok.contains("#endif") ) level--;
+                        if (tok.contains("#if") ) level++;
                     }
-
                 }
             }
             else if (tok.startsWith("#ifndef")) {
                 if ( findsymbol(extractparam(tok, 1))) {
-                    op="";
-                    while (linesIter.hasNext() && (op !="#endif"))
+                    int level = 1;
+                    while (linesIter.hasNext() && (level != 0))
                     {
                         tok = readline(&linesIter);
-                        if (tok.indexOf("#endif") >= 0) op = "#endif";
+                        if (tok.contains("#endif") ) level--;
+                        if (tok.contains("#if") ) level++;
                     }
                 }
             }
@@ -354,11 +356,12 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                 Parser calc(tok.remove(0,4).toAscii().data());
                 int y = calc.Evaluate();
                 if (y<=0 ) {
-                    op="";
-                    while (linesIter.hasNext() && (op !="#endif"))
+                    int level = 1;
+                    while (linesIter.hasNext() && (level != 0))
                     {
                         tok = readline(&linesIter);
-                        if (tok.indexOf("#endif") >= 0) op = "#endif";
+                        if (tok.contains("#endif") ) level--;
+                        if (tok.contains("#if") ) level++;
                     }
                 }
             }

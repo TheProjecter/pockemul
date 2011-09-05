@@ -315,7 +315,7 @@ public:
 
 
     void generateProcCode(QString f, int i);
-    QList<int> calledProc;
+    QMap<int,int> calledProc;
     QList<int> insertedProc;
 
 

@@ -1305,21 +1305,21 @@ bool isbin, ishex, ischr;
 */
 void Clcc::LoadVariable(QByteArray name) {
     QByteArray typ;
-    bool xr,arr,loc;
+    bool xram,arr,local;
     int adr;
 
     writln("LOG",";LoadVariable:"+name);
     if (!FindVar(name)) Error("Variable not defined: "+name);
     typ = varlist[VarFound].typ;
     adr = varlist[VarFound].address;
-    loc = varlist[VarFound].local;
+    local = varlist[VarFound].local;
     arr = varlist[VarFound].array;
-    xr = varlist[VarFound].xram;
+    xram = varlist[VarFound].xram;
 
     if (! arr) {
         if ((typ=="char") || (typ=="byte")) {
-            if (!xr) {
-                if (!loc) {
+            if (!xram) {
+                if (!local) {
                     if (adr < 64) writln(outf,tr("\tLP\t%1").arg(adr)+"\t; Load variable "+name);
                     else writln(outf,tr("\tLIP\t%1").arg(adr)+"\t; Load variable "+name);
                     writln(outf,"\tLDM");
@@ -1339,8 +1339,8 @@ void Clcc::LoadVariable(QByteArray name) {
             if (isword) writln(outf,"\tLIB\t0");
         }
         else {
-            if (!xr) {
-                if (!loc) {
+            if (!xram) {
+                if (!local) {
                     if (adr < 64) writln(outf,tr("\tLP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
                     else writln(outf,tr("\tLIP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
                     writln(outf,"\tLDM\t\t; HB");
@@ -1350,11 +1350,11 @@ void Clcc::LoadVariable(QByteArray name) {
                 }
                 else {// Local word
                     writln(outf,"\tLDR");
-                    writln(outf,tr("\tADIA\t%1").arg(adr+1+pushcnt));
+                    writln(outf,tr("\tADIA\t%1").arg(adr+2+pushcnt));
                     writln(outf,"\tSTP");
                     writln(outf,"\tLDM\t; HB - Load variable "+name);
                     writln(outf,"\tEXAB");
-                    writln(outf,"\tINCP");
+                    writln(outf,"\tDECP");
                     writln(outf,"\tLDM\t; LB");
                 }
             }
@@ -1373,7 +1373,7 @@ void Clcc::LoadVariable(QByteArray name) {
     }
     else {
         if ((typ=="char") || (typ=="byte")) {
-            if (!xr) {
+            if (!xram) {
                 writln(outf,tr("\tLIB\t%1").arg(adr)+"\t; Load array element from "+name);
                 writln(outf,"\tLP\t3");
                 writln(outf,"\tADM");
@@ -1404,7 +1404,7 @@ void Clcc::LoadVariable(QByteArray name) {
             }
         }
         else {
-            if (!xr) {
+            if (!xram) {
                 writln(outf,"\tRC");
                 writln(outf,"\tSL");
                 writln(outf,tr("\tLII\t%1").arg(adr)+"\t; Store array element from "+name);
@@ -1468,8 +1468,6 @@ void Clcc::StoreVariable(QByteArray name) {
 
     if (!var.array) {
         if ( (var.typ=="char") || (var.typ=="byte") ) {
-//                if isword then
-//                        writln(#9'EXAB'#9#9'; Store only HB in byte var!');
             if (! var.xram) {
                 if (!var.local) {
                     if (var.address <= 63) {
@@ -1518,7 +1516,8 @@ void Clcc::StoreVariable(QByteArray name) {
                     writln(outf,"\tPOP"); pushcnt--;
                     writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
                     writln(outf,"\tEXAB");
-                    writln(outf,"\tDECP");
+                    //FIXME ???? INCP or DECP
+                    writln(outf,"\tINCP");
                     writln(outf,"\tEXAM\t; HB");
                 }
             }
@@ -1964,6 +1963,7 @@ void Clcc::ProcCall() {
     int i, c, a;
     QByteArray temp;
 
+
     writln("LOG",";ProCall:"+Tok);
     if (Tok.isEmpty()) return;
 
@@ -1977,11 +1977,7 @@ void Clcc::ProcCall() {
         QByteArray name2 = ExtrWord(&Tok);
         name2.chop(1);
         if (FindProc(name2)) {
-
-            if (! calledProc.contains(ProcFound)) {// && !insertedProc.contains(ProcFound)) {
-                //QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ QString("%1").arg(ProcFound));
-                calledProc.append(ProcFound);
-            }
+                calledProc.insertMulti(currproc,ProcFound);
         }
         else {
             if (showErrors) QMessageBox::about(0,"ERROR","_LCC_DEPEND("+name2+") - '"+ name2+"' undefined");
@@ -2071,8 +2067,9 @@ void Clcc::ProcCall() {
         // Keep trace of the call o integrate only called procedure
 
         //proclist[ProcFound].called = true;
-        if (! calledProc.contains(ProcFound) );//&& !insertedProc.contains(ProcFound))
-            calledProc.append(ProcFound);
+//        if (! calledProc.contains(ProcFound) );//&& !insertedProc.contains(ProcFound))
+//            calledProc.append(ProcFound);
+        calledProc.insertMulti(currproc,ProcFound);
     }
     else
         Expected("procedure call");
@@ -2098,7 +2095,7 @@ void Clcc::repadr(void) {
     if ((lc == 0) && (pc == 0)) return;
     if (lc > 0) name = proclist[currproc].LocName[lc - 1];
     else name = proclist[currproc].parname[pc - 1];
-    if (! FindVar(name)) Error("Var "+name+" not declared!");
+    if (! FindVarCurrProc(name)) Error("Var "+name+" not declared!");
     if (! varlist[VarFound].local) Error("Var "+name+" not local!");
     m = 0;
     if (pc > 0)
@@ -2108,23 +2105,25 @@ void Clcc::repadr(void) {
         for (int i=0; i< lc; i++)
             if (proclist[currproc].LocTyp[i] == "word") m+=2; else m++;
     a = 1;
-    if (pc > 0)
+    if (pc > 0) {
         for (int i= 0; i< pc;i++) {
-        name = proclist[currproc].parname[i];
-        if (! FindVar(name)) Error("Var "+name+" not declared!");
-        if (! varlist[VarFound].local) Error("Var "+name+" not local!");
-        varlist[VarFound].address = m - a;
-        a++;
-        if (proclist[currproc].partyp[i] == "word") a++;
+            name = proclist[currproc].parname[i];
+            if (! FindVarCurrProc(name)) Error("Var "+name+" not declared!");
+            if (! varlist[VarFound].local) Error("Var "+name+" not local!");
+            varlist[VarFound].address = m - a;
+            a++;
+            if (proclist[currproc].partyp[i] == "word") a++;
+        }
     }
-    if (lc > 0)
+    if (lc > 0) {
         for (int i = 0; i< lc; i++) {
-        name = proclist[currproc].LocName[i];
-        if (! FindVar(name)) Error("Var "+name+" not declared!");
-        if (! varlist[VarFound].local) Error("Var "+name+" not local!");
-        varlist[VarFound].address = m - a;
-        a++;
-        if (proclist[currproc].LocTyp[i] == "word") a++;
+            name = proclist[currproc].LocName[i];
+            if (! FindVar(name)) Error("Var "+name+" not declared!");
+            if (! varlist[VarFound].local) Error("Var "+name+" not local!");
+            varlist[VarFound].address = m - a;
+            a++;
+            if (proclist[currproc].LocTyp[i] == "word") a++;
+        }
     }
 }
 
@@ -2179,7 +2178,15 @@ writln("LOG",";Assignement:"+Tok);
                 if (Look == '+') writln(outf,"\t; "+name+"++");
                 else writln(outf,"\t; "+name+"--");
                 i = varlist[VarFound].address;
-                if (i == 0) {
+                if (varlist[VarFound].local) {
+                    // Local char
+                    writln(outf,"\tLDR");
+                    writln(outf,tr("\tADIA\t%1").arg(varlist[VarFound].address+2+pushcnt));
+                    writln(outf,"\tSTP\t;Load variable "+name);
+                    if (Look == '+') writln(outf,"\tADIM\t1");
+                    else writln(outf,"\tSBIM\t1");
+                }
+                else if (i == 0) {
                     if (Look=='+') writln(outf,"\tINCI");
                     else writln(outf,"\tDECI");
                 }
@@ -2196,6 +2203,7 @@ writln("LOG",";Assignement:"+Tok);
                     else writln(outf,"\tDECB");
                 }
                 else if (i == 8) {
+
                     if (Look=='+') writln(outf,"\tINCK");
                     else writln(outf,"\tDECK");
                 }
@@ -2215,11 +2223,11 @@ writln("LOG",";Assignement:"+Tok);
                     // Si var in cpu
                     // alors LP x   ADIM 1
                     Cvar lvar = varlist[VarFound];
-                    if (!lvar.array && !lvar.xram && !lvar.local &&(lvar.typ=="char" || lvar.typ=="byte")) {
-                        if (lvar.address < 64) writln(outf,tr("\tLP\t%1").arg(lvar.address)+"\t; Load variable "+name);
-                        else writln(outf,tr("\tLIP\t%1").arg(lvar.address)+"\t; Load variable "+name);
-                        if (Look == '+') writln(outf,"\tADIM\t1");
-                        else writln(outf,"\tSBIM\t1");
+                    if (!lvar.array && !lvar.xram &&(lvar.typ=="char" || lvar.typ=="byte")) {
+                            if (lvar.address < 64) writln(outf,tr("\tLP\t%1").arg(lvar.address)+"\t; Load variable "+name);
+                            else writln(outf,tr("\tLIP\t%1").arg(lvar.address)+"\t; Load variable "+name);
+                            if (Look == '+') writln(outf,"\tADIM\t1");
+                            else writln(outf,"\tSBIM\t1");
                     }
                     else {
                         LoadVariable(name);
@@ -3085,7 +3093,7 @@ void Clcc::generateProcCode(QString f,int i) {
     currproc = i;
     pushcnt = 0; firstp = true;
     Block();
-    if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
+    if (pushcnt != 0) Error(proclist[i].ProcName+": Possible Stack corruption!");
     removelocvars(proclist[i].ProcName);
     if (proclist[i].ProcName == "main") {
         writln(f, " EOP:\tRTN");
@@ -3098,6 +3106,9 @@ void Clcc::generateProcCode(QString f,int i) {
     insertedProc.append(i);
 }
 #endif
+
+
+
 
 /*!
  \brief
@@ -3167,6 +3178,7 @@ int    adr, size, value;
 
 
     Tok = "main ()";
+    currproc = -1;
     ProcCall();
     writln(f,"\tLP\t0");
     writln(f,"\tLIDP\tSREG");
@@ -3181,13 +3193,22 @@ int    adr, size, value;
             generateProcCode(f,i);
     }
 
-    for(int i=insertedProc.size();i>0;i--) {
-        if ( !calledProc.contains(insertedProc.at(i-1))) {
-            // append the asmtext
-            asmtext.remove(proclist.at(insertedProc.at(i-1)).start,
-                           proclist.at(insertedProc.at(i-1)).end - proclist.at(insertedProc.at(i-1)).start);
+    insertedProc.clear();
+    insertedProc.append(proclist.size()-1);
+    for(int i=proclist.size()-1;i>=0;i--) {
+        if (insertedProc.contains(i)) {
+            QList<int> childs = calledProc.values(i);
+            insertedProc.append(childs);
         }
     }
+    for(int i=proclist.size()-1;i>=0;i--) {
+        if ( !insertedProc.contains(i)) {
+            // remove from asmtext
+            asmtext.remove(proclist.at(i).start,
+                           proclist.at(i).end - proclist.at(i).start);
+        }
+    }
+
 
     if (!LState.isEmpty()) {
         // ADD the savestate memory array
