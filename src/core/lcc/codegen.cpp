@@ -689,7 +689,7 @@ void Clcc::Push(void) {
 
 //{--------------------------------------------------------------}
 //{ Add TOS to Primary }
-#if 0
+
 void Clcc::PopAdd(void) {
     if (isword) {
         writln(outf,"\tLP\t0");
@@ -717,34 +717,7 @@ void Clcc::PopAdd(void) {
         writln(outf,"\tEXAB");
     }
 }
-#else
-void Clcc::PopAdd(void) {
-    if (isword) {
-        writln(outf,"\tLP\t1");
-        writln(outf,"\tEXAM");
-        writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tEXAM");
-        writln(outf,"\tLP\t0");
-        writln(outf,"\tEXAM");
-        writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tEXAM");
-        writln(outf,"\tADB\t\t; Addition");
-        writln(outf,"\tLP\t1");
-        writln(outf,"\tLDM");
-        writln(outf,"\tEXAB");
-        writln(outf,"\tLP\t0");
-        writln(outf,"\tLDM");
-    }
-    else {
-        writln(outf,"\tEXAB");
-        writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tLP\t3");
-        writln(outf,"\tADM\t\t; Addition");
-        writln(outf,"\tEXAB");
-    }
-}
 
-#endif
 
 //{--------------------------------------------------------------}
 //{ Subtract TOS from Primary }
@@ -775,6 +748,7 @@ void Clcc::PopSub(void) {
         writln(outf,"\tEXAB");
     }
 }
+
 //{--------------------------------------------------------------}
 
 

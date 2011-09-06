@@ -108,15 +108,9 @@ l_ps_pset03:
 }
 
 
-byte v_ps_line_xp;
-byte v_ps_line_yp;
-byte v_ps_line_dx;
-byte v_ps_line_dy;
-byte v_ps_line_incrmX;
-byte v_ps_line_incrmY;
-word v_ps_line_dp;
-word v_ps_line_NE;
-word v_ps_line_SE;
+
+
+
 /*! 
  \brief Draw a line
  
@@ -126,73 +120,77 @@ word v_ps_line_SE;
  \param v_ps_line_xb 
  \param v_ps_line_yb 
 */
-ps_line(byte v_ps_line_xa, byte v_ps_line_ya, byte v_ps_line_xb, byte v_ps_line_yb) {
+ps_line(byte xa, byte ya, byte xb, byte yb) {
 	/* pour tracer une droite a partir de 2 points : (xa,ya) et (xb,yb) */
 	
+word NE;
+word SE;
+word dp;	
+byte incrmX;
+byte incrmY;
+byte dx;
+byte dy;
+byte xp;
+byte yp;
 
 	
-	if (v_ps_line_xb > v_ps_line_xa) {
-		v_ps_line_incrmX = 1;
-		v_ps_line_dx = v_ps_line_xb - v_ps_line_xa;
+	if (xb > xa) {
+		incrmX = 1;
+		dx = xb - xa;
 	}
 	else {
-		v_ps_line_incrmX = 2;
-		v_ps_line_dx = v_ps_line_xa - v_ps_line_xb;
+		incrmX = 2;
+		dx = xa - xb;
 	}
 	
-	if (v_ps_line_yb > v_ps_line_ya) {
-		v_ps_line_incrmY = 1;
-		v_ps_line_dy = v_ps_line_yb - v_ps_line_ya;
+	if (yb > ya) {
+		incrmY = 1;
+		dy = yb - ya;
 	}
 	else {
-		v_ps_line_incrmY = 2;
-		v_ps_line_dy = v_ps_line_ya - v_ps_line_yb;
+		incrmY = 2;
+		dy = ya - yb;
 	}
 	
-	
-	if (v_ps_line_dx > v_ps_line_dy) { 
-		
-		v_ps_line_dp =  1024 + v_ps_line_dy + v_ps_line_dy - v_ps_line_dx ;
-		v_ps_line_SE =  v_ps_line_dy + v_ps_line_dy;
-		v_ps_line_NE = v_ps_line_dx + v_ps_line_dx - v_ps_line_dy - v_ps_line_dy;	
-		v_ps_line_yp = v_ps_line_ya;
-		for( v_ps_line_xp = v_ps_line_xa ; v_ps_line_xp != v_ps_line_xb; )
+	if (dx > dy) { 
+		dp =  1024 + dy + dy - dx ;
+		SE =  dy + dy;
+		NE = dx + dx - dy - dy;	
+		yp = ya;
+		for( xp = xa ; xp != xb; )
 		{
-			ps_pset(v_ps_line_xp,v_ps_line_yp,GSET);
-			
-			if (v_ps_line_dp <=1024 ) { v_ps_line_dp += v_ps_line_SE;	}
+			ps_pset(xp,yp,GSET);
+			if (dp <=1024 ) { dp += SE;	}
 			else {
-				v_ps_line_dp -= v_ps_line_NE;
-				if (v_ps_line_incrmY==1) {v_ps_line_yp++;}
-				else {v_ps_line_yp--;}
+				dp -= NE;
+				if (incrmY==1) {yp++;}
+				else {yp--;}
 			}
-			if (v_ps_line_incrmX==1) {v_ps_line_xp++;}
-			else {v_ps_line_xp--;}
-			
+			if (incrmX==1) {xp++;}
+			else {xp--;}
 		}
 	}
 	
-	if (v_ps_line_dx < v_ps_line_dy)  {
+	if (dx <= dy)  {
+		dp = 1024 + dx + dx - dy ;
+		SE = dx + dx;
+		NE = dy + dy - dx - dx;
 		
-		v_ps_line_dp = 1024 + v_ps_line_dx + v_ps_line_dx - v_ps_line_dy ;
-		v_ps_line_SE = v_ps_line_dx + v_ps_line_dx;
-		v_ps_line_NE = v_ps_line_dy + v_ps_line_dy - v_ps_line_dx - v_ps_line_dx;
-		
-		v_ps_line_xp = v_ps_line_xa;
-		for( v_ps_line_yp = v_ps_line_ya ; v_ps_line_yp != v_ps_line_yb ;  ) {
-			ps_pset(v_ps_line_xp,v_ps_line_yp,GSET);
+		xp = xa;
+		for( yp = ya ; yp != yb ;  ) {
+			ps_pset(xp,yp,GSET);
 			
-			if (v_ps_line_dp <= 1024)  { v_ps_line_dp += v_ps_line_SE;}
+			if (dp <= 1024)  { dp += SE;}
 			else {
-				v_ps_line_dp -= v_ps_line_NE;
-				if (v_ps_line_incrmX==1) {v_ps_line_xp++;}
-				else {v_ps_line_xp--;}
+				dp -= NE;
+				if (incrmX==1) {xp++;}
+				else {xp--;}
 			}
-			if (v_ps_line_incrmY==1) {v_ps_line_yp++;}
-			else {v_ps_line_yp--;}
+			if (incrmY==1) {yp++;}
+			else {yp--;}
 		}
 	}
 	
-} // Brensenham 
+} 
 
 #endif // __GRAPH_H

@@ -718,7 +718,11 @@ fct_ps_clrscr:
 	LIDP __MEM_LCD_L1C4__
 	LII  12*__LCD_CHAR_WIDTH__-1
 	FILD	
-	
+
+	LIDP __MEM_LCD_L1C5__
+	LII  12*__LCD_CHAR_WIDTH__-1
+	FILD	
+		
 	LIDP __MEM_LCD_L2C1__
 	LII  12*__LCD_CHAR_WIDTH__-1
 	RA
@@ -735,6 +739,10 @@ fct_ps_clrscr:
 	LIDP __MEM_LCD_L2C4__
 	LII  12*__LCD_CHAR_WIDTH__-1
 	FILD	
+	
+	LIDP __MEM_LCD_L2C5__
+	LII  12*__LCD_CHAR_WIDTH__-1
+	FILD
 #endif
 
 #if __PC_1260__ || __PC_1261__ || __PC_1262__ || __PC_1475__

@@ -1511,13 +1511,13 @@ void Clcc::StoreVariable(QByteArray name) {
                 // Local word
                     writln(outf,"\tPUSH"); pushcnt++;
                     writln(outf,"\tLDR");
-                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+1+pushcnt));
+                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
                     writln(outf,"\tSTP");
                     writln(outf,"\tPOP"); pushcnt--;
                     writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
                     writln(outf,"\tEXAB");
                     //FIXME ???? INCP or DECP
-                    writln(outf,"\tINCP");
+                    writln(outf,"\tDECP");
                     writln(outf,"\tEXAM\t; HB");
                     //writln(outf,"\tEXAB");
                 }
