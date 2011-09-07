@@ -219,6 +219,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool 
     Look = 0;
     nosave = false;
     showErrors = true;
+    sourceinASM = false;
 
 
     outfile = true;
@@ -317,7 +318,7 @@ void Clcc::Error(QString t) {
   if (!Tok.isEmpty()) s.append("\r\nToken: "+Tok);
   if (!dummy.isEmpty())s.append("\r\nCode: "+dummy);
   writeln("LOG","ERROR:"+t+"-"+s);
-  if (showErrors) QMessageBox::about(mainwindow,t,s);
+  if (showErrors) QMessageBox::about(mainwindow,"ERROR",t+"\n"+s);
 
 }
 
@@ -406,7 +407,7 @@ bool Clcc::FindVarCurrProc(QByteArray t) {
 
 bool Clcc::FindVar(QByteArray t) {
     bool result = false;
-    // Mzke a local search and if not found a global search.
+    // Make a local search and if not found a global search.
 
     if (FindVarCurrProc(t)) return true;
 
@@ -474,7 +475,8 @@ void Clcc::printvarlist(QString out) {
         lproc = v.locproc;
 
         write(out,tr("VAR %1: ").arg(i+1));
-        write(out,s+name+", TYP: "+typ+", ADR: "+QString("%1, XRAM: ").arg(adr));
+        if (v.pointer) write(out,"*"+name+", PNTTYP:"+v.pnttyp+",TYP: "+typ+", ADR: "+QString("%1, XRAM: ").arg(adr));
+        else write(out,name+", TYP: "+typ+", ADR: "+QString("%1, XRAM: ").arg(adr));
         if (xr) write(out,"yes, LOCAL: "); else write(out,"no, LOCAL: ");
         if (loc) s = proclist[lproc].ProcName;
         if (loc) write(out,"yes, FUNC: "+s+", SIZE: "); else write(out,"no, SIZE: ");
@@ -556,39 +558,45 @@ QByteArray Clcc::vardecl(void) {
 
 //var Name, Typ, t: string;
 //    xr, p, l: boolean;
-    QByteArray t;
-    QByteArray Typ;
+    QByteArray t="";
+    QByteArray Typ="";
     QByteArray result="";
     bool p,xr,l;
-    QByteArray name;
+    QByteArray locname="";
 
 
-    name = ExtrWord(&Tok);
-    Typ = name;
+    locname = ExtrWord(&Tok);
+    Typ = locname;
     Tok.append(',');
     xr = false;
     do {
         t = ExtrList(&Tok);
-        name=ExtrWord(&t).trimmed();
+        locname=ExtrWord(&t).trimmed();
         p = false;
-        if (name.startsWith('*')) {
+        if (locname.startsWith("xram*")) {
             p = true;
-            name.remove(0,1);//delete(name, 1, 1);
-            name=name.trimmed();
+            xr=true;
+            locname.remove(0,5);//delete(name, 1, 1);
+            locname=locname.trimmed();
         }
-        if (name.startsWith("xram")) {
+        if (locname.startsWith('*')) {
+            p = true;
+            locname.remove(0,1);//delete(name, 1, 1);
+            locname=locname.trimmed();
+        }
+        if (locname.startsWith("xram")) {
             xr = true;
-            name=ExtrWord(&t);
+            locname=ExtrWord(&t);
         }
-        if (t.size()>0) name.append(" " + t);
+        if (t.size()>0) locname.append(" " + t);
         l = (level==0 ? false : true);
         //result.append(name);
         //if l then varlist[varcount].locproc := currproc;
-        AddVar(name, Typ, xr, p, l,(l?currproc:-1));  // Global var definition
+        AddVar(locname, Typ, xr, p, l,(l?currproc:-1));  // Global var definition
     }
     while (Tok.size() >0);
 
-    return name;
+    return locname;
 }
 
 /*!
@@ -994,7 +1002,7 @@ void Clcc::rd(char *c, QByteArray *s) {
 */
 void Clcc::GetToken(int mode, QByteArray *s) {
 
-    writln("LOG",";GetToken:"+Tok);
+    writln("LOG",";GetToken:"+*s);
     Tok="";
     currentQuote = ' ';
     md = mode;
@@ -1034,7 +1042,8 @@ void Clcc::GetToken(int mode, QByteArray *s) {
     //        if (Tok != "")  if (Tok[0] == ' ') Tok.remove(0,1);
     //        if (Tok.right(1) == ' ' ) delete(Tok, length(Tok), 1);
     Tok = Tok.trimmed();
-
+    writln("LOG",";GetToken(middle):"+Tok);
+    if (sourceinASM) writln(outf,"\t; Source: "+Tok);
     int i = 1;
     currentQuote = ' ';
     //for (int i = 1 ; i< (Tok.size()-1); )
@@ -1191,9 +1200,10 @@ void Clcc::Expression(void) {
     writln("LOG",";Expression:"+Tok);
     for (int i= 0 ; i<varlist.size(); i++) {
         if (find_text(varlist[i].varname, Tok) > 0) {
-//            isword = false;
+            //isword = false;
+            if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
+            else
             if (varlist[i].typ == "word") isword = true;
-            else if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
         }
     }
     i = 0;
@@ -1294,9 +1304,142 @@ bool isbin, ishex, ischr;
 }
 
 
-//{--------------------------------------------------------------}
-//{  }
+void Clcc::LoadVariableMain(QByteArray s) {
 
+    if ( (pointer == ptrREF) || (pointer == ptrREFARR)) {
+        LoadVariable(s);
+        if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
+        if (varlist[VarFound].xram) {
+            writln(outf,"\tLP\t4\t; XL");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tLP\t5\t; XH");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tDX");
+            if (varlist[VarFound].pnttyp != "word") {
+                writln(outf,"\tIXL\t\t; Load content *"+s);
+                writln(outf,"\tLIB\t0\t; Load 0 in HB"+s);
+            }
+            else {
+                writln(outf,"\tIXL\t\t; Load content LB *"+s);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tIXL\t\t; Load content HB *"+s);
+                writln(outf,"\tEXAB");
+            }
+        }
+        else {
+            // LIP
+            writln(outf,"\tSTP\t\t; Set P");
+            if (varlist[VarFound].pnttyp != "word") {
+                writln(outf,"\tLDM\t\t; Load content *"+s);
+            }
+            else {
+                writln(outf,"\tLDM\t\t; Load content LB *"+s);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tINCP");
+                writln(outf,"\tLDM\t\t; Load content HB *"+s);
+                writln(outf,"\tEXAB");
+            }
+        }
+    }
+    else
+    if (pointer == ptrADR) {
+        if (varlist[VarFound].xram) {
+            if (varlist[VarFound].address == -1) {
+                writln(outf,"\tLIA\tLB("+s+")\t; &"+s);
+                writln(outf,"\tLIB\tHB("+s+")\t; &"+s);
+            }
+            else {
+                writln(outf,tr("\tLIA\tLB(%1)\t; &").arg(varlist[VarFound].address)+s);
+                writln(outf,tr("\tLIB\tHB(%1)\t; &").arg(varlist[VarFound].address)+s);
+            }
+        }
+        else {
+            writln(outf,tr("\tLIA\t%1\t; &").arg(varlist[VarFound].address)+s);
+        }
+    }
+    else
+        LoadVariable(s);
+}
+
+void Clcc::LoadVariableArray(Cvar v) {
+
+    if ((v.typ=="char") || (v.typ=="byte")) {
+        if (!v.xram) {
+            writln(outf,tr("\tLIB\t%1").arg(v.address)+"\t; Load array element from "+v.varname);
+            writln(outf,"\tLP\t3");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tSTP");
+            writln(outf,"\tLDM");
+        }
+        else {
+            writln(outf,"\tPUSH\t\t; Load array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t5\t; HB of address");
+            if (v.address !=-1) {
+                writln(outf,tr("\tLIA\tHB(%1-1)").arg(v.address));
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP4\t; LB");
+                writln(outf,tr("\tLIA\tLB(%1-1)").arg(v.address));
+            }
+            else {
+                writln(outf,"\tLIA\tHB("+v.varname+"-1)");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t4\t; LB");
+                writln(outf,"\tLIA\tLB("+v.varname+"-1)");
+            }
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tIXL");
+        }
+    }
+    else {
+        if (!v.xram) {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,tr("\tLII\t%1").arg(v.address)+"\t; Store array element from "+v.varname);
+            writln(outf,"\tLP\t0");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tSTP");
+            writln(outf,"\tLDM");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tINCP");
+            writln(outf,"\tLDM");
+            writln(outf,"\tEXAB");
+        }
+        else {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,"\tPUSH\t\t; Load array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t5\t; HB of address");
+            if (v.address !=-1) {
+                writln(outf,tr("\tLIA\tHB(%1-1)").arg(v.address));
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t4\t; LB");
+                writln(outf,tr("\tLIA\tLB(%1-1)").arg(v.address));
+            }
+            else {
+                writln(outf,"\tLIA\tHB("+v.varname+"-1)");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t4\t; LB");
+                writln(outf,"\tLIA\tLB("+v.varname+"-1)");
+            }
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tIXL");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tIXL");
+            writln(outf,"\tEXAB");
+        }
+    }
+}
+
+#if 1
 /*!
  \brief Load a Variable to the Primary Register
 
@@ -1304,8 +1447,88 @@ bool isbin, ishex, ischr;
  \param name
 */
 void Clcc::LoadVariable(QByteArray name) {
+
+    writln("LOG",";LoadVariable:"+name);
+    if (!FindVar(name)) Error("Variable not defined: "+name);
+
+    Cvar v = varlist.at(VarFound);
+
+    if (v.array) {
+        LoadVariableArray(v);
+    }
+    else {
+        if ((v.typ=="char") || (v.typ=="byte")) {
+            if (v.local) {
+                // Local char
+                writln(outf,"\tLDR");
+                writln(outf,tr("\tADIA\t%1").arg(v.address+2+pushcnt));
+                writln(outf,"\tSTP");
+                writln(outf,"\tLDM\t\t; Load variable "+v.varname);
+            }
+            else {
+                if (v.xram) {
+                    if (v.address !=-1) writln(outf,tr("\tLIDP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
+                    else writln(outf,"\tLIDP\t"+v.varname+"\t; Load variable "+v.varname);
+                    writln(outf,"\tLDD");
+                }
+                else {
+                    if (v.address < 64) writln(outf,tr("\tLP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
+                    else writln(outf,tr("\tLIP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
+                    writln(outf,"\tLDM");
+                }
+            }
+            if (isword) writln(outf,"\tLIB\t0");
+        }
+        else {
+            if (v.local) {
+                // Local word
+                writln(outf,"\tLDR");
+                writln(outf,tr("\tADIA\t%1").arg(v.address+1+pushcnt));
+                writln(outf,"\tSTP");
+                writln(outf,"\tLDM\t; HB - Load variable "+v.varname);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tINCP");
+                writln(outf,"\tLDM\t; LB");
+            }
+            else {
+                if (v.xram) {
+                    if (v.address != -1)
+                        writln(outf,tr("\tLIDP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
+                    else
+                        writln(outf,"\tLIDP\t"+v.varname+"+1\t; Load 16bit variable "+v.varname);
+
+                    writln(outf,"\tLDD\t\t; HB");
+                    writln(outf,"\tEXAB");
+                    if ((v.address != -1) && ((v.address + 1) / 256 == (v.address / 256))) {
+                        writln(outf,tr("\tLIDL\tLB(%1)").arg(v.address));
+                    }
+                    else {
+                        if (v.address !=-1) {
+                            writln(outf,tr("\tLIDP\t%1").arg(v.address));
+                        }
+                        else {
+                            writln(outf,"\tLIDP\t"+v.varname);
+                        }
+                    }
+                    writln(outf,"\tLDD\t\t; LB");
+                }
+                else {
+                    if (v.address < 64) writln(outf,tr("\tLP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
+                    else writln(outf,tr("\tLIP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
+                    writln(outf,"\tLDM\t\t; HB");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tDECP\t\t; LB");
+                    writln(outf,"\tLDM");
+                }
+            }
+        }
+    }
+}
+
+#else
+void Clcc::LoadVariable(QByteArray name) {
     QByteArray typ;
-    bool xram,arr,local;
+    bool xram,arr,local,pnt;
     int adr;
 
     writln("LOG",";LoadVariable:"+name);
@@ -1315,6 +1538,8 @@ void Clcc::LoadVariable(QByteArray name) {
     local = varlist[VarFound].local;
     arr = varlist[VarFound].array;
     xram = varlist[VarFound].xram;
+    pnt = varlist.at(VarFound).pointer;
+    Cvar v = varlist.at(VarFound);
 
     if (! arr) {
         if ((typ=="char") || (typ=="byte")) {
@@ -1372,6 +1597,7 @@ void Clcc::LoadVariable(QByteArray name) {
         }
     }
     else {
+
         if ((typ=="char") || (typ=="byte")) {
             if (!xram) {
                 writln(outf,tr("\tLIB\t%1").arg(adr)+"\t; Load array element from "+name);
@@ -1449,16 +1675,174 @@ void Clcc::LoadVariable(QByteArray name) {
 }
 
 
-/*
-{--------------------------------------------------------------}
-{  }
-*/
+#endif
+
+void Clcc::StoreVariableArray(Cvar v) {
+
+    if ((v.typ=="char") || (v.typ=="byte"))
+    {
+        if (!v.xram)
+        {
+            writln(outf,"\tLIB\t"+QByteArray::number(v.address)+"\t; Store array element from "+v.varname);
+            writln(outf,"\tLP\t3");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tSTP");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAM");
+        }
+        else
+        {
+            writln(outf,"\tPUSH\t\t; Store array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t7\t; HB of address");
+
+            writln(outf,"\tLIA\tHB("+v.getLabel()+"-1)");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tLP\t6\t; LB");
+            writln(outf,"\tLIA\tLB("+v.getLabel()+"-1)");
+
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tIYS");
+        }
+    }
+    else
+    {
+        if (!v.xram)
+        {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,"\tLII\t"+QByteArray::number(v.address)+"\t; Store array element from "+v.varname);
+            writln(outf,"\tLP\t0");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tSTP");
+            writln(outf,"\tINCP");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAM");
+            writln(outf,"\tDECP");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAM");
+        }
+        else
+        {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,"\tPUSH\t _t; Store array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t7\t; HB of address");
+
+            writln(outf,"\tLIA\tHB("+v.getLabel()+"-1)");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tLP\t6\t; LB");
+            writln(outf,"\tLIA\tLB("+v.getLabel()+"-1)");
+
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAB");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tIYS");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tIYS");
+        }
+    }
+}
+
 /*!
  \brief Store the Primary Register to a Variable
 
  \fn Clcc::StoreVariable
  \param name
 */
+#if 1
+void Clcc::StoreVariable(QByteArray name) {
+
+    Cvar var;
+
+    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
+    var = varlist.at(VarFound);
+
+    if (var.array) {
+        StoreVariableArray(var);
+    }
+    else {
+        if ( (var.typ=="char") || (var.typ=="byte") ) {
+            if (var.xram) {
+                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store result in "+var.varname);
+                writln(outf,"\tSTD");
+            }
+            else {
+                if (var.local) {
+                    // Local char
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tLDR");
+                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
+                    writln(outf,"\tSTP");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tEXAM\t\t; Store result in "+var.varname);
+                }
+                else {
+                    if (var.address <= 63) {
+                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
+                    }
+                    else {
+                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
+                    }
+                    writln(outf,"\tEXAM");
+                }
+            }
+        }
+        else {
+            if (var.local) {
+                // Local word
+                writln(outf,"\tPUSH"); pushcnt++;
+                writln(outf,"\tLDR");
+                writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
+                writln(outf,"\tSTP");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tDECP");
+                writln(outf,"\tEXAM\t; HB");
+            }
+            else {
+                if (var.xram) {
+                    writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store 16bit variable "+var.varname);
+                    writln(outf,"\tSTD\t\t; LB");
+                    writln(outf,"\tEXAB");
+                    if ( var.address &&
+                         ( ((var.address + 1) / 256) == (var.address / 256) ) ) {
+                        writln(outf,"\tLIDL\tLB("+QByteArray::number(var.address)+"+1)");
+                    }
+                    else  {
+                        writln(outf,"\tLIDP\t"+ var.getLabel()+"+1");
+                    }
+                    writln(outf,"\tSTD\t\t; HB");
+                }
+                else {
+                    // non local, non xram
+                    if (var.address < 64) {
+                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
+                    }
+                    else {
+                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
+                    }
+                    writln(outf,"\tEXAM\t\t; LB");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tINCP\t\t; HB");
+                    writln(outf,"\tEXAM");
+                }
+            }
+        }
+    }
+
+}
+#else
 void Clcc::StoreVariable(QByteArray name) {
 
     Cvar var;
@@ -1612,7 +1996,7 @@ void Clcc::StoreVariable(QByteArray name) {
         }
     }
 }
-
+#endif
 
 //{--------------------------------------------------------------}
 //{  }
@@ -1641,6 +2025,7 @@ void Clcc::Factor(void) {
         s = GetName();
         if (Look == '[') {
             writln("LOG",";Factor(found[):"+Tok);
+            if (pointer == ptrREF) pointer = ptrREFARR;
             rd(&Look, &Tok);
            Tok = Tok.trimmed();
             Expression();
@@ -1650,10 +2035,10 @@ void Clcc::Factor(void) {
             //Push;
         }
         if (FindVar(s)) {
+#if 0
             if (pointer == ptrREF) {
                 LoadVariable(s);
-                if (! varlist[VarFound].pointer)
-                    Error("This var ("+s+") is not a pointer!");
+                if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
                 if (varlist[VarFound].xram) {
                     writln(outf,"\tLP\t4\t; XL");
                     writln(outf,"\tEXAM");
@@ -1687,11 +2072,11 @@ void Clcc::Factor(void) {
                 }
             }
             else
-                if (pointer == ptrADR) {
+            if (pointer == ptrADR) {
                 if (varlist[VarFound].xram) {
                     if (varlist[VarFound].address == -1) {
-                        writln(outf,"\tLIA\tLB('+s+')\t; &"+s);
-                        writln(outf,"\tLIB\tHB('+s+')\t; &"+s);
+                        writln(outf,"\tLIA\tLB("+s+")\t; &"+s);
+                        writln(outf,"\tLIB\tHB("+s+")\t; &"+s);
                     }
                     else {
                         writln(outf,tr("\tLIA\tLB(%1)\t; &").arg(varlist[VarFound].address)+s);
@@ -1702,7 +2087,9 @@ void Clcc::Factor(void) {
                     writln(outf,tr("\tLIA\t%1\t; &").arg(varlist[VarFound].address)+s);
                 }
             }
-            else LoadVariable(s);
+            else
+#endif
+                LoadVariableMain(s);//LoadVariable(s);
         }
         else if (FindProc(s)) {
             Tok = s + " (" + Tok.trimmed();
@@ -2232,7 +2619,7 @@ writln("LOG",";Assignement:"+Tok);
                             else writln(outf,"\tSBIM\t1");
                     }
                     else {
-                        LoadVariable(name);
+                        LoadVariableMain(name);//LoadVariable(name);
                         if (Look == '+') writln(outf,"\tINCA");
                         else writln(outf,"\tDECA");
                         StoreVariable(name);
@@ -2932,22 +3319,12 @@ void Clcc::Block(void) {
  \param pn
 */
 void Clcc::removelocvars(QByteArray pn) {
-    int i, c;
+    int i;
 
     i = 0;
     if (! FindProc(pn)) Error("function "+pn+" unknown!");
     if (proclist[ProcFound].ParCnt == 0) return;
-#if 0
-    while (i < VarCount) {
-        if (varlist[i].local && (varlist[i].locproc == ProcFound)) {
-            for (c = i ; c<VarCount - 1;c++)
-                varlist[c] = varlist[c+1];
-            VarCount--;
-            i--;
-        }
-        i++;
-    }
-#else
+
     while (i < VarCount) {
         if (varlist.at(i).local && (varlist.at(i).locproc == ProcFound)) {
             varlist.removeAt(i);
@@ -2958,7 +3335,7 @@ void Clcc::removelocvars(QByteArray pn) {
             i++;
         }
     }
-#endif
+
 }
 
 
@@ -3006,14 +3383,14 @@ void Clcc::FirstScan(QByteArray filen) {
                 name = ExtrWord(&Tok);
                 hasret = true;
             } else
-                if ((name == "char") || (name == "byte"))
+            if ((name == "char") || (name == "byte"))
                 {
-                name = ExtrWord(&Tok);
-                hasret = true;
-            }
-            else {
-                name = name2;
-            }
+                    name = ExtrWord(&Tok);
+                    hasret = true;
+                }
+                else {
+                    name = name2;
+                }
             Tok = Tok.trimmed(); Tok.remove(0,1); Tok = Tok.trimmed();
             i = 0;
             //                        p := 0;
@@ -3029,9 +3406,20 @@ void Clcc::FirstScan(QByteArray filen) {
 
                 while (!s.isEmpty()) {
                         Tok = ExtrList(&s);
-                        loc_partyp.append(Tok.left(4));//copy(Tok, 1, 4);
+#if 1
+                        // new part to parse pointer in parameters
+                        QByteArray locname = Tok.mid(0,4);
+                        if ((locname == "byte") || (locname == "char") || (locname == "word"))
+                        {
+                            Tok.remove(0,4); Tok = Tok.trimmed();
+                            Tok = locname + " " + Tok;
+                        }
+#endif
+
+                        //loc_partyp.append(Tok.left(4));//copy(Tok, 1, 4);
                         procd = true;
                         loc_parname.append(vardecl());
+                        loc_partyp.append(varlist.last().typ);
                         procd = false;
                         i++;
                     }
@@ -3130,6 +3518,7 @@ int    adr, size, value;
 
     insertedProc.clear();
     calledProc.clear();
+    sourceinASM = true;
 
     //{ Write Intro }
     writln(f, "; pasm file - assemble with pasm!");
@@ -3151,12 +3540,13 @@ int    adr, size, value;
     for (int i=0; i<varlist.size();i++) {
         Cvar v = varlist[i];
         adr = v.address;
-        size = v.size;
+        size = (v.pointer ? (v.typ =="word"? 2 : 1): v.size);
         name = v.varname;
         value = v.initn;
         typ = v.typ;
         at = v.at;
         arr = v.array;
+
 
         if (v.xram) {
             if (at) {

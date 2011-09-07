@@ -21,6 +21,7 @@ extern MainWindowPockemul *mainwindow;
 
 #define ptrREF 1
 #define ptrADR 2
+#define ptrREFARR 3
 
 #define MUL8  0
 #define DIVMOD8  1
@@ -133,8 +134,11 @@ public:
     void writln(QString,QString);
     void writeln(QString ,QString);
     void write(QString,QString);
+    void LoadVariableMain(QByteArray name);
     void LoadVariable(QByteArray name);
+    void LoadVariableArray(Cvar v);
     void StoreVariable(QByteArray);
+    void StoreVariableArray(Cvar v);
     bool  IsVarAtAdr(int adr,int size);
     int AllocVar(bool xr,bool at,int  size, int adr);
     QByteArray ExtrList(QByteArray *list);
@@ -319,11 +323,15 @@ public:
     QList<int> insertedProc;
 
 
+
+
+
 signals:
     void outputSignal(QString,QString);
 
 private:
     bool showErrors;
+    bool sourceinASM;
 };
 
 #endif // LCC_H

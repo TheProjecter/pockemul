@@ -81,4 +81,12 @@ lb2606:
 #restore
 }
 
+
+
+beepcount(byte nb) {
+	byte i;
+	for (i=0;i<nb;i++) {
+		beep(95,10);
+	}
+}
 #endif

@@ -4,7 +4,7 @@
 #ifdef WIN32
   
 // disable warnings about long names
-  #pragma warning( disable : 4786)
+//  #pragma warning( disable : 4786)
 
 #endif
 

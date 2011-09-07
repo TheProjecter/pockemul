@@ -949,7 +949,7 @@ void Cpasm::run(QString fname,QString source) {
     if (nlabcnt > 0) {
         QString s="";
         for (int i=0;i< nlab.size();i++) {
-            s +=QString("In line '") + nlabasm.at(i) + '": ' + nlab.at(i)+"\n";
+            s +=QString("In line '") + nlabasm.at(i) + "': " + nlab.at(i)+"\n";
 
         }
         abort("Labels were not available!"+s);

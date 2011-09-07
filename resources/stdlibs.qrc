@@ -40,5 +40,6 @@
         <file>lcc/model/PC-1261/graph.h</file>
         <file>lcc/model/PC-1262/graph.h</file>
         <file>lcc/model/PC-1475/graph.h</file>
+        <file>lcc/model/string.h</file>
     </qresource>
 </RCC>

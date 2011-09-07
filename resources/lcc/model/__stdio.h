@@ -11,6 +11,7 @@
 */
 byte __onbreak() { 
 #asm
+fct___onbreak:
     RA	;test
     TEST 08
     JRZP lb__stdio__onbreak_end

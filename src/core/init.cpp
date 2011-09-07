@@ -210,7 +210,7 @@ void CPocketThread::run()
 
     while(true)
     {
-        int j=0;
+        //int j=0;
         //while ((j++) < 20)
         {
             pause = true;
@@ -226,7 +226,6 @@ void CPocketThread::run()
                     if (pPC->pTIMER->state < cs)
                     {
                         if (pPC->ioFreq > 0) {
-                            qint64 t = pPC->pTIMER->state;
                             int step = MIN(f / pPC->ioFreq - pPC->pTIMER->deltaStep,cs-pPC->pTIMER->state);
                             pPC->pTIMER->deltaStep = pPC->runRange(step) - step;
                         }
