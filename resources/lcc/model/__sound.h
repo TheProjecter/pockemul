@@ -20,9 +20,6 @@ beep(byte beep_freq,byte beep_duration) {
     EXAB
     LP REG_XH
     LDM
-    ;POP     ; READ B
-    ;EXAB
-    ;POP     ; READ A
     LIDP lb2603+1		; set length of
     STD			;  wait intervals
 
@@ -75,9 +72,7 @@ lb2606:
 
     LOOP lb2602		; loop 5 times
 
-    RTN
 #endasm
-
 //#restore
 }
 
@@ -89,4 +84,5 @@ beepcount(byte nb) {
 		beep(95,10);
 	}
 }
+
 #endif

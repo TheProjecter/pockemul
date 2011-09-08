@@ -3496,23 +3496,24 @@ int    adr, size, value;
         at = v.at;
         arr = v.array;
 
-
-        if (v.xram) {
-            if (at) {
-                if (value !=-1) {
-                    if (!arr) varxram(value, adr, size, name);
-                    else varxarr(varlist[i].inits, adr, size, name, typ);
+        if (!v.local){
+            if (v.xram) {
+                if (at) {
+                    if (value !=-1) {
+                        if (!arr) varxram(value, adr, size, name);
+                        else varxarr(varlist[i].inits, adr, size, name, typ);
+                    }
+                }
+                else {
+                    if (!arr) varcode(value, adr, size, name);
+                    else varcarr(varlist[i].inits, adr, size, name, typ);
                 }
             }
             else {
-                if (!arr) varcode(value, adr, size, name);
-                else varcarr(varlist[i].inits, adr, size, name, typ);
-            }
-        }
-        else {
-            if (value != -1) {
-                if (!arr)  varreg(value, adr, size, name);
-                else varrarr(v.inits, adr, size, name, typ);
+                if (value != -1) {
+                    if (!arr)  varreg(value, adr, size, name);
+                    else varrarr(v.inits, adr, size, name, typ);
+                }
             }
         }
     }

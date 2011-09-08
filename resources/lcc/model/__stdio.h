@@ -111,6 +111,9 @@ _LCC_DEPEND(ps_disp_on);
 #asm
 fct_ps_putchar_con:
 	CALL fct_ps_disp_off
+	; if newline then jump
+	CPIA 0x0D
+	JRZP lb__stdio01newline
 		
 #ifdef __PC_IS_BANKSWITCHED__
 	; if this is a bankswiched pocket, we
@@ -164,7 +167,7 @@ lb__sdtio0101:                       ; copy the 5 (or 6) pixmaps
 	
 	CPIA  __DISP_CH_COLS__        ; if not max. column + 1,
 	JRNZP lb__sdtio0102          ; then go on
-	
+lb__stdio01newline:	
 	RA                    ; else: set to zero
 	STD
 	
@@ -390,7 +393,7 @@ lb__sdtio0701:
 	LOOP lb__sdtio0703	
 #endif
 
-#if __PC_1250__ || __PC_1251__ || __PC_12555__
+#if __PC_1250__ || __PC_1251__ || __PC_1255__
 
 	LP REG_XH
 	LIA		HB(__MEM_LCD_L1C1__-1)
@@ -661,7 +664,7 @@ lb__sdtio0501:
 	FILD
 #endif
 	
-#if __PC_1250__ || __PC_1251__ || __PC_12555__
+#if __PC_1250__ || __PC_1251__ || __PC_1255__
 	CALL fct_ps_clrscr
 #endif
 
@@ -686,7 +689,7 @@ ps_clrscr() {
 #asm
 fct_ps_clrscr:
 	
-#if __PC_1250__ || __PC_1251__ || __PC_12555__
+#if __PC_1250__ || __PC_1251__ || __PC_1255__
 	
 	; ensure, that LIDL can be uses instead of LIDP one time
 	;.assume >MEM_LCD_PART1 - >MEM_LCD_PART2
@@ -849,7 +852,7 @@ ps_dispadr() {
 #asm
 fct_ps_dispadr:
 
-#if __PC_1250__ || __PC_1251__ || __PC_12555__
+#if __PC_1250__ || __PC_1251__ || __PC_1255__
 	
 	; -----------------------------------------------
 	

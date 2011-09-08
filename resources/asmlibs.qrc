@@ -16,5 +16,6 @@
         <file>asmlibs/sc61860/sr16.lib</file>
         <file>asmlibs/sc61860/xor8.lib</file>
         <file>asmlibs/sc61860/xor16.lib</file>
+        <file>asmlibs/sc61860/div16.lib</file>
     </qresource>
 </RCC>
