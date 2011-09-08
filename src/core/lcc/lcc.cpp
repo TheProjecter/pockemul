@@ -1312,6 +1312,9 @@ void Clcc::LoadVariableMain(QByteArray s) {
     if (sourceinASM) writln(outf,"\t; LoadVariable : "+s);
 
     if ( (pointer == ptrREF) || (pointer == ptrREFARR)) {
+        if (pointer == ptrREFARR) {
+            writln(outf,"\tPUSH\t\t; store the offset");pushcnt++;
+        }
         LoadVariable(s);
         if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
         if (varlist[VarFound].xram) {
@@ -1321,6 +1324,13 @@ void Clcc::LoadVariableMain(QByteArray s) {
             writln(outf,"\tEXAB");
             writln(outf,"\tEXAM");
             writln(outf,"\tDX");
+            if (pointer==ptrREFARR) {
+                // decalage
+                writln(outf,"\tPOP\t\t; retrieve index");pushcnt--;
+                writln(outf,"\tLP 4");
+                writln(outf,"\tLIB 0");
+                writln(outf,"\tADB");
+            }
             if (varlist[VarFound].pnttyp != "word") {
                 writln(outf,"\tIXL\t\t; Load content *"+s);
                 writln(outf,"\tLIB\t0\t; Load 0 in HB"+s);
@@ -2029,10 +2039,11 @@ void Clcc::Factor(void) {
         LoadConstant(GetNumber());
     }
     else if (Alpha.contains(toupper(Look))) {
+        bool bracketFound = false;
         s = GetName();
         if (Look == '[') {
             writln("LOG",";Factor(found[):"+Tok);
-            if (pointer == ptrREF) pointer = ptrREFARR;
+            bracketFound=true;
             rd(&Look, &Tok);
            Tok = Tok.trimmed();
             Expression();
@@ -2042,61 +2053,8 @@ void Clcc::Factor(void) {
             //Push;
         }
         if (FindVar(s)) {
-#if 0
-            if (pointer == ptrREF) {
-                LoadVariable(s);
-                if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
-                if (varlist[VarFound].xram) {
-                    writln(outf,"\tLP\t4\t; XL");
-                    writln(outf,"\tEXAM");
-                    writln(outf,"\tLP\t5\t; XH");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tEXAM");
-                    writln(outf,"\tDX");
-                    if (varlist[VarFound].pnttyp != "word") {
-                        writln(outf,"\tIXL\t\t; Load content *"+s);
-                    }
-                    else {
-                        writln(outf,"\tIXL\t\t; Load content LB *"+s);
-                        writln(outf,"\tEXAB");
-                        writln(outf,"\tIXL\t\t; Load content HB *"+s);
-                        writln(outf,"\tEXAB");
-                    }
-                }
-                else {
-                    // LIP
-                    writln(outf,"\tSTP\t\t; Set P");
-                    if (varlist[VarFound].pnttyp != "word") {
-                        writln(outf,"\tLDM\t\t; Load content *"+s);
-                    }
-                    else {
-                        writln(outf,"\tLDM\t\t; Load content LB *"+s);
-                        writln(outf,"\tEXAB");
-                        writln(outf,"\tINCP");
-                        writln(outf,"\tLDM\t\t; Load content HB *"+s);
-                        writln(outf,"\tEXAB");
-                    }
-                }
-            }
-            else
-            if (pointer == ptrADR) {
-                if (varlist[VarFound].xram) {
-                    if (varlist[VarFound].address == -1) {
-                        writln(outf,"\tLIA\tLB("+s+")\t; &"+s);
-                        writln(outf,"\tLIB\tHB("+s+")\t; &"+s);
-                    }
-                    else {
-                        writln(outf,tr("\tLIA\tLB(%1)\t; &").arg(varlist[VarFound].address)+s);
-                        writln(outf,tr("\tLIB\tHB(%1)\t; &").arg(varlist[VarFound].address)+s);
-                    }
-                }
-                else {
-                    writln(outf,tr("\tLIA\t%1\t; &").arg(varlist[VarFound].address)+s);
-                }
-            }
-            else
-#endif
-                LoadVariableMain(s);//LoadVariable(s);
+            if (bracketFound && varlist.at(VarFound).pointer) pointer = ptrREFARR;
+            LoadVariableMain(s);//LoadVariable(s);
         }
         else if (FindProc(s)) {
             Tok = s + " (" + Tok.trimmed();
@@ -2560,7 +2518,11 @@ writln("LOG",";Assignement:"+Tok);
     s = "";
     if (Look == '[') {
         s = Tok;
-        if (varlist.at(VarFound).pointer) p = ptrREFARR;
+        if (varlist.at(VarFound).pointer) {
+            p = ptrREFARR;
+            if (varlist.at(VarFound).pnttyp == "word") isword = true;
+            else isword = false;
+        }
         Tok.remove(0,Tok.indexOf("=")+1); Tok = Tok.trimmed();
     }
     if (QByteArray("+-*/%&|><").contains(Look)) {
@@ -2692,6 +2654,13 @@ writln("LOG",";Assignement:"+Tok);
                 writln(outf,"\tEXAB");
                 writln(outf,"\tEXAM");
                 writln(outf,"\tDY");
+                if (p==ptrREFARR) {
+                    // decalage
+                    writln(outf,"\tPOP\t\t; retrieve index");pushcnt--;
+                    writln(outf,"\tLP 6");
+                    writln(outf,"\tLIB 0");
+                    writln(outf,"\tADB");
+                }
                 if (varlist[VarFound].pnttyp != "word") {
                     writln(outf,"\tPOP"); pushcnt--;
                     writln(outf,"\tIYS\t\t; Store content *"+s);
@@ -2705,7 +2674,7 @@ writln("LOG",";Assignement:"+Tok);
                     writln(outf,"\tIYS\t\t; Store content HB *"+s);
                 }
             }
-            else {
+            else { // manage offset on non xram pointer
                 // LIP
                 writln(outf,"\tSTP\t\t; Set P");
                 if (varlist[VarFound].pnttyp != "word") {
@@ -3455,34 +3424,7 @@ void Clcc::FirstScan(QByteArray filen) {
     printproclist("output");
 }
 
-//TODO parcourir l'arbre à l'envers
-#if 0
-void Clcc::generateProcCode(QString f,int i) {
-    insertedProc.append(i);
-    writln(f,"");
-    writln( f,proclist[i].ProcName+":\t; Procedure");
-    dummy = proclist[i].ProcCode;
-    level = 1;
-    currproc = i;
-    pushcnt = 0; firstp = true;
-    Block();
-    if (pushcnt != 0) writeln(f,proclist[i].ProcName+": Possible Stack corruption!");
-    removelocvars(proclist[i].ProcName);
-    if (proclist[i].ProcName == "main") {
-        writln(f, " EOP:\tRTN");
-    }
-    else {
-        writln(f,"\tRTN");
-    }
-    writln(f,"");
 
-    for (int j=0;j<calledProc.size();j++) {
-        if (!insertedProc.contains(calledProc[j])) {
-            generateProcCode(f,calledProc[j]);
-        }
-    }
-}
-#else
 void Clcc::generateProcCode(QString f,int i) {
     proclist[i].start = asmtext.size();
     writln(f,"");
@@ -3504,8 +3446,6 @@ void Clcc::generateProcCode(QString f,int i) {
     proclist[i].end = asmtext.size();
     insertedProc.append(i);
 }
-#endif
-
 
 
 
