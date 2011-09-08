@@ -267,11 +267,15 @@ const unsigned char Cpasm::nbargu [] = {
     2,2,2,2,2,
     2};
 
+
 QString Cpasm::replace_text(QString text, QString such, QString ers) {
 
-    text = " "+text+" ";
-    QString regex = "([^_0-9A-Za-z])("+such+")([^_0-9A-Za-z])";
-    return text.replace(QRegExp(regex),"\\1"+ers+"\\3").trimmed();
+    if (text.contains(such)) {
+        text = " "+text+" ";
+        QString regex = "([^_0-9A-Za-z])("+such+")([^_0-9A-Za-z])";
+        return text.replace(QRegExp(regex),"\\1"+ers+"\\3").trimmed();
+    }
+    return text;
 }
 
 void Cpasm::abort(QString t) {
@@ -965,6 +969,7 @@ void Cpasm::parsefile(QString fname,QString source) {
     QStringList lines = source.split("\n");
     QStringListIterator linesIter(lines);
 
+    qWarning("start parse: %s",fname.toAscii().data());
     tok = readline(&linesIter);
     while ((linesIter.hasNext()) || !tok.isEmpty()) {
 
@@ -1036,7 +1041,7 @@ void Cpasm::parsefile(QString fname,QString source) {
         }
         tok = readline(&linesIter);
     }
-
+    qWarning("fin parse : %s",fname.toAscii().data());
 }
 
 #if 0

@@ -1,6 +1,8 @@
 #include <cctype>
 #include <QString>
 
+
+
 #define ENABLE_COMPILATION 1
 
 #if ENABLE_COMPILATION
@@ -8,6 +10,7 @@
 #include "lcc.h"
 
 //FIXME if ( iiii[0] > 0 ) { return;}
+//FIXME remove unused variables
 
 /*!
   \brief Little C Compiler transorm a C source code to SC61860 ASM code.
@@ -1306,6 +1309,8 @@ bool isbin, ishex, ischr;
 
 void Clcc::LoadVariableMain(QByteArray s) {
 
+    if (sourceinASM) writln(outf,"\t; LoadVariable : "+s);
+
     if ( (pointer == ptrREF) || (pointer == ptrREFARR)) {
         LoadVariable(s);
         if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
@@ -1764,6 +1769,7 @@ void Clcc::StoreVariable(QByteArray name) {
 
     Cvar var;
 
+    if (sourceinASM) writln(outf,"\t; StoreVariable : "+name);
     if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
     var = varlist.at(VarFound);
 
@@ -1815,7 +1821,7 @@ void Clcc::StoreVariable(QByteArray name) {
                     writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store 16bit variable "+var.varname);
                     writln(outf,"\tSTD\t\t; LB");
                     writln(outf,"\tEXAB");
-                    if ( var.address &&
+                    if ( (var.address>=0) &&
                          ( ((var.address + 1) / 256) == (var.address / 256) ) ) {
                         writln(outf,"\tLIDL\tLB("+QByteArray::number(var.address)+"+1)");
                     }
@@ -2011,6 +2017,7 @@ void Clcc::Factor(void) {
     QByteArray s;
 
     writln("LOG",";Factor:"+Tok);
+    if (sourceinASM) writln(outf,"\t; Factor : "+Tok);
     if (Look =='(') {
         rd(&Look, &Tok);
         Tok = Tok.trimmed();
@@ -2542,7 +2549,7 @@ writln("LOG",";Assignement:"+Tok);
     rd(&Look, &Tok); Tok = Tok.trimmed();
     name = GetName();
     if (FindVar(name)) {
-        Cvar var = varlist[VarFound];
+        Cvar var = varlist.at(VarFound);
         if (p == ptrREF) {
             if (! var.pointer && (var.typ == "word")) isword = true;
             if (var.pointer && (var.pnttyp == "word")) isword = true;
@@ -2553,6 +2560,7 @@ writln("LOG",";Assignement:"+Tok);
     s = "";
     if (Look == '[') {
         s = Tok;
+        if (varlist.at(VarFound).pointer) p = ptrREFARR;
         Tok.remove(0,Tok.indexOf("=")+1); Tok = Tok.trimmed();
     }
     if (QByteArray("+-*/%&|><").contains(Look)) {
@@ -2563,7 +2571,7 @@ writln("LOG",";Assignement:"+Tok);
             //Rd(Look, Tok); Tok := trim(Tok);
         }
         else if ((Look =='+') || (Look=='-')) {
-            if (FindVar(name) && !(varlist[VarFound].typ == "word")) {
+            if (FindVar(name) && !(varlist[VarFound].typ == "word") && !varlist.at(VarFound).pointer) {
                 if (Look == '+') writln(outf,"\t; "+name+"++");
                 else writln(outf,"\t; "+name+"--");
                 i = varlist[VarFound].address;
@@ -2650,7 +2658,7 @@ writln("LOG",";Assignement:"+Tok);
         }
     }
     if (!fv) for (int i=0;i< proccount;i++)
-        if (find_text(proclist[i].ProcName, forml) > 0) fv = true;
+        if (find_text(proclist.at(i).ProcName, forml) > 0) fv = true;
 
     if (fv) Expression();
     else LoadConstant(forml);
@@ -2662,7 +2670,8 @@ writln("LOG",";Assignement:"+Tok);
     }
     if (p == 0) StoreVariable(name);
     else
-    if (p == ptrREF) {
+        if ((p == ptrREF) || (p==ptrREFARR)) {
+            writln(outf,tr("\t; Assignment ptrREF(%1) ").arg(p)+name);
         if (FindVar(name)) {
             if (varlist[VarFound].pnttyp != "word") {
                 writln(outf,"\tPUSH"); pushcnt++;

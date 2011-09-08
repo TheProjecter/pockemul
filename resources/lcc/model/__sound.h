@@ -9,16 +9,16 @@
  \param beep_duration the duration
 */
 beep(byte beep_freq,byte beep_duration) {
-    _reg_k = beep_freq;
-    _reg_l = beep_duration;
+    _reg_xh = beep_freq;
+    _reg_xl = beep_duration;
 
-#save
+//#save
 #asm
 
-    LP 9
+    LP REG_XL
     LDM
     EXAB
-    LP 8
+    LP REG_XH
     LDM
     ;POP     ; READ B
     ;EXAB
@@ -36,16 +36,16 @@ beep(byte beep_freq,byte beep_duration) {
     STD
 
     EXAB			; K=B, B=A
-    LP      08
+    LP	REG_XH
     EXAM
 
     LIA  0x04		; push 4
     PUSH
 
 lb2602:
-    LP   08		; I=K, P=95
+    LP   REG_XH		; I=K, P=95
     LDM
-    LP   0 ;REG_I
+    LP   REG_I
     EXAM
     LIP  95
 
@@ -78,7 +78,7 @@ lb2606:
     RTN
 #endasm
 
-#restore
+//#restore
 }
 
 
