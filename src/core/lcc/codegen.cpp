@@ -618,21 +618,21 @@ void Clcc::PopSr(void) {
 //{ Modulo TOS with Primary }
 void Clcc::PopMod(void) {
     if (isword) {
-        writln(outf,"\tLP\t0");
-        writln(outf,"\tEXAM");
-        writln(outf,"\tEXAB");
         writln(outf,"\tLP\t1");
         writln(outf,"\tEXAM");
         writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tEXAB");
+        writln(outf,"\tEXAM");
+        writln(outf,"\tLP\t0");
+        writln(outf,"\tEXAM");
         writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tCALL\tLIB_MOD16\t; Modulo");
+        writln(outf,"\tEXAM");
+        writln(outf,"\tCALL\tLIB_DIVMOD16\t; Modulo");
         addlib(DIVMOD16);
     }
     else {
         writln(outf,"\tEXAB");
         writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tCALL\tLIB_MOD8\t; Modulo");
+        writln(outf,"\tCALL\tLIB_DIV8\t; Modulo");
         writln(outf,"\tEXAB");
         addlib(DIVMOD8);
     }
@@ -781,15 +781,20 @@ void Clcc::PopMul(void) {
 
 void Clcc::PopDiv(void) {
     if (isword) {
-        writln(outf,"\tLP\t0");
-        writln(outf,"\tEXAM");
-        writln(outf,"\tEXAB");
         writln(outf,"\tLP\t1");
         writln(outf,"\tEXAM");
         writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tEXAB");
+        writln(outf,"\tEXAM");
+        writln(outf,"\tLP\t0");
+        writln(outf,"\tEXAM");
         writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tCALL\tLIB_DIV16\t; Division");
+        writln(outf,"\tEXAM");
+        writln(outf,"\tCALL\tLIB_DIVMOD16\t; Division");
+        writln(outf,"\tLP\t1");
+        writln(outf,"\tLDM");
+        writln(outf,"\tEXAB");
+        writln(outf,"\tLP\t0");
+        writln(outf,"\tLDM");
         addlib(DIVMOD16);
     }
     else {

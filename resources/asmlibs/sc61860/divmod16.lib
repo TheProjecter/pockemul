@@ -1,19 +1,23 @@
-LIB_MOD16:
-    CALL LIB_DIVMOD16
 
-    RTN
-
-LIB_DIV16:
-    CALL LIB_DIVMOD16
-    LP 1
-    EXAM
-    EXAB
-    LP 0
-    EXAM
-    RTN
 
 
 LIB_DIVMOD16:
+    PUSH
+    LP 00
+    LDM
+    LP 10
+    EXAM
+    LP 01
+    LDM
+    LP 11
+    EXAM
+    LP 13
+    EXAB
+    EXAM
+    POP
+    LP 12
+    EXAM
+
     RA
     LP 17			; mov r7, #0 ; clear partial remainder
     EXAM
@@ -114,9 +118,4 @@ LIB_DIVMOD16:
     LII 7
     MVW
 
-    LP 01
-    EXAM
-    EXAB
-    DECP
-    EXAM
 RTN
