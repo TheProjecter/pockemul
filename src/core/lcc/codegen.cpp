@@ -627,12 +627,12 @@ void Clcc::PopMod(void) {
         writln(outf,"\tEXAB");
         writln(outf,"\tPOP"); pushcnt--;
         writln(outf,"\tCALL\tLIB_MOD16\t; Modulo");
-        addlib(MOD16);
+        addlib(DIVMOD16);
     }
     else {
         writln(outf,"\tEXAB");
         writln(outf,"\tPOP"); pushcnt--;
-        writln(outf,"\tCALL\tLIB_DIV8\t; Modulo");
+        writln(outf,"\tCALL\tLIB_MOD8\t; Modulo");
         writln(outf,"\tEXAB");
         addlib(DIVMOD8);
     }
@@ -790,7 +790,7 @@ void Clcc::PopDiv(void) {
         writln(outf,"\tEXAB");
         writln(outf,"\tPOP"); pushcnt--;
         writln(outf,"\tCALL\tLIB_DIV16\t; Division");
-        addlib(DIV16);
+        addlib(DIVMOD16);
     }
     else {
         writln(outf,"\tEXAB");

@@ -239,8 +239,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool 
     libname[XOR8] = "xor8";
 
     libname[MUL16] = "mul16";
-    libname[DIV16] = "div16";
-    libname[MOD16] = "mod16";
+    libname[DIVMOD16] = "divmod16";
     libname[AND16] = "and16";
     libname[OR16] = "or16";
     libname[XOR16] = "xor16";

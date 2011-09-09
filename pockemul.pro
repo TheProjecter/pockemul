@@ -513,6 +513,6 @@ OTHER_FILES += \
     resources/asmlibs/sc61860/cpg16.lib \
     resources/asmlibs/sc61860/cpeq16.lib \
     resources/asmlibs/sc61860/cpe16.lib \
-    resources/asmlibs/sc61860/div16.lib
+    resources/asmlibs/sc61860/divmod16.lib
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

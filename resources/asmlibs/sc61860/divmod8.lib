@@ -1,15 +1,15 @@
 LIB_DIV8:	; A = A/B
-	CALL	divmod
+    CALL	divmod8
 	LP	0
 	LDM
 	RTN
 
 LIB_MOD8:
-	CALL	divmod
+    CALL	divmod8
 	EXAB
 	RTN
 
-divmod:
+divmod8:
 	LII	0
 	LP	3
 	EXAB

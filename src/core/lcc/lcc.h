@@ -30,8 +30,7 @@ extern MainWindowPockemul *mainwindow;
 #define XOR8  5
 
 #define MUL16  12
-#define DIV16  13
-#define MOD16  14
+#define DIVMOD16  13
 #define AND16  15
 #define OR16  16
 #define XOR16  21
