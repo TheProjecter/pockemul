@@ -1819,7 +1819,7 @@ void Clcc::StoreVariable(QByteArray name) {
     Cvar var;
 
     if (sourceinASM) writln(outf,"\t; StoreVariable : "+name);
-    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
+    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); return;}
     var = varlist.at(VarFound);
 
     if (var.array) {
@@ -3195,6 +3195,8 @@ void Clcc::DoSave(void) {
     QByteArray name;
 
     Tok.remove(0,5);
+    rd(&Look, &Tok);
+    Tok = Tok.trimmed();
     name = GetName();
     StoreVariable(name);
 }
