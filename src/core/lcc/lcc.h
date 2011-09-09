@@ -79,6 +79,15 @@ public:
     QByteArray getLabel() {
         return ((address>=0) ? (QByteArray::number(address)) : varname);
     }
+
+    bool operator==( const Cvar &v ) const {
+            if (    (v.varname == varname) &&
+                    (v.local == local) &&
+                    (v.locproc == locproc))
+                return true;
+            else
+                return false;
+    }
 };
 
 class Cparam {
@@ -326,6 +335,7 @@ public:
 
 
 
+    bool ExpressionType(QByteArray e);
 signals:
     void outputSignal(QString,QString);
 

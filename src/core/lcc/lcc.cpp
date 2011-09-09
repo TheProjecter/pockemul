@@ -1196,19 +1196,58 @@ bool Clcc::IsAddop(char c) {
 
  \fn Clcc::Expression
 */
+bool Clcc::ExpressionType(QByteArray e) {
+    bool result = false;
+    QList<QString> identifiedVars;
+    // Look for local var
+    for (int i= 0 ; i<varlist.size(); i++) {
+        Cvar v = varlist.at(i);
+        if (v.local && (v.locproc==currproc) && (find_text(v.varname, e) > 0) ){
+
+            //isword = false;
+            if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
+            else
+            if (varlist[i].typ == "word") isword = true;
+
+            identifiedVars.append(v.varname);
+            result = true;
+        }
+    }
+    // Look non local
+    for (int i= 0 ; i<varlist.size(); i++) {
+        Cvar v = varlist.at(i);
+        if (!v.local && !identifiedVars.contains(v.varname) && (find_text(v.varname, e) > 0) ){
+
+            //isword = false;
+            if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
+            else
+            if (varlist[i].typ == "word") isword = true;
+            result = true;
+
+        }
+    }
+    return result;
+}
+
 void Clcc::Expression(void) {
     int i;
 
     Tok = Look + Tok;
     writln("LOG",";Expression:"+Tok);
+
+#if 1
+    ExpressionType(Tok);
+#else
     for (int i= 0 ; i<varlist.size(); i++) {
         if (find_text(varlist[i].varname, Tok) > 0) {
+
             //isword = false;
             if (varlist[i].pointer && (varlist[i].pnttyp == "word")) isword = true;
             else
             if (varlist[i].typ == "word") isword = true;
         }
     }
+#endif
     i = 0;
 
     // replace << by $
@@ -2353,7 +2392,10 @@ void Clcc::ProcCall() {
                     isword = true;
                     a+=2;
                 }
+                bool partypeisword = isword;
+                // check if parameter type == Expression type;
                 Expression();
+                isword = partypeisword;
                 Push();
                 c++;
                 if (c > proclist[ProcFound].ParCnt) Error("Too many parameters for "+proclist[ProcFound].ProcName);
@@ -2612,6 +2654,9 @@ writln("LOG",";Assignement:"+Tok);
     rd(&Look, &Tok); Tok = Tok.trimmed();
 
     fv = false;
+#if 1
+    fv = ExpressionType(forml);
+#else
     for (int i = 0; i< VarCount;i++) {
         if (find_text(varlist[i].varname, forml) > 0) {
             if (! varlist[i].pointer && (varlist[i].typ == "word")) isword = true;
@@ -2619,6 +2664,7 @@ writln("LOG",";Assignement:"+Tok);
             fv = true;
         }
     }
+#endif
     if (!fv) for (int i=0;i< proccount;i++)
         if (find_text(proclist.at(i).ProcName, forml) > 0) fv = true;
 

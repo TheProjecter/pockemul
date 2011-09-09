@@ -27,17 +27,16 @@ LIB_DIV16:
     RA
     EXAM			; mov r6, #0
     LIB 16			;mov B, #16 ; set loop count
-
+    POP
 div_loop:
     RC				; clr C ; clear carry flag
     LP 10
-    PUSH
-    EXAM			; mov a, r0 ; shift the highest bit of
-    POP
+    LDM 			; mov a, r0 ; shift the highest bit of
     SL				; rlc a ; the dividend into...
     LP 10
     PUSH
-    EXAM			; mov10, a
+    EXAM
+    POP             ; mov r0, a
     LP 11
     LDM				; mov a, r1
     SR				; rlc a
@@ -94,6 +93,7 @@ suite:				; cpl C ; complement external borrow
     LP 17
     EXAM
     POP				; mov r7, dph ; update partial remainder
+    PUSH
     LP 4
     LDM
     LP 16
@@ -103,14 +103,14 @@ div_1:
     LP 14
     LDM				; mov a, r4 ; shift result bit into partial
     SL				; rlc a ; quotient
-    Lp 14
+    LP 14
     PUSH
     EXAM
     POP				; mov r4, a
     LP 15
     LDM				; mov a, r5
     SR				; rlc a
-    Lp15
+    LP15
     PUSH
     EXAM
     POP				; mov r5, a
@@ -124,7 +124,7 @@ div_1:
     POP				; mov r1, a
     LP 14
     LDM				; mov a, r4
-    Lp10
+    LP10
     PUSH
     EXAM
     POP				; mov r0, a
