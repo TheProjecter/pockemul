@@ -168,6 +168,7 @@ lb__sdtio0101:                       ; copy the 5 (or 6) pixmaps
 	CPIA  __DISP_CH_COLS__        ; if not max. column + 1,
 	JRNZP lb__sdtio0102          ; then go on
 lb__stdio01newline:	
+	LIDP  ps_cur_x
 	RA                    ; else: set to zero
 	STD
 	

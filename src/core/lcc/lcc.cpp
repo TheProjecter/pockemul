@@ -217,7 +217,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool 
     this->showErrors = showErrors;
     proccount = 0;
     VarCount = 0;
-    VarPos = 16;        // Start adr assigning cpu variable
+    VarPos = 0x20;        // Start adr assigning cpu variable
     level = 0;
     Look = 0;
     nosave = false;

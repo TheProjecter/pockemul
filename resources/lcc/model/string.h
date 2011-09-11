@@ -93,5 +93,34 @@ byte btoa(byte v,char xram *_str,byte radix) {
 	return 1;	
 }
 
+byte itoa(word v,char xram *_str,byte radix) {
+	word i;
+	
+	//	if ((radix > 36) || (radix <= 1))
+	//	{
+	//		return 0;
+	//	}
+	char xram *tmp;
+	tmp = _str;
+	i=0;
+	while (v>0)
+	{
+		i = v % radix;
+		v = v / radix;
+		if (i < 10) {
+			*_str = 48+i;
+			_str++;
+		}
+		else {
+			*_str = i + 65 - 10;
+			_str++;
+		}
+	}
+	*_str = 0;
+	ps_reverse(tmp);
+	
+	return 1;	
+}
+
 
 #endif

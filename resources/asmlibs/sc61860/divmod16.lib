@@ -97,25 +97,32 @@ LIB_DIVMOD16:
     EXAM			; mov r5, a
     DECB
     JPNZ div_loop	; djnz B, div_loop
-    LP 15
-    LDM				; mov a, r5 ; put quotient in r0, and r1
-    LP 11
-    EXAM			; mov r1, a
-    LP 14
-    LDM				; mov a, r4
-    LP 10
-    EXAM			; mov r0, a
-    LP 17
-    LDM				; mov a, r7 ; get remainder, saved before the
-    LP 13
-    EXAM			; mov r3, a ; last subtraction
-    LP 16
-    LDM				; mov a, r6
-    LP 12
-    EXAM			; mov r2, a
-    LIQ 10
+
+; r4 -> r0
+; r5 -> r1
+; r6 -> r2
+; r7 -> r3
+
+
+;    LP 15
+;    LDM				; mov a, r5 ; put quotient in r0, and r1
+;    LP 11
+;    EXAM			; mov r1, a
+;    LP 14
+;    LDM				; mov a, r4
+;    LP 10
+;    EXAM			; mov r0, a
+;    LP 17
+;    LDM				; mov a, r7 ; get remainder, saved before the
+;    LP 13
+;    EXAM			; mov r3, a ; last subtraction
+;    LP 16
+;    LDM				; mov a, r6
+;    LP 12
+;    EXAM			; mov r2, a
+    LIQ 14
     LP 0
-    LII 7
+    LII 3
     MVW
 
 RTN
