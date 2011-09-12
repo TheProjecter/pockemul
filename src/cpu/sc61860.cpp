@@ -3025,4 +3025,6 @@ void Csc::Regs_Info(UINT8 Type)
 
 }
 
-
+CSC61860::CSC61860(CPObject *parent )	: Csc(parent) {
+    imemsize = 0x60;
+}

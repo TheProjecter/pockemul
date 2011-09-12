@@ -19,7 +19,9 @@ CCPU::CCPU(CPObject *parent)
     fn_log="cpu.log";
     CallSubLevel=prevCallSubLevel=0;
 
-    for (int i=0;i<0x200;i++) imem[i]=0;
+    imemsize = 0x200;
+    for (int i=0;i<imemsize;i++) imem[i]=0;
+
 
 }
 
@@ -53,4 +55,8 @@ bool CCPU::exit(void)
 		save();
 	}
 	return true;
+}
+
+QByteArray CCPU::getimem() {
+    return (QByteArray((const char*)&imem,imemsize));
 }

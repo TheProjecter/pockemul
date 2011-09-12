@@ -61,6 +61,7 @@ public:
     const char    *fn_log;
 
     BYTE	imem[0x200];			// Internal memory
+    int   imemsize;
 
     int		CallSubLevel,prevCallSubLevel;
 
@@ -72,6 +73,7 @@ public:
 
     CCPU(CPObject *parent);
 
+    QByteArray getimem();
 private:
 	FILE *fp_status;		//pointer to status file
 };

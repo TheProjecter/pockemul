@@ -25,7 +25,8 @@ FORMS += ui/about.ui \
     qcodeedit/widgets/editconfig.ui \
     qcodeedit/snippets/snippetedit.ui \
     ui/windowide.ui \
-    ui/dialogdasm.ui
+    ui/dialogdasm.ui \
+    ui/RegsSc61860.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \

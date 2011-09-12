@@ -79,7 +79,7 @@ bool Cpc1475::Chk_Adr(DWORD *d,DWORD data)
 	{
 		int K=0;
 		switch (data & 0x0F)
-		{
+        {
 			case 0x00: K=0x00;	break;
 			case 0x01: K=0x01;	break;
 			case 0x02: K=0x02;	break;

@@ -35,14 +35,6 @@ static bool CALLBACK DasmProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				}
 				case IDSTART:
 				{
-					g_DasmFlag = 0;
-					pPC->pCPU->halt = 0;
-					Edit_GetText(g_hWndBreakDasm,Buffer,5);
-					sscanf(Buffer,"%04x",&g_BreakPointAdr);
-					ListBox_ResetContent(g_hWndListDasm);
-					Index = 0;
-					if (g_BreakSubLevel == pPC->pCPU->CallSubLevel)
-						g_BreakSubLevel = -1;
 
 					break;
 				}
@@ -67,8 +59,7 @@ static bool CALLBACK DasmProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				}
 				case IDSTOP:
 				{
-					g_DasmFlag = 0;
-					pPC->pCPU->halt = 1;
+
 					break;
 				}
 				case IDSTEP:

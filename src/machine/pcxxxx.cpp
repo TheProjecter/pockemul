@@ -74,6 +74,9 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 	setPosY(0);
 
     ioFreq = 24000;
+    DasmFlag = false;
+    DasmStep = false;
+
 }
 
 void CpcXXXX::UpdateFinalImage(void)
@@ -415,13 +418,16 @@ bool CpcXXXX::run(void)
 
 	Get_Connector();
 
+
 	if(!pCPU->halt && !off)
 	{
-//		if (g_DasmStep)
-//		{
-//			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
-//			RefreshDasm();
-//		}
+        if (DasmStep)
+        {
+            DasmLastAdr = pCPU->get_PC();
+            pCPU->pDEBUG->DisAsm_1(DasmLastAdr);
+            emit RefreshDasm();
+            pCPU->halt = true;
+        }
 
         if (pCPU->logsw) {
 			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
@@ -429,7 +435,7 @@ bool CpcXXXX::run(void)
 
 		pCPU->step();
 
-#if 1
+
 		if ( (pCPU->logsw) && (pCPU->fp_log) )
 		{
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
@@ -473,9 +479,11 @@ bool CpcXXXX::run(void)
 //--			ListBox_ResetContent(g_hWndListDasm);
             DasmFlag = 1;
             emit RefreshDasm();
-			pCPU->halt = 1;
+            pCPU->halt = true;
 		}
-#endif
+        if (DasmStep && (DasmLastAdr==pCPU->get_PC())) pCPU->halt = false;
+
+
 	}
     else pTIMER->state+=100;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
 
@@ -921,4 +929,9 @@ bool CpcXXXX::Mem_Load(qint32 adr, QByteArray data ) {
     int p =data.size();
     in.readRawData ((char *) &mem[adr], p );
     return true;
+}
+
+QByteArray CpcXXXX::getmem()
+{
+    return (QByteArray((const char*) &mem,memsize));
 }

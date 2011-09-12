@@ -321,8 +321,8 @@ private:
 
 class CSC61860:public Csc{
 public:
-    const char*	GetClassName(){ return("CSC61860");};
-	CSC61860(CPObject *parent )	: Csc(parent){	};
+    const char*	GetClassName(){ return("CSC61860");}
+    CSC61860(CPObject *parent );
 };
 
 

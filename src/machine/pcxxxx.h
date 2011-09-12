@@ -214,6 +214,7 @@ public:
     virtual UINT8 in(UINT8 address)=0;
     virtual UINT8 out(UINT8 address,UINT8 value)=0;
 
+    QByteArray getmem();
 
 	void	SaveSession(void);
 	bool	SaveSession_File(QFile *);
@@ -283,8 +284,9 @@ signals:
     void RefreshDasm();
 
 public:
-    int DasmStep;
+    bool DasmStep;
     bool DasmFlag;
+    DWORD DasmLastAdr;
     qint32 BreakPointAdr;
     int BreakSubLevel;
 };

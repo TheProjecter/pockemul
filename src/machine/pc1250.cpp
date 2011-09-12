@@ -11,7 +11,7 @@
 #include "sc61860.h"
 #include "Keyb.h"
 #include "Connect.h"
- 
+
 Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
     setfrequency( (int) 576000/3);
