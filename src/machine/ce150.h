@@ -1,9 +1,6 @@
 #ifndef _CE150_H_
 #define _CE150_H_
 
-#ifndef NO_SOUND
-#include "fmod.h"
-#endif
 
 #include "Log.h"
 #include "lh5810.h"

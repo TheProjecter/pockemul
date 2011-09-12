@@ -2,13 +2,15 @@
 #include	<stdlib.h>
 #include <QPainter>
 
-#include	"common.h"
-#include	"pc1250.h"
+#include "common.h"
+#include "pc1250.h"
  
-#include	"Inter.h"
-#include	"Keyb.h"
+#include "Inter.h"
+#include "Keyb.h"
 #include "Keyb1250.h"
-#include	"Log.h"
+#include "sc61860.h"
+#include "Keyb.h"
+#include "Connect.h"
  
 Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -69,6 +71,18 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
     pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"pc1250.map",scandef_pc1250);
 
+}
+
+
+Ctrspc3::Ctrspc3(CPObject *parent)	: Cpc1250(this)
+{								//[constructor]
+    setcfgfname("trspc3");
+
+    SessionHeader	= "TRSPC3PKM";
+    SessionHeaderLen= 9;
+    Initial_Session_Fname ="trspc3.pkm";
+
+    BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
 }
 
 void Cpc1250::UpdateFinalImage(void)

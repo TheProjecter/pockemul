@@ -20,6 +20,7 @@
 #include "dialoganalog.h"
 #include "paperwidget.h"
 #include "Keyb.h"
+#include "Connect.h"
 
 #define DOWN	0
 #define UP		1
@@ -538,4 +539,41 @@ bool Cce126::run(void)
 }
 
 
+Cce123::Cce123()
+{								//[constructor]
+    BackGroundFname	= ":/EXT/ext/ce-123p.jpg";
+    setcfgfname("ce123p");
+    setDX(708);//Pc_DX	= 708;
+    setDY(566);//Pc_DY	= 566;
+    SnapPts = QPoint(215,307);
+    pCONNECTOR->setSnap(QPoint(215,397));
+    setPaperPos(QRect(89,185-149,207,149));
 
+    delete pKEYB; pKEYB=new Ckeyb(this,"ce123.map");
+}
+
+Cce129::Cce129()
+{								//[constructor]
+    BackGroundFname	= ":/EXT/ext/ce-129p.jpg";
+    setcfgfname("ce129p");
+    setDX(708);//Pc_DX	= 708;
+    setDY(566);//Pc_DY	= 566;
+    SnapPts = QPoint(88,288);
+    pCONNECTOR->setSnap(QPoint(88,378));
+    setPaperPos(QRect(89,185-149,207,149));
+    delete pKEYB; pKEYB=new Ckeyb(this,"ce129.map");
+
+}
+
+C263591::C263591()
+{								//[constructor]
+    BackGroundFname	= ":/EXT/ext/26-3591.jpg";
+    setcfgfname("263591");
+    setDX(854);//Pc_DX	= 854;
+    setDY(349);//Pc_DY	= 349;
+    SnapPts = QPoint(373,0);
+    pCONNECTOR->setSnap(QPoint(373,90));
+    setPaperPos(QRect(78,0,207,149));
+
+    delete pKEYB; pKEYB=new Ckeyb(this,"263591.map");
+}

@@ -1124,6 +1124,16 @@ const uint8 CZ80::parity[] = {
   MASK_PV, 0, 0, MASK_PV, 0, MASK_PV, MASK_PV, 0, 0, MASK_PV, MASK_PV, 0, MASK_PV, 0, 0, MASK_PV
 };
 
+CZ80::CZ80(CPObject *parent)	: CCPU(parent)
+{				//[constructor]
+
+    pDEBUG = new Cdebug_z80(parent);
+    fn_status="Z80.sta";
+    fn_log="z80.log";
+
+    Is_Timer_Reached=FALSE;
+    //step_Previous_State = 0;
+}
 
 int CZ80::z80retn(Z80stat *z) {
     uint16 _length = 0;

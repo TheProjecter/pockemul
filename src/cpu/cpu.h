@@ -2,9 +2,13 @@
 #define CPU_H
 
 #include <QtCore/QFile>
+#include "common.h"
 
-#include "Debug.h"
+class CPObject;
 class CpcXXXX;
+class Cdebug;
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 
 #define		MASK_4		0xf				/*  4bit data mask */
@@ -35,14 +39,6 @@ public:
     virtual	void	save_internal(QXmlStreamWriter *) =0;
 			void	save(void);
 
-/*!
- \brief Get data from memory
-
- \fn get_mem
- \param adr     address
- \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
- \return DWORD  value
-*/
     virtual	DWORD	get_mem(DWORD adr,int size) =0;		//get memory
 	virtual	void	set_mem(DWORD adr,int size,DWORD data) =0;	//set memory
 	
@@ -70,29 +66,12 @@ public:
 
 	void	Check_Log(void);
 
-    virtual const char*	GetClassName(){ return("CCPU");};
+    virtual const char*	GetClassName(){ return("CCPU");}
 
 	virtual void	Reset(void) = 0;
 
-	CCPU(CPObject *parent)
-	{				//[constructor]
-		pPC = (CpcXXXX*) parent;
-		
-		halt=0;				//halt?(0:none, 1:halting)
-		end=0;				//program end?(0:none, 1:end)
-		savesw=1;			//end with memory save?(0:no, 1:yes)
-		log=0;				//execute log?(0:off, 1:on)
-		logsw=false;			//log mode?(0:off, 1:on)
-        resetFlag = false;
-		usestatus=0;
-		fp_status=0;
-		fp_log=0;
-        fn_log="cpu.log";
-        CallSubLevel=prevCallSubLevel=0;
+    CCPU(CPObject *parent);
 
-        for (int i=0;i<0x200;i++) imem[i]=0;
-
-	};
 private:
 	FILE *fp_status;		//pointer to status file
 };

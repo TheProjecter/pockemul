@@ -1,7 +1,7 @@
  
 #include	"common.h"
 #include	"pc1360.h"
-
+#include "sc61860.h"
 #include	"Inter.h"
 //#include	"debug.h"
 #include	"Keyb.h"

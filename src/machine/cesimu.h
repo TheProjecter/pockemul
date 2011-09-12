@@ -6,13 +6,13 @@
 #include <QTextBrowser>
 #include <QHBoxLayout>
 
-#include "Connect.h"
+
 #include "pobject.h"
-#include "Inter.h"
-#include "init.h"
+
 
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
 class DialogSimulator;
+class Cconnector;
 
 class Ccesimu:public CPObject{
 Q_OBJECT

@@ -5,6 +5,8 @@
 #include "cesimu.h"
 #include "dialogsimulator.h"
 #include "dialoganalog.h"
+#include "Connect.h"
+#include "Inter.h"
 
 #define DOWN	0
 #define UP		1

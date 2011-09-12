@@ -24,7 +24,8 @@ FORMS += ui/about.ui \
     qcodeedit/widgets/formatconfig.ui \
     qcodeedit/widgets/editconfig.ui \
     qcodeedit/snippets/snippetedit.ui \
-    ui/windowide.ui
+    ui/windowide.ui \
+    ui/dialogdasm.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -232,7 +233,8 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/PC-1475/stdio.h \
     resources/lcc/model/PC-1475/sound.h \
     resources/lcc/model/PC-1475/internal.h \
-    qcodemodel2/qcodenode.h
+    qcodemodel2/qcodenode.h \
+    ui/dialogdasm.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -430,7 +432,8 @@ SOURCES += src/core/Connect.cpp \
     qcodeedit/widgets/qoutpanel.cpp \
     qcodeedit/ccompletion.cpp \
     qcodeedit/qcodecompletionwidget.cpp \
-    qcodemodel2/qcodenode.cpp
+    qcodemodel2/qcodenode.cpp \
+    ui/dialogdasm.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

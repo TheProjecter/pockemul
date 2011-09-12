@@ -2,7 +2,7 @@
 #define _PC1475_H_
 
 #include "pc1360.h"
-#include "pc1450.h"
+
 
 
 class Cpc1475:public Cpc1360{						//PC1350 emulator main class

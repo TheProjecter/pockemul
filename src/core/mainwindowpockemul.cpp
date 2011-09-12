@@ -2,11 +2,6 @@
 #include <QString>
 #include <QPainter>
  
-//#ifndef NO_SOUND
-//#include "fmod.h"
-//#endif
-
-//#define NEWTIMER 1
 
 /** \mainpage
 PockEmul is a Sharp Pocket Computer Emulator.

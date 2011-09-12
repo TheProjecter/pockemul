@@ -21,6 +21,7 @@ class Cconnector;
 class CExtensionArray;
 class DialogKeyList;
 class DialogDump;
+class DialogDasm;
 
 
 struct URL {
@@ -135,10 +136,7 @@ public:
 	virtual int initsound();
 	virtual int exitsound();
 	void fillSoundBuffer(BYTE val);
-#ifndef NO_SOUND
-	FSOUND_STREAM* pStream;
-	static signed char F_CALLBACKAPI CustomStreamCallBack( FSOUND_STREAM *stream, void *buff, int len, void * param );
-#endif
+
     QList<unsigned char> soundBuffer;
 	
     QAudioDeviceInfo* m_device;
@@ -150,6 +148,7 @@ public:
 
 	DialogKeyList	*dialogkeylist;
     DialogDump		*dialogdump;
+    DialogDasm      *dialogdasm;
 
     QPixmap         mask;
 
@@ -194,6 +193,7 @@ public slots:
     void slotLoadSession();
     void slotSaveSession();
 	void Dump();
+    void Dasm();
 
 	
 private:

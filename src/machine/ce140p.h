@@ -2,10 +2,11 @@
 #define CE140P_H
 
 
-#include "sio.h"
+
 #include "ce515p.h"
 
 class DialogConsole;
+class Csio;
 
 class Cce140p:public Cce515p{
 Q_OBJECT

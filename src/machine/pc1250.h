@@ -6,11 +6,9 @@
 
 #include <QImage>
 
-#include "extension.h"
+
 #include "pcxxxx.h"
-#include "sc61860.h"
-#include "Keyb.h"
-#include "Connect.h"
+
 
 
 
@@ -64,16 +62,7 @@ protected:
 class Ctrspc3:public Cpc1250{						//PC1250 emulator main class
 public:
 
-	Ctrspc3(CPObject *parent = 0)	: Cpc1250(this)
-	{								//[constructor]
-		setcfgfname("trspc3");
-
-		SessionHeader	= "TRSPC3PKM";
-		SessionHeaderLen= 9;
-		Initial_Session_Fname ="trspc3.pkm";
-
-        BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
-	}
+    Ctrspc3(CPObject *parent = 0);
 
 
 };

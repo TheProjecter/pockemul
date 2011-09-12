@@ -49,7 +49,7 @@ WindowIDE::WindowIDE(QWidget *parent) :
     ui->setupUi(this);
 
     tabifyDockWidget(ui->projectDockWidget,ui->filesDockWidget);
-    this->setWindowTitle(tr("Integrated Development Environment"));
+    this->setWindowTitle(tr("PockEmul Integrated Development Environment"));
     this->setAttribute(Qt::WA_DeleteOnClose,true);
 
     setupEditor();

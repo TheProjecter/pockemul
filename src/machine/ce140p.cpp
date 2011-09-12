@@ -8,6 +8,8 @@
 #include "ce140p.h"
 #include "Keyb.h"
 #include "dialogconsole.h"
+#include "init.h"
+#include "sio.h"
 
 
 TransMap KeyMapce140p[]={

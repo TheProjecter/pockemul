@@ -5,11 +5,9 @@
 #include <stdio.h>
 
 
-#include "extension.h"
+
 #include "pcxxxx.h"
-#include "sc61860.h"
-#include "Keyb.h"
-#include "Connect.h"
+
 
 
 extern BYTE scandef_pc1350[];

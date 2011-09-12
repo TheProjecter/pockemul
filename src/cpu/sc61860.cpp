@@ -27,6 +27,34 @@ extern FILE *fp_tmp;
 #define		XTICK2      ( pPC->getfrequency() / 1000 * 2)       // 2ms counter
 #define		XTICKRESET  ( pPC->getfrequency() / 2)              // Reset laptime (0.5s)
 
+Csc::Csc(CPObject *parent)	: CCPU(parent)
+{				//[constructor]
+    end=0;				//program end?(0:none, 1:end)
+    log=0;				//execute log?(0:off, 1:on)
+    logsw=false;			//log mode?(0:off, 1:on)
+    usestatus=0;
+    fp_status=0;
+    fn_status="pc1350.sta";
+    fn_log="sc61860.log";
+    CallSubLevel=0;
+
+    div500	= 0;
+    div2	= 0;
+    ticks	= 0;
+    ticks2	= 0;
+    wait2khz = pPC->getfrequency()/1000/4;
+    wait4khz = pPC->getfrequency()/1000/8;
+    ticksReset = 0;
+    DASMLOG=0;
+    first_pass = true;
+    pDEBUG	= new Cdebug_sc61860(parent);
+
+    start2khz = 0;
+    start4khz = 0;
+    wait_loop_running = cup_loop_running = cdn_loop_running = false;
+    op_local_counter = 0;
+}
+
 INLINE void Csc::AddState(BYTE n)
 {
 	pPC->pTIMER->state+=(n);
@@ -2395,12 +2423,13 @@ INLINE void Csc::OpExec(BYTE Op)
 //    AddState(1);
 //    return;
 
+#if 0
 	if (g_DasmStep)
 	{
 		pDEBUG->DisAsm_1(reg.d.pc-1);
 		RefreshDasm();
 	}
-
+#endif
 //debug.DisAsm_1(reg.d.pc-1);
 //	AddLog(0x01,"PC=[%04X]",reg.d.pc-1 );
 

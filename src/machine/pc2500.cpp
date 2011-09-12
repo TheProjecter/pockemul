@@ -3,6 +3,7 @@
 //FIXME DEF key is not working
 #include <QtGui>
 #include "pc2500.h"
+#include "sc61860.h"
 #include "Keyb2500.h"
 #include "paperwidget.h"
 

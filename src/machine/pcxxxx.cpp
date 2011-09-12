@@ -157,6 +157,7 @@ void CpcXXXX::TurnOFF(void)
         };
         break;
     case YES: Initial_Session_Save(); break;
+    default : break;
 
     }
 
@@ -466,12 +467,12 @@ bool CpcXXXX::run(void)
             fflush(pCPU->fp_log);
 		}
 
-		if (g_BreakPointAdr == (pCPU->get_PC()))
+        if (BreakPointAdr == (pCPU->get_PC()))
 		{
 			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
 //--			ListBox_ResetContent(g_hWndListDasm);
-			g_DasmFlag = 1;
-			RefreshDasm();
+            DasmFlag = 1;
+            emit RefreshDasm();
 			pCPU->halt = 1;
 		}
 #endif
@@ -480,10 +481,10 @@ bool CpcXXXX::run(void)
 
 
 
-//	if (g_DasmStep)		// Stop after 1 step processed (DASM)
+//	if (DasmStep)		// Stop after 1 step processed (DASM)
 //	{
 //		pCPU->halt = 1;
-//		g_DasmStep = 0;
+//		DasmStep = 0;
 //	}
 
 

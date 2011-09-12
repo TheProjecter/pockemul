@@ -6,6 +6,7 @@
 #define SC61860_H
 
 #include "cpu.h"
+class CPObject;
 
 
 #define		MAX_IMEM	0x200			/* internal memory size */
@@ -125,33 +126,8 @@ public:
     bool    getDisp() { return disp_on;}
     virtual const char*	GetClassName(){ return("Csc");}
 
-	Csc(CPObject *parent)	: CCPU(parent)
-	{				//[constructor]
-		end=0;				//program end?(0:none, 1:end)
-		log=0;				//execute log?(0:off, 1:on)
-		logsw=false;			//log mode?(0:off, 1:on)
-		usestatus=0;
-		fp_status=0;
-		fn_status="pc1350.sta";
-        fn_log="sc61860.log";
-		CallSubLevel=0;
+    Csc(CPObject *parent);
 
-		div500	= 0;
-		div2	= 0;
-		ticks	= 0;
-        ticks2	= 0;
-        wait2khz = pPC->getfrequency()/1000/4;
-        wait4khz = pPC->getfrequency()/1000/8;
-        ticksReset = 0;
-        DASMLOG=0;
-        first_pass = true;
-		pDEBUG	= new Cdebug_sc61860(parent);
-
-		start2khz = 0;
-		start4khz = 0;
-        wait_loop_running = cup_loop_running = cdn_loop_running = false;
-		op_local_counter = 0;
-	};
 private:
     bool	div500;
     bool	div2;

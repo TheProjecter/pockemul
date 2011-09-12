@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include "pc1245.h"
+#include "Keyb.h"
 
 Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 {								//[constructor]

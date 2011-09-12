@@ -6,7 +6,7 @@
 
 
 #include "pc1350.h"
-#include "sc61860.h"
+
 
 
 class Cpc1450:public Cpc1350{						//PC1350 emulator main class

@@ -228,16 +228,8 @@ public:
 
     static void daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f);
 
-    CZ80(CPObject *parent)	: CCPU(parent)
-    {				//[constructor]
+    CZ80(CPObject *parent);
 
-        pDEBUG = new Cdebug_z80(parent);
-        fn_status="Z80.sta";
-        fn_log="z80.log";
-
-        Is_Timer_Reached=FALSE;
-        //step_Previous_State = 0;
-    };
 };
 #endif
 

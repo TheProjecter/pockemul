@@ -2,10 +2,6 @@
 #define CE1600P_H
 
 
-#ifndef NO_SOUND
-#include "fmod.h"
-#endif
-
 #include "Log.h"
 #include "lh5810.h"
 #include "ce150.h"

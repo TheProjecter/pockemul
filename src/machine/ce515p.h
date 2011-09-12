@@ -1,11 +1,6 @@
 #ifndef CE515P_H
 #define CE515P_H
 
-
-#ifndef NO_SOUND
-#include "fmod.h"
-#endif
-
 #include "Log.h"
 
 #include "cprinter.h"

@@ -6,6 +6,7 @@
 #include "sio.h"
 #include "pcxxxx.h"
 #include "dialogconsole.h"
+#include "init.h"
 
 #define SIO_GET_PIN(n)		pSIOCONNECTOR->Get_pin(n)
 #define SIO_SET_PIN(n,v)	pSIOCONNECTOR->Set_pin(n,v)
@@ -25,6 +26,43 @@
 #define SIO_VC2		13
 #define SIO_ER		14
 #define SIO_PRQ		15
+
+
+Csio::Csio(CPObject *parent)	: CPObject(this)
+{							//[constructor]
+    si=so=0;			//si,so port access?(0:none, 1:access)
+    plink=0;			//aplinks using?(0:none, 1:using)
+    plinkmode=0;		//select plink client(0:plink, 1:plinkc)
+    exportbit=0;
+    exportbyte=1;
+    convCRLF=1;
+
+    bit_in=oldstate_in=0;
+    Start_Bit_Sent = false;
+    t=c=0;waitbitstart=1;waitbitstop=0;
+
+    baudrate = 1200;
+
+    ToDestroy = false;
+
+    inBitNb = 0;
+    Sii_ndx				= 0;
+    Sii_wait			= 0;
+    Sii_startbitsent	= FALSE;
+    Sii_stopbitsent		= TRUE;
+    Sii_TransferStarted = FALSE;
+    Sii_TextLength		= 0;
+    Sii_Bit_Nb			= 0;
+    Sii_LfWait			= 500;
+
+    pSIOCONNECTOR = new Cconnector(this,15,0,"Connector 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
+    setfrequency( 0);
+    BackGroundFname	= ":/EXT/ext/serial.png";
+
+    pTIMER		= new Ctimer(this);
+    setDX(195);//Pc_DX	= 195;
+    setDY(145);//Pc_DY	= 145;
+}
 
 void Csio::Set_Sii_bit(qint8 bit)	{ Sii_bit = bit;				}
 qint8 Csio::Get_Sii_bit(void)		{ return (Sii_bit);				}
@@ -299,7 +337,7 @@ void Csio::outReadBit(void)
 			waitbitstop = 1;
 		}
 	}
-};
+}
 
 
 /*****************************************************************************/

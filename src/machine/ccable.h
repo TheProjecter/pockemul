@@ -2,8 +2,9 @@
 #define _CCABLE_H_
 
 #include "pobject.h"
-#include "Connect.h"
-#include "Inter.h"
+
+
+class Cconnector;
 
 class Ccable:public CPObject{
 public:

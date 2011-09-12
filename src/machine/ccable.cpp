@@ -4,7 +4,9 @@
 #include "dialoganalog.h"
 
 #include "ccable.h"
+#include "Connect.h"
 #include "init.h"
+#include "Inter.h"
 
 
 extern MainWindowPockemul *mainwindow;

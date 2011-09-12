@@ -59,10 +59,16 @@ class Ckeyb;
 #define EXTENSION_CE201M			ext_MemSlot1->ExtArray[ID_CE201M]
 #define EXTENSION_CE202M			ext_MemSlot1->ExtArray[ID_CE202M]
 #define EXTENSION_CE203M			ext_MemSlot1->ExtArray[ID_CE203M]
+#define EXTENSION_CE210M			ext_MemSlot1->ExtArray[ID_CE210M]
+#define EXTENSION_CE211M			ext_MemSlot1->ExtArray[ID_CE211M]
+#define EXTENSION_CE212M			ext_MemSlot1->ExtArray[ID_CE212M]
 
 #define EXTENSION_CE201M_CHECK		EXTENSION_CE201M->IsChecked
 #define EXTENSION_CE202M_CHECK		EXTENSION_CE202M->IsChecked
 #define EXTENSION_CE203M_CHECK		EXTENSION_CE203M->IsChecked
+#define EXTENSION_CE210M_CHECK		EXTENSION_CE210M->IsChecked
+#define EXTENSION_CE211M_CHECK		EXTENSION_CE211M->IsChecked
+#define EXTENSION_CE212M_CHECK		EXTENSION_CE212M->IsChecked
 
 #define S1_EXTENSION_CE210M_CHECK	ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked
 #define S1_EXTENSION_CE211M_CHECK	ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked
@@ -111,7 +117,7 @@ extern TransMap KeyMap2500[]; extern int KeyMap2500Lenght;
 class CpcXXXX:public CPObject{
 Q_OBJECT
 public:
-    virtual const char*	GetClassName(){ return("CpcXXXX");};
+    virtual const char*	GetClassName(){ return("CpcXXXX");}
 
 	QList<CSlot> SlotList;
 	
@@ -273,7 +279,14 @@ private slots:
     void manageSaveExtensions();
 	void manageExtensions(QAction *);
 	
+signals:
+    void RefreshDasm();
 
+public:
+    int DasmStep;
+    bool DasmFlag;
+    qint32 BreakPointAdr;
+    int BreakSubLevel;
 };
 
 

@@ -11,6 +11,8 @@
 #include "clink.h"
 #include "dialogkeylist.h"
 #include "dialogdump.h"
+#include "ui/dialogdasm.h"
+
 #include "weblinksparser.h"
 #include "sc61860.h"
 
@@ -241,21 +243,7 @@ int CPObject::initsound()
     int p = m_audioOutput->periodSize();
     qWarning()<<p;
 #endif
-#ifndef NO_SOUND
-	unsigned int mode;
-	int lenbytes;
-	int samplerate;
-	
-    lenbytes = BUFFLEN;
-	mode = FSOUND_LOOP_OFF | FSOUND_MONO | FSOUND_8BITS | FSOUND_SIGNED;
-	samplerate = SAMPLERATE;
 
-	pStream = FSOUND_Stream_Create( CustomStreamCallBack , lenbytes ,  mode , samplerate ,  this);
-	
-	iChanIndex = FSOUND_Stream_Play( FSOUND_FREE, pStream ); 
-	FSOUND_SetVolumeAbsolute(iChanIndex,30);
-	return iChanIndex;
-#endif
 }
 
 int CPObject::exitsound()
@@ -266,38 +254,6 @@ int CPObject::exitsound()
 	return true;
 }
 
-#ifndef NO_SOUND
-signed char F_CALLBACKAPI CPObject::CustomStreamCallBack( FSOUND_STREAM *stream, void *buff, int len, void * param )
-{
-    mainwindow->audioMutex.lock();
-
-    CPObject *pPC = ((CPObject *) param);
-    char *mono8bitbuffer = (char *)buff;
-
-    for (int count=0; count<len; count++)        
-    {
-        if (! pPC->soundBuffer.isEmpty())
-        {
-            *mono8bitbuffer++ =  pPC->soundBuffer.takeFirst()-128;
-            //pPC->soundBuffer.removeAt(0);
-		}
-        else {
-            *mono8bitbuffer++ = 0;//-128;
-            AddLog(LOG_TEMP,"Buffer audio empty")
-        }
-    }
-//	fprintf(fp_tmp,"\n%s\n",tr("%1 : buffersize = %2 len=%3 stream=%4 buff=%5").arg(pPC->getName()).arg(pPC->soundBuffer.size()).arg(len).arg((int)stream).arg((int)buff).toLocal8Bit().data());
-
-	// Purge buffer for resync
-    if ( (pPC->soundBuffer.size() > BUFFLEN) && (pPC->soundBuffer.indexOf(0xff) == -1) )
-    {
-        pPC->soundBuffer.clear();
-    }
-
-    mainwindow->audioMutex.unlock();
-	return 1;
-}
-#endif
 
 //FIXME The piezo doesn't produce sounf for frequency < 1Khz
 void CPObject::fillSoundBuffer(BYTE val)
@@ -319,42 +275,12 @@ void CPObject::fillSoundBuffer(BYTE val)
         mainwindow->audioMutex.lock();
         while ((pTIMER->state - fillSoundBuffer_old_state) >= wait)
         {
-#if NEW_SOUND
-#if 0
-
-            switch (val) {
-            case 0xff:
-                tempBuff.append(val);
-                if (tempBuff.size()>20) {
-                    audioBuff.append(0x00,10);
-                    tempBuff.remove(0,10);
-                }
-                break;
-            case 0x00:
-                audioBuff.append(tempBuff);
-                audioBuff.append(val);
-                tempBuff.clear();
-                break;
-            }
-#else
             audioBuff.append(val);
-#endif
-//            if (fp_tmp==NULL)
-//                fp_tmp=fopen("LOGsound.bin","wb");
-//            //fputc(val,fp_tmp);
-//            fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5 ").arg(val).arg(wait).arg(delta_state).arg(pTIMER->state).arg(fillSoundBuffer_old_state).toLocal8Bit().data());
 
-            //if (val) { AddLog(LOG_MASTER,tr("SOUND:%1").arg(val))}
-
-#else
-            //if (soundBuffer.size() < BUFFLEN)
-                soundBuffer.append(val);
-#endif
             fillSoundBuffer_old_state += wait;
             //delta_state -= wait;
         }
 
-#if NEW_SOUND
         int ps = m_audioOutput->periodSize();
         //AddLog(LOG_TEMP,tr("buff:%1   ps:%2").arg(audioBuff.size()).arg(ps));
 
@@ -374,7 +300,6 @@ void CPObject::fillSoundBuffer(BYTE val)
             }
 #endif
         }
-#endif
         mainwindow->audioMutex.unlock();
     }
 }
@@ -821,7 +746,9 @@ void CPObject::BuildContextMenu(QMenu * menu)
 
     if ( dynamic_cast<CpcXXXX *>(this) ) {
         menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
+        menu->addAction(tr("Debug"),this,SLOT(Dasm()));
     }
+
 	menu->addSeparator();
 	computeLinkMenu(menu);
 	computeUnLinkMenu(menu);
@@ -995,6 +922,12 @@ void CPObject::Dump()
 {
 	dialogdump = new DialogDump(this);
 	dialogdump->show();
+}
+
+void CPObject::Dasm()
+{
+    dialogdasm = new DialogDasm(this);
+    dialogdasm->show();
 }
 
 bool CPObject::getdisp_onRaised()
