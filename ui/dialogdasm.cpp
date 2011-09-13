@@ -1,3 +1,6 @@
+//TODO Contextual menu on breakpoints
+
+
 #include "dialogdasm.h"
 #include "ui_dialogdasm.h"
 #include "pcxxxx.h"
@@ -20,9 +23,7 @@ DialogDasm::DialogDasm(QWidget *parent) :
 
     imemHexEditor = new BINEditor::BinEditor(ui->imemframe);
     memHexEditor = new BINEditor::BinEditor(ui->memframe);
-//    imemHexEditor->setFocus();
 
-    connect(ui->refreshButton,SIGNAL(clicked()),this,SLOT(loadImem()));
     connect(ui->pbStart,SIGNAL(clicked()),this,SLOT(start()));
     connect(ui->pbStop,SIGNAL(clicked()),this,SLOT(stop()));
     connect(ui->pbStep,SIGNAL(clicked()),this,SLOT(step()));
@@ -32,13 +33,15 @@ DialogDasm::DialogDasm(QWidget *parent) :
     font.setFamily("Courier");
     font.setFixedPitch(true);
     font.setPointSize(10);
-
     ui->codelistWidget->setFont(font);
 
-    regwidget = pPC->pCPU->regwidget;
-    regwidget->setParent(ui->regframe);
+    if (pPC->pCPU->regwidget) {
+        regwidget = pPC->pCPU->regwidget;
+        regwidget->setParent(ui->regframe);
+    }
+    this->show();
+    this->resize(545,490);
 
-    resize(this->size());
 }
 
 DialogDasm::~DialogDasm()
@@ -83,8 +86,6 @@ bool DialogDasm::IsAdrInList(qint32 adr)
     return(false);
 
 }
-
-
 
 void DialogDasm::RefreshDasm()
 {
@@ -157,7 +158,7 @@ void DialogDasm::RefreshDasm()
 
         //ShowReg();
     }
-    regwidget->refresh();
+    if (regwidget) regwidget->refresh();
     loadImem();
 
 }
@@ -177,7 +178,8 @@ void DialogDasm::loadMem()
 
 void DialogDasm::resizeEvent( QResizeEvent * event )
 {
-    imemHexEditor->resize( ui->imemframe->size() );
+    imemHexEditor->resize( ui->imemframe->size());
+    if (regwidget) regwidget->resize(ui->regframe->size());
 }
 
 void DialogDasm::start()

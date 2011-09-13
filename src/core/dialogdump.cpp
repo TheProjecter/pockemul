@@ -28,15 +28,10 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
     connect(pbFindNext,SIGNAL(clicked()),this,SLOT(FindNext()));
     connect(leJump,SIGNAL(returnPressed()),this,SLOT(JumpTo()));
 
-#if 1
     hexeditor = new BINEditor::BinEditor(framedump);
     hexeditor->setFocus();
-#else
-    hextemp = new QHexEdit(framedump);
-    hextemp->setFocus();
-#endif
-      LoadSlot();
 
+    LoadSlot();
 
 	resize( 605,400);
 }
@@ -147,11 +142,8 @@ void DialogDump::LoadSlot(void)
 
 void DialogDump::resizeEvent( QResizeEvent * event )
 {
-#if 1
     hexeditor->resize( framedump->size() );
-#else
-    hextemp->resize(framedump->size());
-#endif
+
 }
 
 void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previous)
@@ -164,21 +156,13 @@ void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previo
 	int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(&ok,16);
 	int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
 
-#if 1
     QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
     hexeditor->data().clear();
     hexeditor->setReadOnly(true);
     hexeditor->setData(*ba);
     hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
 
-#else
-    QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
-    hextemp->data().clear();
-    hextemp->setAddressOffset(adr);
-    hextemp->setData(*ba);//data().append(&(pPC->mem[adr]),size);
 
-    hextemp->setFocus();
-#endif
 	update();
 
 }

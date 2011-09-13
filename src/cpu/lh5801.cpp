@@ -76,7 +76,7 @@ CLH5801::CLH5801(CPObject *parent)	: CCPU(parent)
 
     Is_Timer_Reached=FALSE;
     step_Previous_State = 0;
-};
+}
 
 bool CLH5801::init(void)
 {

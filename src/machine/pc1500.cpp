@@ -274,7 +274,7 @@ bool Cpc15XX::run(void)
 
 	Current_PC = pCPU->get_PC();
 
-	pLCDC->On = ((CLH5801 *)pCPU)->lh5801.dp;
+    //pLCDC->On = ((CLH5801 *)pCPU)->lh5801.dp;
 
 	if (pKEYB->CheckKon()) 
 		((CLH5801 *)pCPU)->lh5801.bf=1;

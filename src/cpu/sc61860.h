@@ -50,7 +50,7 @@ class CPObject;
 
 enum REGNAME{					//register name
 	REG_A , REG_B , REG_BA, REG_I, REG_J, REG_X ,
-	REG_Y ,  REG_PC, REG_DP, REG_C, REG_Z
+    REG_Y ,  REG_PC, REG_DP, REG_C, REG_Z,REG_P,REG_Q,REG_R
 };
 extern char	RegName[10];
 
@@ -302,7 +302,7 @@ private:
 
 	void  Op_e0(BYTE);
 
-	SCREG	reg;				// register structure
+    SCREG	reg;				// register structure
 
 
     qint64 ticks;

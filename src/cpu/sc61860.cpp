@@ -2916,6 +2916,9 @@ DWORD Csc::get_reg(REGNAME regname)
 	case REG_DP:return(reg.d.dp);	break;
 	case REG_C :return(reg.r.c);	break;
 	case REG_Z :return(reg.r.z);	break;
+    case REG_P :return(reg.r.p);    break;
+    case REG_Q :return(reg.r.q);    break;
+    case REG_R :return(reg.r.r);    break;
 	}
 	return(0);
 }
@@ -2946,6 +2949,9 @@ void Csc::set_reg(REGNAME regname,DWORD data)
 	case REG_DP:reg.d.dp= (WORD) data; break;	
 	case REG_C : reg.r.c= (BYTE) data; break;
 	case REG_Z : reg.r.z= (BYTE) data; break;
+    case REG_P : reg.r.p= (BYTE) data; break;
+    case REG_Q : reg.r.q= (BYTE) data; break;
+    case REG_R : reg.r.r= (BYTE) data; break;
 
 	}
 }
