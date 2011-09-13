@@ -26,7 +26,7 @@ FORMS += ui/about.ui \
     qcodeedit/snippets/snippetedit.ui \
     ui/windowide.ui \
     ui/dialogdasm.ui \
-    ui/RegsSc61860.ui
+    ui/cregssc61860widget.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -235,7 +235,8 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/PC-1475/sound.h \
     resources/lcc/model/PC-1475/internal.h \
     qcodemodel2/qcodenode.h \
-    ui/dialogdasm.h
+    ui/dialogdasm.h \
+    ui/cregssc61860widget.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -434,7 +435,8 @@ SOURCES += src/core/Connect.cpp \
     qcodeedit/ccompletion.cpp \
     qcodeedit/qcodecompletionwidget.cpp \
     qcodemodel2/qcodenode.cpp \
-    ui/dialogdasm.cpp
+    ui/dialogdasm.cpp \
+    ui/cregssc61860widget.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

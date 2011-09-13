@@ -3,7 +3,7 @@
 #include "pcxxxx.h"
 #include "Debug.h"
 #include "bineditor/bineditor.h"
-#include "ui_RegsSc61860.h"
+#include "ui/cregssc61860widget.h"
 
 
 DialogDasm::DialogDasm(QWidget *parent) :
@@ -34,8 +34,8 @@ DialogDasm::DialogDasm(QWidget *parent) :
 
     ui->codelistWidget->setFont(font);
 
-    Ui_CRegsSc61860Widget *reg = new Ui_CRegsSc61860Widget();
-    reg->setupUi(ui->regframe);
+    Cregssc61860Widget *reg = new Cregssc61860Widget();
+
     resize(this->size());
 }
 
