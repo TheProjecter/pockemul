@@ -339,10 +339,10 @@ bool BinEditor::isReadOnly() const
     return m_readOnly;
 }
 
-void BinEditor::setData(const QByteArray &data)
+void BinEditor::setData(const QByteArray &data,qint64 offset)
 {
     m_inLazyMode = false;
-    m_baseAddr = 0;
+    m_baseAddr = offset;
     m_lazyData.clear();
     m_modifiedData.clear();
     m_lazyRequests.clear();

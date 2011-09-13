@@ -267,14 +267,15 @@ void WindowIDE::compile(void) {
 
         currentWidget->m_editControl
                 ->addPanel(hexpanel, QCodeEdit::South, true);
-        hexpanel->hexeditor->setData(mapLM["BIN"]);
+        hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
+        hexpanel->hexeditor->setData(mapLM["BIN"],hexpanel->startadr);
         hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
         connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
         connect(this,SIGNAL(removeEmulatedPocket(CPObject*)),hexpanel,SLOT(removePocket(CPObject*)));
         connect(hexpanel,SIGNAL(installTo(CpcXXXX*,qint32,QByteArray)),this,SLOT(installTo(CpcXXXX*,qint32,QByteArray)));
 
 
-        hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
+
 
 //        MSG_ERROR("*"+mapLM["_ORG"]+"*");
 //        MSG_ERROR(QString("%1").arg(hexpanel->startadr));

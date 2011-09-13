@@ -62,7 +62,7 @@ public:
     BinEditor(QWidget *parent = 0);
     ~BinEditor();
 
-    void setData(const QByteArray &data);
+    void setData(const QByteArray &data,qint64 offset=0);
     QByteArray data() const;
 
     inline int dataSize() const { return m_size; }
