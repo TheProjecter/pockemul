@@ -2569,7 +2569,7 @@ DWORD Cdebug_z80::DisAsm_1(DWORD oldpc)
     //return (oldpc);
     Buffer[0] = '\0';
     char *str = Buffer;
-#if 1
+
     char LocBuffer[60];
     oldpc &= 0xffff;
     DasmAdr = oldpc;
@@ -2606,19 +2606,23 @@ DWORD Cdebug_z80::DisAsm_1(DWORD oldpc)
     //sprintf(str,"%s",format);
     //return oldpc;
 
+
+
     switch(*q & (MASK_LPARAM | MASK_RPARAM | MASK_PARAM)) {
     case 0:
         header(oldpc,1);
         sprintf(str,"%-16s %s",Buffer, format);
         //strcpy(str,format);
-        return oldpc+1;// p + 1;
+        pc= oldpc+1;// p + 1;
+        break;
     case LPARAM_UINT8:
     case RPARAM_UINT8:
         header(oldpc,2);
         sprintf(format2,"%-16s %s",Buffer,format);
         //sprintf(str,"%s",format2);
         sprintf(str, format2,p1);// *(uint8 *)(p + 1));
-        return oldpc+2;// p + 2;
+        pc = oldpc+2;// p + 2;
+        break;
     case LPARAM_INT8:
     case RPARAM_INT8:
         header(oldpc,2);
@@ -2627,32 +2631,39 @@ DWORD Cdebug_z80::DisAsm_1(DWORD oldpc)
         sprintf(format2,"%-16s %s",Buffer,format);
         //sprintf(str,"%s",format);
         sprintf(str, format2,p1);// *(int8 *)(p + 1));
-        return oldpc+2;// p + 2;
+        pc = oldpc+2;// p + 2;
+        break;
     case LPARAM_UINT16:
     case RPARAM_UINT16:
         header(oldpc,3);
         //sprintf(str,strcat("%s ",format),Buffer,format,p2,p1);
         sprintf(format2,"%-16s %s",Buffer,format);
         sprintf(str, format2, p2, p1);
-        return oldpc+3;// p + 3;
+        pc = oldpc+3;// p + 3;
+        break;
     case LPARAM_INT8 | RPARAM_UINT8:
         header(oldpc,3);
         //str = &Buffer[16];
         sprintf(format2,"%-16s %s",Buffer,format);
         //sprintf(str,"%s",format);
         sprintf(str, format2, p1, p2);
-        return oldpc+3;// p + 3;
+        pc = oldpc+3;// p + 3;
+        break;
     case PARAM_INT8:
         header(oldpc,2);
         //str = &Buffer[16];
         sprintf(format2,"%-16s %s",Buffer,format);
         //sprintf(str,"%s",format);
         sprintf(str, format2, p);
-        return oldpc+2;// p + 2;
+        pc = oldpc+2;// p + 2;
+        break;
     default:
-        return oldpc+1;// p + 1;
+        pc = oldpc+1;// p + 1;
     }
-#endif
+
+    NextDasmAdr = pc;
+    debugged = true;
+    return pc;
 }
 
 /*

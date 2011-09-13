@@ -76,7 +76,8 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     ioFreq = 24000;
     DasmFlag = false;
     DasmStep = false;
-    BreakPointAdr = -1;
+    BreakPointAdr = 9999999; //-- MAXDWORD;
+    BreakSubLevel = -1;
 
 }
 

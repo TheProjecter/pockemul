@@ -12,6 +12,7 @@
 
 #include "Debug.h"
 #include "Log.h"
+#include "ui/cregslh5801widget.h"
 
 #define IMEM_LEN    0x200
 
@@ -76,6 +77,8 @@ CLH5801::CLH5801(CPObject *parent)	: CCPU(parent)
 
     Is_Timer_Reached=FALSE;
     step_Previous_State = 0;
+
+    regwidget = (CregCPU*) new Cregslh5801Widget(0,this);
 }
 
 bool CLH5801::init(void)
@@ -84,14 +87,14 @@ bool CLH5801::init(void)
 	pDEBUG->init();
 	Reset();
 	return(1);
-};						//initialize
+}						//initialize
 
 bool	CLH5801::exit(void)
 {
     if(fp_log) fclose(fp_log);							//close log file
 	pDEBUG->exit();
 	return true;
-};						//end
+}						//end
 
 void CLH5801::Set_C(void)
 {
