@@ -236,7 +236,8 @@ HEADERS += src/core/Connect.h \
     resources/lcc/model/PC-1475/internal.h \
     qcodemodel2/qcodenode.h \
     ui/dialogdasm.h \
-    ui/cregssc61860widget.h
+    ui/cregssc61860widget.h \
+    ui/cregcpu.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -436,7 +437,8 @@ SOURCES += src/core/Connect.cpp \
     qcodeedit/qcodecompletionwidget.cpp \
     qcodemodel2/qcodenode.cpp \
     ui/dialogdasm.cpp \
-    ui/cregssc61860widget.cpp
+    ui/cregssc61860widget.cpp \
+    ui/cregcpu.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

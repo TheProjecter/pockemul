@@ -14,6 +14,7 @@
 #include "Ce126.h"
 #include "dialoganalog.h"
 #include "dialoglog.h"
+#include "ui/cregssc61860widget.h"
 
 #define ARG2x(i)	arg(i,2,16,QChar('0'))
 #define ARG4x(i)	arg(i,4,16,QChar('0'))
@@ -3027,4 +3028,5 @@ void Csc::Regs_Info(UINT8 Type)
 
 CSC61860::CSC61860(CPObject *parent )	: Csc(parent) {
     imemsize = 0x60;
+    regwidget = (CregCPU*) new Cregssc61860Widget(0,this);
 }

@@ -9,6 +9,7 @@ class CpcXXXX;
 class Cdebug;
 class QXmlStreamReader;
 class QXmlStreamWriter;
+class CregCPU;
 
 
 #define		MASK_4		0xf				/*  4bit data mask */
@@ -74,6 +75,8 @@ public:
     CCPU(CPObject *parent);
 
     QByteArray getimem();
+
+    CregCPU * regwidget;
 private:
 	FILE *fp_status;		//pointer to status file
 };

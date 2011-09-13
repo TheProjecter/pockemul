@@ -22,6 +22,8 @@ CCPU::CCPU(CPObject *parent)
     imemsize = 0x200;
     for (int i=0;i<imemsize;i++) imem[i]=0;
 
+    regwidget = 0;
+
 
 }
 

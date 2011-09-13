@@ -3,17 +3,22 @@
 
 #include <QWidget>
 
+#include "ui/cregcpu.h"
+class CCPU;
+
 namespace Ui {
     class Cregssc61860Widget;
 }
 
-class Cregssc61860Widget : public QWidget
+class Cregssc61860Widget : public CregCPU
 {
     Q_OBJECT
 
 public:
-    explicit Cregssc61860Widget(QWidget *parent = 0);
+    explicit Cregssc61860Widget(QWidget *parent = 0,CCPU *pCPU = 0);
     ~Cregssc61860Widget();
+
+    void refresh();
 
 private:
     Ui::Cregssc61860Widget *ui;

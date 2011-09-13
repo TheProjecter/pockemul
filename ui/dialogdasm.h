@@ -3,6 +3,7 @@
 
 #include <QDialog>
 class CpcXXXX;
+class CregCPU;
 
 namespace BINEditor {
     class BinEditor;
@@ -32,6 +33,7 @@ private:
     Ui::DialogDasm *ui;
     BINEditor::BinEditor *imemHexEditor;
     BINEditor::BinEditor *memHexEditor;
+    CregCPU *regwidget;
 
 public slots:
     void RefreshDasm();

@@ -4,7 +4,8 @@
 #include "Debug.h"
 #include "bineditor/bineditor.h"
 #include "ui/cregssc61860widget.h"
-
+#include "cpu.h"
+#include "cregcpu.h"
 
 DialogDasm::DialogDasm(QWidget *parent) :
     QDialog(parent),
@@ -34,7 +35,8 @@ DialogDasm::DialogDasm(QWidget *parent) :
 
     ui->codelistWidget->setFont(font);
 
-    Cregssc61860Widget *reg = new Cregssc61860Widget();
+    regwidget = pPC->pCPU->regwidget;
+    regwidget->setParent(ui->regframe);
 
     resize(this->size());
 }
@@ -139,6 +141,7 @@ void DialogDasm::RefreshDasm()
 
         //ShowReg();
     }
+    regwidget->refresh();
 
 }
 
