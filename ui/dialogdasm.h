@@ -29,6 +29,7 @@ public:
     qint32	NextMaxAdr;
 
     void resizeEvent(QResizeEvent *event);
+    void selectRow(int index);
 private:
     Ui::DialogDasm *ui;
     BINEditor::BinEditor *imemHexEditor;

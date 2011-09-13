@@ -46,6 +46,22 @@ DialogDasm::~DialogDasm()
     delete ui;
 }
 
+void DialogDasm::selectRow(int index) {
+
+    QListWidgetItem *item = ui->codelistWidget->currentItem();
+    if (item) {
+        ui->codelistWidget->currentItem()->setBackground(Qt::white);
+        ui->codelistWidget->currentItem()->setForeground(Qt::black);
+    }
+    ui->codelistWidget->setCurrentRow(index);
+    //ui->codelistWidget->currentItem()->setSelected(true);
+    ui->codelistWidget->currentItem()->setBackground(Qt::blue);
+    ui->codelistWidget->currentItem()->setForeground(Qt::red);
+    //ui->codelistWidget->currentItem()->font().setBold(true);
+//    font.setBold(true);
+//    ui->codelistWidget->currentItem()->setFont(font);
+}
+
 bool DialogDasm::IsAdrInList(qint32 adr)
 {
 
@@ -58,8 +74,8 @@ bool DialogDasm::IsAdrInList(qint32 adr)
         QListWidgetItem *item = ui->codelistWidget->item(i);
         if (adr == item->data(Qt::UserRole))
         {
-            ui->codelistWidget->setCurrentRow(i);
-            ui->codelistWidget->currentItem()->setSelected(true);
+            selectRow(i);
+
             return(true);
         }
     }
@@ -98,8 +114,8 @@ void DialogDasm::RefreshDasm()
                     int adr = pPC->pCPU->pDEBUG->DasmAdr;
                     item->setData(Qt::UserRole,QVariant(adr));
                     ui->codelistWidget->addItem(item);
-                    ui->codelistWidget->setCurrentRow(ui->codelistWidget->count()-1);
-                    ui->codelistWidget->currentItem()->setSelected(true);
+                    selectRow(ui->codelistWidget->count()-1);
+
                     //ListBox_SetItemData(g_hWndListDasm, Index, 0);
                     NextMaxAdr = pPC->pCPU->pDEBUG->NextDasmAdr;
                     Index++;
@@ -112,8 +128,8 @@ void DialogDasm::RefreshDasm()
             int adr = pPC->pCPU->pDEBUG->DasmAdr;
             item->setData(Qt::UserRole,adr);
             ui->codelistWidget->addItem(item);
-            ui->codelistWidget->setCurrentRow(ui->codelistWidget->count()-1);
-            ui->codelistWidget->currentItem()->setSelected(true);
+            selectRow(ui->codelistWidget->count()-1);
+
             //ui->codelistWidget->currentItem()->setFont();
 
             //ListBox_SetItemData(g_hWndListDasm, Index, pPC->pCPU->pDEBUG->DasmAdr);
@@ -142,6 +158,7 @@ void DialogDasm::RefreshDasm()
         //ShowReg();
     }
     regwidget->refresh();
+    loadImem();
 
 }
 
