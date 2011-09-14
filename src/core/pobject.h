@@ -175,7 +175,9 @@ public:
 	void mouseMoveEvent( QMouseEvent * event );
 	void focusInEvent ( QFocusEvent * event ); 
 	void focusOutEvent ( QFocusEvent * event ); 
-	
+
+
+
 
 public slots:
     void audioStateChanged(QAudio::State state);

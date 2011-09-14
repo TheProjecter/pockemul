@@ -199,6 +199,15 @@
          </item>
          <item>
           <property name="text">
+           <string>PC 1280</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1280.qrc">
+            <normaloff>:/PC1280/pc1280/pc-1280.png</normaloff>:/PC1280/pc1280/pc-1280.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>PC 1350</string>
           </property>
           <property name="icon">
@@ -349,11 +358,11 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1280</string>
+           <string>Canon X-07</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1280.qrc">
-            <normaloff>:/PC1280/pc1280/pc-1280.png</normaloff>:/PC1280/pc1280/pc-1280.png</iconset>
+           <iconset resource="../resources/x07.qrc">
+            <normaloff>:/x07/x07.png</normaloff>:/x07/x07.png</iconset>
           </property>
          </item>
         </widget>
@@ -656,6 +665,7 @@
   <include location="../resources/pc1500.qrc"/>
   <include location="../resources/pc1600.qrc"/>
   <include location="../resources/pc2500.qrc"/>
+  <include location="../resources/x07.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -57,6 +57,8 @@
 #include "potar.h"
 #include "cesimu.h"
 
+#include "cx07.h"
+
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -65,7 +67,7 @@ CWatchPoint WatchPoint;
 
 bool	UpdateDisplayRunning;
 CPocketThread* PcThread;
-QList<CPocketThread*> listPcThread;	
+QList<CPocketThread*> listPcThread;
 
 
 CPObject * InitApp(int idPC )
@@ -126,6 +128,8 @@ CPObject *pPC=0;
         case Simulator  : pPC = new Ccesimu;		pPC->setName("Simulator");break;
 
         case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
+
+        case X07    : pPC = new Cx07;       pPC->setName("Canon X-07"); break;
 
         default			: return 0;
     }

@@ -1,6 +1,8 @@
 #ifndef CE515P_H
 #define CE515P_H
 
+#include <QSound>
+
 #include "Log.h"
 
 #include "cprinter.h"
@@ -119,6 +121,8 @@ private:
     qint64  printer_oldstate_draw;
     qint64  printer_oldstate_paperfeed;
     unsigned char	t,c,waitbitstart,waitbitstop;
+
+    QSound *clac;
 
 };
 

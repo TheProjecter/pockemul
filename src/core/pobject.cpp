@@ -626,6 +626,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 
 void CPObject::keyReleaseEvent(QKeyEvent * event )
 {
+
 	if (!pKEYB) return;	// if no Keyboard then return;
 		
 	pKEYB->LastKey = 0;
@@ -633,7 +634,7 @@ void CPObject::keyReleaseEvent(QKeyEvent * event )
 
 void CPObject::keyPressEvent (QKeyEvent * event )
 {
-		
+
 	if (!pKEYB) return;	// if no Keyboard then return;
 
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);

@@ -157,7 +157,7 @@ public:
     Z80stat z80;
 //    long	ticks;
 
-    const char*	GetClassName(){ return("CZ80");};
+    const char*	GetClassName(){ return("CZ80");}
 
 
 

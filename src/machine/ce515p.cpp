@@ -69,9 +69,8 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
 
     setPaperPos(QRect(75,46,380,170));
 
-#ifndef NO_SOUND
-    clac = NULL;
-#endif
+    clac = 0;
+
     StartRot = false;
     Change_Color = true;
     Sii_wait			= 0;
@@ -246,25 +245,9 @@ bool Cce515p::init(void)
 {
     CPObject::init();
 
-#ifndef NO_SOUND
-    QResource res(":/EXT/ext/clac2.wav");
-    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
-#endif
+    clac = new QSound(":/EXT/ext/clac2.wav");
 
-#if 0
-    QFile inputFile;
-     inputFile.setFileName("/home/alex/Music/noh.wav");
-     inputFile.open(QIODevice::ReadOnly);
 
-     QAudioFormat format;
-     format.setFrequency(44100);
-     format.setChannels(2);
-     format.setSampleSize(32);
-     format.setCodec("audio/pcm");
-     format.setByteOrder(QAudioFormat::LittleEndian);
-     format.setSampleType(QAudioFormat::UnSignedInt);
-     QAudioOutput *audio = new QAudioOutput( format, 0);
-#endif
     setfrequency( 0);
 
     //WatchPoint.add(&pCONNECTOR_value,8,5,this,"Internal connector");
@@ -326,11 +309,8 @@ void Cce515p::Print(CMove point)
         }
         // Check is pen up/down status change to play the CLAC
         if (point.penDown != old_penDown) {
-#ifndef NO_SOUND
-            int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac, 0 , true);
-            FSOUND_SetVolumeAbsolute(iChanIndex,255);
-            FSOUND_SetPaused(iChanIndex,false);
-#endif
+            clac->play();
+
             old_penDown = point.penDown;
         }
         paperWidget->setOffset(QPoint(0,point.Y));

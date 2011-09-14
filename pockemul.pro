@@ -239,7 +239,10 @@ HEADERS += src/core/Connect.h \
     ui/dialogdasm.h \
     ui/cregssc61860widget.h \
     ui/cregcpu.h \
-    ui/cregslh5801widget.h
+    ui/cregslh5801widget.h \
+    src/machine/cx07.h \
+    src/cpu/ct6834.h \
+    src/machine/cx07char.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -290,7 +293,8 @@ RESOURCES += resources/ext.qrc \
     resources/keymap.qrc \
     resources/stdlibs.qrc \
     qcodeedit/qxs/qxs.qrc \
-    resources/asmlibs.qrc
+    resources/asmlibs.qrc \
+    resources/x07.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -441,7 +445,9 @@ SOURCES += src/core/Connect.cpp \
     ui/dialogdasm.cpp \
     ui/cregssc61860widget.cpp \
     ui/cregcpu.cpp \
-    ui/cregslh5801widget.cpp
+    ui/cregslh5801widget.cpp \
+    src/machine/cx07.cpp \
+    src/cpu/ct6834.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

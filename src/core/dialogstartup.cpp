@@ -77,12 +77,13 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "Simulator")	result = Simulator;
 
     if (ItemText == "CE-1600P")	result = CE1600P;
+    if (ItemText == "Canon X-07") result = X07;
 		
     if (result != EMPTY)	{
 		this->done(result);
 	}
-	else
-		QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
+//	else
+//		QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
 }
 //
 void DialogStartup::on_cancelButton_clicked()

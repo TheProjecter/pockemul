@@ -141,7 +141,8 @@ enum Models {
     POTAR,
     Simulator,
 
-    CE1600P
+    CE1600P,
+    X07
 };
 
 #endif

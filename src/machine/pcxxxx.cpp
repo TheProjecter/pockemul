@@ -122,7 +122,7 @@ void CpcXXXX::UpdateFinalImage(void)
 			painter.end();	
 		}
 		
-		pLCDC->Refresh = FALSE;
+        if (pLCDC) pLCDC->Refresh = FALSE;
 	}
 	
 	Refresh_Display = false;
@@ -169,7 +169,7 @@ void CpcXXXX::TurnOFF(void)
 
 	off = 1;
     PowerSwitch = PS_OFF;
-	pLCDC->TurnOFF();
+    if (pLCDC) pLCDC->TurnOFF();
     InitDisplay();
 }
 
@@ -179,7 +179,7 @@ void CpcXXXX::TurnON(void)
 	Initial_Session_Load();
 	off = 0;
     PowerSwitch = PS_RUN;
-	pLCDC->TurnON();
+    if (pLCDC) pLCDC->TurnON();
 }
 
 void CpcXXXX::Reset(void)
@@ -358,11 +358,13 @@ bool CpcXXXX::init(void)
 	AddLog(LOG_MASTER,tr("Success"));
 
 	AddLog(LOG_MASTER,tr("CPU init"));
+    if (!pCPU) return 0;
 	if(!(pCPU->init())) return(0);
 	AddLog(LOG_MASTER,"Success");
 
 	AddLog(LOG_MASTER,tr("LCD init"));
-	if(!(pLCDC->init())) return(0);
+
+    if(pLCDC && !(pLCDC->init())) return(0);
 	AddLog(LOG_MASTER,"Success");
 
 	AddLog(LOG_MASTER,tr("Memory loading nb slot:%1").arg(SlotList.size()));
@@ -416,9 +418,11 @@ bool CpcXXXX::run(void)
 	old_state = pTIMER->state;
 
 	// Read the connectors
-	pCONNECTOR_value = pCONNECTOR->Get_values();
+    if (pCONNECTOR) {
+        pCONNECTOR_value = pCONNECTOR->Get_values();
+    }
 
-	Get_Connector();
+        Get_Connector();
 
 
 	if(!pCPU->halt && !off)
@@ -498,7 +502,7 @@ bool CpcXXXX::run(void)
 //	}
 
 
-	Set_Connector();		//Write the connectors
+    Set_Connector();		//Write the connectors
 	
 	return(1);
 }
@@ -723,7 +727,7 @@ void CpcXXXX::LoadSession(void)
     QXmlStreamReader xmlIn;
 
     xmlIn.setDevice(&file);
-    if (LoadSession_File(&xmlIn)) pLCDC->Update();
+    if (LoadSession_File(&xmlIn) && pLCDC) pLCDC->Update();
 
 #else
 	if (LoadSession_File(&file)) pLCDC->Update();
@@ -848,7 +852,7 @@ bool CpcXXXX::Initial_Session_Load()
 	{
         QXmlStreamReader xmlIn;
         xmlIn.setDevice(&file);
-        if (LoadSession_File(&xmlIn))
+        if (LoadSession_File(&xmlIn) && pLCDC)
             pLCDC->Update();
 		file.close();	
 		return true;
