@@ -17,6 +17,7 @@
 #include "Ce126.h"
 #include "dialoganalog.h"
 #include "dialoglog.h"
+#include "ui/cregsz80widget.h"
 
 #define IMEM_LEN    0x200
 
@@ -1133,6 +1134,8 @@ CZ80::CZ80(CPObject *parent)	: CCPU(parent)
 
     Is_Timer_Reached=FALSE;
     //step_Previous_State = 0;
+
+    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
 int CZ80::z80retn(Z80stat *z) {

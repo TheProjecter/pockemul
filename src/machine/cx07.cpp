@@ -6,6 +6,8 @@
 #include "Inter.h"
 #include "init.h"
 #include "ct6834.h"
+#include "Log.h"
+#include "Lcdc_x07.h"
 
 #include "cx07char.h"
 /*
@@ -87,7 +89,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 
     PowerSwitch = 0;
 
-    //pLCDC		= new Clcdc_pc1250(this);
+    pLCDC		= new Clcdc_x07(this);
     pCPU		= new CZ80(this);
     pT6834      = new CT6834(this);
     pTIMER		= new Ctimer(this);
@@ -95,16 +97,18 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     //pKEYB		= new Ckeyb(this,"x07.map",scandef_x07);
 
     First = 1;
+    Cpt = 0;
 
 }
 
 bool Cx07::init(void)				// initialize
 {
     memset((void*)&Port_FX,0,sizeof (Port_FX));
+    memset((void*)&Clavier,0,sizeof (Clavier));
     //fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+    //pCPU->logsw = true;
 #endif
     CpcXXXX::init();
 
@@ -201,6 +205,7 @@ UINT8 Cx07::in(UINT8 Port)
                    break;
       }
 
+     pCPU->imem[Port] = Value;
      return (Value);
 }
 
@@ -276,15 +281,8 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
  return 0;
 }
 
-void Cx07::ReceiveFromT6834(qint8 Cmd, PorT_FX *Port)
+void Cx07::ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port)
 {
- static qint8 Rsp[80];
- static int  pt;
- static int  lng_rsp;
- static qint8 Ordre;
-// static byte Day=0;
-// byte   x,y;
-// byte  i;
 
  switch (Cmd)
   {
@@ -317,20 +315,15 @@ void Cx07::ReceiveFromT6834(qint8 Cmd, PorT_FX *Port)
                         break;
 
    case LEC_T6834_ACK : pt++;
-#if AFF_IT
                         fprintf (stderr,"LEC_T6834_ACK: IT_");
-#endif
                         if (pt < lng_rsp)
-                         {
-                          IT_T6834 = 1;
-#if AFF_IT
-                          fprintf (stderr,"ON\n");
-#endif
-                         }
+                        {
+                            IT_T6834 = 1;
+                            fprintf (stderr,"ON\n");
+                        }
                         else
-#if AFF_IT
-                          fprintf (stderr,"OFF\n");
-#endif
+                            fprintf (stderr,"OFF\n");
+
                         Port_FX.R.F2 &= 0xFE;
 
                         break;
@@ -342,9 +335,7 @@ void Cx07::ReceiveFromT6834(qint8 Cmd, PorT_FX *Port)
 
 void Cx07::SendToT6834 (PorT_FX *Port)
 {
- static int Cpt=0;
- static int Lng_Cmd;
- static int Lng_Rsp;
+
 // int i;
 
  if (!Cpt)
@@ -367,12 +358,12 @@ void Cx07::SendToT6834 (PorT_FX *Port)
      if (((Port->W.F1) & 0x7F) < 0x47)
       {
        Send_Cmd_T6834 [Cpt++] = Port->W.F1 & 0x7F;
-       Lng_Cmd = pT6834->Cmd_T6834[Port->W.F1 & 0x7F].lng_send;
-       Lng_Rsp = pT6834->Cmd_T6834[Port->W.F1 & 0x7F].lng_rsp;
+       Lng_Cmd = CT6834::Cmd_T6834[Port->W.F1 & 0x7F].lng_send;
+       Lng_Rsp = CT6834::Cmd_T6834[Port->W.F1 & 0x7F].lng_rsp;
        fprintf (stderr,"0x%02X: Send:%02X Rsp:%d (%d)\n",Port->W.F1,Lng_Cmd,Lng_Rsp,Cpt);
       }
      else
-         fprintf (stderr,"Cmd T6834 inconnu ($%02X)[%02X]\n",Port->W.F1,Get_8(0x020F));
+         AddLog(LOG_TEMP,tr("Cmd T6834 inconnu (%1)[%2]").arg(Port->W.F1,2,16,QChar('0')).arg(Get_8(0x020F),2,16,QChar('0')));
     }
   }
  else
@@ -391,7 +382,7 @@ void Cx07::SendToT6834 (PorT_FX *Port)
                     ClrScr ();
                     Send_Cmd_T6834 [0] = Send_Cmd_T6834 [1]&0x7f;
                     Lng_Cmd = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_send;
-                    Lng_Rsp = pT6834->Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
+                    Lng_Rsp = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
                     Cpt --;
                    }
                   break;
@@ -399,8 +390,8 @@ void Cx07::SendToT6834 (PorT_FX *Port)
                    {
                     fputc (pT6834->Send_Cmd_T6834[0],stderr);
                     Send_Cmd_T6834 [0] = Send_Cmd_T6834 [1]&0x7f;
-                    Lng_Cmd = pT6834->Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_send;
-                    Lng_Rsp = pT6834->Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
+                    Lng_Cmd = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_send;
+                    Lng_Rsp = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
                     Cpt --;
                    }
                   break;
@@ -440,8 +431,8 @@ void Cx07::RefreshVideo (void)
  for (x=0;x<120;x++)
   for (y=0;y<32;y++)
    {
-    QColor col = (Ram_Video[x][y])?Color_On:Color_Off;
-    QPainter painter(pPC->LcdImage);
+    QColor col = (Ram_Video[x][y])?pLCDC->Color_On:pLCDC->Color_Off;
+    QPainter painter(LcdImage);
     painter.setPen(  col  );
     painter.drawPoint(x,y);
     painter.end();
@@ -468,8 +459,8 @@ void Cx07::AffCurseur (void)
      y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
      x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
 
-     QPainter painter(pPC->LcdImage);
-     painter.setPen(  Color_Off  );
+     QPainter painter(LcdImage);
+     painter.setPen(  pLCDC->Color_Off  );
      painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
      painter.end();
 //     XPutImage (display,win,mygc[7],ima,0,0,x,y,NB_POINT_CAR_X*General_Info.size_point_x,1);
@@ -483,8 +474,8 @@ void Cx07::AffCurseur (void)
   {
    y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
    x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
-   QPainter painter(pPC->LcdImage);
-   painter.setPen(  Color_On  );
+   QPainter painter(LcdImage);
+   painter.setPen(  pLCDC->Color_On  );
    painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
    painter.end();
    //XPutImage (display,win,mygc[0],ima,0,0,x,y,NB_POINT_CAR_X*General_Info.size_point_x,1);
@@ -582,8 +573,8 @@ void Cx07::Pset (qint8 x, qint8 y)
  fprintf (stderr,"Pset %d,%d ",x,y);
 #endif
  Ram_Video[x][y]=1;
-    QPainter painter(pPC->LcdImage);
-    painter.setPen(  Color_On  );
+    QPainter painter(LcdImage);
+    painter.setPen(  pLCDC->Color_On  );
     painter.drawPoint(x,y);
     painter.end();
 // XPutImage (display,win,mygc[0],ima,0,0,x*General_Info.size_point_x,
@@ -604,7 +595,7 @@ void Cx07::Preset (qint8 x, qint8 y)
 #endif
  Ram_Video[x][y]=0;
  QPainter painter(pPC->LcdImage);
- painter.setPen(  Color_Off  );
+ painter.setPen(  pLCDC->Color_Off  );
  painter.drawPoint(x,y);
  painter.end();
 // XPutImage (display,win,mygc[7],ima,0,0,x*General_Info.size_point_x,

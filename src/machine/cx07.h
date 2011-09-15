@@ -70,7 +70,7 @@ public:
     bool init();
 
     PorT_FX Port_FX;
-    void ReceiveFromT6834(qint8 Cmd, PorT_FX *Port);
+    void ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port);
     void SendToT6834(PorT_FX *Port);
 
     qint8 Mode_K7;
@@ -96,8 +96,7 @@ public:
     void Line(qint8 x1, qint8 y1, qint8 x2, qint8 y2);
     void Circle(int x, int y, int r);
 
-    QColor Color_On;
-    QColor Color_Off;
+
     CLAVIER Clavier;
     bool run();
     void AddKey(qint8 Key);
@@ -107,7 +106,14 @@ public:
 
     void Reset();
 
+    int Cpt;
+    int Lng_Cmd;
+    int Lng_Rsp;
 
+    qint8 Rsp[80];
+    int  pt;
+    int  lng_rsp;
+    qint8 Ordre;
 };
 
 #endif // CX07_H

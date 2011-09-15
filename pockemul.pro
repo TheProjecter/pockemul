@@ -27,7 +27,8 @@ FORMS += ui/about.ui \
     ui/windowide.ui \
     ui/dialogdasm.ui \
     ui/cregssc61860widget.ui \
-    ui/cregslh5801widget.ui
+    ui/cregslh5801widget.ui \
+    ui/cregsz80widget.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -242,7 +243,9 @@ HEADERS += src/core/Connect.h \
     ui/cregslh5801widget.h \
     src/machine/cx07.h \
     src/cpu/ct6834.h \
-    src/machine/cx07char.h
+    src/machine/cx07char.h \
+    ui/cregsz80widget.h \
+    src/core/Lcdc_x07.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -447,7 +450,9 @@ SOURCES += src/core/Connect.cpp \
     ui/cregcpu.cpp \
     ui/cregslh5801widget.cpp \
     src/machine/cx07.cpp \
-    src/cpu/ct6834.cpp
+    src/cpu/ct6834.cpp \
+    ui/cregsz80widget.cpp \
+    src/core/Lcdc_x07.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
