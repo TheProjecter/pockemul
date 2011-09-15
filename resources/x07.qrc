@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>x07/rom_xo7.bin</file>
+        <file>x07/x07.png</file>
+        <file>x07/x07lcd.png</file>
+    </qresource>
+</RCC>
