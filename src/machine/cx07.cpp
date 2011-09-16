@@ -98,6 +98,9 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 
     First = 1;
     Cpt = 0;
+    Nb=0;
+    Lec_K7=0;
+
 
 }
 
@@ -105,10 +108,11 @@ bool Cx07::init(void)				// initialize
 {
     memset((void*)&Port_FX,0,sizeof (Port_FX));
     memset((void*)&Clavier,0,sizeof (Clavier));
+    memset((void*)&Ram_Video,0,sizeof (Ram_Video));
     //fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
-    //pCPU->logsw = true;
+    pCPU->logsw = true;
 #endif
     CpcXXXX::init();
 
@@ -117,9 +121,25 @@ bool Cx07::init(void)				// initialize
     WatchPoint.remove(this);
 
 
-    QMessageBox::about(this, tr("Attention"),"Canon X-07 Emulation is in alpha stage.");
+    //QMessageBox::about(this, tr("Attention"),"Canon X-07 Emulation is in alpha stage.");
 
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
+
+    General_Info.Curs_X       = 0;
+    General_Info.Curs_Y       = 0;
+    General_Info.Curseur      = 0;
+    General_Info.Aff_Udk      = 0;
+    General_Info.Rem_Canal    = 0;
+    General_Info.Stick        = 0x30;
+    General_Info.Strig        = 0xFF;
+    General_Info.Strig1       = 0xFF;
+    General_Info.Break        = 0;
+
+    Line(5,5,105,30);
+    AffCar(1,1,'B');
+    AffCar(3,1,'O');
+    AffCar(5,1,'N');
+    AffCar(7,1,'J');
     return true;
 }
 
@@ -151,6 +171,63 @@ bool Cx07::run() {
      }
 
     CpcXXXX::run();
+
+    if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
+      {
+    if ( IT_T6834 )
+      {
+       switch (IT_T6834)
+        {
+         case 1:
+
+                 AddLog(LOG_TEMP,tr("It1_6834 0X020F = %1   0X026D: %2\n").arg(Get_8(0x020f),2,16,QChar('0')).arg(Get_8(0x026d),2,16,QChar('0')));
+
+                 ReceiveFromT6834 (LEC_T6834, &Port_FX);
+                 IT_T6834 = 0;
+                 ((CZ80*)pCPU)->z80.r.im =2;
+                 ((CZ80*)pCPU)->z80int2(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_A]);
+                 return (IT_RST_A);
+                 break;
+         case 2:
+
+  //               fprintf (stderr,"It2_6834 0X020F = %d   0X026D: %d\n",RAM[0x020f],RAM[0x026d]);
+                 AddLog (LOG_TEMP,tr("It2_6834 Nb= %1\n").arg(Nb));
+
+                            Port_FX.R.F0  = 0x80;
+                            /* Port_FX.R.F1  = 0x04;  Pour 4: demande de l'heure Cmd=1    */
+                            /* Port_FX.R.F1  = 0x05;  Pour 5: UDKoff SPoff, Lect @C00E    */
+                            /* Port_FX.R.F1  = 0x06;  Pour 6: UDKon Affiche 'Low battery' */
+                            /* Port_FX.R.F1  = 0x07;  Pour 7: demande de l'heure Cmd=1    */
+                            /* Port_FX.R.F1  = 0x08;  Pour 8: demande de l'heure Cmd=1    */
+                            Port_FX.R.F1  = Nb;
+                            Port_FX.R.F2 |= 0x01;
+                            Nb++;
+                            if ((Nb==4) || (Nb==7)) Nb++;
+                            if (Nb>255) Nb=0;
+                 IT_T6834 = 0;
+                 ((CZ80*)pCPU)->z80.r.im =2;
+                 ((CZ80*)pCPU)->z80int2(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_A]);
+                 return (IT_RST_A);
+                 break;
+         case 3:
+                 if (Lec_K7 >= 100)
+                  {
+                      AddLog (LOG_TEMP,"It3_6834\n");
+                   IT_T6834 = 0;
+                   Lec_K7 = 0;
+                   ((CZ80*)pCPU)->z80.r.im =2;
+                   ((CZ80*)pCPU)->z80int2(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_B]);
+                   return (IT_RST_B);
+                  }
+                 else
+                  {
+                   Lec_K7 ++;
+                  }
+                 break;
+        }
+      }
+     //return (INT_NONE);
+}
 
 
 }
@@ -211,11 +288,9 @@ UINT8 Cx07::in(UINT8 Port)
 
 UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
- # if 1
-#if AFF_OUT
+
  if ((Port!=0xf0) && (Value!=0x44))
- fprintf (stderr,"(%04X) Out %02X,%02X\n",Reg_Xo7.PC.W,Port,Value);
-#endif
+     AddLog(LOG_TEMP,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 
  switch (Port)
   {
@@ -277,7 +352,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                Port_FX.W.F7 = Value;
                break;
   }
-#endif
+
  return 0;
 }
 
@@ -290,16 +365,16 @@ void Cx07::ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port)
                         pt=0;
                         lng_rsp = Get_8(0x020F); // RAM [0x026D];
                         Ordre = Send_Cmd_T6834[0];
-#if AFF_DEBUG
-                        fprintf (stderr,"INIT_T6834: Ordre=%02X Lng_Rsp=%02X (%02X)\n",Ordre,lng_rsp,Cmd_T6834[Ordre].lng_rsp);
-#endif
+
+                        AddLog(LOG_TEMP,tr("INIT_T6834: Ordre=%1 Lng_Rsp=%2 (%3)").arg(Ordre,2,16,QChar('0')).arg(lng_rsp,2,16,QChar('0')).arg(pT6834->Cmd_T6834[Ordre].lng_rsp,2,16,QChar('0')));
+
                         lng_rsp = pT6834->InitReponseT6834(Ordre, Rsp, Port);
                         if (lng_rsp)
                          {
                           IT_T6834 = 1;
-#if AFF_IT
-                          fprintf (stderr,"Attente reponse...\n");
-#endif
+
+                          AddLog (LOG_TEMP,"Attente reponse...");
+
                          }
                         break;
 
@@ -308,27 +383,27 @@ void Cx07::ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port)
                           Port_FX.R.F0  = 0x40;
                           Port_FX.R.F1  = Rsp[pt];
                           Port_FX.R.F2 |= 0x01;
-#if AFF_RCV_T6834
-                          fprintf (stderr,"LEC_T6834: Data=%02X\n",Rsp[pt]);
-#endif
+
+                          AddLog(LOG_TEMP,tr("LEC_T6834: Data=%1").arg(Rsp[pt],2,16,QChar('0')));
+
                          }
                         break;
 
    case LEC_T6834_ACK : pt++;
-                        fprintf (stderr,"LEC_T6834_ACK: IT_");
+                        AddLog(LOG_TEMP,"LEC_T6834_ACK: IT_");
                         if (pt < lng_rsp)
                         {
                             IT_T6834 = 1;
-                            fprintf (stderr,"ON\n");
+                            AddLog(LOG_TEMP,"ON\n");
                         }
                         else
-                            fprintf (stderr,"OFF\n");
+                            AddLog(LOG_TEMP,"OFF\n");
 
                         Port_FX.R.F2 &= 0xFE;
 
                         break;
 
-   default : //fprintf (stderr,"Commande au T6834 inconnue[%02X]!!!\n",RAM [0x020F]);
+   default : AddLog(LOG_TEMP,tr("Commande au T6834 inconnue[%1]!!!\n").arg(Get_8(0x020F),2,16,QChar('0')));
              break;
   }
 }
@@ -415,133 +490,104 @@ void Cx07::SendToT6834 (PorT_FX *Port)
 
 void Cx07::ClrScr (void)
 {
- qint8 x,y;
-
- for (x=0 ; x<120 ; x++)
-  for (y=0 ; y<32 ; y++)
-   Ram_Video [x][y] = 0;
- RefreshVideo ();
+    memset(&Ram_Video,0,sizeof(Ram_Video));
+    RefreshVideo ();
 }
 
 void Cx07::RefreshVideo (void)
 {
- int x;
- int y;
- int ColorIndex;
- for (x=0;x<120;x++)
-  for (y=0;y<32;y++)
-   {
-    QColor col = (Ram_Video[x][y])?pLCDC->Color_On:pLCDC->Color_Off;
+    int x;
+    int y;
+    int ColorIndex;
     QPainter painter(LcdImage);
-    painter.setPen(  col  );
-    painter.drawPoint(x,y);
+    for (x=0;x<120;x++)
+        for (y=0;y<32;y++)
+        {
+            QColor col = (Ram_Video[x][y])?pLCDC->Color_On:pLCDC->Color_Off;
+
+            painter.setPen(  col  );
+            painter.drawPoint(x,y);
+        }
     painter.end();
-//    XPutImage (display,win,mygc[ColorIndex],ima,0,0,x*General_Info.size_point_x,
-//                                                    y*General_Info.size_point_y,
-//                                                      General_Info.size_point_x,
-//                                                      General_Info.size_point_y);
-   }
- AffCurseur ();
- //XFlush(display);
- Refresh_Display = true;
+    AffCurseur ();
+    //XFlush(display);
+    Refresh_Display = true;
 }
 
 void Cx07::AffCurseur (void)
 {
 
- qint8 x,y;
+    qint8 x,y;
 
-
- if (!First)
-  {
-   if (General_Info.Curseur)
+    if (!First)
     {
-     y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
-     x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
+        if (General_Info.Curseur)
+        {
+            y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
+            x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
 
-     QPainter painter(LcdImage);
-     painter.setPen(  pLCDC->Color_Off  );
-     painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
-     painter.end();
-//     XPutImage (display,win,mygc[7],ima,0,0,x,y,NB_POINT_CAR_X*General_Info.size_point_x,1);
+            QPainter painter(LcdImage);
+            painter.setPen(  pLCDC->Color_Off  );
+            painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
+            painter.end();
+        }
     }
-  }
- else First = 0;
+    else First = 0;
 
- Loc_x = General_Info.Curs_X;
- Loc_y = General_Info.Curs_Y;
- if (General_Info.Curseur)
-  {
-   y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
-   x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
-   QPainter painter(LcdImage);
-   painter.setPen(  pLCDC->Color_On  );
-   painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
-   painter.end();
-   //XPutImage (display,win,mygc[0],ima,0,0,x,y,NB_POINT_CAR_X*General_Info.size_point_x,1);
-   //XFlush(display);
-  }
+    Loc_x = General_Info.Curs_X;
+    Loc_y = General_Info.Curs_Y;
+    if (General_Info.Curseur)
+    {
+        y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
+        x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
+        QPainter painter(LcdImage);
+        painter.setPen(  pLCDC->Color_On  );
+        painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
+        painter.end();
+    }
 }
 
 void Cx07::AffCar(qint8 x, qint8 y, qint8 Car)
 {
- int P_x,P_y;
- qint8 Mask;
-
- /* On efface le caractere precedent */
- /*----------------------------------*/
-// XPutImage (display,win,mygc[7],ima,0,0,x*NB_POINT_CAR_X*General_Info.size_point_x,
-//                                        y*NB_POINT_CAR_Y*General_Info.size_point_y,
-//                                        NB_POINT_CAR_X*General_Info.size_point_x,
-//                                        NB_POINT_CAR_Y*General_Info.size_point_y);
-
- /* Dessin du caractere point par point */
- /*-------------------------------------*/
- for (P_y=0;P_y<8;P_y++)
-  {
-   Mask=0x80;
-   for (P_x=0;P_x<6;P_x++)
+    int P_x,P_y;
+    UINT8 Mask;
+    int offsetX = x*NB_POINT_CAR_X;
+    int offsetY = y*NB_POINT_CAR_Y;
+    /* Dessin du caractere point par point */
+    /*-------------------------------------*/
+    for (P_y=0;P_y<8;P_y++)
     {
-     if (Car_Def[Car][P_y] & Mask)
-      {
-       /* Positionnement de la mémoire video */
-       /*------------------------------------*/
-       Ram_Video[(x*NB_POINT_CAR_X)+P_x][(y*NB_POINT_CAR_Y)+P_y]=1;
+        Mask=0x80;
 
-       /* Affichage d'un point noir si necessaire */
-       /*-----------------------------------------*/
-       //Pset ((x*MUL_X)+P_x,(y*MUL_Y)+P_y);
-//       XPutImage (display,win,mygc[0],ima,0,0,(x*NB_POINT_CAR_X*General_Info.size_point_x)+(P_x*General_Info.size_point_x),
-//                                              (y*NB_POINT_CAR_Y*General_Info.size_point_y)+(P_y*General_Info.size_point_y),
-//                                              General_Info.size_point_x,
-//                                              General_Info.size_point_y);
-      }
-     else
-      {
-       Ram_Video[(x*NB_POINT_CAR_X)+P_x][(y*NB_POINT_CAR_Y)+P_y]=0;
-      }
-     Mask >>=1;
+
+        for (P_x=0;P_x<6;P_x++)
+        {
+            int color = ( (Car_Def[Car][P_y] & Mask) ? 1 : 0);
+
+            /* Positionnement de la mémoire video */
+            /*------------------------------------*/
+            Ram_Video[offsetX+P_x][offsetY+P_y] = color;
+
+            Mask >>=1;
+        }
     }
-  }
 
- /* Envoi de l'image au serveur X11 */
- /*---------------------------------*/
-// XFlush(display);
+
 }
 
 void Cx07::ScrollVideo (void)
 {
- qint8 x,y;
+    qint8 x,y;
 
- for (x=0 ; x<MAX_X ; x++)
-  for (y = (General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
-       y < (General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
-       y++)
-  if (y<((General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
-   Ram_Video [x][y] = Ram_Video[x][y+8];
-  else
-   Ram_Video [x][y] = 0;
- RefreshVideo ();
+    for (x=0 ; x<MAX_X ; x++)
+        for (y = (General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
+             y < (General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
+             y++)
+            if (y<((General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
+                Ram_Video [x][y] = Ram_Video[x][y+8];
+            else
+                Ram_Video [x][y] = 0;
+    RefreshVideo ();
 }
 
 void Cx07::LineClear (qint8 P_y)
@@ -553,35 +599,16 @@ void Cx07::LineClear (qint8 P_y)
  for (x=0;x<MAX_X;x++)
   for (y=P_y*NB_POINT_CAR_Y;y<(P_y+1)*NB_POINT_CAR_Y;y++)
    Ram_Video[x][y]=0;
-
- /* Effacement dans la fenetre video */
- /*----------------------------------*/
-// XPutImage (display,win,mygc[7],ima,0,0,0,
-//                                        P_y*(NB_POINT_CAR_Y*General_Info.size_point_y),
-//                                        (MAX_X*NB_POINT_CAR_X*General_Info.size_point_x),
-//                                        NB_POINT_CAR_Y*General_Info.size_point_y);
-
- /* Envoi de l'image au serveur X11 */
- /*---------------------------------*/
-// XFlush(display);
 }
 
 /*---------------------------------------------------------------------------*/
 void Cx07::Pset (qint8 x, qint8 y)
 {
 #if AFF_CMD_T6834
- fprintf (stderr,"Pset %d,%d ",x,y);
+    fprintf (stderr,"Pset %d,%d ",x,y);
 #endif
- Ram_Video[x][y]=1;
-    QPainter painter(LcdImage);
-    painter.setPen(  pLCDC->Color_On  );
-    painter.drawPoint(x,y);
-    painter.end();
-// XPutImage (display,win,mygc[0],ima,0,0,x*General_Info.size_point_x,
-//                                        y*General_Info.size_point_y,
-//                                          General_Info.size_point_x,
-//                                          General_Info.size_point_y);
-// XFlush(display);
+    Ram_Video[x][y]=1;
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -591,18 +618,9 @@ void Cx07::Pset (qint8 x, qint8 y)
 void Cx07::Preset (qint8 x, qint8 y)
 {
 #if AFF_CMD_T6834
- fprintf (stderr,"Preset %d,%d ",x,y);
+    fprintf (stderr,"Preset %d,%d ",x,y);
 #endif
- Ram_Video[x][y]=0;
- QPainter painter(pPC->LcdImage);
- painter.setPen(  pLCDC->Color_Off  );
- painter.drawPoint(x,y);
- painter.end();
-// XPutImage (display,win,mygc[7],ima,0,0,x*General_Info.size_point_x,
-//                                        y*General_Info.size_point_y,
-//                                          General_Info.size_point_x,
-//                                          General_Info.size_point_y);
-// XFlush(display);
+    Ram_Video[x][y]=0;
 }
 
 void Cx07::Line (qint8 x1, qint8 y1, qint8 x2, qint8 y2)
@@ -705,3 +723,4 @@ void Cx07::Reset()
     CpcXXXX::Reset();
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 }
+

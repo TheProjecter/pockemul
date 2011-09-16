@@ -58,6 +58,13 @@ typedef struct
 #define MAX_X          120
 #define MAX_Y          32
 
+#define IT_RST_A       0x3C  // Interuptions T6834
+#define IT_RST_B       0x34  // Interuptions Liaisons séries et Timer
+#define IT_RST_C       0x2C  // Interuptions non utilisées
+#define IT_NMI         0x66  // Non Maskable Interrupt
+
+
+
 class Cx07 : public CpcXXXX
 {
 public:
@@ -88,7 +95,7 @@ public:
 
     qint8 First;
     qint8 Loc_x,Loc_y;
-    static qint8 Car_Def[256][8];
+    static UINT8 Car_Def[256][8];
     void ScrollVideo();
     void LineClear(qint8 P_y);
     void Preset(qint8 x, qint8 y);
@@ -114,6 +121,9 @@ public:
     int  pt;
     int  lng_rsp;
     qint8 Ordre;
+
+    int Nb;
+    int Lec_K7;
 };
 
 #endif // CX07_H

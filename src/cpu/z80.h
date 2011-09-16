@@ -126,7 +126,7 @@ public:
 
     bool	init(void);						//initialize
     bool	exit(void);						//end
-    void	step(void);
+    virtual void	step(void);
     void	Reset(void);
 
     void	Load_Internal(QFile *file);

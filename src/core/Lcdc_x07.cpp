@@ -14,3 +14,4 @@ void Clcdc_x07::disp()
     Refresh = true;
     ((Cx07 *)pPC)->RefreshVideo();
 }
+

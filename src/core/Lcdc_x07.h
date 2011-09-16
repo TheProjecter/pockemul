@@ -14,6 +14,9 @@ public:
     {						//[constructor]
     }
 
+
+    QList<QImage> imac;
+
 };
 
 #endif // CLCDC_X07_H
