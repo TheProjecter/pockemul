@@ -7,8 +7,8 @@
 
 typedef struct
  {
-  qint8 lng_send;
-  qint8 lng_rsp;
+  UINT8 lng_send;
+  UINT8 lng_rsp;
   char *Str_Cmd;
  } CMD_T6834;
 
@@ -19,14 +19,14 @@ public:
 
     static const qint8 Date[8];
 
-    qint8 Send_Cmd_T6834 [255];
-    qint8 Locate_OnOff;
-    qint8 Loc_X;
-    qint8 Loc_Y;
+    UINT8 Send_Cmd_T6834 [255];
+    UINT8 Locate_OnOff;
+    UINT8 Loc_X;
+    UINT8 Loc_Y;
 
     static const CMD_T6834 Cmd_T6834[0x48];
-    int InitReponseT6834(qint8 Ordre, qint8 *Rsp, PorT_FX *Port);
-    qint8 R5;
+    int InitReponseT6834(UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port);
+    UINT8 R5;
     Cx07 *pPC;
     void AffUdkON(qint8 State);
 };

@@ -5,8 +5,8 @@
 Clcdc_x07::Clcdc_x07(CPObject *parent)	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
                         (int) (95*contrast),
-                        (int) (119*contrast),
-                (int) (193*contrast));
+                        (int) (107*contrast),
+                        (int) (97*contrast));
 }
 
 void Clcdc_x07::disp()

@@ -230,6 +230,7 @@ public:
 
     CZ80(CPObject *parent);
 
+    int z80nsc800intr(Z80stat *z, uint8 vector);
 };
 #endif
 

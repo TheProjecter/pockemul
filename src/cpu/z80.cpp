@@ -174,6 +174,7 @@
 		STORE16(SP, PC + _length); \
 		PC = y; \
 		_state += 7; \
+        CallSubLevel++ ; \
 /*		if(z->i.emulate_subroutine && (s = z80subroutine(z, PC)) >= 0) { \
 			PC = MEM16(SP); \
 			SP += 2; \
@@ -581,6 +582,7 @@
 	if(x) { \
 		PC = MEM16(SP); \
 		SP += 2; \
+        CallSubLevel--; \
 		if(SP > z->i.stack_under) \
 			return Z80_UNDERFLOW; \
 		_state += 6; \
@@ -1350,6 +1352,21 @@ int CZ80::z80int2(Z80stat *z, uint8 vector)
 	return TRUE;
 }
 
+int CZ80::z80nsc800intr(Z80stat *z, uint8 vector)
+{
+    int _state = 0;
+    uint16 _length = 0;
+
+
+
+    if (fp_log) fprintf(fp_log,"Interrupt nsc800: %05X \t IFF=%i\n",MEM16((z->r.i << 8U) | (vector & 0x7f)),z->r.iff);
+    z->r.halt = z->r.iff = 0;
+    z->i.states -= 19;
+    RST(vector);
+
+    pPC->pTIMER->state += _state;
+    return TRUE;
+}
 /*
 	–½—ß‚ğÀs‚·‚é
 */

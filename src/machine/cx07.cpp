@@ -38,7 +38,7 @@
 
 Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 576000/3);
+    setfrequency( (int) 3840000);
     setcfgfname(QString("x07"));
 
     SessionHeader	= "X07PKM";
@@ -74,12 +74,12 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     setDX(715);//Pc_DX		= 483;//409;
     setDY(465);//Pc_DY		= 252;//213;
 
-    Lcd_X		= 55;
-    Lcd_Y		= 49;
-    Lcd_DX		= 240;//168;//144 ;
-    Lcd_DY		= 64;
-    Lcd_ratio_X	= 2;// * 1.18;
-    Lcd_ratio_Y	= 2;// * 1.18;
+    Lcd_X		= 67;
+    Lcd_Y		= 63;
+    Lcd_DX		= 120;//168;//144 ;
+    Lcd_DY		= 32;
+    Lcd_ratio_X	= 2.4;// * 1.18;
+    Lcd_ratio_Y	= 2.8;// * 1.18;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
@@ -116,7 +116,7 @@ bool Cx07::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
-
+    memset((void *)mem ,0,0x6000);
 
     WatchPoint.remove(this);
 
@@ -125,6 +125,22 @@ bool Cx07::init(void)				// initialize
 
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
+    strcpy(&General_Info.F_Key[0][0],"tim?TIME$\r");
+    strcpy(&General_Info.F_Key[1][0],"cldCLOAD");
+    strcpy(&General_Info.F_Key[2][0],"locLOCATE");
+    strcpy(&General_Info.F_Key[3][0],"lstLIST");
+    strcpy(&General_Info.F_Key[4][0],"runRUN\r");
+    strcpy(&General_Info.F_Key[5][0],"nul");
+    strcpy(&General_Info.F_Key[6][0],"dat?DATE$\r");
+    strcpy(&General_Info.F_Key[7][0],"csaCSAVE");
+    strcpy(&General_Info.F_Key[8][0],"prtPRINT");
+    strcpy(&General_Info.F_Key[9][0],"slpSLEEP");
+    strcpy(&General_Info.F_Key[10][0],"cntCONT\r");
+    strcpy(&General_Info.F_Key[11][0],"nul");
+
+
+    General_Info.size_point_x = 1;
+    General_Info.size_point_y = 1;
     General_Info.Curs_X       = 0;
     General_Info.Curs_Y       = 0;
     General_Info.Curseur      = 0;
@@ -135,15 +151,15 @@ bool Cx07::init(void)				// initialize
     General_Info.Strig1       = 0xFF;
     General_Info.Break        = 0;
 
-    Line(5,5,105,30);
-    AffCar(1,1,'B');
-    AffCar(3,1,'O');
-    AffCar(5,1,'N');
-    AffCar(7,1,'J');
+//    Line(5,5,105,30);
+//    AffCar(1,1,'B');
+//    AffCar(3,1,'O');
+//    AffCar(5,1,'N');
+//    AffCar(7,1,'J');
     return true;
 }
 
-void Cx07::AddKey (qint8 Key)
+void Cx07::AddKey (UINT8 Key)
 {
     if (Clavier.Nb_Key < 20)
     {
@@ -157,77 +173,77 @@ void Cx07::AddKey (qint8 Key)
 
 bool Cx07::run() {
 
-    if (Clavier.Nb_Key)
-     {
-      Clavier.Nb_Key --;
-      Port_FX.R.F1 = Clavier.Buff_Key[Clavier.Pt_Lec];
-      Clavier.Pt_Lec ++;
-      if (Clavier.Pt_Lec >=20)
-       Clavier.Pt_Lec = 0;
-      Port_FX.R.F0  = 0x00;
-      Port_FX.R.F2 |= 0x01;
-      IT_T6834      = 0;
-      //return (IT_RST_A);
-     }
-
     CpcXXXX::run();
 
     if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
-      {
-    if ( IT_T6834 )
-      {
-       switch (IT_T6834)
+    {
+        if (Clavier.Nb_Key)
         {
-         case 1:
+            Clavier.Nb_Key --;
+            Port_FX.R.F1 = Clavier.Buff_Key[Clavier.Pt_Lec];
+            Clavier.Pt_Lec ++;
+            if (Clavier.Pt_Lec >=20) Clavier.Pt_Lec = 0;
+            Port_FX.R.F0  = 0x00;
+            Port_FX.R.F2 |= 0x01;
+            IT_T6834      = 0;
 
-                 AddLog(LOG_TEMP,tr("It1_6834 0X020F = %1   0X026D: %2\n").arg(Get_8(0x020f),2,16,QChar('0')).arg(Get_8(0x026d),2,16,QChar('0')));
+            ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_A]);
+        }
 
-                 ReceiveFromT6834 (LEC_T6834, &Port_FX);
-                 IT_T6834 = 0;
-                 ((CZ80*)pCPU)->z80.r.im =2;
-                 ((CZ80*)pCPU)->z80int2(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_A]);
-                 return (IT_RST_A);
-                 break;
-         case 2:
+        if ( IT_T6834 )
+        {
+            switch (IT_T6834)
+            {
+            case 1:
 
-  //               fprintf (stderr,"It2_6834 0X020F = %d   0X026D: %d\n",RAM[0x020f],RAM[0x026d]);
-                 AddLog (LOG_TEMP,tr("It2_6834 Nb= %1\n").arg(Nb));
+                AddLog(LOG_TEMP,tr("It1_6834 0X020F = %1   0X026D: %2\n").arg(Get_8(0x020f),2,16,QChar('0')).arg(Get_8(0x026d),2,16,QChar('0')));
 
-                            Port_FX.R.F0  = 0x80;
-                            /* Port_FX.R.F1  = 0x04;  Pour 4: demande de l'heure Cmd=1    */
-                            /* Port_FX.R.F1  = 0x05;  Pour 5: UDKoff SPoff, Lect @C00E    */
-                            /* Port_FX.R.F1  = 0x06;  Pour 6: UDKon Affiche 'Low battery' */
-                            /* Port_FX.R.F1  = 0x07;  Pour 7: demande de l'heure Cmd=1    */
-                            /* Port_FX.R.F1  = 0x08;  Pour 8: demande de l'heure Cmd=1    */
-                            Port_FX.R.F1  = Nb;
-                            Port_FX.R.F2 |= 0x01;
-                            Nb++;
-                            if ((Nb==4) || (Nb==7)) Nb++;
-                            if (Nb>255) Nb=0;
-                 IT_T6834 = 0;
-                 ((CZ80*)pCPU)->z80.r.im =2;
-                 ((CZ80*)pCPU)->z80int2(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_A]);
-                 return (IT_RST_A);
-                 break;
-         case 3:
-                 if (Lec_K7 >= 100)
+                ReceiveFromT6834 (LEC_T6834, &Port_FX);
+                IT_T6834 = 0;
+
+                ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
+                return (IT_RST_A);
+                break;
+            case 2:
+
+                //               fprintf (stderr,"It2_6834 0X020F = %d   0X026D: %d\n",RAM[0x020f],RAM[0x026d]);
+                AddLog (LOG_TEMP,tr("It2_6834 Nb= %1\n").arg(Nb));
+
+                Port_FX.R.F0  = 0x80;
+                  /* Port_FX.R.F1  = 0x04;  Pour 4: demande de l'heure Cmd=1    */
+                  /* Port_FX.R.F1  = 0x05;  Pour 5: UDKoff SPoff, Lect @C00E    */
+                  /* Port_FX.R.F1  = 0x06;  Pour 6: UDKon Affiche 'Low battery' */
+                  /* Port_FX.R.F1  = 0x07;  Pour 7: demande de l'heure Cmd=1    */
+                  /* Port_FX.R.F1  = 0x08;  Pour 8: demande de l'heure Cmd=1    */
+                  Port_FX.R.F1  = Nb;
+                  Port_FX.R.F2 |= 0x01;
+                  Nb++;
+                  if ((Nb==4) || (Nb==7)) Nb++;
+                  if (Nb>255) Nb=0;
+                  IT_T6834 = 0;
+
+                  ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
+                  return (IT_RST_A);
+                  break;
+              case 3:
+                  if (Lec_K7 >= 100)
                   {
                       AddLog (LOG_TEMP,"It3_6834\n");
-                   IT_T6834 = 0;
-                   Lec_K7 = 0;
-                   ((CZ80*)pCPU)->z80.r.im =2;
-                   ((CZ80*)pCPU)->z80int2(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_B]);
-                   return (IT_RST_B);
+                      IT_T6834 = 0;
+                      Lec_K7 = 0;
+
+                      ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_B);
+                      return (IT_RST_B);
                   }
-                 else
+                  else
                   {
-                   Lec_K7 ++;
+                      Lec_K7 ++;
                   }
-                 break;
-        }
+                  break;
+              }
+          }
+          //return (INT_NONE);
       }
-     //return (INT_NONE);
-}
 
 
 }
@@ -289,8 +305,9 @@ UINT8 Cx07::in(UINT8 Port)
 UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
 
- if ((Port!=0xf0) && (Value!=0x44))
-     AddLog(LOG_TEMP,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+ if ((Port!=0xf0) && (Value!=0x44)) {
+//     AddLog(LOG_TEMP,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+}
 
  switch (Port)
   {
@@ -364,7 +381,7 @@ void Cx07::ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port)
    case INIT_T6834    : memset ((void*)Rsp,0,sizeof(Rsp));
                         pt=0;
                         lng_rsp = Get_8(0x020F); // RAM [0x026D];
-                        Ordre = Send_Cmd_T6834[0];
+                        Ordre = pT6834->Send_Cmd_T6834[0];
 
                         AddLog(LOG_TEMP,tr("INIT_T6834: Ordre=%1 Lng_Rsp=%2 (%3)").arg(Ordre,2,16,QChar('0')).arg(lng_rsp,2,16,QChar('0')).arg(pT6834->Cmd_T6834[Ordre].lng_rsp,2,16,QChar('0')));
 
@@ -411,62 +428,63 @@ void Cx07::ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port)
 void Cx07::SendToT6834 (PorT_FX *Port)
 {
 
-// int i;
+    // int i;
 
- if (!Cpt)
-  {
-   if (pT6834->Locate_OnOff &&
-      ((Port->W.F1 & 0x7F) != 0x24) &&
-      ((Port->W.F1) >= 0x20) &&
-      ((Port->W.F1) <  0x80))
+    if (!Cpt)
     {
-     General_Info.Curs_X ++;
-     //General_Info.Curs_Y ++;
-//     fputc (Port->W.F1,stderr);
-     fprintf (stderr,"(%02X) %c",Port->W.F1,Port->W.F1);
-     AffCar (General_Info.Curs_X,General_Info.Curs_Y,Port->W.F1);
+        if (pT6834->Locate_OnOff &&
+                ((Port->W.F1 & 0x7F) != 0x24) &&
+                ((Port->W.F1) >= 0x20) &&
+                ((Port->W.F1) <  0x80))
+        {
+            General_Info.Curs_X ++;
+            //General_Info.Curs_Y ++;
+            //     fputc (Port->W.F1,stderr);
+            fprintf (stderr,"(%02X) %c",Port->W.F1,Port->W.F1);
+            AffCar (General_Info.Curs_X,General_Info.Curs_Y,Port->W.F1);
+        }
+        else
+        {
+            pT6834->Locate_OnOff = 0;
+            //     Loc_X = Loc_Y = 0xff;
+            if (((Port->W.F1) & 0x7F) < 0x47)
+            {
+                pT6834->Send_Cmd_T6834 [Cpt++] = Port->W.F1 & 0x7F;
+                Lng_Cmd = CT6834::Cmd_T6834[Port->W.F1 & 0x7F].lng_send;
+                Lng_Rsp = CT6834::Cmd_T6834[Port->W.F1 & 0x7F].lng_rsp;
+                AddLog (LOG_TEMP,tr("0x%1: Send:%2 Rsp:%3 (%4)\n").arg(Port->W.F1,2,16,QChar('0')).arg(Lng_Cmd,2,16,QChar('0')).arg(Lng_Rsp,2,16,QChar('0')).arg(Cpt,2,16,QChar('0')));
+            }
+            else {
+                AddLog(LOG_TEMP,tr("Cmd T6834 inconnu (%1)[%2]").arg(Port->W.F1,2,16,QChar('0')).arg(Get_8(0x020F),2,16,QChar('0')));
+            }
+        }
     }
-   else
-    {
-     pT6834->Locate_OnOff = 0;
-//     Loc_X = Loc_Y = 0xff;
-     if (((Port->W.F1) & 0x7F) < 0x47)
-      {
-       Send_Cmd_T6834 [Cpt++] = Port->W.F1 & 0x7F;
-       Lng_Cmd = CT6834::Cmd_T6834[Port->W.F1 & 0x7F].lng_send;
-       Lng_Rsp = CT6834::Cmd_T6834[Port->W.F1 & 0x7F].lng_rsp;
-       fprintf (stderr,"0x%02X: Send:%02X Rsp:%d (%d)\n",Port->W.F1,Lng_Cmd,Lng_Rsp,Cpt);
-      }
-     else
-         AddLog(LOG_TEMP,tr("Cmd T6834 inconnu (%1)[%2]").arg(Port->W.F1,2,16,QChar('0')).arg(Get_8(0x020F),2,16,QChar('0')));
-    }
-  }
  else
   {
-   Send_Cmd_T6834 [Cpt++] = Port->W.F1;
+   pT6834->Send_Cmd_T6834 [Cpt++] = Port->W.F1;
    if ((Lng_Cmd & 0x80) && (Cpt>(Lng_Cmd&0x7F)) && (!Port->W.F1))
     {
-     fprintf (stderr,"0x%02X: Send:%02X Rsp:%d (%d)[%d]\n",Send_Cmd_T6834 [0],Lng_Cmd,Lng_Rsp,Cpt,Port->W.F1);
+     fprintf (stderr,"0x%02X: Send:%02X Rsp:%d (%d)[%d]\n",pT6834->Send_Cmd_T6834 [0],Lng_Cmd,Lng_Rsp,Cpt,Port->W.F1);
      Lng_Cmd = Cpt;
     }
    if (Cpt == 2)
-    switch (Send_Cmd_T6834 [0])
+    switch (pT6834->Send_Cmd_T6834 [0])
      {
-      case 0x0C : if (Send_Cmd_T6834 [1] == 0xB0)
+      case 0x0C : if (pT6834->Send_Cmd_T6834 [1] == 0xB0)
                    {
                     ClrScr ();
-                    Send_Cmd_T6834 [0] = Send_Cmd_T6834 [1]&0x7f;
-                    Lng_Cmd = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_send;
-                    Lng_Rsp = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
+                    pT6834->Send_Cmd_T6834 [0] = pT6834->Send_Cmd_T6834 [1]&0x7f;
+                    Lng_Cmd = CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].lng_send;
+                    Lng_Rsp = CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
                     Cpt --;
                    }
                   break;
-      case 0x07 : if (Send_Cmd_T6834 [1] > 4)
+      case 0x07 : if (pT6834->Send_Cmd_T6834 [1] > 4)
                    {
                     fputc (pT6834->Send_Cmd_T6834[0],stderr);
-                    Send_Cmd_T6834 [0] = Send_Cmd_T6834 [1]&0x7f;
-                    Lng_Cmd = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_send;
-                    Lng_Rsp = CT6834::Cmd_T6834[Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
+                    pT6834->Send_Cmd_T6834 [0] = pT6834->Send_Cmd_T6834 [1]&0x7f;
+                    Lng_Cmd = CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].lng_send;
+                    Lng_Rsp = CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
                     Cpt --;
                    }
                   break;
@@ -476,12 +494,14 @@ void Cx07::SendToT6834 (PorT_FX *Port)
 
  if (Cpt && (Cpt == Lng_Cmd))
   {
-#if AFF_SND_T6834
-   for (i=0; i < Cpt; i++)
-    fprintf (stderr,"%02X ",Send_Cmd_T6834[i]);
-#endif
+
+      QString s = "Cmd - "+QString(CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].Str_Cmd);
+   for (int i=0; i < Cpt; i++)
+       s+=QString(" %1 ").arg(pT6834->Send_Cmd_T6834[i],2,16,QChar('0'));
+
+   AddLog(LOG_TEMP,s);
 #if AFF_STR_SND_T6834
-   fprintf (stderr,"(%s) \n",Cmd_T6834[Send_Cmd_T6834[0]].Str_Cmd);
+   fprintf (stderr,"(%s) \n",Cmd_T6834[pT6834->Send_Cmd_T6834[0]].Str_Cmd);
 #endif
    ReceiveFromT6834 (INIT_T6834,Port);
     Cpt = 0;
@@ -499,6 +519,8 @@ void Cx07::RefreshVideo (void)
     int x;
     int y;
     int ColorIndex;
+
+    AffCurseur ();
     QPainter painter(LcdImage);
     for (x=0;x<120;x++)
         for (y=0;y<32;y++)
@@ -509,27 +531,25 @@ void Cx07::RefreshVideo (void)
             painter.drawPoint(x,y);
         }
     painter.end();
-    AffCurseur ();
-    //XFlush(display);
+
     Refresh_Display = true;
 }
 
 void Cx07::AffCurseur (void)
 {
 
-    qint8 x,y;
+
 
     if (!First)
     {
         if (General_Info.Curseur)
         {
-            y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
-            x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
+            UINT8 y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
+            UINT8 x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
 
-            QPainter painter(LcdImage);
-            painter.setPen(  pLCDC->Color_Off  );
-            painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
-            painter.end();
+            for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
+                Ram_Video[x+i][y+1] = 1;
+
         }
     }
     else First = 0;
@@ -538,16 +558,14 @@ void Cx07::AffCurseur (void)
     Loc_y = General_Info.Curs_Y;
     if (General_Info.Curseur)
     {
-        y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
-        x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
-        QPainter painter(LcdImage);
-        painter.setPen(  pLCDC->Color_On  );
-        painter.drawLine(x,y,x+NB_POINT_CAR_X*General_Info.size_point_x,y+1);
-        painter.end();
+        UINT8 y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
+        UINT8 x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
+        for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
+            Ram_Video[x+i][y+1] = 1;
     }
 }
 
-void Cx07::AffCar(qint8 x, qint8 y, qint8 Car)
+void Cx07::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 {
     int P_x,P_y;
     UINT8 Mask;
@@ -555,6 +573,8 @@ void Cx07::AffCar(qint8 x, qint8 y, qint8 Car)
     int offsetY = y*NB_POINT_CAR_Y;
     /* Dessin du caractere point par point */
     /*-------------------------------------*/
+
+    AddLog (LOG_TEMP,tr("Draw char (%1) at %2,%3").arg(Car,2,16,QChar('0')).arg(x).arg(y));
     for (P_y=0;P_y<8;P_y++)
     {
         Mask=0x80;
@@ -562,7 +582,7 @@ void Cx07::AffCar(qint8 x, qint8 y, qint8 Car)
 
         for (P_x=0;P_x<6;P_x++)
         {
-            int color = ( (Car_Def[Car][P_y] & Mask) ? 1 : 0);
+            int color = ( (X07_CarDef[Car][P_y] & Mask) ? 1 : 0);
 
             /* Positionnement de la mémoire video */
             /*------------------------------------*/
@@ -577,7 +597,7 @@ void Cx07::AffCar(qint8 x, qint8 y, qint8 Car)
 
 void Cx07::ScrollVideo (void)
 {
-    qint8 x,y;
+    UINT8 x,y;
 
     for (x=0 ; x<MAX_X ; x++)
         for (y = (General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
@@ -590,9 +610,9 @@ void Cx07::ScrollVideo (void)
     RefreshVideo ();
 }
 
-void Cx07::LineClear (qint8 P_y)
+void Cx07::LineClear (UINT8 P_y)
 {
- qint8 x,y;
+ UINT8 x,y;
 
  /* Effacement de la mémoire video */
  /*--------------------------------*/
@@ -602,7 +622,7 @@ void Cx07::LineClear (qint8 P_y)
 }
 
 /*---------------------------------------------------------------------------*/
-void Cx07::Pset (qint8 x, qint8 y)
+void Cx07::Pset (UINT8 x, UINT8 y)
 {
 #if AFF_CMD_T6834
     fprintf (stderr,"Pset %d,%d ",x,y);
@@ -615,7 +635,7 @@ void Cx07::Pset (qint8 x, qint8 y)
 /*                                                                           */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void Cx07::Preset (qint8 x, qint8 y)
+void Cx07::Preset (UINT8 x, UINT8 y)
 {
 #if AFF_CMD_T6834
     fprintf (stderr,"Preset %d,%d ",x,y);
@@ -623,7 +643,7 @@ void Cx07::Preset (qint8 x, qint8 y)
     Ram_Video[x][y]=0;
 }
 
-void Cx07::Line (qint8 x1, qint8 y1, qint8 x2, qint8 y2)
+void Cx07::Line (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
     int next_x = x1, next_y = y1;
     int delta_x = abs(x2 - x1) * 2;

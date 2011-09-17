@@ -8,14 +8,14 @@ class CT6834;
 
 typedef struct
  {
-  qint8 F0;
-  qint8 F1;
-  qint8 F2;
-  qint8 F3;
-  qint8 F4;
-  qint8 F5;
-  qint8 F6;
-  qint8 F7;
+  UINT8 F0;
+  UINT8 F1;
+  UINT8 F2;
+  UINT8 F3;
+  UINT8 F4;
+  UINT8 F5;
+  UINT8 F6;
+  UINT8 F7;
  } PORT_FX;
 
 typedef struct
@@ -28,29 +28,29 @@ typedef struct
  {
   int size_point_x;
   int size_point_y;
-  qint8 Scroll_Min_Y;
-  qint8 Scroll_Max_Y;
-  qint8 Curs_X;
-  qint8 Curs_Y;
-  qint8 Curseur;
-  qint8 Aff_Udk;
-  qint8 Stick;
-  qint8 Strig;
-  qint8 Strig1;
+  UINT8 Scroll_Min_Y;
+  UINT8 Scroll_Max_Y;
+  UINT8 Curs_X;
+  UINT8 Curs_Y;
+  UINT8 Curseur;
+  UINT8 Aff_Udk;
+  UINT8 Stick;
+  UINT8 Strig;
+  UINT8 Strig1;
   FILE *K7_File;
-  qint8 Baud_Out_Mode;
-  qint8 Rem_Canal;
-  qint8 Break;
+  UINT8 Baud_Out_Mode;
+  UINT8 Rem_Canal;
+  UINT8 Break;
   char F_Key [12][80];
 
  } GENERAL_INFO;
 
 typedef struct
  {
-  qint8 Buff_Key[20];
-  qint8 Nb_Key;
-  qint8 Pt_Lec;
-  qint8 Pt_Ecr;
+  UINT8 Buff_Key[20];
+  UINT8 Nb_Key;
+  UINT8 Pt_Lec;
+  UINT8 Pt_Ecr;
  } CLAVIER;
 
 #define NB_POINT_CAR_X 6
@@ -80,33 +80,33 @@ public:
     void ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port);
     void SendToT6834(PorT_FX *Port);
 
-    qint8 Mode_K7;
+    UINT8 Mode_K7;
     int IT_T6834;
-    qint8 Int_nsc800_BB;
-    qint8 Send_Cmd_T6834 [255];
+    UINT8 Int_nsc800_BB;
+
     CT6834 *pT6834;
     GENERAL_INFO General_Info;
     void ClrScr();
-    qint8 Ram_Video[120][32];
+    UINT8 Ram_Video[120][32];
     void RefreshVideo();
     void AffCurseur();
-    void AffCar(qint8 x, qint8 y, qint8 Car);
+    void AffCar(UINT8 x, UINT8 y, UINT8 Car);
 
 
-    qint8 First;
-    qint8 Loc_x,Loc_y;
-    static UINT8 Car_Def[256][8];
+    UINT8 First;
+    UINT8 Loc_x,Loc_y;
+
     void ScrollVideo();
-    void LineClear(qint8 P_y);
-    void Preset(qint8 x, qint8 y);
-    void Pset(qint8 x, qint8 y);
-    void Line(qint8 x1, qint8 y1, qint8 x2, qint8 y2);
+    void LineClear(UINT8 P_y);
+    void Preset(UINT8 x, UINT8 y);
+    void Pset(UINT8 x, UINT8 y);
+    void Line(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2);
     void Circle(int x, int y, int r);
 
 
     CLAVIER Clavier;
     bool run();
-    void AddKey(qint8 Key);
+    void AddKey(UINT8 Key);
 
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
@@ -117,10 +117,10 @@ public:
     int Lng_Cmd;
     int Lng_Rsp;
 
-    qint8 Rsp[80];
+    UINT8 Rsp[80];
     int  pt;
     int  lng_rsp;
-    qint8 Ordre;
+    UINT8 Ordre;
 
     int Nb;
     int Lec_K7;

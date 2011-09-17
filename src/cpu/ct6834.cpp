@@ -1,6 +1,9 @@
 #include <QTime>
 
 #include "ct6834.h"
+#include "Log.h"
+
+extern UINT8 X07_CarDef[][8];
 
 CT6834::CT6834(CPObject *parent)	: CPObject(this)
 {
@@ -87,12 +90,12 @@ const CMD_T6834 CT6834::Cmd_T6834[] =
 
 const qint8 CT6834::Date[]={128,192,224,240,248,252,254,255};
 
-int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
+int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
 
  int    Lng_rsp;
  qint16   Adresse;
- qint8  i;
+ UINT8  i;
 
  Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
 
@@ -126,21 +129,21 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x02:
-#if AFF_CMD_T6834
-              fprintf (stderr,"Stick = %02X\n",pPC->General_Info.Stick);
-#endif
+
+            AddLog (LOG_TEMP,tr("Stick = %1").arg(pPC->General_Info.Stick,2,16,QChar('0')));
+
               Rsp[0] = pPC->General_Info.Stick;
               break;
    case 0x03:
-#if AFF_CMD_T6834
-              fprintf (stderr,"Strig = %02X\n",pPC->General_Info.Strig);
-#endif
+
+              AddLog (LOG_TEMP,tr("Strig = %1").arg(pPC->General_Info.Strig,2,16,QChar('0')));
+
               Rsp[0] = pPC->General_Info.Strig;
               break;
    case 0x04:
-#if AFF_CMD_T6834
-              fprintf (stderr,"Strig1 = %02X\n",pPC->General_Info.Strig1);
-#endif
+
+              AddLog(LOG_TEMP,tr("Strig1 = %1").arg(pPC->General_Info.Strig1,2,16,QChar('0')));
+
               Rsp[0] = pPC->General_Info.Strig1;
               break;
 
@@ -227,7 +230,7 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
               pPC->Line (Send_Cmd_T6834[1],Send_Cmd_T6834[2],
                     Send_Cmd_T6834[3],Send_Cmd_T6834[4]);
               break;
-  case 0x15: // Line (x1,y1)-(x2,y2)
+  case 0x15:
 #if AFF_CMD_T6834
              fprintf (stderr,"Circle(%d,%d)-(%d,%d)\n", Send_Cmd_T6834[1],
                                                       Send_Cmd_T6834[2],
@@ -257,7 +260,7 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
               fprintf (stderr,"UDCWrite[%02X]\n",Send_Cmd_T6834[1]);
 #endif
               for (i=0;i<8;i++)
-               pPC->Car_Def [Send_Cmd_T6834[1]][i] = Send_Cmd_T6834[2+i];
+               X07_CarDef [Send_Cmd_T6834[1]][i] = Send_Cmd_T6834[2+i];
               break;
 
    case 0x1B: // UDCRead
@@ -265,7 +268,7 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
               fprintf (stderr,"UDCRead[%02X]\n",Send_Cmd_T6834[1]);
 #endif
               for (i=0;i<8;i++)
-               Rsp[i] = pPC->Car_Def [Send_Cmd_T6834[1]][i];
+               Rsp[i] = X07_CarDef [Send_Cmd_T6834[1]][i];
               break;
 
    case 0x1F: // SPOn
@@ -276,19 +279,19 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x24:
-#if AFF_CMD_T6834
-              fprintf (stderr,"Locate %d,%d ",Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
-#endif
+
+              AddLog (LOG_TEMP,tr("Locate %1,%2 ").arg(Send_Cmd_T6834[1],2,16,QChar('0')).arg(Send_Cmd_T6834[2],2,16,QChar('0')));
+
               if ((Send_Cmd_T6834[1] == 0) && (Send_Cmd_T6834[2]==pPC->General_Info.Curs_Y+1))
                fputc ('\n',stderr);
               if ((Loc_X == Send_Cmd_T6834[1]) && (Loc_Y == Send_Cmd_T6834[2]))
                 {
-                fprintf (stderr,"Locate_OnOff = 0\n");
+                AddLog (LOG_TEMP,"Locate_OnOff = 0\n");
                 Locate_OnOff = 0;
                 }
                else
                 {
-                fprintf (stderr,"Locate_OnOff = 1\n");
+                AddLog (LOG_TEMP,"Locate_OnOff = 1\n");
                 Locate_OnOff = 1;
                 }
               Loc_X = pPC->General_Info.Curs_X = Send_Cmd_T6834[1];
@@ -308,17 +311,17 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x25: // CursOn
-#if AFF_CMD_T6834
-              fprintf (stderr,"Curseur ON\n");
-#endif
+
+                AddLog (LOG_TEMP,"Curseur ON\n");
+
               pPC->General_Info.Curseur = 1;
               pPC->AffCurseur ();
               break;
 
    case 0x26: // CursOff
-#if AFF_CMD_T6834
-              fprintf (stderr,"Curseur OFF\n");
-#endif
+
+              AddLog (LOG_TEMP,"Curseur OFF\n");
+
               pPC->General_Info.Curseur = 0;
               break;
 
@@ -340,7 +343,7 @@ int CT6834::InitReponseT6834 (qint8 Ordre, qint8 *Rsp, PorT_FX *Port)
 
    case 0x3F: // Sleep
 #if AFF_CMD_T6834
-              fprintf (stderr,"Sleep\n");
+              AddLog (LOG_TMP,"Sleep\n");
 #endif
                  //pPC->pCPU->Reg_Xo7.Trace=1;
                  break;
