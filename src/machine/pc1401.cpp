@@ -6,12 +6,15 @@
  
 #include "common.h"
 #include "pc1401.h"
-
+#include "Lcdc.h"
 #include "Log.h"
 #include "Inter.h"
 #include "Keyb.h"
 #include "Keyb1401.h"
 #include "extension.h"
+#include "sc61860.h"
+#include "Keyb.h"
+#include "Connect.h"
 
 Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]

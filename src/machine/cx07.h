@@ -1,6 +1,8 @@
 #ifndef CX07_H
 #define CX07_H
 
+#include <QTime>
+
 class CPObject;
 #include "pcxxxx.h"
 class CT6834;
@@ -32,7 +34,7 @@ typedef struct
   UINT8 Scroll_Max_Y;
   UINT8 Curs_X;
   UINT8 Curs_Y;
-  UINT8 Curseur;
+  bool Curseur;
   UINT8 Aff_Udk;
   UINT8 Stick;
   UINT8 Strig;
@@ -86,25 +88,7 @@ public:
 
     CT6834 *pT6834;
     GENERAL_INFO General_Info;
-    void ClrScr();
-    UINT8 Ram_Video[120][32];
-    void RefreshVideo();
-    void AffCurseur();
-    void AffCar(UINT8 x, UINT8 y, UINT8 Car);
 
-
-    UINT8 First;
-    UINT8 Loc_x,Loc_y;
-
-    void ScrollVideo();
-    void LineClear(UINT8 P_y);
-    void Preset(UINT8 x, UINT8 y);
-    void Pset(UINT8 x, UINT8 y);
-    void Line(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2);
-    void Circle(int x, int y, int r);
-
-
-    //CLAVIER Clavier;
     QByteArray Clavier;
 
     bool run();
@@ -135,6 +119,7 @@ public:
     static const UINT8 key_tbl_k[256];
     static const UINT8 key_tbl_ks[256];
     static const UINT8 key_tbl_g[256];
+
 
 
 };

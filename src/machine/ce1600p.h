@@ -2,13 +2,7 @@
 #define CE1600P_H
 
 
-#include "Log.h"
-#include "lh5810.h"
-#include "ce150.h"
-#include "cprinter.h"
-#include "Connect.h"
-#include "Inter.h"
-#include "Keyb.h"
+
 
 
 #define NO_MOVE	0
@@ -19,6 +13,7 @@
 
 class Cprinter;
 class Cmotor;
+class Ccpu;
 
 extern void DoCe150Dialog(void);
 extern TransMap KeyMapce1600p[];

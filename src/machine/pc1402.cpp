@@ -2,6 +2,7 @@
 #include	"common.h"
 
 #include "pc1402.h"
+#include "Lcdc.h"
 
 Cpc1402::Cpc1402(CPObject *parent)	: Cpc1401(parent)
 {								//[constructor]

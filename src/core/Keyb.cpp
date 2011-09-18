@@ -3,6 +3,7 @@
 #include "common.h"
 #include "init.h"
 #include "pcxxxx.h"
+#include "cpu.h"
 #include "Log.h"
 #include "Inter.h"
 #include "Keyb.h"

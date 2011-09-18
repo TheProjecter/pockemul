@@ -6,9 +6,7 @@
 
 
 #include "pcxxxx.h"
-#include "sc61860.h"
-#include "Keyb.h"
-#include "Connect.h"
+
 
 class Cpc1401:public CpcXXXX{						//PC1403 emulator main class
 public:

@@ -8,6 +8,7 @@
 #include	"pc1450.h"
 #include	"Keyb.h"
 #include    "Keyb1450.h"
+#include "Lcdc.h"
 
 
 

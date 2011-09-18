@@ -6,6 +6,7 @@
 #include "common.h"
 #include "Log.h"
 #include "pcxxxx.h"
+#include "Lcdc.h"
 #include "sc61860.h"
 #include "Dasm.h"
 #include "Inter.h"

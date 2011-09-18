@@ -10,6 +10,7 @@
 #include	"Inter.h"
 #include	"Keyb.h"
 #include "Keyb1403.h"
+#include "Lcdc.h"
 //#include	"ce126.h"
 //#include	"sound.h"
 

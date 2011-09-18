@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "pc1250.h"
+#include "Lcdc.h"
  
 #include "Inter.h"
 #include "Keyb.h"

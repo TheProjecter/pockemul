@@ -30,6 +30,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "Log.h"
 #include "pcxxxx.h"
 #include "pc1500.h"
+#include "Lcdc.h"
 #include "clink.h"
 #include "sc61860.h"
 

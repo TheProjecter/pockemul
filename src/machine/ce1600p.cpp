@@ -4,6 +4,7 @@
 #include "common.h"
 #include "ce150.h"
 #include "ce1600p.h"
+#include "cpu.h"
 #include "pcxxxx.h"
 #include "paperwidget.h"
 #include "Keyb.h"

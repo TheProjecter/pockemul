@@ -7,6 +7,7 @@
 #include "dialogsimulator.h"
 #include "common.h"
 #include "pcxxxx.h"
+#include "Connect.h"
 #include "mainwindowpockemul.h"
 
 extern	MainWindowPockemul* mainwindow;

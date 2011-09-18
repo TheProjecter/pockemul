@@ -96,7 +96,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     //pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     //pKEYB		= new Ckeyb(this,"x07.map",scandef_x07);
 
-    First = 1;
+
     Cpt = 0;
     Nb=0;
     Lec_K7=0;
@@ -108,7 +108,7 @@ bool Cx07::init(void)				// initialize
 {
     memset((void*)&Port_FX,0,sizeof (Port_FX));
     //memset((void*)&Clavier,0,sizeof (Clavier));
-    memset((void*)&Ram_Video,0,sizeof (Ram_Video));
+    memset((void*)&pT6834->Ram_Video,0,sizeof (pT6834->Ram_Video));
     //fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
@@ -145,7 +145,7 @@ bool Cx07::init(void)				// initialize
     General_Info.size_point_y = 1;
     General_Info.Curs_X       = 0;
     General_Info.Curs_Y       = 0;
-    General_Info.Curseur      = 0;
+    General_Info.Curseur      = false;
     General_Info.Aff_Udk      = 0;
     General_Info.Rem_Canal    = 0;
     General_Info.Stick        = 0x30;
@@ -445,7 +445,7 @@ void Cx07::SendToT6834 (PorT_FX *Port)
             //General_Info.Curs_Y ++;
             //     fputc (Port->W.F1,stderr);
             fprintf (stderr,"(%02X) %c",Port->W.F1,Port->W.F1);
-            AffCar (General_Info.Curs_X,General_Info.Curs_Y,Port->W.F1);
+            pT6834->AffCar (General_Info.Curs_X,General_Info.Curs_Y,Port->W.F1);
         }
         else
         {
@@ -476,7 +476,7 @@ void Cx07::SendToT6834 (PorT_FX *Port)
      {
       case 0x0C : if (pT6834->Send_Cmd_T6834 [1] == 0xB0)
                    {
-                    ClrScr ();
+                    pT6834->ClrScr ();
                     pT6834->Send_Cmd_T6834 [0] = pT6834->Send_Cmd_T6834 [1]&0x7f;
                     Lng_Cmd = CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].lng_send;
                     Lng_Rsp = CT6834::Cmd_T6834[pT6834->Send_Cmd_T6834 [0] & 0x7F].lng_rsp;
@@ -512,223 +512,6 @@ void Cx07::SendToT6834 (PorT_FX *Port)
   }
 }
 
-void Cx07::ClrScr (void)
-{
-    memset(&Ram_Video,0,sizeof(Ram_Video));
-    RefreshVideo ();
-}
-
-void Cx07::RefreshVideo (void)
-{
-    int x;
-    int y;
-    int ColorIndex;
-
-    AffCurseur ();
-    QPainter painter(LcdImage);
-    for (x=0;x<120;x++)
-        for (y=0;y<32;y++)
-        {
-            QColor col = (Ram_Video[x][y])?pLCDC->Color_On:pLCDC->Color_Off;
-
-            painter.setPen(  col  );
-            painter.drawPoint(x,y);
-        }
-    painter.end();
-
-    Refresh_Display = true;
-}
-
-void Cx07::AffCurseur (void)
-{
-    if (!First)
-    {
-        if (General_Info.Curseur)
-        {
-            UINT8 y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
-            UINT8 x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
-
-            for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-                Ram_Video[x+i][y-1] = 1;
-
-        }
-    }
-    else First = 0;
-
-    Loc_x = General_Info.Curs_X;
-    Loc_y = General_Info.Curs_Y;
-    if (General_Info.Curseur)
-    {
-        UINT8 y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
-        UINT8 x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
-        for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-            Ram_Video[x+i][y-1] = 1;
-    }
-}
-
-void Cx07::AffCar(UINT8 x, UINT8 y, UINT8 Car)
-{
-    int P_x,P_y;
-    UINT8 Mask;
-    int offsetX = x*NB_POINT_CAR_X;
-    int offsetY = y*NB_POINT_CAR_Y;
-    /* Dessin du caractere point par point */
-    /*-------------------------------------*/
-
-    AddLog (LOG_TEMP,tr("Draw char (%1) at %2,%3").arg(Car,2,16,QChar('0')).arg(x).arg(y));
-    for (P_y=0;P_y<8;P_y++)
-    {
-        Mask=0x80;
-
-
-        for (P_x=0;P_x<6;P_x++)
-        {
-            int color = ( (X07_CarDef[Car][P_y] & Mask) ? 1 : 0);
-
-            /* Positionnement de la mémoire video */
-            /*------------------------------------*/
-            Ram_Video[offsetX+P_x][offsetY+P_y] = color;
-
-            Mask >>=1;
-        }
-    }
-
-
-}
-
-void Cx07::ScrollVideo (void)
-{
-    UINT8 x,y;
-
-    for (x=0 ; x<MAX_X ; x++)
-        for (y = (General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
-             y < (General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
-             y++)
-            if (y<((General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
-                Ram_Video [x][y] = Ram_Video[x][y+8];
-            else
-                Ram_Video [x][y] = 0;
-    RefreshVideo ();
-}
-
-void Cx07::LineClear (UINT8 P_y)
-{
- UINT8 x,y;
-
- /* Effacement de la mémoire video */
- /*--------------------------------*/
- for (x=0;x<MAX_X;x++)
-  for (y=P_y*NB_POINT_CAR_Y;y<(P_y+1)*NB_POINT_CAR_Y;y++)
-   Ram_Video[x][y]=0;
-}
-
-/*---------------------------------------------------------------------------*/
-void Cx07::Pset (UINT8 x, UINT8 y)
-{
-#if AFF_CMD_T6834
-    fprintf (stderr,"Pset %d,%d ",x,y);
-#endif
-    Ram_Video[x][y]=1;
-
-}
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-void Cx07::Preset (UINT8 x, UINT8 y)
-{
-#if AFF_CMD_T6834
-    fprintf (stderr,"Preset %d,%d ",x,y);
-#endif
-    Ram_Video[x][y]=0;
-}
-
-void Cx07::Line (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
-{
-    int next_x = x1, next_y = y1;
-    int delta_x = abs(x2 - x1) * 2;
-    int delta_y = abs(y2 - y1) * 2;
-    int step_x = (x2 < x1) ? -1 : 1;
-    int step_y = (y2 < y1) ? -1 : 1;
-
-    if(delta_x > delta_y) {
-        int frac = delta_y - delta_x / 2;
-        while(next_x != x2) {
-            if(frac >= 0) {
-                next_y += step_y;
-                frac -= delta_x;
-            }
-            next_x += step_x;
-            frac += delta_y;
-            Pset(next_x, next_y);
-        }
-    }
-    else {
-        int frac = delta_x - delta_y / 2;
-        while(next_y != y2) {
-            if(frac >= 0) {
-                next_x += step_x;
-                frac -= delta_y;
-            }
-            next_y += step_y;
-            frac += delta_x;
-            Pset(next_x, next_y);
-        }
-    }
-    Pset(x1, y1);
-    Pset(x2, y2);
-}
-
-void Cx07::Circle(int x, int y, int r)
-{
-#if 0
-// high accuracy
-double xlim = sqrt((double)(r * r) / 2);
-
-for(int cx = 0, cy = r; cx <= xlim ; cx++) {
-    double d1 = (cx * cx + cy * cy) - r * r;
-    double d2 = (cx * cx + (cy - 1) * (cy - 1)) - r * r;
-    if(abs(d1) > abs(d2)) {
-        cy--;
-    }
-    draw_point(cx + x, cy + y, 0xff);
-    draw_point(cx + x, -cy + y, 0xff);
-    draw_point(-cx + x, cy + y, 0xff);
-    draw_point(-cx + x, -cy + y, 0xff);
-    draw_point(cy + x, cx + y, 0xff);
-    draw_point(cy + x, -cx + y, 0xff);
-    draw_point(-cy + x, cx + y, 0xff);
-    draw_point(-cy + x, -cx + y, 0xff);
-}
-#else
-// high speed
-    int cx = 0, cy = r;
-    int d = 2 - 2 * r;
-
-    Pset(cx + x, cy + y);
-    Pset(cx + x, -cy + y);
-    Pset(cy + x, cx + y);
-    Pset(-cy + x, cx + y);
-    while(1) {
-        if(d > -cy) {
-            cy--;
-            d += 1 - 2 * cy;
-        }
-        if(d <= cx) {
-            cx++;
-            d += 1 + 2 * cx;
-        }
-        if(!cy) {
-            return;
-        }
-        Pset(cx + x, cy + y);
-        Pset(-cx + x, cy + y);
-        Pset(-cx + x, -cy + y);
-        Pset(cx + x, -cy + y);
-    }
-#endif
-}
 
 void Cx07::keyReleaseEvent(QKeyEvent *event)
 {
@@ -771,10 +554,10 @@ void Cx07::keyPressEvent(QKeyEvent *event)
     bool kana,graph,shift,ctrl;
 
     switch (event->key()) {
-    case Qt::Key_Up    : General_Info.Stick = 0x31; break;
-    case Qt::Key_Right : General_Info.Stick = 0x32; break;
-    case Qt::Key_Down  : General_Info.Stick = 0x36; break;
-    case Qt::Key_Left  : General_Info.Stick = 0x37; break;
+    case Qt::Key_Up    : General_Info.Stick = 0x31; AddKey(0x1e);break;
+    case Qt::Key_Right : General_Info.Stick = 0x32; AddKey(0x1c);break;
+    case Qt::Key_Down  : General_Info.Stick = 0x36; AddKey(0x1f);break;
+    case Qt::Key_Left  : General_Info.Stick = 0x37; AddKey(0x1d);break;
 
     case Qt::Key_F1    : AddFKey (0);break;
     case Qt::Key_F2    : AddFKey (1);break;
@@ -790,6 +573,10 @@ void Cx07::keyPressEvent(QKeyEvent *event)
     case Qt::Key_F12   : AddFKey (11);break;
 
     case Qt::Key_Return : AddKey(0x0d);break;
+
+    case Qt::Key_Shift :
+    case Qt::Key_Control:
+    case Qt::Key_Alt:   break;
     default:
 
         kana=graph=shift=ctrl = false;
@@ -815,7 +602,7 @@ void Cx07::keyPressEvent(QKeyEvent *event)
         if(val) AddKey(val);
 
     }
-
+    event->accept();
 }
 
 void Cx07::AddFKey (UINT8 F_Key)

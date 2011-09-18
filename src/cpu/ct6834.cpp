@@ -1,6 +1,8 @@
 #include <QTime>
+#include <QPainter>
 
 #include "ct6834.h"
+#include "Lcdc.h"
 #include "Log.h"
 
 extern UINT8 X07_CarDef[][8];
@@ -12,6 +14,7 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
     Loc_X=0;
     Loc_Y=0;
     R5 = 0;
+    First = 1;
 }
 
 const CMD_T6834 CT6834::Cmd_T6834[] =
@@ -172,11 +175,11 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x08:
               fputc ('\n',stderr);
-              pPC->ScrollVideo ();
+              ScrollVideo ();
               break;
 
    case 0x09:
-              pPC->LineClear (Send_Cmd_T6834[1]);
+              LineClear (Send_Cmd_T6834[1]);
               break;
 
    case 0x0A:
@@ -209,18 +212,18 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 #if AFF_CMD_T6834
               fprintf (stderr,"Pset %d,%d ",Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
 #endif
-              pPC->Pset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
+              Pset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
               break;
 
    case 0x12:
 #if AFF_CMD_T6834
               fprintf (stderr,"Preset %d,%d ",Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
 #endif
-              pPC->Preset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
+              Preset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
               break;
   case 0x13:	// Peor
               if(Send_Cmd_T6834[1] < 120 && Send_Cmd_T6834[2] < 32) {
-                  pPC->Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]] = ~(pPC->Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]]);
+                  Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]] = ~(Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]]);
               }
 
    case 0x14: // Line (x1,y1)-(x2,y2)
@@ -231,7 +234,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                                                        Send_Cmd_T6834[4]);
 
 #endif
-              pPC->Line (Send_Cmd_T6834[1],Send_Cmd_T6834[2],
+              Line (Send_Cmd_T6834[1],Send_Cmd_T6834[2],
                     Send_Cmd_T6834[3],Send_Cmd_T6834[4]);
               break;
   case 0x15:
@@ -242,7 +245,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                                                       Send_Cmd_T6834[4]);
 
 #endif
-             pPC->Circle(Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
+             Circle(Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
              break;
    case 0x16: // UDKWrite
 //#if AFF_CMD_T6834
@@ -303,11 +306,11 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               if (Send_Cmd_T6834[3])
                {
                 fputc (Send_Cmd_T6834[3],stderr);
-                pPC->AffCar (Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
+                AffCar (Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
                }
               else
                {
-                pPC->AffCurseur();
+                //pPC->AffCurseur();
                }
 #if AFF_CMD_T6834
               fputc ('\n',stderr);
@@ -318,15 +321,15 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
                 AddLog (LOG_TEMP,"Curseur ON\n");
 
-              pPC->General_Info.Curseur = 1;
-              pPC->AffCurseur ();
+              pPC->General_Info.Curseur = true;
+              //pPC->AffCurseur ();
               break;
 
    case 0x26: // CursOff
 
               AddLog (LOG_TEMP,"Curseur OFF\n");
 
-              pPC->General_Info.Curseur = 0;
+              pPC->General_Info.Curseur = false;
               break;
 
    case 0x2D: // KeyBufferClear
@@ -338,7 +341,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
    case 0x31: // UDKOff
               pPC->General_Info.Aff_Udk = 0;
-              pPC->LineClear (3);
+              LineClear (3);
               break;
 
    case 0x3b: // KeybOn
@@ -367,8 +370,237 @@ void CT6834::AffUdkON (bool shift)
     Offset = (shift)?1:0;
     for (i=0;i<5;i++)
     {
-        pPC->AffCar (x++,3,131);
+        AffCar (x++,3,131);
         for (j=0;j<3;j++)
-            pPC->AffCar (x++,3,pPC->General_Info.F_Key[i+(6*Offset)][j]);
+            AffCar (x++,3,pPC->General_Info.F_Key[i+(6*Offset)][j]);
     }
+}
+
+void CT6834::ClrScr (void)
+{
+    memset(&Ram_Video,0,sizeof(Ram_Video));
+    RefreshVideo ();
+}
+
+void CT6834::RefreshVideo (void)
+{
+    int x;
+    int y;
+    int ColorIndex;
+
+    //AffCurseur ();
+    QPainter painter(pPC->LcdImage);
+    for (x=0;x<120;x++)
+        for (y=0;y<32;y++)
+        {
+            if (pPC->General_Info.Curseur &&
+                cursorTimer.elapsed()>500 &&
+                pPC->General_Info.Curs_X == (x/6) &&
+                pPC->General_Info.Curs_Y == (y/8)) {
+
+                painter.setPen( (y == pPC->General_Info.Curs_Y * 8 + 6) ? pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off );
+                painter.drawPoint(x,y);
+            }
+            else {
+                QColor col = (Ram_Video[x][y])?pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off;
+
+                painter.setPen(  col  );
+                painter.drawPoint(x,y);
+            }
+        }
+    if (pPC->General_Info.Curseur && cursorTimer.elapsed()>1000) cursorTimer.restart();
+    painter.end();
+
+    Refresh_Display = true;
+}
+
+void CT6834::AffCurseur (void)
+{
+    if (!First)
+    {
+        if (pPC->General_Info.Curseur)
+        {
+            UINT8 y = ((Loc_Y+1) * pPC->General_Info.size_point_y * NB_POINT_CAR_Y) - pPC->General_Info.size_point_y;
+            UINT8 x =   Loc_X    * pPC->General_Info.size_point_x * NB_POINT_CAR_X;
+
+            for (int i=0;i<=NB_POINT_CAR_X*pPC->General_Info.size_point_x;i++)
+                Ram_Video[x+i][y-1] = 1;
+
+        }
+    }
+    else First = 0;
+
+    Loc_X = pPC->General_Info.Curs_X;
+    Loc_Y = pPC->General_Info.Curs_Y;
+    if (pPC->General_Info.Curseur)
+    {
+        UINT8 y = ((Loc_Y+1) * pPC->General_Info.size_point_y * NB_POINT_CAR_Y) - pPC->General_Info.size_point_y;
+        UINT8 x =   Loc_X    * pPC->General_Info.size_point_x * NB_POINT_CAR_X;
+        for (int i=0;i<=NB_POINT_CAR_X*pPC->General_Info.size_point_x;i++)
+            Ram_Video[x+i][y-1] = 1;
+    }
+}
+
+void CT6834::AffCar(UINT8 x, UINT8 y, UINT8 Car)
+{
+    int P_x,P_y;
+    UINT8 Mask;
+    int offsetX = x*NB_POINT_CAR_X;
+    int offsetY = y*NB_POINT_CAR_Y;
+    /* Dessin du caractere point par point */
+    /*-------------------------------------*/
+
+    AddLog (LOG_TEMP,tr("Draw char (%1) at %2,%3").arg(Car,2,16,QChar('0')).arg(x).arg(y));
+    for (P_y=0;P_y<8;P_y++)
+    {
+        Mask=0x80;
+
+
+        for (P_x=0;P_x<6;P_x++)
+        {
+            int color = ( (X07_CarDef[Car][P_y] & Mask) ? 1 : 0);
+
+            /* Positionnement de la mémoire video */
+            /*------------------------------------*/
+            Ram_Video[offsetX+P_x][offsetY+P_y] = color;
+
+            Mask >>=1;
+        }
+    }
+
+
+}
+
+void CT6834::ScrollVideo (void)
+{
+    UINT8 x,y;
+
+    for (x=0 ; x<MAX_X ; x++)
+        for (y = (pPC->General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
+             y < (pPC->General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
+             y++)
+            if (y<((pPC->General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
+                Ram_Video [x][y] = Ram_Video[x][y+8];
+            else
+                Ram_Video [x][y] = 0;
+    RefreshVideo ();
+}
+
+void CT6834::LineClear (UINT8 P_y)
+{
+ UINT8 x,y;
+
+ /* Effacement de la mémoire video */
+ /*--------------------------------*/
+ for (x=0;x<MAX_X;x++)
+  for (y=P_y*NB_POINT_CAR_Y;y<(P_y+1)*NB_POINT_CAR_Y;y++)
+   Ram_Video[x][y]=0;
+}
+
+/*---------------------------------------------------------------------------*/
+void CT6834::Pset (UINT8 x, UINT8 y)
+{
+#if AFF_CMD_T6834
+    fprintf (stderr,"Pset %d,%d ",x,y);
+#endif
+    Ram_Video[x][y]=1;
+
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                                                                           */
+/*---------------------------------------------------------------------------*/
+void CT6834::Preset (UINT8 x, UINT8 y)
+{
+#if AFF_CMD_T6834
+    fprintf (stderr,"Preset %d,%d ",x,y);
+#endif
+    Ram_Video[x][y]=0;
+}
+
+void CT6834::Line (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+{
+    int next_x = x1, next_y = y1;
+    int delta_x = abs(x2 - x1) * 2;
+    int delta_y = abs(y2 - y1) * 2;
+    int step_x = (x2 < x1) ? -1 : 1;
+    int step_y = (y2 < y1) ? -1 : 1;
+
+    if(delta_x > delta_y) {
+        int frac = delta_y - delta_x / 2;
+        while(next_x != x2) {
+            if(frac >= 0) {
+                next_y += step_y;
+                frac -= delta_x;
+            }
+            next_x += step_x;
+            frac += delta_y;
+            Pset(next_x, next_y);
+        }
+    }
+    else {
+        int frac = delta_x - delta_y / 2;
+        while(next_y != y2) {
+            if(frac >= 0) {
+                next_x += step_x;
+                frac -= delta_y;
+            }
+            next_y += step_y;
+            frac += delta_x;
+            Pset(next_x, next_y);
+        }
+    }
+    Pset(x1, y1);
+    Pset(x2, y2);
+}
+
+void CT6834::Circle(int x, int y, int r)
+{
+#if 0
+// high accuracy
+double xlim = sqrt((double)(r * r) / 2);
+
+for(int cx = 0, cy = r; cx <= xlim ; cx++) {
+    double d1 = (cx * cx + cy * cy) - r * r;
+    double d2 = (cx * cx + (cy - 1) * (cy - 1)) - r * r;
+    if(abs(d1) > abs(d2)) {
+        cy--;
+    }
+    draw_point(cx + x, cy + y, 0xff);
+    draw_point(cx + x, -cy + y, 0xff);
+    draw_point(-cx + x, cy + y, 0xff);
+    draw_point(-cx + x, -cy + y, 0xff);
+    draw_point(cy + x, cx + y, 0xff);
+    draw_point(cy + x, -cx + y, 0xff);
+    draw_point(-cy + x, cx + y, 0xff);
+    draw_point(-cy + x, -cx + y, 0xff);
+}
+#else
+// high speed
+    int cx = 0, cy = r;
+    int d = 2 - 2 * r;
+
+    Pset(cx + x, cy + y);
+    Pset(cx + x, -cy + y);
+    Pset(cy + x, cx + y);
+    Pset(-cy + x, cx + y);
+    while(1) {
+        if(d > -cy) {
+            cy--;
+            d += 1 - 2 * cy;
+        }
+        if(d <= cx) {
+            cx++;
+            d += 1 + 2 * cx;
+        }
+        if(!cy) {
+            return;
+        }
+        Pset(cx + x, cy + y);
+        Pset(-cx + x, cy + y);
+        Pset(-cx + x, -cy + y);
+        Pset(cx + x, -cy + y);
+    }
+#endif
 }

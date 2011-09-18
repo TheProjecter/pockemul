@@ -5,6 +5,8 @@
 #include "Log.h"
 
 #include "pc1280.h"
+#include "Lcdc.h"
+#include "cpu.h"
 #include "init.h"
 #include "Keyb1280.h"
 

@@ -4,6 +4,7 @@
 #include <QtGui>
 #include "pc2500.h"
 #include "sc61860.h"
+#include "Lcdc.h"
 #include "Keyb2500.h"
 #include "paperwidget.h"
 

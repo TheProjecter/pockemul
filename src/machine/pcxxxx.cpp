@@ -8,6 +8,9 @@
 
 #include	"common.h"
 #include	"pcxxxx.h"
+#include    "Lcdc.h"
+#include    "cpu.h"
+#include    "Connect.h"
 #include	"Log.h"
 #include	"Dasm.h"
 #include	"Debug.h"

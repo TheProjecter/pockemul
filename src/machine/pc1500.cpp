@@ -8,7 +8,7 @@
 
 #include	"common.h"
 #include	"pc1500.h"
- 
+#include    "Lcdc.h"
 #include	"Inter.h"
 #include	"Debug.h"
 #include	"Keyb.h"

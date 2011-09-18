@@ -9,11 +9,14 @@
 
 #include "pobject.h"
 
-#include "Lcdc.h"
-#include "cpu.h"
+
+
 #include "Inter.h"
-#include "Connect.h"
+
 #include "extension.h"
+class Clcdc;
+class CCPU;
+class Cconnector;
 class CExtension;
 class Cprinter;
 class Ckeyb;

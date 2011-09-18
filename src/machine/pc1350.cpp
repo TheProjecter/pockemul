@@ -10,6 +10,8 @@
 #include	"common.h"
 #include	"pc1350.h"
 
+#include "Connect.h"
+#include "Lcdc.h"
 #include "sc61860.h"
 #include "Inter.h"
 #include "Keyb.h"

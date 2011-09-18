@@ -5,6 +5,7 @@
 #include "pobject.h"
 #include "Log.h"
 #include "pcxxxx.h"
+#include "Lcdc.h"
 #include "Keyb.h"
 #include "extension.h"
 #include "Connect.h"
@@ -383,6 +384,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
         event->ignore();
         return;
     }
+
+    setFocus();
 
 	if (event->modifiers() == Qt::MetaModifier) return;
 		

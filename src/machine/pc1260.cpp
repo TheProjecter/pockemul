@@ -1,6 +1,7 @@
 #include	"common.h"
  
 #include "pc1260.h"
+#include "Lcdc.h"
 
 Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
 {								//[constructor]

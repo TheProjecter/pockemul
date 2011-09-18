@@ -8,6 +8,7 @@
 #include "common.h"
 #include "Debug.h"
 #include "pcxxxx.h"
+#include "cpu.h"
 
 //#include "inter.h"
 
