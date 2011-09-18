@@ -28,7 +28,7 @@ public:
     int InitReponseT6834(UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port);
     UINT8 R5;
     Cx07 *pPC;
-    void AffUdkON(qint8 State);
+    void AffUdkON(bool State);
 };
 
 #endif // CT6834_H

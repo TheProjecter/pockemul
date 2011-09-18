@@ -104,7 +104,9 @@ public:
     void Circle(int x, int y, int r);
 
 
-    CLAVIER Clavier;
+    //CLAVIER Clavier;
+    QByteArray Clavier;
+
     bool run();
     void AddKey(UINT8 Key);
 
@@ -124,6 +126,17 @@ public:
 
     int Nb;
     int Lec_K7;
+    void AddFKey(UINT8 F_Key);
+
+
+    static const UINT8 key_tbl[256];
+    static const UINT8 key_tbl_c[256];
+    static const UINT8 key_tbl_s[256];
+    static const UINT8 key_tbl_k[256];
+    static const UINT8 key_tbl_ks[256];
+    static const UINT8 key_tbl_g[256];
+
+
 };
 
 #endif // CX07_H

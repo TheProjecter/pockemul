@@ -218,6 +218,10 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 #endif
               pPC->Preset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
               break;
+  case 0x13:	// Peor
+              if(Send_Cmd_T6834[1] < 120 && Send_Cmd_T6834[2] < 32) {
+                  pPC->Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]] = ~(pPC->Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]]);
+              }
 
    case 0x14: // Line (x1,y1)-(x2,y2)
 #if AFF_CMD_T6834
@@ -355,12 +359,12 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
  return (Lng_rsp);
 }
 
-void CT6834::AffUdkON (qint8 State)
+void CT6834::AffUdkON (bool shift)
 {
     qint8 Offset,i,j;
     qint8 x=0;
 
-    Offset = (State)?1:0;
+    Offset = (shift)?1:0;
     for (i=0;i<5;i++)
     {
         pPC->AffCar (x++,3,131);

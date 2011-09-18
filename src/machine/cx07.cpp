@@ -38,7 +38,7 @@
 
 Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3840000);
+    setfrequency( (int) 3840000*3/8);
     setcfgfname(QString("x07"));
 
     SessionHeader	= "X07PKM";
@@ -107,12 +107,12 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 bool Cx07::init(void)				// initialize
 {
     memset((void*)&Port_FX,0,sizeof (Port_FX));
-    memset((void*)&Clavier,0,sizeof (Clavier));
+    //memset((void*)&Clavier,0,sizeof (Clavier));
     memset((void*)&Ram_Video,0,sizeof (Ram_Video));
     //fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+    //pCPU->logsw = true;
 #endif
     CpcXXXX::init();
 
@@ -139,6 +139,8 @@ bool Cx07::init(void)				// initialize
     strcpy(&General_Info.F_Key[11][0],"nul");
 
 
+    General_Info.Scroll_Min_Y = 0;
+    General_Info.Scroll_Max_Y = 4;
     General_Info.size_point_x = 1;
     General_Info.size_point_y = 1;
     General_Info.Curs_X       = 0;
@@ -161,14 +163,7 @@ bool Cx07::init(void)				// initialize
 
 void Cx07::AddKey (UINT8 Key)
 {
-    if (Clavier.Nb_Key < 20)
-    {
-        Clavier.Nb_Key ++;
-        Clavier.Buff_Key[Clavier.Pt_Ecr] = Key & 0XFF;
-        Clavier.Pt_Ecr ++;
-        if (Clavier.Pt_Ecr >=20)
-            Clavier.Pt_Ecr = 0;
-    }
+    Clavier.append(Key);
 }
 
 bool Cx07::run() {
@@ -177,19 +172,28 @@ bool Cx07::run() {
 
     if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
     {
-        if (Clavier.Nb_Key)
-        {
-            Clavier.Nb_Key --;
-            Port_FX.R.F1 = Clavier.Buff_Key[Clavier.Pt_Lec];
-            Clavier.Pt_Lec ++;
-            if (Clavier.Pt_Lec >=20) Clavier.Pt_Lec = 0;
+        if (!Clavier.isEmpty()) {
+            Port_FX.R.F1 = Clavier.at(0);
+            Clavier.remove(0,1);
             Port_FX.R.F0  = 0x00;
             Port_FX.R.F2 |= 0x01;
             IT_T6834      = 0;
+            AddLog(LOG_TEMP,tr("Key:%1").arg(Port_FX.R.F1,2,16,QChar('0')));
 
-            ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,pCPU->imem[IT_RST_A]);
+            ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
+
         }
 
+        if (General_Info.Break == 1)
+        {
+            Port_FX.R.F0  = 0x80;
+            Port_FX.R.F1  = 0x05;
+            Port_FX.R.F2 |= 0x01;
+            IT_T6834      = 0;
+            General_Info.Break=0;
+            fprintf (stderr,"Break\n");
+            return (IT_RST_A);
+        }
         if ( IT_T6834 )
         {
             switch (IT_T6834)
@@ -537,9 +541,6 @@ void Cx07::RefreshVideo (void)
 
 void Cx07::AffCurseur (void)
 {
-
-
-
     if (!First)
     {
         if (General_Info.Curseur)
@@ -548,7 +549,7 @@ void Cx07::AffCurseur (void)
             UINT8 x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
 
             for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-                Ram_Video[x+i][y+1] = 1;
+                Ram_Video[x+i][y-1] = 1;
 
         }
     }
@@ -561,7 +562,7 @@ void Cx07::AffCurseur (void)
         UINT8 y = ((Loc_y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) -General_Info.size_point_y;
         UINT8 x =   Loc_x    * General_Info.size_point_x * NB_POINT_CAR_X;
         for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-            Ram_Video[x+i][y+1] = 1;
+            Ram_Video[x+i][y-1] = 1;
     }
 }
 
@@ -731,11 +732,98 @@ for(int cx = 0, cy = r; cx <= xlim ; cx++) {
 
 void Cx07::keyReleaseEvent(QKeyEvent *event)
 {
+    bool kana,graph,shift,ctrl;
+    kana=graph=shift=ctrl = false;
+
+    switch (event->modifiers()) {
+        case Qt::ShiftModifier : shift = true; break;
+        case Qt::AltModifier:   graph = true; break;
+        case Qt::ControlModifier: ctrl = true; break;
+    }
+
+    if(General_Info.Aff_Udk) {
+        pT6834->AffUdkON(shift);
+    }
+
+    switch(event->key()) {
+    case Qt::Key_Backspace:	// bs->left
+        General_Info.Stick = 0x30;
+        break;
+
+    case Qt::Key_Space:
+        General_Info.Strig1 = 0xff;
+        break;
+    case Qt::Key_Up    :
+    case Qt::Key_Right :
+    case Qt::Key_Down  :
+    case Qt::Key_Left  :
+        General_Info.Stick = 0x30;
+        break;
+    case Qt::Key_F6:	// F6
+        General_Info.Strig = 0xff;
+        break;
+    }
 }
 
 void Cx07::keyPressEvent(QKeyEvent *event)
 {
-    AddKey(event->key());
+    UINT8 code,val;
+    bool kana,graph,shift,ctrl;
+
+    switch (event->key()) {
+    case Qt::Key_Up    : General_Info.Stick = 0x31; break;
+    case Qt::Key_Right : General_Info.Stick = 0x32; break;
+    case Qt::Key_Down  : General_Info.Stick = 0x36; break;
+    case Qt::Key_Left  : General_Info.Stick = 0x37; break;
+
+    case Qt::Key_F1    : AddFKey (0);break;
+    case Qt::Key_F2    : AddFKey (1);break;
+    case Qt::Key_F3    : AddFKey (2);break;
+    case Qt::Key_F4    : AddFKey (3);break;
+    case Qt::Key_F5    : AddFKey (4);break;
+    case Qt::Key_F6    : General_Info.Strig = 0; AddFKey (5);break;
+    case Qt::Key_F7    : AddFKey (6);break;
+    case Qt::Key_F8    : AddFKey (7);break;
+    case Qt::Key_F9    : AddFKey (8);break;
+    case Qt::Key_F10   : AddFKey (9);break;
+    case Qt::Key_F11   : AddFKey (10);break;
+    case Qt::Key_F12   : AddFKey (11);break;
+
+    case Qt::Key_Return : AddKey(0x0d);break;
+    default:
+
+        kana=graph=shift=ctrl = false;
+        switch (event->modifiers()) {
+            case Qt::ShiftModifier : shift = true; break;
+            case Qt::AltModifier:   graph = true; break;
+            case Qt::ControlModifier: ctrl = true; break;
+        }
+        code = event->key();
+        if(ctrl) val = key_tbl_c[code];
+        else if(kana) {
+            if(shift) val = key_tbl_ks[code];
+            else val = key_tbl_k[code];
+        }
+        else if(graph) val = key_tbl_g[code];
+       // else if(shift) val = key_tbl_s[code];
+        else {
+            val = code;//key_tbl[code];
+            // Manage lowercase
+            if (shift && (val >=0x41) && (val <= 0x5a)) val += 0x20;
+        }
+
+        if(val) AddKey(val);
+
+    }
+
+}
+
+void Cx07::AddFKey (UINT8 F_Key)
+{
+
+    if (F_Key < 12)
+        for (int i=3;(i<50) && (General_Info.F_Key [F_Key][i]);i++)
+            AddKey (General_Info.F_Key [F_Key][i]);
 }
 
 void Cx07::Reset()
