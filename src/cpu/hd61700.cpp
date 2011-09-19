@@ -2766,7 +2766,7 @@ void CHD61700::execute_set_input(int inputnum, int state)
 //  INLINE HELPERS
 //**************************************************************************
 
-inline void CHD61700::set_pc(INT32 new_pc)
+inline void CHD61700::set_pc(UINT32 new_pc)
 {
     m_curpc = (m_curpc & 0x30000) | new_pc;
     m_pc = new_pc & 0xffff;

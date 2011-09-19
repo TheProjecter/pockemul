@@ -1,7 +1,7 @@
 #ifndef HD61700_H
 #define HD61700_H
 
-#undef FIRST_CASIO
+//#define FIRST_CASIO
 
 #ifdef FIRST_CASIO
 /**********************************************************************
@@ -110,7 +110,7 @@ protected:
     bool check_irqs(void);
 
     // inline helpers
-    inline void  set_pc(INT32 new_pc);
+    inline void  set_pc(UINT32 new_pc);
     inline UINT8 read_op();
     inline UINT8 mem_readbyte(UINT8 segment, UINT16 offset);
     inline void  mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data);

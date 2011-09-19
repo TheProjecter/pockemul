@@ -298,7 +298,8 @@ RESOURCES += resources/ext.qrc \
     resources/stdlibs.qrc \
     qcodeedit/qxs/qxs.qrc \
     resources/asmlibs.qrc \
-    resources/x07.qrc
+    resources/x07.qrc \
+    resources/pb1000.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \

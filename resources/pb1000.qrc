@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pb1000/chr.bin</file>
+        <file>pb1000/ram0.bin</file>
+        <file>pb1000/ram1.bin</file>
+        <file>pb1000/rom0.bin</file>
+        <file>pb1000/rom1.bin</file>
+    </qresource>
+</RCC>
