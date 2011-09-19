@@ -74,7 +74,11 @@ void Clcdc::disp_symb(void)
 /*****************************************************************************/
 void	Clcdc::check(void)  {}
 
-void	Clcdc::TurnON(void) { On = true; }
+void	Clcdc::TurnON(void) {
+    On = true;
+    Refresh = true;
+}
+
 void	Clcdc::TurnOFF(void){ On = false; }
 
 bool	Clcdc::init(void)

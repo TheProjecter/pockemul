@@ -102,7 +102,7 @@ public:
 	virtual bool	InitDisplay(void);
 	virtual void	UpdateFinalImage(void);
     virtual	bool	run(void){ return true;}					// emulator main step
-            int     runRange(qint64);
+            qint64     runRange(qint64);
 	virtual bool	exit();					// exit
     virtual bool	Set_Connector(void) { return true; }
     virtual bool	Get_Connector(void) { return true; }

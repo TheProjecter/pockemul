@@ -227,7 +227,7 @@ void CPocketThread::run()
                 {
                     // test si en retard
                     qint64 cs = pPC->pTIMER->currentState();
-                    if (pPC->pTIMER->state < cs)
+                    if (pPC->pTIMER->state <= cs)
                     {
                         if (pPC->ioFreq > 0) {
                             int step = MIN(f / pPC->ioFreq - pPC->pTIMER->deltaStep,cs-pPC->pTIMER->state);

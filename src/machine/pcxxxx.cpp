@@ -171,6 +171,7 @@ void CpcXXXX::TurnOFF(void)
 
 
 	off = 1;
+    Power = false;
     PowerSwitch = PS_OFF;
     if (pLCDC) pLCDC->TurnOFF();
     InitDisplay();
@@ -181,6 +182,7 @@ void CpcXXXX::TurnON(void)
 {
 	Initial_Session_Load();
 	off = 0;
+    Power = true;
     PowerSwitch = PS_RUN;
     if (pLCDC) pLCDC->TurnON();
 }
@@ -494,7 +496,7 @@ bool CpcXXXX::run(void)
 
 
 	}
-    else pTIMER->state+=100;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+    else pTIMER->state = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
 
 
 

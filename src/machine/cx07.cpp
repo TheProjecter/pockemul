@@ -100,7 +100,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     Cpt = 0;
     Nb=0;
     Lec_K7=0;
-
+    IT_T6834 = 0;
 
 }
 
@@ -192,6 +192,7 @@ bool Cx07::run() {
             IT_T6834      = 0;
             General_Info.Break=0;
             fprintf (stderr,"Break\n");
+            ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
             return (IT_RST_A);
         }
         if ( IT_T6834 )
@@ -612,6 +613,15 @@ void Cx07::AddFKey (UINT8 F_Key)
         for (int i=3;(i<50) && (General_Info.F_Key [F_Key][i]);i++)
             AddKey (General_Info.F_Key [F_Key][i]);
 }
+
+void Cx07::TurnON(void){
+    CpcXXXX::TurnON();
+
+    General_Info.Break == 1;
+
+    //((CZ80 *) pCPU)->z80.r16.pc = 0x0000;//0xC3C3;
+}
+
 
 void Cx07::Reset()
 {

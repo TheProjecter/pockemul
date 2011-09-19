@@ -122,6 +122,7 @@ public:
 
 
 
+    void TurnON();
 };
 
 #endif // CX07_H

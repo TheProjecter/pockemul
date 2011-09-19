@@ -257,7 +257,17 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 //#endif
                  strcpy (pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1],(char*)&Send_Cmd_T6834[2]);
                  break;
-
+  case 0x17:	// UDKRead
+                  //val = Send_Cmd_T6834[1];
+                  for(i = 0; i < 42; i++) {
+                      UINT8 code = pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1][i];
+                      Rsp[i] = code;
+                      if(!code) {
+                          return (i+1);
+                      }
+                  }
+                  return (i+1);
+                  break;
    case 0x18: // UDKOn
    case 0x19: // UDKOff
                  break;
@@ -283,6 +293,10 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                  break;
 
    case 0x22: Rsp[0]=0x04; // 0x41
+              break;
+   case 0x23: // Turn OFF
+              mainwindow->saveAll =NO;
+              pPC->TurnOFF();
               break;
 
    case 0x24:
@@ -398,7 +412,7 @@ void CT6834::RefreshVideo (void)
                 pPC->General_Info.Curs_X == (x/6) &&
                 pPC->General_Info.Curs_Y == (y/8)) {
 
-                painter.setPen( (y == pPC->General_Info.Curs_Y * 8 + 6) ? pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off );
+                painter.setPen( ((y == pPC->General_Info.Curs_Y * 8 + 6) &&(x!=pPC->General_Info.Curs_X*6+5))? pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off );
                 painter.drawPoint(x,y);
             }
             else {
