@@ -1,3 +1,6 @@
+
+#include <math.h>
+
 #include <QTime>
 #include <QPainter>
 
@@ -15,6 +18,9 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
     Loc_Y=0;
     R5 = 0;
     First = 1;
+
+    mem=(BYTE *)malloc(0x1000*sizeof(BYTE));
+    //initUdk();
 }
 
 const CMD_T6834 CT6834::Cmd_T6834[] =
@@ -91,13 +97,21 @@ const CMD_T6834 CT6834::Cmd_T6834[] =
  {   1,   1,"TimeChk"},          // 0x45
  {   1,   1,"AlmChk"}};          // 0x46
 
-const qint8 CT6834::Date[]={128,192,224,240,248,252,254,255};
+const UINT8 CT6834::Date[]={128,192,224,240,248,252,254,255};
+
+const int CT6834::udk_ofs[12] = {
+    0, 42, 84, 126, 168, 210, 256, 298, 340, 382, 424, 466
+};
+
+const int CT6834::udk_size[12] = {
+    42, 42, 42, 42, 42, 46, 42, 42, 42, 42, 42, 46
+};
 
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
 
  int    Lng_rsp;
- qint16   Adresse;
+ DWORD   Adresse;
  UINT8  i;
 
  Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
@@ -150,25 +164,25 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               Rsp[0] = pPC->General_Info.Strig1;
               break;
 
-   case 0x05: Adresse = Send_Cmd_T6834[1] + ( Send_Cmd_T6834[2] << 8);
-#if AFF_CMD_T6834
-              fprintf (stderr,"Adresse = %04X\n",Adresse);
-#endif
-              if (!R5) {Rsp[0]=0x0A;R5++;}
-              else     {Rsp[0]='0';}
+   case 0x05: // RamRead
+              Adresse = Send_Cmd_T6834[1] + ( Send_Cmd_T6834[2] << 8);
+              if(Adresse == 0xc00e) {
+                  Rsp[0] = 0x0a;
+              }
+              else if(Adresse == 0xd000) {
+                  Rsp[0] = 0x30;
+              }
+              else
+                  Rsp[0] = mem[Adresse & 0xfff];
+
               break;
 
-   case 0x06:
+   case 0x06: // RamWrite
               Adresse = Send_Cmd_T6834[2] + ( Send_Cmd_T6834[3] << 8);
-#if AFF_CMD_T6834
-              fprintf (stderr,"Adresse = %04X Data:%02X\n",Adresse,Send_Cmd_T6834[1]);
-#endif
+              mem[Adresse & 0xfff] = Send_Cmd_T6834[1];
               break;
 
    case 0x07: // Scroll Set
-#if AFF_CMD_T6834
-                fprintf (stderr,"Scroll_Set[%d,%d]\n",Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
-#endif
                 pPC->General_Info.Scroll_Min_Y = Send_Cmd_T6834[1];
                 pPC->General_Info.Scroll_Max_Y = Send_Cmd_T6834[2]+1;
               break;
@@ -209,9 +223,6 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x11:
-#if AFF_CMD_T6834
-              fprintf (stderr,"Pset %d,%d ",Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
-#endif
               Pset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
               break;
 
@@ -248,19 +259,19 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
              Circle(Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
              break;
    case 0x16: // UDKWrite
-//#if AFF_CMD_T6834
-                 fprintf (stderr,"UDKWrite[%d] ", Send_Cmd_T6834[1]);
-                 for (i=2;(i<50) && (Send_Cmd_T6834[i]);i++)
-                  if (Send_Cmd_T6834[i]>=' ') fputc (Send_Cmd_T6834[i],stderr);
-                  else fprintf (stderr," $%02X",Send_Cmd_T6834[i]);
-                 fputc ('\n',stderr);
-//#endif
+#if 0
+
                  strcpy (pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1],(char*)&Send_Cmd_T6834[2]);
+#else
+      for(i = 0; i < udk_size[Send_Cmd_T6834[1]]; i++) {
+          mem[0x800+udk_ofs[Send_Cmd_T6834[1]] + i] = Send_Cmd_T6834[2+i];
+      }
+#endif
                  break;
   case 0x17:	// UDKRead
                   //val = Send_Cmd_T6834[1];
                   for(i = 0; i < 42; i++) {
-                      UINT8 code = pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1][i];
+                      UINT8 code = mem[0x800+udk_ofs[Send_Cmd_T6834[1]] + i];//pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1][i];
                       Rsp[i] = code;
                       if(!code) {
                           return (i+1);
@@ -376,6 +387,21 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
  return (Lng_rsp);
 }
 
+void CT6834::initUdk() {
+    strcpy((char*)&mem[0x800+udk_ofs[0]],"tim?TIME$\r");
+    strcpy((char*)&mem[0x800+udk_ofs[1]],"cldCLOAD");
+    strcpy((char*)&mem[0x800+udk_ofs[2]],"locLOCATE");
+    strcpy((char*)&mem[0x800+udk_ofs[3]],"lstLIST");
+    strcpy((char*)&mem[0x800+udk_ofs[4]],"runRUN\r");
+    strcpy((char*)&mem[0x800+udk_ofs[5]],"nul");
+    strcpy((char*)&mem[0x800+udk_ofs[6]],"dat?DATE$\r");
+    strcpy((char*)&mem[0x800+udk_ofs[7]],"csaCSAVE");
+    strcpy((char*)&mem[0x800+udk_ofs[8]],"prtPRINT");
+    strcpy((char*)&mem[0x800+udk_ofs[9]],"slpSLEEP");
+    strcpy((char*)&mem[0x800+udk_ofs[10]],"cntCONT\r");
+    strcpy((char*)&mem[0x800+udk_ofs[11]],"nul");
+}
+
 void CT6834::AffUdkON (bool shift)
 {
     qint8 Offset,i,j;
@@ -386,7 +412,7 @@ void CT6834::AffUdkON (bool shift)
     {
         AffCar (x++,3,131);
         for (j=0;j<3;j++)
-            AffCar (x++,3,pPC->General_Info.F_Key[i+(6*Offset)][j]);
+            AffCar (x++,3,mem[0x800+udk_ofs[i+6*Offset]+j]);//pPC->General_Info.F_Key[i+(6*Offset)][j]);
     }
 }
 
@@ -512,12 +538,13 @@ void CT6834::LineClear (UINT8 P_y)
 }
 
 /*---------------------------------------------------------------------------*/
-void CT6834::Pset (UINT8 x, UINT8 y)
+void CT6834::Pset (int x, int y)
 {
 #if AFF_CMD_T6834
     fprintf (stderr,"Pset %d,%d ",x,y);
 #endif
-    Ram_Video[x][y]=1;
+    if ( x>=0 && x <120 && y>=0 && y<32)
+        Ram_Video[x][y]=1;
 
 }
 
@@ -525,12 +552,13 @@ void CT6834::Pset (UINT8 x, UINT8 y)
 /*                                                                           */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-void CT6834::Preset (UINT8 x, UINT8 y)
+void CT6834::Preset (int x, int y)
 {
 #if AFF_CMD_T6834
     fprintf (stderr,"Preset %d,%d ",x,y);
 #endif
-    Ram_Video[x][y]=0;
+    if ( x>=0 && x <120 && y>=0 && y<32)
+        Ram_Video[x][y]=0;
 }
 
 void CT6834::Line (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
@@ -571,24 +599,24 @@ void CT6834::Line (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 
 void CT6834::Circle(int x, int y, int r)
 {
-#if 0
+#if 1
 // high accuracy
 double xlim = sqrt((double)(r * r) / 2);
 
-for(int cx = 0, cy = r; cx <= xlim ; cx++) {
+for(int cx = 0, cy = r; cx <= xlim+1 ; cx++) {
     double d1 = (cx * cx + cy * cy) - r * r;
     double d2 = (cx * cx + (cy - 1) * (cy - 1)) - r * r;
     if(abs(d1) > abs(d2)) {
         cy--;
     }
-    draw_point(cx + x, cy + y, 0xff);
-    draw_point(cx + x, -cy + y, 0xff);
-    draw_point(-cx + x, cy + y, 0xff);
-    draw_point(-cx + x, -cy + y, 0xff);
-    draw_point(cy + x, cx + y, 0xff);
-    draw_point(cy + x, -cx + y, 0xff);
-    draw_point(-cy + x, cx + y, 0xff);
-    draw_point(-cy + x, -cx + y, 0xff);
+    Pset(cx + x, cy + y);
+    Pset(cx + x, -cy + y);
+    Pset(-cx + x, cy + y);
+    Pset(-cx + x, -cy + y);
+    Pset(cy + x, cx + y);
+    Pset(cy + x, -cx + y);
+    Pset(-cy + x, cx + y);
+    Pset(-cy + x, -cx + y);
 }
 #else
 // high speed

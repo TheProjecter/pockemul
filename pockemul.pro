@@ -245,7 +245,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/ct6834.h \
     src/machine/cx07char.h \
     ui/cregsz80widget.h \
-    src/core/Lcdc_x07.h
+    src/core/Lcdc_x07.h \
+    src/cpu/hd61700.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -452,7 +453,9 @@ SOURCES += src/core/Connect.cpp \
     src/machine/cx07.cpp \
     src/cpu/ct6834.cpp \
     ui/cregsz80widget.cpp \
-    src/core/Lcdc_x07.cpp
+    src/core/Lcdc_x07.cpp \
+    src/cpu/hd61700d.cpp \
+    src/cpu/hd61700.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

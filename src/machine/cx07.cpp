@@ -106,16 +106,17 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 
 bool Cx07::init(void)				// initialize
 {
-    memset((void*)&Port_FX,0,sizeof (Port_FX));
-    //memset((void*)&Clavier,0,sizeof (Clavier));
-    memset((void*)&pT6834->Ram_Video,0,sizeof (pT6834->Ram_Video));
+
+
     //fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
     //pCPU->logsw = true;
 #endif
     CpcXXXX::init();
-
+    memset((void*)&Port_FX,0,sizeof (Port_FX));
+    //memset((void*)&Clavier,0,sizeof (Clavier));
+    memset((void*)&pT6834->Ram_Video,0,sizeof (pT6834->Ram_Video));
     memset((void *)mem ,0,0x6000);
 
     WatchPoint.remove(this);
@@ -125,18 +126,7 @@ bool Cx07::init(void)				// initialize
 
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
-    strcpy(&General_Info.F_Key[0][0],"tim?TIME$\r");
-    strcpy(&General_Info.F_Key[1][0],"cldCLOAD");
-    strcpy(&General_Info.F_Key[2][0],"locLOCATE");
-    strcpy(&General_Info.F_Key[3][0],"lstLIST");
-    strcpy(&General_Info.F_Key[4][0],"runRUN\r");
-    strcpy(&General_Info.F_Key[5][0],"nul");
-    strcpy(&General_Info.F_Key[6][0],"dat?DATE$\r");
-    strcpy(&General_Info.F_Key[7][0],"csaCSAVE");
-    strcpy(&General_Info.F_Key[8][0],"prtPRINT");
-    strcpy(&General_Info.F_Key[9][0],"slpSLEEP");
-    strcpy(&General_Info.F_Key[10][0],"cntCONT\r");
-    strcpy(&General_Info.F_Key[11][0],"nul");
+    pT6834->initUdk();
 
 
     General_Info.Scroll_Min_Y = 0;
@@ -153,11 +143,6 @@ bool Cx07::init(void)				// initialize
     General_Info.Strig1       = 0xFF;
     General_Info.Break        = 0;
 
-//    Line(5,5,105,30);
-//    AffCar(1,1,'B');
-//    AffCar(3,1,'O');
-//    AffCar(5,1,'N');
-//    AffCar(7,1,'J');
     return true;
 }
 
@@ -610,8 +595,8 @@ void Cx07::AddFKey (UINT8 F_Key)
 {
 
     if (F_Key < 12)
-        for (int i=3;(i<50) && (General_Info.F_Key [F_Key][i]);i++)
-            AddKey (General_Info.F_Key [F_Key][i]);
+        for (int i=3;(i<pT6834->udk_size[i]) && pT6834->mem[0x800+pT6834->udk_ofs[F_Key]+i];i++)
+            AddKey (pT6834->mem[0x800+pT6834->udk_ofs[F_Key]+i]);
 }
 
 void Cx07::TurnON(void){
