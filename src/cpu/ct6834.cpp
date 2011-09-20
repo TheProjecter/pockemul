@@ -109,7 +109,7 @@ const int CT6834::udk_size[12] = {
 
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
-
+static UINT8 dow[8] = {128, 192, 224, 240, 248, 252, 254, 255};
  int    Lng_rsp;
  DWORD   Adresse;
  UINT8  i;
@@ -128,9 +128,9 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
                Rsp[0] = ((my_t.date().year()-100)>>8) & 0xFF;
                Rsp[1] = my_t.date().year() & 0xFF;
-               Rsp[2] = my_t.date().month()+1;
+               Rsp[2] = my_t.date().month();
                Rsp[3] = my_t.date().day();
-               Rsp[4] = my_t.date().dayOfWeek();
+               Rsp[4] = dow[my_t.date().dayOfWeek()];
                Rsp[5] = my_t.time().hour();
                Rsp[6] = my_t.time().minute();
                Rsp[7] = my_t.time().second();
@@ -188,7 +188,6 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x08:
-              fputc ('\n',stderr);
               ScrollVideo ();
               break;
 
@@ -221,53 +220,40 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                                                                    Send_Cmd_T6834[7],
                                                                    Send_Cmd_T6834[8]);
               break;
+  case 0x0d:
+  case 0x0e:
+  case 0x0f:    break;
+
+  case 0x10:    //POINT
+            return (Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]] ? 0: 0xff);
+                    break;
 
    case 0x11:
               Pset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
               break;
 
    case 0x12:
-#if AFF_CMD_T6834
-              fprintf (stderr,"Preset %d,%d ",Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
-#endif
               Preset (Send_Cmd_T6834[1],Send_Cmd_T6834[2]);
               break;
   case 0x13:	// Peor
               if(Send_Cmd_T6834[1] < 120 && Send_Cmd_T6834[2] < 32) {
-                  Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]] = ~(Ram_Video[Send_Cmd_T6834[2]][Send_Cmd_T6834[1]]);
+                  Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]] = ~(Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]]);
               }
 
    case 0x14: // Line (x1,y1)-(x2,y2)
-#if AFF_CMD_T6834
-              fprintf (stderr,"Line(%d,%d)-(%d,%d)\n", Send_Cmd_T6834[1],
-                                                       Send_Cmd_T6834[2],
-                                                       Send_Cmd_T6834[3],
-                                                       Send_Cmd_T6834[4]);
-
-#endif
               Line (Send_Cmd_T6834[1],Send_Cmd_T6834[2],
                     Send_Cmd_T6834[3],Send_Cmd_T6834[4]);
               break;
   case 0x15:
-#if AFF_CMD_T6834
-             fprintf (stderr,"Circle(%d,%d)-(%d,%d)\n", Send_Cmd_T6834[1],
-                                                      Send_Cmd_T6834[2],
-                                                      Send_Cmd_T6834[3],
-                                                      Send_Cmd_T6834[4]);
-
-#endif
              Circle(Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
              break;
-   case 0x16: // UDKWrite
-#if 0
 
-                 strcpy (pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1],(char*)&Send_Cmd_T6834[2]);
-#else
+  case 0x16: // UDKWrite
       for(i = 0; i < udk_size[Send_Cmd_T6834[1]]; i++) {
           mem[0x800+udk_ofs[Send_Cmd_T6834[1]] + i] = Send_Cmd_T6834[2+i];
       }
-#endif
-                 break;
+      break;
+
   case 0x17:	// UDKRead
                   //val = Send_Cmd_T6834[1];
                   for(i = 0; i < 42; i++) {
@@ -284,24 +270,35 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                  break;
 
    case 0x1A: // UDCWrite
-#if AFF_CMD_T6834
-              fprintf (stderr,"UDCWrite[%02X]\n",Send_Cmd_T6834[1]);
-#endif
               for (i=0;i<8;i++)
                X07_CarDef [Send_Cmd_T6834[1]][i] = Send_Cmd_T6834[2+i];
               break;
 
    case 0x1B: // UDCRead
-#if AFF_CMD_T6834
-              fprintf (stderr,"UDCRead[%02X]\n",Send_Cmd_T6834[1]);
-#endif
-              for (i=0;i<8;i++)
-               Rsp[i] = X07_CarDef [Send_Cmd_T6834[1]][i];
+                for (i=0;i<8;i++)
+                    Rsp[i] = X07_CarDef [Send_Cmd_T6834[1]][i];
               break;
 
+  case 0x1d:
+  case 0x1e:
+      for(i = 0; (i < 0x200 && Send_Cmd_T6834[i+1]); i++) {
+          mem[0xE00+i] = Send_Cmd_T6834[12+i];
+      }
+
+      break;
    case 0x1F: // SPOn
    case 0x20: // SPOff
                  break;
+   case 0x21: // SP Read  0xCE00 -> 0xCFFF
+      for(i = 0; i < 0x200; i++) {
+          UINT8 code = mem[0xE00+i];
+          Rsp[i] = code;
+          if(!code) {
+              return (i+1);
+          }
+      }
+      return (i+1);
+      break;
 
    case 0x22: Rsp[0]=0x04; // 0x41
               break;
@@ -314,32 +311,27 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
               AddLog (LOG_TEMP,tr("Locate %1,%2 ").arg(Send_Cmd_T6834[1],2,16,QChar('0')).arg(Send_Cmd_T6834[2],2,16,QChar('0')));
 
-              if ((Send_Cmd_T6834[1] == 0) && (Send_Cmd_T6834[2]==pPC->General_Info.Curs_Y+1))
-               fputc ('\n',stderr);
               if ((Loc_X == Send_Cmd_T6834[1]) && (Loc_Y == Send_Cmd_T6834[2]))
                 {
-                AddLog (LOG_TEMP,"Locate_OnOff = 0\n");
-                Locate_OnOff = 0;
+                    AddLog (LOG_TEMP,"Locate_OnOff = 0\n");
+                    Locate_OnOff = 0;
                 }
                else
                 {
-                AddLog (LOG_TEMP,"Locate_OnOff = 1\n");
-                Locate_OnOff = 1;
+                    AddLog (LOG_TEMP,"Locate_OnOff = 1\n");
+                    Locate_OnOff = 1;
                 }
               Loc_X = pPC->General_Info.Curs_X = Send_Cmd_T6834[1];
               Loc_Y = pPC->General_Info.Curs_Y = Send_Cmd_T6834[2];
               if (Send_Cmd_T6834[3])
-               {
-                fputc (Send_Cmd_T6834[3],stderr);
-                AffCar (Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
-               }
+              {
+                  AffCar (Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
+              }
               else
-               {
-                //pPC->AffCurseur();
-               }
-#if AFF_CMD_T6834
-              fputc ('\n',stderr);
-#endif
+              {
+                  //pPC->AffCurseur();
+              }
+
               break;
 
    case 0x25: // CursOn
@@ -347,7 +339,6 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                 AddLog (LOG_TEMP,"Curseur ON\n");
 
               pPC->General_Info.Curseur = true;
-              //pPC->AffCurseur ();
               break;
 
    case 0x26: // CursOff
@@ -357,7 +348,14 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               pPC->General_Info.Curseur = false;
               break;
 
+   case 0x2b: // LCD OFF
+                pPC->General_Info.LcdOn = false;
+                break;
+   case 0x2c: // LCD ON
+                pPC->General_Info.LcdOn = true;
+                break;
    case 0x2D: // KeyBufferClear
+             pPC->Clavier.clear();
               break;
 
    case 0x30: // UDKOn
@@ -370,15 +368,39 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x3b: // KeybOn
+                pPC->General_Info.EnableKeyEntry = true;
+                break;
    case 0x3c: // KeybOff
+                pPC->General_Info.EnableKeyEntry = false;
                  break;
 
    case 0x3F: // Sleep
-#if AFF_CMD_T6834
-              AddLog (LOG_TMP,"Sleep\n");
-#endif
+              AddLog (LOG_TEMP,"Sleep\n");
+
                  //pPC->pCPU->Reg_Xo7.Trace=1;
                  break;
+  case 0x40:
+        initUdk();
+      break;
+  case 0x41:
+      // TODO function 41
+      break;    // WriteCar
+  case 0x42:	// ReadCar
+      // TODO function 42
+      for(i = 0; i < 8; i++) {
+          Rsp[0]=0;
+      }
+
+      break;
+  case 0x43:	// ScanR
+  case 0x44:	// ScanL
+      Rsp[0]=0;
+      Rsp[1]=0;
+      break;
+  case 0x45:	// TimeChk
+  case 0x46:	// AlmChk
+      Rsp[0]=0;
+      break;
 
    default:    fprintf (stderr,"(%s) \n",Cmd_T6834[Send_Cmd_T6834[0]].Str_Cmd);
                break;
@@ -438,11 +460,16 @@ void CT6834::RefreshVideo (void)
                 pPC->General_Info.Curs_X == (x/6) &&
                 pPC->General_Info.Curs_Y == (y/8)) {
 
-                painter.setPen( ((y == pPC->General_Info.Curs_Y * 8 + 6) &&(x!=pPC->General_Info.Curs_X*6+5))? pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off );
+                painter.setPen( (pPC->General_Info.LcdOn &&
+                                 (y == pPC->General_Info.Curs_Y * 8 + 6) &&
+                                 (x!=pPC->General_Info.Curs_X*6+5)) ?
+                                    pPC->pLCDC->Color_On :
+                                    pPC->pLCDC->Color_Off );
                 painter.drawPoint(x,y);
             }
             else {
-                QColor col = (Ram_Video[x][y])?pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off;
+                QColor col = (pPC->General_Info.LcdOn && Ram_Video[x][y])?
+                                    pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off;
 
                 painter.setPen(  col  );
                 painter.drawPoint(x,y);

@@ -115,7 +115,6 @@ bool Cx07::init(void)				// initialize
 #endif
     CpcXXXX::init();
     memset((void*)&Port_FX,0,sizeof (Port_FX));
-    //memset((void*)&Clavier,0,sizeof (Clavier));
     memset((void*)&pT6834->Ram_Video,0,sizeof (pT6834->Ram_Video));
     memset((void *)mem ,0,0x6000);
 
@@ -142,6 +141,8 @@ bool Cx07::init(void)				// initialize
     General_Info.Strig        = 0xFF;
     General_Info.Strig1       = 0xFF;
     General_Info.Break        = 0;
+    General_Info.EnableKeyEntry = true;
+    General_Info.LcdOn        = true;
 
     return true;
 }
@@ -150,6 +151,7 @@ void Cx07::AddKey (UINT8 Key)
 {
     Clavier.append(Key);
 }
+
 
 bool Cx07::run() {
 
@@ -176,7 +178,7 @@ bool Cx07::run() {
             Port_FX.R.F2 |= 0x01;
             IT_T6834      = 0;
             General_Info.Break=0;
-            fprintf (stderr,"Break\n");
+            AddLog(LOG_TEMP,"Break");
             ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
             return (IT_RST_A);
         }
@@ -539,24 +541,38 @@ void Cx07::keyPressEvent(QKeyEvent *event)
     UINT8 code,val;
     bool kana,graph,shift,ctrl;
 
+    switch (event->modifiers()) {
+    case Qt::ShiftModifier : switch (event->key()) {
+        case Qt::Key_F1    : AddFKey (6);break;
+        case Qt::Key_F2    : AddFKey (7);break;
+        case Qt::Key_F3    : AddFKey (8);break;
+        case Qt::Key_F4    : AddFKey (9);break;
+        case Qt::Key_F5    : AddFKey (10);break;
+        case Qt::Key_F6    : AddFKey (11);break;
+        } break;
+    default:  switch (event->key()) {
+        case Qt::Key_F1    : AddFKey (0);break;
+        case Qt::Key_F2    : AddFKey (1);break;
+        case Qt::Key_F3    : AddFKey (2);break;
+        case Qt::Key_F4    : AddFKey (3);break;
+        case Qt::Key_F5    : AddFKey (4);break;
+        case Qt::Key_F6    : General_Info.Strig = 0; AddFKey (5);break;
+        }
+    }
+
     switch (event->key()) {
+    case Qt::Key_F1    :
+    case Qt::Key_F2    :
+    case Qt::Key_F3    :
+    case Qt::Key_F4    :
+    case Qt::Key_F5    :
+    case Qt::Key_F6    : break;
+
     case Qt::Key_Up    : General_Info.Stick = 0x31; AddKey(0x1e);break;
     case Qt::Key_Right : General_Info.Stick = 0x32; AddKey(0x1c);break;
     case Qt::Key_Down  : General_Info.Stick = 0x36; AddKey(0x1f);break;
     case Qt::Key_Left  : General_Info.Stick = 0x37; AddKey(0x1d);break;
 
-    case Qt::Key_F1    : AddFKey (0);break;
-    case Qt::Key_F2    : AddFKey (1);break;
-    case Qt::Key_F3    : AddFKey (2);break;
-    case Qt::Key_F4    : AddFKey (3);break;
-    case Qt::Key_F5    : AddFKey (4);break;
-    case Qt::Key_F6    : General_Info.Strig = 0; AddFKey (5);break;
-    case Qt::Key_F7    : AddFKey (6);break;
-    case Qt::Key_F8    : AddFKey (7);break;
-    case Qt::Key_F9    : AddFKey (8);break;
-    case Qt::Key_F10   : AddFKey (9);break;
-    case Qt::Key_F11   : AddFKey (10);break;
-    case Qt::Key_F12   : AddFKey (11);break;
 
     case Qt::Key_Return : AddKey(0x0d);break;
 
@@ -572,6 +588,11 @@ void Cx07::keyPressEvent(QKeyEvent *event)
             case Qt::ControlModifier: ctrl = true; break;
         }
         code = event->key();
+        if (ctrl && code==Qt::Key_C) {
+            General_Info.Break == 1;
+            val = 0;
+        }
+        else
         if(ctrl) val = key_tbl_c[code];
         else if(kana) {
             if(shift) val = key_tbl_ks[code];
@@ -598,13 +619,20 @@ void Cx07::AddFKey (UINT8 F_Key)
         for (int i=3;(i<pT6834->udk_size[i]) && pT6834->mem[0x800+pT6834->udk_ofs[F_Key]+i];i++)
             AddKey (pT6834->mem[0x800+pT6834->udk_ofs[F_Key]+i]);
 }
+void Cx07::TurnOFF(void) {
+    mainwindow->saveAll = YES;
+    CpcXXXX::TurnOFF();
+    mainwindow->saveAll = ASK;
+    AddLog(LOG_TEMP,"TURN OFF");
+}
 
 void Cx07::TurnON(void){
     CpcXXXX::TurnON();
-
-    General_Info.Break == 1;
-
-    //((CZ80 *) pCPU)->z80.r16.pc = 0x0000;//0xC3C3;
+//    General_Info.Break == 1;
+    AddLog(LOG_TEMP,"TURN ON");
+    Reset();
+    //AddKey(3);
+    //((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 }
 
 

@@ -43,7 +43,8 @@ typedef struct
   UINT8 Baud_Out_Mode;
   UINT8 Rem_Canal;
   UINT8 Break;
-  char F_Key [12][80];
+  bool EnableKeyEntry;
+  bool LcdOn;
 
  } GENERAL_INFO;
 
@@ -123,6 +124,7 @@ public:
 
 
     void TurnON();
+    void TurnOFF();
 };
 
 #endif // CX07_H
