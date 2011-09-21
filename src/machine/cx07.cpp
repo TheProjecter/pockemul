@@ -589,7 +589,7 @@ void Cx07::keyPressEvent(QKeyEvent *event)
         }
         code = event->key();
         if (ctrl && code==Qt::Key_C) {
-            General_Info.Break == 1;
+            General_Info.Break = 1;
             val = 0;
         }
         else
