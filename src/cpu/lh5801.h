@@ -26,7 +26,7 @@ enum {
 typedef union {
 	struct
 	{
-#ifdef BIG_ENDIAN
+#ifdef POCKEMUL_BIG_ENDIAN
 		UINT8 h,l;
 #else
 		UINT8 l,h;

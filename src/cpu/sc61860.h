@@ -64,7 +64,7 @@ union {
     {
         BYTE	p,q,r,dummy;
 #if 0
-#ifdef BIG_ENDIAN
+#ifdef POCKEMUL_BIG_ENDIAN
         BYTE	dph,dpl;
         BYTE	pch,pcl;
 #else

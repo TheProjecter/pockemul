@@ -19,7 +19,7 @@
 
 
 
-#if defined(BIG_ENDIAN)
+#ifdef POCKEMUL_BIG_ENDIAN
 #   define Z80_BIGENDIAN	1
 #else
 #   define Z80_LITTLEENDIAN	1

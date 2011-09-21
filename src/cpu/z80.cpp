@@ -2905,7 +2905,7 @@ inline void CZ80::z80write8(const Z80stat *z, uint16 address, uint8 value)
 }
 
 
-#if defined(Z80_LITTLEENDIAN)
+#ifdef Z80_LITTLEENDIAN
 
 /*
     16bits READ/WRITE (リトルエンディアン)
