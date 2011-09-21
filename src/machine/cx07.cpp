@@ -632,7 +632,7 @@ void Cx07::TurnON(void){
     AddLog(LOG_TEMP,"TURN ON");
     //Reset();
     //AddKey(3);
-    //((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
+//    ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 }
 
 

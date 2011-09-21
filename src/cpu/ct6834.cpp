@@ -167,6 +167,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x05: // RamRead
               Adresse = Send_Cmd_T6834[1] + ( Send_Cmd_T6834[2] << 8);
+              Adresse |= 0xC000;
               if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"Lecture adr %04X",Adresse);
               AddLog(LOG_CANON,tr("Lecture adr %1").arg(Adresse,4,16,QChar('0')));
               if(Adresse == 0xc00e) {
@@ -187,6 +188,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               Adresse = Send_Cmd_T6834[2] + ( Send_Cmd_T6834[3] << 8);
               if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"Ecriture adr %04X : %02X",Adresse,Send_Cmd_T6834[1]);
               AddLog(LOG_CANON,tr("Ecriture adr [%1]=%2").arg(Adresse,4,16,QChar('0')).arg(Send_Cmd_T6834[1],2,16,QChar('0')));
+              Adresse |= 0xC000;
               mem[Adresse - 0xC000] = Send_Cmd_T6834[1];
               if(Adresse == 0xc00e) {
                   AddLog(LOG_TEMP,tr("RAM WRITE C00E %1").arg(Rsp[0],2,16,QChar('0')));
