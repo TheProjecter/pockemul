@@ -111,7 +111,7 @@ bool Cx07::init(void)				// initialize
     //fp_CRVA = 0;
     // if DEBUG then log CPU
 #ifndef QT_NO_DEBUG
-    //pCPU->logsw = true;
+    pCPU->logsw = true;
 #endif
     CpcXXXX::init();
     memset((void*)&Port_FX,0,sizeof (Port_FX));
@@ -491,7 +491,7 @@ void Cx07::SendToT6834 (PorT_FX *Port)
    for (int i=0; i < Cpt; i++)
        s+=QString(" %1 ").arg(pT6834->Send_Cmd_T6834[i],2,16,QChar('0'));
 
-   AddLog(LOG_TEMP,s);
+   AddLog(LOG_CANON,s);
 #if AFF_STR_SND_T6834
    fprintf (stderr,"(%s) \n",Cmd_T6834[pT6834->Send_Cmd_T6834[0]].Str_Cmd);
 #endif
@@ -630,7 +630,7 @@ void Cx07::TurnON(void){
     CpcXXXX::TurnON();
 //    General_Info.Break == 1;
     AddLog(LOG_TEMP,"TURN ON");
-    Reset();
+    //Reset();
     //AddKey(3);
     //((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 }

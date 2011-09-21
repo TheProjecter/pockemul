@@ -16,7 +16,7 @@
 #define LOG_11PORT		0x1000
 #define LOG_ANALOG		0x2000
 #define LOG_SIMULATOR	0x4000
-
+#define LOG_CANON   	0x8000
 
 //extern void AddLog(int ,QString);
 #include "dialoglog.h"

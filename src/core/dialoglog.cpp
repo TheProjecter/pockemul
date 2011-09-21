@@ -25,6 +25,7 @@ DialogLog::DialogLog( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 	addCkeckableItem("11 Pins",		LOG_11PORT);
     addCkeckableItem("Analogic",	LOG_ANALOG);
     addCkeckableItem("Simulator",	LOG_SIMULATOR);
+    addCkeckableItem("Canon X-07",	LOG_CANON);
 
 	LogLevel = 0;
 }

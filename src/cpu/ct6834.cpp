@@ -7,6 +7,7 @@
 #include "ct6834.h"
 #include "Lcdc.h"
 #include "Log.h"
+#include "cpu.h"
 
 extern UINT8 X07_CarDef[][8];
 
@@ -19,7 +20,7 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
     R5 = 0;
     First = 1;
 
-    mem=(BYTE *)malloc(0x1000*sizeof(BYTE));
+    mem=(BYTE *)malloc(0x2200*sizeof(BYTE));
     //initUdk();
 }
 
@@ -109,12 +110,12 @@ const int CT6834::udk_size[12] = {
 
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
-static UINT8 dow[8] = {128, 192, 224, 240, 248, 252, 254, 255};
- int    Lng_rsp;
- DWORD   Adresse;
- UINT8  i;
+    static UINT8 dow[8] = {128, 192, 224, 240, 248, 252, 254, 255};
+    int    Lng_rsp;
+    DWORD  Adresse;
+    UINT8  i;
 
- Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
+    Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
 
  switch (Ordre & 0x7F)
   {
@@ -166,20 +167,30 @@ static UINT8 dow[8] = {128, 192, 224, 240, 248, 252, 254, 255};
 
    case 0x05: // RamRead
               Adresse = Send_Cmd_T6834[1] + ( Send_Cmd_T6834[2] << 8);
+              if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"Lecture adr %04X",Adresse);
+              AddLog(LOG_CANON,tr("Lecture adr %1").arg(Adresse,4,16,QChar('0')));
               if(Adresse == 0xc00e) {
-                  Rsp[0] = 0x0a;
+                  Rsp[0] = 0x0A;
               }
-              else if(Adresse == 0xd000) {
+              else
+              if(Adresse == 0xd000) {
                   Rsp[0] = 0x30;
               }
               else
-                  Rsp[0] = mem[Adresse & 0xfff];
+              {
 
+                  Rsp[0] = mem[Adresse - 0xC000];
+              }
               break;
 
    case 0x06: // RamWrite
               Adresse = Send_Cmd_T6834[2] + ( Send_Cmd_T6834[3] << 8);
-              mem[Adresse & 0xfff] = Send_Cmd_T6834[1];
+              if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"Ecriture adr %04X : %02X",Adresse,Send_Cmd_T6834[1]);
+              AddLog(LOG_CANON,tr("Ecriture adr [%1]=%2").arg(Adresse,4,16,QChar('0')).arg(Send_Cmd_T6834[1],2,16,QChar('0')));
+              mem[Adresse - 0xC000] = Send_Cmd_T6834[1];
+              if(Adresse == 0xc00e) {
+                  AddLog(LOG_TEMP,tr("RAM WRITE C00E %1").arg(Rsp[0],2,16,QChar('0')));
+              }
               break;
 
    case 0x07: // Scroll Set
@@ -300,10 +311,11 @@ static UINT8 dow[8] = {128, 192, 224, 240, 248, 252, 254, 255};
       return (i+1);
       break;
 
-   case 0x22: Rsp[0]=0x04; // 0x41
+   case 0x22: Rsp[0]=0x04; // MEM 0xC006
+                // teste le bit 6 de A. tenter de le mettre à 1
+      Rsp[0] = 0x44;
               break;
    case 0x23: // Turn OFF
-              mainwindow->saveAll =NO;
               pPC->TurnOFF();
               break;
 
@@ -673,3 +685,24 @@ for(int cx = 0, cy = r; cx <= xlim+1 ; cx++) {
     }
 #endif
 }
+
+
+/*
+  E1FE
+            VIDEO RAM
+  E000
+
+  CFFF
+            Programme de lancement
+  CE00
+
+  CCFF
+            Buffer clavier
+  CC00
+            Char user defined
+  CA00
+            F Key
+  C800
+
+  C000
+  */
