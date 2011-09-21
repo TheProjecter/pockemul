@@ -635,9 +635,14 @@ void MainWindowPockemul::updateFrameTimer()
 }
 
 void MainWindowPockemul::mousePressEvent	( QMouseEvent *event){
+    if (event->button() != Qt::LeftButton) {
+        event->ignore();
+        return;
+    }
     setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
     startPosDrag = true;
     PosDrag = event->globalPos();
+    event->accept();
 }
 
 void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){

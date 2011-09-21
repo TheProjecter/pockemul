@@ -448,6 +448,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 		startPosDrag = true;
 		PosDrag = event->globalPos();
 	}
+
+    event->accept();
 }
 
 void CPObject::manageStackPos(QList<CPObject *> *l) {
@@ -489,6 +491,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 			pKEYB->modified = true;
 			KeyDrag = event->globalPos();
 			repaint();
+            event->accept();
 			return;
 		}
 	}
@@ -500,6 +503,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
         MoveWithLinked(delta);
 		PosDrag = event->globalPos();
 		repaint();
+        event->accept();
 		return;
 	}
 	
@@ -595,7 +599,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	{
 		QApplication::sendEvent(parentWidget(), event);
 	}
-
+    event->accept();
 }
 			
 qreal CPObject::RangeFrom(CPObject * target)
@@ -692,6 +696,7 @@ void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 	BuildContextMenu(&menu);
 
 	menu.exec(event->globalPos () );
+    event->accept();
 }
 
 void CPObject::BuildContextMenu(QMenu * menu)
