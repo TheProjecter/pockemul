@@ -21,7 +21,7 @@
 
 #define IMEM_LEN    0x200
 
-/* レジスタ */
+
 #define A	z->r.a	/* アキュムレータ */
 #define F	z->r.f	/* フラグ */
 #define B	z->r.b	/* 汎用レジスタB */
