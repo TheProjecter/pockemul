@@ -313,7 +313,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x22: Rsp[0]=0x04; // MEM 0xC006
                 // teste le bit 6 de A. tenter de le mettre à 1
-      Rsp[0] = 0x44;
+//      Rsp[0] = 0x44;
               break;
    case 0x23: // Turn OFF
               pPC->TurnOFF();
