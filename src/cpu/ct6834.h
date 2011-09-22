@@ -7,6 +7,29 @@
 
 typedef struct
  {
+  int size_point_x;
+  int size_point_y;
+  UINT8 Scroll_Min_Y;
+  UINT8 Scroll_Max_Y;
+  UINT8 Curs_X;
+  UINT8 Curs_Y;
+  bool Curseur;
+  UINT8 Aff_Udk;
+  UINT8 Stick;
+  UINT8 Strig;
+  UINT8 Strig1;
+  FILE *K7_File;
+  UINT8 Baud_Out_Mode;
+  UINT8 Rem_Canal;
+  UINT8 Break;
+  bool EnableKeyEntry;
+  bool LcdOn;
+
+ } GENERAL_INFO;
+
+
+typedef struct
+ {
   UINT8 lng_send;
   UINT8 lng_rsp;
   char *Str_Cmd;
@@ -18,25 +41,13 @@ public:
     CT6834(CPObject *parent = 0);
 
     bool init(void);
+    void Reset(void);
     static const UINT8 Date[8];
     static const int udk_ofs[12];
     static const int udk_size[12];
-
-    UINT8 Send_Cmd_T6834 [255];
-    UINT8 Locate_OnOff;
-    UINT8 Loc_X;
-    UINT8 Loc_Y;
-
-    UINT8 Loc_x,Loc_y;
-
     static const CMD_T6834 Cmd_T6834[0x48];
-    int InitReponseT6834(UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port);
-    UINT8 R5;
-    Cx07 *pPC;
-    UINT8 Ram_Video[120][32];
-    QTime cursorTimer;
-    UINT8 First;
 
+    int InitReponseT6834(UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port);
     void AffUdkON(bool State);
     void ClrScr();
     void RefreshVideo();
@@ -49,10 +60,33 @@ public:
     void Line(UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2);
     void Circle(int x, int y, int r);
 
-    UINT8 *mem;
     void initUdk();
     void save_internal(QXmlStreamWriter *xmlOut);
     void Load_Internal(QXmlStreamReader *xmlIn);
+
+    void AddFKey(UINT8 F_Key);
+    void AddKey(UINT8 Key);
+
+    GENERAL_INFO General_Info;
+    UINT8 Send_Cmd_T6834 [255];
+    UINT8 Locate_OnOff;
+    UINT8 Loc_X;
+    UINT8 Loc_Y;
+
+    UINT8 Loc_x,Loc_y;
+
+    UINT8 R5;
+    Cx07 *pPC;
+    UINT8 Ram_Video[120][32];
+    QTime cursorTimer;
+    UINT8 First;
+
+
+
+    UINT8 *mem;
+
+    QByteArray Clavier;
+
 };
 
 #endif // CT6834_H

@@ -26,27 +26,6 @@ typedef struct
   PORT_FX W;
  } PorT_FX;
 
-typedef struct
- {
-  int size_point_x;
-  int size_point_y;
-  UINT8 Scroll_Min_Y;
-  UINT8 Scroll_Max_Y;
-  UINT8 Curs_X;
-  UINT8 Curs_Y;
-  bool Curseur;
-  UINT8 Aff_Udk;
-  UINT8 Stick;
-  UINT8 Strig;
-  UINT8 Strig1;
-  FILE *K7_File;
-  UINT8 Baud_Out_Mode;
-  UINT8 Rem_Canal;
-  UINT8 Break;
-  bool EnableKeyEntry;
-  bool LcdOn;
-
- } GENERAL_INFO;
 
 typedef struct
  {
@@ -88,9 +67,6 @@ public:
     UINT8 Int_nsc800_BB;
 
     CT6834 *pT6834;
-    GENERAL_INFO General_Info;
-
-    QByteArray Clavier;
 
     bool run();
     void AddKey(UINT8 Key);

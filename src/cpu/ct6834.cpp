@@ -8,6 +8,7 @@
 #include "Lcdc.h"
 #include "Log.h"
 #include "cpu.h"
+#include "cx07.h"
 
 extern UINT8 X07_CarDef[][8];
 
@@ -20,8 +21,6 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
     R5 = 0;
     First = 1;
 
-
-    //initUdk();
 }
 
 const CMD_T6834 CT6834::Cmd_T6834[] =
@@ -122,47 +121,29 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
    case 0x00: //lng_rsp = Cmd_T6834[Ordre].lng_rsp;
               break;
 
-   case 0x01:
-              {
-                QDateTime my_t = QDateTime::currentDateTime();
-
-
-               Rsp[0] = ((my_t.date().year()-100)>>8) & 0xFF;
-               Rsp[1] = my_t.date().year() & 0xFF;
-               Rsp[2] = my_t.date().month();
-               Rsp[3] = my_t.date().day();
-               Rsp[4] = dow[my_t.date().dayOfWeek()];
-               Rsp[5] = my_t.time().hour();
-               Rsp[6] = my_t.time().minute();
-               Rsp[7] = my_t.time().second();
-              fprintf (stderr,"TimeCall:%d/%d/%d (%d) %d:%d:%d\n",(Rsp [0]<<8)+
-                                                                   Rsp [1],
-                                                                   Rsp [2],
-                                                                   Rsp [3],
-                                                                   Rsp [4],
-                                                                   Rsp [5],
-                                                                   Rsp [6],
-                                                                   Rsp [7]);
+   case 0x01: {
+                  QDateTime my_t = QDateTime::currentDateTime();
+                  Rsp[0] = ((my_t.date().year()-100)>>8) & 0xFF;
+                  Rsp[1] = my_t.date().year() & 0xFF;
+                  Rsp[2] = my_t.date().month();
+                  Rsp[3] = my_t.date().day();
+                  Rsp[4] = dow[my_t.date().dayOfWeek()];
+                  Rsp[5] = my_t.time().hour();
+                  Rsp[6] = my_t.time().minute();
+                  Rsp[7] = my_t.time().second();
               }
               break;
 
-   case 0x02:
-
-            AddLog (LOG_TEMP,tr("Stick = %1").arg(pPC->General_Info.Stick,2,16,QChar('0')));
-
-              Rsp[0] = pPC->General_Info.Stick;
+   case 0x02: AddLog (LOG_TEMP,tr("Stick = %1").arg(General_Info.Stick,2,16,QChar('0')));
+              Rsp[0] = General_Info.Stick;
               break;
-   case 0x03:
 
-              AddLog (LOG_TEMP,tr("Strig = %1").arg(pPC->General_Info.Strig,2,16,QChar('0')));
-
-              Rsp[0] = pPC->General_Info.Strig;
+   case 0x03: AddLog (LOG_TEMP,tr("Strig = %1").arg(General_Info.Strig,2,16,QChar('0')));
+              Rsp[0] = General_Info.Strig;
               break;
-   case 0x04:
 
-              AddLog(LOG_TEMP,tr("Strig1 = %1").arg(pPC->General_Info.Strig1,2,16,QChar('0')));
-
-              Rsp[0] = pPC->General_Info.Strig1;
+   case 0x04: AddLog(LOG_TEMP,tr("Strig1 = %1").arg(General_Info.Strig1,2,16,QChar('0')));
+              Rsp[0] = General_Info.Strig1;
               break;
 
    case 0x05: // RamRead
@@ -196,8 +177,8 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x07: // Scroll Set
-                pPC->General_Info.Scroll_Min_Y = Send_Cmd_T6834[1];
-                pPC->General_Info.Scroll_Max_Y = Send_Cmd_T6834[2]+1;
+                General_Info.Scroll_Min_Y = Send_Cmd_T6834[1];
+                General_Info.Scroll_Max_Y = Send_Cmd_T6834[2]+1;
               break;
 
    case 0x08:
@@ -270,7 +251,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
   case 0x17:	// UDKRead
                   //val = Send_Cmd_T6834[1];
                   for(i = 0; i < 42; i++) {
-                      UINT8 code = mem[0x800+udk_ofs[Send_Cmd_T6834[1]] + i];//pPC->General_Info.F_Key [Send_Cmd_T6834[1]-1][i];
+                      UINT8 code = mem[0x800+udk_ofs[Send_Cmd_T6834[1]] + i];//General_Info.F_Key [Send_Cmd_T6834[1]-1][i];
                       Rsp[i] = code;
                       if(!code) {
                           return (i+1);
@@ -335,8 +316,8 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                     AddLog (LOG_TEMP,"Locate_OnOff = 1\n");
                     Locate_OnOff = 1;
                 }
-              Loc_X = pPC->General_Info.Curs_X = Send_Cmd_T6834[1];
-              Loc_Y = pPC->General_Info.Curs_Y = Send_Cmd_T6834[2];
+              Loc_X = General_Info.Curs_X = Send_Cmd_T6834[1];
+              Loc_Y = General_Info.Curs_Y = Send_Cmd_T6834[2];
               if (Send_Cmd_T6834[3])
               {
                   AffCar (Send_Cmd_T6834[1],Send_Cmd_T6834[2],Send_Cmd_T6834[3]);
@@ -352,40 +333,40 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
                 AddLog (LOG_TEMP,"Curseur ON\n");
 
-              pPC->General_Info.Curseur = true;
+              General_Info.Curseur = true;
               break;
 
    case 0x26: // CursOff
 
               AddLog (LOG_TEMP,"Curseur OFF\n");
 
-              pPC->General_Info.Curseur = false;
+              General_Info.Curseur = false;
               break;
 
    case 0x2b: // LCD OFF
-                pPC->General_Info.LcdOn = false;
+                General_Info.LcdOn = false;
                 break;
    case 0x2c: // LCD ON
-                pPC->General_Info.LcdOn = true;
+                General_Info.LcdOn = true;
                 break;
    case 0x2D: // KeyBufferClear
-             pPC->Clavier.clear();
+              Clavier.clear();
               break;
 
    case 0x30: // UDKOn
-              pPC->General_Info.Aff_Udk = 1;
+              General_Info.Aff_Udk = 1;
               AffUdkON (0);
               break;
    case 0x31: // UDKOff
-              pPC->General_Info.Aff_Udk = 0;
+              General_Info.Aff_Udk = 0;
               LineClear (3);
               break;
 
    case 0x3b: // KeybOn
-                pPC->General_Info.EnableKeyEntry = true;
+                General_Info.EnableKeyEntry = true;
                 break;
    case 0x3c: // KeybOff
-                pPC->General_Info.EnableKeyEntry = false;
+                General_Info.EnableKeyEntry = false;
                  break;
 
    case 0x3F: // Sleep
@@ -448,7 +429,7 @@ void CT6834::AffUdkON (bool shift)
     {
         AffCar (x++,3,131);
         for (j=0;j<3;j++)
-            AffCar (x++,3,mem[0x800+udk_ofs[i+6*Offset]+j]);//pPC->General_Info.F_Key[i+(6*Offset)][j]);
+            AffCar (x++,3,mem[0x800+udk_ofs[i+6*Offset]+j]);//General_Info.F_Key[i+(6*Offset)][j]);
     }
 }
 
@@ -469,27 +450,27 @@ void CT6834::RefreshVideo (void)
     for (x=0;x<120;x++)
         for (y=0;y<32;y++)
         {
-            if (pPC->General_Info.Curseur &&
+            if (General_Info.Curseur &&
                 cursorTimer.elapsed()>500 &&
-                pPC->General_Info.Curs_X == (x/6) &&
-                pPC->General_Info.Curs_Y == (y/8)) {
+                General_Info.Curs_X == (x/6) &&
+                General_Info.Curs_Y == (y/8)) {
 
-                painter.setPen( (pPC->General_Info.LcdOn &&
-                                 (y == pPC->General_Info.Curs_Y * 8 + 6) &&
-                                 (x!=pPC->General_Info.Curs_X*6+5)) ?
+                painter.setPen( (General_Info.LcdOn &&
+                                 (y == General_Info.Curs_Y * 8 + 6) &&
+                                 (x!=General_Info.Curs_X*6+5)) ?
                                     pPC->pLCDC->Color_On :
                                     pPC->pLCDC->Color_Off );
                 painter.drawPoint(x,y);
             }
             else {
-                QColor col = (pPC->General_Info.LcdOn && Ram_Video[x][y])?
+                QColor col = (General_Info.LcdOn && Ram_Video[x][y])?
                                     pPC->pLCDC->Color_On : pPC->pLCDC->Color_Off;
 
                 painter.setPen(  col  );
                 painter.drawPoint(x,y);
             }
         }
-    if (pPC->General_Info.Curseur && cursorTimer.elapsed()>1000) cursorTimer.restart();
+    if (General_Info.Curseur && cursorTimer.elapsed()>1000) cursorTimer.restart();
     painter.end();
 
     Refresh_Display = true;
@@ -499,25 +480,25 @@ void CT6834::AffCurseur (void)
 {
     if (!First)
     {
-        if (pPC->General_Info.Curseur)
+        if (General_Info.Curseur)
         {
-            UINT8 y = ((Loc_Y+1) * pPC->General_Info.size_point_y * NB_POINT_CAR_Y) - pPC->General_Info.size_point_y;
-            UINT8 x =   Loc_X    * pPC->General_Info.size_point_x * NB_POINT_CAR_X;
+            UINT8 y = ((Loc_Y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) - General_Info.size_point_y;
+            UINT8 x =   Loc_X    * General_Info.size_point_x * NB_POINT_CAR_X;
 
-            for (int i=0;i<=NB_POINT_CAR_X*pPC->General_Info.size_point_x;i++)
+            for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
                 Ram_Video[x+i][y-1] = 1;
 
         }
     }
     else First = 0;
 
-    Loc_X = pPC->General_Info.Curs_X;
-    Loc_Y = pPC->General_Info.Curs_Y;
-    if (pPC->General_Info.Curseur)
+    Loc_X = General_Info.Curs_X;
+    Loc_Y = General_Info.Curs_Y;
+    if (General_Info.Curseur)
     {
-        UINT8 y = ((Loc_Y+1) * pPC->General_Info.size_point_y * NB_POINT_CAR_Y) - pPC->General_Info.size_point_y;
-        UINT8 x =   Loc_X    * pPC->General_Info.size_point_x * NB_POINT_CAR_X;
-        for (int i=0;i<=NB_POINT_CAR_X*pPC->General_Info.size_point_x;i++)
+        UINT8 y = ((Loc_Y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) - General_Info.size_point_y;
+        UINT8 x =   Loc_X    * General_Info.size_point_x * NB_POINT_CAR_X;
+        for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
             Ram_Video[x+i][y-1] = 1;
     }
 }
@@ -557,10 +538,10 @@ void CT6834::ScrollVideo (void)
     UINT8 x,y;
 
     for (x=0 ; x<MAX_X ; x++)
-        for (y = (pPC->General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
-             y < (pPC->General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
+        for (y = (General_Info.Scroll_Min_Y * NB_POINT_CAR_Y);
+             y < (General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
              y++)
-            if (y<((pPC->General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
+            if (y<((General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
                 Ram_Video [x][y] = Ram_Video[x][y+8];
             else
                 Ram_Video [x][y] = 0;
@@ -697,8 +678,9 @@ void CT6834::Load_Internal(QXmlStreamReader *xmlIn)
 //            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
 //            memcpy((char *) &r,ba_reg.data(),sizeof(r));
             QByteArray ba_mem = QByteArray::fromBase64(xmlIn->attributes().value("Mem").toString().toAscii());
-            int i = ba_mem.size();
-            memcpy((char *)mem,ba_mem.data(),i);
+            memcpy((char *)mem,ba_mem.data(),ba_mem.size());
+            QByteArray ba_lcd = QByteArray::fromBase64(xmlIn->attributes().value("Lcd").toString().toAscii());
+            memcpy((char *)&Ram_Video,ba_lcd.data(),ba_lcd.size());
         }
         xmlIn->skipCurrentElement();
     }
@@ -712,16 +694,55 @@ void CT6834::save_internal(QXmlStreamWriter *xmlOut)
 //        xmlOut->writeAttribute("registers",ba_reg.toBase64());
         QByteArray ba_mem((char*)mem,0x2200*sizeof(UINT8));
         xmlOut->writeAttribute("Mem",ba_mem.toBase64());
-        xmlOut->writeEndElement();
+        QByteArray ba_lcd((char*)&Ram_Video,sizeof(Ram_Video));
+        xmlOut->writeAttribute("Lcd",ba_lcd.toBase64());
+    xmlOut->writeEndElement();
 }
 
 bool CT6834::init()
 {
     mem=(UINT8 *)malloc(0x2200*sizeof(UINT8));
+
     initUdk();
+
+    General_Info.Scroll_Min_Y = 0;
+    General_Info.Scroll_Max_Y = 4;
+    General_Info.size_point_x = 1;
+    General_Info.size_point_y = 1;
+    General_Info.Curs_X       = 0;
+    General_Info.Curs_Y       = 0;
+    General_Info.Curseur      = false;
+    General_Info.Aff_Udk      = 0;
+    General_Info.Rem_Canal    = 0;
+    General_Info.Stick        = 0x30;
+    General_Info.Strig        = 0xFF;
+    General_Info.Strig1       = 0xFF;
+    General_Info.Break        = 0;
+    General_Info.EnableKeyEntry = true;
+    General_Info.LcdOn        = false;
 
 }
 
+void CT6834::Reset()
+{
+    // Ram_Video should be integrated into mem.
+    memset((void*)&Ram_Video,0,sizeof (Ram_Video));
+    memset(mem,0,0x2200);
+    initUdk();
+}
+
+void CT6834::AddKey (UINT8 Key)
+{
+    Clavier.append(Key);
+}
+
+void CT6834::AddFKey (UINT8 F_Key)
+{
+
+    if (F_Key < 12)
+        for (int i=3;(i<udk_size[i]) && mem[0x800+udk_ofs[F_Key]+i];i++)
+            AddKey(mem[0x800+udk_ofs[F_Key]+i]);
+}
 /*
   E1FE
             VIDEO RAM
