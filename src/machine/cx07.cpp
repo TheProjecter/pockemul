@@ -114,6 +114,7 @@ bool Cx07::init(void)				// initialize
     pCPU->logsw = true;
 #endif
     CpcXXXX::init();
+
     memset((void*)&Port_FX,0,sizeof (Port_FX));
     memset((void*)&pT6834->Ram_Video,0,sizeof (pT6834->Ram_Video));
     memset((void *)mem ,0,0x6000);
@@ -125,7 +126,7 @@ bool Cx07::init(void)				// initialize
 
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
-    pT6834->initUdk();
+    pT6834->init();
 
 
     General_Info.Scroll_Min_Y = 0;
@@ -642,3 +643,14 @@ void Cx07::Reset()
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 }
 
+bool Cx07::LoadConfig(QXmlStreamReader *xmlIn)
+{
+    pT6834->Load_Internal(xmlIn);
+    return true;
+}
+
+bool Cx07::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+    pT6834->save_internal(xmlOut);
+    return true;
+}

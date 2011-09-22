@@ -125,6 +125,8 @@ public:
 
     void TurnON();
     void TurnOFF();
+    bool SaveConfig(QXmlStreamWriter *xmlOut);
+    bool LoadConfig(QXmlStreamReader *xmlIn);
 };
 
 #endif // CX07_H

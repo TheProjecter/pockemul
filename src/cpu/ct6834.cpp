@@ -20,7 +20,7 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
     R5 = 0;
     First = 1;
 
-    mem=(BYTE *)malloc(0x2200*sizeof(BYTE));
+
     //initUdk();
 }
 
@@ -688,6 +688,39 @@ for(int cx = 0, cy = r; cx <= xlim+1 ; cx++) {
 #endif
 }
 
+
+void CT6834::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "t6834")) {
+//            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+//            memcpy((char *) &r,ba_reg.data(),sizeof(r));
+            QByteArray ba_mem = QByteArray::fromBase64(xmlIn->attributes().value("Mem").toString().toAscii());
+            int i = ba_mem.size();
+            memcpy((char *)mem,ba_mem.data(),i);
+        }
+        xmlIn->skipCurrentElement();
+    }
+}
+
+void CT6834::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","t6834");
+//        QByteArray ba_reg((char*)&r,sizeof(r));
+//        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+        QByteArray ba_mem((char*)mem,0x2200*sizeof(UINT8));
+        xmlOut->writeAttribute("Mem",ba_mem.toBase64());
+        xmlOut->writeEndElement();
+}
+
+bool CT6834::init()
+{
+    mem=(UINT8 *)malloc(0x2200*sizeof(UINT8));
+    initUdk();
+
+}
 
 /*
   E1FE

@@ -17,6 +17,7 @@ class CT6834 : public CPObject
 public:
     CT6834(CPObject *parent = 0);
 
+    bool init(void);
     static const UINT8 Date[8];
     static const int udk_ofs[12];
     static const int udk_size[12];
@@ -50,6 +51,8 @@ public:
 
     UINT8 *mem;
     void initUdk();
+    void save_internal(QXmlStreamWriter *xmlOut);
+    void Load_Internal(QXmlStreamReader *xmlIn);
 };
 
 #endif // CT6834_H
