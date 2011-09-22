@@ -98,4 +98,8 @@
     <model value="ce140f">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-140f_e.html"/>
     </model>
+    <model value="x07">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/canon/x-07_e.html"/>
+        <url desc="Silicium (fr)" link="http://www.silicium.org/oldskool/calc/x07/index.htm"/>
+    </model>
 </weblinks>
