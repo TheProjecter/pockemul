@@ -9,7 +9,7 @@
 #include "Log.h"
 #include "Lcdc_x07.h"
 
-#include "cx07char.h"
+
 /*
            Mémoire du XO7
   0000    ----------------
@@ -476,113 +476,12 @@ void Cx07::SendToT6834 (PorT_FX *Port)
 
 void Cx07::keyReleaseEvent(QKeyEvent *event)
 {
-    bool kana,graph,shift,ctrl;
-    kana=graph=shift=ctrl = false;
-
-    switch (event->modifiers()) {
-        case Qt::ShiftModifier : shift = true; break;
-        case Qt::AltModifier:   graph = true; break;
-        case Qt::ControlModifier: ctrl = true; break;
-    }
-
-    if(pT6834->General_Info.Aff_Udk) {
-        pT6834->AffUdkON(shift);
-    }
-
-    switch(event->key()) {
-    case Qt::Key_Backspace:	// bs->left
-        pT6834->General_Info.Stick = 0x30;
-        break;
-
-    case Qt::Key_Space:
-        pT6834->General_Info.Strig1 = 0xff;
-        break;
-    case Qt::Key_Up    :
-    case Qt::Key_Right :
-    case Qt::Key_Down  :
-    case Qt::Key_Left  :
-        pT6834->General_Info.Stick = 0x30;
-        break;
-    case Qt::Key_F6:	// F6
-        pT6834->General_Info.Strig = 0xff;
-        break;
-    }
+    pT6834->keyRelease(event);
 }
 
 void Cx07::keyPressEvent(QKeyEvent *event)
 {
-    UINT8 code,val;
-    bool kana,graph,shift,ctrl;
-
-    switch (event->modifiers()) {
-    case Qt::ShiftModifier : switch (event->key()) {
-        case Qt::Key_F1    : pT6834->AddFKey (6);break;
-        case Qt::Key_F2    : pT6834->AddFKey (7);break;
-        case Qt::Key_F3    : pT6834->AddFKey (8);break;
-        case Qt::Key_F4    : pT6834->AddFKey (9);break;
-        case Qt::Key_F5    : pT6834->AddFKey (10);break;
-        case Qt::Key_F6    : pT6834->AddFKey (11);break;
-        } break;
-    default:  switch (event->key()) {
-        case Qt::Key_F1    : pT6834->AddFKey (0);break;
-        case Qt::Key_F2    : pT6834->AddFKey (1);break;
-        case Qt::Key_F3    : pT6834->AddFKey (2);break;
-        case Qt::Key_F4    : pT6834->AddFKey (3);break;
-        case Qt::Key_F5    : pT6834->AddFKey (4);break;
-        case Qt::Key_F6    : pT6834->General_Info.Strig = 0; pT6834->AddFKey (5);break;
-        }
-    }
-
-    switch (event->key()) {
-    case Qt::Key_F1    :
-    case Qt::Key_F2    :
-    case Qt::Key_F3    :
-    case Qt::Key_F4    :
-    case Qt::Key_F5    :
-    case Qt::Key_F6    : break;
-
-    case Qt::Key_Up    : pT6834->General_Info.Stick = 0x31; pT6834->AddKey(0x1e);break;
-    case Qt::Key_Right : pT6834->General_Info.Stick = 0x32; pT6834->AddKey(0x1c);break;
-    case Qt::Key_Down  : pT6834->General_Info.Stick = 0x36; pT6834->AddKey(0x1f);break;
-    case Qt::Key_Left  : pT6834->General_Info.Stick = 0x37; pT6834->AddKey(0x1d);break;
-
-
-    case Qt::Key_Return : pT6834->AddKey(0x0d);break;
-
-    case Qt::Key_Shift :
-    case Qt::Key_Control:
-    case Qt::Key_Alt:   break;
-    default:
-
-        kana=graph=shift=ctrl = false;
-        switch (event->modifiers()) {
-            case Qt::ShiftModifier : shift = true; break;
-            case Qt::AltModifier:   graph = true; break;
-            case Qt::ControlModifier: ctrl = true; break;
-        }
-        code = event->key();
-        if (ctrl && code==Qt::Key_C) {
-            pT6834->General_Info.Break = 1;
-            val = 0;
-        }
-        else
-        if(ctrl) val = key_tbl_c[code];
-        else if(kana) {
-            if(shift) val = key_tbl_ks[code];
-            else val = key_tbl_k[code];
-        }
-        else if(graph) val = key_tbl_g[code];
-       // else if(shift) val = key_tbl_s[code];
-        else {
-            val = code;//key_tbl[code];
-            // Manage lowercase
-            if (shift && (val >=0x41) && (val <= 0x5a)) val += 0x20;
-        }
-
-        if(val) pT6834->AddKey(val);
-
-    }
-    event->accept();
+    pT6834->keyPress(event);
 }
 
 

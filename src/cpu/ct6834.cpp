@@ -3,14 +3,15 @@
 
 #include <QTime>
 #include <QPainter>
+#include <QKeyEvent>
 
 #include "ct6834.h"
 #include "Lcdc.h"
 #include "Log.h"
 #include "cpu.h"
 #include "cx07.h"
+#include "cx07char.h"
 
-extern UINT8 X07_CarDef[][8];
 
 CT6834::CT6834(CPObject *parent)	: CPObject(this)
 {
@@ -743,6 +744,119 @@ void CT6834::AddFKey (UINT8 F_Key)
         for (int i=3;(i<udk_size[i]) && mem[0x800+udk_ofs[F_Key]+i];i++)
             AddKey(mem[0x800+udk_ofs[F_Key]+i]);
 }
+
+void CT6834::keyRelease(QKeyEvent *event)
+{
+    bool kana,graph,shift,ctrl;
+    kana=graph=shift=ctrl = false;
+
+    switch (event->modifiers()) {
+        case Qt::ShiftModifier : shift = true; break;
+        case Qt::AltModifier:   graph = true; break;
+        case Qt::ControlModifier: ctrl = true; break;
+    }
+
+    if(General_Info.Aff_Udk) {
+        AffUdkON(shift);
+    }
+
+    switch(event->key()) {
+    case Qt::Key_Backspace:	// bs->left
+        General_Info.Stick = 0x30;
+        break;
+
+    case Qt::Key_Space:
+        General_Info.Strig1 = 0xff;
+        break;
+    case Qt::Key_Up    :
+    case Qt::Key_Right :
+    case Qt::Key_Down  :
+    case Qt::Key_Left  :
+        General_Info.Stick = 0x30;
+        break;
+    case Qt::Key_F6:	// F6
+        General_Info.Strig = 0xff;
+        break;
+    }
+    event->accept();
+}
+
+void CT6834::keyPress(QKeyEvent *event)
+{
+    UINT8 code,val;
+    bool kana,graph,shift,ctrl;
+
+    switch (event->modifiers()) {
+    case Qt::ShiftModifier : switch (event->key()) {
+        case Qt::Key_F1    : AddFKey (6);break;
+        case Qt::Key_F2    : AddFKey (7);break;
+        case Qt::Key_F3    : AddFKey (8);break;
+        case Qt::Key_F4    : AddFKey (9);break;
+        case Qt::Key_F5    : AddFKey (10);break;
+        case Qt::Key_F6    : AddFKey (11);break;
+        } break;
+    default:  switch (event->key()) {
+        case Qt::Key_F1    : AddFKey (0);break;
+        case Qt::Key_F2    : AddFKey (1);break;
+        case Qt::Key_F3    : AddFKey (2);break;
+        case Qt::Key_F4    : AddFKey (3);break;
+        case Qt::Key_F5    : AddFKey (4);break;
+        case Qt::Key_F6    : General_Info.Strig = 0; AddFKey (5);break;
+        }
+    }
+
+    switch (event->key()) {
+    case Qt::Key_F1    :
+    case Qt::Key_F2    :
+    case Qt::Key_F3    :
+    case Qt::Key_F4    :
+    case Qt::Key_F5    :
+    case Qt::Key_F6    : break;
+
+    case Qt::Key_Up    : General_Info.Stick = 0x31; AddKey(0x1e);break;
+    case Qt::Key_Right : General_Info.Stick = 0x32; AddKey(0x1c);break;
+    case Qt::Key_Down  : General_Info.Stick = 0x36; AddKey(0x1f);break;
+    case Qt::Key_Left  : General_Info.Stick = 0x37; AddKey(0x1d);break;
+
+
+    case Qt::Key_Return : AddKey(0x0d);break;
+
+    case Qt::Key_Shift :
+    case Qt::Key_Control:
+    case Qt::Key_Alt:   break;
+    default:
+
+        kana=graph=shift=ctrl = false;
+        switch (event->modifiers()) {
+            case Qt::ShiftModifier : shift = true; break;
+            case Qt::AltModifier:   graph = true; break;
+            case Qt::ControlModifier: ctrl = true; break;
+        }
+        code = event->key();
+        if (ctrl && code==Qt::Key_C) {
+            General_Info.Break = 1;
+            val = 0;
+        }
+        else
+        if(ctrl) val = key_tbl_c[code];
+        else if(kana) {
+            if(shift) val = key_tbl_ks[code];
+            else val = key_tbl_k[code];
+        }
+        else if(graph) val = key_tbl_g[code];
+       // else if(shift) val = key_tbl_s[code];
+        else {
+            val = code;//key_tbl[code];
+            // Manage lowercase
+            if (shift && (val >=0x41) && (val <= 0x5a)) val += 0x20;
+        }
+
+        if(val) AddKey(val);
+
+    }
+    event->accept();
+}
+
 /*
   E1FE
             VIDEO RAM

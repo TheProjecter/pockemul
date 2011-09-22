@@ -67,6 +67,9 @@ public:
     void AddFKey(UINT8 F_Key);
     void AddKey(UINT8 Key);
 
+    void keyPress(QKeyEvent *event);
+    void keyRelease(QKeyEvent *event);
+
     GENERAL_INFO General_Info;
     UINT8 Send_Cmd_T6834 [255];
     UINT8 Locate_OnOff;
@@ -81,11 +84,17 @@ public:
     QTime cursorTimer;
     UINT8 First;
 
-
+    static const UINT8 key_tbl[256];
+    static const UINT8 key_tbl_c[256];
+    static const UINT8 key_tbl_s[256];
+    static const UINT8 key_tbl_k[256];
+    static const UINT8 key_tbl_ks[256];
+    static const UINT8 key_tbl_g[256];
 
     UINT8 *mem;
 
     QByteArray Clavier;
+
 
 };
 
