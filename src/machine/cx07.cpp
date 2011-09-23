@@ -138,8 +138,9 @@ bool Cx07::run() {
         Qt::KeyboardModifiers keyModifiers = (pT6834->shift?Qt::ShiftModifier:Qt::NoModifier)|(pT6834->graph?Qt::AltModifier:Qt::NoModifier)|(pT6834->ctrl?Qt::ControlModifier:Qt::NoModifier);
 
         QKeyEvent *event = new QKeyEvent(QEvent::KeyPress,pKEYB->LastKey,keyModifiers);
-        pKEYB->LastKey = 0;
+
         pT6834->keyPress(event);
+        pKEYB->LastKey = 0;
     }
 
     CpcXXXX::run();

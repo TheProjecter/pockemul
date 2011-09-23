@@ -897,11 +897,14 @@ void CT6834::keyPress(QKeyEvent *event)
             else val = key_tbl_k[code];
         }
         else if(graph) val = key_tbl_g[code];
-       // else if(shift) val = key_tbl_s[code];
+        //else if(shift) val = key_tbl_s[code];
         else {
             val = code;//key_tbl[code];
             // Manage lowercase
-            if (shift && (val >=0x41) && (val <= 0x5a)) val += 0x20;
+            if (shift ) {//&& !((val >=0x30) && (val <=0x39))) {
+                if ((val >=0x41) && (val <= 0x5a)) val += 0x20;
+                else if ((code == pPC->pKEYB->LastKey)/*&&(val >=0x30) && (val <= 0x39)*/) val =key_tbl_s[code];
+            }
         }
 
         if(val) AddKey(val);
