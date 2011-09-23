@@ -8,6 +8,7 @@
 #include "ct6834.h"
 #include "Log.h"
 #include "Lcdc_x07.h"
+#include "Keyb.h"
 
 
 /*
@@ -98,7 +99,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     pT6834      = new CT6834(this);
     pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
-    //pKEYB		= new Ckeyb(this,"x07.map",scandef_x07);
+    pKEYB		= new Ckeyb(this,"x07.map");
 
 
     Cpt = 0;
@@ -132,6 +133,15 @@ bool Cx07::init(void)				// initialize
 
 bool Cx07::run() {
 
+
+    if (pKEYB->LastKey){
+        Qt::KeyboardModifiers keyModifiers = (pT6834->shift?Qt::ShiftModifier:Qt::NoModifier)|(pT6834->graph?Qt::AltModifier:Qt::NoModifier)|(pT6834->ctrl?Qt::ControlModifier:Qt::NoModifier);
+
+        QKeyEvent *event = new QKeyEvent(QEvent::KeyPress,pKEYB->LastKey,keyModifiers);
+        pKEYB->LastKey = 0;
+        pT6834->keyPress(event);
+    }
+
     CpcXXXX::run();
 
     if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
@@ -148,22 +158,25 @@ bool Cx07::run() {
 
         }
 
-//		if (!state->m_lcd_on)
-//		{
-//			state->m_lcd_on = 1;
-//			cpu_set_reg(state->m_maincpu, Z80_PC, 0xc3c3);
-//		}
-//		else
+
         if (pT6834->General_Info.Break == 1)
         {
-            Port_FX.R.F0  = 0x80;
-            Port_FX.R.F1  = 0x05;
-            Port_FX.R.F2 |= 0x01;
-            IT_T6834      = 0;
-            pT6834->General_Info.Break=0;
-            AddLog(LOG_TEMP,"Break");
-            ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
-            return (IT_RST_A);
+            if (off)
+            {
+                TurnON();
+                ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
+            }
+            else
+            {
+                Port_FX.R.F0  = 0x80;
+                Port_FX.R.F1  = 0x05;
+                Port_FX.R.F2 |= 0x01;
+                IT_T6834      = 0;
+                pT6834->General_Info.Break=0;
+                AddLog(LOG_TEMP,"Break");
+                ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
+                return (IT_RST_A);
+            }
         }
         if ( IT_T6834 )
         {
@@ -526,7 +539,9 @@ void Cx07::keyReleaseEvent(QKeyEvent *event)
 
 void Cx07::keyPressEvent(QKeyEvent *event)
 {
+
     pT6834->keyPress(event);
+
 }
 
 

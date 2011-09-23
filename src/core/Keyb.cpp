@@ -9,7 +9,7 @@
 #include "Keyb.h"
 
 
-extern CPocketThread* PcThread;
+//extern CPocketThread* PcThread;
 INLINE BYTE bit(int ii)
 {
     BYTE jj;
@@ -36,16 +36,28 @@ CKey::CKey(int scancode, QString description,QRect rect )
 	Rect = rect;
 }
 
-BYTE Ckeyb::KeyClick(QPoint pts)
+Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan): CPObject(parent)								//[constructor]
 {
-	// Keys iterator 
-	QList<CKey>::iterator i;
-// 	for (i = Keys.begin(); i != Keys.end(); ++i)
-            for (int i=0;i<Keys.size();i++)
-        {
-                QRect r = Keys.at(i).Rect;
-                r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+r.height())*mainwindow->zoom/100);
-                if ( r.contains(pts) ) return Keys.at(i).ScanCode;
+    for(int i=0;i<MAX_KO;i++) pc1350KeyStatus[i]=0;
+    for(int j=0;j<200;j++) keym[j]=0;
+    access		= 0;							//ko port access?(0:none, 1:access)
+    KStrobe		= 0;
+    IA_PORT		= 0;
+    Kon			= false;
+    scandef     = scan;
+    fn_KeyMap	= map;
+    modified = false;
+    handler = new KEYBMAPParser(this);
+    LastKey = 0;
+}
+
+int Ckeyb::KeyClick(QPoint pts)
+{
+    for (int i=0;i<Keys.size();i++)
+    {
+        QRect r = Keys.at(i).Rect;
+        r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+r.height())*mainwindow->zoom/100);
+        if ( r.contains(pts) ) return Keys.at(i).ScanCode;
 	}
 	return(0);
 }

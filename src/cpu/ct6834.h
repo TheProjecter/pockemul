@@ -94,7 +94,7 @@ public:
 
     QByteArray Clavier;
 
-
+    bool kana,graph,shift,ctrl;
 };
 
 #endif // CT6834_H

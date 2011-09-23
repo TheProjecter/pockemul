@@ -216,7 +216,7 @@ public:
 	int		CheckOff();
 
 	QString KeyString(QPoint pts);
-	BYTE	KeyClick(QPoint pts);
+    int	KeyClick(QPoint pts);
 	void	keyscan(void);
 	BYTE	*scandef;
 
@@ -225,7 +225,7 @@ public:
 	bool	access;							//KO access flag(0:none,1:access)
 	QString fn_KeyMap;
     bool	Kon;
-	BYTE	LastKey;
+    int	LastKey;
 
 	QList<CKey>	Keys;
 	bool	modified;
@@ -237,19 +237,7 @@ public:
 
 	KEYBMAPParser *handler;
 		
-    Ckeyb(CPObject *parent = 0,QString map = "",BYTE *scan=0)	: CPObject(parent)								//[constructor]
-    {
-        for(int i=0;i<MAX_KO;i++) pc1350KeyStatus[i]=0;
-        for(int j=0;j<200;j++) keym[j]=0;
-        access		= 0;							//ko port access?(0:none, 1:access)
-        KStrobe		= 0;
-        IA_PORT		= 0;
-        Kon			= false;
-        scandef     = scan;
-        fn_KeyMap	= map;
-        modified = false;
-        handler = new KEYBMAPParser(this);
-    }
+    Ckeyb(CPObject *parent = 0,QString map = "",BYTE *scan=0);
     virtual ~Ckeyb(){}
 					
 protected:

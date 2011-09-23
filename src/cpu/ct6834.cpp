@@ -11,6 +11,7 @@
 #include "cpu.h"
 #include "cx07.h"
 #include "cx07char.h"
+#include "Keyb.h"
 
 
 CT6834::CT6834(CPObject *parent)	: CPObject(this)
@@ -299,13 +300,15 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
       return (i+1);
       break;
 
-   case 0x22: Rsp[0]=0x04; //  | (m_sleep<<6) | m_warm_start; // MEM 0xC006
+   case 0x22: Rsp[0]=mem[0x0006];//0x04; //  | (m_sleep<<6) | m_warm_start; // MEM 0xC006
                 // teste le bit 6 de A. tenter de le mettre à 1
 
               break;
    case 0x23: // Turn OFF
 //      m_warm_start = 1;
 //      m_sleep = 0;
+      mem[0x0006] &= 0xBF;      // bit 6 to 0 for SLEEP
+      mem[0x0006] |= 0x01;      // bit 0 to 1 for OFF
               pPC->TurnOFF();
               break;
 
@@ -406,9 +409,8 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x3F: // Sleep
               AddLog (LOG_TEMP,"Sleep\n");
-//              m_warm_start = 1;
-//              m_lcd_on = 0;
-//              m_sleep = 1;
+              mem[0x0006] |= 0x41;      // bit 0 and 6 to 1 for OFF and SLEEP
+                pPC->TurnOFF();
                  break;
   case 0x40:
         initUdk();
@@ -797,18 +799,18 @@ void CT6834::AddFKey (UINT8 F_Key)
 
 void CT6834::keyRelease(QKeyEvent *event)
 {
-    bool kana,graph,shift,ctrl;
+
     kana=graph=shift=ctrl = false;
 
-    switch (event->modifiers()) {
-        case Qt::ShiftModifier : shift = true; break;
-        case Qt::AltModifier:   graph = true; break;
-        case Qt::ControlModifier: ctrl = true; break;
-    }
+//    switch (event->modifiers()) {
+//        case Qt::ShiftModifier : shift = true; break;
+//        case Qt::AltModifier:   graph = true; break;
+//        case Qt::ControlModifier: ctrl = true; break;
+//    }
 
-    if(General_Info.Aff_Udk) {
-        AffUdkON(shift);
-    }
+//    if(General_Info.Aff_Udk) {
+//        AffUdkON(shift);
+//    }
 
     switch(event->key()) {
     case Qt::Key_Backspace:	// bs->left
@@ -834,7 +836,8 @@ void CT6834::keyRelease(QKeyEvent *event)
 void CT6834::keyPress(QKeyEvent *event)
 {
     UINT8 code,val;
-    bool kana,graph,shift,ctrl;
+
+
 
     switch (event->modifiers()) {
     case Qt::ShiftModifier : switch (event->key()) {
@@ -871,9 +874,9 @@ void CT6834::keyPress(QKeyEvent *event)
 
     case Qt::Key_Return : AddKey(0x0d);break;
 
-    case Qt::Key_Shift :
-    case Qt::Key_Control:
-    case Qt::Key_Alt:   break;
+    case Qt::Key_Shift : shift = true; break;
+    case Qt::Key_Control: ctrl = true; break;
+    case Qt::Key_Alt:   graph = true; break;
     default:
 
         kana=graph=shift=ctrl = false;
