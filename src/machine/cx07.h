@@ -26,6 +26,12 @@ typedef struct
   PORT_FX W;
  } PorT_FX;
 
+enum MODE {
+    RESET,
+    SERIE,
+    TAPE,
+    BUZZER
+};
 
 typedef struct
  {
@@ -63,6 +69,9 @@ public:
     void SendToT6834(PorT_FX *Port);
 
     UINT8 Mode_K7;
+    UINT8 Mode_BUZ;
+    UINT8 Mode_SERIE;
+
     int IT_T6834;
     UINT8 Int_nsc800_BB;
 
@@ -93,6 +102,7 @@ public:
     void TurnOFF();
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
+    void Print(UINT8 Cmd, PorT_FX *Port);
 };
 
 #endif // CX07_H

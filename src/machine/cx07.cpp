@@ -31,6 +31,10 @@
   FFFF    ----------------
 
 */
+#define PRT_DATA       0x00
+#define PRT_ACK        0x01
+#define MASK_PRT_DATA  0x20
+#define MASK_PRT_ACK   0x40
 
 #define INIT_T6834     0xf0
 #define LEC_T6834      0xf1
@@ -243,7 +247,9 @@ UINT8 Cx07::in(UINT8 Port)
                    else                     Port_FX.R.F2 &=0xFE;*/
                    if (Port_FX.W.F5 & 0x04) Port_FX.R.F2 |=0x02;
                    else                     Port_FX.R.F2 &=0xFD;
-                   Value = Port_FX.R.F2 | 2;
+//                   if (Port_FX.W.F5 & 0x20) Port_FX.R.F2 |=0x80;
+//                   else                     Port_FX.R.F2 &=0x7F;
+                   Value = Port_FX.R.F2 | 0x82;
                    break;
        case 0xF3 : /* ~~~Vide~~~ */
                    Value = Port_FX.R.F3;
@@ -295,8 +301,11 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
    case 0xF4 : /* Modes */
                Port_FX.W.F4 = Value;
                Port_FX.R.F4 = Value;
-               if ((Value & 0x0D) == 0x09) Mode_K7=1;
-               else                        Mode_K7=0;
+               Mode_K7 = ((Value & 0x0C) == 0x08) ? 1 : 0;
+               Mode_BUZ= ((Value & 0x0E) == 0x0E) ? 1 : 0;
+               Mode_SERIE=((Value & 0x0C)== 0x0C) ? 1 : 0;
+
+
                if ((Mode_K7==1) && (Port_FX.W.F5& 0x04)) {
 //                   Receive_from_K7 (&Port_FX);
                }
@@ -307,24 +316,29 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x01)
                 ReceiveFromT6834 (LEC_T6834_ACK,&Port_FX);
+
                /* Envoie d'un octet a destination du T6834 *
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x02)
                 SendToT6834 (&Port_FX);
+
                /* Reception d'un octet EN PROVENANCE du lecteur de K7 *
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x04) {
 //                   Receive_from_K7 (&Port_FX);
                }
+
                /* Envoie d'un octet a destination du lecteur de K7 *
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x08) {
 //                   Send_to_K7 (&Port_FX);
                }
+
                /* Envoie d'un bit sur le port imprimante  *
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x20) {
-//                   Print (PRT_DATA,&Port_FX);
+                   AddLog(LOG_CANON,"PRINTER");
+                   Print (PRT_DATA,&Port_FX);
                }
                break;
    case 0xF6 : /* Configuration de L'UART */
@@ -336,6 +350,31 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
   }
 
  return 0;
+}
+
+void Cx07::Print (UINT8 Cmd, PorT_FX *Port)
+{
+ static UINT8 Cpt_Bit=0;
+ static UINT8 Data=0;
+
+ switch (Cmd)
+  {
+   case PRT_DATA: if (!(Port->R.F4 & MASK_PRT_DATA)) Data |= 0x80;
+      AddLog(LOG_PRINTER,tr("bit:%1   data=%2").arg(Data&1).arg(Data,2,16,QChar('0')));
+                  if (Cpt_Bit == 7)
+                   {
+                       AddLog(LOG_PRINTER,tr("Prt_data=0x%1 : %2").arg(Data,2,16,QChar('0')).arg(QChar(Data)));
+                    Cpt_Bit = 0;
+                    Data = 0;
+                   }
+                  else {
+                      Data >>= 1;
+                      Cpt_Bit ++;
+                  }
+                  break;
+   case PRT_ACK:
+                  break;
+  }
 }
 
 void Cx07::ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port)
