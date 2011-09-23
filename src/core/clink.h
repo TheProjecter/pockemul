@@ -79,8 +79,8 @@ class CLink11to11:public CLink
 public:
 	CLink11to11()
 	{
-        AConn = new Cconnector(this,11,0,"Connector 11 pins",false);//Cconnector11(this);
-        BConn = new Cconnector(this,11,1,"Connector 11 pins",false);//Cconnector11(this);
+        AConn = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false);//Cconnector11(this);
+        BConn = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins",false);//Cconnector11(this);
 	}
 
 	bool run(void);

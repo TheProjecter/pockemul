@@ -148,6 +148,12 @@ bool Cx07::run() {
 
         }
 
+//		if (!state->m_lcd_on)
+//		{
+//			state->m_lcd_on = 1;
+//			cpu_set_reg(state->m_maincpu, Z80_PC, 0xc3c3);
+//		}
+//		else
         if (pT6834->General_Info.Break == 1)
         {
             Port_FX.R.F0  = 0x80;

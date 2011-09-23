@@ -42,7 +42,6 @@ public:
 
     bool init(void);
     void Reset(void);
-    static const UINT8 Date[8];
     static const int udk_ofs[12];
     static const int udk_size[12];
     static const CMD_T6834 Cmd_T6834[0x48];

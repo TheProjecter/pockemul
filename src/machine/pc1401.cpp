@@ -51,7 +51,7 @@ Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
     pLCDC		= new Clcdc_pc1401(this);
     pCPU		= new CSC61860(this);
     pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"pc1401.map",scandef_pc1401);
 
     Lcd_X	= 119;

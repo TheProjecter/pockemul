@@ -22,6 +22,18 @@ class Cconnector:public QObject
 public:
 	CPObject *Parent;
 	
+    enum ConnectorType
+    {
+        Sharp_15,
+        Sharp_11,
+        Sharp_60,
+        Jack,
+        Optical,
+        Canon_15,
+        Canon_9,
+        Canon_40,
+        Canon_Din
+    };
 
 	bool	refresh;
 
@@ -41,30 +53,25 @@ public:
     Q_INVOKABLE bool	getGender();
     Q_INVOKABLE void	setGender(bool);
 
+    Q_INVOKABLE ConnectorType	getType();
+    Q_INVOKABLE void	setType(ConnectorType);
+
 	void	ConnectTo(Cconnector *);
 
     void    setSnap(QPoint p) {snap = p;}
     QPoint  getSnap(void) {return snap;}
     int    getNbpins(void) {return nbpins;}
 
-    static bool arePluggable(Cconnector *a,Cconnector *b) {
-        return ( (a->nbpins==b->nbpins) && (a->gender != b->gender) );
-    }
+    static bool arePluggable(Cconnector *a,Cconnector *b);
 	
-    Cconnector(CPObject *parent , QString desc, bool newGender = false)
-	{
-		Parent	= parent;
-		Desc = desc;
-		gender = newGender;
-		values = 0;
-    }
-    Cconnector(CPObject *parent , int nbpins, int Id, QString desc,bool newGender = false,QPoint snap=QPoint(0,0));
+    Cconnector(CPObject *parent , QString desc, bool newGender = false);
+    Cconnector(CPObject *parent , int nbpins, int Id, ConnectorType type, QString desc,bool newGender = false,QPoint snap=QPoint(0,0));
 
     virtual ~Cconnector(){}
 
 private:
 	bool	gender;		// Male = true   Female = false  :-)
-
+    ConnectorType Type;
     int		nbpins;
     qint64	values;
     QPoint  snap;

@@ -14,7 +14,7 @@ Cce120p::Cce120p()
     SnapPts = QPoint(402,43);
     pCONNECTOR->setSnap(QPoint(400,131));
 
-    pCONNECTOR_Ext = new Cconnector(this,11,1,"Connector 11 pins Ext.",false,QPoint(0,370));	publish(pCONNECTOR_Ext);
+    pCONNECTOR_Ext = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins Ext.",false,QPoint(0,370));	publish(pCONNECTOR_Ext);
 
     setPaperPos(QRect(89,185-149,207,149));
 

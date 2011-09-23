@@ -75,7 +75,7 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     mode		= EJECT;
     SoundOn		= FALSE;
     info.ptrFd	= 0;
-    pTAPECONNECTOR	= new Cconnector(this,3,0,"Line in / Rec / Rmt",true);	publish(pTAPECONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",true);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     setDX(200);//Pc_DX		= 200;
     setDY(320);//Pc_DY		= 320;

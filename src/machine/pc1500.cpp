@@ -71,7 +71,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new CLH5801(this); pCPU->logsw=false;
 	pLH5810		= new CLH5810_PC1500(this);
 	pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,60,0,"Connector 60 pins",false,QPoint(0,72));	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,72));	publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"pc1500.map",scandef_pc1500);
 	pce152		= new Cce152_PC15XX(this);
 	delete pce152->pTIMER; pce152->pTIMER = pTIMER;

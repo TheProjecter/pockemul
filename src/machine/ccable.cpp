@@ -14,8 +14,8 @@ extern MainWindowPockemul *mainwindow;
 Ccable::Ccable(CPObject *parent)	: CPObject(this)
 {							//[constructor]
 
-    pCONNECTOR_A = new Cconnector(this,11,0,"11 pins Connector A",true,QPoint(135,6)); publish(pCONNECTOR_A);
-    pCONNECTOR_B = new Cconnector(this,11,1,"11 pins Connector B",true,QPoint(135,300)); publish(pCONNECTOR_B);
+    pCONNECTOR_A = new Cconnector(this,11,0,Cconnector::Sharp_11,"11 pins Connector A",true,QPoint(135,6)); publish(pCONNECTOR_A);
+    pCONNECTOR_B = new Cconnector(this,11,1,Cconnector::Sharp_11,"11 pins Connector B",true,QPoint(135,300)); publish(pCONNECTOR_B);
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/cable.png";
 

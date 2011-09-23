@@ -7,17 +7,29 @@
 
 class CPObject;
 
-Cconnector::Cconnector(CPObject *parent , int nb, int id,QString desc, bool newGender,QPoint snap)
+Cconnector::Cconnector(CPObject *parent , QString desc, bool newGender)
 {
-	Parent	= parent;
-	nbpins = nb;
-        Id = id;
-	gender = newGender;
-	Desc = desc;
-	values = 0;
-    this->snap = snap;
+    Parent	= parent;
+    Desc = desc;
+    gender = newGender;
+    values = 0;
 }
 
+Cconnector::Cconnector(CPObject *parent , int nb, int id,ConnectorType type,QString desc, bool newGender,QPoint snap)
+{
+    this->Parent = parent;
+    this->Desc   = desc;
+    this->gender = newGender;
+    this->values = 0;
+    this->nbpins = nb;
+    this->Id     = id;
+    this->Type   = type;
+    this->snap   = snap;
+}
+
+bool Cconnector::arePluggable(Cconnector *a,Cconnector *b) {
+    return ( (a->nbpins==b->nbpins) && (a->gender != b->gender) && (a->Type == b->Type) );
+}
 
 // Link current connector to Source connector
 void Cconnector::ConnectTo(Cconnector * source)
@@ -65,6 +77,16 @@ bool Cconnector::getGender()
 void Cconnector::setGender(bool newgender)
 {
 	gender = newgender;
+}
+
+Cconnector::ConnectorType Cconnector::getType()
+{
+    return this->Type;
+}
+
+void Cconnector::setType(Cconnector::ConnectorType type)
+{
+    this->Type = type;
 }
 
 

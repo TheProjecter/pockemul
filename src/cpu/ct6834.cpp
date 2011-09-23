@@ -98,7 +98,6 @@ const CMD_T6834 CT6834::Cmd_T6834[] =
  {   1,   1,"TimeChk"},          // 0x45
  {   1,   1,"AlmChk"}};          // 0x46
 
-const UINT8 CT6834::Date[]={128,192,224,240,248,252,254,255};
 
 const int CT6834::udk_ofs[12] = {
     0, 42, 84, 126, 168, 210, 256, 298, 340, 382, 424, 466
@@ -110,7 +109,6 @@ const int CT6834::udk_size[12] = {
 
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
-    static UINT8 dow[8] = {128, 192, 224, 240, 248, 252, 254, 255};
     int    Lng_rsp;
     DWORD  Adresse;
     UINT8  i;
@@ -128,7 +126,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                   Rsp[1] = my_t.date().year() & 0xFF;
                   Rsp[2] = my_t.date().month();
                   Rsp[3] = my_t.date().day();
-                  Rsp[4] = dow[my_t.date().dayOfWeek()];
+                  Rsp[4] = ~(((0x01 << (7 - my_t.date().dayOfWeek())) - 1) & 0xff);
                   Rsp[5] = my_t.time().hour();
                   Rsp[6] = my_t.time().minute();
                   Rsp[7] = my_t.time().second();
@@ -217,7 +215,13 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
   case 0x0d:
   case 0x0e:
-  case 0x0f:    break;
+  case 0x0f:/*
+  {
+      UINT8 line = m_in.data[m_in.read++];
+      for(int i = 0; i < 120; i++)
+          m_out.data[m_out.write++] = (line < 32) ? m_lcd_map[line][i] : 0;
+  } */
+      break;
 
   case 0x10:    //POINT
             return (Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]] ? 0: 0xff);
@@ -295,11 +299,13 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
       return (i+1);
       break;
 
-   case 0x22: Rsp[0]=0x04; // MEM 0xC006
+   case 0x22: Rsp[0]=0x04; //  | (m_sleep<<6) | m_warm_start; // MEM 0xC006
                 // teste le bit 6 de A. tenter de le mettre à 1
-//      Rsp[0] = 0x44;
+
               break;
    case 0x23: // Turn OFF
+//      m_warm_start = 1;
+//      m_sleep = 0;
               pPC->TurnOFF();
               break;
 
@@ -343,6 +349,33 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
               General_Info.Curseur = false;
               break;
+  case 0x27 :
+      /*
+  {
+      static const char *const lines[] = {"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "BZ", "A1"};
+      UINT16 matrix;
+      UINT8 data = 0;
+      matrix = m_in.data[m_in.read++];
+      matrix |= (m_in.data[m_in.read++] << 8);
+
+      for (int i=0 ;i<10; i++)
+          if (matrix & (1<<i))
+              data |= input_port_read(machine, lines[i]);
+
+      m_out.data[m_out.write++] = data;
+  }
+  */
+      break;
+  case 0x28:	//test chr
+//      {
+//          UINT8 idx = kb_get_index(m_in.data[m_in.read++]);
+//          m_out.data[m_out.write++] = (input_port_read(machine, x07_keycodes[idx].tag) & x07_keycodes[idx].mask) ? 0x00 : 0xff;
+//      }
+      break;
+
+  case 0x29:	//init sec
+  case 0x2a:	//init date
+      break;
 
    case 0x2b: // LCD OFF
                 General_Info.LcdOn = false;
@@ -351,6 +384,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                 General_Info.LcdOn = true;
                 break;
    case 0x2D: // KeyBufferClear
+      //memset(m_t6834_ram + 0x400, 0, 0x100);
               Clavier.clear();
               break;
 
@@ -372,21 +406,37 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x3F: // Sleep
               AddLog (LOG_TEMP,"Sleep\n");
-
-                 //pPC->pCPU->Reg_Xo7.Trace=1;
+//              m_warm_start = 1;
+//              m_lcd_on = 0;
+//              m_sleep = 1;
                  break;
   case 0x40:
         initUdk();
       break;
-  case 0x41:
-      // TODO function 41
-      break;    // WriteCar
-  case 0x42:	// ReadCar
-      // TODO function 42
-      for(i = 0; i < 8; i++) {
-          Rsp[0]=0;
-      }
+  case 0x41:	//char write
+      {
+//          for(int cy = 0; cy < 8; cy++)
+//          {
+//              UINT8 cl = m_in.data[m_in.read++];
 
+//              for(int cx = 0; cx < 6; cx++)
+//                  m_lcd_map[m_cursor.y * 8 + cy][m_cursor.x * 6 + cx] = (cl & (0x80>>cx)) ? 1 : 0;
+//          }
+      }
+      break;
+
+  case 0x42: //char read
+      {
+//          for(int cy = 0; cy < 8; cy++)
+//          {
+//              UINT8 cl = 0x00;
+
+//              for(int cx = 0; cx < 6; cx++)
+//                  cl |= (m_lcd_map[m_cursor.y * 8 + cy][m_cursor.x * 6 + cx] != 0) ? (1<<(7-cx)) : 0;
+
+//              m_out.data[m_out.write++] = cl;
+//          }
+      }
       break;
   case 0x43:	// ScanR
   case 0x44:	// ScanL

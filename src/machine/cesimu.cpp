@@ -16,8 +16,8 @@ Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
 
     //ToDestroy = false;
 
-    pCONNECTOR = new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(130,7)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,11,0,"Saved Connector 11 pins",true,QPoint(130,7));
+    pCONNECTOR = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(130,7)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,11,0,Cconnector::Sharp_11,"Saved Connector 11 pins",true,QPoint(130,7));
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/simu.png";
 

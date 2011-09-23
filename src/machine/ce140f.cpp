@@ -54,8 +54,8 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	   = new Cconnector(this,11,0,"Connector 11 pins",true,QPoint(597,310));	publish(pCONNECTOR);
-    pCONNECTOR_Ext = new Cconnector(this,11,1,"Connector 11 pins Ext.",false,QPoint(6,295));	publish(pCONNECTOR_Ext);
+    pCONNECTOR	   = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(597,310));	publish(pCONNECTOR);
+    pCONNECTOR_Ext = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins Ext.",false,QPoint(6,295));	publish(pCONNECTOR_Ext);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140f;
     KeyMapLenght= KeyMapce140fLenght;
