@@ -6,6 +6,7 @@
 #include <QPainter>
 
 #include "ce140p.h"
+#include "Connect.h"
 #include "Keyb.h"
 #include "dialogconsole.h"
 #include "init.h"

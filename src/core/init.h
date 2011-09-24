@@ -143,6 +143,7 @@ enum Models {
 
     CE1600P,
     X07,
+    X710,
     E500
 };
 

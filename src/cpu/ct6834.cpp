@@ -497,6 +497,7 @@ void CT6834::RefreshVideo (void)
     int ColorIndex;
 
     //AffCurseur ();
+    if (!pPC->LcdImage) return;
     QPainter painter(pPC->LcdImage);
     for (x=0;x<120;x++)
         for (y=0;y<32;y++)

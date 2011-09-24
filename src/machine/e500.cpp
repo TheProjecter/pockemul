@@ -142,13 +142,7 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
     return true;
 }
 
-bool Ce500::InitDisplay()
-{
-}
 
-void Ce500::UpdateFinalImage()
-{
-}
 
 bool Ce500::Set_Connector()
 {

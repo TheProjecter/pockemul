@@ -3,9 +3,11 @@
 
 #include "common.h"
 #include "ce515p.h"
+#include "pcxxxx.h"
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "clink.h"
+#include "Inter.h"
 #include "dialoganalog.h"
 
 

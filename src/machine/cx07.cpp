@@ -9,6 +9,8 @@
 #include "Log.h"
 #include "Lcdc_x07.h"
 #include "Keyb.h"
+#include "Connect.h"
+#include "dialoganalog.h"
 
 
 /*
@@ -99,6 +101,10 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     pT6834      = new CT6834(this);
     pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
+
+
+    pPARConnector = new Cconnector(this,15,1,Cconnector::Canon_15,"Parrallel Connector",false,QPoint(715,50));
+    publish(pPARConnector);
     pKEYB		= new Ckeyb(this,"x07.map");
 
 
@@ -120,7 +126,8 @@ bool Cx07::init(void)				// initialize
     memset((void*)&Port_FX,0,sizeof (Port_FX));
     memset((void *)mem ,0,0x6000);
 
-    //WatchPoint.remove(this);
+    WatchPoint.remove(this);
+    WatchPoint.add(&pPARConnector_value,64,15,this,"Parrallel Connector");
 
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
@@ -233,7 +240,7 @@ bool Cx07::run() {
           //return (INT_NONE);
       }
 
-
+    pPARConnector_value = pPARConnector->Get_values();
 }
 
 bool Cx07::Chk_Adr(DWORD *d, DWORD data)
@@ -379,16 +386,28 @@ void Cx07::Print (UINT8 Cmd, PorT_FX *Port)
  switch (Cmd)
   {
    case PRT_DATA: if (!(Port->R.F4 & MASK_PRT_DATA)) Data |= 0x80;
-      AddLog(LOG_PRINTER,tr("bit:%1   data=%2").arg(Data&1).arg(Data,2,16,QChar('0')));
+                    AddLog(LOG_PRINTER,tr("bit:%1   data=%2").arg(Data&1).arg(Data,2,16,QChar('0')));
+
                   if (Cpt_Bit == 7)
                    {
                        AddLog(LOG_PRINTER,tr("Prt_data=0x%1 : %2").arg(Data,2,16,QChar('0')).arg(QChar(Data)));
+                       qint64 val = pPARConnector->Get_values();
+                       val &= 0x7E01;
+                       val |= Data << 1;
+                       val |= 0x01;   // fire the strobe;
+                       pPARConnector->Set_values(val);
+                       if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
                     Cpt_Bit = 0;
                     Data = 0;
+
                    }
                   else {
                       Data >>= 1;
                       Cpt_Bit ++;
+                      if (Cpt_Bit == 5) {
+                          pPARConnector->Set_pin(1,false);
+                          if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
+                      }
                   }
                   break;
    case PRT_ACK:

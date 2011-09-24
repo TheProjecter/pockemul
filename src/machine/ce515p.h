@@ -3,13 +3,8 @@
 
 #include <QSound>
 
-#include "Log.h"
-
 #include "cprinter.h"
-#include "pcxxxx.h"
-#include "Connect.h"
-#include "Inter.h"
-#include "Keyb.h"
+
 
 
 

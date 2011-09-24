@@ -2,7 +2,7 @@
 #define _CLINK_H_
 
 #include "pobject.h"
-#include "Connect.h"
+class Cconnector;
 
 class CDirectLink:public QObject
 {
@@ -74,18 +74,6 @@ private:
 };
 
 
-class CLink11to11:public CLink
-{
-public:
-	CLink11to11()
-	{
-        AConn = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false);//Cconnector11(this);
-        BConn = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins",false);//Cconnector11(this);
-	}
-
-	bool run(void);
-
-};
 
 
 

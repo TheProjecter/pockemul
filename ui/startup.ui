@@ -544,6 +544,15 @@
             <normaloff>:/EXT/ext/ce-152.png</normaloff>:/EXT/ext/ce-152.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Canon X-710</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/x07.qrc">
+            <normaloff>:/x07/x710.png</normaloff>:/x07/x710.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>

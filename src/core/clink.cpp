@@ -1,5 +1,6 @@
 
 #include "clink.h"
+#include "Connect.h"
 #include "Log.h"
 
 CDirectLink::CDirectLink(void) {
@@ -129,11 +130,3 @@ void CDirectLink::outConnector(Cconnector* search)
 
 
 
-bool CLink11to11::run()
-{
-	
-	// DIRECT LINK
-//	pSIO->pSIOCONNECTOR->ConnectTo(pPC->pSIOCONNECTOR);	
-	
-	return true;
-}

@@ -75,6 +75,9 @@ public:
     int IT_T6834;
     UINT8 Int_nsc800_BB;
 
+    Cconnector *pPARConnector;
+    qint64      pPARConnector_value;
+
     CT6834 *pT6834;
 
     bool run();

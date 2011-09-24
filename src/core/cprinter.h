@@ -3,13 +3,12 @@
 
 #include <QColor>
 #include "pobject.h"
-//#include "paperwidget.h"
 
 class CpaperWidget;
 
 class Cprinter:public CPObject{
 
-//Q_OBJECT
+Q_OBJECT
 
 public:
     virtual void clearPaper(void) {}
