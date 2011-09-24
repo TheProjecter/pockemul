@@ -102,9 +102,6 @@ class Ckeyb;
 #define EXTENSION_CE161_CHECK		EXTENSION_CE161->IsChecked
 
 
-enum MEMUNIT{						// memory unit
-	UNIT_B, UNIT_KB, UNIT_MB
-};
 
 enum PORTS{
 	PORT_A,PORT_B,PORT_C,PORT_F,PORT_T};
@@ -207,11 +204,14 @@ public:
 	WORD	Get_16(DWORD adr);
 	WORD	Get_16r(DWORD adr);
     virtual WORD	Get_16rPC(DWORD adr);
+    DWORD Get_20(DWORD adr);
+    DWORD Get_24(DWORD adr);
 
 	void	Set_8(DWORD adr,BYTE d);
 	void	Set_16(DWORD adr,WORD d);
     void	Set_16r(DWORD adr,WORD d);
-
+    void Set_20(DWORD adr,DWORD d);
+    void Set_24(DWORD adr,DWORD d);
 	virtual bool	Chk_Adr(DWORD *d,DWORD data) = 0;
 	virtual bool	Chk_Adr_R(DWORD *d,DWORD data) = 0;
     virtual UINT8 in(UINT8 address)=0;

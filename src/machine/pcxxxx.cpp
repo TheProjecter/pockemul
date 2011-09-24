@@ -317,6 +317,19 @@ WORD CpcXXXX::Get_16rPC(DWORD adr)
     else
         return(0);
 }
+
+DWORD CpcXXXX::Get_20(DWORD adr)
+{
+    Chk_Adr_R(&adr,bREAD);
+    return((mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_20);
+}
+
+DWORD CpcXXXX::Get_24(DWORD adr)
+{
+    Chk_Adr_R(&adr,bREAD);
+    return((mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_24);
+}
+
 /*****************************************************************************/
 /* Set data to mem[]														 */
 /*  ENTRY :DWORD adr=RAM address, BYTE(8),WORD(16),DWORD(20,24) d=data		 */
@@ -343,6 +356,28 @@ void CpcXXXX::Set_16r(DWORD adr,WORD d)
     if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
     a=adr+1;
     if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
+}
+
+void CpcXXXX::Set_20(DWORD adr, DWORD d)
+{
+    DWORD	a;
+    a=adr;
+    if(Chk_Adr(&a,d)) mem[a]=d;
+    a=++adr;
+    if(Chk_Adr(&a,(d>>8))) mem[a]=(d>>8);
+    a=++adr;
+    if(Chk_Adr(&a,(d>>16)&MASK_4)) mem[a]=(d>>16)&MASK_4;
+}
+
+void CpcXXXX::Set_24(DWORD adr, DWORD d)
+{
+    DWORD	a;
+    a=adr;
+    if(Chk_Adr(&a,d)) mem[a]=d;
+    a=++adr;
+    if(Chk_Adr(&a,(d>>8))) mem[a]=(d>>8);
+    a=++adr;
+    if(Chk_Adr(&a,(d>>16))) mem[a]=(d>>16);
 }
 
 /*****************************************************************************/
@@ -946,3 +981,9 @@ QByteArray CpcXXXX::getmem()
 {
     return (QByteArray((const char*) &mem,memsize));
 }
+
+
+
+
+
+

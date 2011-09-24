@@ -3,7 +3,7 @@
 /*                       Copyright (C) Matsumo 1998,1999  */
 /**********************************************************/
 
-#if 0
+#if 1
 
 #ifndef SC62015_H
 #define SC62015_H
@@ -58,7 +58,7 @@
 /*--------------------------------------------------------------------------*/
 enum REGNAME{					//register name
 	REG_A , REG_IL, REG_BA, REG_I, REG_X ,
-	REG_Y , REG_U, REG_S , REG_P , REG_F
+    REG_Y , REG_PC, REG_U, REG_S , REG_P , REG_F
 };
 enum OPRMODE{					//operation mode
 	OPR_AND, OPR_OR , OPR_XOR, OPR_ADD, OPR_SUB
@@ -67,44 +67,353 @@ enum MEMUNIT{					//memory unit
 	UNIT_B, UNIT_KB, UNIT_MB
 };
 
-class Csc62015:public Csc{
+class Csc62015:public CCPU{
 public:
-	short init(void);						//initialize
-	void exit(void);						//end
-	short step(void);						//step SC62015
+    bool init(void);						//initialize
+    bool exit(void);						//end
+    void step(void);						//step SC62015
+
+    virtual	void	Load_Internal(QFile *);
+    virtual	void	Load_Internal(QXmlStreamReader *);
+    virtual	void	save_internal(QFile *);
+    virtual	void	save_internal(QXmlStreamWriter *);
+
+    DWORD Get_r(BYTE r);
+    DWORD Get_r2(BYTE r);
+    void Set_r(BYTE r,DWORD d);
+    void Set_r2(BYTE r,DWORD d);
 	DWORD get_reg(REGNAME regname);			//get register
 	void set_reg(REGNAME regname,DWORD data);	//set register
-	DWORD get_mem(DWORD adr,int size);		//get memory
-	void set_mem(DWORD adr,int size,DWORD data);	//set memory
+//	DWORD get_mem(DWORD adr,int size);		//get memory
+//	void set_mem(DWORD adr,int size,DWORD data);	//set memory
 	void opr_mem(DWORD adr,OPRMODE opr,BYTE data);	//operation memory
 	DWORD get_imem(BYTE adr);				//get i-mem
 	void set_imem(BYTE adr,BYTE data);		//set i-mem
 	void opr_imem(BYTE adr,OPRMODE opr,BYTE data);	//operation i-mem
-	bool check_filesize(FILE *fp,int size,MEMUNIT unit);	//check file size
+    bool check_filesize(FILE *fp,int size,MEMUNIT unit);	//check file size
 	char *fn_status;					//status file name
-	bool usestatus;						//use status file(0:no,1:yes)
-	bool *SlotName[4];					//slot filename
-	BOOL	halt,off;					//halt,off flag
-	BOOL	end,save, e6, log,logsw;	//etc.flag
+    bool usestatus;						//use status file(0:no,1:yes)
+    bool *SlotName[4];					//slot filename
+    bool	halt,off;					//halt,off flag
+    bool	end,save, e6, log,logsw;	//etc.flag
 	BYTE	emsmode;					//ems memory size
-	Csc62015(){									//[constructor]
-		halt=0;				//halt?(0:none, 1:halting)
-		off=0;				//off?(0:none, 1:off)
-		end=0;				//program end?(0:none, 1:end)
-		save=0;				//end with memory save?(0:no, 1:yes)
-		SlotName[0]="s1.ram"; SlotName[1]="s2.ram";
-		SlotName[2]="s3.rom"; SlotName[3]="ems.ram";
-		e6=0;				//E650 mode?(0:no, 1:yes)
-		emsmode=0;			//EMS mode(0:none, 1-5:Delta 1-4 or Super)
-		log=0;				//execute log?(0:off, 1:on)
-		logsw=0;				//log mode?(0:off, 1:on)
-		usestatus=0;
-		fp_status=0;
-		fn_status="e500e.sta";
-	};
+    Csc62015(CPObject *);
+
+    BYTE  Get_i8(BYTE a,bool m);
+    WORD  Get_i16(BYTE a,bool m);
+    DWORD Get_i20(BYTE a,bool m);
+    DWORD Get_i24(BYTE a,bool m);
+    void Set_i8(BYTE a,BYTE d,bool m);
+    void Set_i16(BYTE a,WORD d,bool m);
+    void Set_i20(BYTE a,DWORD d,bool m);
+    void Set_i24(BYTE a,DWORD d,bool m);
+
+    void Chk_imemAdr(BYTE d, BYTE len);
+    void Chk_Flag(DWORD d, BYTE len);
+    void Chk_Zero(DWORD d, BYTE len);
+    DWORD Get_i(void);
+    DWORD Get_i2(BYTE *);
+    void AddState(BYTE n);
+    BYTE bcd2hex(BYTE d);
+    WORD hex2bcd(BYTE d);
+
+    void  Op_00(void);
+    void  Op_01(void);
+    void  Op_02(void);
+    void  Op_03(void);
+    void  Op_04(void);
+    void  Op_05(void);
+    void  Op_06(void);
+    void  Op_07(void);
+    void  Op_08(void);
+    void  Op_09(void);
+    void  Op_0a(void);
+    void  Op_0b(void);
+    void  Op_0c(void);
+    void  Op_0d(void);
+    void  Op_0e(void);
+    void  Op_0f(void);
+
+    void  Op_10(void);
+    void  Op_11(void);
+    void  Op_12(void);
+    void  Op_13(void);
+    void  Op_14(void);
+    void  Op_15(void);
+    void  Op_16(void);
+    void  Op_17(void);
+    void  Op_18(void);
+    void  Op_19(void);
+    void  Op_1a(void);
+    void  Op_1b(void);
+    void  Op_1c(void);
+    void  Op_1d(void);
+    void  Op_1e(void);
+    void  Op_1f(void);
+
+    void  Op_20(void);
+    void  Op_21(void);
+    void  Op_22(void);
+    void  Op_23(void);
+    void  Op_24(void);
+    void  Op_25(void);
+    void  Op_26(void);
+    void  Op_27(void);
+    void  Op_28(void);
+    void  Op_29(void);
+    void  Op_2a(void);
+    void  Op_2b(void);
+    void  Op_2c(void);
+    void  Op_2d(void);
+    void  Op_2e(void);
+    void  Op_2f(void);
+
+    void  Op_30(void);
+    void  Op_31(void);
+    void  Op_32(void);
+    void  Op_33(void);
+    void  Op_34(void);
+    void  Op_35(void);
+    void  Op_36(void);
+    void  Op_37(void);
+    void  Op_38(void);
+    void  Op_39(void);
+    void  Op_3a(void);
+    void  Op_3b(void);
+    void  Op_3c(void);
+    void  Op_3d(void);
+    void  Op_3e(void);
+    void  Op_3f(void);
+
+    void  Op_40(void);
+    void  Op_41(void);
+    void  Op_42(void);
+    void  Op_43(void);
+    void  Op_44(void);
+    void  Op_45(void);
+    void  Op_46(void);
+    void  Op_47(void);
+    void  Op_48(void);
+    void  Op_49(void);
+    void  Op_4a(void);
+    void  Op_4b(void);
+    void  Op_4c(void);
+    void  Op_4d(void);
+    void  Op_4e(void);
+    void  Op_4f(void);
+
+    void  Op_50(void);
+    void  Op_51(void);
+    void  Op_52(void);
+    void  Op_53(void);
+    void  Op_54(void);
+    void  Op_55(void);
+    void  Op_56(void);
+    void  Op_57(void);
+    void  Op_58(void);
+    void  Op_59(void);
+    void  Op_5a(void);
+    void  Op_5b(void);
+    void  Op_5c(void);
+    void  Op_5d(void);
+    void  Op_5e(void);
+    void  Op_5f(void);
+
+    void  Op_60(void);
+    void  Op_61(void);
+    void  Op_62(void);
+    void  Op_63(void);
+    void  Op_64(void);
+    void  Op_65(void);
+    void  Op_66(void);
+    void  Op_67(void);
+    void  Op_68(void);
+    void  Op_69(void);
+    void  Op_6a(void);
+    void  Op_6b(void);
+    void  Op_6c(void);
+    void  Op_6d(void);
+    void  Op_6e(void);
+    void  Op_6f(void);
+
+    void  Op_70(void);
+    void  Op_71(void);
+    void  Op_72(void);
+    void  Op_73(void);
+    void  Op_74(void);
+    void  Op_75(void);
+    void  Op_76(void);
+    void  Op_77(void);
+    void  Op_78(void);
+    void  Op_79(void);
+    void  Op_7a(void);
+    void  Op_7b(void);
+    void  Op_7c(void);
+    void  Op_7d(void);
+    void  Op_7e(void);
+    void  Op_7f(void);
+
+    void  Op_80(void);
+    void  Op_81(void);
+    void  Op_82(void);
+    void  Op_83(void);
+    void  Op_84(void);
+    void  Op_85(void);
+    void  Op_86(void);
+    void  Op_87(void);
+    void  Op_88(void);
+    void  Op_89(void);
+    void  Op_8a(void);
+    void  Op_8b(void);
+    void  Op_8c(void);
+    void  Op_8d(void);
+    void  Op_8e(void);
+    void  Op_8f(void);
+
+    void  Op_90(void);
+    void  Op_91(void);
+    void  Op_92(void);
+    void  Op_93(void);
+    void  Op_94(void);
+    void  Op_95(void);
+    void  Op_96(void);
+    void  Op_97(void);
+    void  Op_98(void);
+    void  Op_99(void);
+    void  Op_9a(void);
+    void  Op_9b(void);
+    void  Op_9c(void);
+    void  Op_9d(void);
+    void  Op_9e(void);
+    void  Op_9f(void);
+
+    void  Op_a0(void);
+    void  Op_a1(void);
+    void  Op_a2(void);
+    void  Op_a3(void);
+    void  Op_a4(void);
+    void  Op_a5(void);
+    void  Op_a6(void);
+    void  Op_a7(void);
+    void  Op_a8(void);
+    void  Op_a9(void);
+    void  Op_aa(void);
+    void  Op_ab(void);
+    void  Op_ac(void);
+    void  Op_ad(void);
+    void  Op_ae(void);
+    void  Op_af(void);
+
+    void  Op_b0(void);
+    void  Op_b1(void);
+    void  Op_b2(void);
+    void  Op_b3(void);
+    void  Op_b4(void);
+    void  Op_b5(void);
+    void  Op_b6(void);
+    void  Op_b7(void);
+    void  Op_b8(void);
+    void  Op_b9(void);
+    void  Op_ba(void);
+    void  Op_bb(void);
+    void  Op_bc(void);
+    void  Op_bd(void);
+    void  Op_be(void);
+    void  Op_bf(void);
+
+
+    void  Op_c0(void);
+    void  Op_c1(void);
+    void  Op_c2(void);
+    void  Op_c3(void);
+    void  Op_c4(void);
+    void  Op_c5(void);
+    void  Op_c6(void);
+    void  Op_c7(void);
+    void  Op_c8(void);
+    void  Op_c9(void);
+    void  Op_ca(void);
+    void  Op_cb(void);
+    void  Op_cc(void);
+    void  Op_cd(void);
+    void  Op_ce(void);
+    void  Op_cf(void);
+
+    void  Op_d0(void);
+    void  Op_d1(void);
+    void  Op_d2(void);
+    void  Op_d3(void);
+    void  Op_d4(void);
+    void  Op_d5(void);
+    void  Op_d6(void);
+    void  Op_d7(void);
+    void  Op_d8(void);
+    void  Op_d9(void);
+    void  Op_da(void);
+    void  Op_db(void);
+    void  Op_dc(void);
+    void  Op_dd(void);
+    void  Op_de(void);
+    void  Op_df(void);
+
+    void  Op_e0(void);
+    void  Op_e1(void);
+    void  Op_e2(void);
+    void  Op_e3(void);
+    void  Op_e4(void);
+    void  Op_e5(void);
+    void  Op_e6(void);
+    void  Op_e7(void);
+    void  Op_e8(void);
+    void  Op_e9(void);
+    void  Op_ea(void);
+    void  Op_eb(void);
+    void  Op_ec(void);
+    void  Op_ed(void);
+    void  Op_ee(void);
+    void  Op_ef(void);
+
+    void  Op_f0(void);
+    void  Op_f1(void);
+    void  Op_f2(void);
+    void  Op_f3(void);
+    void  Op_f4(void);
+    void  Op_f5(void);
+    void  Op_f6(void);
+    void  Op_f7(void);
+    void  Op_f8(void);
+    void  Op_f9(void);
+    void  Op_fa(void);
+    void  Op_fb(void);
+    void  Op_fc(void);
+    void  Op_fd(void);
+    void  Op_fe(void);
+    void  Op_ff(void);
+
+
+    void (Csc62015::*OpTbl[])(void);
+
+    DWORD Get_d(BYTE len);
+    DWORD Get_d2(BYTE len, BYTE *r);
+
+    short Step_sc62015_();
+
+    void set_mem(DWORD adr, int size, DWORD data);
+    DWORD get_mem(DWORD adr, int size);
+    void Reset();
+    void Regs_Info(UINT8 Type);
+
+    bool	Get_Xin(void);
+    void	Set_Xin(bool);
+    bool	Get_Xout(void);
+    void	Set_Xout(bool);
+
+    DWORD	get_PC(void);
+
+
 private:
-	bool Mem_Load(BYTE s);
-	bool EMS_Load(void);
+    bool Mem_Load(BYTE s);
+    bool EMS_Load(void);
 	void Mem_Save(BYTE s);
 	void EMS_Save(void);
     //FILE *fp_log;			// file pointer to log file
@@ -113,5 +422,7 @@ private:
 
 	
 };
+
+#endif
 
 #endif

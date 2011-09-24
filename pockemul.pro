@@ -246,7 +246,8 @@ HEADERS += src/core/Connect.h \
     src/machine/cx07char.h \
     ui/cregsz80widget.h \
     src/core/Lcdc_x07.h \
-    src/cpu/hd61700.h
+    src/cpu/hd61700.h \
+    src/machine/e500.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -299,7 +300,8 @@ RESOURCES += resources/ext.qrc \
     qcodeedit/qxs/qxs.qrc \
     resources/asmlibs.qrc \
     resources/x07.qrc \
-    resources/pb1000.qrc
+    resources/pb1000.qrc \
+    resources/e500.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -456,7 +458,8 @@ SOURCES += src/core/Connect.cpp \
     ui/cregsz80widget.cpp \
     src/core/Lcdc_x07.cpp \
     src/cpu/hd61700d.cpp \
-    src/cpu/hd61700.cpp
+    src/cpu/hd61700.cpp \
+    src/machine/e500.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
