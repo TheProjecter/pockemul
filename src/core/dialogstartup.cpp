@@ -78,7 +78,8 @@ void DialogStartup::create(QString ItemText)
 
     if (ItemText == "CE-1600P")	result = CE1600P;
     if (ItemText == "Canon X-07") result = X07;
-		
+    if (ItemText == "PC-E500") result = E500;
+
     if (result != EMPTY)	{
 		this->done(result);
 	}

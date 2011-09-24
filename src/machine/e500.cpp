@@ -14,16 +14,16 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     SessionHeaderLen= 7;
     Initial_Session_Fname ="e500.pkm";
 
-    BackGroundFname	= ":/e500/e500.png";
+    BackGroundFname	= ":/e500/pc-e500.png";
     LcdFname		= ":/e500/e500lcd.png";
     SymbFname		= ":/e500/e500symb.png";
 
     memsize		= 0x10000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8	, 0x0000 ,	":/PC1250/pc1250/cpu-1250.rom"	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	":/e500/cpu-1250.rom"	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1250/R1-1250.ram"	, RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	":/PC1250/pc1250/bas-1250.rom"	, "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	":/e500/bas-1250.rom"	, "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
     SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1250/R2-1250.ram" 	, RAM , "RAM"));
 
     KeyMap		= KeyMap1250;
@@ -32,12 +32,12 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;
 
-    setDXmm(135);//Pc_DX_mm = 135;
-    setDYmm(70);//Pc_DY_mm = 70;
-    setDZmm(10);//Pc_DZ_mm = 10;
+    setDXmm(200);//Pc_DX_mm = 135;
+    setDYmm(100);//Pc_DY_mm = 70;
+    setDZmm(14);//Pc_DZ_mm = 10;
 
-    setDX(483);//Pc_DX		= 483;//409;
-    setDY(252);//Pc_DY		= 252;//213;
+    setDX(715);//Pc_DX		= 483;//409;
+    setDY(357);//Pc_DY		= 252;//213;
 
     Lcd_X		= 55;
     Lcd_Y		= 49;

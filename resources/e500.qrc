@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>e500/s3.rom</file>
+        <file>e500/pc-e500.png</file>
     </qresource>
 </RCC>

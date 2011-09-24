@@ -358,6 +358,15 @@
          </item>
          <item>
           <property name="text">
+           <string>PC-E500</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/e500.qrc">
+            <normaloff>:/e500/pc-e500.png</normaloff>:/e500/pc-e500.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Canon X-07</string>
           </property>
           <property name="icon">
@@ -643,6 +652,7 @@
  </widget>
  <layoutdefault spacing="0" margin="0"/>
  <resources>
+  <include location="../resources/e500.qrc"/>
   <include location="../resources/ext.qrc"/>
   <include location="../resources/pc1245.qrc"/>
   <include location="../resources/pc1250.qrc"/>

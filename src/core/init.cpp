@@ -58,6 +58,7 @@
 #include "cesimu.h"
 
 #include "cx07.h"
+#include "e500.h"
 
 
 extern QList<CPObject *> listpPObject;  
@@ -130,6 +131,7 @@ CPObject *pPC=0;
         case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
 
         case X07    : pPC = new Cx07;       pPC->setName("Canon X-07"); break;
+        case E500   : pPC = new Ce500;       pPC->setName("PC-E500"); break;
 
         default			: return 0;
     }

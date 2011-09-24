@@ -142,7 +142,8 @@ enum Models {
     Simulator,
 
     CE1600P,
-    X07
+    X07,
+    E500
 };
 
 #endif
