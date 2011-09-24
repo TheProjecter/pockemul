@@ -305,11 +305,8 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
               break;
    case 0x23: // Turn OFF
-//      m_warm_start = 1;
-//      m_sleep = 0;
-      mem[0x0006] &= 0xBF;      // bit 6 to 0 for SLEEP
-      mem[0x0006] |= 0x01;      // bit 0 to 1 for OFF
-              pPC->TurnOFF();
+      TurnOFF();
+
               break;
 
    case 0x24:
@@ -410,6 +407,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
    case 0x3F: // Sleep
               AddLog (LOG_TEMP,"Sleep\n");
               mem[0x0006] |= 0x41;      // bit 0 and 6 to 1 for OFF and SLEEP
+              General_Info.LcdOn = false;
                 pPC->TurnOFF();
                  break;
   case 0x40:
@@ -865,6 +863,7 @@ void CT6834::keyPress(QKeyEvent *event)
     case Qt::Key_F4    :
     case Qt::Key_F5    :
     case Qt::Key_F6    : break;
+    case Qt::Key_F12   : TurnOFF(); break;
 
     case Qt::Key_Up    : General_Info.Stick = 0x31; AddKey(0x1e);break;
     case Qt::Key_Right : General_Info.Stick = 0x32; AddKey(0x1c);break;
@@ -886,7 +885,7 @@ void CT6834::keyPress(QKeyEvent *event)
             case Qt::ControlModifier: ctrl = true; break;
         }
         code = event->key();
-        if (ctrl && code==Qt::Key_C) {
+        if ((code == 0x03) || (ctrl && code==Qt::Key_C)) {
             General_Info.Break = 1;
             val = 0;
         }
@@ -911,6 +910,16 @@ void CT6834::keyPress(QKeyEvent *event)
 
     }
     event->accept();
+}
+
+
+void CT6834::TurnOFF() {
+    //      m_warm_start = 1;
+    //      m_sleep = 0;
+    mem[0x0006] &= 0xBF;      // bit 6 to 0 for SLEEP
+    mem[0x0006] |= 0x01;      // bit 0 to 1 for OFF
+    General_Info.LcdOn = false;
+    pPC->TurnOFF();
 }
 
 /*

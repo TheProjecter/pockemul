@@ -68,6 +68,7 @@ public:
 
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
+    void TurnOFF();
 
     GENERAL_INFO General_Info;
     UINT8 Send_Cmd_T6834 [255];
@@ -95,6 +96,7 @@ public:
     QByteArray Clavier;
 
     bool kana,graph,shift,ctrl;
+
 };
 
 #endif // CT6834_H

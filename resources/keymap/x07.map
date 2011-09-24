@@ -10,8 +10,8 @@
     <KEY description="DEL" height="30" left="444" scancode="0x16" top="208" width="36"/>
     <KEY description="HOME/CLR" height="30" left="500" scancode="0xc" top="208" width="36"/>
     <KEY description="On/Brk" height="30" left="627" scancode="0x3" top="205" width="36"/>
-    <KEY description="Off" height="30" left="573" scancode="0x3e" top="207" width="36"/>
-    <KEY description="F6" height="39" left="584" scancode="0x7a" top="87" width="38"/>
+    <KEY description="Off" height="30" left="573" scancode="0x100003b" top="207" width="36"/>
+    <KEY description="F6" height="39" left="584" scancode="0x1000035" top="87" width="38"/>
     <KEY description="Down Arrow" height="30" left="574" scancode="0x1000015" top="137" width="57"/>
     <KEY description="Left Arrow" height="55" left="544" scancode="0x1000012" top="79" width="36"/>
     <KEY description="Rigth Arrow" height="55" left="631" scancode="0x1000014" top="79" width="30"/>

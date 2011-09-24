@@ -132,7 +132,13 @@ bool Cx07::init(void)				// initialize
 
 
 bool Cx07::run() {
+    if (off && pT6834->General_Info.Break == 1)
+    {
+            pT6834->General_Info.Break = 0;
+            TurnON();
+            ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
+    }
 
     if (pKEYB->LastKey){
         Qt::KeyboardModifiers keyModifiers = (pT6834->shift?Qt::ShiftModifier:Qt::NoModifier)|(pT6834->graph?Qt::AltModifier:Qt::NoModifier)|(pT6834->ctrl?Qt::ControlModifier:Qt::NoModifier);
@@ -162,22 +168,15 @@ bool Cx07::run() {
 
         if (pT6834->General_Info.Break == 1)
         {
-            if (off)
-            {
-                TurnON();
-                ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
-            }
-            else
-            {
-                Port_FX.R.F0  = 0x80;
-                Port_FX.R.F1  = 0x05;
-                Port_FX.R.F2 |= 0x01;
-                IT_T6834      = 0;
-                pT6834->General_Info.Break=0;
-                AddLog(LOG_TEMP,"Break");
-                ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
-                return (IT_RST_A);
-            }
+
+            Port_FX.R.F0  = 0x80;
+            Port_FX.R.F1  = 0x05;
+            Port_FX.R.F2 |= 0x01;
+            IT_T6834      = 0;
+            pT6834->General_Info.Break=0;
+            AddLog(LOG_TEMP,"Break");
+            ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_A);
+            return (IT_RST_A);
         }
         if ( IT_T6834 )
         {
@@ -551,6 +550,7 @@ void Cx07::TurnOFF(void) {
     CpcXXXX::TurnOFF();
     mainwindow->saveAll = ASK;
     AddLog(LOG_TEMP,"TURN OFF");
+    pT6834->General_Info.LcdOn = false;
 }
 
 void Cx07::TurnON(void){
