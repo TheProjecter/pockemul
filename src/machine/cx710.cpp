@@ -11,13 +11,14 @@
 #define DOWN	0
 #define UP		1
 
-//TransMap KeyMapce140p[]={
-//    {1,	"FEED  ",	K_PFEED,34,234,	9},
-//    {2, "PRINTER ON",K_PRINT_ON,34,200,9},
-//    {3, "SIO ON",K_PRINT_OFF,35,150,9}
-//};
-//int KeyMapce140pLenght = 3;
-
+/*
+TransMap KeyMapce140p[]={
+    {1,	"FEED  ",	K_PFEED,34,234,	9},
+    {2, "PRINTER ON",K_PRINT_ON,34,200,9},
+    {3, "SIO ON",K_PRINT_OFF,35,150,9}
+};
+ int KeyMapce140pLenght = 3;
+*/
 
 Cx710::Cx710(CPObject *parent):Cce515p(this) {
     //setfrequency( 0);
@@ -42,7 +43,6 @@ Cx710::Cx710(CPObject *parent):Cce515p(this) {
 
 }
 
-
 bool Cx710::init(void) {
 
     Cce515p::init();
@@ -54,7 +54,6 @@ bool Cx710::init(void) {
 
     return true;
 }
-
 
 bool Cx710::run(void) {
 
@@ -144,3 +143,4 @@ void Cx710::paintEvent(QPaintEvent *event)
 void Cx710::CommandSlot(qint8 data) {
     Command(data);
 }
+

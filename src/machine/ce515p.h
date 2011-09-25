@@ -65,10 +65,10 @@ public:
     void    set_SD(quint8);
     void    drawChar(quint8 data,qint8 rot= 0);
     void    DrawMove(int lenght,int dir,bool penDown);
-    void    Command(quint8);
-    void    ProcessEscCommand(void);
-    void    ProcessGraphCommand(void);
-    void    ProcessMultiPointCommand(QString);
+    virtual void    Command(quint8);
+    virtual void    ProcessEscCommand(void);
+    virtual void    ProcessGraphCommand(void);
+    virtual void    ProcessMultiPointCommand(QString);
     void    DrawLine(int xa, int ya, int xb, int yb);
     void    DrawTest(void);
     void    PaperFeed(void);
@@ -96,7 +96,7 @@ protected:
     int		Sii_wait;
     static const QString graph[];
 
-private:
+protected:
     QList<CMove> moveBuffer;
     int charSize;
     QString escCommand;

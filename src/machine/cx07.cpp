@@ -386,7 +386,7 @@ void Cx07::Print (UINT8 Cmd, PorT_FX *Port)
  switch (Cmd)
   {
    case PRT_DATA: if (!(Port->R.F4 & MASK_PRT_DATA)) Data |= 0x80;
-                    AddLog(LOG_PRINTER,tr("bit:%1   data=%2").arg(Data&1).arg(Data,2,16,QChar('0')));
+//                    AddLog(LOG_PRINTER,tr("bit:%1   data=%2").arg(Data&1).arg(Data,2,16,QChar('0')));
 
                   if (Cpt_Bit == 7)
                    {

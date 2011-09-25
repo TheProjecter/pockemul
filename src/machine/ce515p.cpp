@@ -330,6 +330,13 @@ void Cce515p::SaveAsText(void)
                          tr("Saving output as text is irrelevant") );
 }
 
+#define BS  0x08
+#define LF  0x0A
+#define LU  0x0B
+#define CR  0x0D
+#define DC1 0x11
+#define DC2 0x12
+
 void Cce515p::Command(quint8 t) {
     if (escMode) {
         escCommand+=QChar(t);
@@ -378,11 +385,17 @@ void Cce515p::Command(quint8 t) {
                         //Pen_Y+=(12*charSize); Pen_X = 0;
                 break;
             case 0x1B: escMode = true; break;
+            case DC1:   break;
+            case DC2:   mode = GRAPH; break;
             default: drawChar(t);break;
         }
         break;
     case GRAPH :
         switch (t) {
+            case DC1:   mode = TEXT;
+                        orig_X = 0 ;            Pen_X = 0;
+                        orig_Y = TRANSY(Pen_Y); Pen_Y = 0;
+                        break;
             case 0x1B: escMode = true; break;
             case 0x0D:
                     if (escMode) {
@@ -406,6 +419,14 @@ void Cce515p::ProcessGraphCommand() {
     bool ok;
     AddLog(LOG_PRINTER,"Graph Command:"+graphCommand);
     switch (graphCommand.at(0).toAscii()) {
+    case 'S':   { //size 0-15 (Canon x-710)
+                    qint8 tmpcharSize = graphCommand.mid(1).toInt() +1;
+                    if ((tmpcharSize >0) && (tmpcharSize <= 16))
+                        charSize = tmpcharSize;
+                }
+                break;
+    case 'C':   moveBuffer.append( CMove(Pen_Color,graphCommand.mid(1).toInt(0,10)));
+                break;
     case 'A' : // Back to TEXT Mode
                 mode = TEXT;
                 orig_X = 0 ;            Pen_X = 0;
