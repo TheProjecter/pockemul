@@ -9,8 +9,8 @@
 #include "dialogconsole.h"
 #include "init.h"
 
-#define SIO_GET_PIN(n)		pSIOCONNECTOR->Get_pin(n)
-#define SIO_SET_PIN(n,v)	pSIOCONNECTOR->Set_pin(n,v)
+#define SIO_GET_PIN(n)		pSIOCONNECTOR->Get_pin(getPinId(n))
+#define SIO_SET_PIN(n,v)	pSIOCONNECTOR->Set_pin(getPinId(n),v)
 
 
 #define SIO_GNDP	1
@@ -29,6 +29,46 @@
 #define SIO_PRQ		15
 
 
+
+
+qint8 Csio::getPinId(SIGNAME signal) {
+    return signalMap[signal];
+}
+
+bool Csio::initSignalMap(Cconnector::ConnectorType type) {
+    switch (type) {
+    case Cconnector::Sharp_15 : signalMap.clear();
+                                signalMap[S_SD] = 2;
+                                signalMap[S_RD] = 3;
+                                signalMap[S_RS] = 4;
+                                signalMap[S_CS] = 5;
+                                signalMap[S_CD] = 8;
+                                signalMap[S_RR] = 11;
+                                signalMap[S_ER] = 14;
+                                pSIOCONNECTOR->Desc = "Connector 15 pins";
+                                pSIOCONNECTOR->setNbpins(15);
+                                pSIOCONNECTOR->setType(Cconnector::Sharp_15);
+                                WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
+                                WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,pSIOCONNECTOR->Desc);
+                                break;
+    case Cconnector::Canon_9  : signalMap.clear();
+                                signalMap[S_SD] = 2;
+                                signalMap[S_RD] = 3;
+                                signalMap[S_RS] = 4;
+                                signalMap[S_CS] = 5;
+                                signalMap[S_CD] = 8;
+                                signalMap[S_RR] = 11;
+                                signalMap[S_ER] = 14;
+                                pSIOCONNECTOR->Desc = "Serial Connector";
+                                pSIOCONNECTOR->setNbpins(9);
+                                pSIOCONNECTOR->setType(Cconnector::Canon_9);
+                                WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
+                                WatchPoint.add(&pSIOCONNECTOR_value,64,9,this,pSIOCONNECTOR->Desc);
+                                break;
+    default: break;
+    }
+}
+
 Csio::Csio(CPObject *parent)	: CPObject(this)
 {							//[constructor]
     si=so=0;			//si,so port access?(0:none, 1:access)
@@ -38,7 +78,7 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     exportbyte=1;
     convCRLF=1;
 
-    bit_in=oldstate_in=0;
+    currentBit=oldstate_in=0;
     Start_Bit_Sent = false;
     t=c=0;waitbitstart=1;waitbitstop=0;
 
@@ -117,11 +157,11 @@ bool Csio::run(void)
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
 	// Read connector
-	Set_SD( SIO_GET_PIN(SIO_SD) );
-	Set_RR( SIO_GET_PIN(SIO_RR) );
-	Set_RS( SIO_GET_PIN(SIO_RS) );
-	Set_ER( SIO_GET_PIN(SIO_ER) );	
-//	Set_PRQ( SIO_GET_PIN(SIO_PRQ) );	
+    Set_SD( SIO_GET_PIN(S_SD) );
+    Set_RR( SIO_GET_PIN(S_RR) );
+    Set_RS( SIO_GET_PIN(S_RS) );
+    Set_ER( SIO_GET_PIN(S_ER) );
+//	Set_PRQ( SIO_GET_PIN(S_PRQ) );
 	
 	
 	Sii_bit = 0;
@@ -129,11 +169,11 @@ bool Csio::run(void)
 	Set_RD( Sii_bit );	
 	
 	if (RS) { Set_CS(1); Set_CD(1); }			
-	outReadBit();
+    bitToByte();
 
-	SIO_SET_PIN(SIO_RD, Get_RD());
-	SIO_SET_PIN(SIO_CS, Get_CS());
-	SIO_SET_PIN(SIO_CD, Get_CD());
+    SIO_SET_PIN(S_RD, Get_RD());
+    SIO_SET_PIN(S_CS, Get_CS());
+    SIO_SET_PIN(S_CD, Get_CD());
     //SIO_SET_PIN(SIO_PAK, 0);
 
 	return true;
@@ -147,7 +187,7 @@ void Csio::startTransfer(void)
 	Sii_startbitsent	= false;
 	Sii_stopbitsent		= true;
 	Sii_TransferStarted = true;
-	
+    byteBufferSize = baInput.size();
 	Set_CD(1);
 	
 }
@@ -171,34 +211,36 @@ bool Csio::inReadBit(void)
 // If there are new data in baInput
 	if (! Sii_TransferStarted) return 0;
 
-	if ( Sii_ndx < baInput.size() )
+    //if ( Sii_ndx < baInput.size() )
+    if (baInput.size())
 	{
         deltastate = pTIMER->state - oldstate_in;
 
-        if (deltastate < Sii_wait) return(bit_in);
+        if (deltastate < Sii_wait) return(currentBit);
 
         oldstate_in	= pTIMER->state;
 //		oldstate_in	+= deltastate;
 
-		data	= baInput.at(Sii_ndx); 
+        data	= baInput.at(0);
+
 
         // Update Input proressbar
-        emit valueChanged((int)((Sii_ndx*100)/baInput.size()+.5));
+        emit valueChanged((int)((Sii_ndx*100)/byteBufferSize+.5));
         Refresh_Display = true;
 		data = (data == 0x0A ? 0x0D : data);
-        bit_in		= inReadBitFromByte(data);
+        currentBit		= byteToBit(data);
 		
-        switch (bit_in)
+        switch (currentBit)
 		{
-        case 3:	bit_in = 1;
+        case 3:	currentBit = 1;
                 Sii_wait = TICKS_BDS;
-                return(bit_in);		// START BIT
+                return(currentBit);		// START BIT
 		case 0:
-        case 1:	AddLog(LOG_SIO,tr("Envoie bit = %1").arg(bit_in));
+        case 1:	AddLog(LOG_SIO,tr("Envoie bit = %1").arg(currentBit));
                 Sii_wait = TICKS_BDS;
-                return(bit_in);		// DATA BIT
+                return(currentBit);		// DATA BIT
 
-        case 2:	bit_in = 0;
+        case 2:	currentBit = 0;
                 Sii_wait = TICKS_BDS;
 
 				if (data == 0x0D)
@@ -207,16 +249,15 @@ bool Csio::inReadBit(void)
 					AddLog(LOG_SIO,tr("LF found, wait %1 ms").arg(Sii_LfWait));
 				}
 				
-				Sii_ndx++;										// Next Char
+                baInput.remove(0,1);										// Next Char
 
-                return(bit_in);
+                return(currentBit);
 		}
 	}
 
 	if (
 		Sii_TransferStarted &&
-		(Sii_ndx == baInput.size()) &&
-		(Sii_ndx >0) )
+        (baInput.size() == 0) )
 	{
 		// End of file
 //		Sii_ndx				= 0;
@@ -233,10 +274,12 @@ bool Csio::inReadBit(void)
 }
 
 
+// Byte to bit
 //
 // Take in account number of start, stop and parity bits
 //
-qint8 Csio::inReadBitFromByte(qint8 data)
+
+qint8 Csio::byteToBit(qint8 data)
 {
 	qint8			bit			= 0;
 
@@ -269,18 +312,18 @@ qint8 Csio::inReadBitFromByte(qint8 data)
 
 void Csio::ExportBit(bool data) {}
 
-void Csio::ExportByte(qint8 data)
+void Csio::byteRecv(qint8 data)
 {
 	baOutput.append( (char) data);
 
     // Emit signal new data
-    emit newData(data);
+    emit newByteRecv(data);
 
 	Refresh_Display = true;
 }
 
-
-void Csio::outReadBit(void)
+// convert bit to Byte
+void Csio::bitToByte(void)
 {
 
     int deltastate=0;
@@ -333,7 +376,7 @@ void Csio::outReadBit(void)
 		if((c=(++c)&7)==0)
 		{
 			AddLog(LOG_SIO,tr("Byte = %1").arg(t,2,16,QChar('0')));
-			ExportByte(t);
+            byteRecv(t);
 			t=0;
 			waitbitstop = 1;
 		}
@@ -362,8 +405,9 @@ bool Csio::init(void)
     connect(this,SIGNAL(valueChanged(int)),dialogconsole->inputProgressBar,SLOT(setValue(int)));
 
 	AddLog(LOG_MASTER,"done.\n");
+    initSignalMap(Cconnector::Sharp_15);
 
-    WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
+
 
 	return true;
 }

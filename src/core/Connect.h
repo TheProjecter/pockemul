@@ -61,6 +61,7 @@ public:
     void    setSnap(QPoint p) {snap = p;}
     QPoint  getSnap(void) {return snap;}
     int    getNbpins(void) {return nbpins;}
+    void   setNbpins(int nb) { nbpins = nb;}
 
     static bool arePluggable(Cconnector *a,Cconnector *b);
 	

@@ -25,8 +25,8 @@ Cx710::Cx710(CPObject *parent):Cce515p(this) {
     setcfgfname(QString("x710"));
     BackGroundFname	= ":/x07/x710.png";
 
-    pCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Connector 15 pins",true,QPoint(631,468)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Saved connector",true,QPoint(631,468));
+    pCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",true,QPoint(631,468)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
 
 //    KeyMap      = KeyMapx710;
 //    KeyMapLenght= KeyMapce140pLenght;

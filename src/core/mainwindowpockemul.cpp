@@ -352,6 +352,8 @@ void MainWindowPockemul::opensession()
 
     objtable["CE-1600P"]=CE1600P;
     objtable["Canon X-07"]=X07;
+    objtable["Canon X-710"]=X710;
+    objtable["PC-E500"]=E500;
 
 
     QMap<int,CPObject*> map;

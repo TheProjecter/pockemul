@@ -6,6 +6,7 @@
 class CPObject;
 #include "pcxxxx.h"
 class CT6834;
+class Cuart;
 
 
 typedef struct
@@ -75,11 +76,11 @@ public:
     int IT_T6834;
     UINT8 Int_nsc800_BB;
 
-    Cconnector *pPARConnector;
-    qint64      pPARConnector_value;
+    Cconnector *pPARConnector;    qint64      pPARConnector_value;
+    Cconnector *pSERConnector;    qint64      pSERConnector_value;
 
-    CT6834 *pT6834;
-
+    CT6834  *pT6834;
+    Cuart    *pUART;
     bool run();
     void AddKey(UINT8 Key);
 
@@ -106,6 +107,7 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
     void Print(UINT8 Cmd, PorT_FX *Port);
+    void SendToSerial(PorT_FX *Port);
 };
 
 #endif // CX07_H

@@ -6,6 +6,7 @@
 #include "Inter.h"
 #include "init.h"
 #include "ct6834.h"
+#include "uart.h"
 #include "Log.h"
 #include "Lcdc_x07.h"
 #include "Keyb.h"
@@ -42,6 +43,25 @@
 #define INIT_T6834     0xf0
 #define LEC_T6834      0xf1
 #define LEC_T6834_ACK  0xf2
+
+#define SIO_GET_PIN(n)		pSio->pSIOCONNECTOR->Get_pin(n)
+#define SIO_SET_PIN(n,v)	pSio->pSIOCONNECTOR->Set_pin(n,v)
+
+
+#define SIO_GNDP	1
+#define SIO_SD 		2
+#define SIO_RD		3
+#define SIO_RS		4
+#define SIO_CS		5
+
+#define SIO_GND		7
+#define SIO_CD		8
+#define SIO_VC1		10
+#define SIO_RR		11
+#define SIO_PAK		12
+#define SIO_VC2		13
+#define SIO_ER		14
+#define SIO_PRQ		15
 
 Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -99,12 +119,15 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     pLCDC		= new Clcdc_x07(this);
     pCPU		= new CZ80(this);
     pT6834      = new CT6834(this);
+    pUART        = new Cuart(this);
     pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
 
 
-    pPARConnector = new Cconnector(this,15,1,Cconnector::Canon_15,"Parrallel Connector",false,QPoint(715,50));
+    pPARConnector = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",false,QPoint(715,50));
     publish(pPARConnector);
+    pSERConnector = new Cconnector(this,9,1,Cconnector::Canon_9,"Serial Connector",false,QPoint(0,50));
+    publish(pSERConnector);
     pKEYB		= new Ckeyb(this,"x07.map");
 
 
@@ -126,12 +149,17 @@ bool Cx07::init(void)				// initialize
     memset((void*)&Port_FX,0,sizeof (Port_FX));
     memset((void *)mem ,0,0x6000);
 
-    WatchPoint.remove(this);
-    WatchPoint.add(&pPARConnector_value,64,15,this,"Parrallel Connector");
-
     ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
     pT6834->init();
+    pUART->init();
+    pUART->pTIMER = pTIMER;
+
+
+
+    WatchPoint.remove(this);
+    WatchPoint.add(&pPARConnector_value,64,15,this,"Parallel Connector");
+    WatchPoint.add(&pSERConnector_value,64,9,this,"Serial Connector");
 
     return true;
 }
@@ -157,6 +185,17 @@ bool Cx07::run() {
     }
 
     CpcXXXX::run();
+
+    // Copy data to UART
+
+    pUART->Set_CS(true);
+
+    pUART->run();
+
+    pSERConnector->Set_pin(4,pUART->Get_SD());      // TxD
+    pSERConnector->Set_pin(5,pUART->Get_RD());      // RxD
+    pSERConnector->Set_pin(6,pUART->Get_CS());      // CTS
+    pSERConnector->Set_pin(7,pUART->Get_RS());      // RTS
 
     if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
     {
@@ -241,6 +280,7 @@ bool Cx07::run() {
       }
 
     pPARConnector_value = pPARConnector->Get_values();
+    pSERConnector_value = pSERConnector->Get_values();
 }
 
 bool Cx07::Chk_Adr(DWORD *d, DWORD data)
@@ -288,6 +328,12 @@ UINT8 Cx07::in(UINT8 Port)
                    break;
        case 0xF6 : /* Status de l'UART */
                    if (Mode_K7) Port_FX.R.F6 |= 0x05;
+                   if ( (Mode_SERIE) && (Port_FX.W.F6 & 0x01)) {
+//                       if (pSio->CS)
+                       {
+                           Port_FX.R.F6 |=0x05;
+                       }
+                   }
                    Value = Port_FX.R.F6;
                    break;
        case 0xF7 : /* Données recu par l'UART */
@@ -329,12 +375,16 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                Port_FX.R.F4 = Value;
                Mode_K7 = ((Value & 0x0C) == 0x08) ? 1 : 0;
                Mode_BUZ= ((Value & 0x0E) == 0x0E) ? 1 : 0;
-               Mode_SERIE=((Value & 0x0C)== 0x0C) ? 1 : 0;
+               Mode_SERIE=((Value & 0x0C)== 0x04) ? 1 : 0;
 
+               if (Mode_SERIE) {
+                   AddLog(LOG_CANON,"MODE SERIE");
+               }
 
                if ((Mode_K7==1) && (Port_FX.W.F5& 0x04)) {
 //                   Receive_from_K7 (&Port_FX);
                }
+
                break;
    case 0xF5 : /* Interruptions (RESET) */
                Port_FX.W.F5 = Value;
@@ -351,13 +401,26 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                /* Reception d'un octet EN PROVENANCE du lecteur de K7 *
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x04) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x04 = %1").arg(Value,2,16,QChar('0')));
 //                   Receive_from_K7 (&Port_FX);
                }
 
                /* Envoie d'un octet a destination du lecteur de K7 *
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x08) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x08 = %1").arg(Value,2,16,QChar('0')));
+                   if (Mode_K7) {
 //                   Send_to_K7 (&Port_FX);
+                   }
+                   if (Mode_SERIE) {
+                       SendToSerial(&Port_FX);
+                   }
+               }
+
+               /* R?????????  SERIAL ??????? *
+               *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x10) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x10 = %1").arg(Value,2,16,QChar('0')));
                }
 
                /* Envoie d'un bit sur le port imprimante  *
@@ -365,6 +428,17 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                if (Value & 0x20) {
                    AddLog(LOG_CANON,"PRINTER");
                    Print (PRT_DATA,&Port_FX);
+               }
+
+               /* R?????????  SERIAL ??????? *
+               *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x40) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x40 = %1").arg(Value,2,16,QChar('0')));
+               }
+               /* R?????????  ALARM ??????? *
+               *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x80) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x80 = %1").arg(Value,2,16,QChar('0')));
                }
                break;
    case 0xF6 : /* Configuration de L'UART */
@@ -601,4 +675,52 @@ bool Cx07::SaveConfig(QXmlStreamWriter *xmlOut)
 {
     pT6834->save_internal(xmlOut);
     return true;
+}
+
+/*
+void Send_to_K7 (PorT_FX *Port)
+{
+ if ((Port->R.F4 & 0x09) == 0x09)
+  {
+   fprintf (stderr,"%02X ",Port->W.F7);
+  }
+}
+
+void Receive_from_K7 (PorT_FX *Port)
+{
+// static int Cpt=0;
+
+// if (!Presence_k7)
+//  {
+//   Fichier = fopen ("fichiers.xo7/DOMINO.LST","r");
+//   Fichier = fopen ("fichiers.xo7/BURGER.LST","r");
+//   Fichier = fopen ("fichiers.xo7/KARATE.LST","r");
+//   Fichier_k7 = fopen ("fichiers.xo7/AVENTUR.LST","r");
+//   Presence_k7 = 1;
+//  }
+
+ if (Presence_k7 && ((Port->R.F4 & 0x09) == 0x09))
+  {
+   if (feof(Fichier_k7))
+    {
+     rewind (Fichier_k7);
+    }
+   Port->R.F7  = fgetc (Fichier_k7);
+   Port->R.F6 |= 0x02;
+   IT_T6834 = 3;
+//   fprintf (stderr,"Receive from K7 %02X ",Port->R.F7);
+//   if (Cpt>=60)
+//    Cpt=0;
+  }
+}
+
+*/
+
+void Cx07::SendToSerial(PorT_FX *Port)
+{
+ if ((Port->R.F4 & 0x0C) == 0x04)
+  {
+    pUART->outputBuffer.append(Port->W.F7);
+    pUART->startTransfer();
+  }
 }

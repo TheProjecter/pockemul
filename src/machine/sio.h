@@ -11,12 +11,16 @@
 
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
 class DialogConsole;
-class Cconnector;
+#include "Connect.h"
 
 class Csio:public CPObject{
 Q_OBJECT
 
 public:
+    enum SIGNAME {
+        S_SD,S_RD,S_RS,S_CS,S_GND,S_CD,S_RR,S_ER
+    };
+
     const char*	GetClassName(){ return("Csio");}
 
 	QByteArray baOutput;
@@ -32,7 +36,7 @@ public:
 	void Put_SO(void);				//serial out
 
 	void ExportBit(bool);
-    virtual void ExportByte(qint8);
+    virtual void byteRecv(qint8);
 
     void Set_BaudRate(int);
     int  Get_BaudRate(void);
@@ -56,11 +60,11 @@ public:
 	void	Set_Sii_bit(qint8);
 	qint8	Get_Sii_bit(void);
 	
-	qint8	inReadBitFromByte(qint8 data);
+    qint8	byteToBit(qint8 data);
 	bool	inReadBit(void);
 	void	startTransfer(void);
 
-	void	outReadBit(void);
+    void	bitToByte(void);
 
 
 	bool	CD,CS,RD,RR,RS,ER,SD;
@@ -78,6 +82,7 @@ public:
 	
 	void	clearInput(void);
     DialogConsole *dialogconsole;
+    QMap<SIGNAME,qint8> signalMap;
 	
     Csio(CPObject *parent = 0);
 
@@ -87,13 +92,15 @@ public:
 public:
 	void paintEvent(QPaintEvent *);
 
+    bool initSignalMap(Cconnector::ConnectorType type);
+    qint8 getPinId(SIGNAME signal);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowConsole(void);
     void HideConsole(void);
 signals:
     void valueChanged(int v);
-    void newData(qint8);
+    void newByteRecv(qint8);
 
 private:
 	int		inBitNb;
@@ -107,11 +114,12 @@ private:
 	int		Sii_LfWait;	
     int     baudrate;
 
-    qint8   bit_in;
+    qint8   currentBit;
     qint64  oldstate_in;
     qint64  oldstate_out;
     bool    Start_Bit_Sent;
     unsigned char	t,c,waitbitstart,waitbitstop;
+    int byteBufferSize;
 };
 
 
