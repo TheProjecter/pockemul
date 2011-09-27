@@ -20,8 +20,7 @@ public:
 
     const char*	GetClassName(){ return("Cuart");}
 
-    QByteArray baOutput;
-    QByteArray outputBuffer;
+
     qint64  bitbuffer;
 
     virtual bool run(void);
@@ -65,8 +64,13 @@ public:
     virtual ~Cuart(){
     }
 
+    void sendByte(UINT8 data);
+    qint8 getInputByte();
+    bool isInputByte();
+    qint8 popInputByte();
 signals:
     void newByteRecv(qint8);
+    void newByteSent(qint8);
 
 private:
     int		bitNb;
@@ -86,6 +90,9 @@ private:
     bool    Start_Bit_Sent;
     unsigned char	t,c,waitbitstart,waitbitstop;
     int byteBufferSize;
+
+    QByteArray inputBuffer;
+    QByteArray outputBuffer;
 };
 
 

@@ -186,9 +186,9 @@ bool Cx07::run() {
 
     CpcXXXX::run();
 
-    // Copy data to UART
+    //TODO Copy data to UART: Baudrate
 
-    pUART->Set_CS(true);
+    pUART->Set_CS(true);        // for test purpose
 
     pUART->run();
 
@@ -349,7 +349,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
 
  if ((Port!=0xf0) && (Value!=0x44)) {
-//     AddLog(LOG_TEMP,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+     AddLog(LOG_TEMP,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 }
 
  switch (Port)
@@ -366,13 +366,30 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                break;
    case 0xF2 : /* Controle de BAUDS (poids faible) */
                Port_FX.W.F2 = Value;
+//               AddLog(LOG_SIO,tr("Reglage Bauds faible: %1").arg(Value,2,16,QChar('0')));
+//               pUART->Set_BaudRate(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2));
                break;
    case 0xF3 : /* Controle de BAUDS (poids fort) */
                Port_FX.W.F3 = Value;
+//               AddLog(LOG_SIO,tr("Reglage Bauds fort: %1").arg(Value,2,16,QChar('0')));
+//               pUART->Set_BaudRate(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2));
                break;
    case 0xF4 : /* Modes */
                Port_FX.W.F4 = Value;
                Port_FX.R.F4 = Value;
+
+               if (Value & 0x80) {
+                   AddLog(LOG_SIO,tr("Reglage Bauds : %1 - %2  = %3").arg(Port_FX.W.F2,2,16,QChar('0')).arg(Port_FX.W.F3,2,16,QChar('0')).arg(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2),2,16,QChar('0')));
+                   int divisor = ((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2) + 1;
+                   if (divisor) pUART->Set_BaudRate(24000/divisor);
+               }
+
+               if (Value & 0x40) {
+                   AddLog(LOG_SIO,tr("Bauds Counter START"));
+               }
+               else {
+                   AddLog(LOG_SIO,tr("Bauds Counter STOP"));
+               }
                Mode_K7 = ((Value & 0x0C) == 0x08) ? 1 : 0;
                Mode_BUZ= ((Value & 0x0E) == 0x0E) ? 1 : 0;
                Mode_SERIE=((Value & 0x0C)== 0x04) ? 1 : 0;
@@ -720,7 +737,7 @@ void Cx07::SendToSerial(PorT_FX *Port)
 {
  if ((Port->R.F4 & 0x0C) == 0x04)
   {
-    pUART->outputBuffer.append(Port->W.F7);
+    pUART->sendByte(Port->W.F7);
     pUART->startTransfer();
   }
 }

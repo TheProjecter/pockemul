@@ -28,7 +28,8 @@ FORMS += ui/about.ui \
     ui/dialogdasm.ui \
     ui/cregssc61860widget.ui \
     ui/cregslh5801widget.ui \
-    ui/cregsz80widget.ui
+    ui/cregsz80widget.ui \
+    ui/uartconsole.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -249,7 +250,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/hd61700.h \
     src/machine/e500.h \
     src/machine/cx710.h \
-    src/cpu/uart.h
+    src/cpu/uart.h \
+    ui/uartconsole.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -463,7 +465,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/hd61700.cpp \
     src/machine/e500.cpp \
     src/machine/cx710.cpp \
-    src/cpu/uart.cpp
+    src/cpu/uart.cpp \
+    ui/uartconsole.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

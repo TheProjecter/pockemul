@@ -175,6 +175,10 @@ Cuart::BIT_TYPE Cuart::sendBit(void)
     return(Bit_0);
 }
 
+void Cuart::sendByte(UINT8 data) {
+    outputBuffer.append(data);
+    emit newByteSent(data);
+}
 
 // Byte to bit
 //
@@ -209,9 +213,27 @@ Cuart::BIT_TYPE Cuart::byteToBit(qint8 data)
     return(Bit_Start);
 }
 
+qint8 Cuart::getInputByte(void) {
+    if (inputBuffer.size()) return inputBuffer.at(0);
+    return 0;
+}
+
+bool Cuart::isInputByte(void) {
+    return !inputBuffer.isEmpty();
+}
+
+qint8 Cuart::popInputByte(void) {
+    if (!inputBuffer.isEmpty()) {
+        qint8 data = inputBuffer.at(0);
+        inputBuffer.remove(0,1);
+        return data;
+    }
+    return 0;
+}
+
 void Cuart::byteRecv(qint8 data)
 {
-    baOutput.append( (char) data);
+    inputBuffer.append( (char) data);
 
     // Emit signal new data
     emit newByteRecv(data);

@@ -18,13 +18,19 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= ":/e500/e500lcd.png";
     SymbFname		= ":/e500/e500symb.png";
 
-    memsize		= 0x10000;
+    memsize		= 0x100000;
 
+    /* ROM area(c0000-fffff) S3: */
     SlotList.clear();
-    SlotList.append(CSlot(8	, 0x0000 ,	":/e500/cpu-1250.rom"	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1250/R1-1250.ram"	, RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	":/e500/bas-1250.rom"	, "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
-    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1250/R2-1250.ram" 	, RAM , "RAM"));
+//    SlotList.append(CSlot(8	, 0x0000 ,	":/e500/cpu-1250.rom"	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
+//    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1250/R1-1250.ram"	, RAM , "RAM"));
+//    SlotList.append(CSlot(16, 0x4000 ,	":/e500/bas-1250.rom"	, "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
+//    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1250/R2-1250.ram" 	, RAM , "RAM"));
+
+    SlotList.append(CSlot(256, 0x40000 , ""             , ""            , RAM , "RAM S1"));
+    SlotList.append(CSlot(256, 0x80000 , ""             , ""            , RAM , "RAM S2"));
+    SlotList.append(CSlot(256, 0xC0000 , ":/e500/s3.rom", "e500/s3.rom" , ROM , "ROM S3"));
+
 
     KeyMap		= KeyMap1250;
     KeyMapLenght= KeyMap1250Lenght;
@@ -73,10 +79,13 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
 /*****************************************************************************/
 bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 {
-#if 0
     if(*d>0xbffff) return(0);			/* ROM area(c0000-fffff) S3: */
     if(*d>0x7ffff) return(1);			/* RAM area(80000-bffff) S1: */
     if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
+
+
+#if 0
+
     if(*d>0x1ffff){
 //        if(sc.e6) return(0);			/* ROM area(20000-3ffff) ->E650/U6000 */
 //        else{
