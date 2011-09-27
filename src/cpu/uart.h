@@ -69,6 +69,9 @@ public:
     qint8 getInputByte();
     bool isInputByte();
     qint8 popInputByte();
+    void newInputByte(qint8 data);
+    void newInputArray(QByteArray badata);
+    void clearInputBuffer(void);
 
     CUartConsole *pUartConsole;
 

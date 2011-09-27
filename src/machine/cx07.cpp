@@ -260,7 +260,7 @@ bool Cx07::run() {
                   return (IT_RST_A);
                   break;
               case 3:
-                  if (Lec_K7 >= 100)
+//                  if (Lec_K7 >= 100)
                   {
                       AddLog (LOG_TEMP,"It3_6834\n");
                       IT_T6834 = 0;
@@ -269,10 +269,10 @@ bool Cx07::run() {
                       ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_B);
                       return (IT_RST_B);
                   }
-                  else
-                  {
-                      Lec_K7 ++;
-                  }
+//                  else
+//                  {
+//                      Lec_K7 ++;
+//                  }
                   break;
               }
           }
@@ -419,7 +419,12 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                 *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
                if (Value & 0x04) {
                    AddLog(LOG_CANON,tr("Interruption F5 & 0x04 = %1").arg(Value,2,16,QChar('0')));
+                   if (Mode_K7) {
 //                   Receive_from_K7 (&Port_FX);
+                   }
+                   if (Mode_SERIE) {
+                       ReceiveFromSerial(&Port_FX);
+                   }
                }
 
                /* Envoie d'un octet a destination du lecteur de K7 *
@@ -732,6 +737,12 @@ void Receive_from_K7 (PorT_FX *Port)
 }
 
 */
+
+void Cx07::ReceiveFromSerial(PorT_FX *Port) {
+    Port->R.F7  = pUART->popInputByte();
+    Port->R.F6 |= 0x02;
+    IT_T6834 = 3;
+}
 
 void Cx07::SendToSerial(PorT_FX *Port)
 {

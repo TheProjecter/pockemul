@@ -109,6 +109,7 @@ public:
     void Print(UINT8 Cmd, PorT_FX *Port);
     void SendToSerial(PorT_FX *Port);
 
+    void ReceiveFromSerial(PorT_FX *Port);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
 };

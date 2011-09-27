@@ -6,6 +6,7 @@
 namespace Ui {
     class CUartConsole;
 }
+class Cuart;
 
 class CUartConsole : public QDialog
 {
@@ -16,8 +17,10 @@ public:
     ~CUartConsole();
 public slots:
     void newOutputByte(qint8 data);
+    void newInputByte();
 private:
     Ui::CUartConsole *ui;
+    Cuart *pUart;
 };
 
 #endif // UARTCONSOLE_H

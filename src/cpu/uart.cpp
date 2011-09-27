@@ -59,6 +59,8 @@ Cuart::Cuart(CPObject *parent)	: CPObject(this)
     pUartConsole = new CUartConsole(this);
     connect(this,SIGNAL(newByteSent(qint8)),pUartConsole,SLOT(newOutputByte(qint8)));
 
+
+
 }
 
 bool Cuart::Get_CD(void)		{ return(CD);	}
@@ -326,4 +328,19 @@ void Cuart::ShowConsole(void) {
 }
 void Cuart::HideConsole(void) {
     pUartConsole->hide();
+}
+
+void Cuart::newInputByte(qint8 data)
+{
+    inputBuffer.append(data);
+}
+
+void Cuart::clearInputBuffer()
+{
+    inputBuffer.clear();
+}
+
+void Cuart::newInputArray(QByteArray badata)
+{
+    inputBuffer.append(badata);
 }
