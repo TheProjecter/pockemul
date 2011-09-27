@@ -1,13 +1,13 @@
 #ifndef UARTCONSOLE_H
 #define UARTCONSOLE_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
     class CUartConsole;
 }
 
-class CUartConsole : public QWidget
+class CUartConsole : public QDialog
 {
     Q_OBJECT
 

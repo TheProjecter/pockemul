@@ -11,6 +11,7 @@
 #include "Connect.h"
 #include "dialogconsole.h"
 #include "init.h"
+#include "ui/uartconsole.h"
 
 #define SIO_GET_PIN(n)		pSIOCONNECTOR->Get_pin(getPinId(n))
 #define SIO_SET_PIN(n,v)	pSIOCONNECTOR->Set_pin(getPinId(n),v)
@@ -54,6 +55,8 @@ Cuart::Cuart(CPObject *parent)	: CPObject(this)
     Sii_TextLength		= 0;
     Sii_Bit_Nb			= 0;
     Sii_LfWait			= 500;
+
+    pUartConsole = new CUartConsole(this);
 
 }
 
@@ -317,3 +320,9 @@ bool Cuart::exit(void)
     return true;
 }
 
+void Cuart::ShowConsole(void) {
+    pUartConsole->show();
+}
+void Cuart::HideConsole(void) {
+    pUartConsole->hide();
+}

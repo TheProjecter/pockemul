@@ -741,3 +741,18 @@ void Cx07::SendToSerial(PorT_FX *Port)
     pUART->startTransfer();
   }
 }
+
+void Cx07::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
+
+    BuildContextMenu(&menu);
+
+    menu.addSeparator();
+
+    QMenu *menuUart = menu.addMenu(tr("Serial communication"));
+    menuUart->addAction(tr("Show console"),pUART,SLOT(ShowConsole()));
+    menuUart->addAction(tr("Hide console"),pUART,SLOT(HideConsole()));
+
+    menu.exec(event->globalPos () );
+}

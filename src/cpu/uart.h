@@ -4,6 +4,7 @@
 #include "pobject.h"
 #define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
 
+class CUartConsole;
 
 class Cuart : public CPObject
 {
@@ -68,6 +69,14 @@ public:
     qint8 getInputByte();
     bool isInputByte();
     qint8 popInputByte();
+
+    CUartConsole *pUartConsole;
+
+protected slots:
+
+    void ShowConsole(void);
+    void HideConsole(void);
+
 signals:
     void newByteRecv(qint8);
     void newByteSent(qint8);

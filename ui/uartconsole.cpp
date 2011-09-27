@@ -2,7 +2,7 @@
 #include "ui_uartconsole.h"
 
 CUartConsole::CUartConsole(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::CUartConsole)
 {
     ui->setupUi(this);

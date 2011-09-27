@@ -108,6 +108,9 @@ public:
     bool LoadConfig(QXmlStreamReader *xmlIn);
     void Print(UINT8 Cmd, PorT_FX *Port);
     void SendToSerial(PorT_FX *Port);
+
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
 };
 
 #endif // CX07_H
