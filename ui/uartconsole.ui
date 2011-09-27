@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Serial Console</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
@@ -148,8 +148,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>477</width>
-          <height>262</height>
+          <width>248</width>
+          <height>192</height>
          </rect>
         </property>
         <attribute name="label">
@@ -536,5 +536,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pbClear</sender>
+   <signal>clicked()</signal>
+   <receiver>textEdit_out</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>415</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>187</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

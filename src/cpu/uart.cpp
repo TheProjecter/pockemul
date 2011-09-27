@@ -57,6 +57,7 @@ Cuart::Cuart(CPObject *parent)	: CPObject(this)
     Sii_LfWait			= 500;
 
     pUartConsole = new CUartConsole(this);
+    connect(this,SIGNAL(newByteSent(qint8)),pUartConsole,SLOT(newOutputByte(qint8)));
 
 }
 

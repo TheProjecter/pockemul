@@ -12,3 +12,10 @@ CUartConsole::~CUartConsole()
 {
     delete ui;
 }
+
+void CUartConsole::newOutputByte(qint8 data) {
+    if (data != 0x0D) {
+        QString buf = ui->textEdit_out->toPlainText();
+        ui->textEdit_out->setPlainText(buf + QString(data));
+    }
+}

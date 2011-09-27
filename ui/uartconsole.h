@@ -14,7 +14,8 @@ class CUartConsole : public QDialog
 public:
     explicit CUartConsole(QWidget *parent = 0);
     ~CUartConsole();
-
+public slots:
+    void newOutputByte(qint8 data);
 private:
     Ui::CUartConsole *ui;
 };
