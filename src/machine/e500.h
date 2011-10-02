@@ -3,6 +3,8 @@
 
 #include "pcxxxx.h"
 
+class CHD61102;
+
 class Ce500:public CpcXXXX{						//E500 emulator main class
 Q_OBJECT
 public:
@@ -34,6 +36,12 @@ public:
     virtual ~Ce500()
     {								//[constructor]
     }
+    bool init();
+
+    CHD61102        *pHD61102_1;
+    CHD61102        *pHD61102_2;
+
+    void disp(qint8 cmd, DWORD data);
 protected:
 //	BYTE previous_key;
 

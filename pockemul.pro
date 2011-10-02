@@ -251,7 +251,8 @@ HEADERS += src/core/Connect.h \
     src/machine/e500.h \
     src/machine/cx710.h \
     src/cpu/uart.h \
-    ui/uartconsole.h
+    ui/uartconsole.h \
+    src/core/Lcdc_e500.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -466,7 +467,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/e500.cpp \
     src/machine/cx710.cpp \
     src/cpu/uart.cpp \
-    ui/uartconsole.cpp
+    ui/uartconsole.cpp \
+    src/core/Lcdc_e500.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

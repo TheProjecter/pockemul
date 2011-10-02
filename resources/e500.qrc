@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>e500/s3.rom</file>
         <file>e500/pc-e500.png</file>
+        <file>e500/e500lcd.png</file>
+        <file>e500/e500symb.png</file>
     </qresource>
 </RCC>

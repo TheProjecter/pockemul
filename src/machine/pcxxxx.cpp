@@ -321,7 +321,8 @@ WORD CpcXXXX::Get_16rPC(DWORD adr)
 DWORD CpcXXXX::Get_20(DWORD adr)
 {
     Chk_Adr_R(&adr,bREAD);
-    return((mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_20);
+    DWORD data = (mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_20;
+    return(data);
 }
 
 DWORD CpcXXXX::Get_24(DWORD adr)
@@ -490,7 +491,7 @@ bool CpcXXXX::run(void)
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
             for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
 
-            fprintf(pCPU->fp_log,"%-40s   %s  ",
+            fprintf(pCPU->fp_log,"%-40s   %s  \n",
 				pCPU->pDEBUG->Buffer,pCPU->Regs_String);
 #if 0
             for (int r=0x00;r<0x5c;r++){
@@ -498,14 +499,14 @@ bool CpcXXXX::run(void)
                 fprintf(pCPU->fp_log,"%02x ",pCPU->imem[r]);
 
             }
-#endif
+
             fprintf(pCPU->fp_log," a:%02x b:%02x c:%02x f:%02x\n",
                     pCPU->imem[0x5C],
                     pCPU->imem[0x5D],
                     pCPU->imem[0x5F],
                     pCPU->imem[0x5E]
                     );
-
+#endif
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
                 for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
                 fprintf(pCPU->fp_log,"{\n");

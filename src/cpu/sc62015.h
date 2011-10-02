@@ -391,8 +391,6 @@ public:
     void  Op_ff(void);
 
 
-    void (Csc62015::*OpTbl[])(void);
-
     DWORD Get_d(BYTE len);
     DWORD Get_d2(BYTE len, BYTE *r);
 
@@ -411,6 +409,8 @@ public:
     DWORD	get_PC(void);
 
 
+    BYTE Conv_imemAdr(BYTE d, bool m);
+    void OpExec(BYTE Op);
 private:
     bool Mem_Load(BYTE s);
     bool EMS_Load(void);

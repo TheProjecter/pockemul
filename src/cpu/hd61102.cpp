@@ -1,5 +1,6 @@
 #include "hd61102.h"
 #include "pcxxxx.h"
+#include "cpu.h"
 
 #define MASK_on_off     0x3e
 #define MASK_setY       0x40
@@ -50,6 +51,7 @@ void CHD61102::set8(qint16 adr,BYTE val)
 
 BYTE CHD61102::instruction(qint16 cmd)
 {
+    if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);
 
     if ((cmd & MASK_read) == MASK_read ) { return cmd_read(cmd); }
     else
@@ -100,7 +102,7 @@ BYTE CHD61102::cmd_status(qint16 cmd)
 
 void CHD61102::cmd_write(qint16 cmd)
 {
-//    if ((pPC->pCPU->fp_log) && (cmd & 0xff))fprintf(pPC->pCPU->fp_log,"LCD Write:%02x\n",cmd & 0xff);
+    if ((pPC->pCPU->fp_log) && (cmd & 0xff))fprintf(pPC->pCPU->fp_log,"LCD Write:%02x\n",cmd & 0xff);
 //    if ((pPC->fp_log) && (cmd & 0xff)) fprintf(pPC->fp_log,"LCD Write:x=%02x y=%02x val=%02x\n",Xadr,Yadr,cmd & 0xff);
     set8( (info.Xadr * 0x40) + info.Yadr , (cmd & 0xff));
     (info.Yadr)++;

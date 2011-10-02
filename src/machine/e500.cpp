@@ -1,7 +1,9 @@
 #include "e500.h"
 #include "sc62015.h"
+#include "hd61102.h"
 #include "Connect.h"
 #include "Keyb.h"
+#include "Lcdc_e500.h"
 
 #if 1
 
@@ -19,21 +21,13 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= ":/e500/e500symb.png";
 
     memsize		= 0x100000;
-
+    InitMemValue	= 0xff;
     /* ROM area(c0000-fffff) S3: */
     SlotList.clear();
-//    SlotList.append(CSlot(8	, 0x0000 ,	":/e500/cpu-1250.rom"	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
-//    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1250/R1-1250.ram"	, RAM , "RAM"));
-//    SlotList.append(CSlot(16, 0x4000 ,	":/e500/bas-1250.rom"	, "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
-//    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1250/R2-1250.ram" 	, RAM , "RAM"));
-
     SlotList.append(CSlot(256, 0x40000 , ""             , ""            , RAM , "RAM S1"));
     SlotList.append(CSlot(256, 0x80000 , ""             , ""            , RAM , "RAM S2"));
     SlotList.append(CSlot(256, 0xC0000 , ":/e500/s3.rom", "e500/s3.rom" , ROM , "ROM S3"));
 
-
-    KeyMap		= KeyMap1250;
-    KeyMapLenght= KeyMap1250Lenght;
 
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;
@@ -45,12 +39,12 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     setDX(715);//Pc_DX		= 483;//409;
     setDY(357);//Pc_DY		= 252;//213;
 
-    Lcd_X		= 55;
-    Lcd_Y		= 49;
-    Lcd_DX		= 144;//168;//144 ;
-    Lcd_DY		= 8;
-    Lcd_ratio_X	= 2 * 1.18;
-    Lcd_ratio_Y	= 2 * 1.18;
+    Lcd_X		= 69;
+    Lcd_Y		= 99;
+    Lcd_DX		= 240;//168;//144 ;
+    Lcd_DY		= 32;
+    Lcd_ratio_X	= 348.0/240;
+    Lcd_ratio_Y	= 60.0/32;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
@@ -59,17 +53,66 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     Lcd_Symb_ratio_X	= 1;//1.18;
 
 
-    //pLCDC		= new Clcdc_e500(this);
+    pLCDC		= new Clcdc_e500(this);
     pCPU		= new Csc62015(this);
     pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector11(this);		publish(pCONNECTOR);
     pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"e500.map");
 
+    pHD61102_1  = new CHD61102(this);
+    pHD61102_2  = new CHD61102(this);
+
 }
 
+bool Ce500::init(void) {
+#ifndef QT_NO_DEBUG
+    pCPU->logsw = true;
+#endif
+    CpcXXXX::init();
 
+//	if(emsmode!=0) EMS_Load();
 
+    return true;
+}
+
+void Ce500::disp(qint8 cmd,DWORD data)
+{
+    switch(cmd){
+    case   6:							/* LCDC 2 write data */
+        pHD61102_2->instruction(0x100 | data);
+        pLCDC->Refresh = true;
+        break;
+    case 0xa:							/* LCDC 1 write data */
+        pHD61102_1->instruction(0x100 | data);
+        pLCDC->Refresh = true;
+        break;
+    case   4:							/* LCDC 2 inst */
+        pHD61102_2->instruction(data);
+        pLCDC->Refresh = true;
+        break;
+    case   8:							/* LCDC 1 inst */
+        pHD61102_1->instruction(data);
+        pLCDC->Refresh = true;
+        break;
+    case   0:							/* LCDC 1&2 inst */
+        pHD61102_1->instruction(data);
+        pHD61102_2->instruction(data);
+        pLCDC->Refresh = true;
+        break;
+    case   2:							/* LCDC 1&2 write data */
+        pHD61102_1->instruction(0x100|data);
+        pHD61102_2->instruction(0x100|data);
+        pLCDC->Refresh = true;
+        break;
+    case   7:							/* LCDC 2 read data */
+        pCPU->set_mem(0x2007,SIZE_8,pHD61102_2->instruction(0x300));
+        break;
+    case 0xb:							/* LCDC 1 read data */
+        pCPU->set_mem(0x200b,SIZE_8,pHD61102_1->instruction(0x300));
+        break;
+    }
+}
 
 /*---------------------------------------------------------------------------*/
 /*****************************************************************************/
@@ -83,6 +126,10 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
     if(*d>0x7ffff) return(1);			/* RAM area(80000-bffff) S1: */
     if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
 
+    if((*d&0x6000)==0x2000){
+        *d&=0x200f; disp(*d&15,data);//lcdc.access=1; lcdc.lcdcadr=*d&15;
+        return(1-(*d&1));			/* LCDC (0200x) */
+    }
 
 #if 0
 
@@ -101,10 +148,7 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
         *d&=0xf005; ssfdc.access=1; ssfdc.adr=*d;
         return(1);					/* SSFDC (0e00x) */
     }
-    if((*d&0x6000)==0x2000){
-        *d&=0x200f; lcdc.access=1; lcdc.lcdcadr=*d&15;
-        return(1-(*d&1));			/* LCDC (0200x) */
-    }
+
     if((*d&0x3000)==0x1000){
         *d&=0x103f; rtc.access=1; rtc.adr=*d&31;
         return((*d&0x10)==0);		/* CLOCK (010xx) */
@@ -120,10 +164,15 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 /*****************************************************************************/
 bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 {
-#if 0
-    if(*d>0xbffff) return(0);			/* ROM area(c0000-fffff) S3: */
+    if(*d>0xbffff) return(1);			/* ROM area(c0000-fffff) S3: */
     if(*d>0x7ffff) return(1);			/* RAM area(80000-bffff) S1: */
     if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
+
+    if((*d&0x6000)==0x2000){
+        *d&=0x200f; disp(*d&15,data);//pLCDC->SetDirtyBuf(pLCDC->SetDirtyBuf(*d & 15));
+        return(1-(*d&1));			/* LCDC (0200x) */
+    }
+#if 0
     if(*d>0x1ffff){
         if(sc.e6) return(0);			/* ROM area(20000-3ffff) ->E650/U6000 */
         else{
@@ -139,10 +188,7 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
         *d&=0xf005; ssfdc.access=1; ssfdc.adr=*d;
         return(1);					/* SSFDC (0e00x) */
     }
-    if((*d&0x6000)==0x2000){
-        *d&=0x200f; lcdc.access=1; lcdc.lcdcadr=*d&15;
-        return(1-(*d&1));			/* LCDC (0200x) */
-    }
+
     if((*d&0x3000)==0x1000){
         *d&=0x103f; rtc.access=1; rtc.adr=*d&31;
         return((*d&0x10)==0);		/* CLOCK (010xx) */
@@ -171,6 +217,7 @@ BYTE Ce500::Get_PortB()
 
 void Ce500::TurnON()
 {
+    CpcXXXX::TurnON();
 }
 
 bool Ce500::LoadExtra(QFile *)

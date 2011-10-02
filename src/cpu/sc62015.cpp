@@ -10,7 +10,7 @@
 #include "sc62015.h"
 #include "pcxxxx.h"
 #include "inter.h"
-#include "debug.h"
+#include "Debug.h"
 #include "keyb.h"
 //#include "rtc.h"
 //#include "opt11.h"
@@ -54,7 +54,7 @@ union {
 
 BYTE	pre_1,pre_2;		/* pre byte mode */
 SCREG	reg;				/* register structure */
-BYTE	*mem, *imem;		/* memory */
+//BYTE	*mem, *imem;		/* memory */
 
 DWORD	BASE_128[]={0x20000, 0x100000, 0x120000, 0x140000};
 DWORD	BASE_64[] ={0x10000, 0x160000, 0x170000, 0x180000};
@@ -78,6 +78,9 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     usestatus=0;
     fp_status=0;
     fn_status="e500e.sta";
+    CallSubLevel=0;
+
+     pDEBUG	= new Cdebug_sc62015(parent);
 }
 
 inline void Csc62015::AddState(BYTE n)
@@ -121,7 +124,7 @@ inline void Csc62015::AddState(BYTE n)
 /*  ENTRY :BYTE d=internal RAM address										 */
 /*  RETURN:BYTE (internal RAM real address)									 */
 /*****************************************************************************/
-static inline BYTE Conv_imemAdr(BYTE d,bool m)
+inline BYTE Csc62015::Conv_imemAdr(BYTE d,bool m)
 {
 /*printf("mode=%d\n",m);*/
 	register BYTE	r;
@@ -459,6 +462,7 @@ void Csc62015::Op_01(void)
 	reg.x.s++;
     reg.x.p=pPC->Get_20(reg.x.s);
 	reg.x.s+=SIZE_20;
+    CallSubLevel--;
 	AddState(7);
 }
 /* JP mn */
@@ -482,6 +486,7 @@ void Csc62015::Op_04(void)
 	reg.x.s-=SIZE_16;
     pPC->Set_16(reg.x.s, reg.r.pc);
 	reg.r.pc=t;
+    CallSubLevel++;
 	AddState(6);
 }
 /* CALLF lmn */
@@ -493,6 +498,7 @@ void Csc62015::Op_05(void)
 	reg.x.s-=SIZE_20;
     pPC->Set_20(reg.x.s, reg.x.p);
 	reg.x.p=t;
+    CallSubLevel++;
 	AddState(8);
 }
 /* RET */
@@ -500,6 +506,7 @@ void Csc62015::Op_06(void)
 {
     reg.r.pc=pPC->Get_16(reg.x.s);
 	reg.x.s+=SIZE_16;
+    CallSubLevel--;
 	AddState(4);
 }
 /* RETF */
@@ -507,6 +514,7 @@ void Csc62015::Op_07(void)
 {
     reg.x.p=pPC->Get_20(reg.x.s);
 	reg.x.s+=SIZE_20;
+    CallSubLevel--;
 	AddState(5);
 }
 /* MV A,n */
@@ -2854,6 +2862,7 @@ void Csc62015::Op_fe(void)
 	reg.x.s--;
     pPC->Set_8(reg.x.s,imem[IMEM_IMR]);
     reg.x.p=pPC->Get_20(VECT_IR);
+    CallSubLevel++;
 	AddState(1);
 }
 /* RESET */
@@ -2871,7 +2880,7 @@ inline short Csc62015::Step_sc62015_(void)
 	register DWORD t;
 	t=reg.x.p;
 	reg.r.pc++;
-    (this->*OpTbl[mem[t]])();
+    OpExec(pPC->Get_PC(t));
 	Reset_Pre();
 }
 /*---------------------------------------------------------------------------*/
@@ -3018,10 +3027,11 @@ void Csc62015::EMS_Save(void)
 /*****************************************************************************/
 bool Csc62015::init(void)
 {
+    Check_Log();
 	printf("MEMORY initializing...");
-	if((mem=(BYTE *)malloc(MAX_MEM))==NULL) return(0);		/* alloc main ram */
+//	if((mem=(BYTE *)malloc(MAX_MEM))==NULL) return(0);		/* alloc main ram */
 //	if((imem=(BYTE *)malloc(MAX_IMEM))==NULL) return(0);	/* internal ram*/
-	memset((void *)mem,255,MAX_MEM);			//initialize memory
+//	memset((void *)mem,255,MAX_MEM);			//initialize memory
 	printf("done.\n");
 //	printf("main memory(alloc:%p),internal memory(alloc:%p)\n",mem,imem);
 
@@ -3044,65 +3054,63 @@ bool Csc62015::init(void)
 		fclose(fp_status); fp_status=0;
 		printf("done.\n");
 	}else{
-		memset((void *)imem,0,MAX_IMEM);
-		reg.x.f=0;									//initialize registers
-		reg.x.ba=0;
-		reg.x.i=0;
-		reg.x.x=0;
-		reg.x.y=0;
-		reg.x.u=0xb0000;
-		reg.x.s=0xc0000;
-		reg.x.p=0;
+        Reset();
 	}
 
-	Mem_Load(SLOT1);
-	Mem_Load(SLOT2);
-//	if(!Mem_Load(SLOT3)) debug.isdebug=1;
-	if(emsmode!=0) EMS_Load();
 
-	if(logsw) fp_log=fopen("sc62015.log","at");			//open log file
+
 
 
 
     /* Operation Code Table */
     void(Csc62015::*OpTbl[])(void)={
         &Csc62015::Op_00, &Csc62015::Op_01, &Csc62015::Op_02, &Csc62015::Op_03, &Csc62015::Op_04, &Csc62015::Op_05, &Csc62015::Op_06, &Csc62015::Op_07,
+        &Csc62015::Op_08, &Csc62015::Op_09, &Csc62015::Op_0a, &Csc62015::Op_0b, &Csc62015::Op_0c, &Csc62015::Op_0d, &Csc62015::Op_0e, &Csc62015::Op_0f,
+        &Csc62015::Op_10, &Csc62015::Op_11, &Csc62015::Op_12, &Csc62015::Op_13, &Csc62015::Op_14, &Csc62015::Op_15, &Csc62015::Op_16, &Csc62015::Op_17,
+        &Csc62015::Op_18, &Csc62015::Op_19, &Csc62015::Op_1a, &Csc62015::Op_1b, &Csc62015::Op_1c, &Csc62015::Op_1d, &Csc62015::Op_1e, &Csc62015::Op_1f,
+        &Csc62015::Op_20, &Csc62015::Op_21, &Csc62015::Op_22, &Csc62015::Op_23, &Csc62015::Op_24, &Csc62015::Op_25, &Csc62015::Op_26, &Csc62015::Op_27,
+        &Csc62015::Op_28, &Csc62015::Op_29, &Csc62015::Op_2a, &Csc62015::Op_2b, &Csc62015::Op_2c, &Csc62015::Op_2d, &Csc62015::Op_2e, &Csc62015::Op_2f,
+        &Csc62015::Op_30, &Csc62015::Op_31, &Csc62015::Op_32, &Csc62015::Op_33, &Csc62015::Op_34, &Csc62015::Op_35, &Csc62015::Op_36, &Csc62015::Op_37,
+        &Csc62015::Op_38, &Csc62015::Op_39, &Csc62015::Op_3a, &Csc62015::Op_3b, &Csc62015::Op_3c, &Csc62015::Op_3d, &Csc62015::Op_3e, &Csc62015::Op_3f,
+        &Csc62015::Op_40, &Csc62015::Op_41, &Csc62015::Op_42, &Csc62015::Op_43, &Csc62015::Op_44, &Csc62015::Op_45, &Csc62015::Op_46, &Csc62015::Op_47,
+        &Csc62015::Op_48, &Csc62015::Op_49, &Csc62015::Op_4a, &Csc62015::Op_4b, &Csc62015::Op_4c, &Csc62015::Op_4d, &Csc62015::Op_4e, &Csc62015::Op_4f,
+        &Csc62015::Op_50, &Csc62015::Op_51, &Csc62015::Op_52, &Csc62015::Op_53, &Csc62015::Op_54, &Csc62015::Op_55, &Csc62015::Op_56, &Csc62015::Op_57,
+        &Csc62015::Op_58, &Csc62015::Op_59, &Csc62015::Op_5a, &Csc62015::Op_5b, &Csc62015::Op_5c, &Csc62015::Op_5d, &Csc62015::Op_5e, &Csc62015::Op_5f,
+        &Csc62015::Op_60, &Csc62015::Op_61, &Csc62015::Op_62, &Csc62015::Op_63, &Csc62015::Op_64, &Csc62015::Op_65, &Csc62015::Op_66, &Csc62015::Op_67,
+        &Csc62015::Op_68, &Csc62015::Op_69, &Csc62015::Op_6a, &Csc62015::Op_6b, &Csc62015::Op_6c, &Csc62015::Op_6d, &Csc62015::Op_6e, &Csc62015::Op_6f,
+        &Csc62015::Op_70, &Csc62015::Op_71, &Csc62015::Op_72, &Csc62015::Op_73, &Csc62015::Op_74, &Csc62015::Op_75, &Csc62015::Op_76, &Csc62015::Op_77,
+        &Csc62015::Op_78, &Csc62015::Op_79, &Csc62015::Op_7a, &Csc62015::Op_7b, &Csc62015::Op_7c, &Csc62015::Op_7d, &Csc62015::Op_7e, &Csc62015::Op_7f,
+        &Csc62015::Op_80, &Csc62015::Op_81, &Csc62015::Op_82, &Csc62015::Op_83, &Csc62015::Op_84, &Csc62015::Op_85, &Csc62015::Op_86, &Csc62015::Op_87,
+        &Csc62015::Op_88, &Csc62015::Op_89, &Csc62015::Op_8a, &Csc62015::Op_8b, &Csc62015::Op_8c, &Csc62015::Op_8d, &Csc62015::Op_8e, &Csc62015::Op_8f,
+        &Csc62015::Op_90, &Csc62015::Op_91, &Csc62015::Op_92, &Csc62015::Op_93, &Csc62015::Op_94, &Csc62015::Op_95, &Csc62015::Op_96, &Csc62015::Op_97,
+        &Csc62015::Op_98, &Csc62015::Op_99, &Csc62015::Op_9a, &Csc62015::Op_9b, &Csc62015::Op_9c, &Csc62015::Op_9d, &Csc62015::Op_9e, &Csc62015::Op_9f,
+        &Csc62015::Op_a0, &Csc62015::Op_a1, &Csc62015::Op_a2, &Csc62015::Op_a3, &Csc62015::Op_a4, &Csc62015::Op_a5, &Csc62015::Op_a6, &Csc62015::Op_a7,
+        &Csc62015::Op_a8, &Csc62015::Op_a9, &Csc62015::Op_aa, &Csc62015::Op_ab, &Csc62015::Op_ac, &Csc62015::Op_ad, &Csc62015::Op_ae, &Csc62015::Op_af,
+        &Csc62015::Op_b0, &Csc62015::Op_b1, &Csc62015::Op_b2, &Csc62015::Op_b3, &Csc62015::Op_b4, &Csc62015::Op_b5, &Csc62015::Op_b6, &Csc62015::Op_b7,
+        &Csc62015::Op_b8, &Csc62015::Op_b9, &Csc62015::Op_ba, &Csc62015::Op_bb, &Csc62015::Op_bc, &Csc62015::Op_bd, &Csc62015::Op_be, &Csc62015::Op_bf,
+        &Csc62015::Op_c0, &Csc62015::Op_c1, &Csc62015::Op_c2, &Csc62015::Op_c3, &Csc62015::Op_c4, &Csc62015::Op_c5, &Csc62015::Op_c6, &Csc62015::Op_c7,
+        &Csc62015::Op_c8, &Csc62015::Op_c9, &Csc62015::Op_ca, &Csc62015::Op_cb, &Csc62015::Op_cc, &Csc62015::Op_cd, &Csc62015::Op_ce, &Csc62015::Op_cf,
+        &Csc62015::Op_d0, &Csc62015::Op_d1, &Csc62015::Op_d2, &Csc62015::Op_d3, &Csc62015::Op_d4, &Csc62015::Op_d5, &Csc62015::Op_d6, &Csc62015::Op_d7,
+        &Csc62015::Op_d8, &Csc62015::Op_d9, &Csc62015::Op_da, &Csc62015::Op_db, &Csc62015::Op_dc, &Csc62015::Op_dd, &Csc62015::Op_de, &Csc62015::Op_df,
+        &Csc62015::Op_e0, &Csc62015::Op_e1, &Csc62015::Op_e2, &Csc62015::Op_e3, &Csc62015::Op_e4, &Csc62015::Op_e5, &Csc62015::Op_e6, &Csc62015::Op_e7,
+        &Csc62015::Op_e8, &Csc62015::Op_e9, &Csc62015::Op_ea, &Csc62015::Op_eb, &Csc62015::Op_ec, &Csc62015::Op_ed, &Csc62015::Op_ee, &Csc62015::Op_ef,
+        &Csc62015::Op_f0, &Csc62015::Op_f1, &Csc62015::Op_f2, &Csc62015::Op_f3, &Csc62015::Op_f4, &Csc62015::Op_f5, &Csc62015::Op_f6, &Csc62015::Op_f7,
+        &Csc62015::Op_f8, &Csc62015::Op_f9, &Csc62015::Op_fa, &Csc62015::Op_fb, &Csc62015::Op_fc, &Csc62015::Op_fd, &Csc62015::Op_fe, &Csc62015::Op_ff
+    };
 
-    };
-    /*Op_08, Op_09, Op_0a, Op_0b, Op_0c, Op_0d, Op_0e, Op_0f,
-        Op_10, Op_11, Op_12, Op_13, Op_14, Op_15, Op_16, Op_17,
-        Op_18, Op_19, Op_1a, Op_1b, Op_1c, Op_1d, Op_1e, Op_1f,
-        Op_20, Op_21, Op_22, Op_23, Op_24, Op_25, Op_26, Op_27,
-        Op_28, Op_29, Op_2a, Op_2b, Op_2c, Op_2d, Op_2e, Op_2f,
-        Op_30, Op_31, Op_32, Op_33, Op_34, Op_35, Op_36, Op_37,
-        Op_38, Op_39, Op_3a, Op_3b, Op_3c, Op_3d, Op_3e, Op_3f,
-        Op_40, Op_41, Op_42, Op_43, Op_44, Op_45, Op_46, Op_47,
-        Op_48, Op_49, Op_4a, Op_4b, Op_4c, Op_4d, Op_4e, Op_4f,
-        Op_50, Op_51, Op_52, Op_53, Op_54, Op_55, Op_56, Op_57,
-        Op_58, Op_59, Op_5a, Op_5b, Op_5c, Op_5d, Op_5e, Op_5f,
-        Op_60, Op_61, Op_62, Op_63, Op_64, Op_65, Op_66, Op_67,
-        Op_68, Op_69, Op_6a, Op_6b, Op_6c, Op_6d, Op_6e, Op_6f,
-        Op_70, Op_71, Op_72, Op_73, Op_74, Op_75, Op_76, Op_77,
-        Op_78, Op_79, Op_7a, Op_7b, Op_7c, Op_7d, Op_7e, Op_7f,
-        Op_80, Op_81, Op_82, Op_83, Op_84, Op_85, Op_86, Op_87,
-        Op_88, Op_89, Op_8a, Op_8b, Op_8c, Op_8d, Op_8e, Op_8f,
-        Op_90, Op_91, Op_92, Op_93, Op_94, Op_95, Op_96, Op_97,
-        Op_98, Op_99, Op_9a, Op_9b, Op_9c, Op_9d, Op_9e, Op_9f,
-        Op_a0, Op_a1, Op_a2, Op_a3, Op_a4, Op_a5, Op_a6, Op_a7,
-        Op_a8, Op_a9, Op_aa, Op_ab, Op_ac, Op_ad, Op_ae, Op_af,
-        Op_b0, Op_b1, Op_b2, Op_b3, Op_b4, Op_b5, Op_b6, Op_b7,
-        Op_b8, Op_b9, Op_ba, Op_bb, Op_bc, Op_bd, Op_be, Op_bf,
-        Op_c0, Op_c1, Op_c2, Op_c3, Op_c4, Op_c5, Op_c6, Op_c7,
-        Op_c8, Op_c9, Op_ca, Op_cb, Op_cc, Op_cd, Op_ce, Op_cf,
-        Op_d0, Op_d1, Op_d2, Op_d3, Op_d4, Op_d5, Op_d6, Op_d7,
-        Op_d8, Op_d9, Op_da, Op_db, Op_dc, Op_dd, Op_de, Op_df,
-        Op_e0, Op_e1, Op_e2, Op_e3, Op_e4, Op_e5, Op_e6, Op_e7,
-        Op_e8, Op_e9, Op_ea, Op_eb, Op_ec, Op_ed, Op_ee, Op_ef,
-        Op_f0, Op_f1, Op_f2, Op_f3, Op_f4, Op_f5, Op_f6, Op_f7,
-        Op_f8, Op_f9, Op_fa, Op_fb, Op_fc, Op_fd, Op_fe, Op_ff
-    };
-*/
 	return(1);
+}
+
+void Csc62015::Reset(void) {
+    memset((void *)imem,0,MAX_IMEM);
+    reg.x.f=0;									//initialize registers
+    reg.x.ba=0;
+    reg.x.i=0;
+    reg.x.x=0;
+    reg.x.y=0;
+    reg.x.u=0xb0000;
+    reg.x.s=0xc0000;
+    reg.x.p=0;
 }
 
 /*****************************************************************************/
@@ -3161,8 +3169,295 @@ void Csc62015::step(void)
 		}
 		t=reg.x.p;
 		reg.r.pc++;
-        (this->*OpTbl[mem[t]])();
+        OpExec(pPC->Get_PC(t));
 	}
+}
+
+void Csc62015::OpExec(BYTE Op)
+{
+
+    switch(Op)	{
+    case 0x00 : Op_00();	break;
+    case 0x01 : Op_01();	break;
+    case 0x02 : Op_02();	break;
+    case 0x03 : Op_03();	break;
+    case 0x04 : Op_04();	break;
+    case 0x05 : Op_05();	break;
+    case 0x06 : Op_06();	break;
+    case 0x07 : Op_07();	break;
+    case 0x08 : Op_08();	break;
+    case 0x09 : Op_09();	break;
+    case 0x0a : Op_0a();	break;
+    case 0x0b : Op_0b();	break;
+    case 0x0c : Op_0c();	break;
+    case 0x0d : Op_0d();	break;
+    case 0x0e : Op_0e();	break;
+    case 0x0f : Op_0f();	break;
+
+    case 0x10 : Op_10();	break;
+    case 0x11 : Op_11();	break;
+    case 0x12 : Op_12();	break;
+    case 0x13 : Op_13();	break;
+    case 0x14 : Op_14();	break;
+    case 0x15 : Op_15();	break;
+    case 0x16 : Op_16();	break;
+    case 0x17 : Op_17();	break;
+    case 0x18 : Op_18();	break;
+    case 0x19 : Op_19();	break;
+    case 0x1a : Op_1a();	break;
+    case 0x1b : Op_1b();	break;
+    case 0x1c : Op_1c();	break;
+    case 0x1d : Op_1d();	break;
+    case 0x1e : Op_1e();	break;
+    case 0x1f : Op_1f();	break;
+
+    case 0x20 : Op_20();	break;
+    case 0x21 : Op_21();	break;
+    case 0x22 : Op_22();	break;
+    case 0x23 : Op_23();	break;
+    case 0x24 : Op_24();	break;
+    case 0x25 : Op_25();	break;
+    case 0x26 : Op_26();	break;
+    case 0x27 : Op_27();	break;
+    case 0x28 : Op_28();	break;
+    case 0x29 : Op_29();	break;
+    case 0x2a : Op_2a();	break;
+    case 0x2b : Op_2b();	break;
+    case 0x2c : Op_2c();	break;
+    case 0x2d : Op_2d();	break;
+    case 0x2e : Op_2e();	break;
+    case 0x2f : Op_2f();	break;
+
+    case 0x30 : Op_30();	break;
+    case 0x31 : Op_31();	break;
+    case 0x32 : Op_32();	break;
+    case 0x33 : Op_33();	break;
+    case 0x34 : Op_34();	break;
+    case 0x35 : Op_35();	break;
+    case 0x36 : Op_36();	break;
+    case 0x37 : Op_37();	break;
+    case 0x38 : Op_38();	break;
+    case 0x39 : Op_39();	break;
+    case 0x3a : Op_3a();	break;
+    case 0x3b : Op_3b();	break;
+    case 0x3c : Op_3c();	break;
+    case 0x3d : Op_3d();	break;
+    case 0x3e : Op_3e();	break;
+    case 0x3f : Op_3f();	break;
+
+    case 0x40 : Op_40();	break;
+    case 0x41 : Op_41();	break;
+    case 0x42 : Op_42();	break;
+    case 0x43 : Op_43();	break;
+    case 0x44 : Op_44();	break;
+    case 0x45 : Op_45();	break;
+    case 0x46 : Op_46();	break;
+    case 0x47 : Op_47();	break;
+    case 0x48 : Op_48();	break;
+    case 0x49 : Op_49();	break;
+    case 0x4a : Op_4a();	break;
+    case 0x4b : Op_4b();	break;
+    case 0x4c : Op_4c();	break;
+    case 0x4d : Op_4d();	break;
+    case 0x4e : Op_4e();	break;
+    case 0x4f : Op_4f();	break;
+
+    case 0x50 : Op_50();	break;
+    case 0x51 : Op_51();	break;
+    case 0x52 : Op_52();	break;
+    case 0x53 : Op_53();	break;
+    case 0x54 : Op_54();	break;
+    case 0x55 : Op_55();	break;
+    case 0x56 : Op_56();	break;
+    case 0x57 : Op_57();	break;
+    case 0x58 : Op_58();	break;
+    case 0x59 : Op_59();	break;
+    case 0x5a : Op_5a();	break;
+    case 0x5b : Op_5b();	break;
+    case 0x5c : Op_5c();	break;
+    case 0x5d : Op_5d();	break;
+    case 0x5e : Op_5e();	break;
+    case 0x5f : Op_5f();	break;
+
+    case 0x60 : Op_60();	break;
+    case 0x61 : Op_61();	break;
+    case 0x62 : Op_62();	break;
+    case 0x63 : Op_63();	break;
+    case 0x64 : Op_64();	break;
+    case 0x65 : Op_65();	break;
+    case 0x66 : Op_66();	break;
+    case 0x67 : Op_67();	break;
+    case 0x68 : Op_68();	break;
+    case 0x69 : Op_69();	break;
+    case 0x6a : Op_6a();	break;
+    case 0x6b : Op_6b();	break;
+    case 0x6c : Op_6c();	break;
+    case 0x6d : Op_6d();	break;
+    case 0x6e : Op_6e();	break;
+    case 0x6f : Op_6f();	break;
+
+    case 0x70 : Op_70();	break;
+    case 0x71 : Op_71();	break;
+    case 0x72 : Op_72();	break;
+    case 0x73 : Op_73();	break;
+    case 0x74 : Op_74();	break;
+    case 0x75 : Op_75();	break;
+    case 0x76 : Op_76();	break;
+    case 0x77 : Op_77();	break;
+    case 0x78 : Op_78();	break;
+    case 0x79 : Op_79();	break;
+    case 0x7a : Op_7a();	break;
+    case 0x7b : Op_7b();	break;
+    case 0x7c : Op_7c();	break;
+    case 0x7d : Op_7d();	break;
+    case 0x7e : Op_7e();	break;
+    case 0x7f : Op_7f();	break;
+
+    case 0x80 : Op_80();	break;
+    case 0x81 : Op_81();	break;
+    case 0x82 : Op_82();	break;
+    case 0x83 : Op_83();	break;
+    case 0x84 : Op_84();	break;
+    case 0x85 : Op_85();	break;
+    case 0x86 : Op_86();	break;
+    case 0x87 : Op_87();	break;
+    case 0x88 : Op_88();	break;
+    case 0x89 : Op_89();	break;
+    case 0x8a : Op_8a();	break;
+    case 0x8b : Op_8b();	break;
+    case 0x8c : Op_8c();	break;
+    case 0x8d : Op_8d();	break;
+    case 0x8e : Op_8e();	break;
+    case 0x8f : Op_8f();	break;
+
+    case 0x90 : Op_90();	break;
+    case 0x91 : Op_91();	break;
+    case 0x92 : Op_92();	break;
+    case 0x93 : Op_93();	break;
+    case 0x94 : Op_94();	break;
+    case 0x95 : Op_95();	break;
+    case 0x96 : Op_96();	break;
+    case 0x97 : Op_97();	break;
+    case 0x98 : Op_98();	break;
+    case 0x99 : Op_99();	break;
+    case 0x9a : Op_9a();	break;
+    case 0x9b : Op_9b();	break;
+    case 0x9c : Op_9c();	break;
+    case 0x9d : Op_9d();	break;
+    case 0x9e : Op_9e();	break;
+    case 0x9f : Op_9f();	break;
+
+    case 0xa0 : Op_a0();	break;
+    case 0xa1 : Op_a1();	break;
+    case 0xa2 : Op_a2();	break;
+    case 0xa3 : Op_a3();	break;
+    case 0xa4 : Op_a4();	break;
+    case 0xa5 : Op_a5();	break;
+    case 0xa6 : Op_a6();	break;
+    case 0xa7 : Op_a7();	break;
+    case 0xa8 : Op_a8();	break;
+    case 0xa9 : Op_a9();	break;
+    case 0xaa : Op_aa();	break;
+    case 0xab : Op_ab();	break;
+    case 0xac : Op_ac();	break;
+    case 0xad : Op_ad();	break;
+    case 0xae : Op_ae();	break;
+    case 0xaf : Op_af();	break;
+
+    case 0xb0 : Op_b0();	break;
+    case 0xb1 : Op_b1();	break;
+    case 0xb2 : Op_b2();	break;
+    case 0xb3 : Op_b3();	break;
+    case 0xb4 : Op_b4();	break;
+    case 0xb5 : Op_b5();	break;
+    case 0xb6 : Op_b6();	break;
+    case 0xb7 : Op_b7();	break;
+    case 0xb8 : Op_b8();	break;
+    case 0xb9 : Op_b9();	break;
+    case 0xba : Op_ba();	break;
+    case 0xbb : Op_bb();	break;
+    case 0xbc : Op_bc();	break;
+    case 0xbd : Op_bd();	break;
+    case 0xbe : Op_be();	break;
+    case 0xbf : Op_bf();	break;
+
+    case 0xc0 : Op_c0();	break;
+    case 0xc1 : Op_c1();	break;
+    case 0xc2 : Op_c2();	break;
+    case 0xc3 : Op_c3();	break;
+    case 0xc4 : Op_c4();	break;
+    case 0xc5 : Op_c5();	break;
+    case 0xc6 : Op_c6();	break;
+    case 0xc7 : Op_c7();	break;
+    case 0xc8 : Op_c8();	break;
+    case 0xc9 : Op_c9();	break;
+    case 0xca : Op_ca();	break;
+    case 0xcb : Op_cb();	break;
+    case 0xcc : Op_cc();	break;
+    case 0xcd : Op_cd();	break;
+    case 0xce : Op_ce();	break;
+    case 0xcf : Op_cf();	break;
+
+    case 0xd0 : Op_d0();	break;
+    case 0xd1 : Op_d1();	break;
+    case 0xd2 : Op_d2();	break;
+    case 0xd3 : Op_d3();	break;
+    case 0xd4 : Op_d4();	break;
+    case 0xd5 : Op_d5();	break;
+    case 0xd6 : Op_d6();	break;
+    case 0xd7 : Op_d7();	break;
+    case 0xd8 : Op_d8();	break;
+    case 0xd9 : Op_d9();	break;
+    case 0xda : Op_da();	break;
+    case 0xdb : Op_db();	break;
+    case 0xdc : Op_dc();	break;
+    case 0xdd : Op_dd();	break;
+    case 0xde : Op_de();	break;
+    case 0xdf : Op_df();	break;
+
+    case 0xe0 : Op_e0();	break;
+    case 0xe1 : Op_e1();	break;
+    case 0xe2 : Op_e2();	break;
+    case 0xe3 : Op_e3();	break;
+    case 0xe4 : Op_e4();	break;
+    case 0xe5 : Op_e5();	break;
+    case 0xe6 : Op_e6();	break;
+    case 0xe7 : Op_e7();	break;
+    case 0xe8 : Op_e8();	break;
+    case 0xe9 : Op_e9();	break;
+    case 0xea : Op_ea();	break;
+    case 0xeb : Op_eb();	break;
+    case 0xec : Op_ec();	break;
+    case 0xed : Op_ed();	break;
+    case 0xee : Op_ee();	break;
+    case 0xef : Op_ef();	break;
+
+    case 0xf0 : Op_f0();	break;
+    case 0xf1 : Op_f1();	break;
+    case 0xf2 : Op_f2();	break;
+    case 0xf3 : Op_f3();	break;
+    case 0xf4 : Op_f4();	break;
+    case 0xf5 : Op_f5();	break;
+    case 0xf6 : Op_f6();	break;
+    case 0xf7 : Op_f7();	break;
+    case 0xf8 : Op_f8();	break;
+    case 0xf9 : Op_f9();	break;
+    case 0xfa : Op_fa();	break;
+    case 0xfb : Op_fb();	break;
+    case 0xfc : Op_fc();	break;
+    case 0xfd : Op_fd();	break;
+    case 0xfe : Op_fe();	break;
+    case 0xff : Op_ff();	break;
+
+
+
+    default : 	//DASMLOG = 1;
+                //if (fp_log) fprintf(fp_log,"PC=[%04X]='%02X' : NOT YET EMULATED",reg.d.pc-1,Op);
+//				AddLog(0x04,"PC=[%04X]='%02X' : NOT YET EMULATED",reg.d.pc-1,Op);
+        break;
+    }
+
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -3218,13 +3513,13 @@ void Csc62015::set_reg(REGNAME regname,DWORD data)
 /*****************************************************************************/
 void Csc62015::opr_mem(DWORD adr,OPRMODE opr,BYTE data)
 {
-	switch(opr){
-	case OPR_AND:mem[adr]&=data; break;
-	case OPR_OR :mem[adr]|=data; break;
-	case OPR_XOR:mem[adr]^=data; break;
-	case OPR_ADD:mem[adr]+=data; break;
-	case OPR_SUB:mem[adr]-=data; break;
-	}
+//	switch(opr){
+//	case OPR_AND:mem[adr]&=data; break;
+//	case OPR_OR :mem[adr]|=data; break;
+//	case OPR_XOR:mem[adr]^=data; break;
+//	case OPR_ADD:mem[adr]+=data; break;
+//	case OPR_SUB:mem[adr]-=data; break;
+//	}
 }
 /*****************************************************************************/
 /* Get data from internal memory											 */
@@ -3326,6 +3621,7 @@ void Csc62015::set_mem(DWORD adr,int size,DWORD data)
 
 void Csc62015::Regs_Info(UINT8 Type)
 {
+    sprintf(Regs_String," ");
 #if 0
     switch(Type)
     {
@@ -3351,9 +3647,6 @@ void Csc62015::Regs_Info(UINT8 Type)
 #endif
 }
 
-void Csc62015::Reset(void)
-{
-}
 
 
 bool	Csc62015::Get_Xin(void)
@@ -3379,6 +3672,344 @@ void Csc62015::Set_Xout(bool data)
 
 DWORD Csc62015::get_PC(void)
 {
-    return(get_reg(REG_PC));
+    return(get_reg(REG_P));
+}
+
+DWORD Cdebug_sc62015::DisAsm_1(DWORD adr)
+{
+    typedef	struct{
+        char	len;
+        const char	*nim;
+    }	DisAsmTbl;
+
+    DisAsmTbl	d[]={
+         1,"NOP",						/* 00h */
+         1,"RETI",
+        -3,"JP    %02X%02X",
+        -4,"JPF   %1X%02X%02X",
+        -3,"CALL  %02X%02X",
+        -4,"CALLF %1X%02X%02X",
+         1,"RET",
+         1,"RETF",
+         2,"MV    A,%02X",
+         2,"MV    IL,%02X",
+        -3,"MV    BA,%02X%02X",
+        -3,"MV    I,%02X%02X",
+        -4,"MV    X,%1X%02X%02X",
+        -4,"MV    Y,%1X%02X%02X",
+        -4,"MV    U,%1X%02X%02X",
+        -4,"MV    S,%1X%02X%02X",
+         2,"JP    (%02X)",					/* 10h */
+        10,"JP    %s",
+         2,"JR    +%02X",
+         2,"JR    -%02X",
+        -3,"JPZ   %02X%02X",
+        -3,"JPNZ  %02X%02X",
+        -3,"JPC   %02X%02X",
+        -3,"JPNC  %02X%02X",
+         2,"JRZ   +%02X",
+         2,"JRZ   -%02X",
+         2,"JRNZ  +%02X",
+         2,"JRNZ  -%02X",
+         2,"JRC   +%02X",
+         2,"JRC   -%02X",
+         2,"JRNC  +%02X",
+         2,"JRNC  -%02X",
+         1,"???   (20)",					/* 20h */
+         1,"PRE   21",
+         1,"PRE   22",
+         1,"PRE   23",
+         1,"PRE   24",
+         1,"PRE   25",
+         1,"PRE   26",
+         1,"PRE   27",
+         1,"PUSHU A",
+         1,"PUSHU IL",
+         1,"PUSHU BA",
+         1,"PUSHU I",
+         1,"PUSHU X",
+         1,"PUSHU Y",
+         1,"PUSHU F",
+         1,"PUSHU IMR",
+         1,"PRE   30",					/* 30h */
+         1,"PRE   31",
+         1,"PRE   32",
+         1,"PRE   33",
+         1,"PRE   34",
+         1,"PRE   35",
+         1,"PRE   36",
+         1,"PRE   37",
+         1,"POPU  A",
+         1,"POPU  IL",
+         1,"POPU  BA",
+         1,"POPU  I",
+         1,"POPU  X",
+         1,"POPU  Y",
+         1,"POPU  F",
+         1,"POPU  IMR",
+         2,"ADD   A,%02X",						/* 40h */
+         3,"ADD   (%02X),%02X",
+         2,"ADD   A,(%02X)",
+         2,"ADD   (%02X),A",
+        11,"ADD   %s,%s",
+        11,"ADD   %s,%s",
+        11,"ADD   %s,%s",
+         3,"PMDF  (%02X),%02X",
+         2,"SUB   A,%02X",
+         3,"SUB   (%02X),%02X",
+         2,"SUB   A,(%02X)",
+         2,"SUB   (%02X),A",
+        11,"SUB   %s,%s",
+        11,"SUB   %s,%s",
+        11,"SUB   %s,%s",
+         1,"PUSHS F",
+         2,"ADC   A,%02X",						/* 50h */
+         3,"ADC   (%02X),%02X",
+         2,"ADC   A,(%02X)",
+         2,"ADC   (%02X),A",
+         3,"ADCL  (%02X),(%02X)",
+         2,"ADCL  (%02X),A",
+        12,"MVL   (%02X),[%s%s%02X]",
+         2,"PMDF  (%02X),a",
+         2,"SBC   A,%02X",
+         3,"SBC   (%02X),%02X",
+         2,"SBC   A,(%02X)",
+         2,"SBC   (%02X),A",
+         3,"SBCL  (%02X),(%02X)",
+         2,"SBCL  (%02X),A",
+        13,"MVL   [%s%s%02X],(%02X)",
+         1,"POPS  F",
+         2,"CMP   A,%02X",						/* 60h */
+         3,"CMP   (%02X),%02X",
+         5,"CMP   [%1X%02X%02X],%02X",
+         2,"CMP   (%02X),A",
+         2,"TEST  A,%02X",
+         3,"TEST  (%02X),%02X",
+         5,"TEST  [%1X%02X%02X],%02X",
+         2,"TEST  (%02X),A",
+         2,"XOR   A,%02X",
+         3,"XOR   (%02X),%02X",
+         5,"XOR   [%1X%02X%02X],%02X",
+         2,"XOR   (%02X),A",
+        10,"INC   %s",
+         2,"INC   (%02X)",
+         3,"XOR   (%02X),(%02X)",
+         2,"XOR   A,(%02X)",
+         2,"AND   A,%02X",						/* 70h */
+         3,"AND   (%02X),%02X",
+         5,"AND   [%1X%02X%02X],%02X",
+         2,"AND   (%02X),A",
+         1,"MV    A,B",
+         1,"MV    B,A",
+         3,"AND   (%02X),(%02X)",
+         2,"AND   A,(%02X)",
+         2,"OR    A,%02X",
+         3,"OR    (%02X),%02X",
+         5,"OR    [%1X%02X%02X],%02X",
+         2,"OR    (%02X),A",
+        10,"DEC   %s",
+         2,"DEC   (%02X)",
+         3,"OR    (%02X),(%02X)",
+         2,"OR    A,(%02X)",
+         2,"MV    A,(%02X)",					/* 80h */
+         2,"MV    IL,(%02X)",
+         2,"MV    BA,(%02X)",
+         2,"MV    I,(%02X)",
+         2,"MV    X,(%02X)",
+         2,"MV    Y,(%02X)",
+         2,"MV    U,(%02X)",
+         2,"MV    S,(%02X)",
+        -4,"MV    A,[%1X%02X%02X]",
+        -4,"MV    IL,[%1X%02X%02X]",
+        -4,"MV    BA,[%1X%02X%02X]",
+        -4,"MV    I,[%1X%02X%02X]",
+        -4,"MV    X,[%1X%02X%02X]",
+        -4,"MV    Y,[%1X%02X%02X]",
+        -4,"MV    U,[%1X%02X%02X]",
+        -4,"MV    S,[%1X%02X%02X]",
+        14,"MV    A,[%s]",						/* 90h */
+        14,"MV    IL,[%s]",
+        14,"MV    BA,[%s]",
+        14,"MV    I,[%s]",
+        14,"MV    X,[%s]",
+        14,"MV    Y,[%s]",
+        14,"MV    U,[%s]",
+         1,"SC",
+        15,"MV    A,[(%02X)%s]",
+        15,"MV    IL,[(%02X)%s]",
+        15,"MV    BA,[(%02X)%s]",
+        15,"MV    I,[(%02X)%s]",
+        15,"MV    X,[(%02X)%s]",
+        15,"MV    Y,[(%02X)%s]",
+        15,"MV    U,[(%02X)%s]",
+         1,"RC",
+         2,"MV    (%02X),A",					/* a0h */
+         2,"MV    (%02X),IL",
+         2,"MV    (%02X),BA",
+         2,"MV    (%02X),I",
+         2,"MV    (%02X),X",
+         2,"MV    (%02X),Y",
+         2,"MV    (%02X),U",
+         2,"MV    (%02X),S",
+        -4,"MV    [%1X%02X%02X],A",
+        -4,"MV    [%1X%02X%02X],IL",
+        -4,"MV    [%1X%02X%02X],BA",
+        -4,"MV    [%1X%02X%02X],I",
+        -4,"MV    [%1X%02X%02X],X",
+        -4,"MV    [%1X%02X%02X],Y",
+        -4,"MV    [%1X%02X%02X],U",
+        -4,"MV    [%1X%02X%02X],S",
+        14,"MV    [%s],A",						/* b0h */
+        14,"MV    [%s],IL",
+        14,"MV    [%s],BA",
+        14,"MV    [%s],I",
+        14,"MV    [%s],X",
+        14,"MV    [%s],Y",
+        14,"MV    [%s],U",
+         3,"CMP   (%02X),(%02X)",
+        15,"MV    [(%02X)%s],A",
+        15,"MV    [(%02X)%s],IL",
+        15,"MV    [(%02X)%s],BA",
+        15,"MV    [(%02X)%s],I",
+        15,"MV    [(%02X)%s],X",
+        15,"MV    [(%02X)%s],Y",
+        15,"MV    [(%02X)%s],U",
+         1,"???   (BF)",
+         3,"EX    (%02X),(%02X)",				/* c0h */
+         3,"EXW   (%02X),(%02X)",
+         3,"EXP   (%02X),(%02X)",
+         3,"EXL   (%02X),(%02X)",
+         3,"DADL  (%02X),(%02X)",
+         2,"DADL  (%02X),A",
+         3,"CMPW  (%02X),(%02X)",
+         3,"CMPP  (%02X),(%02X)",
+         3,"MV    (%02X),(%02X)",
+         3,"MVW   (%02X),(%02X)",
+         3,"MVP   (%02X),(%02X)",
+         3,"MVL   (%02X),(%02X)",
+         3,"MV    (%02X),%02X",
+         4,"MVW   (%02X),%02X%02X",
+         1,"TCL",
+         3,"MVLD  (%02X),(%02X)",
+        -5,"MV    (%02X),[%1X%02X%02X]",				/* d0h */
+        -5,"MVW   (%02X),[%1X%02X%02X]",
+        -5,"MVP   (%02X),[%1X%02X%02X]",
+        -5,"MVL   (%02X),[%1X%02X%02X]",
+         3,"DSBL  (%02X),(%02X)",
+         2,"DSBL  (%02X),A",
+        16,"CMPW  (%02X),%s",
+        16,"CMPP  (%02X),%s",
+         5,"MV    [%1X%02X%02X],(%02X)",
+         5,"MVW   [%1X%02X%02X],(%02X)",
+         5,"MVP   [%1X%02X%02X],(%02X)",
+         5,"MVL   [%1X%02X%02X],(%02X)",
+        -5,"MVP   (%02X),%1X%02X%02X",
+         1,"EX    A,B",
+         1,"HALT",
+         1,"OFF",
+        17,"MV    (%02X),[%s]",						/* e0h */
+        17,"MVW   (%02X),[%s]",
+        17,"MVP   (%02X),[%s]",
+        17,"MVL   (%02X),[%s]",
+         1,"ROR   A",
+         2,"ROR   (%02X)",
+         1,"ROL   A",
+         2,"ROL   (%02X)",
+        18,"MV    [%s],(%02X)",
+        18,"MVW   [%s],(%02X)",
+        18,"MVP   [%s],(%02X)",
+        18,"MVL   [%s],(%02X)",
+         2,"DSLL  (%02X)",
+        11,"EX    %s,%s",
+         1,"SWAP  A",
+         1,"WAIT",
+        19,"MV    (%02X),[(%02X)%s]",					/* f0h */
+        19,"MVW   (%02X),[(%02X)%s]",
+        19,"MVP   (%02X),[(%02X)%s]",
+        19,"MVL   (%02X),[(%02X)%s]",
+         1,"SHR   A",
+         2,"SHR   (%02X)",
+         1,"SHL   A",
+         2,"SHL   (%02X)",
+        20,"MV    [(%02X)%s],(%02X)",
+        20,"MVW   [(%02X)%s],(%02X)",
+        20,"MVP   [(%02X)%s],(%02X)",
+        20,"MVL   [(%02X)%s],(%02X)",
+         2,"DSRL  (%02X)",
+        11,"MV    %s,%s",
+         1,"IR",
+         1,"RESET"};
+    char	*reg[]={"A","IL","BA","I","X","Y","U","S"};
+    char	l,b[16],s[32];
+    BYTE	t,i;
+
+    l=abs(d[pPC->pCPU->get_mem(adr,SIZE_8)].len);
+    switch(d[pPC->pCPU->get_mem(adr,SIZE_8)].len){
+    case  1:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim); break;
+    case  2:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+1,SIZE_8)); break;
+    case  3:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+1,SIZE_8),pPC->pCPU->get_mem(adr+2,SIZE_8)); break;
+    case  4:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+1,SIZE_8),pPC->pCPU->get_mem(adr+3,SIZE_8),pPC->pCPU->get_mem(adr+2,SIZE_8)); break;
+    case  5:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+3,SIZE_8),pPC->pCPU->get_mem(adr+2,SIZE_8),pPC->pCPU->get_mem(adr+1,SIZE_8),pPC->pCPU->get_mem(adr+4,SIZE_8)); break;
+    case -3:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+2,SIZE_8),pPC->pCPU->get_mem(adr+1,SIZE_8)); break;
+    case -4:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+3,SIZE_8),pPC->pCPU->get_mem(adr+2,SIZE_8),pPC->pCPU->get_mem(adr+1,SIZE_8)); break;
+    case -5:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+1,SIZE_8),pPC->pCPU->get_mem(adr+4,SIZE_8),pPC->pCPU->get_mem(adr+3,SIZE_8),pPC->pCPU->get_mem(adr+2,SIZE_8)); break;
+    case 10:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7]); l=2;break;
+    case 11:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,reg[(pPC->pCPU->get_mem(adr+1,SIZE_8)>>4)&7],reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7]); l=2;break;
+    case 12:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+2,SIZE_8),reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+3,SIZE_8)); l=4;break;
+    case 13:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+3,SIZE_8),pPC->pCPU->get_mem(adr+2,SIZE_8)); l=4;break;
+    case 14:
+        if((pPC->pCPU->get_mem(adr+1,SIZE_8)&0x80)==0){
+            sprintf(b,"%s%s%s",(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x30)!=0x30?"":"--",reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x30)!=0x20?"":"++");l=2;
+        }else{
+            sprintf(b,"%s%s%02X",reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+2,SIZE_8));l=3;
+        }
+        sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,b); break;
+    case 15:
+        if((pPC->pCPU->get_mem(adr+1,SIZE_8)&0x80)==0){ b[0]=0;l=3;
+        }else{
+            sprintf(b,"%s%02X",(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+3,SIZE_8));l=4;
+        }
+        sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+2,SIZE_8),b);break;
+    case 16:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+2,SIZE_8),reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7]); l=3;break;
+    case 17:
+        if((pPC->pCPU->get_mem(adr+1,SIZE_8)&0x80)==0){
+            sprintf(b,"%s%s%s",(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x30)!=0x30?"":"--",reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x30)!=0x20?"":"++");
+            l=3;t=pPC->pCPU->get_mem(adr+2,SIZE_8);
+        }else{
+            sprintf(b,"%s%s%02X",reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+3,SIZE_8));
+            l=4;t=pPC->pCPU->get_mem(adr+2,SIZE_8);
+        }
+        sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,t,b); break;
+    case 18:
+        if((pPC->pCPU->get_mem(adr+1,SIZE_8)&0x80)==0){
+            sprintf(b,"%s%s%s",(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x30)!=0x30?"":"--",reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x30)!=0x20?"":"++");
+            l=3;t=pPC->pCPU->get_mem(adr+2,SIZE_8);
+        }else{
+            sprintf(b,"%s%s%02X",reg[pPC->pCPU->get_mem(adr+1,SIZE_8)&7],(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+3,SIZE_8));
+            l=4;t=pPC->pCPU->get_mem(adr+2,SIZE_8);
+        }
+        sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,b,t); break;
+    case 19:
+        if((pPC->pCPU->get_mem(adr+1,SIZE_8)&0x80)==0){ b[0]=0;l=4;
+        }else{
+            sprintf(b,"%s%02X",(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+4,SIZE_8));l=5;
+        }
+        sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+2,SIZE_8),pPC->pCPU->get_mem(adr+3,SIZE_8),b);break;
+    case 20:
+        if((pPC->pCPU->get_mem(adr+1,SIZE_8)&0x80)==0){ b[0]=0;l=4;
+        }else{
+            sprintf(b,"%s%02X",(pPC->pCPU->get_mem(adr+1,SIZE_8)&0x40)==0?"+":"-",pPC->pCPU->get_mem(adr+4,SIZE_8));l=5;
+        }
+        sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim,pPC->pCPU->get_mem(adr+2,SIZE_8),b,pPC->pCPU->get_mem(adr+3,SIZE_8));break;
+    }
+    sprintf(Buffer,"%05X:",adr);
+    for(i=0;i<l;i++) sprintf(Buffer,"%s%02X",Buffer,pPC->pCPU->get_mem(adr+i,SIZE_8));
+    sprintf(Buffer,"%s%*s%s ",Buffer,16-(l<<1)," ",s);
+    if((pPC->pCPU->get_mem(adr,SIZE_8)>0x20 && pPC->pCPU->get_mem(adr,SIZE_8)<0x28)||(pPC->pCPU->get_mem(adr,SIZE_8)>0x2f && pPC->pCPU->get_mem(adr,SIZE_8)<0x38)){
+        adr=DisAsm_1((adr+l)&MASK_20); l=0;
+    }
+
+    debugged = true;
+    return((adr+l)&MASK_20);
 }
 #endif

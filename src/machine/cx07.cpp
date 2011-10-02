@@ -299,6 +299,7 @@ bool Cx07::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Cx07::in(UINT8 Port)
 {
     UINT8 Value=0;
+
      switch (Port)
       {
        case 0xF0 : /* Controle des interruptions */
@@ -341,6 +342,8 @@ UINT8 Cx07::in(UINT8 Port)
                    break;
       }
 
+     AddLog(LOG_SIO,tr("(%1) In %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+
      pCPU->imem[Port] = Value;
      return (Value);
 }
@@ -349,7 +352,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
 
  if ((Port!=0xf0) && (Value!=0x44)) {
-     AddLog(LOG_TEMP,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+     AddLog(LOG_SIO,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 }
 
  switch (Port)
@@ -366,13 +369,9 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                break;
    case 0xF2 : /* Controle de BAUDS (poids faible) */
                Port_FX.W.F2 = Value;
-//               AddLog(LOG_SIO,tr("Reglage Bauds faible: %1").arg(Value,2,16,QChar('0')));
-//               pUART->Set_BaudRate(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2));
                break;
    case 0xF3 : /* Controle de BAUDS (poids fort) */
                Port_FX.W.F3 = Value;
-//               AddLog(LOG_SIO,tr("Reglage Bauds fort: %1").arg(Value,2,16,QChar('0')));
-//               pUART->Set_BaudRate(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2));
                break;
    case 0xF4 : /* Modes */
                Port_FX.W.F4 = Value;
@@ -398,8 +397,13 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                    AddLog(LOG_CANON,"MODE SERIE");
                }
 
-               if ((Mode_K7==1) && (Port_FX.W.F5& 0x04)) {
-//                   Receive_from_K7 (&Port_FX);
+               if (Port_FX.W.F5 & 0x04) {
+                   if (Mode_K7) {
+//                       Receive_from_K7 (&Port_FX);
+                   }
+                   if (Mode_SERIE ) {//&& !(Port_FX.W.F6 & 0x20)) {
+                       ReceiveFromSerial(&Port_FX);
+                   }
                }
 
                break;
@@ -422,7 +426,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                    if (Mode_K7) {
 //                   Receive_from_K7 (&Port_FX);
                    }
-                   if (Mode_SERIE) {
+                   if (Mode_SERIE ){//&& !(Port_FX.W.F6 & 0x20)) {
                        ReceiveFromSerial(&Port_FX);
                    }
                }
@@ -434,7 +438,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                    if (Mode_K7) {
 //                   Send_to_K7 (&Port_FX);
                    }
-                   if (Mode_SERIE) {
+                   if (Mode_SERIE ){//&& (Port_FX.W.F6 & 0x20)) {
                        SendToSerial(&Port_FX);
                    }
                }
@@ -465,6 +469,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                break;
    case 0xF6 : /* Configuration de L'UART */
                Port_FX.W.F6 = Value;
+//               Port_FX.R.F6 = Value;
                break;
    case 0xF7 : /* Données émises par l'UART */
                Port_FX.W.F7 = Value;
@@ -739,9 +744,13 @@ void Receive_from_K7 (PorT_FX *Port)
 */
 
 void Cx07::ReceiveFromSerial(PorT_FX *Port) {
-    Port->R.F7  = pUART->popInputByte();
-    Port->R.F6 |= 0x02;
-    IT_T6834 = 3;
+    if ((Port->W.F6 & 0x04) && pUART->isInputByte()) {
+        AddLog(LOG_SIO,tr("POP BYTE:%1 - %2").arg(pUART->getInputByte(),2,16,QChar('0')).arg(QChar(pUART->getInputByte())));
+        Port->R.F7  = pUART->popInputByte();
+        Port->R.F6 |= 0x02;
+        Port->R.F6 &= ~0x04;
+        IT_T6834 = 3;
+    }
 }
 
 void Cx07::SendToSerial(PorT_FX *Port)

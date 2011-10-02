@@ -27,5 +27,5 @@ void CUartConsole::newOutputByte(qint8 data) {
 void CUartConsole::newInputByte()
 {
     pUart->clearInputBuffer();
-    pUart->newInputArray(ui->textEdit_in->toPlainText().toAscii());
+    pUart->newInputArray(ui->textEdit_in->toPlainText().toAscii().replace(0x0a,0x0d));
 }
