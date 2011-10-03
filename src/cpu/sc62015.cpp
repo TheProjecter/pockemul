@@ -12,6 +12,7 @@
 #include "inter.h"
 #include "Debug.h"
 #include "keyb.h"
+#include "e500.h"
 //#include "rtc.h"
 //#include "opt11.h"
 //#include "ssfdc.h"
@@ -28,7 +29,7 @@
 #define		Get_i8d(a)		imem[a&255]			//get i-mem direct
 #define		Set_i8d(a,d)	imem[a&255]=d		//set i-mem direct
 #define		Reset_Pre()		pre_1=1;pre_2=1	/* reset pre byte mode */
-//#define		AddState(n)		timer.state+=(n);
+
 #define		GetBank()		(((imem[IMEM_EOL]>>5)&1)|((imem[IMEM_KOH]>>6)&2))
 #define		SLOT1			0
 #define		SLOT2			1
@@ -36,32 +37,15 @@
 #define		EMS				3
 #define		SLOT3EXT		4
 
-// レジスタ構造体
-typedef
-union {
-	struct a{
-		BYTE	a,b,il,ih;
-		WORD	pc,ps,xl,xh,yl,yh,ul,uh,sl,sh;
-		BYTE	c:1;
-		BYTE	z:1;
-	}r;
-	struct b{
-		WORD	ba,i;
-		DWORD	p,x,y,u,s;
-		BYTE	f;
-	}x;
-} SCREG;
 
-BYTE	pre_1,pre_2;		/* pre byte mode */
-SCREG	reg;				/* register structure */
-//BYTE	*mem, *imem;		/* memory */
+
+
+
 
 DWORD	BASE_128[]={0x20000, 0x100000, 0x120000, 0x140000};
 DWORD	BASE_64[] ={0x10000, 0x160000, 0x170000, 0x180000};
 DWORD	SlotAdr[]={0x80000,0x40000,0xc0000,0x10000,0x20000};
 WORD	SlotSize[]={256,256,256,192,128};
-
-//Csc sc;
 
 Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
 {									//[constructor]
@@ -69,8 +53,6 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     off=0;				//off?(0:none, 1:off)
     end=0;				//program end?(0:none, 1:end)
     save=0;				//end with memory save?(0:no, 1:yes)
-//    SlotName[0]="s1.ram"; SlotName[1]="s2.ram";
-//    SlotName[2]="s3.rom"; SlotName[3]="ems.ram";
     e6=0;				//E650 mode?(0:no, 1:yes)
     emsmode=0;			//EMS mode(0:none, 1-5:Delta 1-4 or Super)
     log=0;				//execute log?(0:off, 1:on)
@@ -156,8 +138,8 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len)
 	register BYTE i;
 	for(i=0;i<len;i++){
 		switch(d++){
-//		case	IMEM_KOL:
-//		case	IMEM_KOH:keyb.access=1; break;	// key matrix
+        case	IMEM_KOL:
+        case	IMEM_KOH:((Ce500*)pPC)->getKey(); break;	// key matrix
 //		case	IMEM_RxD:sio.si=1; break;		// sio RxD
 //		case	IMEM_TxD:sio.so=1; break;		// sio TxD
 //		case	IMEM_SCR:snd.scr=1; break;		// sound
@@ -3058,46 +3040,6 @@ bool Csc62015::init(void)
 	}
 
 
-
-
-
-
-    /* Operation Code Table */
-    void(Csc62015::*OpTbl[])(void)={
-        &Csc62015::Op_00, &Csc62015::Op_01, &Csc62015::Op_02, &Csc62015::Op_03, &Csc62015::Op_04, &Csc62015::Op_05, &Csc62015::Op_06, &Csc62015::Op_07,
-        &Csc62015::Op_08, &Csc62015::Op_09, &Csc62015::Op_0a, &Csc62015::Op_0b, &Csc62015::Op_0c, &Csc62015::Op_0d, &Csc62015::Op_0e, &Csc62015::Op_0f,
-        &Csc62015::Op_10, &Csc62015::Op_11, &Csc62015::Op_12, &Csc62015::Op_13, &Csc62015::Op_14, &Csc62015::Op_15, &Csc62015::Op_16, &Csc62015::Op_17,
-        &Csc62015::Op_18, &Csc62015::Op_19, &Csc62015::Op_1a, &Csc62015::Op_1b, &Csc62015::Op_1c, &Csc62015::Op_1d, &Csc62015::Op_1e, &Csc62015::Op_1f,
-        &Csc62015::Op_20, &Csc62015::Op_21, &Csc62015::Op_22, &Csc62015::Op_23, &Csc62015::Op_24, &Csc62015::Op_25, &Csc62015::Op_26, &Csc62015::Op_27,
-        &Csc62015::Op_28, &Csc62015::Op_29, &Csc62015::Op_2a, &Csc62015::Op_2b, &Csc62015::Op_2c, &Csc62015::Op_2d, &Csc62015::Op_2e, &Csc62015::Op_2f,
-        &Csc62015::Op_30, &Csc62015::Op_31, &Csc62015::Op_32, &Csc62015::Op_33, &Csc62015::Op_34, &Csc62015::Op_35, &Csc62015::Op_36, &Csc62015::Op_37,
-        &Csc62015::Op_38, &Csc62015::Op_39, &Csc62015::Op_3a, &Csc62015::Op_3b, &Csc62015::Op_3c, &Csc62015::Op_3d, &Csc62015::Op_3e, &Csc62015::Op_3f,
-        &Csc62015::Op_40, &Csc62015::Op_41, &Csc62015::Op_42, &Csc62015::Op_43, &Csc62015::Op_44, &Csc62015::Op_45, &Csc62015::Op_46, &Csc62015::Op_47,
-        &Csc62015::Op_48, &Csc62015::Op_49, &Csc62015::Op_4a, &Csc62015::Op_4b, &Csc62015::Op_4c, &Csc62015::Op_4d, &Csc62015::Op_4e, &Csc62015::Op_4f,
-        &Csc62015::Op_50, &Csc62015::Op_51, &Csc62015::Op_52, &Csc62015::Op_53, &Csc62015::Op_54, &Csc62015::Op_55, &Csc62015::Op_56, &Csc62015::Op_57,
-        &Csc62015::Op_58, &Csc62015::Op_59, &Csc62015::Op_5a, &Csc62015::Op_5b, &Csc62015::Op_5c, &Csc62015::Op_5d, &Csc62015::Op_5e, &Csc62015::Op_5f,
-        &Csc62015::Op_60, &Csc62015::Op_61, &Csc62015::Op_62, &Csc62015::Op_63, &Csc62015::Op_64, &Csc62015::Op_65, &Csc62015::Op_66, &Csc62015::Op_67,
-        &Csc62015::Op_68, &Csc62015::Op_69, &Csc62015::Op_6a, &Csc62015::Op_6b, &Csc62015::Op_6c, &Csc62015::Op_6d, &Csc62015::Op_6e, &Csc62015::Op_6f,
-        &Csc62015::Op_70, &Csc62015::Op_71, &Csc62015::Op_72, &Csc62015::Op_73, &Csc62015::Op_74, &Csc62015::Op_75, &Csc62015::Op_76, &Csc62015::Op_77,
-        &Csc62015::Op_78, &Csc62015::Op_79, &Csc62015::Op_7a, &Csc62015::Op_7b, &Csc62015::Op_7c, &Csc62015::Op_7d, &Csc62015::Op_7e, &Csc62015::Op_7f,
-        &Csc62015::Op_80, &Csc62015::Op_81, &Csc62015::Op_82, &Csc62015::Op_83, &Csc62015::Op_84, &Csc62015::Op_85, &Csc62015::Op_86, &Csc62015::Op_87,
-        &Csc62015::Op_88, &Csc62015::Op_89, &Csc62015::Op_8a, &Csc62015::Op_8b, &Csc62015::Op_8c, &Csc62015::Op_8d, &Csc62015::Op_8e, &Csc62015::Op_8f,
-        &Csc62015::Op_90, &Csc62015::Op_91, &Csc62015::Op_92, &Csc62015::Op_93, &Csc62015::Op_94, &Csc62015::Op_95, &Csc62015::Op_96, &Csc62015::Op_97,
-        &Csc62015::Op_98, &Csc62015::Op_99, &Csc62015::Op_9a, &Csc62015::Op_9b, &Csc62015::Op_9c, &Csc62015::Op_9d, &Csc62015::Op_9e, &Csc62015::Op_9f,
-        &Csc62015::Op_a0, &Csc62015::Op_a1, &Csc62015::Op_a2, &Csc62015::Op_a3, &Csc62015::Op_a4, &Csc62015::Op_a5, &Csc62015::Op_a6, &Csc62015::Op_a7,
-        &Csc62015::Op_a8, &Csc62015::Op_a9, &Csc62015::Op_aa, &Csc62015::Op_ab, &Csc62015::Op_ac, &Csc62015::Op_ad, &Csc62015::Op_ae, &Csc62015::Op_af,
-        &Csc62015::Op_b0, &Csc62015::Op_b1, &Csc62015::Op_b2, &Csc62015::Op_b3, &Csc62015::Op_b4, &Csc62015::Op_b5, &Csc62015::Op_b6, &Csc62015::Op_b7,
-        &Csc62015::Op_b8, &Csc62015::Op_b9, &Csc62015::Op_ba, &Csc62015::Op_bb, &Csc62015::Op_bc, &Csc62015::Op_bd, &Csc62015::Op_be, &Csc62015::Op_bf,
-        &Csc62015::Op_c0, &Csc62015::Op_c1, &Csc62015::Op_c2, &Csc62015::Op_c3, &Csc62015::Op_c4, &Csc62015::Op_c5, &Csc62015::Op_c6, &Csc62015::Op_c7,
-        &Csc62015::Op_c8, &Csc62015::Op_c9, &Csc62015::Op_ca, &Csc62015::Op_cb, &Csc62015::Op_cc, &Csc62015::Op_cd, &Csc62015::Op_ce, &Csc62015::Op_cf,
-        &Csc62015::Op_d0, &Csc62015::Op_d1, &Csc62015::Op_d2, &Csc62015::Op_d3, &Csc62015::Op_d4, &Csc62015::Op_d5, &Csc62015::Op_d6, &Csc62015::Op_d7,
-        &Csc62015::Op_d8, &Csc62015::Op_d9, &Csc62015::Op_da, &Csc62015::Op_db, &Csc62015::Op_dc, &Csc62015::Op_dd, &Csc62015::Op_de, &Csc62015::Op_df,
-        &Csc62015::Op_e0, &Csc62015::Op_e1, &Csc62015::Op_e2, &Csc62015::Op_e3, &Csc62015::Op_e4, &Csc62015::Op_e5, &Csc62015::Op_e6, &Csc62015::Op_e7,
-        &Csc62015::Op_e8, &Csc62015::Op_e9, &Csc62015::Op_ea, &Csc62015::Op_eb, &Csc62015::Op_ec, &Csc62015::Op_ed, &Csc62015::Op_ee, &Csc62015::Op_ef,
-        &Csc62015::Op_f0, &Csc62015::Op_f1, &Csc62015::Op_f2, &Csc62015::Op_f3, &Csc62015::Op_f4, &Csc62015::Op_f5, &Csc62015::Op_f6, &Csc62015::Op_f7,
-        &Csc62015::Op_f8, &Csc62015::Op_f9, &Csc62015::Op_fa, &Csc62015::Op_fb, &Csc62015::Op_fc, &Csc62015::Op_fd, &Csc62015::Op_fe, &Csc62015::Op_ff
-    };
-
 	return(1);
 }
 
@@ -3943,6 +3885,8 @@ DWORD Cdebug_sc62015::DisAsm_1(DWORD adr)
     char	l,b[16],s[32];
     BYTE	t,i;
 
+    DasmAdr=adr;
+
     l=abs(d[pPC->pCPU->get_mem(adr,SIZE_8)].len);
     switch(d[pPC->pCPU->get_mem(adr,SIZE_8)].len){
     case  1:sprintf(s,d[pPC->pCPU->get_mem(adr,SIZE_8)].nim); break;
@@ -4010,6 +3954,7 @@ DWORD Cdebug_sc62015::DisAsm_1(DWORD adr)
     }
 
     debugged = true;
+    NextDasmAdr = (adr+l)&MASK_20;
     return((adr+l)&MASK_20);
 }
 #endif

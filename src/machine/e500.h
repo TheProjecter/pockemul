@@ -42,6 +42,8 @@ public:
     CHD61102        *pHD61102_2;
 
     void disp(qint8 cmd, DWORD data);
+    BYTE getKey();
+    bool run();
 protected:
 //	BYTE previous_key;
 

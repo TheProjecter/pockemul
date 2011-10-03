@@ -4,6 +4,8 @@
 #include "Connect.h"
 #include "Keyb.h"
 #include "Lcdc_e500.h"
+#include "Inter.h"
+#include "Log.h"
 
 #if 1
 
@@ -74,6 +76,20 @@ bool Ce500::init(void) {
 //	if(emsmode!=0) EMS_Load();
 
     return true;
+}
+
+bool Ce500::run(void) {
+    CpcXXXX::run();
+    Csc62015 * sc = (Csc62015*)pCPU;
+
+    if((sc->imem[IMEM_IMR]&0x80)&&(pCPU->imem[IMEM_IMR] & pCPU->imem[IMEM_ISR])){
+        sc->set_reg(REG_S,sc->get_reg(REG_S)-SIZE_20-2);								//go interrupt routine
+        sc->set_mem(sc->get_reg(REG_S)+2,SIZE_20,sc->get_reg(REG_P));
+        sc->set_mem(sc->get_reg(REG_S)+1,SIZE_8,sc->get_reg(REG_F));
+        sc->set_mem(sc->get_reg(REG_S),SIZE_8,sc->get_imem(IMEM_IMR));
+        sc->opr_imem(IMEM_IMR,OPR_AND,0x7f);
+        sc->set_reg(REG_P,sc->get_mem(VECT_IR,SIZE_20));
+    }
 }
 
 void Ce500::disp(qint8 cmd,DWORD data)
@@ -235,4 +251,232 @@ UINT8 Ce500::in(UINT8 address)
 UINT8 Ce500::out(UINT8 address, UINT8 value)
 {
 }
+
+#if 0
+
+E5KeyTbl	E5_KeyTbl[]={
+        0x00,0x01,		/* (Åü) */				/* 0 */
+        0x00,0x02,		/* Q */
+        0x00,0x04,		/* (MENU) */
+        0x00,0x08,		/* A */
+        0x00,0x10,		/* (BASIC) */
+        0x00,0x20,		/* Z */
+        0x00,0x40,		/* (SHIFT) */
+        0x00,0x80,		/* (CTRL) */
+        0x01,0x01,		/* W */
+        0x01,0x02,		/* E */
+        0x01,0x04,		/* S */					/* 10 */
+        0x01,0x08,		/* D */
+        0x01,0x10,		/* X */
+        0x01,0x20,		/* C */
+        0x01,0x40,		/* (CAPS) */
+        0x01,0x80,		/* (KANA) */
+        0x02,0x01,		/* R */
+        0x02,0x02,		/* T */
+        0x02,0x04,		/* F */
+        0x02,0x08,		/* G */
+        0x02,0x10,		/* V */					/* 20 */
+        0x02,0x20,		/* B */
+        0x02,0x40,		/* (SPACE) */
+        0x02,0x80,		/* (DOWN) */
+        0x03,0x01,		/* Y */
+        0x03,0x02,		/* U */
+        0x03,0x04,		/* H */
+        0x03,0x08,		/* J */
+        0x03,0x10,		/* N */
+        0x03,0x20,		/* M */
+        0x03,0x40,		/* (UP) */				/* 30 */
+        0x03,0x80,		/* (LEFT) */
+        0x04,0x01,		/* I */
+        0x04,0x02,		/* O */
+        0x04,0x04,		/* K */
+        0x04,0x08,		/* L */
+        0x04,0x10,		/* , */
+        0x04,0x20,		/* ; */
+        0x04,0x40,		/* (RIGHT) */
+        0x04,0x80,		/* (RETURN) */
+        0x05,0x01,		/* (RCL) */				/* 40 */
+        0x05,0x02,		/* (hyp) */
+        0x05,0x04,		/* (HEX) */
+        0x05,0x08,		/* (EXP) */
+        0x05,0x10,		/* 7 */
+        0x05,0x20,		/* 4 */
+        0x05,0x40,		/* 1 */
+        0x05,0x80,		/* 0 */
+        0x06,0x01,		/* (STO) */
+        0x06,0x02,		/* (sin) */
+        0x06,0x04,		/* (DEG) */				/* 50 */
+        0x06,0x08,		/* (Y^x) */
+        0x06,0x10,		/* 8 */
+        0x06,0x20,		/* 5 */
+        0x06,0x40,		/* 2 */
+        0x06,0x80,		/* (+/-) */
+        0x07,0x01,		/* (C.CE) */
+        0x07,0x02,		/* (cos) */
+        0x07,0x04,		/* (ln) */
+        0x07,0x08,		/* (ROOT) */
+        0x07,0x10,		/* 9 */					/* 60 */
+        0x07,0x20,		/* 6 */
+        0x07,0x40,		/* 3 */
+        0x07,0x80,		/* . */
+        0x08,0x01,		/* (<->) */
+        0x08,0x02,		/* (tan) */
+        0x08,0x04,		/* (log) */
+        0x08,0x08,		/* (X^2) */
+        0x08,0x10,		/* / */
+        0x08,0x20,		/* * */
+        0x08,0x40,		/* - */					/* 70 */
+        0x08,0x80,		/* + */
+        0x09,0x01,		/* ) */
+        0x09,0x02,		/* (FSE) */
+        0x09,0x04,		/* (1/X) */
+        0x09,0x08,		/* ( */
+        0x09,0x10,		/* (DEL) */
+        0x09,0x20,		/* (BS) */
+        0x09,0x40,		/* (INS) */
+        0x09,0x80,		/* = */
+        0x0a,0x01,		/* P */					/* 80 */
+        0x0a,0x02,		/* (2ndF) */
+        0x0a,0x04,		/* (PF5) */
+        0x0a,0x08,		/* (PF4) */
+        0x0a,0x10,		/* (PF3) */
+        0x0a,0x20,		/* (PF2) */
+        0x0a,0x40,		/* (PF1) */
+        0x0a,0x80,	/*  */
+        0x0b,0x01,		/* (OFF) */
+        0x0b,0x02,		/* (ON) */
+        0x0b,0x04,	/*  */						/* 90 */
+        0x0b,0x08,	/*  */
+        0x0b,0x10,	/*  */
+        0x0b,0x20,	/* <LOW BATT> */
+        0x0b,0x40,	/* <DEBUG> */
+        0x0b,0x80,	/* <QUIT> */
+        0x00,0x00};		/* [default] */			/* 96 */
+
+#endif
+
+#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define		Set_ISR(d)	((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,d)	// set status to ISR
+
+BYTE Ce500::getKey()
+{
+
+
+    UINT8 data=0;
+
+//    if (pKEYB->LastKey)
+//    {
+//        BYTE ks1 = pLH5810->GetReg(LH5810_OPB);
+//        if (!( ks1 & 0x40)) {
+//            if (KEY(K_CTRL))		data|=0x01;
+//            if (KEY(K_KBII))		data|=0x02;
+//            if (KEY(K_BS))			data|=0x04;
+//        }
+//    }
+//    BYTE ks = pKEYB->Get_KS() ^ 0xff;
+    DWORD ks = (pCPU->imem[IMEM_KOH]<<8)+pCPU->imem[IMEM_KOL];
+    AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ks,4,16,QChar('0')));
+    if ((pKEYB->LastKey) && ks )
+    {
+        if (ks&1) {
+            if (KEY('2'))			data|=0x01;
+            if (KEY('5'))			data|=0x02;
+            if (KEY('8'))			data|=0x04;
+            if (KEY('H'))			data|=0x08;
+            if (KEY(K_SHT))			data|=0x10;
+            if (KEY('Y'))			data|=0x20;
+            if (KEY('N'))			data|=0x40;
+            if (KEY(K_UA))			data|=0x80;			// UP ARROW
+        }
+        if (ks&2) {
+            if (KEY('.'))			data|=0x01;
+            if (KEY('-'))			data|=0x02;
+            if (KEY(K_OF))			data|=0x04;			// OFF
+            if (KEY('S'))			data|=0x08;
+            if (KEY(K_F1))			data|=0x10;
+            if (KEY('W'))			data|=0x20;
+            if (KEY('X'))			data|=0x40;
+            if (KEY(K_RSV))			data|=0x80;
+        }
+        if (ks&4) {
+            if (KEY('1'))			data|=0x01;
+            if (KEY('4'))			data|=0x02;
+            if (KEY('7'))			data|=0x04;
+            if (KEY('J'))			data|=0x08;
+            if (KEY(K_F5))			data|=0x10;
+            if (KEY('U'))			data|=0x20;
+            if (KEY('M'))			data|=0x40;
+            if (KEY('0'))			data|=0x80;
+        }
+        if (ks&8) {
+            if (KEY(')'))			data|=0x01;
+            if (KEY('L'))			data|=0x02;
+            if (KEY('O'))			data|=0x04;
+            if (KEY('K'))			data|=0x08;
+            if (KEY(K_F6))			data|=0x10;
+            if (KEY('I'))			data|=0x20;
+            if (KEY('('))			data|=0x40;
+            if (KEY(K_RET))			data|=0x80;
+        }
+        if (ks&0x10) {
+            if (KEY('+'))			data|=0x01;			// +
+            if (KEY('*'))			data|=0x02;			// *
+            if (KEY('/'))			data|=0x04;			// /
+            if (KEY('D'))			data|=0x08;
+            if (KEY(K_F2))			data|=0x10;			// Key F2
+            if (KEY('E'))			data|=0x20;
+            if (KEY('C'))			data|=0x40;
+            if (KEY(K_RCL))			data|=0x80;
+        }
+        if (ks&0x20) {
+            if (KEY('='))			data|=0x01;			// =
+            if (KEY(K_LA))			data|=0x02;			// LEFT ARROW
+            if (KEY('P'))			data|=0x04;
+            if (KEY('F'))			data|=0x08;
+            if (KEY(K_F3))			data|=0x10;
+            if (KEY('R'))			data|=0x20;
+            if (KEY('V'))			data|=0x40;
+            if (KEY(' '))			data|=0x80;
+        }
+        if (ks&0x40) {
+            if (KEY(K_RA))			data|=0x01;			// R ARROW
+            if (KEY(K_MOD))			data|=0x02;			// MODE
+            if (KEY(K_CLR))			data|=0x04;			// CLS
+            if (KEY('A'))			data|=0x08;
+            if (KEY(K_DEF))			data|=0x10;
+            if (KEY('Q'))			data|=0x20;
+            if (KEY('Z'))			data|=0x40;
+            if (KEY(K_SML))			data|=0x80;
+        }
+        if (ks&0x80) {
+            if (KEY('3'))			data|=0x01;
+            if (KEY('6'))			data|=0x02;
+            if (KEY('9'))			data|=0x04;
+            if (KEY('G'))			data|=0x08;
+            if (KEY(K_F4))			data|=0x10;			// Key F4
+            if (KEY('T'))			data|=0x20;
+            if (KEY('B'))			data|=0x40;
+            if (KEY(K_DA))			data|=0x80;			// DOWN ARROW
+        }
+        if (ks&0x200) {
+            if (KEY(K_F5))			data|=0x04;
+            if (KEY(K_F4))			data|=0x08;
+            if (KEY(K_F3))			data|=0x10;
+            if (KEY(K_F2))			data|=0x20;
+            if (KEY(K_F1))			data|=0x40;			// Key F4
+
+        }
+//        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
+        //SetReg(LH5810_OPA,data^0xff);
+    }
+
+    if(data) {
+            Set_ISR(INT_KEY);						//make keyint
+
+        }
+    pCPU->imem[IMEM_KI] = data;					//set data to ki
+    return data^0xff;
+
+}
+
 #endif
