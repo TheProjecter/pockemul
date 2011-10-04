@@ -400,7 +400,7 @@ BYTE Ce500::getKey()
             if (KEY('X'))			data|=0x10;
             if (KEY('C'))			data|=0x20;
             if (KEY(K_SML))			data|=0x40;
-//            if (KEY(K_KANA))			data|=0x80;
+            if (KEY(K_KANA))		data|=0x80;
         }
         if (ks&4) {
             if (KEY('R'))			data|=0x01;
