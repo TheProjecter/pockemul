@@ -189,7 +189,7 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 
     if((*d&0x6000)==0x2000){
         *d&=0x200f; disp(*d&15,data);//pLCDC->SetDirtyBuf(pLCDC->SetDirtyBuf(*d & 15));
-        return(1-(*d&1));			/* LCDC (0200x) */
+        return(1);//-(*d&1));			/* LCDC (0200x) */
     }
 #if 0
     if(*d>0x1ffff){

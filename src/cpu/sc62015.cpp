@@ -2491,7 +2491,7 @@ void Csc62015::Op_dd(void)
 /* HALT */
 void Csc62015::Op_de(void)
 {
-AddLog(LOG_TEMP,"System HALT!!");/*exit(1);*/
+//AddLog(LOG_TEMP,"System HALT!!");/*exit(1);*/
 //debug.isdebug=1;
     halt=1;
 	AddState(2);
@@ -2499,7 +2499,7 @@ AddLog(LOG_TEMP,"System HALT!!");/*exit(1);*/
 /* OFF */
 void Csc62015::Op_df(void)
 {
-AddLog(LOG_TEMP,"Software POWER OFF!!");/*exit(1);*/
+//AddLog(LOG_TEMP,"Software POWER OFF!!");/*exit(1);*/
 //debug.isdebug=1;
 	imem[IMEM_ISR]=0;
     off=1;

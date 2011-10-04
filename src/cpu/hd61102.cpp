@@ -1,6 +1,7 @@
 #include "hd61102.h"
 #include "pcxxxx.h"
 #include "cpu.h"
+#include "Log.h"
 
 #define MASK_on_off     0x3e
 #define MASK_setY       0x40
@@ -31,6 +32,7 @@ BYTE CHD61102::get8(qint16 adr)
     if (adr >= 0x200)
     {
         // ERROR
+        AddLog(LOG_TEMP,tr("LCD : ERROR adr [%1] out of range").arg(adr,4,16,QChar('0')));
         if (pPC->fp_log) fprintf(pPC->fp_log,"LCD : ERROR adr [%04x] out of range [0,200h]\n",adr);
         return 0;
     }
@@ -53,6 +55,8 @@ BYTE CHD61102::instruction(qint16 cmd)
 {
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);
 
+    //AddLog(LOG_TEMP,tr("HD61102 CMD:%1").arg(cmd,4,16,QChar('0')));
+
     if ((cmd & MASK_read) == MASK_read ) { return cmd_read(cmd); }
     else
     if ((cmd & MASK_status) == MASK_status ) { return cmd_status(cmd); }
@@ -66,6 +70,8 @@ BYTE CHD61102::instruction(qint16 cmd)
     if ((cmd & MASK_setY) == MASK_setY ) { cmd_setY(cmd); }
     else
     if ((cmd & MASK_on_off) == MASK_on_off ) { cmd_on_off(cmd); }
+
+
 
     return 0;
 }
@@ -114,7 +120,9 @@ void CHD61102::cmd_write(qint16 cmd)
 BYTE CHD61102::cmd_read(qint16 cmd)
 {
 
+
     BYTE value = get8((info.Xadr * 0x40) + (info.Yadr==0 ? 63 : info.Yadr - 1) );
+    AddLog(LOG_TEMP,tr("HD61102 READ CMD : x=%1   Y=%2  v=%3").arg(info.Xadr).arg(info.Yadr).arg(value,2,16,QChar('0')));
     (info.Yadr)++;
     if (info.Yadr == 64) {
         info.Yadr=0;
