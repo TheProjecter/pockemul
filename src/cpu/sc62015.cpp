@@ -2,7 +2,7 @@
 /* SC62015 CPU emulation                                  */
 /*                       Copyright (C) Matsumo 1998,1999  */
 /**********************************************************/
-#if 1
+
 
 
 #include <stdlib.h>
@@ -18,6 +18,8 @@
 //#include "ssfdc.h"
 #include "sio.h"
 #include "lcdc.h"
+#include "Log.h"
+#include "ui/cregsz80widget.h"
 
 //#define	UN_DEFINE	printf("Undefined Code !!(pc=%05X)\n",reg.x.p);
 #define		UN_DEFINE	debug.isdebug=1;
@@ -63,6 +65,7 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     CallSubLevel=0;
 
      pDEBUG	= new Cdebug_sc62015(parent);
+     regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
 inline void Csc62015::AddState(BYTE n)
@@ -2478,7 +2481,7 @@ void Csc62015::Op_dd(void)
 /* HALT */
 void Csc62015::Op_de(void)
 {
-//printf("System HALT!!\n");/*exit(1);*/
+AddLog(LOG_TEMP,"System HALT!!");/*exit(1);*/
 //debug.isdebug=1;
     halt=1;
 	AddState(2);
@@ -2486,7 +2489,7 @@ void Csc62015::Op_de(void)
 /* OFF */
 void Csc62015::Op_df(void)
 {
-//printf("Software POWER OFF!!\n");/*exit(1);*/
+AddLog(LOG_TEMP,"Software POWER OFF!!");/*exit(1);*/
 //debug.isdebug=1;
 	imem[IMEM_ISR]=0;
     off=1;
@@ -3563,30 +3566,25 @@ void Csc62015::set_mem(DWORD adr,int size,DWORD data)
 
 void Csc62015::Regs_Info(UINT8 Type)
 {
+
     sprintf(Regs_String," ");
-#if 0
+
     switch(Type)
     {
     case 0:			// Monitor Registers Dialog
     case 2:			// For Log File
-        sprintf(Regs_String,	"I:%.2x J:%.2x A:%.2x B:%.2x \r\nX:%.2x%.2x  Y:%.2x%.2x \r\nK:%.2x L:%.2x M:%.2x N:%.2x \r\nP:%.2x Q:%.2x R:%.2x DP:%.4x \r\nC:%s Z:%s",
-            I_REG_I,I_REG_J,I_REG_A,I_REG_B,
-            I_REG_Xh,I_REG_Xl,I_REG_Yh,I_REG_Yl,
-            I_REG_K,I_REG_L,I_REG_M,I_REG_N,
-            reg.r.p,reg.r.q,reg.r.r,reg.d.dp,
-            reg.r.c?"1":".",reg.r.z?"1":".");
+        sprintf(Regs_String,	"BA:%.4x i:%.4x p:%.6x x:%.6x y:%.6x u:%.6x s:%.6 f:%.2x z:%s c:%s",
+            reg.x.ba,reg.x.i,reg.x.p,reg.x.x,reg.x.y,reg.x.u,reg.x.s,reg.x.f,
+                reg.r.z?"1":"0",
+                reg.r.c?"1":"0");
         break;
     case 1:			// For Log File
-        sprintf(Regs_String,	"I:%.2x J:%.2x A:%.2x B:%.2x X:%.2x%.2x  Y:%.2x%.2x K:%.2x L:%.2x M:%.2x N:%.2x P:%.2x Q:%.2x R:%.2x DP:%.4x C:%s Z:%s",
-            I_REG_I,I_REG_J,I_REG_A,I_REG_B,
-            I_REG_Xh,I_REG_Xl,I_REG_Yh,I_REG_Yl,
-            I_REG_K,I_REG_L,I_REG_M,I_REG_N,
-            reg.r.p,reg.r.q,reg.r.r,reg.d.dp,
-            reg.r.c?"1":".",reg.r.z?"1":".");
-
+        sprintf(Regs_String,	"BA:%.4x i:%.4x p:%.6x x:%.6x y:%.6x u:%.6x s:%.6 f:%.2x z:%s c:%s",
+            reg.x.ba,reg.x.i,reg.x.p,reg.x.x,reg.x.y,reg.x.u,reg.x.s,reg.x.f,
+                reg.r.z?"1":"0",
+                reg.r.c?"1":"0");
         break;
     }
-#endif
 }
 
 
@@ -3957,4 +3955,4 @@ DWORD Cdebug_sc62015::DisAsm_1(DWORD adr)
     NextDasmAdr = (adr+l)&MASK_20;
     return((adr+l)&MASK_20);
 }
-#endif
+

@@ -20,7 +20,8 @@ void Cregsz80Widget::refresh()
 {
     if (!pCPU) return;
 
-    CZ80 *cpu = (CZ80 *) pCPU;
+//    CZ80 *cpu = (CZ80 *) pCPU;
+    CCPU *cpu =  pCPU;
 
     cpu->Regs_Info(0);
     ui->regsTextEdit->setText(QString(cpu->Regs_String));

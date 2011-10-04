@@ -331,6 +331,17 @@ DWORD CpcXXXX::Get_24(DWORD adr)
     return((mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_24);
 }
 
+DWORD CpcXXXX::get_mem(DWORD adr,int size)
+{
+    switch(size)
+    {
+    case SIZE_8 :return(Get_PC(adr));
+    case SIZE_16:return(Get_PC(adr)+(Get_PC(adr+1)<<8));
+    case SIZE_20:return((Get_PC(adr)+(Get_PC(adr+1)<<8)+(Get_PC(adr+2)<<16))&MASK_20);
+    case SIZE_24:return((Get_PC(adr)+(Get_PC(adr+1)<<8)+(Get_PC(adr+2)<<16))&MASK_24);
+    }
+    return(0);
+}
 /*****************************************************************************/
 /* Set data to mem[]														 */
 /*  ENTRY :DWORD adr=RAM address, BYTE(8),WORD(16),DWORD(20,24) d=data		 */
@@ -381,6 +392,29 @@ void CpcXXXX::Set_24(DWORD adr, DWORD d)
     if(Chk_Adr(&a,(d>>16))) mem[a]=(d>>16);
 }
 
+void CpcXXXX::set_mem(DWORD adr,int size,DWORD data)
+{
+    switch(size)
+    {
+    case SIZE_8 :
+        Set_8(adr , (BYTE) data);
+        break;
+    case SIZE_16:
+        Set_8(adr , (BYTE) data);
+        Set_8(adr+1 , (BYTE) (data>>8));
+        break;
+    case SIZE_20:
+        Set_8(adr , (BYTE) data);
+        Set_8(adr+1 , (BYTE) (data>>8));
+        Set_8(adr+2 , (BYTE) ((data>>16)&MASK_4));
+        break;
+    case SIZE_24:
+        Set_8(adr , (BYTE) data);
+        Set_8(adr+1 , (BYTE) (data>>8));
+        Set_8(adr+2 , (BYTE) (data>>16));
+        break;
+    }
+}
 /*****************************************************************************/
 /* RETURN: 0=error, 1=success												 */
 /*****************************************************************************/

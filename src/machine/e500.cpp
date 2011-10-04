@@ -82,7 +82,7 @@ bool Ce500::run(void) {
     CpcXXXX::run();
     Csc62015 * sc = (Csc62015*)pCPU;
 
-    if((sc->imem[IMEM_IMR]&0x80)&&(pCPU->imem[IMEM_IMR] & pCPU->imem[IMEM_ISR])){
+    if((sc->get_imem(IMEM_IMR)&0x80)&&(sc->get_imem(IMEM_IMR) & sc->get_imem(IMEM_ISR))) {
         sc->set_reg(REG_S,sc->get_reg(REG_S)-SIZE_20-2);								//go interrupt routine
         sc->set_mem(sc->get_reg(REG_S)+2,SIZE_20,sc->get_reg(REG_P));
         sc->set_mem(sc->get_reg(REG_S)+1,SIZE_8,sc->get_reg(REG_F));
@@ -458,7 +458,7 @@ BYTE Ce500::getKey()
             if (KEY('B'))			data|=0x40;
             if (KEY(K_DA))			data|=0x80;			// DOWN ARROW
         }
-        if (ks&0x200) {
+        if (ks&0x400) {
             if (KEY(K_F5))			data|=0x04;
             if (KEY(K_F4))			data|=0x08;
             if (KEY(K_F3))			data|=0x10;
@@ -471,7 +471,8 @@ BYTE Ce500::getKey()
     }
 
     if(data) {
-            Set_ISR(INT_KEY);						//make keyint
+//            Set_ISR(INT_KEY);						//make keyint
+            ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
 
         }
     pCPU->imem[IMEM_KI] = data;					//set data to ki

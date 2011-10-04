@@ -206,12 +206,14 @@ public:
     virtual WORD	Get_16rPC(DWORD adr);
     DWORD Get_20(DWORD adr);
     DWORD Get_24(DWORD adr);
+    DWORD get_mem(DWORD adr, int size);
 
 	void	Set_8(DWORD adr,BYTE d);
 	void	Set_16(DWORD adr,WORD d);
     void	Set_16r(DWORD adr,WORD d);
     void Set_20(DWORD adr,DWORD d);
     void Set_24(DWORD adr,DWORD d);
+    void set_mem(DWORD adr, int size, DWORD data);
 	virtual bool	Chk_Adr(DWORD *d,DWORD data) = 0;
 	virtual bool	Chk_Adr_R(DWORD *d,DWORD data) = 0;
     virtual UINT8 in(UINT8 address)=0;
@@ -292,6 +294,8 @@ public:
     DWORD DasmLastAdr;
     qint32 BreakPointAdr;
     int BreakSubLevel;
+
+
 };
 
 
