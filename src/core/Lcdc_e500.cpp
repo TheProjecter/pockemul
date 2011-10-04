@@ -15,23 +15,22 @@ Clcdc_e500::Clcdc_e500(CPObject *parent )	: Clcdc(parent){						//[constructor]
 
 static const struct {
     int x,y;
-} e500_pos[16]={
-    {0, 0},     // BUSY
-    {18, 0},    // SHIFT
-    {40, 0},    // JAP
-    {50, 0},    // SMALL
-    {75 ,0},    // DE
-    {83 ,0},    // G
-    {88 ,0},    // RAD
-    {160,0},    // RUN
-    {175,0},    // PRO
-    {190,0},    // RESERVE
-    {220,0},    // DEF
-    {240,0},    // ROMEAN_I
-    {245,0},    // ROMEAN_II
-    {255,0},    // ROMEAN_III
-    {265,0},    // CTRL
-    {290,0}     // REV_BAT
+} e500_pos[15]={
+    {7, 10},     // BUSY
+    {60, 10},    // RUN
+    {79, 10},    // PRO
+    {35, 10},    // DBL
+    {257 ,10},    // SMALL
+    {238 ,10},    // KANA
+    {202 ,0},    // HYP
+    {200,10},    // CAPS
+    {173,10},    // 2ndF
+    {241,0},    // PRINT
+    {300,10},    // E
+    {181,0},    // RAD
+    {176,0},    // G
+    {168,0},    // DEG
+    {314,9}    // BATT
 };
 /* busy  shift   small   de g rad   run  pro  reserve  def  i ii iii battery */
 /* japanese? */
@@ -42,28 +41,27 @@ static const struct {
 // S2           RUN     PRO     RESERVE         RAD     G       DE      F64F
 // S3   DEF     I       II      III     SML     x       SHIFT   BUSY    F64E
 
-#define SYMB1_1600		((Ce500 *)pPC)->pHD61102_2->info.imem[symbSL(4)]
-#define SYMB2_1600		((Ce500 *)pPC)->pHD61102_2->info.imem[symbSL(6)]
-#define SYMB3_1600		((Ce500 *)pPC)->pHD61102_2->info.imem[symbSL(7)]
+#define SYMB1_e500		((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(0)]
+#define SYMB2_e500		((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(4)]
+#define SYMB3_e500		((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(5)]
 
 void Clcdc_e500::disp_symb(void)
 {
-    disp_one_symb( BUSY,		COLOR(SYMB3_1600&1),	e500_pos[0].x,	e500_pos[0].y);
-    disp_one_symb( SHIFT,		COLOR(SYMB3_1600&2),	e500_pos[1].x,	e500_pos[1].y);
-    disp_one_symb( JAP,			COLOR(SYMB3_1600&4),	e500_pos[2].x,	e500_pos[2].y);
-    disp_one_symb( SMALL,		COLOR(SYMB3_1600&8),	e500_pos[3].x,	e500_pos[3].y);
-    disp_one_symb( DE,			COLOR(SYMB2_1600&0x01),	e500_pos[4].x,	e500_pos[4].y);
-    disp_one_symb( G,			COLOR(SYMB2_1600&0x02),	e500_pos[5].x,	e500_pos[5].y);
-    disp_one_symb( RAD,			COLOR(SYMB2_1600&0x04),	e500_pos[6].x,	e500_pos[6].y);
-    disp_one_symb( RUN,			COLOR(SYMB2_1600&0x40),	e500_pos[7].x,	e500_pos[7].y);
-    disp_one_symb( PRO,			COLOR(SYMB2_1600&0x20),	e500_pos[8].x,	e500_pos[8].y);
-    disp_one_symb( RESERVE,		COLOR(SYMB2_1600&0x10),	e500_pos[9].x,	e500_pos[9].y);
-    disp_one_symb( DEF,			COLOR(SYMB3_1600&0x80),	e500_pos[10].x,	e500_pos[10].y);
-    disp_one_symb( ROMEAN_I,	COLOR(SYMB3_1600&0x40),	e500_pos[11].x,	e500_pos[11].y);
-    disp_one_symb( ROMEAN_II,	COLOR(SYMB3_1600&0x20),	e500_pos[12].x,	e500_pos[12].y);
-    disp_one_symb( ROMEAN_III,	COLOR(SYMB3_1600&0x10),	e500_pos[13].x,	e500_pos[13].y);
-    disp_one_symb( CTRL,        COLOR(SYMB1_1600&0x02),	e500_pos[14].x,	e500_pos[14].y);
-    disp_one_symb( REV_BATT,    COLOR(0),               e500_pos[15].x,	e500_pos[15].y);
+    disp_one_symb( BUSY,		COLOR(SYMB1_e500&1),	e500_pos[0].x,	e500_pos[0].y);
+    disp_one_symb( RUN,         COLOR(SYMB1_e500&2),	e500_pos[1].x,	e500_pos[1].y);
+    disp_one_symb( PRO,			COLOR(SYMB1_e500&4),	e500_pos[2].x,	e500_pos[2].y);
+    disp_one_symb( DBL,         COLOR(SYMB1_e500&8),	e500_pos[3].x,	e500_pos[3].y);
+    disp_one_symb( SMALL,		COLOR(SYMB2_e500&0x01),	e500_pos[4].x,	e500_pos[4].y);
+    disp_one_symb( JAP, 		COLOR(SYMB2_e500&0x02),	e500_pos[5].x,	e500_pos[5].y);
+    disp_one_symb( HYP,			COLOR(SYMB2_e500&0x04),	e500_pos[6].x,	e500_pos[6].y);
+    disp_one_symb( CAPS,		COLOR(SYMB2_e500&0x08),	e500_pos[7].x,	e500_pos[7].y);
+    disp_one_symb( SECF,		COLOR(SYMB2_e500&0x10),	e500_pos[8].x,	e500_pos[8].y);
+    disp_one_symb( PRINTL,		COLOR(SYMB3_e500&0x01),	e500_pos[9].x,	e500_pos[9].y);
+    disp_one_symb( E,			COLOR(SYMB3_e500&0x02),	e500_pos[10].x,	e500_pos[10].y);
+    disp_one_symb( RAD,         COLOR(SYMB3_e500&0x04),	e500_pos[11].x,	e500_pos[11].y);
+    disp_one_symb( G,       	COLOR(SYMB3_e500&0x08),	e500_pos[12].x,	e500_pos[12].y);
+    disp_one_symb( DEG,         COLOR(SYMB3_e500&0x10),	e500_pos[13].x,	e500_pos[13].y);
+    disp_one_symb( REV_BATT,    COLOR(SYMB3_e500&0x80),	e500_pos[14].x,	e500_pos[14].y);
 
     Refresh = true;
 

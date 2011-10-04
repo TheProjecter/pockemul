@@ -110,7 +110,8 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_CAL_PER   0xd8
 #define K_CAL_RES   0xd9
 #define K_MENU      0xda
-
+#define K_EXTMENU   0xdb
+#define K_STO		0xdd
 #define K_RCL		0xde
 #define K_RSV		0xdf
 

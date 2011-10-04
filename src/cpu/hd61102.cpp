@@ -55,7 +55,7 @@ BYTE CHD61102::instruction(qint16 cmd)
 {
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);
 
-    //AddLog(LOG_TEMP,tr("HD61102 CMD:%1").arg(cmd,4,16,QChar('0')));
+    AddLog(LOG_DISPLAY,tr("HD61102 CMD:%1").arg(cmd,4,16,QChar('0')));
 
     if ((cmd & MASK_read) == MASK_read ) { return cmd_read(cmd); }
     else

@@ -47,10 +47,10 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     Lcd_ratio_X	= 348.0/240;
     Lcd_ratio_Y	= 60.0/32;
 
-    Lcd_Symb_X	= 55;//(int) (45 * 1.18);
-    Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
-    Lcd_Symb_DX	= 339;
-    Lcd_Symb_DY	= 5;
+    Lcd_Symb_X	= 69;//(int) (45 * 1.18);
+    Lcd_Symb_Y	= 79;//(int) (35 * 1.18);
+    Lcd_Symb_DX	= 348;
+    Lcd_Symb_DY	= 20;
     Lcd_Symb_ratio_X	= 1;//1.18;
 
 
@@ -383,13 +383,13 @@ BYTE Ce500::getKey()
     {
         AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ks,4,16,QChar('0')));
         if (ks&1) {
-            if (KEY('2'))			data|=0x01;
+            if (KEY(K_EXTMENU))     data|=0x01;
             if (KEY('Q'))			data|=0x02;
             if (KEY(K_MENU))		data|=0x04;
             if (KEY('A'))			data|=0x08;
             if (KEY(K_BASIC))		data|=0x10;
             if (KEY('Z'))			data|=0x20;
-            if (KEY(K_SHT))			data|=0x40;
+//            if (KEY(K_SHT))			data|=0x40;
             if (KEY(K_CTRL))		data|=0x80;			// UP ARROW
         }
         if (ks&2) {
@@ -443,10 +443,10 @@ BYTE Ce500::getKey()
             if (KEY('0'))			data|=0x80;
         }
         if (ks&0x40) {
-//            if (KEY(K_STO))			data|=0x01;			// R ARROW
+            if (KEY(K_STO))			data|=0x01;			// R ARROW
             if (KEY(K_SIN))			data|=0x02;			// MODE
             if (KEY(K_DEG))			data|=0x04;			// CLS
-//            if (KEY(K_POT))			data|=0x08;
+            if (KEY(K_POT))			data|=0x08;
             if (KEY('8'))			data|=0x10;
             if (KEY('5'))			data|=0x20;
             if (KEY('2'))			data|=0x40;
