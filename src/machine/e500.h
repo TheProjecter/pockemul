@@ -44,6 +44,7 @@ public:
     void disp(qint8 cmd, DWORD data);
     BYTE getKey();
     bool run();
+
 protected:
 //	BYTE previous_key;
 

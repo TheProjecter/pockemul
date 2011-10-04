@@ -7,11 +7,10 @@
 #include "Inter.h"
 #include "Log.h"
 
-#if 1
 
 Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 576000/3);
+    setfrequency( (int) 3072000/3);
     setcfgfname(QString("e500"));
 
     SessionHeader	= "E500PKM";
@@ -80,6 +79,10 @@ bool Ce500::init(void) {
 
 bool Ce500::run(void) {
     CpcXXXX::run();
+
+
+
+    getKey();
     Csc62015 * sc = (Csc62015*)pCPU;
 
     if((sc->get_imem(IMEM_IMR)&0x80)&&(sc->get_imem(IMEM_IMR) & sc->get_imem(IMEM_ISR))) {
@@ -122,10 +125,10 @@ void Ce500::disp(qint8 cmd,DWORD data)
         pLCDC->Refresh = true;
         break;
     case   7:							/* LCDC 2 read data */
-        pCPU->set_mem(0x2007,SIZE_8,pHD61102_2->instruction(0x300));
+        mem[0x2007] = pHD61102_2->instruction(0x300);
         break;
     case 0xb:							/* LCDC 1 read data */
-        pCPU->set_mem(0x200b,SIZE_8,pHD61102_1->instruction(0x300));
+        mem[0x200b] = pHD61102_1->instruction(0x300);
         break;
     }
 }
@@ -356,7 +359,7 @@ E5KeyTbl	E5_KeyTbl[]={
 #endif
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
-#define		Set_ISR(d)	((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,d)	// set status to ISR
+
 
 BYTE Ce500::getKey()
 {
@@ -375,90 +378,113 @@ BYTE Ce500::getKey()
 //    }
 //    BYTE ks = pKEYB->Get_KS() ^ 0xff;
     DWORD ks = (pCPU->imem[IMEM_KOH]<<8)+pCPU->imem[IMEM_KOL];
-    AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ks,4,16,QChar('0')));
-    if ((pKEYB->LastKey) && ks )
+
+    if ((pKEYB->LastKey) )
     {
+        AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ks,4,16,QChar('0')));
         if (ks&1) {
             if (KEY('2'))			data|=0x01;
-            if (KEY('5'))			data|=0x02;
-            if (KEY('8'))			data|=0x04;
-            if (KEY('H'))			data|=0x08;
-            if (KEY(K_SHT))			data|=0x10;
-            if (KEY('Y'))			data|=0x20;
-            if (KEY('N'))			data|=0x40;
-            if (KEY(K_UA))			data|=0x80;			// UP ARROW
+            if (KEY('Q'))			data|=0x02;
+            if (KEY(K_MENU))		data|=0x04;
+            if (KEY('A'))			data|=0x08;
+            if (KEY(K_BASIC))		data|=0x10;
+            if (KEY('Z'))			data|=0x20;
+            if (KEY(K_SHT))			data|=0x40;
+            if (KEY(K_CTRL))		data|=0x80;			// UP ARROW
         }
         if (ks&2) {
-            if (KEY('.'))			data|=0x01;
-            if (KEY('-'))			data|=0x02;
-            if (KEY(K_OF))			data|=0x04;			// OFF
-            if (KEY('S'))			data|=0x08;
-            if (KEY(K_F1))			data|=0x10;
-            if (KEY('W'))			data|=0x20;
-            if (KEY('X'))			data|=0x40;
-            if (KEY(K_RSV))			data|=0x80;
+            if (KEY('W'))			data|=0x01;
+            if (KEY('E'))			data|=0x02;
+            if (KEY('S'))			data|=0x04;			// OFF
+            if (KEY('D'))			data|=0x08;
+            if (KEY('X'))			data|=0x10;
+            if (KEY('C'))			data|=0x20;
+            if (KEY(K_SML))			data|=0x40;
+//            if (KEY(K_KANA))			data|=0x80;
         }
         if (ks&4) {
-            if (KEY('1'))			data|=0x01;
-            if (KEY('4'))			data|=0x02;
-            if (KEY('7'))			data|=0x04;
-            if (KEY('J'))			data|=0x08;
-            if (KEY(K_F5))			data|=0x10;
-            if (KEY('U'))			data|=0x20;
-            if (KEY('M'))			data|=0x40;
-            if (KEY('0'))			data|=0x80;
+            if (KEY('R'))			data|=0x01;
+            if (KEY('T'))			data|=0x02;
+            if (KEY('F'))			data|=0x04;
+            if (KEY('G'))			data|=0x08;
+            if (KEY('V'))			data|=0x10;
+            if (KEY('B'))			data|=0x20;
+            if (KEY(' '))			data|=0x40;
+            if (KEY(K_DA))			data|=0x80;
         }
         if (ks&8) {
-            if (KEY(')'))			data|=0x01;
-            if (KEY('L'))			data|=0x02;
-            if (KEY('O'))			data|=0x04;
-            if (KEY('K'))			data|=0x08;
-            if (KEY(K_F6))			data|=0x10;
-            if (KEY('I'))			data|=0x20;
-            if (KEY('('))			data|=0x40;
-            if (KEY(K_RET))			data|=0x80;
+            if (KEY('Y'))			data|=0x01;
+            if (KEY('U'))			data|=0x02;
+            if (KEY('H'))			data|=0x04;
+            if (KEY('J'))			data|=0x08;
+            if (KEY('N'))			data|=0x10;
+            if (KEY('M'))			data|=0x20;
+            if (KEY(K_UA))			data|=0x40;
+            if (KEY(K_LA))			data|=0x80;
         }
         if (ks&0x10) {
-            if (KEY('+'))			data|=0x01;			// +
-            if (KEY('*'))			data|=0x02;			// *
-            if (KEY('/'))			data|=0x04;			// /
-            if (KEY('D'))			data|=0x08;
-            if (KEY(K_F2))			data|=0x10;			// Key F2
-            if (KEY('E'))			data|=0x20;
-            if (KEY('C'))			data|=0x40;
-            if (KEY(K_RCL))			data|=0x80;
+            if (KEY('I'))			data|=0x01;			// +
+            if (KEY('O'))			data|=0x02;			// *
+            if (KEY('K'))			data|=0x04;			// /
+            if (KEY('L'))			data|=0x08;
+            if (KEY(','))			data|=0x10;			// Key F2
+            if (KEY(';'))			data|=0x20;
+            if (KEY(K_RA))			data|=0x40;
+            if (KEY(K_RET))			data|=0x80;
         }
         if (ks&0x20) {
-            if (KEY('='))			data|=0x01;			// =
-            if (KEY(K_LA))			data|=0x02;			// LEFT ARROW
-            if (KEY('P'))			data|=0x04;
-            if (KEY('F'))			data|=0x08;
-            if (KEY(K_F3))			data|=0x10;
-            if (KEY('R'))			data|=0x20;
-            if (KEY('V'))			data|=0x40;
-            if (KEY(' '))			data|=0x80;
+            if (KEY(K_RCL))			data|=0x01;			// =
+            if (KEY(K_HYP))			data|=0x02;			// LEFT ARROW
+            if (KEY(K_HEX))			data|=0x04;
+            if (KEY(K_EXP))			data|=0x08;
+            if (KEY('7'))			data|=0x10;
+            if (KEY('4'))			data|=0x20;
+            if (KEY('1'))			data|=0x40;
+            if (KEY('0'))			data|=0x80;
         }
         if (ks&0x40) {
-            if (KEY(K_RA))			data|=0x01;			// R ARROW
-            if (KEY(K_MOD))			data|=0x02;			// MODE
-            if (KEY(K_CLR))			data|=0x04;			// CLS
-            if (KEY('A'))			data|=0x08;
-            if (KEY(K_DEF))			data|=0x10;
-            if (KEY('Q'))			data|=0x20;
-            if (KEY('Z'))			data|=0x40;
-            if (KEY(K_SML))			data|=0x80;
+//            if (KEY(K_STO))			data|=0x01;			// R ARROW
+            if (KEY(K_SIN))			data|=0x02;			// MODE
+            if (KEY(K_DEG))			data|=0x04;			// CLS
+//            if (KEY(K_POT))			data|=0x08;
+            if (KEY('8'))			data|=0x10;
+            if (KEY('5'))			data|=0x20;
+            if (KEY('2'))			data|=0x40;
+            if (KEY(K_SIGN))			data|=0x80;
         }
         if (ks&0x80) {
-            if (KEY('3'))			data|=0x01;
-            if (KEY('6'))			data|=0x02;
-            if (KEY('9'))			data|=0x04;
-            if (KEY('G'))			data|=0x08;
-            if (KEY(K_F4))			data|=0x10;			// Key F4
-            if (KEY('T'))			data|=0x20;
-            if (KEY('B'))			data|=0x40;
-            if (KEY(K_DA))			data|=0x80;			// DOWN ARROW
+            if (KEY(K_CCE))			data|=0x01;
+            if (KEY(K_COS))			data|=0x02;
+            if (KEY(K_LN))			data|=0x04;
+            if (KEY(K_ROOT))		data|=0x08;
+            if (KEY('9'))			data|=0x10;			// Key F4
+            if (KEY('6'))			data|=0x20;
+            if (KEY('3'))			data|=0x40;
+            if (KEY('.'))			data|=0x80;			// DOWN ARROW
+        }
+        if (ks&0x100) {
+            if (KEY(K_STAT))		data|=0x01;
+            if (KEY(K_TAN))			data|=0x02;
+            if (KEY(K_LOG))			data|=0x04;
+            if (KEY(K_SQR))         data|=0x08;
+            if (KEY('/'))			data|=0x10;			// Key F4
+            if (KEY('*'))			data|=0x20;
+            if (KEY('-'))			data|=0x40;
+            if (KEY('+'))			data|=0x80;			// DOWN ARROW
+        }
+        if (ks&0x200) {
+            if (KEY(')'))			data|=0x01;
+            if (KEY(K_FSE))			data|=0x02;
+            if (KEY(K_1X))			data|=0x04;
+            if (KEY('('))   		data|=0x08;
+            if (KEY(K_DEL))			data|=0x10;			// Key F4
+            if (KEY(K_BS))			data|=0x20;
+            if (KEY(K_INS))			data|=0x40;
+            if (KEY('='))			data|=0x80;			// DOWN ARROW
         }
         if (ks&0x400) {
+            if (KEY('P'))			data|=0x01;
+            if (KEY(K_SHT))			data|=0x02;
             if (KEY(K_F5))			data|=0x04;
             if (KEY(K_F4))			data|=0x08;
             if (KEY(K_F3))			data|=0x10;
@@ -480,4 +506,3 @@ BYTE Ce500::getKey()
 
 }
 
-#endif

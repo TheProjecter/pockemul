@@ -164,6 +164,10 @@ private:
 
     BYTE	pre_1,pre_2;		/* pre byte mode */
     SCREG	reg;				/* register structure */
+    bool div500;
+    bool div2;
+    qint64 ticks;
+    qint64 ticks2;
 	
     void  Op_00(void);void  Op_01(void);void  Op_02(void);void  Op_03(void);void  Op_04(void);void  Op_05(void);void  Op_06(void);void  Op_07(void);
     void  Op_08(void);void  Op_09(void);void  Op_0a(void);void  Op_0b(void);void  Op_0c(void);void  Op_0d(void);void  Op_0e(void);void  Op_0f(void);

@@ -64,20 +64,37 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     fn_status="e500e.sta";
     CallSubLevel=0;
 
+    div500	= div2	= false;
+    ticks	= ticks2	= 0;
+
      pDEBUG	= new Cdebug_sc62015(parent);
      regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
+#define		XTICKS      ( pPC->getfrequency() / 2)              // 0.5s counter
+#define		XTICK2      ( pPC->getfrequency() / 1000 * 2)       // 2ms counter
+#define		Set_ISR(d)	opr_imem(IMEM_ISR,OPR_OR,d)	// set status to ISR
+
 inline void Csc62015::AddState(BYTE n)
 {
     pPC->pTIMER->state+=(n);
-/*
+
+
     ticks+=(n);
     ticks2+=(n);
 
 #if 1
     div500  = (ticks >= XTICKS);
     div2    = (ticks2>= XTICK2);
+    if (div500) {
+        Set_ISR(INT_SLOW);
+        ticks=0;
+    }
+    if (div2) {
+        Set_ISR(INT_FAST);
+        ticks2=0;
+    }
+
 #else
     if (ticks >= XTICKS)
     {
@@ -91,17 +108,9 @@ inline void Csc62015::AddState(BYTE n)
     }
 #endif
 
-    if (resetFlag) {
-        ticksReset+=(n);
-        if (ticksReset >= XTICKRESET)
-        {
-            resetFlag = false;
-            ticksReset = 0;
-        }
-    }
 
-    backgroundTasks();
-    */
+//    backgroundTasks();
+
 }
 
 /*****************************************************************************/
@@ -139,6 +148,7 @@ inline BYTE Csc62015::Conv_imemAdr(BYTE d,bool m)
 inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len)
 {
 	register BYTE i;
+    if (fp_log) fprintf(fp_log,"IMEM access : %02X  l=%d\n",d,len);
 	for(i=0;i<len;i++){
 		switch(d++){
         case	IMEM_KOL:
@@ -3573,13 +3583,13 @@ void Csc62015::Regs_Info(UINT8 Type)
     {
     case 0:			// Monitor Registers Dialog
     case 2:			// For Log File
-        sprintf(Regs_String,	"BA:%.4x i:%.4x p:%.6x x:%.6x y:%.6x u:%.6x s:%.6 f:%.2x z:%s c:%s",
+        sprintf(Regs_String,	"BA:%.4x i:%.4x p:%.6x x:%.6x y:%.6x u:%.6x s:%.6x f:%.2x z:%s c:%s",
             reg.x.ba,reg.x.i,reg.x.p,reg.x.x,reg.x.y,reg.x.u,reg.x.s,reg.x.f,
                 reg.r.z?"1":"0",
                 reg.r.c?"1":"0");
         break;
     case 1:			// For Log File
-        sprintf(Regs_String,	"BA:%.4x i:%.4x p:%.6x x:%.6x y:%.6x u:%.6x s:%.6 f:%.2x z:%s c:%s",
+        sprintf(Regs_String,	"BA:%.4x i:%.4x p:%.6x x:%.6x y:%.6x u:%.6x s:%.6x f:%.2x z:%s c:%s",
             reg.x.ba,reg.x.i,reg.x.p,reg.x.x,reg.x.y,reg.x.u,reg.x.s,reg.x.f,
                 reg.r.z?"1":"0",
                 reg.r.c?"1":"0");
