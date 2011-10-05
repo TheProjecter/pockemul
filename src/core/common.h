@@ -64,9 +64,9 @@
 #include "global.h"
 
 typedef unsigned char	UINT8;
-typedef unsigned short	UINT16;
-typedef unsigned short	WORD;
-typedef unsigned long	DWORD;
+typedef quint16	UINT16;
+typedef quint16	WORD;
+typedef quint32	DWORD;
 typedef unsigned char	BYTE;
 typedef unsigned int    UINT;
 typedef 		 DWORD	COLORREF;	
