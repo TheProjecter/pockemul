@@ -27,6 +27,7 @@
 #include "hd61700.h"
 #include "Log.h"
 #include "pcxxxx.h"
+#include "ui/cregsz80widget.h"
 
 #ifdef FIRST_CASIO
 
@@ -114,6 +115,8 @@ static const UINT16 irq_vector[] = {0x0032, 0x0042, 0x0052, 0x0062, 0x0072};
 
 CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
 
+//    pDEBUG	= new Cdebug_sc62015(parent);
+    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
 //-------------------------------------------------
@@ -336,6 +339,7 @@ bool CHD61700::check_irqs(void)
 void CHD61700::step(void) {
     m_icount = 1;
     execute_run();
+    pPC->pTIMER->state-=(m_icount-1);
 }
 
 //-------------------------------------------------

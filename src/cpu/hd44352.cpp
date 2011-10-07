@@ -380,3 +380,8 @@ UINT8 CHD44352::data_read()
 {
     return info.m_data_bus;
 }
+
+HD44352info CHD44352::getInfo()
+{
+    return info;
+}

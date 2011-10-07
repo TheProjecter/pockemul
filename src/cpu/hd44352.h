@@ -57,9 +57,10 @@ public:
     UINT8 data_read();
     void data_write(UINT8 data);
     void control_write(UINT8 data);
+    HD44352info getInfo();
 
 //    int video_update(bitmap_t &bitmap, const rectangle &cliprect);
-
+static UINT8 compute_newval(UINT8 type, UINT8 oldval, UINT8 newval);
 protected:
     // device-level overrides
     bool	init(void);						//initialize
@@ -72,8 +73,9 @@ protected:
 //    virtual void device_config_complete();
 //    virtual bool device_validity_check( const game_driver &driver ) const;
 
+
 private:
-    UINT8 compute_newval(UINT8 type, UINT8 oldval, UINT8 newval);
+
     UINT8 get_char(UINT16 pos);
 
 //    static const device_timer_id ON_TIMER = 1;

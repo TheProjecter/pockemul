@@ -12,7 +12,7 @@
 #include "ct6834.h"
 #include "uart.h"
 #include "Log.h"
-#include "Lcdc_x07.h"
+#include "Lcdc_pb1000.h"
 #include "Keyb.h"
 #include "Connect.h"
 #include "dialoganalog.h"
@@ -65,7 +65,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
     SlotList.clear();
     SlotList.append(CSlot(3 , 0x0000 ,	":/pb1000/rom0.bin" , ""	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(32, 0x6000 ,	""					, ""	, RAM , "RAM0"));
+    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "RAM0"));
     SlotList.append(CSlot(32, 0x8000 ,	":/pb1000/rom1.bin"	, ""	, ROM , "ROM"));
     SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, RAM , "RAM1"));
 
@@ -90,22 +90,13 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
     Lcd_Symb_DX	= 339;
     Lcd_Symb_DY	= 5;
-    Lcd_Symb_ratio_X	= 1;//1.18;
+    Lcd_Symb_ratio_X	= 1;
 
     PowerSwitch = 0;
 
-//    pLCDC		= new Clcdc_x07(this);
+    pLCDC		= new Clcdc_pb1000(this);
     pCPU		= new CHD61700(this);
-
-//    pUART        = new Cuart(this);
     pTIMER		= new Ctimer(this);
-    //pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
-
-
-//    pPARConnector = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",false,QPoint(715,50));
-//    publish(pPARConnector);
-//    pSERConnector = new Cconnector(this,9,1,Cconnector::Canon_9,"Serial Connector",false,QPoint(0,50));
-//    publish(pSERConnector);
     pKEYB		= new Ckeyb(this,"pb1000.map");
     pHD44352    = new CHD44352(this);
 
@@ -125,25 +116,8 @@ bool Cpb1000::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
-//    memset((void*)&Port_FX,0,sizeof (Port_FX));
-//    memset((void *)mem ,0,0x6000);
-
-//    ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
-
-//    pT6834->init();
-//    pUART->init();
-//    pUART->pTIMER = pTIMER;
-
-
-
-//    WatchPoint.remove(this);
-//    WatchPoint.add(&pPARConnector_value,64,15,this,"Parallel Connector");
-//    WatchPoint.add(&pSERConnector_value,64,9,this,"Serial Connector");
-
     return true;
 }
-
-
 
 bool Cpb1000::run() {
 
@@ -154,8 +128,8 @@ bool Cpb1000::run() {
 
 bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
 {
-    if ( (*d>=0x0000) && (*d<=0x3FFF) )	return(true);		// RAM area()
-    if ( (*d>=0x8000) && (*d<=0x97FF) )	return(true);		// RAM area()
+    if ( (*d>=0x06000) && (*d<=0x07FFF) )	return(true);		// RAM area()
+    if ( (*d>=0x18000) && (*d<=0x1FFFF) )	return(true);		// RAM area()
 
     return false;
 }

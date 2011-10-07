@@ -6,5 +6,7 @@
         <file>pb1000/rom0.bin</file>
         <file>pb1000/rom1.bin</file>
         <file>pb1000/pb-1000.png</file>
+        <file>pb1000/pb-1000lcd.png</file>
+        <file>pb1000/pb-1000symb.png</file>
     </qresource>
 </RCC>

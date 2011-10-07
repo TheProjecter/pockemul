@@ -8,7 +8,7 @@ class Clcdc_pc1600:public Clcdc{
 public:
     void disp(void);				//display LCDC data to screen
     void disp_symb(void);
-    const char*	GetClassName(){ return("Clcdc_pc1500");};
+    const char*	GetClassName(){ return("Clcdc_pc1500");}
 
     int computeSL(CHD61102* pCtrl,int ord);
     int symbSL(int x);

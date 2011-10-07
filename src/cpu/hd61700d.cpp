@@ -9,7 +9,7 @@
 #define EXT_ROM		(pc > 0x0c00)
 #define INC_POS		pos += (type+1)
 #define POS			(pos + type)
-
+#define BIT(x,n) (((x)>>(n))&1)
 static const char *const reg_5b[4] =  {"sx", "sy", "sz", "sz"};
 static const char *const reg_8b[8] =  {"pe", "pd", "ib", "ua", "ia", "ie", "tm", "tm"};
 static const char *const reg_16b[8] = {"ix", "iy", "iz", "us", "ss", "ky", "ky", "ky"};
@@ -387,11 +387,11 @@ UINT32 get_dasmflags(UINT8 op)
         case 0xb4: case 0xb5: case 0xb6: case 0xb7:	//jr
         case 0xde:									//jp
         case 0xdf:									//jp
-            return DASMFLAG_STEP_OVER;
+            return 0;//DASMFLAG_STEP_OVER;
         case 0xf0: case 0xf1: case 0xf2: case 0xf3:	//rtn
         case 0xf4: case 0xf5: case 0xf6: case 0xf7:	//rtn
         case 0xfd:									//rtni
-            return DASMFLAG_STEP_OUT;
+            return 1;// DASMFLAG_STEP_OUT;
     }
 
     return 0;
