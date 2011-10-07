@@ -144,7 +144,8 @@ enum Models {
     CE1600P,
     X07,
     X710,
-    E500
+    E500,
+    PB1000
 };
 
 #endif

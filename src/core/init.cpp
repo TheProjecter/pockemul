@@ -60,6 +60,7 @@
 #include "cx07.h"
 #include "cx710.h"
 #include "e500.h"
+#include "pb1000.h"
 
 
 extern QList<CPObject *> listpPObject;  
@@ -122,18 +123,19 @@ CPObject *pPC=0;
         case CE140F : pPC = new Cce140f;	pPC->setName("CE-140F");break;
         case CE150  : pPC = new Cce150;		pPC->setName("CE-150");break;
         case CE152  : pPC = new Cce152;		pPC->setName("CE-152");break;
-        case TANDY263591: pPC = new C263591;	pPC->setName("26-3591");break;
+        case TANDY263591: pPC = new C263591;pPC->setName("26-3591");break;
 
-        case SerialConsole: pPC = new Csio;		pPC->setName("Serial Console");break;
-        case CABLE11Pins: pPC = new Ccable;		pPC->setName("11Pins Cable");break;
-        case POTAR      : pPC = new Cpotar;		pPC->setName("Potar");break;
-        case Simulator  : pPC = new Ccesimu;		pPC->setName("Simulator");break;
+        case SerialConsole: pPC = new Csio;	pPC->setName("Serial Console");break;
+        case CABLE11Pins: pPC = new Ccable;	pPC->setName("11Pins Cable");break;
+        case POTAR      : pPC = new Cpotar;	pPC->setName("Potar");break;
+        case Simulator  : pPC = new Ccesimu;pPC->setName("Simulator");break;
 
-        case CE1600P: pPC = new Cce1600p;		pPC->setName("CE-1600P");break;
+        case CE1600P: pPC = new Cce1600p;	pPC->setName("CE-1600P");break;
 
         case X07    : pPC = new Cx07;       pPC->setName("Canon X-07"); break;
-        case X710   : pPC = new Cx710;       pPC->setName("Canon X-710"); break;
-        case E500   : pPC = new Ce500;       pPC->setName("PC-E500"); break;
+        case X710   : pPC = new Cx710;      pPC->setName("Canon X-710"); break;
+        case E500   : pPC = new Ce500;      pPC->setName("PC-E500"); break;
+        case PB1000 : pPC = new Cpb1000;    pPC->setName("Casio PB-1000"); break;
 
         default			: return 0;
     }

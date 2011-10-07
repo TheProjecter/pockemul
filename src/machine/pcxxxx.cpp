@@ -454,11 +454,11 @@ bool CpcXXXX::init(void)
 	if(pTIMER)	pTIMER->init();
 	if(pLCDC)	pLCDC->init_screen();
 
-	WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
-	WatchPoint.add((qint64 *) &IO_A,8,8,this,"Port A");
-	WatchPoint.add((qint64 *) &IO_B,8,8,this,"Port B");
-	WatchPoint.add((qint64 *) &IO_C,8,8,this,"Port C");
-	WatchPoint.add((qint64 *) &IO_F,8,8,this,"Port F");
+    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
+    WatchPoint.add((qint64 *) &IO_A,8,8,this,"Port A");
+    WatchPoint.add((qint64 *) &IO_B,8,8,this,"Port B");
+    WatchPoint.add((qint64 *) &IO_C,8,8,this,"Port C");
+    WatchPoint.add((qint64 *) &IO_F,8,8,this,"Port F");
 	
 	initsound();
 

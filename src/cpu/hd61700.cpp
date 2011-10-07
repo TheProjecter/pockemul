@@ -21,10 +21,12 @@
 ******************************************************************************/
 
 
-
+#define CLEAR_LINE 0
 //#include "emu.h"
 //#include "debugger.h"
 #include "hd61700.h"
+#include "Log.h"
+#include "pcxxxx.h"
 
 #ifdef FIRST_CASIO
 
@@ -97,37 +99,44 @@ static const UINT16 irq_vector[] = {0x0032, 0x0042, 0x0052, 0x0062, 0x0072};
 //  HD61700 DEVICE
 //**************************************************************************
 
-const device_type HD61700 = &device_creator<CHD61700>;
+//const device_type HD61700 = &device_creator<CHD61700>;
 
 //-------------------------------------------------
 //  hd61700_cpu_device - constructor
 //-------------------------------------------------
 
-CHD61700::CHD61700(const machine_config &mconfig, const char *tag, device_t *owner, UINT32 clock)
-    : cpu_device(mconfig, HD61700, "HD61700", tag, owner, clock),
-     m_program_config("program", ENDIANNESS_BIG, 16, 18, -1)
-{
-    memset(&m_partial_frame_period, 0, sizeof(m_partial_frame_period));
-}
+//CHD61700::CHD61700(const machine_config &mconfig, const char *tag, device_t *owner, UINT32 clock)
+//    : cpu_device(mconfig, HD61700, "HD61700", tag, owner, clock),
+//     m_program_config("program", ENDIANNESS_BIG, 16, 18, -1)
+//{
+//    memset(&m_partial_frame_period, 0, sizeof(m_partial_frame_period));
+//}
 
+CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
+
+}
 
 //-------------------------------------------------
 //  static_set_config - set the configuration
 //  structure
 //-------------------------------------------------
 
-void CHD61700::static_set_config(device_t &device, const hd61700_config &config)
-{
-    CHD61700 &conf = downcast<CHD61700 &>(device);
-    static_cast<hd61700_config &>(conf) = config;
-}
+//void CHD61700::static_set_config(device_t &device, const hd61700_config &config)
+//{
+//    CHD61700 &conf = downcast<CHD61700 &>(device);
+//    static_cast<hd61700_config &>(conf) = config;
+//}
 
 //-------------------------------------------------
 //  device_start - start up the device
 //-------------------------------------------------
+bool CHD61700::init() {
+    device_start();
+}
 
 void CHD61700::device_start()
 {
+#if 0
     m_program = this->space(AS_PROGRAM);
 
     m_sec_timer = timer_alloc(SEC_TIMER);
@@ -183,12 +192,16 @@ void CHD61700::device_start()
 
     // set our instruction counter
     m_icountptr = &m_icount;
+#endif
 }
 
 
 //-------------------------------------------------
 //  device_reset - reset up the device
 //-------------------------------------------------
+void CHD61700::Reset() {
+    device_reset();
+}
 
 void CHD61700::device_reset()
 {
@@ -201,13 +214,13 @@ void CHD61700::device_reset()
     m_irq_status = 0;
     prev_ua = 0;
 
-    memset(m_regsir, 0, ARRAY_LENGTH(m_regsir));
-    memset(m_reg8bit, 0, ARRAY_LENGTH(m_reg8bit));
-    memset(m_reg16bit, 0, ARRAY_LENGTH(m_reg16bit) * sizeof(UINT16));
-    memset(m_regmain, 0, ARRAY_LENGTH(m_regmain));
+    memset(m_regsir, 0, sizeof(m_regsir));
+    memset(m_reg8bit, 0, sizeof(m_reg8bit));
+    memset(m_reg16bit, 0, sizeof(m_reg16bit));
+    memset(m_regmain, 0, sizeof(m_regmain));
 
-    for (int i=0;i<6; i++)
-        m_lines_status[i] = CLEAR_LINE;
+//    for (int i=0;i<6; i++)
+//        m_lines_status[i] = CLEAR_LINE;
 }
 
 
@@ -215,6 +228,7 @@ void CHD61700::device_reset()
 //-------------------------------------------------
 //  device_timer - handler timer events
 //-------------------------------------------------
+#if 0
 void CHD61700::device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr)
 {
     switch(id)
@@ -240,13 +254,13 @@ void CHD61700::device_timer(emu_timer &timer, device_timer_id id, int param, voi
     }
 }
 
-
+#endif
 
 //-------------------------------------------------
 //  state_import - import state into the device,
 //  after it has been set
 //-------------------------------------------------
-
+#if 0
 void CHD61700::state_import(const device_state_entry &entry)
 {
     switch (entry.index())
@@ -256,43 +270,45 @@ void CHD61700::state_import(const device_state_entry &entry)
             break;
     }
 }
-
+#endif
 //-------------------------------------------------
 //  state_string_export - export state as a string
 //  for the debugger
 //-------------------------------------------------
-
-void CHD61700::state_string_export(const device_state_entry &entry, astring &string)
+void CHD61700::Regs_Info(UINT8 Type)
 {
-    switch (entry.index())
+
+    sprintf(Regs_String," ");
+
+    switch(Type)
     {
-        case STATE_GENFLAGS:
-            string.printf("%c%c%c%c%c%c",
-                m_flags & FLAG_Z   ? '.' : 'Z',
-                m_flags & FLAG_C   ? 'C' : '.',
-                m_flags & FLAG_LZ  ? '.' : 'L',
-                m_flags & FLAG_UZ  ? '.' : 'U',
-                m_flags & FLAG_SW  ? 'S' : '.',
-                m_flags & FLAG_APO ? 'A' : '.'
-            );
-            break;
+    case 0:			// Monitor Registers Dialog
+    case 2:			// For Log File
+    case 1:			// For Log File
+        sprintf(Regs_String,"%c%c%c%c%c%c",
+            m_flags & FLAG_Z   ? '.' : 'Z',
+            m_flags & FLAG_C   ? 'C' : '.',
+            m_flags & FLAG_LZ  ? '.' : 'L',
+            m_flags & FLAG_UZ  ? '.' : 'U',
+            m_flags & FLAG_SW  ? 'S' : '.',
+            m_flags & FLAG_APO ? 'A' : '.'
+        );
+        break;
     }
 }
-
-
 
 //-------------------------------------------------
 //  disasm_disassemble - call the disassembly
 //  helper function
 //-------------------------------------------------
-
+#if 0
 offs_t CHD61700::disasm_disassemble(char *buffer, offs_t pc, const UINT8 *oprom, const UINT8 *opram, UINT32 options)
 {
     extern CPU_DISASSEMBLE( hd61700 );
     return CPU_DISASSEMBLE_NAME(hd61700)(NULL, buffer, pc, oprom, opram, 0);
 }
 
-
+#endif
 
 //-------------------------------------------------
 //  check_irqs - check if need interrupts
@@ -317,6 +333,10 @@ bool CHD61700::check_irqs(void)
     return false;
 }
 
+void CHD61700::step(void) {
+    m_icount = 1;
+    execute_run();
+}
 
 //-------------------------------------------------
 //  execute - execute for the provided number of
@@ -327,7 +347,7 @@ void CHD61700::execute_run()
 {
     do
     {
-        debugger_instruction_hook(this, m_curpc);
+//        debugger_instruction_hook(this, m_curpc);
 
         // verify that CPU is not in sleep
         if (m_state & CPU_SLP)
@@ -460,8 +480,8 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
-                        if (m_lcd_data_w)
-                            (*m_lcd_data_w)(*this, READ_REG(arg));
+//                        if (m_lcd_data_w)
+//                            (*m_lcd_data_w)(*this, READ_REG(arg));
 
                         check_optional_jr(arg);
                         m_icount -= 11;
@@ -473,8 +493,8 @@ void CHD61700::execute_run()
                         UINT8 arg = read_op();
                         UINT8 res = 0xff;
 
-                        if (m_lcd_data_r)
-                            res = (*m_lcd_data_r)(*this);
+//                        if (m_lcd_data_r)
+//                            res = (*m_lcd_data_r)(*this);
 
                         WRITE_REG(arg, res);
 
@@ -493,8 +513,8 @@ void CHD61700::execute_run()
                         }
                         else
                         {
-                            if (m_lcd_control)
-                                (*m_lcd_control)(*this, READ_REG(arg));
+//                            if (m_lcd_control)
+//                                (*m_lcd_control)(*this, READ_REG(arg));
                         }
 
                         check_optional_jr(arg);
@@ -524,8 +544,8 @@ void CHD61700::execute_run()
                             case 0:		//PE
                             case 1:		//PD
                                 WRITE_REG8(idx, src);
-                                if (m_port_w)
-                                    (*m_port_w)(*this, REG_PD & REG_PE);
+//                                if (m_port_w)
+//                                    (*m_port_w)(*this, REG_PD & REG_PE);
                                 break;
                             case 2:		//IB
                                 REG_IB = (REG_IB & 0x1f) | (src & 0xe0);
@@ -534,8 +554,8 @@ void CHD61700::execute_run()
                                 WRITE_REG8(idx, src);
                                 break;
                             case 4:		//IA
-                                if (m_kb_w)
-                                    (*m_kb_w)(*this, src);
+//                                if (m_kb_w)
+//                                    (*m_kb_w)(*this, src);
                                 WRITE_REG8(idx, src);
                                 break;
                             case 5:		//IE
@@ -668,8 +688,8 @@ void CHD61700::execute_run()
                         }
                         else
                         {
-                            if (m_port_r)
-                                src = (*m_port_r)(*this);
+//                            if (m_port_r)
+//                                src = (*m_port_r)(*this);
 
                             src&=(~REG_PE);
                         }
@@ -1013,8 +1033,8 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
-                        if (m_lcd_data_w)
-                            (*m_lcd_data_w)(*this, arg);
+//                        if (m_lcd_data_w)
+//                            (*m_lcd_data_w)(*this, arg);
 
                         m_icount -= 12;
                     }
@@ -1031,8 +1051,8 @@ void CHD61700::execute_run()
                         }
                         else
                         {
-                            if (m_lcd_control)
-                                (*m_lcd_control)(*this, src);
+//                            if (m_lcd_control)
+//                                (*m_lcd_control)(*this, src);
                         }
 
                         m_icount -= 3;
@@ -1060,8 +1080,8 @@ void CHD61700::execute_run()
                             case 0:		//PE
                             case 1:		//PD
                                 WRITE_REG8(idx, src);
-                                if (m_port_w)
-                                    (*m_port_w)(*this, REG_PD & REG_PE);
+//                                if (m_port_w)
+//                                    (*m_port_w)(*this, REG_PD & REG_PE);
                                 break;
                             case 2:		//IB
                                 REG_IB = (REG_IB & 0x1f) | (src & 0xe0);
@@ -1070,8 +1090,8 @@ void CHD61700::execute_run()
                                 WRITE_REG8(idx, src);
                                 break;
                             case 4:		//IA
-                                if (m_kb_w)
-                                    (*m_kb_w)(*this, src);
+//                                if (m_kb_w)
+//                                    (*m_kb_w)(*this, src);
                                 WRITE_REG8(idx, src);
                                 break;
                             case 5:		//IE
@@ -1444,11 +1464,11 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
-                        if (m_lcd_data_w)
-                        {
-                            (*m_lcd_data_w)(*this, READ_REG(arg));
-                            (*m_lcd_data_w)(*this, READ_REG(arg+1));
-                        }
+//                        if (m_lcd_data_w)
+//                        {
+//                            (*m_lcd_data_w)(*this, READ_REG(arg));
+//                            (*m_lcd_data_w)(*this, READ_REG(arg+1));
+//                        }
 
                         check_optional_jr(arg);
                         m_icount -= 19;
@@ -1460,13 +1480,13 @@ void CHD61700::execute_run()
                         UINT8 arg = read_op();
                         UINT8 reg0, reg1;
 
-                        if (m_lcd_data_r)
-                        {
-                            reg0 = (*m_lcd_data_r)(*this);
-                            reg1 = (*m_lcd_data_r)(*this);
-                        }
-                        else
-                            reg0 = reg1 = 0xff;
+//                        if (m_lcd_data_r)
+//                        {
+//                            reg0 = (*m_lcd_data_r)(*this);
+//                            reg1 = (*m_lcd_data_r)(*this);
+//                        }
+//                        else
+//                            reg0 = reg1 = 0xff;
 
                         WRITE_REG(arg+0, reg0);
                         WRITE_REG(arg+1, reg1);
@@ -1628,13 +1648,13 @@ void CHD61700::execute_run()
                         }
                         else
                         {
-                            if (m_port_r)
-                            {
-                                reg0 = (*m_port_r)(*this);
-                                reg1 = (*m_port_r)(*this);
-                            }
-                            else
-                                reg0 = reg1 = 0xff;
+//                            if (m_port_r)
+//                            {
+//                                reg0 = (*m_port_r)(*this);
+//                                reg1 = (*m_port_r)(*this);
+//                            }
+//                            else
+//                                reg0 = reg1 = 0xff;
 
                             reg0&=(~REG_PE);
                             reg1&=(~REG_PE);
@@ -1660,8 +1680,8 @@ void CHD61700::execute_run()
                         {
                             UINT16 port = 0xff;
 
-                            if (m_kb_r)
-                                port = (*m_kb_r)(*this);
+//                            if (m_kb_r)
+//                                port = (*m_kb_r)(*this);
 
                             src = (REG_KY & 0x0f00) | (port & 0xf0ff);
                         }
@@ -2120,8 +2140,8 @@ void CHD61700::execute_run()
 
                         for (int n=GET_IM3(arg1); n>0; n--)
                         {
-                            if (m_lcd_data_w)
-                                (*m_lcd_data_w)(*this, READ_REG(arg));
+//                            if (m_lcd_data_w)
+//                                (*m_lcd_data_w)(*this, READ_REG(arg));
 
                             arg++;
                             m_icount -= 8;
@@ -2139,10 +2159,10 @@ void CHD61700::execute_run()
 
                         for (int n=GET_IM3(arg1); n>0; n--)
                         {
-                            if (m_lcd_data_r)
-                                src = (*m_lcd_data_r)(*this);
-                            else
-                                src = 0xff;
+//                            if (m_lcd_data_r)
+//                                src = (*m_lcd_data_r)(*this);
+//                            else
+//                                src = 0xff;
 
                             WRITE_REG(arg, src++);
 
@@ -2636,11 +2656,11 @@ void CHD61700::execute_run()
                         m_state |= CPU_SLP;
 
                         m_irq_status = 0;
-                        if (m_lcd_control)
-                            (*m_lcd_control)(*this, 0);
+//                        if (m_lcd_control)
+//                            (*m_lcd_control)(*this, 0);
 
-                        if (m_kb_w)
-                            (*m_kb_w)(*this, 0);
+//                        if (m_kb_w)
+//                            (*m_kb_w)(*this, 0);
                         m_icount -= 3;
                     }
                     break;
@@ -2675,11 +2695,11 @@ void CHD61700::execute_run()
                 case 0xc3:
                 case 0xd4:
                 case 0xd5:
-                    logerror( "%06x: illegal instruction %02x encountered\n", m_pc, op );
+                AddLog(LOG_CPU,tr("%1: illegal instruction %2 encountered").arg(m_pc,6,16,QChar('0')).arg(op,2,16,QChar('0')));
                     break;
 
                 default:
-                    logerror( "%06x: unimplemented instruction %02x encountered\n", m_pc, op );
+                    AddLog(LOG_CPU,tr("%1: unimplemented instruction %2 encountered").arg(m_pc,6,16,QChar('0')).arg(op,2,16,QChar('0')));
                     break;
             }
         }
@@ -2701,7 +2721,7 @@ void CHD61700::execute_set_input(int inputnum, int state)
 {
     switch (inputnum)
     {
-        case INPUT_LINE_RESET:
+        case 10000:// INPUT_LINE_RESET:
             REG_UA = 0;
             REG_IA = 0;
             REG_IX = 0;
@@ -2780,7 +2800,8 @@ inline UINT8 CHD61700::read_op()
 
     if (m_pc <= INT_ROM)
     {
-        data = m_program->read_word(addr18<<1);
+//        data = m_program->read_word(addr18<<1);
+        data = pPC->get_mem(addr18<<1,SIZE_16);
 
         if (!(m_fetch_addr&1))
             data = (data>>8) ;
@@ -2788,9 +2809,11 @@ inline UINT8 CHD61700::read_op()
     else
     {
         if (m_fetch_addr&1)
-            data = m_program->read_word((addr18+1)<<1);
+//            data = m_program->read_word((addr18+1)<<1);
+            data = pPC->get_mem((addr18+1)<<1,SIZE_16);
         else
-            data = m_program->read_word((addr18+0)<<1);
+//            data = m_program->read_word((addr18+0)<<1);
+             data = pPC->get_mem((addr18+0)<<1,SIZE_16);
     }
 
     m_fetch_addr += ((m_pc > INT_ROM) ? 2 : 1);
@@ -2806,12 +2829,14 @@ inline UINT8 CHD61700::read_op()
 
 inline UINT8 CHD61700::mem_readbyte(UINT8 segment, UINT16 offset)
 {
-    return m_program->read_word(make_18bit_addr(segment, offset)<<1) & 0xff;
+//    return m_program->read_word(make_18bit_addr(segment, offset)<<1) & 0xff;
+    return pPC->get_mem(make_18bit_addr(segment, offset)<<1,SIZE_8) & 0xff;
 }
 
 inline void CHD61700::mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data)
 {
-    m_program->write_word(make_18bit_addr(segment, offset)<<1, data);
+//    m_program->write_word(make_18bit_addr(segment, offset)<<1, data);
+    pPC->set_mem(make_18bit_addr(segment, offset)<<1,SIZE_8,data);
 }
 
 inline UINT32 CHD61700::make_18bit_addr(UINT8 segment, UINT16 offset)
@@ -3023,5 +3048,18 @@ inline UINT16 CHD61700::make_bcd_add(UINT8 arg1, UINT8 arg2)
     return ret;
 }
 
+bool CHD61700::exit()
+{
+    CCPU::exit();
+}
 
+DWORD CHD61700::get_PC(void)
+{
+    return(m_pc);
+}
+
+void	CHD61700::Load_Internal(QFile *) {}
+void	CHD61700::Load_Internal(QXmlStreamReader *) {}
+void	CHD61700::save_internal(QFile *) {}
+void	CHD61700::save_internal(QXmlStreamWriter *) {}
 #endif

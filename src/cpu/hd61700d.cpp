@@ -4,7 +4,7 @@
 //#include "debugger.h"
 #include "hd61700.h"
 
-#ifdef FIRST_CASIO
+#ifdef FIRST_CASIO_DASM
 
 #define EXT_ROM		(pc > 0x0c00)
 #define INC_POS		pos += (type+1)

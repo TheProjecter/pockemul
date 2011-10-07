@@ -62,3 +62,19 @@ bool CCPU::exit(void)
 QByteArray CCPU::getimem() {
     return (QByteArray((const char*)&imem,imemsize));
 }
+
+void	CCPU::setImemBit(WORD adr, int bit, BYTE data)
+{
+    int t;
+
+    if (data)
+    {
+        t=1<<(bit-1);
+        imem[adr] |= t;
+    }
+    else
+    {
+        t=0xFF - (1<<(bit-1));
+        imem[adr] &= t;
+    }
+}

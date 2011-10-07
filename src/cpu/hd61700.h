@@ -1,7 +1,7 @@
 #ifndef HD61700_H
 #define HD61700_H
 
-//#define FIRST_CASIO
+#define FIRST_CASIO
 
 #ifdef FIRST_CASIO
 /**********************************************************************
@@ -55,7 +55,7 @@ enum
 {
     HD61700_PC=1, HD61700_F, HD61700_SX, HD61700_SY, HD61700_SZ, HD61700_PE, HD61700_PD,
     HD61700_IB,  HD61700_UA, HD61700_IA, HD61700_IE, HD61700_TM, HD61700_IX,
-    HD61700_IY,  HD61700_IZ, HD61700_US, HD61700_SS, HD61700_KY, HD61700_MAINREG,
+    HD61700_IY,  HD61700_IZ, HD61700_US, HD61700_SS, HD61700_KY, HD61700_MAINREG
 };
 
 // input lines
@@ -72,20 +72,43 @@ enum
 
 // ======================> hd61700_cpu_device
 
-class CHD61700 : public cpu_device,
-                           public hd61700_config
+class CHD61700 : public CCPU
 {
 public:
-    // construction/destruction
-    CHD61700(const machine_config &mconfig, const char *_tag, device_t *_owner, UINT32 _clock);
+    CHD61700(CPObject *);
 
-    static void static_set_config(device_t &device, const hd61700_config &config);
+    virtual	bool	init(void);						//initialize
+    virtual	bool	exit(void);						//end
+    virtual void	step(void);						//step SC61860
+    virtual void	Reset(void);
+
+    virtual	void	Load_Internal(QFile *);
+    virtual	void	Load_Internal(QXmlStreamReader *);
+    virtual	void	save_internal(QFile *);
+    virtual	void	save_internal(QXmlStreamWriter *);
+            void	save(void);
+
+    virtual	DWORD	get_mem(DWORD adr,int size){}		//get memory
+    virtual	void	set_mem(DWORD adr,int size,DWORD data){}	//set memory
+
+    virtual	bool	Get_Xin(void){}
+    virtual	void	Set_Xin(bool){}
+    virtual	bool	Get_Xout(void){}
+    virtual	void	Set_Xout(bool){}
+
+    virtual	DWORD	get_PC(void);					//get Program Counter
+    virtual void	Regs_Info(UINT8);
+
+    // construction/destruction
+//    CHD61700(const machine_config &mconfig, const char *_tag, device_t *_owner, UINT32 _clock);
+
+//    static void static_set_config(device_t &device, const hd61700_config &config);
 
 protected:
     // device-level overrides
     virtual void device_start();
     virtual void device_reset();
-    virtual void device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr);
+//    virtual void device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr);
 
     // device_execute_interface overrides
     virtual UINT32 execute_min_cycles() const { return 1; }
@@ -95,16 +118,16 @@ protected:
     virtual void execute_set_input(int inputnum, int state);
 
     // device_state_interface overrides
-    virtual void state_import(const device_state_entry &entry);
-    void state_string_export(const device_state_entry &entry, astring &string);
+//    virtual void state_import(const device_state_entry &entry);
+//    void state_string_export(const device_state_entry &entry, astring &string);
 
     // device_memory_interface overrides
-    virtual const address_space_config *memory_space_config(address_spacenum spacenum = AS_0) const { return (spacenum == AS_PROGRAM) ? &m_program_config : NULL; }
+//    virtual const address_space_config *memory_space_config(address_spacenum spacenum = AS_0) const { return (spacenum == AS_PROGRAM) ? &m_program_config : NULL; }
 
     // device_disasm_interface overrides
-    virtual UINT32 disasm_min_opcode_bytes() const { return 1; }
-    virtual UINT32 disasm_max_opcode_bytes() const { return 16; }
-    virtual offs_t disasm_disassemble(char *buffer, offs_t pc, const UINT8 *oprom, const UINT8 *opram, UINT32 options);
+//    virtual UINT32 disasm_min_opcode_bytes() const { return 1; }
+//    virtual UINT32 disasm_max_opcode_bytes() const { return 16; }
+//    virtual offs_t disasm_disassemble(char *buffer, offs_t pc, const UINT8 *oprom, const UINT8 *opram, UINT32 options);
 
     // interrupts
     bool check_irqs(void);
@@ -131,12 +154,12 @@ protected:
 protected:
 
     // internal state
-    address_space_config m_program_config;
-    static const device_timer_id SEC_TIMER = 1;
-    emu_timer *m_sec_timer;
+//    address_space_config m_program_config;
+//    static const device_timer_id SEC_TIMER = 1;
+//    emu_timer *m_sec_timer;
 
-    offs_t         m_ppc;
-    offs_t         m_curpc;
+    UINT32         m_ppc;
+    UINT32         m_curpc;
     UINT16         m_pc;
     UINT8          m_flags;
     UINT32         m_fetch_addr;
@@ -150,7 +173,7 @@ protected:
     int            m_lines_status[6];
     int            m_icount;
 
-    address_space *m_program;
+//    address_space *m_program;
 
     // flag definitions
     static const int FLAG_Z		= 0x80;
@@ -161,7 +184,7 @@ protected:
     static const int FLAG_APO	= 0x04;
 };
 
-extern const device_type HD61700;
+
 
 #endif
 

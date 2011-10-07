@@ -20,6 +20,7 @@
 #include "lcdc.h"
 #include "Log.h"
 #include "ui/cregsz80widget.h"
+#include "dialoganalog.h"
 
 //#define	UN_DEFINE	printf("Undefined Code !!(pc=%05X)\n",reg.x.p);
 #define		UN_DEFINE	debug.isdebug=1;
@@ -145,12 +146,12 @@ inline BYTE Csc62015::Conv_imemAdr(BYTE d,bool m)
 /*  ENTRY :BYTE d=internal RAM address, BYTE len=access bytes				 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len)
+inline void Csc62015::Chk_imemAdr_Read(BYTE d,BYTE len)
 {
-	register BYTE i;
+    register BYTE i;
     if (fp_log) fprintf(fp_log,"IMEM access : %02X  l=%d\n",d,len);
-	for(i=0;i<len;i++){
-		switch(d++){
+    for(i=0;i<len;i++){
+        switch(d){
         case	IMEM_KOL:
         case	IMEM_KOH:((Ce500*)pPC)->getKey(); break;	// key matrix
 //		case	IMEM_RxD:sio.si=1; break;		// sio RxD
@@ -158,8 +159,39 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len)
 //		case	IMEM_SCR:snd.scr=1; break;		// sound
 //		case	IMEM_EOL:opt11.eio=IMEM_EOL; break;
 //		case	IMEM_EIL:opt11.eio=IMEM_EIL; break;
-		}
-	}
+        case IMEM_EIH:
+        case IMEM_EIL:
+        case IMEM_EOH:
+        case IMEM_EOL: if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
+                        AddLog(LOG_PRINTER,tr("READ [%1]").arg(d,2,16,QChar('0')));
+                        break;
+        }
+        d++;
+    }
+}
+
+inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
+{
+    register BYTE i;
+    if (fp_log) fprintf(fp_log,"IMEM access : %02X  l=%d\n",d,len);
+    for(i=0;i<len;i++){
+        switch(d){
+//        case	IMEM_KOL:
+//        case	IMEM_KOH:((Ce500*)pPC)->getKey(); break;	// key matrix
+//		case	IMEM_RxD:sio.si=1; break;		// sio RxD
+//		case	IMEM_TxD:sio.so=1; break;		// sio TxD
+//		case	IMEM_SCR:snd.scr=1; break;		// sound
+//		case	IMEM_EOL:opt11.eio=IMEM_EOL; break;
+//		case	IMEM_EIL:opt11.eio=IMEM_EIL; break;
+        case IMEM_EIH:
+        case IMEM_EIL:
+        case IMEM_EOH:
+        case IMEM_EOL: if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
+                AddLog(LOG_PRINTER,tr("WRITE [%1] = %2").arg(d,2,16,QChar('0')).arg(data,6,16,QChar('0')));
+                break;
+        }
+        d++;
+    }
 }
 
 
@@ -174,28 +206,28 @@ BYTE Csc62015::Get_i8(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_8);
+    Chk_imemAdr_Read(adr,SIZE_8);
 	return(imem[adr]);
 }
 WORD Csc62015::Get_i16(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_16);
+    Chk_imemAdr_Read(adr,SIZE_16);
 	return(imem[adr]+(imem[adr+1]<<8));
 }
 DWORD Csc62015::Get_i20(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_20);
+    Chk_imemAdr_Read(adr,SIZE_20);
 	return((imem[adr]+(imem[adr+1]<<8)+(imem[adr+2]<<16))&MASK_20);
 }
 DWORD Csc62015::Get_i24(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_20);
+    Chk_imemAdr_Read(adr,SIZE_20);
 	return((imem[adr]+(imem[adr+1]<<8)+(imem[adr+2]<<16))&MASK_24);
 }
 
@@ -207,14 +239,14 @@ void Csc62015::Set_i8(BYTE a,BYTE d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_8);
+    Chk_imemAdr(adr,SIZE_8,d);
 	imem[adr]=d;
 }
 void Csc62015::Set_i16(BYTE a,WORD d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_16);
+    Chk_imemAdr(adr,SIZE_16,d);
 	imem[adr++]=d;
 	imem[adr]=(d>>8);
 }
@@ -222,7 +254,7 @@ void Csc62015::Set_i20(BYTE a,DWORD d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_20);
+    Chk_imemAdr(adr,SIZE_20,d);
 	imem[adr++]=d;
 	imem[adr++]=(d>>8);
 	imem[adr]=(d>>16)&MASK_4;
@@ -231,7 +263,7 @@ void Csc62015::Set_i24(BYTE a,DWORD d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
-	Chk_imemAdr(adr,SIZE_20);
+    Chk_imemAdr(adr,SIZE_20,d);
 	imem[adr++]=d;
 	imem[adr++]=(d>>8);
 	imem[adr]=(d>>16);

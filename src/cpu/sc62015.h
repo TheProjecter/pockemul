@@ -116,7 +116,8 @@ public:
     void    Set_i20(BYTE a,DWORD d,bool m);
     void    Set_i24(BYTE a,DWORD d,bool m);
 
-    void    Chk_imemAdr(BYTE d, BYTE len);
+    void    Chk_imemAdr_Read(BYTE d, BYTE len);
+    void    Chk_imemAdr(BYTE d, BYTE len,DWORD data = 0);
     void    Chk_Flag(DWORD d, BYTE len);
     void    Chk_Zero(DWORD d, BYTE len);
     DWORD   Get_i(void);
@@ -149,6 +150,7 @@ public:
     bool	halt,off;					//halt,off flag
     bool	end,save, e6, log,logsw;	//etc.flag
     BYTE	emsmode;					//ems memory size
+
 
 
 

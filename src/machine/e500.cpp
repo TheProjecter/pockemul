@@ -6,6 +6,7 @@
 #include "Lcdc_e500.h"
 #include "Inter.h"
 #include "Log.h"
+#include "init.h"
 
 
 Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
@@ -72,6 +73,9 @@ bool Ce500::init(void) {
 #endif
     CpcXXXX::init();
 
+    WatchPoint.remove(this);
+    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
+
 //	if(emsmode!=0) EMS_Load();
 
     return true;
@@ -93,6 +97,39 @@ bool Ce500::run(void) {
         sc->opr_imem(IMEM_IMR,OPR_AND,0x7f);
         sc->set_reg(REG_P,sc->get_mem(VECT_IR,SIZE_20));
     }
+}
+
+#define GET_IMEM_BIT(adr,Bit) ((pCPU->imem[adr] & (1<<((Bit)-1))) ? 1:0)
+
+bool Ce500::Set_Connector(void)
+{
+#if 0
+    pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
+    pCONNECTOR->Set_pin(PIN_VGG		,1);
+    pCONNECTOR->Set_pin(PIN_BUSY	,GET_IMEM_BIT(IMEM_EOL,5));		// F01
+    pCONNECTOR->Set_pin(PIN_D_OUT	,GET_IMEM_BIT(IMEM_EOL,4));		// F02
+    pCONNECTOR->Set_pin(PIN_MT_OUT1	,GET_IMEM_BIT(IMEM_EOL,5));//pCPU->Get_Xout());
+//	pCONNECTOR->Set_pin(PIN_SEL2	,GET_PORT_BIT(PORT_B,6));		// B06
+//	pCONNECTOR->Set_pin(PIN_SEL1	,GET_PORT_BIT(PORT_B,5));		// B05
+#else
+    for (int i=1;i<=8;i++) {
+        pCONNECTOR->Set_pin(i	,GET_IMEM_BIT(IMEM_EOL,i));
+    }
+    for (int i=1;i<=3;i++) {
+        pCONNECTOR->Set_pin(8+i	,GET_IMEM_BIT(IMEM_EOH,i));
+    }
+#endif
+    return(1);
+}
+
+bool Ce500::Get_Connector(void)
+{
+//	Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB7
+//    pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_D_IN));
+    pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_ACK));
+//	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+
+    return(1);
 }
 
 void Ce500::disp(qint8 cmd,DWORD data)
@@ -217,14 +254,6 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 }
 
 
-
-bool Ce500::Set_Connector()
-{
-}
-
-bool Ce500::Get_Connector()
-{
-}
 
 BYTE Ce500::Get_PortA()
 {

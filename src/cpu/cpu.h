@@ -77,6 +77,7 @@ public:
     QByteArray getimem();
 
     CregCPU * regwidget;
+    void setImemBit(WORD adr, int bit, BYTE data);
 private:
 	FILE *fp_status;		//pointer to status file
 };

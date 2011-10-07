@@ -374,6 +374,15 @@
             <normaloff>:/x07/x07.png</normaloff>:/x07/x07.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Casio PB-1000</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pb1000.qrc">
+            <normaloff>:/pb1000/pb-1000.png</normaloff>:/pb1000/pb-1000.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -663,6 +672,7 @@
  <resources>
   <include location="../resources/e500.qrc"/>
   <include location="../resources/ext.qrc"/>
+  <include location="../resources/pb1000.qrc"/>
   <include location="../resources/pc1245.qrc"/>
   <include location="../resources/pc1250.qrc"/>
   <include location="../resources/pc1251.qrc"/>
