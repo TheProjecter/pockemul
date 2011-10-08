@@ -79,8 +79,8 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     setDX(668);//715);
     setDY(633);//465);
 
-    Lcd_X		= 67;
-    Lcd_Y		= 63;
+    Lcd_X		= 90;
+    Lcd_Y		= 130;
     Lcd_DX		= 192;//168;//144 ;
     Lcd_DY		= 32;
     Lcd_ratio_X	= 2;// * 1.18;

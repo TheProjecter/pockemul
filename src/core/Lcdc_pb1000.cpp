@@ -11,9 +11,9 @@
 Clcdc_pb1000::Clcdc_pb1000(CPObject *parent)	: Clcdc(parent){						//[constructor]
 
     Color_Off.setRgb(
-                        (int) (95*contrast),
-                        (int) (119*contrast),
-                        (int) (193*contrast));
+                        (int) (90*contrast),
+                        (int) (108*contrast),
+                        (int) (99*contrast));
 }
 
 static const struct {
