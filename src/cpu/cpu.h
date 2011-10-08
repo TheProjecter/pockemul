@@ -40,8 +40,8 @@ public:
     virtual	void	save_internal(QXmlStreamWriter *) =0;
 			void	save(void);
 
-    virtual	DWORD	get_mem(DWORD adr,int size) =0;		//get memory
-	virtual	void	set_mem(DWORD adr,int size,DWORD data) =0;	//set memory
+    virtual	DWORD	get_mem(DWORD adr,int size);		//get memory
+    virtual	void	set_mem(DWORD adr,int size,DWORD data);	//set memory
 	
 	virtual	bool	Get_Xin(void) =0;
 	virtual	void	Set_Xin(bool) =0;

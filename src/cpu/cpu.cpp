@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "cpu.h"
 #include "Debug.h"
+#include "pcxxxx.h"
 
 CCPU::CCPU(CPObject *parent)
 {				//[constructor]
@@ -76,5 +77,53 @@ void	CCPU::setImemBit(WORD adr, int bit, BYTE data)
     {
         t=0xFF - (1<<(bit-1));
         imem[adr] &= t;
+    }
+}
+
+/*!
+ \brief Get data from memory
+
+ \fn Csc::get_mem
+ \param adr     address
+ \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
+ \return DWORD  value
+*/
+DWORD CCPU::get_mem(DWORD adr,int size)
+{
+    switch(size)
+    {
+    case SIZE_8 :return(pPC->Get_PC(adr));
+    case SIZE_16:return(pPC->Get_PC(adr)+(pPC->Get_PC(adr+1)<<8));
+    case SIZE_20:return((pPC->Get_PC(adr)+(pPC->Get_PC(adr+1)<<8)+(pPC->Get_PC(adr+2)<<16))&MASK_20);
+    case SIZE_24:return((pPC->Get_PC(adr)+(pPC->Get_PC(adr+1)<<8)+(pPC->Get_PC(adr+2)<<16))&MASK_24);
+    }
+    return(0);
+}
+/*****************************************************************************/
+/* Set data to memory														 */
+/*  ENTRY :DOWRD adr=address, int size=SIZE_xx, DWORD data=value			 */
+/*  RETURN:none																 */
+/*****************************************************************************/
+void CCPU::set_mem(DWORD adr,int size,DWORD data)
+{
+    switch(size)
+    {
+    case SIZE_8 :
+        pPC->Set_8(adr , (BYTE) data);
+        break;
+    case SIZE_16:
+        pPC->Set_8(adr , (BYTE) data);
+        pPC->Set_8(adr+1 , (BYTE) (data>>8));
+        break;
+    case SIZE_20:
+        pPC->Set_8(adr , (BYTE) data);
+        pPC->Set_8(adr+1 , (BYTE) (data>>8));
+        pPC->Set_8(adr+2 , (BYTE) ((data>>16)&MASK_4));
+        break;
+    case SIZE_24:
+        pPC->Set_8(adr , (BYTE) data);
+        pPC->Set_8(adr+1 , (BYTE) (data>>8));
+        pPC->Set_8(adr+2 , (BYTE) (data>>16));
+        break;
     }
 }

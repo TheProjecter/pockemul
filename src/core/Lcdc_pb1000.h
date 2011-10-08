@@ -17,13 +17,7 @@ public:
     int x2a[100];
 
 
-    Clcdc_pb1000(CPObject *parent = 0)	: Clcdc(parent){						//[constructor]
-        info = ((Cpb1000*) pPC)->pHD44352->getInfo();
-        Color_Off.setRgb(
-                            (int) (95*contrast),
-                            (int) (119*contrast),
-                            (int) (193*contrast));
-    }
+    Clcdc_pb1000(CPObject *parent = 0);
     virtual ~Clcdc_pb1000()
     {						//[constructor]
     }

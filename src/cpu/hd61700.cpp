@@ -25,9 +25,12 @@
 //#include "emu.h"
 //#include "debugger.h"
 #include "hd61700.h"
+#include "hd44352.h"
+#include "pb1000.h"
 #include "Log.h"
 #include "pcxxxx.h"
 #include "ui/cregsz80widget.h"
+#include "Debug.h"
 
 #ifdef FIRST_CASIO
 
@@ -115,7 +118,7 @@ static const UINT16 irq_vector[] = {0x0032, 0x0042, 0x0052, 0x0062, 0x0072};
 
 CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
 
-//    pDEBUG	= new Cdebug_sc62015(parent);
+    pDEBUG	= new Cdebug_hd61700(parent);
     regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
@@ -134,7 +137,11 @@ CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
 //  device_start - start up the device
 //-------------------------------------------------
 bool CHD61700::init() {
-    device_start();
+    Check_Log();
+    Reset();
+    pPC->pTIMER->resetTimer(0);
+
+    return(true);
 }
 
 void CHD61700::device_start()
@@ -222,8 +229,8 @@ void CHD61700::device_reset()
     memset(m_reg16bit, 0, sizeof(m_reg16bit));
     memset(m_regmain, 0, sizeof(m_regmain));
 
-//    for (int i=0;i<6; i++)
-//        m_lines_status[i] = CLEAR_LINE;
+    for (int i=0;i<6; i++)
+        m_lines_status[i] = CLEAR_LINE;
 }
 
 
@@ -288,14 +295,18 @@ void CHD61700::Regs_Info(UINT8 Type)
     case 0:			// Monitor Registers Dialog
     case 2:			// For Log File
     case 1:			// For Log File
-        sprintf(Regs_String,"%c%c%c%c%c%c",
+        sprintf(Regs_String,"%c%c%c%c%c%c 00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
             m_flags & FLAG_Z   ? '.' : 'Z',
             m_flags & FLAG_C   ? 'C' : '.',
             m_flags & FLAG_LZ  ? '.' : 'L',
             m_flags & FLAG_UZ  ? '.' : 'U',
             m_flags & FLAG_SW  ? 'S' : '.',
-            m_flags & FLAG_APO ? 'A' : '.'
+            m_flags & FLAG_APO ? 'A' : '.',
+
+                m_regmain[0],m_regmain[1],m_regmain[2],m_regmain[3],m_regmain[4],m_regmain[5],m_regmain[6],m_regmain[7],
+                m_regmain[8],m_regmain[9],m_regmain[10],m_regmain[11],m_regmain[12],m_regmain[13],m_regmain[14],m_regmain[15]
         );
+
         break;
     }
 }
@@ -336,10 +347,37 @@ bool CHD61700::check_irqs(void)
     return false;
 }
 
+void CHD61700::secTimer(void) {
+
+    REG_TM++;
+    if ((REG_TM&0x3f) == 60)
+    {
+        REG_TM = (REG_TM & 0xc0) + 0x40;
+
+        if (((REG_IE>>3) & (1<<HD61700_TIMER_INT)))
+        {
+            REG_IB |= (1<<HD61700_TIMER_INT);
+
+            if (REG_IB & 0x20)
+            {
+                m_state &= ~CPU_SLP;
+                m_flags |= FLAG_APO;
+            }
+        }
+    }
+
+}
+
+
+
 void CHD61700::step(void) {
     m_icount = 1;
     execute_run();
     pPC->pTIMER->state-=(m_icount-1);
+    if (pPC->pTIMER->msElapsedId(0) >=1000) {
+        pPC->pTIMER->resetTimer(0);
+        secTimer();
+    }
 }
 
 //-------------------------------------------------
@@ -349,6 +387,8 @@ void CHD61700::step(void) {
 
 void CHD61700::execute_run()
 {
+    CHD44352 *pHD44352 = ((Cpb1000 *)pPC)->pHD44352;
+
     do
     {
 //        debugger_instruction_hook(this, m_curpc);
@@ -484,8 +524,11 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
+                        pHD44352->data_write(READ_REG(arg));
+
 //                        if (m_lcd_data_w)
 //                            (*m_lcd_data_w)(*this, READ_REG(arg));
+
 
                         check_optional_jr(arg);
                         m_icount -= 11;
@@ -497,6 +540,7 @@ void CHD61700::execute_run()
                         UINT8 arg = read_op();
                         UINT8 res = 0xff;
 
+                        res = pHD44352->data_read();
 //                        if (m_lcd_data_r)
 //                            res = (*m_lcd_data_r)(*this);
 
@@ -517,6 +561,7 @@ void CHD61700::execute_run()
                         }
                         else
                         {
+                            pHD44352->control_write(READ_REG(arg));
 //                            if (m_lcd_control)
 //                                (*m_lcd_control)(*this, READ_REG(arg));
                         }
@@ -1037,6 +1082,7 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
+                        pHD44352->data_write(arg);
 //                        if (m_lcd_data_w)
 //                            (*m_lcd_data_w)(*this, arg);
 
@@ -1055,6 +1101,7 @@ void CHD61700::execute_run()
                         }
                         else
                         {
+                            pHD44352->control_write(src);
 //                            if (m_lcd_control)
 //                                (*m_lcd_control)(*this, src);
                         }
@@ -1473,6 +1520,8 @@ void CHD61700::execute_run()
 //                            (*m_lcd_data_w)(*this, READ_REG(arg));
 //                            (*m_lcd_data_w)(*this, READ_REG(arg+1));
 //                        }
+                        pHD44352->data_write(READ_REG(arg));
+                        pHD44352->data_write(READ_REG(arg+1));
 
                         check_optional_jr(arg);
                         m_icount -= 19;
@@ -1486,6 +1535,8 @@ void CHD61700::execute_run()
 
 //                        if (m_lcd_data_r)
 //                        {
+                            reg0 = pHD44352->data_read();
+                            reg1 = pHD44352->data_read();
 //                            reg0 = (*m_lcd_data_r)(*this);
 //                            reg1 = (*m_lcd_data_r)(*this);
 //                        }
@@ -1686,6 +1737,7 @@ void CHD61700::execute_run()
 
 //                            if (m_kb_r)
 //                                port = (*m_kb_r)(*this);
+                            port = 0;
 
                             src = (REG_KY & 0x0f00) | (port & 0xf0ff);
                         }
@@ -2144,6 +2196,7 @@ void CHD61700::execute_run()
 
                         for (int n=GET_IM3(arg1); n>0; n--)
                         {
+                            pHD44352->data_write(READ_REG(arg));
 //                            if (m_lcd_data_w)
 //                                (*m_lcd_data_w)(*this, READ_REG(arg));
 
@@ -2163,6 +2216,7 @@ void CHD61700::execute_run()
 
                         for (int n=GET_IM3(arg1); n>0; n--)
                         {
+                            src = pHD44352->data_read();
 //                            if (m_lcd_data_r)
 //                                src = (*m_lcd_data_r)(*this);
 //                            else
@@ -2660,6 +2714,8 @@ void CHD61700::execute_run()
                         m_state |= CPU_SLP;
 
                         m_irq_status = 0;
+                        pHD44352->control_write(0);
+
 //                        if (m_lcd_control)
 //                            (*m_lcd_control)(*this, 0);
 
@@ -2805,19 +2861,23 @@ inline UINT8 CHD61700::read_op()
     if (m_pc <= INT_ROM)
     {
 //        data = m_program->read_word(addr18<<1);
-        data = pPC->get_mem(addr18<<1,SIZE_16);
+        data = pPC->Get_16rPC(addr18<<1);
 
         if (!(m_fetch_addr&1))
             data = (data>>8) ;
     }
     else
     {
+#if 1
+        data = pPC->Get_PC(addr18);
+#else
         if (m_fetch_addr&1)
 //            data = m_program->read_word((addr18+1)<<1);
-            data = pPC->get_mem((addr18+1)<<1,SIZE_16);
+            data = pPC->Get_16rPC((addr18+1)<<1);
         else
 //            data = m_program->read_word((addr18+0)<<1);
-             data = pPC->get_mem((addr18+0)<<1,SIZE_16);
+             data = pPC->Get_16rPC((addr18+0)<<1);
+#endif
     }
 
     m_fetch_addr += ((m_pc > INT_ROM) ? 2 : 1);
@@ -2834,13 +2894,15 @@ inline UINT8 CHD61700::read_op()
 inline UINT8 CHD61700::mem_readbyte(UINT8 segment, UINT16 offset)
 {
 //    return m_program->read_word(make_18bit_addr(segment, offset)<<1) & 0xff;
-    return pPC->get_mem(make_18bit_addr(segment, offset)<<1,SIZE_8) & 0xff;
+    DWORD adr = make_18bit_addr(segment, offset);
+    return pPC->get_mem(adr,SIZE_8) & 0xff;
 }
 
 inline void CHD61700::mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data)
 {
 //    m_program->write_word(make_18bit_addr(segment, offset)<<1, data);
-    pPC->set_mem(make_18bit_addr(segment, offset)<<1,SIZE_8,data);
+    DWORD adr = make_18bit_addr(segment, offset);
+    pPC->set_mem(adr,SIZE_8,data);
 }
 
 inline UINT32 CHD61700::make_18bit_addr(UINT8 segment, UINT16 offset)

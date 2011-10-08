@@ -48,7 +48,7 @@
 
 Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3840000*3/8);
+    setfrequency( (int) 910000/3);
     setcfgfname(QString("pb1000"));
 
     SessionHeader	= "PB1000PKM";
@@ -64,7 +64,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
 
     SlotList.clear();
-    SlotList.append(CSlot(3 , 0x0000 ,	":/pb1000/rom0.bin" , ""	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(6 , 0x0000 ,	":/pb1000/rom0.bin" , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "RAM0"));
     SlotList.append(CSlot(32, 0x8000 ,	":/pb1000/rom1.bin"	, ""	, ROM , "ROM"));
     SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, RAM , "RAM1"));
@@ -81,10 +81,10 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
     Lcd_X		= 67;
     Lcd_Y		= 63;
-    Lcd_DX		= 120;//168;//144 ;
+    Lcd_DX		= 192;//168;//144 ;
     Lcd_DY		= 32;
-    Lcd_ratio_X	= 2.4;// * 1.18;
-    Lcd_ratio_Y	= 2.8;// * 1.18;
+    Lcd_ratio_X	= 2;// * 1.18;
+    Lcd_ratio_Y	= 2;// * 1.18;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
@@ -128,6 +128,10 @@ bool Cpb1000::run() {
 
 bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
 {
+    if ( (*d>=0x06100) && (*d<=0x061FF) )	{
+//        pLCDC->Refresh = true;
+        return(true);		// RAM area()
+    }
     if ( (*d>=0x06000) && (*d<=0x07FFF) )	return(true);		// RAM area()
     if ( (*d>=0x18000) && (*d<=0x1FFFF) )	return(true);		// RAM area()
 

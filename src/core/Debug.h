@@ -93,4 +93,17 @@ public:
         }
 
 };
+
+class Cdebug_hd61700:public Cdebug{
+    Q_OBJECT
+public:
+    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+
+        Cdebug_hd61700(CPObject *parent)	: Cdebug(parent)
+        {
+            AsmTbl = AsmTbl_sc61860;
+        }
+        virtual ~Cdebug_hd61700(){}
+
+};
 #endif

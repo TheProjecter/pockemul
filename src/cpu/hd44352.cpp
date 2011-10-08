@@ -1,3 +1,4 @@
+#include <QFile>
 #include "hd44352.h"
 
 
@@ -39,6 +40,13 @@ CHD44352::CHD44352(QObject *parent) :
 
 bool CHD44352::init()
 {
+    Reset();
+
+    QFile file;
+    file.setFileName(":/pb1000/chr.bin");
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in.readRawData ((char *) &charset,0x800 );
     return true;
 }
 
@@ -159,7 +167,7 @@ UINT8 CHD44352::get_char(UINT16 pos)
         case 0xff:
             return info.m_custom_char[3][pos%8];
         default:
-            return 0;//region()->u8(pos);
+            return charset[pos];
     }
 }
 

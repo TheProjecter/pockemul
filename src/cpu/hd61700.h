@@ -88,9 +88,6 @@ public:
     virtual	void	save_internal(QXmlStreamWriter *);
             void	save(void);
 
-    virtual	DWORD	get_mem(DWORD adr,int size){}		//get memory
-    virtual	void	set_mem(DWORD adr,int size,DWORD data){}	//set memory
-
     virtual	bool	Get_Xin(void){}
     virtual	void	Set_Xin(bool){}
     virtual	bool	Get_Xout(void){}
@@ -102,8 +99,9 @@ public:
     // construction/destruction
 //    CHD61700(const machine_config &mconfig, const char *_tag, device_t *_owner, UINT32 _clock);
 
-//    static void static_set_config(device_t &device, const hd61700_config &config);
+            //    static void static_set_config(device_t &device, const hd61700_config &config);
 
+            void secTimer();
 protected:
     // device-level overrides
     virtual void device_start();

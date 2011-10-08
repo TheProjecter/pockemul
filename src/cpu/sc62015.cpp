@@ -3558,6 +3558,7 @@ void Csc62015::save_internal(QXmlStreamWriter *)
 {
 }
 
+#if 0
 /*!
  \brief Get data from memory
 
@@ -3605,6 +3606,7 @@ void Csc62015::set_mem(DWORD adr,int size,DWORD data)
         break;
     }
 }
+#endif
 
 void Csc62015::Regs_Info(UINT8 Type)
 {

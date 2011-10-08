@@ -8,6 +8,14 @@
 
 #define BIT(x,n) (((x)>>(n))&1)
 
+Clcdc_pb1000::Clcdc_pb1000(CPObject *parent)	: Clcdc(parent){						//[constructor]
+
+    Color_Off.setRgb(
+                        (int) (95*contrast),
+                        (int) (119*contrast),
+                        (int) (193*contrast));
+}
+
 static const struct {
     int x,y;
 } pb1000_pos[16]={
@@ -58,6 +66,7 @@ void Clcdc_pb1000::disp(void)
     if (!ready) return;
     if (!((Cpb1000 *)pPC)->pHD44352 ) return;
     Refresh = true;
+    info = ((Cpb1000*) pPC)->pHD44352->getInfo();
     disp_symb();
 
     QPainter painter(pPC->LcdImage);

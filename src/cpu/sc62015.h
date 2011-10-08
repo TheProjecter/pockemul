@@ -131,8 +131,8 @@ public:
 
     short   Step_sc62015_();
 
-    void    set_mem(DWORD adr, int size, DWORD data);
-    DWORD   get_mem(DWORD adr, int size);
+//    void    set_mem(DWORD adr, int size, DWORD data);
+//    DWORD   get_mem(DWORD adr, int size);
     void    Reset();
     void    Regs_Info(UINT8 Type);
 

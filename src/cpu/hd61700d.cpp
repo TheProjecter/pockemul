@@ -3,12 +3,14 @@
 //#include "emu.h"
 //#include "debugger.h"
 #include "hd61700.h"
+#include "Debug.h"
+#include "pcxxxx.h"
 
-#ifdef FIRST_CASIO_DASM
+#if 1//def FIRST_CASIO_DASM
 
 #define EXT_ROM		(pc > 0x0c00)
-#define INC_POS		pos += (type+1)
-#define POS			(pos + type)
+#define INC_POS		pos++;//pos += (type+1)
+#define POS			pos //(pos + type)
 #define BIT(x,n) (((x)>>(n))&1)
 static const char *const reg_5b[4] =  {"sx", "sy", "sz", "sz"};
 static const char *const reg_8b[8] =  {"pe", "pd", "ib", "ua", "ia", "ie", "tm", "tm"};
@@ -40,7 +42,7 @@ enum
     OP_REG8_,
     OP_REGIM8,
     OP_RMSIM3,
-    OP_RSIR,
+    OP_RSIR
 };
 
 typedef struct
@@ -70,7 +72,7 @@ static const hd61700_dasm hd61700_ops[256] =
     { "pst",  OP_REG8,   OP_MREG2,    1 }, { "pst",  OP_REG8, OP_MREG2,  1 },
     { "???",  OP_MREG2,   OP_NULL,     1 }, { "illegal", OP_NULL, OP_NULL, 0 },
     { "???",  OP_MREG2,   OP_NULL,     1 }, { "???",  OP_MREG2, OP_NULL,   1 },
-    { "???",  OP_MREG2,   OP_NULL,     1 }, { "gsr",  OP_RSIR,  OP_MREG2,  1 },
+    { "gfl",  OP_MREG2,   OP_NULL,    1 }, { "gsr",  OP_RSIR,  OP_MREG2,  1 },
     { "gst",  OP_REG8,   OP_MREG2,    1 }, { "gst",  OP_REG8, OP_MREG2,  1 },
 
     // 0x20
@@ -106,7 +108,7 @@ static const hd61700_dasm hd61700_ops[256] =
     // 0x50
     { "st",   OP_IM8I,    OP_MREG2,  0 }, { "st",    OP_IM8,      OP_MREG2,0 },
     { "stl",  OP_IM8_,    OP_NULL,   0 }, { "illegal", OP_NULL,   OP_NULL, 0 },
-    { "???",  OP_IM8_,    OP_NULL,   0 }, { "psr",   OP_RSIR,     OP_IM5,  0 },
+    { "ppo",  OP_IM8_,    OP_NULL,   0 }, { "psr",   OP_RSIR,     OP_IM5,  0 },
     { "pst",  OP_REG8_,   OP_IM8,    0 }, { "pst",   OP_REG8_,    OP_IM8,  0 },
     { "bups", OP_IM8_,    OP_NULL,   0 }, { "bdns",  OP_IM8_,     OP_NULL, 0 },
     { "illegal", OP_NULL, OP_NULL,   0 }, { "illegal", OP_NULL,   OP_NULL, 0 },
@@ -148,7 +150,7 @@ static const hd61700_dasm hd61700_ops[256] =
     { "stlw", OP_MREG2,   OP_NULL,   1 }, { "ldlw", OP_MREG2,   OP_NULL,   1 },
     { "illegal", OP_NULL, OP_NULL,   0 }, { "illegal", OP_NULL, OP_NULL,   0 },
     { "pre",  OP_REG16,   OP_MREG2,  1 }, { "pre",  OP_REG16,   OP_MREG2,  1 },
-    { "???",  OP_MREG2,   OP_NULL,   1 }, { "illegal", OP_NULL, OP_NULL,   0 },
+    { "biuw", OP_MREG2,   OP_NULL,   1 }, { "illegal", OP_NULL, OP_NULL,   0 },
     { "???",  OP_MREG2,   OP_NULL,   1 }, { "???",  OP_MREG2,   OP_NULL,   1 },
     { "???",  OP_MREG2,   OP_NULL,   1 }, { "illegal", OP_NULL, OP_NULL,   0 },
     { "gre",  OP_REG16,   OP_MREG2,  1 }, { "gre",  OP_REG16,   OP_MREG2,  1 },
@@ -397,18 +399,26 @@ UINT32 get_dasmflags(UINT8 op)
     return 0;
 }
 
-
-CPU_DISASSEMBLE( hd61700 )
+DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
 {
+
     const hd61700_dasm *inst;
     UINT32 dasmflags = 0;
     UINT8 op, op1;
-    int pos = 0, type = EXT_ROM;
+    UINT8 *oprom =  pPC->mem;//&pPC->mem[0];
+    int pos =adr, type = 0;//(adr>0x0C00);
+    if (adr<0x0C00) pos<<=1;
+
+    char *buffer = (char *)malloc(200);
+    char *startbuffer = buffer;
+
+    buffer[0] = '\0';
 
     op = oprom[POS];
     INC_POS;
 
     dasmflags = get_dasmflags(op);
+
 
     op1 = oprom[POS];
 
@@ -417,27 +427,32 @@ CPU_DISASSEMBLE( hd61700 )
     buffer += sprintf(buffer,"%-8s", inst->str);
 
     //dasm first arg
-    buffer += dasm_arg(buffer, op, pc, inst->arg1, oprom, pos);
+    buffer += dasm_arg(buffer, op, adr, inst->arg1, oprom, pos);
 
     //if present dasm second arg
     if (inst->arg2 != OP_NULL)
     {
         buffer += sprintf(buffer,", ");
-        buffer += dasm_arg(buffer, op, pc, inst->arg2, oprom, pos);
+        buffer += dasm_arg(buffer, op, adr, inst->arg2, oprom, pos);
     }
 
     //if required add the optional jr
     if (inst->optjr == true && BIT(op1, 7))
     {
         buffer += sprintf( buffer, ", jr ");
-        buffer += dasm_arg(buffer, op, pc+1, OP_IM7, oprom, pos);
+        buffer += dasm_arg(buffer, op, adr+1, OP_IM7, oprom, pos);
 
-        dasmflags = DASMFLAG_STEP_OVER;
+//        dasmflags = DASMFLAG_STEP_OVER;
     }
 
-    if (pos&1) INC_POS;
+//    if (pos&1) INC_POS;
 
-    return (pos>>1) | dasmflags | DASMFLAG_SUPPORTED;
+    sprintf(Buffer," %06X:%s",adr,startbuffer);
+    debugged = true;
+    NextDasmAdr = (pos>>1);
+    return(pos>>1);
+
+//    return (pos>>1) | dasmflags | DASMFLAG_SUPPORTED;
 }
 
 #endif

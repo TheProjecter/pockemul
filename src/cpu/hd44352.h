@@ -82,6 +82,7 @@ private:
 //    emu_timer *m_on_timer;
 
     HD44352info info;
+    UINT8 charset[0x800];
 
 
 
