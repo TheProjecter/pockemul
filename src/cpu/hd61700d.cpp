@@ -1,21 +1,19 @@
 
-
-//#include "emu.h"
-//#include "debugger.h"
 #include "hd61700.h"
 #include "Debug.h"
 #include "pcxxxx.h"
 
-#if 1//def FIRST_CASIO_DASM
 
 #define EXT_ROM		(pc > 0x0c00)
 #define INC_POS		pos++;//pos += (type+1)
 #define POS			pos //(pos + type)
 #define BIT(x,n) (((x)>>(n))&1)
-static const char *const reg_5b[4] =  {"sx", "sy", "sz", "sz"};
-static const char *const reg_8b[8] =  {"pe", "pd", "ib", "ua", "ia", "ie", "tm", "tm"};
-static const char *const reg_16b[8] = {"ix", "iy", "iz", "us", "ss", "ky", "ky", "ky"};
-static const char *const jp_cond[8] = {"z", "nc", "lz", "uz", "nz", "c", "nlz"};
+
+
+const char *const Cdebug_hd61700::reg_5b[4] =  {"sx", "sy", "sz", "sz"};
+const char *const Cdebug_hd61700::reg_8b[8] =  {"pe", "pd", "ib", "ua", "ia", "ie", "tm", "tm"};
+const char *const Cdebug_hd61700::reg_16b[8] = {"ix", "iy", "iz", "us", "ss", "ky", "ky", "ky"};
+const char *const Cdebug_hd61700::jp_cond[8] = {"z", "nc", "lz", "uz", "nz", "c", "nlz"};
 
 enum
 {
@@ -45,15 +43,9 @@ enum
     OP_RSIR
 };
 
-typedef struct
-{
-    const char *str;
-    UINT8		arg1;
-    UINT8		arg2;
-    bool		optjr;
-} hd61700_dasm;
 
-static const hd61700_dasm hd61700_ops[256] =
+
+const hd61700_dasm Cdebug_hd61700::hd61700_ops[256] =
 {
     // 0x00
     { "adc",  OP_MREG,    OP_MR_SIR, 1 }, { "sbc",  OP_MREG,    OP_MR_SIR, 1 },
@@ -217,7 +209,7 @@ static const hd61700_dasm hd61700_ops[256] =
 };
 
 
-inline int dasm_im8(char *buffer, UINT16 pc, int arg, const UINT8 *oprom, int &pos, int type)
+inline int Cdebug_hd61700::dasm_im8(char *buffer, UINT16 pc, int arg, const UINT8 *oprom, int &pos, int type)
 {
     if (((arg>>5) & 0x03) == 0x03)
     {
@@ -232,7 +224,7 @@ inline int dasm_im8(char *buffer, UINT16 pc, int arg, const UINT8 *oprom, int &p
 }
 
 
-inline int dasm_im8(char *buffer, UINT16 pc, int arg, int arg1, const UINT8 *oprom, int &pos)
+inline int Cdebug_hd61700::dasm_im8(char *buffer, UINT16 pc, int arg, int arg1, const UINT8 *oprom, int &pos)
 {
     if (((arg>>5) & 0x03) == 0x03)
     {
@@ -245,7 +237,7 @@ inline int dasm_im8(char *buffer, UINT16 pc, int arg, int arg1, const UINT8 *opr
 }
 
 
-int dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const UINT8 *oprom, int &pos)
+int Cdebug_hd61700::dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const UINT8 *oprom, int &pos)
 {
     char* buffer_start = buffer;
     int type = EXT_ROM;
@@ -377,7 +369,7 @@ int dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const UINT8 *oprom, int
     return buffer - buffer_start;
 }
 
-UINT32 get_dasmflags(UINT8 op)
+UINT32 Cdebug_hd61700::get_dasmflags(UINT8 op)
 {
     switch (op)
     {
@@ -455,4 +447,4 @@ DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
 //    return (pos>>1) | dasmflags | DASMFLAG_SUPPORTED;
 }
 
-#endif
+
