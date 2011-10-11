@@ -90,10 +90,21 @@
     <KEY description="Sin" height="16" left="516" scancode="0xf3" top="88" width="25"/>
     <KEY description="Hyp" height="16" left="478" scancode="0xf4" top="88" width="25"/>
     <KEY description="RM" height="22" left="582" scancode="0xf5" top="144" width="32"/>
-    <KEY description="PF1" height="17" left="68" scancode="0xf6" top="192" width="60"/>
-    <KEY description="PF2" height="17" left="139" scancode="0xf7" top="191" width="60"/>
-    <KEY description="PF3" height="17" left="211" scancode="0xf8" top="191" width="60"/>
-    <KEY description="PF4" height="17" left="283" scancode="0xf9" top="191" width="60"/>
-    <KEY description="PF5" height="17" left="356" scancode="0xfa" top="191" width="60"/>
+    <KEY description="Touch SCREEN 00" height="16" left="90" scancode="0x100" top="130" width="96"/>
+    <KEY description="Touch SCREEN 01" height="16" left="90" scancode="0x101" top="146" width="96"/>
+    <KEY description="Touch SCREEN 02" height="16" left="90" scancode="0x102" top="162" width="96"/>
+    <KEY description="Touch SCREEN 03" height="16" left="90" scancode="0x103" top="178" width="96"/>
+    <KEY description="Touch SCREEN 10" height="16" left="186" scancode="0x110" top="130" width="96"/>
+    <KEY description="Touch SCREEN 11" height="16" left="186" scancode="0x111" top="146" width="96"/>
+    <KEY description="Touch SCREEN 12" height="16" left="186" scancode="0x112" top="162" width="96"/>
+    <KEY description="Touch SCREEN 13" height="16" left="186" scancode="0x113" top="178" width="96"/>
+    <KEY description="Touch SCREEN 20" height="16" left="282" scancode="0x120" top="130" width="96"/>
+    <KEY description="Touch SCREEN 21" height="16" left="282" scancode="0x121" top="146" width="96"/>
+    <KEY description="Touch SCREEN 22" height="16" left="282" scancode="0x122" top="162" width="96"/>
+    <KEY description="Touch SCREEN 23" height="16" left="282" scancode="0x123" top="178" width="96"/>
+    <KEY description="Touch SCREEN 30" height="16" left="378" scancode="0x130" top="130" width="96"/>
+    <KEY description="Touch SCREEN 31" height="16" left="378" scancode="0x131" top="146" width="96"/>
+    <KEY description="Touch SCREEN 32" height="16" left="378" scancode="0x132" top="162" width="96"/>
+    <KEY description="Touch SCREEN 33" height="16" left="378" scancode="0x133" top="178" width="96"/>
 </Keyboard>
 </KEYBMAP>

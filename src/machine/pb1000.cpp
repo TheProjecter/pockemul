@@ -388,6 +388,10 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY('('))			data|=0x10;
             if (KEY('/'))			data|=0x20;
             if (KEY('^'))			data|=0x80;
+            if (KEY(K_TS_00))       data|=0x1000;
+            if (KEY(K_TS_01))       data|=0x2000;
+            if (KEY(K_TS_02))       data|=0x4000;
+            if (KEY(K_TS_03))       data|=0x8000;
         }
 
         if (ko&0x80) {
@@ -398,6 +402,10 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY('6'))			data|=0x10;
             if (KEY('*'))			data|=0x20;
             if (KEY('I'))			data|=0x80;
+            if (KEY(K_TS_10))       data|=0x1000;
+            if (KEY(K_TS_11))       data|=0x2000;
+            if (KEY(K_TS_12))       data|=0x4000;
+            if (KEY(K_TS_13))       data|=0x8000;
         }
 
         if (ko&0x100) {
@@ -408,6 +416,10 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY('3'))			data|=0x10;
             if (KEY('+'))			data|=0x20;
             if (KEY('J'))			data|=0x80;
+            if (KEY(K_TS_20))       data|=0x1000;
+            if (KEY(K_TS_21))       data|=0x2000;
+            if (KEY(K_TS_22))       data|=0x4000;
+            if (KEY(K_TS_23))       data|=0x8000;
         }
 
         if (ko&0x200) {
@@ -418,6 +430,10 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY(K_RET))			data|=0x10;
             if (KEY('-'))			data|=0x20;
             if (KEY(' '))			data|=0x80;
+            if (KEY(K_TS_30))       data|=0x1000;
+            if (KEY(K_TS_31))       data|=0x2000;
+            if (KEY(K_TS_32))       data|=0x4000;
+            if (KEY(K_TS_33))       data|=0x8000;
         }
     }
 

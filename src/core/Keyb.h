@@ -178,7 +178,22 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_Z			0x66
 
 
-
+#define K_TS_00     0x100
+#define K_TS_01     0x101
+#define K_TS_02     0x102
+#define K_TS_03     0x103
+#define K_TS_10     0x110
+#define K_TS_11     0x111
+#define K_TS_12     0x112
+#define K_TS_13     0x113
+#define K_TS_20     0x120
+#define K_TS_21     0x121
+#define K_TS_22     0x122
+#define K_TS_23     0x123
+#define K_TS_30     0x130
+#define K_TS_31     0x131
+#define K_TS_32     0x132
+#define K_TS_33     0x133
 
 class CKey{
 public:
