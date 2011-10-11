@@ -309,8 +309,13 @@ UINT16 Cpb1000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
 
-ko = m_kb_matrix;
-//if (ko == 0) return 0xffff;
+    switch (m_kb_matrix) {
+    case 0: return 0;
+    case 13: ko = 0xffff; break;
+    case 14:
+    case 15: ko = 0; break;
+    default: ko = (1<<(m_kb_matrix-1)); break;
+    }
 
     if ((pKEYB->LastKey) )
     {
