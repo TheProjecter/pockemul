@@ -27,7 +27,9 @@ DialogDasm::DialogDasm(QWidget *parent) :
     connect(ui->pbStart,SIGNAL(clicked()),this,SLOT(start()));
     connect(ui->pbStop,SIGNAL(clicked()),this,SLOT(stop()));
     connect(ui->pbStep,SIGNAL(clicked()),this,SLOT(step()));
+    connect(ui->breakPointLineEdit,SIGNAL(textChanged(QString)),this,SLOT(newBreakPoint(QString)));
     connect(pPC,SIGNAL(RefreshDasm()),this,SLOT(RefreshDasm()));
+
 
     QFont font;
     font.setFamily("Courier");
@@ -153,7 +155,7 @@ void DialogDasm::RefreshDasm()
                 Index++;
             }
         }
-        pPC->pCPU->Regs_Info(2);
+//        pPC->pCPU->Regs_Info(2);
 
 
         //ShowReg();
@@ -207,4 +209,9 @@ void DialogDasm::step()
     pPC->DasmFlag = true;
     pPC->pCPU->halt = 0;
     pPC->DasmStep = true;
+}
+
+void DialogDasm::newBreakPoint(QString v)
+{
+    pPC->BreakPointAdr = v.toLongLong(0,16);
 }

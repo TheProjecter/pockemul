@@ -74,7 +74,7 @@ public:
 
     CCPU(CPObject *parent);
 
-    QByteArray getimem();
+    virtual QByteArray getimem();
 
     CregCPU * regwidget;
     void setImemBit(WORD adr, int bit, BYTE data);

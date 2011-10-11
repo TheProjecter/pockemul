@@ -394,6 +394,8 @@ UINT32 Cdebug_hd61700::get_dasmflags(UINT8 op)
 DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
 {
 
+    DasmAdr = adr;
+
     const hd61700_dasm *inst;
     UINT32 dasmflags = 0;
     UINT8 op, op1;

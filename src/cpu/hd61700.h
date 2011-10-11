@@ -99,6 +99,7 @@ public:
 
             void secTimer();
             virtual void execute_set_input(int inputnum, int state);
+            QByteArray getimem();
 protected:
     // device-level overrides
     virtual void device_start();

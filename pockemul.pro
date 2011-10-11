@@ -29,7 +29,8 @@ FORMS += ui/about.ui \
     ui/cregssc61860widget.ui \
     ui/cregslh5801widget.ui \
     ui/cregsz80widget.ui \
-    ui/uartconsole.ui
+    ui/uartconsole.ui \
+    ui/cregshd61700widget.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -255,7 +256,8 @@ HEADERS += src/core/Connect.h \
     src/core/Lcdc_e500.h \
     src/machine/pb1000.h \
     src/cpu/hd44352.h \
-    src/core/Lcdc_pb1000.h
+    src/core/Lcdc_pb1000.h \
+    ui/cregshd61700widget.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -474,7 +476,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/Lcdc_e500.cpp \
     src/machine/pb1000.cpp \
     src/cpu/hd44352.cpp \
-    src/core/Lcdc_pb1000.cpp
+    src/core/Lcdc_pb1000.cpp \
+    ui/cregshd61700widget.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts

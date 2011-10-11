@@ -67,6 +67,7 @@
     <KEY description="Y" height="16" left="230" scancode="0x79" top="473" width="25"/>
     <KEY description="Z" height="16" left="72" scancode="0x7a" top="541" width="25"/>
     <KEY description="MENU" height="34" left="121" scancode="0xda" top="272" width="36"/>
+    <KEY description="CAL" height="34" left="160" scancode="0xe1" top="273" width="36"/>
     <KEY description="EXTMENU" height="16" left="20" scancode="0xdb" top="192" width="25"/>
     <KEY description="BASIC" height="16" left="19" scancode="0xe2" top="256" width="25"/>
     <KEY description="+/-" height="22" left="524" scancode="0xe0" top="314" width="32"/>

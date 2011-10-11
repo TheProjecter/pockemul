@@ -29,7 +29,7 @@
 #include "pb1000.h"
 #include "Log.h"
 #include "pcxxxx.h"
-#include "ui/cregsz80widget.h"
+#include "ui/cregshd61700widget.h"
 #include "Debug.h"
 
 
@@ -124,7 +124,7 @@ CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
     pulseInterval = 4;
 
     pDEBUG	= new Cdebug_hd61700(parent);
-    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
+    regwidget = (CregCPU*) new Cregshd61700Widget(0,this);
 }
 
 //-------------------------------------------------
@@ -270,9 +270,8 @@ void CHD61700::Regs_Info(UINT8 Type)
     switch(Type)
     {
     case 0:			// Monitor Registers Dialog
-    case 2:			// For Log File
-    case 1:			// For Log File
-        sprintf(Regs_String,"sx:%02X sy:%02X sz:%02X %c%c%c%c%c%c IE:%02x IA:%02x IB:%02x 00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x 16-31:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+        sprintf(Regs_String,"ix:%04X\niy:%04X\niz:%04X\nsx:%02X\nsy:%02X\nsz:%02X\n%c%c%c%c%c%c\nIE:%02x UA:%02x\nIA:%02x IB:%02x\n00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n16-31:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+            REG_IX,REG_IY,REG_IZ,
             REG_SX,REG_SY,REG_SZ,
             m_flags & FLAG_Z   ? '.' : 'Z',
             m_flags & FLAG_C   ? 'C' : '.',
@@ -280,7 +279,26 @@ void CHD61700::Regs_Info(UINT8 Type)
             m_flags & FLAG_UZ  ? '.' : 'U',
             m_flags & FLAG_SW  ? 'S' : '.',
             m_flags & FLAG_APO ? 'A' : '.',
-                REG_IE,REG_IA,REG_IB,
+                REG_IE,REG_UA,REG_IA,REG_IB,
+
+            m_regmain[0],m_regmain[1],m_regmain[2],m_regmain[3],m_regmain[4],m_regmain[5],m_regmain[6],m_regmain[7],
+            m_regmain[8],m_regmain[9],m_regmain[10],m_regmain[11],m_regmain[12],m_regmain[13],m_regmain[14],m_regmain[15],
+            m_regmain[16],m_regmain[17],m_regmain[18],m_regmain[19],m_regmain[20],m_regmain[21],m_regmain[22],m_regmain[23],
+            m_regmain[24],m_regmain[25],m_regmain[26],m_regmain[27],m_regmain[28],m_regmain[29],m_regmain[30],m_regmain[31]
+        );
+        break;
+    case 2:			// For Log File
+    case 1:			// For Log File
+        sprintf(Regs_String,"ix:%04X iy:%04X iz:%04X sx:%02X sy:%02X sz:%02X %c%c%c%c%c%c IE:%02x UA:%02x IA:%02x IB:%02x 00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x 16-31:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+            REG_IX,REG_IY,REG_IZ,
+            REG_SX,REG_SY,REG_SZ,
+            m_flags & FLAG_Z   ? '.' : 'Z',
+            m_flags & FLAG_C   ? 'C' : '.',
+            m_flags & FLAG_LZ  ? '.' : 'L',
+            m_flags & FLAG_UZ  ? '.' : 'U',
+            m_flags & FLAG_SW  ? 'S' : '.',
+            m_flags & FLAG_APO ? 'A' : '.',
+                REG_IE,REG_UA,REG_IA,REG_IB,
 
             m_regmain[0],m_regmain[1],m_regmain[2],m_regmain[3],m_regmain[4],m_regmain[5],m_regmain[6],m_regmain[7],
             m_regmain[8],m_regmain[9],m_regmain[10],m_regmain[11],m_regmain[12],m_regmain[13],m_regmain[14],m_regmain[15],
@@ -2903,7 +2921,7 @@ inline void CHD61700::mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data)
 
 inline UINT32 CHD61700::make_18bit_addr(UINT8 segment, UINT16 offset)
 {
-#if 0
+#if 1
     if (offset >= ((REG_IB>>6) & 0x03) * 0x4000)
         return (UINT32)((offset | ((segment&0x03)<<16)) & 0x3ffff);
     else
@@ -3131,3 +3149,6 @@ void	CHD61700::Load_Internal(QXmlStreamReader *) {}
 void	CHD61700::save_internal(QFile *) {}
 void	CHD61700::save_internal(QXmlStreamWriter *) {}
 
+QByteArray CHD61700::getimem() {
+    return (QByteArray((const char*)&m_regmain,sizeof(m_regmain)));
+}
