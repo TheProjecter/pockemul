@@ -1,9 +1,6 @@
 #ifndef HD61700_H
 #define HD61700_H
 
-#define FIRST_CASIO
-
-#ifdef FIRST_CASIO
 /**********************************************************************
 
     Hitachi HD61700
@@ -59,15 +56,14 @@ enum
 };
 
 // input lines
-enum
-{
-    HD61700_ON_INT,
-    HD61700_TIMER_INT,
-    HD61700_INT2,
-    HD61700_KEY_INT,
-    HD61700_INT1,
-    HD61700_SW
-};
+
+#define HD61700_ON_INT      0
+#define HD61700_TIMER_INT   1
+#define HD61700_INT2        2
+#define HD61700_KEY_INT     3
+#define HD61700_INT1        4
+#define HD61700_SW          5
+
 
 
 // ======================> hd61700_cpu_device
@@ -102,6 +98,7 @@ public:
             //    static void static_set_config(device_t &device, const hd61700_config &config);
 
             void secTimer();
+            virtual void execute_set_input(int inputnum, int state);
 protected:
     // device-level overrides
     virtual void device_start();
@@ -113,7 +110,7 @@ protected:
     virtual UINT32 execute_max_cycles() const { return 52; }
     virtual UINT32 execute_input_lines() const { return 6; }
     virtual void execute_run();
-    virtual void execute_set_input(int inputnum, int state);
+
 
     // device_state_interface overrides
 //    virtual void state_import(const device_state_entry &entry);
@@ -180,11 +177,12 @@ protected:
     static const int FLAG_UZ	= 0x10;
     static const int FLAG_SW	= 0x08;
     static const int FLAG_APO	= 0x04;
+
+    int pulseInterval;
+
+    static const UINT16 irq_vector[];
 };
 
-
-
-#endif
 
 
 #endif // HD61700_H

@@ -32,7 +32,10 @@
 #include "ui/cregsz80widget.h"
 #include "Debug.h"
 
-#ifdef FIRST_CASIO
+
+#define SEC_TIMER   0
+#define PULSE_TIMER 1
+#define KEY_TIMER   2
 
 // internal ROM
 #define INT_ROM					0x0c00
@@ -97,7 +100,7 @@
 #define	CPU_SLP 				0x02
 
 /* HD61700 IRQ vector */
-static const UINT16 irq_vector[] = {0x0032, 0x0042, 0x0052, 0x0062, 0x0072};
+const UINT16 CHD61700::irq_vector[] = {0x0032, 0x0042, 0x0052, 0x0062, 0x0072};
 
 //**************************************************************************
 //  HD61700 DEVICE
@@ -117,6 +120,8 @@ static const UINT16 irq_vector[] = {0x0032, 0x0042, 0x0052, 0x0062, 0x0072};
 //}
 
 CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
+
+    pulseInterval = 4;
 
     pDEBUG	= new Cdebug_hd61700(parent);
     regwidget = (CregCPU*) new Cregsz80Widget(0,this);
@@ -139,7 +144,9 @@ CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
 bool CHD61700::init() {
     Check_Log();
     Reset();
-    pPC->pTIMER->resetTimer(0);
+    pPC->pTIMER->resetTimer(SEC_TIMER);
+    pPC->pTIMER->resetTimer(PULSE_TIMER);
+    pPC->pTIMER->resetTimer(KEY_TIMER);
 
     return(true);
 }
@@ -235,36 +242,6 @@ void CHD61700::device_reset()
 
 
 
-//-------------------------------------------------
-//  device_timer - handler timer events
-//-------------------------------------------------
-#if 0
-void CHD61700::device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr)
-{
-    switch(id)
-    {
-        case SEC_TIMER:
-            REG_TM++;
-            if ((REG_TM&0x3f) == 60)
-            {
-                REG_TM = (REG_TM & 0xc0) + 0x40;
-
-                if (((REG_IE>>3) & (1<<HD61700_TIMER_INT)))
-                {
-                    REG_IB |= (1<<HD61700_TIMER_INT);
-
-                    if (REG_IB & 0x20)
-                    {
-                        m_state &= ~CPU_SLP;
-                        m_flags |= FLAG_APO;
-                    }
-                }
-            }
-            break;
-    }
-}
-
-#endif
 
 //-------------------------------------------------
 //  state_import - import state into the device,
@@ -295,34 +272,26 @@ void CHD61700::Regs_Info(UINT8 Type)
     case 0:			// Monitor Registers Dialog
     case 2:			// For Log File
     case 1:			// For Log File
-        sprintf(Regs_String,"%c%c%c%c%c%c 00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+        sprintf(Regs_String,"sx:%02X sy:%02X sz:%02X %c%c%c%c%c%c IE:%02x IA:%02x IB:%02x 00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x 16-31:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+            REG_SX,REG_SY,REG_SZ,
             m_flags & FLAG_Z   ? '.' : 'Z',
             m_flags & FLAG_C   ? 'C' : '.',
             m_flags & FLAG_LZ  ? '.' : 'L',
             m_flags & FLAG_UZ  ? '.' : 'U',
             m_flags & FLAG_SW  ? 'S' : '.',
             m_flags & FLAG_APO ? 'A' : '.',
+                REG_IE,REG_IA,REG_IB,
 
-                m_regmain[0],m_regmain[1],m_regmain[2],m_regmain[3],m_regmain[4],m_regmain[5],m_regmain[6],m_regmain[7],
-                m_regmain[8],m_regmain[9],m_regmain[10],m_regmain[11],m_regmain[12],m_regmain[13],m_regmain[14],m_regmain[15]
+            m_regmain[0],m_regmain[1],m_regmain[2],m_regmain[3],m_regmain[4],m_regmain[5],m_regmain[6],m_regmain[7],
+            m_regmain[8],m_regmain[9],m_regmain[10],m_regmain[11],m_regmain[12],m_regmain[13],m_regmain[14],m_regmain[15],
+            m_regmain[16],m_regmain[17],m_regmain[18],m_regmain[19],m_regmain[20],m_regmain[21],m_regmain[22],m_regmain[23],
+            m_regmain[24],m_regmain[25],m_regmain[26],m_regmain[27],m_regmain[28],m_regmain[29],m_regmain[30],m_regmain[31]
         );
 
         break;
     }
 }
 
-//-------------------------------------------------
-//  disasm_disassemble - call the disassembly
-//  helper function
-//-------------------------------------------------
-#if 0
-offs_t CHD61700::disasm_disassemble(char *buffer, offs_t pc, const UINT8 *oprom, const UINT8 *opram, UINT32 options)
-{
-    extern CPU_DISASSEMBLE( hd61700 );
-    return CPU_DISASSEMBLE_NAME(hd61700)(NULL, buffer, pc, oprom, opram, 0);
-}
-
-#endif
 
 //-------------------------------------------------
 //  check_irqs - check if need interrupts
@@ -339,6 +308,7 @@ bool CHD61700::check_irqs(void)
             push(REG_SS, (m_pc>>0)&0xff);
 
             set_pc(irq_vector[i]);
+            CallSubLevel++;
             m_icount -= 12;
             return true;
         }
@@ -350,6 +320,7 @@ bool CHD61700::check_irqs(void)
 void CHD61700::secTimer(void) {
 
     REG_TM++;
+    if (fp_log) fprintf(fp_log,"SEC TIMER : %d",REG_TM);
     if ((REG_TM&0x3f) == 60)
     {
         REG_TM = (REG_TM & 0xc0) + 0x40;
@@ -373,10 +344,32 @@ void CHD61700::secTimer(void) {
 void CHD61700::step(void) {
     m_icount = 1;
     execute_run();
+
+    // Sec Timer
     pPC->pTIMER->state-=(m_icount-1);
-    if (pPC->pTIMER->msElapsedId(0) >=1000) {
-        pPC->pTIMER->resetTimer(0);
+    if (pPC->pTIMER->msElapsedId(SEC_TIMER) >=1000) {
+        pPC->pTIMER->resetTimer(SEC_TIMER);
         secTimer();
+    }
+
+    // Pulse Timer
+    if (pPC->pTIMER->msElapsedId(PULSE_TIMER) >= pulseInterval) {
+        if (fp_log) fprintf(fp_log,"PULSE TIMER\n");
+        if ((REG_IA & 0x80) == 0) execute_set_input(HD61700_KEY_INT,1);
+        if ((REG_IA & 40) == 0) {
+            pulseInterval = 4;
+        }
+        else {
+            pulseInterval = 31;
+        }
+        pPC->pTIMER->resetTimer(PULSE_TIMER);
+    }
+
+    // Keyboard timer
+    if (pPC->pTIMER->msElapsedId(KEY_TIMER) >= 4) {
+        if (fp_log) fprintf(fp_log,"KEYBOARD TIMER\n");
+        pPC->pTIMER->resetTimer(KEY_TIMER);
+        execute_set_input(HD61700_KEY_INT,1);
     }
 }
 
@@ -526,10 +519,6 @@ void CHD61700::execute_run()
 
                         pHD44352->data_write(READ_REG(arg));
 
-//                        if (m_lcd_data_w)
-//                            (*m_lcd_data_w)(*this, READ_REG(arg));
-
-
                         check_optional_jr(arg);
                         m_icount -= 11;
                     }
@@ -541,8 +530,6 @@ void CHD61700::execute_run()
                         UINT8 res = 0xff;
 
                         res = pHD44352->data_read();
-//                        if (m_lcd_data_r)
-//                            res = (*m_lcd_data_r)(*this);
 
                         WRITE_REG(arg, res);
 
@@ -562,8 +549,6 @@ void CHD61700::execute_run()
                         else
                         {
                             pHD44352->control_write(READ_REG(arg));
-//                            if (m_lcd_control)
-//                                (*m_lcd_control)(*this, READ_REG(arg));
                         }
 
                         check_optional_jr(arg);
@@ -603,6 +588,7 @@ void CHD61700::execute_run()
                                 WRITE_REG8(idx, src);
                                 break;
                             case 4:		//IA
+                            ((Cpb1000*)pPC)->setKey(src);
 //                                if (m_kb_w)
 //                                    (*m_kb_w)(*this, src);
                                 WRITE_REG8(idx, src);
@@ -739,6 +725,7 @@ void CHD61700::execute_run()
                         {
 //                            if (m_port_r)
 //                                src = (*m_port_r)(*this);
+                            src = 0x00;
 
                             src&=(~REG_PE);
                         }
@@ -866,6 +853,7 @@ void CHD61700::execute_run()
                         m_icount -= 8;
                     }
                     break;
+
 
                 case 0x2c:	//ldd
                     {
@@ -1143,6 +1131,7 @@ void CHD61700::execute_run()
                             case 4:		//IA
 //                                if (m_kb_w)
 //                                    (*m_kb_w)(*this, src);
+                            ((Cpb1000*)pPC)->setKey(src);
                                 WRITE_REG8(idx, src);
                                 break;
                             case 5:		//IE
@@ -1333,6 +1322,7 @@ void CHD61700::execute_run()
                             push(REG_SS, (m_pc>>0)&0xff);
 
                             set_pc((msb<<8) | lsb);
+                            CallSubLevel++;
                             m_icount -= 6;
                         }
                         m_icount -= 3;
@@ -1710,6 +1700,8 @@ void CHD61700::execute_run()
 //                            }
 //                            else
 //                                reg0 = reg1 = 0xff;
+                            reg0=0x00;
+                            reg1=0x00;
 
                             reg0&=(~REG_PE);
                             reg1&=(~REG_PE);
@@ -1737,7 +1729,7 @@ void CHD61700::execute_run()
 
 //                            if (m_kb_r)
 //                                port = (*m_kb_r)(*this);
-                            port = 0;
+                            port = ((Cpb1000*)pPC)->getKey();
 
                             src = (REG_KY & 0x0f00) | (port & 0xf0ff);
                         }
@@ -2647,6 +2639,7 @@ void CHD61700::execute_run()
                             UINT8 msb = pop(REG_SS);
 
                             set_pc((((msb<<8) | (lsb<<0)) + 1));
+                            CallSubLevel--;
                         }
                         m_icount -= 3;
                     }
@@ -2677,6 +2670,7 @@ void CHD61700::execute_run()
                         UINT8 msb = pop(REG_SS);
 
                         set_pc((msb<<8) | (lsb<<0));
+                        CallSubLevel--;
 
                         m_icount -= 5;
                     }
@@ -2714,13 +2708,12 @@ void CHD61700::execute_run()
                         m_state |= CPU_SLP;
 
                         m_irq_status = 0;
-                        pHD44352->control_write(0);
 
-//                        if (m_lcd_control)
-//                            (*m_lcd_control)(*this, 0);
+                        pHD44352->control_write(0);
 
 //                        if (m_kb_w)
 //                            (*m_kb_w)(*this, 0);
+                        ((Cpb1000*)pPC)->setKey(0);
                         m_icount -= 3;
                     }
                     break;
@@ -2731,6 +2724,7 @@ void CHD61700::execute_run()
                         push(REG_SS, (m_pc>>8)&0xff);
                         push(REG_SS, (m_pc>>0)&0xff);
                         set_pc(0x0022);
+                        CallSubLevel++;
                         m_icount -= 9;
                     }
                     break;
@@ -2781,7 +2775,7 @@ void CHD61700::execute_set_input(int inputnum, int state)
 {
     switch (inputnum)
     {
-        case 10000:// INPUT_LINE_RESET:
+        case 1000:// INPUT_LINE_RESET:
             REG_UA = 0;
             REG_IA = 0;
             REG_IX = 0;
@@ -2809,6 +2803,7 @@ void CHD61700::execute_set_input(int inputnum, int state)
 
             REG_KY = (REG_KY & 0xf7ff) | ((state != CLEAR_LINE)<<11);
             break;
+
         case HD61700_INT2:	//level sensitive line
             if (((REG_IE>>3) & (1<<inputnum)) && state != CLEAR_LINE)
                 REG_IB |= (1<<inputnum);
@@ -2816,6 +2811,7 @@ void CHD61700::execute_set_input(int inputnum, int state)
             REG_IE = (REG_IE & 0xfe) | (state != CLEAR_LINE);
             REG_KY = (REG_KY & 0xfbff) | ((state != CLEAR_LINE)<<10);
             break;
+
         case HD61700_ON_INT:	//level sensitive line
             if ((REG_IE>>3) & (1<<inputnum) && state != CLEAR_LINE)
                 REG_IB |= (1<<inputnum);
@@ -3128,4 +3124,4 @@ void	CHD61700::Load_Internal(QFile *) {}
 void	CHD61700::Load_Internal(QXmlStreamReader *) {}
 void	CHD61700::save_internal(QFile *) {}
 void	CHD61700::save_internal(QXmlStreamWriter *) {}
-#endif
+

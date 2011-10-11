@@ -22,6 +22,9 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
 
     CHD44352 *pHD44352;
+    UINT16 getKey();
+    void setKey(UINT8 data);
+    UINT8 m_kb_matrix;
 };
 
 #endif // CPB1000_H
