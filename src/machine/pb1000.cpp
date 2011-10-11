@@ -142,18 +142,38 @@ bool Cpb1000::run() {
 
 bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
 {
-    if ( (*d>=0x06100) && (*d<=0x061FF) )	{
+    if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
 //        pLCDC->Refresh = true;
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE IO [%04X] = %02x\n",*d,data);
         return(true);		// RAM area()
     }
-    if ( (*d>=0x06000) && (*d<=0x07FFF) )	return(true);		// RAM area()
-    if ( (*d>=0x18000) && (*d<=0x1FFFF) )	return(true);		// RAM area()
 
+    if ( (*d>=0x06100) && (*d<=0x061FF) )	{
+//        pLCDC->Refresh = true;
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04X] = %02x\n",*d,data);
+        return(true);		// RAM area()
+    }
+    if ( (*d>=0x06000) && (*d<=0x07FFF) ) {
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04X] = %02x\n",*d,data);
+        return(true);		// RAM area()
+    }
+    if ( (*d>=0x18000) && (*d<=0x1FFFF) ) {
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04X] = %02x\n",*d,data);
+        return(true);		// RAM area()
+    }
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE REJETEE [%04X] = %02x\n",*d,data);
     return false;
 }
 
 bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
 {
+    if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
+//        pLCDC->Refresh = true;
+        mem[*d] = 0xff;
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
+        return(true);		// RAM area()
+    }
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04X]\n",*d);
     return true;
 }
 

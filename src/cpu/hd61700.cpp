@@ -2903,10 +2903,16 @@ inline void CHD61700::mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data)
 
 inline UINT32 CHD61700::make_18bit_addr(UINT8 segment, UINT16 offset)
 {
+#if 0
     if (offset >= ((REG_IB>>6) & 0x03) * 0x4000)
         return (UINT32)((offset | ((segment&0x03)<<16)) & 0x3ffff);
     else
         return offset;
+#else
+    if (offset < ((REG_IB <<8) & 0xC000)) segment = 0;		// UA invalid, bank 0 selected
+    return (UINT32)((offset | ((segment&0x03)<<16)) & 0x3ffff);
+
+#endif
 }
 
 inline void CHD61700::push(UINT16 &offset, UINT8 data)
