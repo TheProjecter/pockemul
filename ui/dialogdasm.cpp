@@ -162,6 +162,7 @@ void DialogDasm::RefreshDasm()
     }
     if (regwidget) regwidget->refresh();
     loadImem();
+    loadMem();
 
 }
 
@@ -175,12 +176,16 @@ void DialogDasm::loadImem()
 
 void DialogDasm::loadMem()
 {
-    //if (pPC) memHexEditor->setData(ba);
+    if (pPC) {
+        memHexEditor->setData(pPC->getmem());
+    }
+    update();
 }
 
 void DialogDasm::resizeEvent( QResizeEvent * event )
 {
     imemHexEditor->resize( ui->imemframe->size());
+    memHexEditor->resize(ui->memframe->size());
     if (regwidget) regwidget->resize(ui->regframe->size());
 }
 

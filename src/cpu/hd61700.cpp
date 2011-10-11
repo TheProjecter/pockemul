@@ -270,7 +270,7 @@ void CHD61700::Regs_Info(UINT8 Type)
     switch(Type)
     {
     case 0:			// Monitor Registers Dialog
-        sprintf(Regs_String,"ix:%04X\niy:%04X\niz:%04X\nsx:%02X\nsy:%02X\nsz:%02X\n%c%c%c%c%c%c\nIE:%02x UA:%02x\nIA:%02x IB:%02x\n00-15:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n16-31:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+        sprintf(Regs_String,"ix:%04X\niy:%04X\niz:%04X\nsx:%02X\nsy:%02X\nsz:%02X\n%c%c%c%c%c%c\nIE:%02x UA:%02x\nIA:%02x IB:%02x",
             REG_IX,REG_IY,REG_IZ,
             REG_SX,REG_SY,REG_SZ,
             m_flags & FLAG_Z   ? '.' : 'Z',
@@ -279,12 +279,7 @@ void CHD61700::Regs_Info(UINT8 Type)
             m_flags & FLAG_UZ  ? '.' : 'U',
             m_flags & FLAG_SW  ? 'S' : '.',
             m_flags & FLAG_APO ? 'A' : '.',
-                REG_IE,REG_UA,REG_IA,REG_IB,
-
-            m_regmain[0],m_regmain[1],m_regmain[2],m_regmain[3],m_regmain[4],m_regmain[5],m_regmain[6],m_regmain[7],
-            m_regmain[8],m_regmain[9],m_regmain[10],m_regmain[11],m_regmain[12],m_regmain[13],m_regmain[14],m_regmain[15],
-            m_regmain[16],m_regmain[17],m_regmain[18],m_regmain[19],m_regmain[20],m_regmain[21],m_regmain[22],m_regmain[23],
-            m_regmain[24],m_regmain[25],m_regmain[26],m_regmain[27],m_regmain[28],m_regmain[29],m_regmain[30],m_regmain[31]
+                REG_IE,REG_UA,REG_IA,REG_IB
         );
         break;
     case 2:			// For Log File

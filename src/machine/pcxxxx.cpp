@@ -1014,7 +1014,7 @@ bool CpcXXXX::Mem_Load(qint32 adr, QByteArray data ) {
 
 QByteArray CpcXXXX::getmem()
 {
-    return (QByteArray((const char*) &mem,memsize));
+    return (QByteArray((const char*) mem,memsize));
 }
 
 
