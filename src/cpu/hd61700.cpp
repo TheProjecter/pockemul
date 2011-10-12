@@ -148,6 +148,14 @@ bool CHD61700::init() {
     pPC->pTIMER->resetTimer(PULSE_TIMER);
     pPC->pTIMER->resetTimer(KEY_TIMER);
 
+    memset(m_regsir, 0, sizeof(m_regsir));
+    memset(m_reg8bit, 0, sizeof(m_reg8bit));
+    memset(m_reg16bit, 0, sizeof(m_reg16bit));
+    memset(m_regmain, 0, sizeof(m_regmain));
+
+    for (int i=0;i<6; i++)
+        m_lines_status[i] = CLEAR_LINE;
+
     return(true);
 }
 
@@ -231,13 +239,7 @@ void CHD61700::device_reset()
     m_irq_status = 0;
     prev_ua = 0;
 
-    memset(m_regsir, 0, sizeof(m_regsir));
-    memset(m_reg8bit, 0, sizeof(m_reg8bit));
-    memset(m_reg16bit, 0, sizeof(m_reg16bit));
-    memset(m_regmain, 0, sizeof(m_regmain));
 
-    for (int i=0;i<6; i++)
-        m_lines_status[i] = CLEAR_LINE;
 }
 
 

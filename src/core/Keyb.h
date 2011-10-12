@@ -195,6 +195,10 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_TS_32     0x132
 #define K_TS_33     0x133
 
+#define K_NEWALL    0x200
+#define K_LCKEY     0x201
+#define K_CALC      0x202
+
 class CKey{
 public:
 	CKey(int ScanCode, QString Description,QRect Rect = QRect());

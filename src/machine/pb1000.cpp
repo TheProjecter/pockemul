@@ -377,7 +377,7 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY(K_SML))			data|=0x20;
             if (KEY('H'))			data|=0x80;
             if (KEY(K_CAL))         data|=0x2000;
-//            if (KEY(K_CALC))			data|=0x4000;
+            if (KEY(K_CALC))			data|=0x4000;
             if (KEY(K_DA))			data|=0x8000;
         }
         if (ko&0x10) {
@@ -396,12 +396,12 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&0x20) {
             if (KEY(K_CLR))			data|=0x01;
             if (KEY(K_BS))			data|=0x02;
-//            if (KEY(K_NEWALL))		data|=0x04;
+            if (KEY(K_NEWALL))		data|=0x04;
             if (KEY(K_INS))			data|=0x08;
             if (KEY(K_STOP))		data|=0x10;
             if (KEY(')'))			data|=0x20;
 //            if (KEY(K_CONTRAST))	data|=0x80;
-//            if (KEY(K_LCKEY))		data|=0x2000;
+            if (KEY(K_LCKEY))		data|=0x2000;
         }
 
         if (ko&0x40) {
