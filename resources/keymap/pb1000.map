@@ -110,5 +110,9 @@
     <KEY description="NEW ALL" height="16" left="344" scancode="0x200" top="404" width="32"/>
     <KEY description="LCKEY" height="34" left="82" scancode="0x201" top="271" width="36"/>
     <KEY description="CALC" height="34" left="355" scancode="0x202" top="274" width="36"/>
+    <KEY description="MEMO" height="34" left="199" scancode="0x203" top="273" width="36"/>
+    <KEY description="OUT" height="34" left="315" scancode="0x204" top="273" width="36"/>
+    <KEY description="IN" height="34" left="278" scancode="0x205" top="274" width="36"/>
+    <KEY description="MEMO IN" height="34" left="237" scancode="0x206" top="273" width="36"/>
 </Keyboard>
 </KEYBMAP>

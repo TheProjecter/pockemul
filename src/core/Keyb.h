@@ -198,6 +198,10 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_NEWALL    0x200
 #define K_LCKEY     0x201
 #define K_CALC      0x202
+#define K_MEMO      0x203
+#define K_OUT       0x204
+#define K_IN        0x205
+#define K_MEMO_IN   0x206
 
 class CKey{
 public:

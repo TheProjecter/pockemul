@@ -328,10 +328,12 @@ bool Cpb1000::SaveConfig(QXmlStreamWriter *xmlOut)
 
 #endif
 
+#define toupper( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 UINT16 Cpb1000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
+
 
     switch (m_kb_matrix) {
     case 0: return 0;
@@ -341,6 +343,7 @@ UINT16 Cpb1000::getKey(void) {
     default: ko = (1<<(m_kb_matrix-1)); break;
     }
 
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"GET KEY (%04X) [%04X,%04x]=",pKEYB->LastKey,m_kb_matrix,ko);
     if ((pKEYB->LastKey) )
     {
 
@@ -356,6 +359,18 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
 //            if (KEY(K_CTRL))		data|=0x80;			// UP ARROW
         }
 
+        if (ko&0x02) {
+            if (KEY(':'))			data|=0x01;
+            if (KEY(';'))			data|=0x02;
+            if (KEY('='))			data|=0x04;
+            if (KEY('&'))			data|=0x08;
+            if (KEY('$'))			data|=0x10;
+//            if (KEY(''''))			data|=0x20;
+            if (KEY(','))			data|=0x80;
+            if (KEY(K_MEMO_IN))		data|=0x2000;
+            if (KEY(K_IN))			data|=0x4000;
+            if (KEY(K_RET))			data|=0x8000;
+        }
         if (ko&0x04) {
             if (KEY('Y'))			data|=0x01;
             if (KEY('T'))			data|=0x02;
@@ -364,8 +379,8 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY('W'))			data|=0x10;
             if (KEY('Q'))			data|=0x20;
             if (KEY('U'))			data|=0x80;
-//            if (KEY(K_MEMO))		data|=0x2000;
-//            if (KEY(K_OUT))			data|=0x4000;
+            if (KEY(K_MEMO))		data|=0x2000;
+            if (KEY(K_OUT))			data|=0x4000;
             if (KEY(K_RA))			data|=0x8000;
         }
         if (ko&0x08) {
@@ -377,7 +392,7 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY(K_SML))			data|=0x20;
             if (KEY('H'))			data|=0x80;
             if (KEY(K_CAL))         data|=0x2000;
-            if (KEY(K_CALC))			data|=0x4000;
+            if (KEY(K_CALC))		data|=0x4000;
             if (KEY(K_DA))			data|=0x8000;
         }
         if (ko&0x10) {
@@ -461,7 +476,7 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         }
     }
 
-
+if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
 
     return data;
 
