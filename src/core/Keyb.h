@@ -72,6 +72,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_SHT		0x11
 #define K_OB		0x3f
 #define K_OF		0x3e
+#define K_DBLQUOTE  0x22
 
 #define K_0         0xa0
 #define K_1         0xa1

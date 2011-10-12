@@ -1,6 +1,7 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>pb1000</model>
 <Keyboard>
+    <KEY description="Dbl Quote" height="18" left="71" scancode="0x22" top="437" width="25"/>
     <KEY description="-" height="22" left="586" scancode="0x2d" top="531" width="25"/>
     <KEY description="(" height="21" left="547" scancode="0x28" top="452" width="27"/>
     <KEY description=")" height="21" left="586" scancode="0x29" top="451" width="27"/>

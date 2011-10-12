@@ -366,7 +366,7 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY('='))			data|=0x04;
             if (KEY('&'))			data|=0x08;
             if (KEY('$'))			data|=0x10;
-//            if (KEY(''''))			data|=0x20;
+            if (KEY('"'))			data|=0x20;
             if (KEY(','))			data|=0x80;
             if (KEY(K_MEMO_IN))		data|=0x2000;
             if (KEY(K_IN))			data|=0x4000;

@@ -657,7 +657,12 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 		case Qt::Key_Minus:		pKEYB->LastKey = '-';		event->accept();	break;
 		case Qt::Key_Asterisk:	pKEYB->LastKey = '*';		event->accept();	break;
 		case Qt::Key_Slash:		pKEYB->LastKey = '/';		event->accept();	break;
-		case Qt::Key_Tab:		pKEYB->LastKey = '=';		event->accept();	break;
+        case Qt::Key_Equal:		pKEYB->LastKey = '=';		event->accept();	break;
+        case Qt::Key_QuoteDbl:	pKEYB->LastKey = '"';		event->accept();	break;
+        case Qt::Key_Semicolon:	pKEYB->LastKey = ';';		event->accept();	break;
+        case Qt::Key_Comma:		pKEYB->LastKey = ',';		event->accept();	break;
+        case Qt::Key_ParenLeft: pKEYB->LastKey = '(';       event->accept();    break;
+        case Qt::Key_ParenRight:pKEYB->LastKey = ')';       event->accept();    break;
 		case Qt::Key_Backspace:	pKEYB->LastKey = K_MOD;		event->accept();	break;
 		case Qt::Key_CapsLock:	pKEYB->LastKey = K_SML;		event->accept();	break;
 		case Qt::Key_Left:		pKEYB->LastKey = K_LA;		event->accept();	break;
