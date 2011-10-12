@@ -664,6 +664,8 @@ void CPObject::keyPressEvent (QKeyEvent * event )
         case Qt::Key_ParenLeft: pKEYB->LastKey = '(';       event->accept();    break;
         case Qt::Key_ParenRight:pKEYB->LastKey = ')';       event->accept();    break;
 		case Qt::Key_Backspace:	pKEYB->LastKey = K_MOD;		event->accept();	break;
+        case Qt::Key_Dollar:	pKEYB->LastKey = '$';		event->accept();	break;
+        case Qt::Key_Ampersand:	pKEYB->LastKey = '&';		event->accept();	break;
 		case Qt::Key_CapsLock:	pKEYB->LastKey = K_SML;		event->accept();	break;
 		case Qt::Key_Left:		pKEYB->LastKey = K_LA;		event->accept();	break;
 		case Qt::Key_Right:		pKEYB->LastKey = K_RA;		event->accept();	break;

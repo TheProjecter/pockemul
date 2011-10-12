@@ -48,7 +48,7 @@
 
 Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 910000/3);
+    setfrequency( (int) 910000/2);
     setcfgfname(QString("pb1000"));
 
     SessionHeader	= "PB1000PKM";
@@ -123,15 +123,20 @@ bool Cpb1000::init(void)				// initialize
 
 bool Cpb1000::run() {
 
+    if (off && pKEYB->LastKey == K_POW_ON)
+    {
+        TurnON();
+        pKEYB->LastKey = 0;
+    }
 
     CpcXXXX::run();
 
-    if (pKEYB->LastKey == K_POW_ON) {
-        AddLog(LOG_KEYBOARD,tr("ON Interrupt"));
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"PULSE TIMER\n");
-        ((CHD61700*)pCPU)->execute_set_input(HD61700_ON_INT,1);
-        pKEYB->LastKey = 0;
-    }
+//    if (off && (pKEYB->LastKey == K_POW_ON)) {
+//        AddLog(LOG_KEYBOARD,tr("ON Interrupt"));
+//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"PULSE TIMER\n");
+//        ((CHD61700*)pCPU)->execute_set_input(HD61700_ON_INT,1);
+//        pKEYB->LastKey = 0;
+//    }
 
     if (pKEYB->LastKey) {
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
@@ -356,7 +361,7 @@ UINT16 Cpb1000::getKey(void) {
 
 AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&1) {
-            if (KEY(K_OF))          data|=0x20;
+            if (KEY(K_POW_OFF))          data|=0x20;
             if (KEY(K_BRK))         data|=0x80;
         }
 

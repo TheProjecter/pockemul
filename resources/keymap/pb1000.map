@@ -2,6 +2,7 @@
 <model>pb1000</model>
 <Keyboard>
     <KEY description="Dbl Quote" height="18" left="71" scancode="0x22" top="437" width="25"/>
+    <KEY description="&amp;" height="18" left="151" scancode="0x26" top="438" width="25"/>
     <KEY description="-" height="22" left="586" scancode="0x2d" top="531" width="25"/>
     <KEY description="(" height="21" left="547" scancode="0x28" top="452" width="27"/>
     <KEY description=")" height="21" left="586" scancode="0x29" top="451" width="27"/>
@@ -12,13 +13,14 @@
     <KEY description=":" height="16" left="268" scancode="0x3a" top="438" width="25"/>
     <KEY description=";" height="16" left="228" scancode="0x3b" top="439" width="25"/>
     <KEY description="+" height="22" left="545" scancode="0x2b" top="531" width="32"/>
-    <KEY description="OFF" height="16" left="21" scancode="0xc8" top="288" width="25"/>
+    <KEY description="OFF" height="16" left="37" scancode="0xc8" top="392" width="25"/>
     <KEY description="ON" height="16" left="66" scancode="0xc7" top="391" width="25"/>
     <KEY description="CLS" height="21" left="469" scancode="0xef" top="411" width="27"/>
     <KEY description="DEL" height="27" left="663" scancode="0xa" top="195" width="31"/>
     <KEY description="Down Arrow" height="34" left="510" scancode="0x4" top="274" width="36"/>
-    <KEY description="ENTER" height="23" left="548" scancode="0xd" top="569" width="66"/>
-    <KEY description="Equal" height="22" left="663" scancode="0x3d" top="315" width="32"/>
+    <KEY description="EXE Keyboard" height="23" left="548" scancode="0xd" top="569" width="66"/>
+    <KEY description="EXE Touch" height="34" left="548" scancode="0xd" top="274" width="36"/>
+    <KEY description="Equal" height="17" left="189" scancode="0x3d" top="437" width="28"/>
     <KEY description="INS" height="25" left="546" scancode="0x9" top="409" width="32"/>
     <KEY description="Left Arrow" height="34" left="393" scancode="0x6" top="274" width="36"/>
     <KEY description="MODE" height="16" left="1" scancode="0x8" top="0" width="25"/>
