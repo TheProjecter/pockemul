@@ -67,7 +67,7 @@ void Clcdc_pb1000::disp(void)
     if (!((Cpb1000 *)pPC)->pHD44352 ) return;
     Refresh = true;
     info = ((Cpb1000*) pPC)->pHD44352->getInfo();
-    disp_symb();
+//    disp_symb();
 
     QPainter painter(pPC->LcdImage);
 

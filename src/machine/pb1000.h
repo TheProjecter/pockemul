@@ -25,6 +25,7 @@ public:
     UINT16 getKey();
     void setKey(UINT8 data);
     UINT8 m_kb_matrix;
+    WORD Get_16rPC(DWORD adr);
 };
 
 #endif // CPB1000_H

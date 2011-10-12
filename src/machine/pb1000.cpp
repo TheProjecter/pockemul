@@ -57,7 +57,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
     BackGroundFname	= ":/pb1000/pb-1000.png";
     LcdFname		= ":/pb1000/pb-1000lcd.png";
-    SymbFname		= ":/pb1000/pb-1000symb.png";
+    SymbFname		= "";
 
     memsize		= 0x20000;
     InitMemValue	= 0xff;
@@ -163,6 +163,13 @@ bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
     }
 //    if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE REJETEE [%04X] = %02x\n",*d,data);
     return false;
+}
+
+WORD Cpb1000::Get_16rPC(DWORD adr)
+{
+    DWORD	a;
+    a=adr+1;
+    return((mem[adr]<<8)+mem[a]);
 }
 
 bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
@@ -349,14 +356,8 @@ UINT16 Cpb1000::getKey(void) {
 
 AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&1) {
-//            if (KEY(K_EXTMENU))     data|=0x01;
-//            if (KEY('Q'))			data|=0x02;
-//            if (KEY(K_MENU))		data|=0x04;
-//            if (KEY('A'))			data|=0x08;
-//            if (KEY(K_BASIC))		data|=0x10;
-//            if (KEY('Z'))			data|=0x20;
-////            if (KEY(K_SHT))			data|=0x40;
-//            if (KEY(K_CTRL))		data|=0x80;			// UP ARROW
+            if (KEY(K_OF))          data|=0x20;
+            if (KEY(K_BRK))         data|=0x80;
         }
 
         if (ko&0x02) {

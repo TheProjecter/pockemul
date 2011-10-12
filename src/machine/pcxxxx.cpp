@@ -108,14 +108,15 @@ void CpcXXXX::UpdateFinalImage(void)
 //		if (pPC->pLCDC->On)
 		{
 			painter.begin(FinalImage);
-            //painter.setRenderHint(QPainter::Antialiasing);
-			x = Lcd_Symb_X + Pc_Offset_X;
-			y = Lcd_Symb_Y + Pc_Offset_Y;
-            z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio_X);
-            t = (int) (Lcd_Symb_DY * Lcd_Symb_ratio_Y);
-		
-            painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
-			
+            if (SymbImage) {
+                //painter.setRenderHint(QPainter::Antialiasing);
+                x = Lcd_Symb_X + Pc_Offset_X;
+                y = Lcd_Symb_Y + Pc_Offset_Y;
+                z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio_X);
+                t = (int) (Lcd_Symb_DY * Lcd_Symb_ratio_Y);
+
+                painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+            }
 			x	= Lcd_X + Pc_Offset_X;
 			y	= Lcd_Y + Pc_Offset_Y;
 			z	= (int) (Lcd_DX * Lcd_ratio_X);
@@ -147,7 +148,7 @@ bool CpcXXXX::InitDisplay(void)
     global_h = getDY();
 	
 	LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
-	SymbImage				= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
+    if (!SymbFname.isEmpty()) SymbImage	= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
 
 	UpdateDisplayRunning = TRUE;
 	return(1);
