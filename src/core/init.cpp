@@ -266,7 +266,7 @@ void CPocketThread::run()
                 }
             }
         }
-        if (pause) usleep(1);
+        if (pause) msleep(10);
 #ifdef NEWTIMER
         mainwindow->rawclk += timer.nsecsElapsed();
         timer.restart();

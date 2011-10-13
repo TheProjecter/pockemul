@@ -26,6 +26,8 @@ public:
     void setKey(UINT8 data);
     UINT8 m_kb_matrix;
     WORD Get_16rPC(DWORD adr);
+    UINT8 readPort(void);
+    void writePort(UINT8);
 };
 
 #endif // CPB1000_H
