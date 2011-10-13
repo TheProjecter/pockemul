@@ -196,6 +196,9 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
 
                     QAction * actionDistConn = menuPockets->addAction(newpPC->getName());
                     actionDistConn->setData(tr("%1").arg((long)newpPC));
+                    QMenu *ctxMenu = new QMenu(this);
+                    newpPC->BuildContextMenu(ctxMenu);
+                    actionDistConn->setMenu(ctxMenu);
 
                     if (dialoganalogic) {
                         dialoganalogic->fill_twWatchPoint();

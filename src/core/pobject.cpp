@@ -690,6 +690,7 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 
 void CPObject::focusInEvent ( QFocusEvent * event )
 {
+
 }
 
 void CPObject::focusOutEvent ( QFocusEvent * event )
