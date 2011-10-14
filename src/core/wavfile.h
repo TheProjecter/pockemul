@@ -44,7 +44,8 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qfile.h>
-#include <QtMultimedia/qaudioformat.h>
+#include <QAudioFormat>
+//#include <QtMultimedia/qaudioformat.h>
 
 /**
  * Helper class for reading WAV files

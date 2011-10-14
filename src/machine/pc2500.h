@@ -3,7 +3,8 @@
 
 #include "init.h"
 #include "pc1350.h"
-#include "Ce515p.h"
+
+class Cce515p;
 
 // SPEED 73mm/s  -> 73*5 = 365 step/sec
 

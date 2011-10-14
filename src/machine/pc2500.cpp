@@ -9,6 +9,7 @@
 #include "Connect.h"
 #include "Keyb2500.h"
 #include "paperwidget.h"
+#include "ce515p.h"
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 
