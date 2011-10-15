@@ -3,6 +3,8 @@
 
 #include <QMutex>
 #include <QPoint>
+#include <QGesture>
+#include <QGestureEvent>
 //
 #include "ui_pockemul.h"
 #include "common.h"
@@ -24,73 +26,78 @@ Q_OBJECT
 public:
     QMutex audioMutex,analogMutex;
 
-	MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
-	void setZoom(int );
-	void setCpu(int );
+    MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
+    void setZoom(int );
+    void setCpu(int );
 
-	DialogLog		*dialoglog;
-	dialogAnalog	*dialoganalogic;
+    DialogLog		*dialoglog;
+    dialogAnalog	*dialoganalogic;
     WindowIDE       *windowide;
-	
-//	CpaperWidget	*paperWidget;
-	
-	QTimer *FrameTimer;
+
+    //	CpaperWidget	*paperWidget;
+
+    QTimer *FrameTimer;
 
     CDirectLink		*pdirectLink;
-	void SendSignal_AddLogItem(QString str);
+    void SendSignal_AddLogItem(QString str);
 
     void slotUnlink(CPObject *);
-	
-	qint64	rawclk;
+
+    qint64	rawclk;
     CPObject * LoadPocket(int result);
     ASKYN saveAll;
     float	zoom;
 
 
+    void doZoom(QPoint point, float delta);
+
+    bool event(QEvent *event);
+    bool gestureEvent(QGestureEvent *event);
+    void pinchTriggered(QPinchGesture *gesture);
 private slots:
-	void about();
-	void Log();
+    void about();
+    void Log();
     void IDE();
     void Analogic();
-	void CheckUpdates();
+    void CheckUpdates();
     void Minimize_All();
     void Close_All();
     void resetZoom();
     void SelectPocket(QAction *);
-	int  newsession();
-	void opensession();
+    int  newsession();
+    void opensession();
         void saveassession();
-	void updateTimer();
-	void updateFrameTimer();
-	void updateTimeTimer();
-	void resizeSlot(QSize size , CPObject *pObject);
-	void DestroySlot(CPObject *pObject);
-	void slotNewLink(QAction *);
+    void updateTimer();
+    void updateFrameTimer();
+    void updateTimeTimer();
+    void resizeSlot(QSize size , CPObject *pObject);
+    void DestroySlot(CPObject *pObject);
+    void slotNewLink(QAction *);
     void slotWebLink(QAction *);
-	void slotUnLink(QAction *);
+    void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
 
-	
+
 protected:
-	void paintEvent(QPaintEvent *);
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent( QMouseEvent * event );
+    void paintEvent(QPaintEvent *);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent( QMouseEvent * event );
         void wheelEvent(QWheelEvent *event);
-	void resizeEvent(QResizeEvent *);
+    void resizeEvent(QResizeEvent *);
     void closeEvent(QCloseEvent *event);
 
 signals:
-	void AddLogItem(QString);
+    void AddLogItem(QString);
 
 private:
-	QList<CKey>::iterator keyIterator;
-	bool startKeyDrag;
-	QPoint KeyDrag;
-	bool startPosDrag;
-	QPoint PosDrag;
+    QList<CKey>::iterator keyIterator;
+    bool startKeyDrag;
+    QPoint KeyDrag;
+    bool startPosDrag;
+    QPoint PosDrag;
 
 
 };
