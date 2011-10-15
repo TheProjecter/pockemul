@@ -64,21 +64,6 @@ HEADERS += src/core/Connect.h \
     src/core/init.h \
     src/core/keybce150.h \
     src/core/keybce152.h \
-    src/core/lfhex/box.h \
-    src/core/lfhex/compareDlg.h \
-    src/core/lfhex/conversionDlg.h \
-    src/core/lfhex/cursor.h \
-    src/core/lfhex/delta.h \
-    src/core/lfhex/expr.h \
-    src/core/lfhex/grid.h \
-    src/core/lfhex/hexEditor.h \
-    src/core/lfhex/hexGui.h \
-    src/core/lfhex/local.h \
-    src/core/lfhex/mappings.h \
-    src/core/lfhex/offsetConstraint.h \
-    src/core/lfhex/reader.h \
-    src/core/lfhex/save.h \
-    src/core/lfhex/translate.h \
     src/core/mainwindowpockemul.h \
     src/core/paperwidget.h \
     src/core/pobject.h \
@@ -333,18 +318,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/dialogstartup.cpp \
     src/core/hexviewer.cpp \
     src/core/init.cpp \
-    src/core/lfhex/compareDlg.cpp \
-    src/core/lfhex/conversionDlg.cpp \
-    src/core/lfhex/cursor.cpp \
-    src/core/lfhex/delta.cpp \
-    src/core/lfhex/driver.cpp \
-    src/core/lfhex/grid.cpp \
-    src/core/lfhex/hexEditor.cpp \
-    src/core/lfhex/hexGui.cpp \
-    src/core/lfhex/offsetConstraint.cpp \
-    src/core/lfhex/reader.cpp \
-    src/core/lfhex/save.cpp \
-    src/core/lfhex/translate.cpp \
     src/core/mainwindowpockemul.cpp \
     src/core/paperwidget.cpp \
     src/core/pcxxxx_ext.cpp \
