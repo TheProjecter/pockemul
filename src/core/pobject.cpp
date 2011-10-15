@@ -20,7 +20,7 @@
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
-#define NEW_SOUND 1
+
 extern QWidget* mainwidget;
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
@@ -206,6 +206,7 @@ qint64 CPObject::runRange(qint64 step) {
 #define SAMPLERATE 8000
 #define BUFFLEN 500
 
+#ifndef NO_SOUND
 void CPObject::audioStateChanged(QAudio::State state)
 {
     if (state == QAudio::IdleState) {
@@ -214,12 +215,12 @@ void CPObject::audioStateChanged(QAudio::State state)
     //AddLog(LOG_TEMP,tr("state = %1").arg(state))
     qWarning() << "state = " << state;
 }
-
+#endif
 int CPObject::initsound()
 {
     int DataFrequencyHz = 8000;
     //int BufferSize      = 800;
-#if NEW_SOUND
+#ifndef NO_SOUND
     QAudioDeviceInfo m_device(QAudioDeviceInfo::defaultOutputDevice());
     m_format.setFrequency(DataFrequencyHz);
     m_format.setChannels(1);
@@ -249,9 +250,6 @@ int CPObject::initsound()
 
 int CPObject::exitsound()
 {
-#ifndef NO_SOUND
-	FSOUND_Stream_Close(pStream);
-#endif
 	return true;
 }
 
@@ -259,7 +257,7 @@ int CPObject::exitsound()
 //FIXME The piezo doesn't produce sounf for frequency < 1Khz
 void CPObject::fillSoundBuffer(BYTE val)
 {
-
+#ifndef NO_SOUND
 	qint64 new_state,delta_state;
 	 
 	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
@@ -303,6 +301,7 @@ void CPObject::fillSoundBuffer(BYTE val)
         }
         mainwindow->audioMutex.unlock();
     }
+#endif
 }
 
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)

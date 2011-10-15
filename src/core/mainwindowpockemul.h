@@ -42,10 +42,10 @@ public:
     void slotUnlink(CPObject *);
 	
 	qint64	rawclk;
-        CPObject * LoadPocket(int result);
-        ASKYN saveAll;
-float	zoom;
-    //Audio audio;
+    CPObject * LoadPocket(int result);
+    ASKYN saveAll;
+    float	zoom;
+
 
 private slots:
 	void about();

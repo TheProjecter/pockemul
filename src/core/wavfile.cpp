@@ -38,6 +38,8 @@
 **
 ****************************************************************************/
 
+#if 0
+
 #include <QtCore/qendian.h>
 #include <QVector>
 #include <QDebug>
@@ -348,3 +350,5 @@ qint16 WavFile::realToPcm(qreal real)
 {
     return real * PCMS16MaxValue;
 }
+
+#endif

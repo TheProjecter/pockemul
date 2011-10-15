@@ -79,9 +79,6 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 
     pdirectLink = new CDirectLink;
  
-#ifndef NO_SOUND
-	FSOUND_Init(44100, 32, 0); 
-#endif
 
 //audio.show();
 

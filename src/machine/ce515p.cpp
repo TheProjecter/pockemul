@@ -234,7 +234,7 @@ void Cce515p::clearPaper(void)
 
 bool Cce515p::exit(void)
 {
-#ifndef NO_SOUND
+#if 0
     FSOUND_Sample_Free(clac);
 #endif
 

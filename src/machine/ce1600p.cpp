@@ -57,7 +57,7 @@ bool Cce1600p::init(void)
 
         CPObject::init();
 
-    #ifndef NO_SOUND
+    #if 0
         QResource res(":/EXT/ext/clac2.wav");
         clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
     #endif
@@ -186,7 +186,7 @@ bool Cce1600p::run(void)
         if (Pen_Z >50) Pen_Z = 50;
         if (Pen_Z == 6) // Pen up
         {
-#ifndef NO_SOUND
+#if 0
             int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac, 0 , true);
             FSOUND_SetVolumeAbsolute(iChanIndex,255);
             FSOUND_SetPaused(iChanIndex,false);
@@ -196,7 +196,7 @@ bool Cce1600p::run(void)
             AddLog(LOG_PRINTER,"PEN UP");
         }
         if (Pen_Z == 0) {   // Pen down
-#ifndef NO_SOUND
+#if 0
             int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac,0,true);
             FSOUND_SetVolumeAbsolute(iChanIndex,255);
             FSOUND_SetPaused(iChanIndex,false);

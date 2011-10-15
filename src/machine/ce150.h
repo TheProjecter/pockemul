@@ -79,9 +79,6 @@ protected:
 
 
 	bool		Change_Color;
-#ifndef NO_SOUND
-	FSOUND_SAMPLE *clac;
-#endif
 	bool	StartRot;
 	BYTE	Direction;
 

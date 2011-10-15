@@ -87,9 +87,7 @@ protected:
     //quint8  	t,c;
 
     bool		Change_Color;
-#ifndef NO_SOUND
-    FSOUND_SAMPLE *clac;
-#endif
+
     bool	StartRot;
     quint8	Direction;
     quint8    SD;

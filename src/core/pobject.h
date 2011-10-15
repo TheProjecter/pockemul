@@ -7,7 +7,11 @@
 #include <QPoint>
 #include <QImage>
 #include <QMenu>
+
+#ifndef NO_SOUND
 #include <QAudioOutput>
+#endif
+
 #include <QXmlStreamWriter>
 #include <QPixmap>
 
@@ -138,10 +142,13 @@ public:
 	void fillSoundBuffer(BYTE val);
 
     QList<unsigned char> soundBuffer;
-	
+
+#ifndef NO_SOUND
     QAudioDeviceInfo* m_device;
     QAudioFormat    m_format;
     QAudioOutput*   m_audioOutput;
+#endif
+
     QIODevice*      m_output;
     int DataFrequencyHz;
     int BufferSize;
@@ -178,10 +185,12 @@ public:
 
 
 
-
 public slots:
+#ifndef NO_SOUND
     void audioStateChanged(QAudio::State state);
-	void contextMenuEvent ( QContextMenuEvent * event );
+#endif
+
+    void contextMenuEvent ( QContextMenuEvent * event );
 	void slotExit();
 	void KeyList();
 

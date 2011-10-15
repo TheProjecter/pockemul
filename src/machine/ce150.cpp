@@ -96,9 +96,7 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     needRedraw = true;
     setPaperPos(QRect(0,0,0,0));
 
-#ifndef NO_SOUND
-    clac = NULL;
-#endif
+
     StartRot = false;
     Change_Color = true;
 }
@@ -106,11 +104,6 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
 bool Cce150::init(void)
 {
     CPObject::init();
-
-#ifndef NO_SOUND
-    QResource res(":/EXT/ext/clac2.wav");
-    clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
-#endif
 
     setfrequency( 0);
 
@@ -281,11 +274,6 @@ bool Cce150::run(void)
 	{
  		if (Pen_Status==PEN_DOWN) 
 		{
-#ifndef NO_SOUND
-			int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac, 0 , true);
-			FSOUND_SetVolumeAbsolute(iChanIndex,255);
-			FSOUND_SetPaused(iChanIndex,false);
-#endif
 			has_moved=TRUE;
 			Pen_Status = PEN_UP;
 //			AddLog(LOG_PRINTER,"PEN UP");
@@ -295,11 +283,7 @@ bool Cce150::run(void)
 	{
 		if (Pen_Status==PEN_UP) 
 		{
-#ifndef NO_SOUND
-			int iChanIndex = FSOUND_PlaySoundEx(FSOUND_FREE, clac,0,true);
-			FSOUND_SetVolumeAbsolute(iChanIndex,255);
-			FSOUND_SetPaused(iChanIndex,false);
-#endif
+
 			has_moved=TRUE;
 			Pen_Status = PEN_DOWN;
 //			AddLog(LOG_PRINTER,"PEN DOWN");
@@ -345,9 +329,6 @@ void Cce150::clearPaper(void)
 
 bool Cce150::exit(void)
 {
-#ifndef NO_SOUND
-    FSOUND_Sample_Free(clac);
-#endif
 
 	CPObject::exit();
 	
