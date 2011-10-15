@@ -1,7 +1,9 @@
 #ifndef CE515P_H
 #define CE515P_H
 
+#ifndef NO_SOUND
 #include <QSound>
+#endif
 
 #include "cprinter.h"
 
@@ -114,8 +116,9 @@ protected:
     qint64  printer_oldstate_draw;
     qint64  printer_oldstate_paperfeed;
     unsigned char	t,c,waitbitstart,waitbitstop;
-
+#ifndef NO_SOUND
     QSound *clac;
+#endif
 
 };
 

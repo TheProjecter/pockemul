@@ -70,8 +70,9 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
     needRedraw = true;
 
     setPaperPos(QRect(75,46,380,170));
-
+#ifndef NO_SOUND
     clac = 0;
+#endif
 
     StartRot = false;
     Change_Color = true;
@@ -246,9 +247,9 @@ bool Cce515p::exit(void)
 bool Cce515p::init(void)
 {
     CPObject::init();
-
+#ifndef NO_SOUND
     clac = new QSound(":/EXT/ext/clac2.wav");
-
+#endif
 
     setfrequency( 0);
 
@@ -311,8 +312,9 @@ void Cce515p::Print(CMove point)
         }
         // Check is pen up/down status change to play the CLAC
         if (point.penDown != old_penDown) {
+#ifndef NO_SOUND
             clac->play();
-
+#endif
             old_penDown = point.penDown;
         }
         paperWidget->setOffset(QPoint(0,point.Y));
