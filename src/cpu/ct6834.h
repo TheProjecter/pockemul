@@ -96,6 +96,7 @@ public:
     QByteArray Clavier;
 
     bool kana,graph,shift,ctrl;
+    bool curOnOff;
 
 };
 

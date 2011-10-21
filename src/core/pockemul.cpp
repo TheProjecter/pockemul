@@ -13,6 +13,13 @@
     {
 
         QApplication app(argc, argv);
+
+#ifdef Q_OS_ANDROID
+        QFont f = app.font();
+        f.setItalic(true); //bold also works
+        app.setFont(f);
+#endif
+
         mainwindow = new MainWindowPockemul;
 
 

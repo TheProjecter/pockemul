@@ -28,6 +28,9 @@ public:
     WORD Get_16rPC(DWORD adr);
     UINT8 readPort(void);
     void writePort(UINT8);
+    UINT8 lcdDataRead();
+    void lcdDataWrite(UINT8 data);
+    void lcdControlWrite(UINT8 data);
 };
 
 #endif // CPB1000_H

@@ -356,3 +356,15 @@ void Cpb1000::writePort(UINT8 data)
 {
     AddLog(LOG_TEMP,tr("Write Port:%1").arg(data,2,16,QChar('0')));
 }
+
+void Cpb1000::lcdControlWrite(UINT8 data) {
+    pLCDC->redraw = true;
+    pHD44352->control_write(data);
+}
+void Cpb1000::lcdDataWrite(UINT8 data) {
+    pLCDC->redraw = true;
+    pHD44352->data_write(data);
+}
+UINT8 Cpb1000::lcdDataRead() {
+    return pHD44352->data_read();
+}

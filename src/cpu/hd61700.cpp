@@ -395,7 +395,7 @@ void CHD61700::step(void) {
 
 void CHD61700::execute_run()
 {
-    CHD44352 *pHD44352 = ((Cpb1000 *)pPC)->pHD44352;
+    Cpb1000 *pPB1000 = (Cpb1000*)pPC;
 
     do
     {
@@ -532,7 +532,7 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
-                        pHD44352->data_write(READ_REG(arg));
+                        pPB1000->lcdDataWrite(READ_REG(arg));
 
                         check_optional_jr(arg);
                         m_icount -= 11;
@@ -544,7 +544,7 @@ void CHD61700::execute_run()
                         UINT8 arg = read_op();
                         UINT8 res = 0xff;
 
-                        res = pHD44352->data_read();
+                        res = pPB1000->lcdDataRead();
 
                         WRITE_REG(arg, res);
 
@@ -563,7 +563,7 @@ void CHD61700::execute_run()
                         }
                         else
                         {
-                            pHD44352->control_write(READ_REG(arg));
+                            pPB1000->lcdControlWrite(READ_REG(arg));
                         }
 
                         check_optional_jr(arg);
@@ -1086,7 +1086,7 @@ void CHD61700::execute_run()
                     {
                         UINT8 arg = read_op();
 
-                        pHD44352->data_write(arg);
+                        pPB1000->lcdDataWrite(arg);
 //                        if (m_lcd_data_w)
 //                            (*m_lcd_data_w)(*this, arg);
 
@@ -1105,7 +1105,7 @@ void CHD61700::execute_run()
                         }
                         else
                         {
-                            pHD44352->control_write(src);
+                            pPB1000->lcdControlWrite(src);
 //                            if (m_lcd_control)
 //                                (*m_lcd_control)(*this, src);
                         }
@@ -1527,8 +1527,8 @@ void CHD61700::execute_run()
 //                            (*m_lcd_data_w)(*this, READ_REG(arg));
 //                            (*m_lcd_data_w)(*this, READ_REG(arg+1));
 //                        }
-                        pHD44352->data_write(READ_REG(arg));
-                        pHD44352->data_write(READ_REG(arg+1));
+                        pPB1000->lcdDataWrite(READ_REG(arg));
+                        pPB1000->lcdDataWrite(READ_REG(arg+1));
 
                         check_optional_jr(arg);
                         m_icount -= 19;
@@ -1542,8 +1542,8 @@ void CHD61700::execute_run()
 
 //                        if (m_lcd_data_r)
 //                        {
-                            reg0 = pHD44352->data_read();
-                            reg1 = pHD44352->data_read();
+                            reg0 = pPB1000->lcdDataRead();
+                            reg1 = pPB1000->lcdDataRead();
 //                            reg0 = (*m_lcd_data_r)(*this);
 //                            reg1 = (*m_lcd_data_r)(*this);
 //                        }
@@ -2205,7 +2205,7 @@ void CHD61700::execute_run()
 
                         for (int n=GET_IM3(arg1); n>0; n--)
                         {
-                            pHD44352->data_write(READ_REG(arg));
+                            pPB1000->lcdDataWrite(READ_REG(arg));
 //                            if (m_lcd_data_w)
 //                                (*m_lcd_data_w)(*this, READ_REG(arg));
 
@@ -2225,7 +2225,7 @@ void CHD61700::execute_run()
 
                         for (int n=GET_IM3(arg1); n>0; n--)
                         {
-                            src = pHD44352->data_read();
+                            src = pPB1000->lcdDataRead();
 //                            if (m_lcd_data_r)
 //                                src = (*m_lcd_data_r)(*this);
 //                            else
@@ -2726,7 +2726,7 @@ void CHD61700::execute_run()
 
                         m_irq_status = 0;
 
-                        pHD44352->control_write(0);
+                        pPB1000->lcdControlWrite(0);
 
 //                        if (m_kb_w)
 //                            (*m_kb_w)(*this, 0);

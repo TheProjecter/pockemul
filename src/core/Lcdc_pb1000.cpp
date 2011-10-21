@@ -63,6 +63,7 @@ void Clcdc_pb1000::disp_symb(void)
 
 void Clcdc_pb1000::disp(void)
 {
+    if (!redraw) return;
     if (!ready) return;
     if (!((Cpb1000 *)pPC)->pHD44352 ) return;
     Refresh = true;
