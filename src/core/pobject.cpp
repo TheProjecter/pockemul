@@ -922,7 +922,9 @@ void CPObject::slotPower()
         TurnOFF();
 }
 
-void CPObject::slotReset()		{ Reset(); }
+void CPObject::slotReset() {
+    Reset();
+}
 
 void CPObject::slotLoadSession()
 {
@@ -964,3 +966,10 @@ bool CPObject::getDisp_on()
 }
 
 
+void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight) {
+    setPosX(newposx);
+    setPosY(newposy);
+    setGeometry(newposx,newposy,newwidth,newheight);
+    setMask(mask.scaled(newwidth,newheight).mask());
+
+}

@@ -102,4 +102,8 @@
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/canon/x-07_e.html"/>
         <url desc="Silicium (fr)" link="http://www.silicium.org/oldskool/calc/x07/index.htm"/>
     </model>
+    <model value="pb1000">
+        <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=29&amp;serie=6"/>
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/pb-1000_e.html"/>
+    </model>
 </weblinks>

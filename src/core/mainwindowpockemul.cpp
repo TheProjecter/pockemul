@@ -552,10 +552,11 @@ void MainWindowPockemul::doZoom(QPoint point,float delta) {
         float newposx = locpc->posx() + (locpc->posx()-point.x())*(delta)/100.0;
         float newposy = locpc->posy() + (locpc->posy()-point.y())*(delta)/100.0;
 
-        locpc->setPosX(newposx);
-        locpc->setPosY(newposy);
-        locpc->setGeometry(newposx,newposy,locpc->getDX()*zoom/100/(locpc->Front?1:4),locpc->getDY()*zoom/100/(locpc->Front?1:4));
-        locpc->setMask(locpc->mask.scaled(locpc->getDX()*zoom/100/(locpc->Front?1:4),locpc->getDY()*zoom/100/(locpc->Front?1:4)).mask());
+        locpc->changeGeometry(newposx,
+                              newposy,
+                              locpc->getDX()*zoom/100/(locpc->Front?1:4),
+                              locpc->getDY()*zoom/100/(locpc->Front?1:4));
+
     }
 }
 

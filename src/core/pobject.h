@@ -185,6 +185,7 @@ public:
 
 
 
+    void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
 public slots:
 #ifndef NO_SOUND
     void audioStateChanged(QAudio::State state);
@@ -208,7 +209,7 @@ public slots:
 
 	
 private:
-        float		PosX,PosY;
+    float		PosX,PosY;
 	int		Width,Height;
 
 	bool	startKeyDrag;
