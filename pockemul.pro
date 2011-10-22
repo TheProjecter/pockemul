@@ -536,6 +536,7 @@ OTHER_FILES += \
     resources/asmlibs/sc61860/divmod16.lib \
     resources/keymap/x07.map \
     resources/keymap/e500.map \
-    resources/keymap/pb1000.map
+    resources/keymap/pb1000.map \
+    resources/keymap/x710.map
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg

@@ -23,5 +23,6 @@
         <file>keymap/x07.map</file>
         <file>keymap/e500.map</file>
         <file>keymap/pb1000.map</file>
+        <file>keymap/x710.map</file>
     </qresource>
 </RCC>
