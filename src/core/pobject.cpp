@@ -315,7 +315,7 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
         delete e;
         return;
     }
-#if 1
+#if 0
 
 
     if (parentWidget() == mainwidget)
@@ -334,6 +334,26 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
         //update();
     }
 #endif
+#if 1
+    bool detach = (parentWidget() != 0);
+    // Search all conected objects then compute them
+    QList<CPObject *> LinkedList;
+    LinkedList.append(this);
+    mainwindow->pdirectLink->findAllObj(this,&LinkedList);
+    for (int i=0;i<LinkedList.size();i++)
+    {
+        if (detach) {
+            LinkedList.at(i)->setParent(0);
+            LinkedList.at(i)->setWindowFlags(Qt::FramelessWindowHint);
+            LinkedList.at(i)->show();
+        }
+        else {
+            LinkedList.at(i)->setParent(mainwidget);
+            LinkedList.at(i)->show();
+        }
+    }
+#endif
+
 }
 
 void CPObject::SwitchFrontBack(QPoint point) {

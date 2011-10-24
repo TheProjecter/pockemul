@@ -55,6 +55,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     setupUi(this);
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
+    setStatusBar(0);
     dialoglog = 0;
     dialoganalogic = 0;
     windowide = 0;
@@ -63,25 +64,20 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     startKeyDrag = false;
     startPosDrag = false;
 
-    connect(actionAbout_PockEmul,	SIGNAL(triggered()), this, SLOT(about()));
-    connect(actionNew,				SIGNAL(triggered()), this, SLOT(newsession()));
-    connect(actionOpen,				SIGNAL(triggered()), this, SLOT(opensession()));
-    connect(actionSave_As,              SIGNAL(triggered()),this,SLOT(saveassession()));
-    connect(actionLog_Messages,		SIGNAL(triggered()), this, SLOT(Log()));
-    connect(actionAnalogic_Port,	SIGNAL(triggered()), this, SLOT(Analogic()));
-    connect(actionCheck_for_Updates,SIGNAL(triggered()), this, SLOT(CheckUpdates()));
-    connect(actionMinimize_All,     SIGNAL(triggered()), this, SLOT(Minimize_All()));
-    connect(actionReset_Zoom,           SIGNAL(triggered()),this, SLOT(resetZoom()));
-    connect(actionClose_All,        SIGNAL(triggered()), this, SLOT(Close_All()));
-    connect(menuPockets, SIGNAL(triggered( QAction *)), this, SLOT(SelectPocket( QAction *)));
-
-    connect(actionEditor,SIGNAL(triggered()),this,SLOT(IDE()));
+    connect(actionAbout_PockEmul,	SIGNAL(triggered()),            this, SLOT(about()));
+    connect(actionNew,				SIGNAL(triggered()),            this, SLOT(newsession()));
+    connect(actionOpen,				SIGNAL(triggered()),            this, SLOT(opensession()));
+    connect(actionSave_As,          SIGNAL(triggered()),            this, SLOT(saveassession()));
+    connect(actionLog_Messages,		SIGNAL(triggered()),            this, SLOT(Log()));
+    connect(actionAnalogic_Port,	SIGNAL(triggered()),            this, SLOT(Analogic()));
+    connect(actionCheck_for_Updates,SIGNAL(triggered()),            this, SLOT(CheckUpdates()));
+    connect(actionMinimize_All,     SIGNAL(triggered()),            this, SLOT(Minimize_All()));
+    connect(actionReset_Zoom,       SIGNAL(triggered()),            this, SLOT(resetZoom()));
+    connect(actionClose_All,        SIGNAL(triggered()),            this, SLOT(Close_All()));
+    connect(menuPockets,            SIGNAL(triggered(QAction *)),   this, SLOT(SelectPocket( QAction *)));
+    connect(actionEditor,           SIGNAL(triggered()),            this, SLOT(IDE()));
 
     pdirectLink = new CDirectLink;
-
-
-//audio.show();
-
 
     // Create a timer for Drawing screen FRAMERATE times per seconds
     FrameTimer = new QTimer(mainwindow);
@@ -98,11 +94,14 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     PcThread->connect(PcThread,SIGNAL(Destroy(CPObject * )),this,SLOT(DestroySlot(CPObject * )));
     PcThread->start();
 
-        grabGesture(Qt::PanGesture);
-        grabGesture(Qt::PinchGesture);
+    grabGesture(Qt::PanGesture);
+    grabGesture(Qt::PinchGesture);
 }
+
 //
-void MainWindowPockemul::SendSignal_AddLogItem(QString str) { emit AddLogItem(str); }
+void MainWindowPockemul::SendSignal_AddLogItem(QString str) {
+    emit AddLogItem(str);
+}
 
 
 void MainWindowPockemul::slotUnLink(Cconnector * conn) {
@@ -356,7 +355,7 @@ void MainWindowPockemul::opensession()
     objtable["Canon X-07"]=X07;
     objtable["Canon X-710"]=X710;
     objtable["PC-E500"]=E500;
-
+    objtable["Casio PB-1000"]=PB1000;
 
     QMap<int,CPObject*> map;
 

@@ -2,6 +2,8 @@
 	#include <QtPlugin>
 	
     #include "mainwindowpockemul.h"
+#include "pobject.h"
+#include "dialogstartup.h"
 
 
     MainWindowPockemul* mainwindow;
@@ -29,8 +31,16 @@
         mainwidget = mainwindow->centralWidget();
 		mainwindow->setWindowIcon ( QIcon(":/POCKEMUL/pockemul/pockemul.bmp") );      
         mainwindow->resize(680,505);
-        mainwindow->show();
 
+#ifdef Q_OS_ANDROID
+        DialogStartup dialogstartup(0);
+        int result = dialogstartup.exec();
+        CPObject * pPC = mainwindow->LoadPocket(result);
+        pPC->setParent(0,Qt::FramelessWindowHint);
+        pPC->show();
+#else
+        mainwindow->show();
+#endif
         return app.exec(); 
         	
     }

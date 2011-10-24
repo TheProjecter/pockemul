@@ -14,7 +14,7 @@ public:
 		FileName = filename;
 		Type = type;
 		Label = label;		
-	};
+    }
 	
 	int		getSize()		  { return Size; }
     void	setSize(int size) { Size = size; }

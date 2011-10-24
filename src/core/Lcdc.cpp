@@ -18,14 +18,14 @@ Clcdc::Clcdc(CPObject *parent)
 {						//[constructor]
     pPC = (CpcXXXX*) parent;
 
-    redraw		= 1;				//display redraw?(0:not need, 1:need)
-    On			= 1;
+    redraw		= true;				//display redraw?(0:not need, 1:need)
+    On			= true;
     Refresh		= false;
     contrast	= 0.95;
-    for (int i=0 ; i<0x1000;i++) DirtyBuf[i] = false;
+    memset(&DirtyBuf,0,sizeof(DirtyBuf));
     Color_On.setRgb(0,0,0);
     ready = false;
-};
+}
 
 void Clcdc::Contrast(int command)
 {
@@ -77,6 +77,7 @@ void	Clcdc::check(void)  {}
 void	Clcdc::TurnON(void) {
     On = true;
     Refresh = true;
+    redraw = true;
 }
 
 void	Clcdc::TurnOFF(void){ On = false; }
@@ -85,6 +86,7 @@ bool	Clcdc::init(void)
 {
 	On = false;
     ready = true;
+    redraw = true;
 	
 	return(true);
 }
@@ -1228,6 +1230,8 @@ void Clcdc_pc1450::disp_symb(void)
 
 bool	Clcdc_pc1450::init(void)
 {
+    Clcdc::init();
+
 #define LCDX1 (5 * 12)
 #define LCDX2 (5 * 16)
 
@@ -1378,6 +1382,9 @@ void Clcdc_pc1475::disp_symb(void)
 
 bool	Clcdc_pc1475::init(void)
 {
+
+    Clcdc::init();
+
 #define LCDX1 (5 * 12)
 #define LCDX2 (5 * 16)
 
@@ -1407,7 +1414,10 @@ void Clcdc_pc1475::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    if (!redraw) return;
+    redraw = false;
+
+    Refresh = false;
 	disp_symb();
 	QPainter painter(pPC->LcdImage);
 	

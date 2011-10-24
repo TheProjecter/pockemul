@@ -161,56 +161,6 @@ CPObject *pPC=0;
     return pPC;
 }
 
-#if 0
-void CPocketThread::run()
-{
-	bool pause = true;
-
-    QElapsedTimer timer;
-    timer.start();
-
-	while(true)
-	{
-        int j=0;
-        //while ((j++) < 20)
-        {
-            pause = true;
-            for (int i=0;i<listpPObject.size();i++)
-            {
-                CPObject *pPC = listpPObject.at(i);
-                // si objet maitre
-                if (pPC->getfrequency() != 0)
-                {
-                    // test si en retard
-                    if (pPC->pTIMER->CheckSpeed())
-                    {
-                        pPC->run();
-                        // WRITE the LINK BOX Connector
-                        mainwindow->pdirectLink->clearlog();
-                        mainwindow->pdirectLink->Output(pPC);
-
-                        pause = false;
-                    }
-                    if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
-                        mainwindow->dialoganalogic->captureData();
-                    }
-                }
-                if (pPC->toDestroy)
-                {
-                    // Unlink before destroy
-                    mainwindow->slotUnlink(pPC);
-
-                    listpPObject.removeAt(i);
-                    i--;
-                    emit Destroy(pPC);
-                }
-            }
-        }
-        if (pause) usleep(5);
-
-    }
-}
-#else
 void CPocketThread::run()
 {
     bool pause = true;
@@ -273,7 +223,6 @@ void CPocketThread::run()
 #endif
     }
 }
-#endif
 
 void CPocketThread::SendSignal_AddLogItem(QString str)
 {
