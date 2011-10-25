@@ -396,6 +396,23 @@ void CPObject::SwitchFrontBack(QPoint point) {
     Front = ! Front;
 }
 
+void CPObject::wheelEvent(QWheelEvent *event) {
+
+    QPoint point;
+    if (Parent) {
+        point = event->pos();
+    }
+    else {
+        point = event->globalPos();
+    }
+
+    float delta = event->delta()/12;
+
+    mainwindow->doZoom(point,delta);
+    event->accept();
+
+}
+
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
 

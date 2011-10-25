@@ -180,12 +180,14 @@ public:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent( QMouseEvent * event );
+    void wheelEvent(QWheelEvent *event);
 	void focusInEvent ( QFocusEvent * event ); 
 	void focusOutEvent ( QFocusEvent * event ); 
 
 
 
     void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
+
 public slots:
 #ifndef NO_SOUND
     void audioStateChanged(QAudio::State state);
