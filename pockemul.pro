@@ -247,6 +247,7 @@ INCLUDEPATH += . \
     src/core \
     src/cpu \
     src/machine \
+    src/lcd \
     src/qmdilib
 #DEPENDPATH += . document language widgets qnfa
 INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa

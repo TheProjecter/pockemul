@@ -174,10 +174,7 @@ bool CPObject::exit()
 
 qint64 CPObject::runRange(qint64 step) {
     if (pTIMER) {
-        if (off) {
-            pTIMER->state += step;
-            return 0;
-        }
+
         qint64 t = pTIMER->state;
         while (pTIMER->state - t < step) {
             run();
