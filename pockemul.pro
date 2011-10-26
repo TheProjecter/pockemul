@@ -44,8 +44,6 @@ HEADERS += src/core/Connect.h \
     src/core/Keyb1403.h \
     src/core/Keyb1450.h \
     src/core/Keyb1500.h \
-    src/core/Lcdc.h \
-    src/core/Lcdc_symb.h \
     src/core/Log.h \
     src/core/analog.h \
     src/core/autoupdater.h \
@@ -101,7 +99,6 @@ HEADERS += src/core/Connect.h \
     src/machine/pc1600.h \
     src/machine/ce1600p.h \
     src/cpu/hd61102.h \
-    src/core/Lcdc_pc1600.h \
     src/cpu/z80-2.h \
     src/cpu/lu57813p.h \
     src/core/Keyb1600.h \
@@ -232,17 +229,20 @@ HEADERS += src/core/Connect.h \
     src/cpu/ct6834.h \
     src/machine/cx07char.h \
     ui/cregsz80widget.h \
-    src/core/Lcdc_x07.h \
     src/cpu/hd61700.h \
     src/machine/e500.h \
     src/machine/cx710.h \
     src/cpu/uart.h \
     ui/uartconsole.h \
-    src/core/Lcdc_e500.h \
     src/machine/pb1000.h \
     src/cpu/hd44352.h \
-    src/core/Lcdc_pb1000.h \
-    ui/cregshd61700widget.h
+    ui/cregshd61700widget.h \
+    src/lcd/Lcdc_x07.h \
+    src/lcd/Lcdc_symb.h \
+    src/lcd/Lcdc_pc1600.h \
+    src/lcd/Lcdc_pb1000.h \
+    src/lcd/Lcdc_e500.h \
+    src/lcd/Lcdc.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -303,7 +303,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/Debug.cpp \
     src/core/Inter.cpp \
     src/core/Keyb.cpp \
-    src/core/Lcdc.cpp \
     src/core/Log.cpp \
     src/core/analog.cpp \
     src/core/autoupdater.cpp \
@@ -357,7 +356,6 @@ SOURCES += src/core/Connect.cpp \
     src/machine/ce1600p.cpp \
     src/cpu/z80_dasm.cpp \
     src/cpu/hd61102.cpp \
-    src/core/Lcdc_pc1600.cpp \
     src/cpu/lu57813p.cpp \
     src/machine/potar.cpp \
     src/core/dialogpotar.cpp \
@@ -439,18 +437,20 @@ SOURCES += src/core/Connect.cpp \
     src/machine/cx07.cpp \
     src/cpu/ct6834.cpp \
     ui/cregsz80widget.cpp \
-    src/core/Lcdc_x07.cpp \
     src/cpu/hd61700d.cpp \
     src/cpu/hd61700.cpp \
     src/machine/e500.cpp \
     src/machine/cx710.cpp \
     src/cpu/uart.cpp \
     ui/uartconsole.cpp \
-    src/core/Lcdc_e500.cpp \
     src/machine/pb1000.cpp \
     src/cpu/hd44352.cpp \
-    src/core/Lcdc_pb1000.cpp \
-    ui/cregshd61700widget.cpp
+    ui/cregshd61700widget.cpp \
+    src/lcd/Lcdc_x07.cpp \
+    src/lcd/Lcdc_pc1600.cpp \
+    src/lcd/Lcdc_pb1000.cpp \
+    src/lcd/Lcdc_e500.cpp \
+    src/lcd/Lcdc.cpp
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
@@ -540,3 +540,5 @@ OTHER_FILES += \
     resources/keymap/x710.map
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
+
+
