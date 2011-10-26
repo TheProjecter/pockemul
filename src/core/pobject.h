@@ -61,6 +61,8 @@ public:
 	QString	LcdFname;
 	QString	SymbFname;
 
+    bool	off;
+
     void setDisp_on(bool v);
     bool getdisp_onRaised();
     bool getDisp_on(void);

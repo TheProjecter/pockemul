@@ -240,7 +240,7 @@ public:
 
     qint64	old_state;
 
-	bool	off;
+
 
 	int		RomBank,RamBank;					// Bank Number id
     int     ProtectMemory;
