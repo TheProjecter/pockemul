@@ -567,7 +567,7 @@ bool CpcXXXX::run(void)
 
 
 	}
-    else pTIMER->state = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+    else pTIMER->state+=1000;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
 
 
 

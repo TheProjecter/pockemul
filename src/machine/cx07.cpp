@@ -167,6 +167,7 @@ bool Cx07::init(void)				// initialize
 
 
 bool Cx07::run() {
+
     if (off && pT6834->General_Info.Break == 1)
     {
             pT6834->General_Info.Break = 0;
