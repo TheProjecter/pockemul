@@ -452,6 +452,7 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_pb1000.cpp \
     src/lcd/Lcdc_e500.cpp \
     src/lcd/Lcdc.cpp
+
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
@@ -541,5 +542,18 @@ OTHER_FILES += \
     resources/keymap/x710.map
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

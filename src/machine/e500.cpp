@@ -34,12 +34,12 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;
 
-    setDXmm(200);//Pc_DX_mm = 135;
-    setDYmm(100);//Pc_DY_mm = 70;
-    setDZmm(14);//Pc_DZ_mm = 10;
+    setDXmm(200);
+    setDYmm(100);
+    setDZmm(14);
 
-    setDX(715);//Pc_DX		= 483;//409;
-    setDY(357);//Pc_DY		= 252;//213;
+    setDX(715);
+    setDY(357);
 
     Lcd_X		= 69;
     Lcd_Y		= 99;
@@ -54,11 +54,9 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     Lcd_Symb_DY	= 20;
     Lcd_Symb_ratio_X	= 1;//1.18;
 
-
     pLCDC		= new Clcdc_e500(this);
     pCPU		= new Csc62015(this);
     pTIMER		= new Ctimer(this);
-    //pCONNECTOR	= new Cconnector11(this);		publish(pCONNECTOR);
     pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"e500.map");
 
@@ -97,6 +95,8 @@ bool Ce500::run(void) {
         sc->opr_imem(IMEM_IMR,OPR_AND,0x7f);
         sc->set_reg(REG_P,sc->get_mem(VECT_IR,SIZE_20));
     }
+
+    return true;
 }
 
 #define GET_IMEM_BIT(adr,Bit) ((pCPU->imem[adr] & (1<<((Bit)-1))) ? 1:0)
@@ -257,10 +257,12 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 
 BYTE Ce500::Get_PortA()
 {
+    return 0;
 }
 
 BYTE Ce500::Get_PortB()
 {
+    return 0;
 }
 
 void Ce500::TurnON()
@@ -270,18 +272,22 @@ void Ce500::TurnON()
 
 bool Ce500::LoadExtra(QFile *)
 {
+    return true;
 }
 
 bool Ce500::SaveExtra(QFile *)
 {
+    return true;
 }
 
 UINT8 Ce500::in(UINT8 address)
 {
+    return 0;
 }
 
 UINT8 Ce500::out(UINT8 address, UINT8 value)
 {
+    return 0;
 }
 
 #if 0
