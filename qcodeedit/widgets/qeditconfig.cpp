@@ -476,7 +476,7 @@ void QEditConfig::on_chkReplaceTabs_toggled(bool y)
 {
 	if ( m_direct )
 	{
-		// FIXME
+        // FIXME:
 		foreach ( QEditor *e, QEditor::m_editors )
 		{
 			e->setFlag(QEditor::ReplaceTabs, y);
@@ -585,7 +585,7 @@ void QEditConfig::on_chkAutoRemoveTrailingWhitespace_toggled(bool y)
 {
 	if ( m_direct )
 	{
-		// FIXME
+        // FIXME:
 		foreach ( QEditor *e, QEditor::m_editors )
 		{
 			e->setFlag(QEditor::RemoveTrailing, y);
@@ -601,7 +601,7 @@ void QEditConfig::on_chkPreserveTrailingIndent_toggled(bool y)
 {
 	if ( m_direct )
 	{
-		// FIXME
+        // FIXME:
 		foreach ( QEditor *e, QEditor::m_editors )
 		{
 			e->setFlag(QEditor::PreserveTrailingIndent, y);

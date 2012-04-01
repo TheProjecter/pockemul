@@ -106,4 +106,7 @@
         <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=29&amp;serie=6"/>
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/pb-1000_e.html"/>
     </model>
+    <model value="e500">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-e500_e.html"/>
+    </model>
 </weblinks>

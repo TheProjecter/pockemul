@@ -729,7 +729,7 @@ void Cce140f::process_SAVE(int cmd) {
             // remove command from he stream
             data.removeFirst();
             //store data
-            // WARNING : received by 256Bytes paquet
+            // WARNING: received by 256Bytes paquet
             QDataStream out(&file_save);
 
             for (int i=0;i<data.size()-1;i++) {

@@ -2,7 +2,7 @@
 /* PC1350 emulator main class                             */
 /**********************************************************/
  
-//FIXME Ce-126p not working with Shift+Enter
+//FIXME: Ce-126p not working with Shift+Enter
 
 #include	<string.h>
 #include	<stdlib.h>

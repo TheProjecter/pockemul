@@ -12,7 +12,7 @@
 
 
 
-// WARNING -- TO MODIFY !!!!!!!!!!!!!
+// WARNING: -- TO MODIFY !!!!!!!!!!!!!
 //#define KEY(c)	( asfocus && ( GetAsyncKeyState(c) || (toupper(pPC->pKEYB->LastKey)==toupper(c)) || pPC->pKEYB->LastKey == c) )
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 

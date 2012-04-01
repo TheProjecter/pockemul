@@ -1,6 +1,6 @@
 #include <QtGui>
 
-//FIXME JPC not working
+//FIXME: JPC not working
 
 #include "parser/parser.h"
 #include "pasm.h"
@@ -486,8 +486,8 @@ void Cpasm::doasm(void) {
             adr = calcadr();
             if (adr >= 8192) {
                 addcode(opp);
-                //FIXME
-                //                   if opp in JRPLUS then addcode(adr - codpos - startadr)
+                //FIXME:
+                // if opp in JRPLUS then addcode(adr - codpos - startadr)
                 //                   else
                 addcode(abs(codpos + startadr - adr));
             }

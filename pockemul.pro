@@ -242,7 +242,9 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_pc1600.h \
     src/lcd/Lcdc_pb1000.h \
     src/lcd/Lcdc_e500.h \
-    src/lcd/Lcdc.h
+    src/lcd/Lcdc.h \
+    pictureflow/pictureflow.h \
+    pictureflow/materialflow.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -297,7 +299,8 @@ RESOURCES += resources/ext.qrc \
     resources/asmlibs.qrc \
     resources/x07.qrc \
     resources/pb1000.qrc \
-    resources/e500.qrc
+    resources/e500.qrc \
+    resources/cover.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -451,7 +454,9 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_pc1600.cpp \
     src/lcd/Lcdc_pb1000.cpp \
     src/lcd/Lcdc_e500.cpp \
-    src/lcd/Lcdc.cpp
+    src/lcd/Lcdc.cpp \
+    pictureflow/pictureflow.cpp \
+    pictureflow/materialflow.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

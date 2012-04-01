@@ -45,6 +45,7 @@ public:
     BYTE getKey();
     bool run();
 
+    void computeSound();
 protected:
 //	BYTE previous_key;
 

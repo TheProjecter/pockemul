@@ -9,8 +9,8 @@
 
 #include "lcc.h"
 
-//FIXME if ( iiii[0] > 0 ) { return;}
-//FIXME remove unused variables
+//FIXME: if ( iiii[0] > 0 ) { return;}
+//FIXME: remove unused variables
 
 /*!
   \brief Little C Compiler transorm a C source code to SC61860 ASM code.
@@ -1954,7 +1954,7 @@ void Clcc::StoreVariable(QByteArray name) {
                     writln(outf,"\tPOP"); pushcnt--;
                     writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
                     writln(outf,"\tEXAB");
-                    //FIXME ???? INCP or DECP
+                    //FIXME: ???? INCP or DECP
                     writln(outf,"\tDECP");
                     writln(outf,"\tEXAM\t; HB");
                     //writln(outf,"\tEXAB");
@@ -2145,7 +2145,7 @@ void Clcc::NotFactor(void) {
 
 //{--------------------------------------------------------------}
 //{  }
-//FIXME Mod a un problème. A checker
+//FIXME: Mod a un problème. A checker
 /*!
  \brief Parse and Translate a Term
 

@@ -4248,7 +4248,7 @@ void QEditor::insertText(QDocumentCursor& c, const QString& text)
 		c.insertText(lines.takeFirst());
 		
 		QString indent;
-		// FIXME ? work on strings to make sure command grouping does not interfere with cursor state...
+        // FIXME: ? work on strings to make sure command grouping does not interfere with cursor state...
 		
 		indent = c.line().text().left(qMax(0, qMin(c.line().firstChar(), c.columnNumber())));
 		
@@ -4263,7 +4263,7 @@ void QEditor::insertText(QDocumentCursor& c, const QString& text)
 			
 			if ( m_definition )
 			{
-				// FIXME ? work on strings to make sure command grouping does not interfere with cursor state...
+                // FIXME: ? work on strings to make sure command grouping does not interfere with cursor state...
 				indent = m_definition->indent(c);
 				
 				if ( flag(ReplaceTabs) )

@@ -256,7 +256,7 @@ int CPObject::exitsound()
 }
 
 
-//FIXME The piezo doesn't produce sounf for frequency < 1Khz
+//FIXME: The piezo doesn't produce sounf for frequency < 1Khz
 void CPObject::fillSoundBuffer(BYTE val)
 {
 #ifndef NO_SOUND
@@ -292,7 +292,7 @@ void CPObject::fillSoundBuffer(BYTE val)
             audioBuff.remove(0,ps);
         }
         else {
-            //FIXME buffer underrun
+            //FIXME: buffer underrun
 #if 0
             if((m_audioOutput->bufferSize()-m_audioOutput->bytesFree()) < ps) {
                 AddLog(LOG_TEMP,tr("sound1 size:%1    free:%2   diff:%3   ps:%4").arg(m_audioOutput->bufferSize()).arg(m_audioOutput->bytesFree()).arg(m_audioOutput->bufferSize()-m_audioOutput->bytesFree()).arg(ps));
@@ -941,7 +941,7 @@ void CPObject::slotCpu(QAction* action) {
     if (action->text() == tr("200%")) setCpu(2);
     if (action->text() == tr("300%")) setCpu(3);
     if (action->text() == tr("500%")) setCpu(5);
-    if (action->text() == tr("Maximum")) setCpu(75);
+    if (action->text() == tr("Maximum")) setCpu(1000);
 }
 
 void CPObject::slotContrast(QAction * action) {

@@ -8,9 +8,9 @@
 
 Clcdc_e500::Clcdc_e500(CPObject *parent )	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
-                        (int) (126*contrast),
-                        (int) (151*contrast),
-                        (int) (124*contrast));
+                        (int) (92*contrast),
+                        (int) (120*contrast),
+                        (int) (103*contrast));
 }
 
 static const struct {
@@ -41,9 +41,9 @@ static const struct {
 // S2           RUN     PRO     RESERVE         RAD     G       DE      F64F
 // S3   DEF     I       II      III     SML     x       SHIFT   BUSY    F64E
 
-#define SYMB1_e500		((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(0)]
-#define SYMB2_e500		((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(4)]
-#define SYMB3_e500		((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(5)]
+#define SYMB1_e500		(((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(0)])
+#define SYMB2_e500		(((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(4)])
+#define SYMB3_e500		(((Ce500 *)pPC)->pHD61102_1->info.imem[symbSL(5)])
 
 void Clcdc_e500::disp_symb(void)
 {
@@ -69,7 +69,7 @@ void Clcdc_e500::disp_symb(void)
 }
 INLINE int Clcdc_e500::symbSL(int x)
 {
-    Ce500 *p = (Ce500 *)pPC;
+//    Ce500 *p = (Ce500 *)pPC;
     int l=(x+((Ce500 *)pPC)->pHD61102_2->info.displaySL/8);
     l = (l>=8) ? l-8 : l;
     return l*0x40+63;

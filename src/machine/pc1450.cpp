@@ -25,23 +25,17 @@ Cpc1450::Cpc1450(CPObject *parent)	: Cpc1350(parent)
     LcdFname		= ":/PC1450/pc1450/1450lcd.jpg";
     SymbFname		= ":/PC1450/pc1450/1450symb.jpg";
     memsize			= 0x10000;
-//		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1450/pc1450/cpu-1450.rom", "pc-1350/cpu-1450.rom" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	""						, "pc-1350/R1-1450.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1450/pc1450/bas-1450.rom", "pc-1350/bas-1450.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1450/pc1450/cpu-1450.rom", "pc-1450/cpu-1450.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	""						, "pc-1450/R1-1450.ram" , RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	":/PC1450/pc1450/bas-1450.rom", "pc-1450/bas-1450.rom" , ROM , "BASIC ROM"));
 
     KeyMap = KeyMap1450;
     KeyMapLenght = KeyMap1450Lenght;
 
-
-
-    delete pLCDC;
-    pLCDC		= new Clcdc_pc1450(this);
-
-    delete pKEYB;
-    pKEYB		= new Ckeyb(this,"pc1450.map",scandef_pc1450);
+    delete pLCDC;   pLCDC = new Clcdc_pc1450(this);
+    delete pKEYB;   pKEYB = new Ckeyb(this,"pc1450.map",scandef_pc1450);
 
     Lcd_X		= 130;
     Lcd_Y		= 53;
@@ -58,13 +52,13 @@ Cpc1450::Cpc1450(CPObject *parent)	: Cpc1350(parent)
     //initExtension();
 }
 
-//FIXME Extension
+//FIXME: Extension
 
 void	Cpc1450::initExtension(void)
 {
     ext_MemSlot1 = new CExtensionArray("Memory Slot 1","Add memory credit card");
 	// Add possible memory card to ext_MemSlot1
-    ext_MemSlot1->setAvailable(ID_CE201M,true);ext_MemSlot1->setChecked(ID_CE201M,true);
+    ext_MemSlot1->setAvailable(ID_CE201M,true);ext_MemSlot1->setChecked(ID_CE202M,true);
     ext_MemSlot1->setAvailable(ID_CE202M,true);
     ext_MemSlot1->setAvailable(ID_CE203M,true);
     ext_MemSlot1->setAvailable(ID_CE210M,true);
@@ -72,7 +66,7 @@ void	Cpc1450::initExtension(void)
 	ext_MemSlot1->setAvailable(ID_CE212M,true);
 	ext_MemSlot1->setAvailable(ID_CE2H16M,true);
 	ext_MemSlot1->setAvailable(ID_CE2H32M,true);
-	ext_MemSlot1->setAvailable(ID_CE2H64M,true);
+//	ext_MemSlot1->setAvailable(ID_CE2H64M,true);
 
 	addExtMenu(ext_MemSlot1);
 
@@ -99,7 +93,7 @@ BYTE	Cpc1450::Get_PortA(void)
 /*****************************************************************************/
 // Virtual Fonction
 
-#if 1
+
 bool Cpc1450::Chk_Adr(DWORD *d,DWORD data)
 {
 	if ( (*d>=0x7000) && (*d<=0x708F) ) {pLCDC->SetDirtyBuf(*d-0x7000);return(1);	}
@@ -115,14 +109,16 @@ bool Cpc1450::Chk_Adr(DWORD *d,DWORD data)
 				return( EXTENSION_CE201M_CHECK | EXTENSION_CE202M_CHECK | EXTENSION_CE203M_CHECK); }	// ROM area(0000-3FFF) 16K
 
 	if ( (*d>=0x6000) && (*d<=0x7FFF) ) return(1);			// Internal RAM area(6000-8000)
-
 	if ( (*d>=0x8000) && (*d<=0xFFFF) ) return(0);			// ROM area(8000-ffff) 
 
 	return(0);
 }
 
-bool Cpc1450::Chk_Adr_R(DWORD *d,DWORD data){ return(1); }
-#endif
+bool Cpc1450::Chk_Adr_R(DWORD *d,DWORD data)
+{
+    return(1);
+}
+
 
 
 

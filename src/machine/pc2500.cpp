@@ -1,6 +1,6 @@
-//BUG  the RUN statement is not working. DEF"a" or RUN 10 are working
-//BUG   c'est un probleme de bankswitch
-//FIXME DEF key is not working
+//BUG:  the RUN statement is not working. DEF"a" or RUN 10 are working
+//BUG:   c'est un probleme de bankswitch
+//FIXME: DEF key is not working
 #include <QtGui>
 #include "pc2500.h"
 #include "sc61860.h"

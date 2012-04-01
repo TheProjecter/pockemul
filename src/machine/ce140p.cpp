@@ -1,6 +1,6 @@
-//TODO  Paper positionning
-//FIXME Gérer correctement le commutateur SIO/PRN. Si sur SIO, l'imprimante intercepte les commande PRN
-//FIXME Lorsque les PRQ et PAK sont gérés, plus rien ne marche
+//TODO:  Paper positionning
+//FIXME: Gérer correctement le commutateur SIO/PRN. Si sur SIO, l'imprimante intercepte les commande PRN
+//FIXME: Lorsque les PRQ et PAK sont gérés, plus rien ne marche
 
 
 #include <QPainter>

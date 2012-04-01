@@ -77,6 +77,7 @@ private slots:
     void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
 
+    void test();
 
 protected:
     void paintEvent(QPaintEvent *);

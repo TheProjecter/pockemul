@@ -12,7 +12,7 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 **
 ****************************************************************************/
-// FIXME le multi  ligne et la taille
+// FIXME: le multi  ligne et la taille
 #include "qcalltip.h"
 
 /*!

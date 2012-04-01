@@ -96,8 +96,106 @@ bool Ce500::run(void) {
         sc->set_reg(REG_P,sc->get_mem(VECT_IR,SIZE_20));
     }
 
+    // SOUND
+    //
+    /*
+        switch(sc.get_imem(IMEM_SCR)&0x70){
+            case 0x10:								// speaker ON
+                status=1; break;
+            case 0x20:								// 2000Hz
+                status=2; break;
+            case 0x30:								// 4000Hz
+                status=3; break;
+            default: status=0; break;				// speaker OFF
+            }
+            break;
+    */
+
     return true;
 }
+
+INLINE void Ce500::computeSound(void)
+{
+    /*
+    qint64 delta;
+    qint64 wait2khz = getfrequency()/1000/4;
+    qint64 wait4khz = getfrequency()/1000/8;
+
+    switch ( (sc->get_imem(IMEM_SCR)>>4) & 0x07)
+    {
+        case 0x00 : Xout = false;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT LOW\n");
+                    break;
+
+        case 0x01 : Xout = true;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT HIGH\n");
+                    break;
+
+        case 0x02 : // 2khz
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT 2Khz\n");
+                    if (start2khz == 0){
+                        start2khz = pTIMER->state;
+                        if (fp_log) fprintf(fp_log,"XOUT 2Khz INIT\n");
+                        Xout = true;
+                    }
+                    delta = pTIMER->state - start2khz;
+                    //while
+                    if ((pTIMER->state - start2khz) >= wait2khz){
+                        Xout = !Xout;
+                        start2khz += wait2khz;
+                        if (fp_log) fprintf(fp_log,"XOUT 2Khz switch\n");
+                    }
+                    break;
+
+        case 0x03 : // 4khz
+                    start2khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT 4Khz\n");
+                    if (start4khz==0)
+                    {
+                        start4khz = pTIMER->state;
+                        if (fp_log) fprintf(fp_log,"XOUT 4Khz INIT\n");
+                        Xout = true;
+                    }
+                    delta = TIMER->state - start4khz;
+                    //while
+                    if (( TIMER->state - start4khz) >= wait4khz)
+                    {
+                        Xout = !Xout;
+                        start4khz += wait4khz;
+//                        if (fp_tmp) fprintf(fp_tmp,"%s\n",tr("switch XOUT to %1 : wait = %2  -  delta=%3  new:%4 - old:%5 ").arg(Xout).arg(wait4khz).arg(pPC->pTIMER->state - start4khz).arg(pPC->pTIMER->state).arg(start4khz).toLocal8Bit().data());
+
+
+                        if (fp_log) fprintf(fp_log,"XOUT 4Khz switch\n");
+                    }
+                    break;
+
+        case 0x04 : Xout = false;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT LOW");
+                    break;
+
+        case 0x05 : Xout = true;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT HIGH\n");
+                    break;
+
+        case 0x06 :
+        case 0x07 : // Xin -> Xout
+                    Xout = Xin;
+                    start2khz = 0;
+                    start4khz = 0;
+                    break;
+    }
+*/
+}
+
 
 #define GET_IMEM_BIT(adr,Bit) ((pCPU->imem[adr] & (1<<((Bit)-1))) ? 1:0)
 
