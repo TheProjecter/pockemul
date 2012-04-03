@@ -244,13 +244,17 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_e500.h \
     src/lcd/Lcdc.h \
     pictureflow/pictureflow.h \
-    pictureflow/materialflow.h
+    pictureflow/materialflow.h \
+    pictureflow/fluidlauncher.h \
+    pictureflow/launcher.h \
+    pictureflow/slideshow.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
     src/machine \
     src/lcd \
-    src/qmdilib
+    src/qmdilib \
+    pictureflow
 #DEPENDPATH += . document language widgets qnfa
 INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa
 #mac:INCLUDEPATH += /Users/svp/Library/fmodapi375mac/api/inc
@@ -456,7 +460,10 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_e500.cpp \
     src/lcd/Lcdc.cpp \
     pictureflow/pictureflow.cpp \
-    pictureflow/materialflow.cpp
+    pictureflow/materialflow.cpp \
+    pictureflow/fluidlauncher.cpp \
+    pictureflow/launcher.cpp \
+    pictureflow/slideshow.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -544,7 +551,8 @@ OTHER_FILES += \
     resources/keymap/x07.map \
     resources/keymap/e500.map \
     resources/keymap/pb1000.map \
-    resources/keymap/x710.map
+    resources/keymap/x710.map \
+    resources/pockemul/config.xml
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
 

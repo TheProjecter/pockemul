@@ -1,3 +1,4 @@
+#if 0
 /*
   PictureFlow - animated image show widget
   http://pictureflow.googlecode.com
@@ -178,3 +179,4 @@ void run( QWidget* parent=0 )
 ;
 }
 
+#endif

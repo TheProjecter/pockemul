@@ -4,5 +4,6 @@
         <file>pockemul/release_notes.html</file>
         <file>weblinks.xml</file>
         <file>pockemul/script_help.html</file>
+        <file>pockemul/config.xml</file>
     </qresource>
 </RCC>

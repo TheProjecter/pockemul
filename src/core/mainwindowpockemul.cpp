@@ -17,6 +17,8 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 #include "mainwindowpockemul.h"
 
+#include "fluidlauncher.h"
+
 #include "dialoganalog.h"
 #include "dialogabout.h"
 #include "dialogstartup.h"
@@ -175,8 +177,10 @@ void MainWindowPockemul::slotNewLink(QAction * action)
 extern void run(QWidget*);
 
 void MainWindowPockemul::test() {
-    run(mainwindow);
-
+    //run(mainwindow);
+    FluidLauncher* launcher;
+    launcher = new FluidLauncher(0);//mainwindow);
+    launcher->show();
 }
 
 int MainWindowPockemul::newsession()
