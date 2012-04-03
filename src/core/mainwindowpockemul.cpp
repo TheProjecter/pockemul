@@ -179,7 +179,8 @@ extern void run(QWidget*);
 void MainWindowPockemul::test() {
     //run(mainwindow);
     FluidLauncher* launcher;
-    launcher = new FluidLauncher(0);//mainwindow);
+    launcher = new FluidLauncher(mainwindow);
+
     launcher->show();
 }
 

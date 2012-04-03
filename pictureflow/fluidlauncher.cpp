@@ -47,6 +47,8 @@
  #define SIZING_FACTOR_HEIGHT 6/10
  #define SIZING_FACTOR_WIDTH 6/10
 
+extern QWidget* mainwidget;
+
 FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
  {
      pictureFlowWidget = new PictureFlow();
@@ -59,8 +61,8 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      setCurrentWidget(pictureFlowWidget);
      pictureFlowWidget->setFocus();
 
-     QRect screen_size = QApplication::desktop()->screenGeometry();
-
+     QRect screen_size = mainwidget->geometry();//QApplication::desktop()->screenGeometry();
+     resize(mainwidget->size());
      QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
      QObject::connect(pictureFlowWidget, SIGNAL(inputReceived()),    this, SLOT(resetInputTimeout()));
      QObject::connect(slideShowWidget,   SIGNAL(inputReceived()),    this, SLOT(switchToLauncher()));
@@ -71,6 +73,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
      const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
      const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
+
      const int hh = qMin(h, w);
      const int ww = hh / 3 * 2;
      pictureFlowWidget->setSlideSize(QSize(ww, hh));
@@ -85,7 +88,8 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      if (success) {
        populatePictureFlow();
 
-       showFullScreen();
+       show();
+       //showFullScreen();
        inputTimer->start();
      } else {
          pictureFlowWidget->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -137,6 +141,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      Launcher* exitItem = new Launcher(QString(), QLatin1String("Exit Embedded Demo"), QString(), QStringList());
      demoList.append(exitItem);
 
+     qWarning("nb slide:%i   %i\n",pictureFlowWidget->slideCount(),demoList.count());
      return true;
  }
 
@@ -234,6 +239,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
  void FluidLauncher::switchToLauncher()
  {
+     qWarning("Switch\n");
      slideShowWidget->stopShow();
      inputTimer->start();
      setCurrentWidget(pictureFlowWidget);

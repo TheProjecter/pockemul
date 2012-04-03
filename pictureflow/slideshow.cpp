@@ -72,6 +72,7 @@
  void SlideShowPrivate::showNextSlide()
  {
      currentSlide++;
+     qWarning("Current:%i / %i\n",currentSlide,imagePaths.size());
      if (currentSlide >= imagePaths.size())
        currentSlide = 0;
  }
@@ -117,6 +118,7 @@
 
  void SlideShow::startShow()
  {
+     qWarning("Start show\n");
      d->interSlideTimer.start(d->slideInterval, this);
      d->showNextSlide();
      update();
@@ -148,9 +150,10 @@
  {
      QPainter painter(this);
      painter.setRenderHint(QPainter::Antialiasing, false);
-
+     qWarning("PaintEvent \n");
      if (d->imagePaths.size() > 0) {
          QPixmap slide = QPixmap(d->imagePaths[d->currentSlide]);
+         qWarning("Loading img:%s\n",d->imagePaths.at(d->currentSlide).toAscii().data());
          QSize slideSize = slide.size();
          QSize scaledSize = QSize(qMin(slideSize.width(), size().width()),
              qMin(slideSize.height(), size().height()));

@@ -92,7 +92,7 @@ static const int captionFontSize =
 
 // uncomment this to enable bilinear filtering for texture mapping
 // gives much better rendering, at the cost of memory space
-// #define PICTUREFLOW_BILINEAR_FILTER
+//#define PICTUREFLOW_BILINEAR_FILTER
 
 // for fixed-point arithmetic, we need minimum 32-bit long
 // long long (64-bit) might be useful for multiplication and division
@@ -414,8 +414,8 @@ PictureFlowPrivate::PictureFlowPrivate(PictureFlow* w)
 {
   widget = w;
 
-  slideWidth = 200;
-  slideHeight = 200;
+  slideWidth = 100;
+  slideHeight = 100;
   zoom = 100;
 
   centerIndex = 0;
@@ -429,7 +429,7 @@ PictureFlowPrivate::PictureFlowPrivate(PictureFlow* w)
   triggerTimer.setInterval(0);
   QObject::connect(&triggerTimer, SIGNAL(timeout()), widget, SLOT(render()));
 
-  recalc(200, 200);
+  recalc(slideWidth, slideHeight);
   resetSlides();
 }
 
@@ -599,7 +599,13 @@ void PictureFlowPrivate::resetSlides()
 static QImage prepareSurface(QImage img, int w, int h)
 {
   Qt::TransformationMode mode = Qt::SmoothTransformation;
-  img = img.scaled(w, h, Qt::IgnoreAspectRatio, mode);
+  QImage imgtmp  = img.scaled(w, h, Qt::KeepAspectRatio, mode);
+  img = QImage(w,h,QImage::Format_RGB16);
+  img.fill(Qt::black);
+  QPainter painter;
+  painter.begin(&img);
+  painter.drawImage(0,h-imgtmp.height(),imgtmp);
+  painter.end();
 
   // slightly larger, to accommodate for the reflection
   int hs = h * 2;
@@ -634,7 +640,7 @@ static QImage prepareSurface(QImage img, int w, int h)
 #ifdef PICTUREFLOW_BILINEAR_FILTER
   int hh = BILINEAR_STRETCH_VER*hs;
   int ww = BILINEAR_STRETCH_HOR*w;
-  result = result.scaled(hh, ww, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+  result = result.scaled(hh, ww, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
 
   return result;
@@ -806,7 +812,8 @@ static inline uint BYTE_MUL_RGB16_32(uint x, uint a) {
 QRect PictureFlowPrivate::renderSlide(const SlideInfo &slide, int alpha,
 int col1, int col2)
 {
-  QImage* src = surface(slide.slideIndex);
+  QImage *src = surface(slide.slideIndex);
+
   if(!src)
     return QRect();
 
