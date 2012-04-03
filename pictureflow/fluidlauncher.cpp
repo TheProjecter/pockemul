@@ -138,7 +138,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      }
 
      // Append an exit Item
-     Launcher* exitItem = new Launcher(QString(), QLatin1String("Exit Embedded Demo"), QString(), QStringList());
+     Launcher* exitItem = new Launcher(QString(), QLatin1String("Exit"), ":/cover/exit.png", QStringList());
      demoList.append(exitItem);
 
      qWarning("nb slide:%i   %i\n",pictureFlowWidget->slideCount(),demoList.count());

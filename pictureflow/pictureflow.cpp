@@ -1375,6 +1375,18 @@ void PictureFlow::mouseReleaseEvent(QMouseEvent* event)
   emit inputReceived();
 }
 
+void PictureFlow::wheelEvent(QWheelEvent * event)
+{
+    if (event->delta()>0)
+        showNext();
+    else
+        showPrevious();
+
+    event->accept();
+
+    emit inputReceived();
+}
+
 void PictureFlow::paintEvent(QPaintEvent* event)
 {
   Q_UNUSED(event);

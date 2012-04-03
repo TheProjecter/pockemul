@@ -31,5 +31,6 @@
         <file>cover/pc-e500.png</file>
         <file>cover/trspc3.png</file>
         <file>cover/x07.png</file>
+        <file>cover/exit.png</file>
     </qresource>
 </RCC>
