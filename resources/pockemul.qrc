@@ -5,5 +5,6 @@
         <file>weblinks.xml</file>
         <file>pockemul/script_help.html</file>
         <file>pockemul/config.xml</file>
+        <file>pockemul/open.png</file>
     </qresource>
 </RCC>

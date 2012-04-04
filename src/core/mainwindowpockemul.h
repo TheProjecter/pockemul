@@ -18,7 +18,7 @@ class CKey;
 class CpcXXXX;
 class Cconnector;
 class WindowIDE;
-
+class LaunchButtonWidget;
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -48,6 +48,7 @@ public:
     ASKYN saveAll;
     float	zoom;
 
+    LaunchButtonWidget* launch;
 
     void doZoom(QPoint point, float delta);
 
@@ -99,6 +100,7 @@ private:
     QPoint KeyDrag;
     bool startPosDrag;
     QPoint PosDrag;
+
 
 
 };

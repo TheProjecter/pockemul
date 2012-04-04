@@ -18,7 +18,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "mainwindowpockemul.h"
 
 #include "fluidlauncher.h"
-
+#include "launchbuttonwidget.h"
 #include "dialoganalog.h"
 #include "dialogabout.h"
 #include "dialogstartup.h"
@@ -49,6 +49,8 @@ QTime t,tf;
 QElapsedTimer et;
 QTimer *timer;
 QList<CPObject *> listpPObject;
+
+
 
 
 MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainWindow(parent, f)
@@ -99,6 +101,8 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
+
+
 }
 
 //
@@ -529,6 +533,9 @@ void MainWindowPockemul::saveassession()
 
     saveAll = ASK;
 }
+
+
+
 
 void MainWindowPockemul::paintEvent(QPaintEvent *event) {}
 

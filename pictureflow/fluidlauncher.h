@@ -71,6 +71,7 @@
  private:
      PictureFlow* pictureFlowWidget;
      SlideShow* slideShowWidget;
+     QWidget* buttonWidget;
      QTimer* inputTimer;
      QList<Launcher*> demoList;
 

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
  <demolauncher>
    <demos>
-     <example filename="../../../examples/assistant/simpletextviewer/simpletextviewer" name="Casio PB-1000" image=":/cover/pb-1000.png"/>
-     <example filename="../../../examples/dialogs/trivialwizard/trivialwizard" name="Sharp pc-1251" image=":/cover/pc1251.png"/>
-     <example filename="../../../examples/draganddrop/draggableicons/draggableicons" name="Sharp pc-1255" image=":/cover/pc1255.jpg"/>
-     <example filename="../../../examples/draganddrop/draggabletext/draggabletext" name="Sharp pc-1260" image=":/cover/pc1260.jpg"/>
-     <example filename="../../../examples/draganddrop/fridgemagnets/fridgemagnets" name="Sharp pc-2500" image=":/cover/pc-2500.jpg"/>
-     <example filename="../../../examples/graphicsview/collidingmice/collidingmice" name="Canon X-07" image=":/cover/x07.png"/>
-     <example filename="../../../examples/graphicsview/padnavigator/padnavigator" name="Sharp pc-E500" image=":/cover/pc-e500.png"/>
-     <example filename="../../../examples/itemviews/coloreditorfactory/coloreditorfactory" name="Seiko MC-2200" image=":/cover/mc2200.png" args="-maximize"/>
+     <example idpocket="Casio PB-1000" filename="./" name="Casio PB-1000" image=":/cover/pb-1000.png"/>
+     <example idpocket="PC 1251" filename="./" name="Sharp pc-1251" image=":/cover/pc1251.png"/>
+     <example idpocket="PC 1255" filename="./" name="Sharp pc-1255" image=":/cover/pc1255.jpg"/>
+     <example idpocket="PC 1260" filename="./" name="Sharp pc-1260" image=":/cover/pc1260.jpg"/>
+     <example idpocket="PC 2500" filename="./" name="Sharp pc-2500" image=":/cover/pc-2500.jpg"/>
+     <example idpocket="Canon X-07" filename="./" name="Canon X-07" image=":/cover/x07.png"/>
+     <example idpocket="PC-E500" filename="./" name="Sharp pc-E500" image=":/cover/pc-e500.png"/>
+     <example idpocket="MC 2200" filename="./" name="Seiko MC-2200" image=":/cover/mc2200.png" args="-maximize"/>
    </demos>
 
    <slideshow timeout="5000" interval="1000">

@@ -247,7 +247,8 @@ HEADERS += src/core/Connect.h \
     pictureflow/materialflow.h \
     pictureflow/fluidlauncher.h \
     pictureflow/launcher.h \
-    pictureflow/slideshow.h
+    pictureflow/slideshow.h \
+    src/core/launchbuttonwidget.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -463,7 +464,8 @@ SOURCES += src/core/Connect.cpp \
     pictureflow/materialflow.cpp \
     pictureflow/fluidlauncher.cpp \
     pictureflow/launcher.cpp \
-    pictureflow/slideshow.cpp
+    pictureflow/slideshow.cpp \
+    src/core/launchbuttonwidget.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

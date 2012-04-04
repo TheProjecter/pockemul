@@ -44,8 +44,9 @@
 
  #include "launcher.h"
 
- Launcher::Launcher(QString executableName, QString caption, QString imageName, QStringList args)
+ Launcher::Launcher(QString id,QString executableName, QString caption, QString imageName, QStringList args)
  {
+     idPocket = id;
      imagePath = imageName;
      appCaption = caption;
 
@@ -75,6 +76,11 @@
  QImage* Launcher::getImage()
  {
      return new QImage(imagePath);
+ }
+
+ QString Launcher::getIdPocket()
+ {
+     return idPocket;
  }
 
  QString Launcher::getCaption()

@@ -2,6 +2,8 @@
 	#include <QtPlugin>
 	
     #include "mainwindowpockemul.h"
+#include "launchbuttonwidget.h"
+
 #include "pobject.h"
 #include "dialogstartup.h"
 
@@ -32,6 +34,15 @@
 		mainwindow->setWindowIcon ( QIcon(":/POCKEMUL/pockemul/pockemul.bmp") );      
         mainwindow->resize(680,505);
 
+
+
+        mainwindow->launch = new LaunchButtonWidget(mainwidget);
+        mainwindow->launch->setMouseTracking(true);
+        mainwindow->launch->setGeometry(0,0,30,30);
+//        mainwindow->launch->show();
+//        launch->raise();
+//        launch->update();
+
 #ifdef Q_OS_ANDROID
         DialogStartup dialogstartup(0);
         int result = dialogstartup.exec();
@@ -40,6 +51,7 @@
         pPC->show();
 #else
         mainwindow->show();
+
 #endif
         return app.exec(); 
         	
