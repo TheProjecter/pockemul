@@ -21,13 +21,20 @@ void LaunchButtonWidget::mouseMoveEvent(QMouseEvent *event)
     // create the sliding widget
 
     if (slidePanel) delete(slidePanel);
-
+#if 1
     slidePanel = new QWidget(mainwidget);
     slidePanel->resize(mainwidget->width(),mainwidget->height());
     slidePanel->show();
+#else
+    slidePanel = new QTabWidget(mainwidget);
+    slidePanel->resize(mainwidget->width(),mainwidget->height());
+    slidePanel->show();
+#endif
+
     launcher = new FluidLauncher(slidePanel);
     launcher->show();
 
+//    slidePanel->addTab(launcher,"Pockets");
     QPropertyAnimation *animation = new QPropertyAnimation(slidePanel, "geometry");
     animation->setDuration(500);
     animation->setStartValue(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));

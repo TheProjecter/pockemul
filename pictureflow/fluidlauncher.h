@@ -47,7 +47,7 @@
  #include <QStringRef>
 
  #include "pictureflow.h"
- #include "pictureflow/slideshow.h"
+// #include "pictureflow/slideshow.h"
  #include "pictureflow/launcher.h"
 
  class FluidLauncher : public QStackedWidget
@@ -60,29 +60,19 @@
 
  public slots:
      void launchApplication(int index);
-     void switchToLauncher();
-     void resetInputTimeout();
-     void inputTimedout();
      void demoFinished();
      void exitSlot();
-
-
- protected:
-     void changeEvent(QEvent *event);
 
  private:
 
      PictureFlow* pictureFlowWidget;
-     SlideShow* slideShowWidget;
      QWidget* buttonWidget;
-     QTimer* inputTimer;
+
      QList<Launcher*> demoList;
 
      bool loadConfig(QString configPath);
      void populatePictureFlow();
-     void switchToSlideshow();
      void parseDemos(QXmlStreamReader& reader);
-     void parseSlideshow(QXmlStreamReader& reader);
 
  };
 

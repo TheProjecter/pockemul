@@ -61,11 +61,8 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
  {
 
      pictureFlowWidget = new PictureFlow();
-     slideShowWidget = new SlideShow();
-     inputTimer = new QTimer();
 
      addWidget(pictureFlowWidget);
-     addWidget(slideShowWidget);
 
      setCurrentWidget(pictureFlowWidget);
      pictureFlowWidget->setFocus();
@@ -76,11 +73,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
      QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
      QObject::connect(pictureFlowWidget, SIGNAL(inputReceived()),    this, SLOT(resetInputTimeout()));
-     QObject::connect(slideShowWidget,   SIGNAL(inputReceived()),    this, SLOT(switchToLauncher()));
-     QObject::connect(inputTimer,        SIGNAL(timeout()),          this, SLOT(inputTimedout()));
 
-     inputTimer->setSingleShot(true);
-     inputTimer->setInterval(DEFAULT_INPUT_TIMEOUT);
 
      const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
      const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
@@ -90,18 +83,14 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      pictureFlowWidget->setSlideSize(QSize(ww, hh));
 
      bool success;
-//     int configIndex = args->indexOf("-config");
-//     if ( (configIndex != -1) && (configIndex != args->count()-1) )
-//         success = loadConfig(args->at(configIndex+1));
-//     else
-         success = loadConfig(":/POCKEMUL/pockemul/config.xml");
+
+     success = loadConfig(":/POCKEMUL/pockemul/config.xml");
 
      if (success) {
        populatePictureFlow();
 
        show();
-       //showFullScreen();
-       inputTimer->start();
+
      } else {
          pictureFlowWidget->setAttribute(Qt::WA_DeleteOnClose, true);
          pictureFlowWidget->close();
@@ -112,7 +101,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
  FluidLauncher::~FluidLauncher()
  {
      delete pictureFlowWidget;
-     delete slideShowWidget;
  }
 
  bool FluidLauncher::loadConfig(QString configPath)
@@ -125,8 +113,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
          return false;
      }
 
-     slideShowWidget->clearImages();
-
      xmlFile.open(QIODevice::ReadOnly);
      QXmlStreamReader reader(&xmlFile);
      while (!reader.atEnd()) {
@@ -135,8 +121,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
          if (reader.isStartElement()) {
              if (reader.name() == "demos")
                  parseDemos(reader);
-             else if(reader.name() == "slideshow")
-                 parseSlideshow(reader);
          }
      }
 
@@ -183,42 +167,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      }
  }
 
- void FluidLauncher::parseSlideshow(QXmlStreamReader& reader)
- {
-     QXmlStreamAttributes attrs = reader.attributes();
-
-     QStringRef timeout = attrs.value("timeout");
-     bool valid;
-     if (!timeout.isEmpty()) {
-         int t = timeout.toString().toInt(&valid);
-         if (valid)
-             inputTimer->setInterval(t);
-     }
-
-     QStringRef interval = attrs.value("interval");
-     if (!interval.isEmpty()) {
-         int i = interval.toString().toInt(&valid);
-         if (valid)
-             slideShowWidget->setSlideInterval(i);
-     }
-
-     while (!reader.atEnd()) {
-         reader.readNext();
-         if (reader.isStartElement()) {
-             QXmlStreamAttributes attrs = reader.attributes();
-             if (reader.name() == "imagedir") {
-                 QStringRef dir = attrs.value("dir");
-                 slideShowWidget->addImageDir(dir.toString());
-             } else if(reader.name() == "image") {
-                 QStringRef image = attrs.value("image");
-                 slideShowWidget->addImage(image.toString());
-             }
-         } else if(reader.isEndElement() && reader.name() == "slideshow") {
-             return;
-         }
-     }
-
- }
 
  void FluidLauncher::populatePictureFlow()
  {
@@ -246,7 +194,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
          return;
      }
 
-     inputTimer->stop();
 #if 0
      QObject::connect(demoList[index], SIGNAL(demoFinished()), this, SLOT(demoFinished()));
 
@@ -316,32 +263,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
  }
 
- void FluidLauncher::switchToLauncher()
- {
-     qWarning("Switch\n");
-     slideShowWidget->stopShow();
-     inputTimer->start();
-     setCurrentWidget(pictureFlowWidget);
- }
-
- void FluidLauncher::resetInputTimeout()
- {
-     if (inputTimer->isActive())
-         inputTimer->start();
- }
-
- void FluidLauncher::inputTimedout()
- {
-//     switchToSlideshow();
- }
-
- void FluidLauncher::switchToSlideshow()
- {
-     inputTimer->stop();
-     slideShowWidget->startShow();
-     setCurrentWidget(slideShowWidget);
- }
-
  void FluidLauncher::exitSlot()
  {
      parentWidget()->close();
@@ -351,26 +272,10 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
  void FluidLauncher::demoFinished()
  {
      setCurrentWidget(pictureFlowWidget);
-     inputTimer->start();
 
      // Bring the Fluidlauncher to the foreground to allow selecting another demo
      raise();
      activateWindow();
  }
 
- void FluidLauncher::changeEvent(QEvent* event)
- {
-     if (event->type() == QEvent::ActivationChange) {
-         if (isActiveWindow()) {
-             if(currentWidget() == pictureFlowWidget) {
-                 resetInputTimeout();
-             } else {
-                 slideShowWidget->startShow();
-             }
-         } else {
-             inputTimer->stop();
-             slideShowWidget->stopShow();
-         }
-     }
-     QStackedWidget::changeEvent(event);
- }
+

@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class FluidLauncher;
+class QTabWidget;
 
 class LaunchButtonWidget:public QWidget
 {
