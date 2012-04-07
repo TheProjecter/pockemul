@@ -32,5 +32,6 @@
         <file>cover/x07.png</file>
         <file>cover/exit.png</file>
         <file>cover/pc1280.png</file>
+        <file>cover/pc1251H.jpg</file>
     </qresource>
 </RCC>

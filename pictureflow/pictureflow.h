@@ -201,6 +201,9 @@
    void itemActivated(int index);
    void inputReceived();
 
+ public slots:
+   void exitSlot();
+
  protected:
    void paintEvent(QPaintEvent *event);
    void keyPressEvent(QKeyEvent* event);

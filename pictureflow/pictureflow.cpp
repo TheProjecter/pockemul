@@ -76,6 +76,8 @@
 #include <QVector>
 #include <QWidget>
 #include <QTime>
+#include <QPushButton>
+#include <qcolor.h>
 
 #ifdef Q_WS_QWS
 #include <QScreen>
@@ -595,13 +597,14 @@ void PictureFlowPrivate::resetSlides()
 
 #define BILINEAR_STRETCH_HOR 4
 #define BILINEAR_STRETCH_VER 4
+#define BACKGROUNDCOLOR Qt::black
 
 static QImage prepareSurface(QImage img, int w, int h)
 {
   Qt::TransformationMode mode = Qt::SmoothTransformation;
   QImage imgtmp  = img.scaled(w, h, Qt::KeepAspectRatio, mode);
   img = QImage(w,h,QImage::Format_RGB16);
-  img.fill(Qt::black);
+  img.fill(BACKGROUNDCOLOR);
   QPainter painter;
   painter.begin(&img);
   painter.drawImage(0,h-imgtmp.height(),imgtmp);
@@ -613,7 +616,7 @@ static QImage prepareSurface(QImage img, int w, int h)
 
   // offscreen buffer: black is sweet
   QImage result(hs, w, QImage::Format_RGB16);
-  result.fill(0);
+  result.fill(BACKGROUNDCOLOR);
 
   // transpose the image, this is to speed-up the rendering
   // because we process one column at a time
@@ -664,13 +667,13 @@ QImage* PictureFlowPrivate::surface(int slideIndex)
     if(blankSurface.isNull())
     {
       blankSurface = QImage(slideWidth, slideHeight, QImage::Format_RGB16);
-
+        blankSurface.fill(BACKGROUNDCOLOR);
       QPainter painter(&blankSurface);
       QPoint p1(slideWidth*4/10, 0);
       QPoint p2(slideWidth*6/10, slideHeight);
       QLinearGradient linearGrad(p1, p2);
-      linearGrad.setColorAt(0, Qt::black);
-      linearGrad.setColorAt(1, Qt::white);
+      linearGrad.setColorAt(1, Qt::black);
+      linearGrad.setColorAt(0, Qt::white);
       painter.setBrush(linearGrad);
       painter.fillRect(0, 0, slideWidth, slideHeight, QBrush(linearGrad));
 
@@ -697,7 +700,7 @@ void PictureFlowPrivate::triggerRender()
 // Render the slides. Updates only the offscreen buffer.
 void PictureFlowPrivate::render()
 {
-  buffer.fill(0);
+  buffer.fill(BACKGROUNDCOLOR);
 
   int nleft = leftSlides.count();
   int nright = rightSlides.count();
@@ -957,7 +960,7 @@ void PictureFlowPrivate::recalc(int ww, int wh)
   int w = (ww+1)/2;
   int h = (wh+1)/2;
   buffer = QImage(ww, wh, QImage::Format_RGB16);
-  buffer.fill(0);
+  buffer.fill(BACKGROUNDCOLOR);
 
   rays.resize(w*2);
 
@@ -1127,6 +1130,17 @@ PictureFlow::PictureFlow(QWidget* parent): QWidget(parent)
   if (QScreen::instance()->pixelFormat() != QImage::Format_Invalid)
     setAttribute(Qt::WA_PaintOnScreen, true);
 #endif
+
+  QPushButton* pb = new QPushButton(this);
+  pb->setPalette(QColor(Qt::black));
+  //  QString monStyle = "QPushButton { background-image: url(':/cover/exit.png'); }";
+
+  pb->setStyleSheet("background-color: rgb(0, 0, 0); color: rgb(255, 255, 255)");
+
+  pb->setText("Exit");
+
+
+  connect(pb,SIGNAL(clicked()),this,SLOT(exitSlot()));
 }
 
 PictureFlow::~PictureFlow()
@@ -1254,6 +1268,10 @@ void PictureFlow::keyPressEvent(QKeyEvent* event)
   }
 
   event->ignore();
+}
+
+void PictureFlow::exitSlot(){
+    emit itemActivated(-1);
 }
 
 #define SPEED_LOWER_THRESHOLD 10

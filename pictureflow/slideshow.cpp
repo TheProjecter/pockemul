@@ -50,6 +50,9 @@
 
  #include "slideshow.h"
 
+#define BACKGROUNDCOLOR Qt::white
+
+
  class SlideShowPrivate
  {
  public:
@@ -167,20 +170,20 @@
 
          if (pixmapRect.top() > 0) {
              // Fill in top & bottom rectangles:
-             painter.fillRect(0, 0, size().width(), pixmapRect.top(), Qt::black);
-             painter.fillRect(0, pixmapRect.bottom(), size().width(), size().height(), Qt::black);
+             painter.fillRect(0, 0, size().width(), pixmapRect.top(), BACKGROUNDCOLOR);
+             painter.fillRect(0, pixmapRect.bottom(), size().width(), size().height(), BACKGROUNDCOLOR);
          }
 
          if (pixmapRect.left() > 0) {
              // Fill in left & right rectangles:
-             painter.fillRect(0, 0, pixmapRect.left(), size().height(), Qt::black);
-             painter.fillRect(pixmapRect.right(), 0, size().width(), size().height(), Qt::black);
+             painter.fillRect(0, 0, pixmapRect.left(), size().height(), BACKGROUNDCOLOR);
+             painter.fillRect(pixmapRect.right(), 0, size().width(), size().height(), BACKGROUNDCOLOR);
          }
 
          painter.drawPixmap(pixmapRect, slide);
 
      } else
-         painter.fillRect(event->rect(), Qt::black);
+         painter.fillRect(event->rect(), BACKGROUNDCOLOR);
  }
 
  void SlideShow::keyPressEvent(QKeyEvent* event)

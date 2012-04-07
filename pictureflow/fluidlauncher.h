@@ -64,12 +64,14 @@
      void resetInputTimeout();
      void inputTimedout();
      void demoFinished();
+     void exitSlot();
 
 
  protected:
      void changeEvent(QEvent *event);
 
  private:
+
      PictureFlow* pictureFlowWidget;
      SlideShow* slideShowWidget;
      QWidget* buttonWidget;

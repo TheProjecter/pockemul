@@ -240,7 +240,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      // a delay upon returning, as items are reloaded.
      //pictureFlowWidget->clearCaches();
 
-     if (index == demoList.size() -1) {
+     if ( (index==-1) ||(index == demoList.size() -1)) {
          parentWidget()->close();
          close();
          return;
@@ -340,6 +340,12 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      inputTimer->stop();
      slideShowWidget->startShow();
      setCurrentWidget(slideShowWidget);
+ }
+
+ void FluidLauncher::exitSlot()
+ {
+     parentWidget()->close();
+     close();
  }
 
  void FluidLauncher::demoFinished()
