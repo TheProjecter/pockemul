@@ -29,8 +29,4 @@
      <example idpocket="PC-E500" filename="./" name="Sharp pc-E500" image=":/cover/pc-e500.png"/>
     <example idpocket="Casio PB-1000" filename="./" name="Casio PB-1000" image=":/cover/pb-1000.png"/>
    </demos>
-
-   <slideshow timeout="5000" interval="1000">
-     <imagedir dir=":/cover"/>
-   </slideshow>
  </demolauncher>

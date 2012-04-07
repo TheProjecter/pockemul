@@ -49,6 +49,7 @@ public:
     float	zoom;
 
     LaunchButtonWidget* launch;
+    LaunchButtonWidget* launch2;
 
     void doZoom(QPoint point, float delta);
 
@@ -77,8 +78,6 @@ private slots:
     void slotWebLink(QAction *);
     void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
-
-    void test();
 
 protected:
     void paintEvent(QPaintEvent *);

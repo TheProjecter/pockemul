@@ -47,7 +47,6 @@
  #include <QStringRef>
 
  #include "pictureflow.h"
-// #include "pictureflow/slideshow.h"
  #include "pictureflow/launcher.h"
 
  class FluidLauncher : public QStackedWidget
@@ -55,7 +54,7 @@
      Q_OBJECT
 
  public:
-     FluidLauncher(QWidget *);
+     FluidLauncher(QWidget *,QString);
      ~FluidLauncher();
 
  public slots:

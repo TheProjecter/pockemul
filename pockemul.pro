@@ -554,7 +554,8 @@ OTHER_FILES += \
     resources/keymap/e500.map \
     resources/keymap/pb1000.map \
     resources/keymap/x710.map \
-    resources/pockemul/config.xml
+    resources/pockemul/config.xml \
+    resources/pockemul/configExt.xml
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
 

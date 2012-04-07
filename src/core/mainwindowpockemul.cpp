@@ -178,16 +178,6 @@ void MainWindowPockemul::slotNewLink(QAction * action)
     AddLog(LOG_MASTER,tr("DirectLink Iinsert (%1,%2)").arg((qint64)p1).arg((qint64)p2));
 }
 
-extern void run(QWidget*);
-
-void MainWindowPockemul::test() {
-    //run(mainwindow);
-    FluidLauncher* launcher;
-    launcher = new FluidLauncher(mainwindow);
-
-    launcher->show();
-}
-
 int MainWindowPockemul::newsession()
 {
     DialogStartup dialogstartup(this);

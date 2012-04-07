@@ -36,9 +36,13 @@
 
 
 
-        mainwindow->launch = new LaunchButtonWidget(mainwidget);
+        mainwindow->launch = new LaunchButtonWidget(mainwidget,":/POCKEMUL/pockemul/config.xml",":/POCKEMUL/pockemul/pockemul.bmp");
         mainwindow->launch->setMouseTracking(true);
         mainwindow->launch->setGeometry(0,0,30,30);
+
+        mainwindow->launch2 = new LaunchButtonWidget(mainwidget,":/POCKEMUL/pockemul/configExt.xml",":/POCKEMUL/pockemul/open.png");
+        mainwindow->launch2->setMouseTracking(true);
+        mainwindow->launch2->setGeometry(0,40,30,30);
 //        mainwindow->launch->show();
 //        launch->raise();
 //        launch->update();

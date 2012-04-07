@@ -57,7 +57,7 @@ extern QWidget* mainwidget;
 
 
 
-FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
+FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(parent)
  {
 
      pictureFlowWidget = new PictureFlow();
@@ -72,7 +72,6 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
 
      QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
-     QObject::connect(pictureFlowWidget, SIGNAL(inputReceived()),    this, SLOT(resetInputTimeout()));
 
 
      const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
@@ -84,7 +83,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
      bool success;
 
-     success = loadConfig(":/POCKEMUL/pockemul/config.xml");
+     success = loadConfig(config);
 
      if (success) {
        populatePictureFlow();
@@ -133,8 +132,8 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      }
 
      // Append an exit Item
-     Launcher* exitItem = new Launcher("EXIT",QString(), QLatin1String("Exit"), ":/cover/exit.png", QStringList());
-     demoList.append(exitItem);
+//     Launcher* exitItem = new Launcher("EXIT",QString(), QLatin1String("Exit"), ":/cover/exit.png", QStringList());
+//     demoList.append(exitItem);
 
      qWarning("nb slide:%i   %i\n",pictureFlowWidget->slideCount(),demoList.count());
      return true;
@@ -188,7 +187,8 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      // a delay upon returning, as items are reloaded.
      //pictureFlowWidget->clearCaches();
 
-     if ( (index==-1) ||(index == demoList.size() -1)) {
+     if ( (index==-1) )//||(index == demoList.size() -1))
+     {
          parentWidget()->close();
          close();
          return;

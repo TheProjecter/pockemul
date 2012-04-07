@@ -5,9 +5,12 @@
 
 extern QWidget* mainwidget;
 
-LaunchButtonWidget::LaunchButtonWidget(QWidget *parent):QWidget(parent)
+LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,QString param,QString img):QWidget(parent)
 {
-
+    config = param;
+    image = img;
+    slidePanel = 0;
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 
@@ -15,25 +18,20 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent):QWidget(parent)
 
 void LaunchButtonWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    qWarning("hover\n");
+    qWarning("hover : %s  %i\n",image.toAscii().data(),slidePanel);
 
 
     // create the sliding widget
 
-    if (slidePanel) delete(slidePanel);
-#if 1
+    if (slidePanel) slidePanel->close();
+
     slidePanel = new QWidget(mainwidget);
     slidePanel->resize(mainwidget->width(),mainwidget->height());
     slidePanel->show();
-#else
-    slidePanel = new QTabWidget(mainwidget);
-    slidePanel->resize(mainwidget->width(),mainwidget->height());
-    slidePanel->show();
-#endif
 
-    launcher = new FluidLauncher(slidePanel);
+    launcher = new FluidLauncher(slidePanel,config);
     launcher->show();
-
+qWarning("hover2\n");
 //    slidePanel->addTab(launcher,"Pockets");
     QPropertyAnimation *animation = new QPropertyAnimation(slidePanel, "geometry");
     animation->setDuration(500);
@@ -41,13 +39,15 @@ void LaunchButtonWidget::mouseMoveEvent(QMouseEvent *event)
     animation->setEndValue(QRect(0, 0, mainwidget->width(), mainwidget->height()));
 
     animation->start();
+qWarning("hover3\n");
 
+event->accept();
 }
 
 void LaunchButtonWidget::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
-    painter.drawImage(0,0,QImage(":/POCKEMUL/pockemul/open.png").scaled(30,30));
+    painter.drawImage(0,0,QImage(image).scaled(30,30));
     painter.end();
 
 }

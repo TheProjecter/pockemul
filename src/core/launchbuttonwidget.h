@@ -10,12 +10,15 @@ class LaunchButtonWidget:public QWidget
 {
     Q_OBJECT
 public:
-    LaunchButtonWidget(QWidget* parent);
+    LaunchButtonWidget(QWidget* parent,QString,QString);
 
     void mouseMoveEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *event);
     QWidget* slidePanel;
     FluidLauncher* launcher;
+
+    QString config;
+    QString image;
 
 
 
