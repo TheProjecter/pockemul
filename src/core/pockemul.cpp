@@ -43,6 +43,7 @@
 //        launch->raise();
 //        launch->update();
 
+
 #ifdef Q_OS_ANDROID
         DialogStartup dialogstartup(0);
         int result = dialogstartup.exec();

@@ -26,11 +26,11 @@
         <file>cover/pc1250.png</file>
         <file>cover/PC-1250A.png</file>
         <file>cover/pc1251.png</file>
-        <file>cover/pc-1280.png</file>
         <file>cover/pc1350.png</file>
         <file>cover/pc-e500.png</file>
         <file>cover/trspc3.png</file>
         <file>cover/x07.png</file>
         <file>cover/exit.png</file>
+        <file>cover/pc1280.png</file>
     </qresource>
 </RCC>

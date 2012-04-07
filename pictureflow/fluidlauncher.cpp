@@ -64,16 +64,14 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      slideShowWidget = new SlideShow();
      inputTimer = new QTimer();
 
-     qWarning("TOTO 0");
-
      addWidget(pictureFlowWidget);
      addWidget(slideShowWidget);
 
      setCurrentWidget(pictureFlowWidget);
      pictureFlowWidget->setFocus();
 
-     QRect screen_size = mainwidget->geometry();//QApplication::desktop()->screenGeometry();
-     resize(mainwidget->size());
+     QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
+     resize(parent->size());
 
 
      QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
@@ -88,7 +86,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
 
      const int hh = qMin(h, w);
-     const int ww = hh / 3 * 2;
+     const int ww = hh / 3 * 4;
      pictureFlowWidget->setSlideSize(QSize(ww, hh));
 
      bool success;
@@ -237,12 +235,14 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
  void FluidLauncher::launchApplication(int index)
  {
 
+
      // NOTE: Clearing the caches will free up more memory for the demo but will cause
      // a delay upon returning, as items are reloaded.
      //pictureFlowWidget->clearCaches();
 
      if (index == demoList.size() -1) {
-         hide();
+         parentWidget()->close();
+         close();
          return;
      }
 
@@ -309,7 +309,9 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
      if (result != EMPTY)	{
          mainwindow->LoadPocket(result);
          hide();
+         parentWidget()->close();
      }
+
 
 
  }
@@ -330,7 +332,7 @@ FluidLauncher::FluidLauncher(QWidget * parent):QStackedWidget(parent)
 
  void FluidLauncher::inputTimedout()
  {
-     switchToSlideshow();
+//     switchToSlideshow();
  }
 
  void FluidLauncher::switchToSlideshow()

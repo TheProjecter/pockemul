@@ -65,6 +65,7 @@
      void inputTimedout();
      void demoFinished();
 
+
  protected:
      void changeEvent(QEvent *event);
 
