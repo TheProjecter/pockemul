@@ -12,7 +12,7 @@
      <example idpocket="CE-140P" filename="./" name="Sharp ce-140p" image=":/EXT/ext/ce-140p.jpg"/>
      <example idpocket="CE-150" filename="./" name="Sharp ce-150" image=":/EXT/ext/ce-150.jpg"/>
      <example idpocket="CE-140F" filename="./" name="Sharp ce-140f" image=":/EXT/ext/ce-140f.png"/>
-     <example idpocket="CE-1600P" filename="./" name="Sharp ce-600p" image=":/EXT/ext/ce-1600p.png"/>
+     <example idpocket="CE-1600P" filename="./" name="Sharp ce-1600p" image=":/EXT/ext/ce-1600p.png"/>
      <example idpocket="Canon X-710" filename="./" name="Canon X-710" image=":/x07/x710.png"/>
      <example idpocket="Serial Console" filename="./" name="Serial Console" image=":/EXT/ext/serial.png"/>
      <example idpocket="Potar" filename="./" name="Potar" image=":/EXT/ext/jack.png"/>

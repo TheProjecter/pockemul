@@ -9,5 +9,8 @@
         <file>pockemul/configExt.xml</file>
         <file>pockemul/pocket.png</file>
         <file>pockemul/ext.png</file>
+        <file>pockemul/dev.png</file>
+        <file>pockemul/save.png</file>
+        <file>pockemul/load.png</file>
     </qresource>
 </RCC>

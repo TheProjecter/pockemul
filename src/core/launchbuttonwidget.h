@@ -6,11 +6,23 @@
 class FluidLauncher;
 class QTabWidget;
 
+
+
+
 class LaunchButtonWidget:public QWidget
 {
     Q_OBJECT
+
 public:
-    LaunchButtonWidget(QWidget* parent,QString,QString);
+
+    enum LaunchType
+    {
+        PictureFlow,
+        Action
+    };
+
+
+    LaunchButtonWidget(QWidget* parent,LaunchType type,QString param,QString img);
 
     void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *event);
@@ -19,8 +31,10 @@ public:
 
     QString config;
     QString image;
+    LaunchType type;
 
-
+signals:
+    void clicked();
 
 
 };

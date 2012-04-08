@@ -36,16 +36,41 @@
 
 
 
-        mainwindow->launch = new LaunchButtonWidget(mainwidget,":/POCKEMUL/pockemul/config.xml",":/POCKEMUL/pockemul/pocket.png");
+        mainwindow->launch = new LaunchButtonWidget(mainwidget,
+                                                    LaunchButtonWidget::PictureFlow,
+                                                    ":/POCKEMUL/pockemul/config.xml",
+                                                    ":/POCKEMUL/pockemul/pocket.png");
         mainwindow->launch->setMouseTracking(true);
         mainwindow->launch->setGeometry(0,0,48,48);
 
-        mainwindow->launch2 = new LaunchButtonWidget(mainwidget,":/POCKEMUL/pockemul/configExt.xml",":/POCKEMUL/pockemul/ext.png");
+        mainwindow->launch2 = new LaunchButtonWidget(mainwidget,
+                                                     LaunchButtonWidget::PictureFlow,
+                                                     ":/POCKEMUL/pockemul/configExt.xml",
+                                                     ":/POCKEMUL/pockemul/ext.png");
         mainwindow->launch2->setMouseTracking(true);
         mainwindow->launch2->setGeometry(0,50,48,48);
-//        mainwindow->launch->show();
-//        launch->raise();
-//        launch->update();
+
+        LaunchButtonWidget* dev = new LaunchButtonWidget(mainwidget,
+                                                          LaunchButtonWidget::Action,
+                                                          "",
+                                                          ":/POCKEMUL/pockemul/dev.png");
+        mainwindow->connect(dev,SIGNAL(clicked()),mainwindow,SLOT(IDE()));
+        dev->setGeometry(0,100,48,48);
+
+        LaunchButtonWidget* save = new LaunchButtonWidget(mainwidget,
+                                                          LaunchButtonWidget::Action,
+                                                          "",
+                                                          ":/POCKEMUL/pockemul/save.png");
+        mainwindow->connect(save,SIGNAL(clicked()),mainwindow,SLOT(saveassession()));
+        save->setGeometry(0,150,48,48);
+
+        LaunchButtonWidget* load = new LaunchButtonWidget(mainwidget,
+                                                          LaunchButtonWidget::Action,
+                                                          "",
+                                                          ":/POCKEMUL/pockemul/load.png");
+        mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
+        load->setGeometry(0,200,48,48);
+
 
 
 #ifdef Q_OS_ANDROID

@@ -5,8 +5,12 @@
 
 extern QWidget* mainwidget;
 
-LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,QString param,QString img):QWidget(parent)
+
+
+
+LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::LaunchType type,QString param,QString img):QWidget(parent)
 {
+    this->type = type;
     config = param;
     image = img;
     slidePanel = 0;
@@ -21,27 +25,30 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
     qWarning("hover : %s  %i\n",image.toAscii().data(),slidePanel);
 
 
-    // create the sliding widget
+    emit clicked();
 
-    if (slidePanel) slidePanel->close();
+    if (type == PictureFlow)
+    {
 
-    slidePanel = new QWidget(mainwidget);
-    slidePanel->resize(mainwidget->width(),mainwidget->height());
-    slidePanel->show();
+        // create the sliding widget
 
-    launcher = new FluidLauncher(slidePanel,config);
-    launcher->show();
-qWarning("hover2\n");
-//    slidePanel->addTab(launcher,"Pockets");
-    QPropertyAnimation *animation = new QPropertyAnimation(slidePanel, "geometry");
-    animation->setDuration(500);
-    animation->setStartValue(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
-    animation->setEndValue(QRect(0, 0, mainwidget->width(), mainwidget->height()));
+        if (slidePanel) slidePanel->close();
 
-    animation->start();
-qWarning("hover3\n");
+        slidePanel = new QWidget(mainwidget);
+        slidePanel->resize(mainwidget->width(),mainwidget->height());
+        slidePanel->show();
 
-event->accept();
+        launcher = new FluidLauncher(slidePanel,config);
+        launcher->show();
+        QPropertyAnimation *animation = new QPropertyAnimation(slidePanel, "geometry");
+        animation->setDuration(500);
+        animation->setStartValue(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
+        animation->setEndValue(QRect(0, 0, mainwidget->width(), mainwidget->height()));
+
+        animation->start();
+        qWarning("hover3\n");
+    }
+    event->accept();
 }
 
 void LaunchButtonWidget::paintEvent(QPaintEvent *event) {
