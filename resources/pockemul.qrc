@@ -7,5 +7,7 @@
         <file>pockemul/config.xml</file>
         <file>pockemul/open.png</file>
         <file>pockemul/configExt.xml</file>
+        <file>pockemul/pocket.png</file>
+        <file>pockemul/ext.png</file>
     </qresource>
 </RCC>

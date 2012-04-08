@@ -16,7 +16,7 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,QString param,QString img
 
 
 
-void LaunchButtonWidget::mouseMoveEvent(QMouseEvent *event)
+void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 {
     qWarning("hover : %s  %i\n",image.toAscii().data(),slidePanel);
 
@@ -47,7 +47,7 @@ event->accept();
 void LaunchButtonWidget::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
-    painter.drawImage(0,0,QImage(image).scaled(30,30));
+    painter.drawImage(0,0,QImage(image).scaled(size()));
     painter.end();
 
 }

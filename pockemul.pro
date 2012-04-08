@@ -304,8 +304,7 @@ RESOURCES += resources/ext.qrc \
     resources/asmlibs.qrc \
     resources/x07.qrc \
     resources/pb1000.qrc \
-    resources/e500.qrc \
-    resources/cover.qrc
+    resources/e500.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \

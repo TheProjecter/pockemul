@@ -12,7 +12,7 @@ class LaunchButtonWidget:public QWidget
 public:
     LaunchButtonWidget(QWidget* parent,QString,QString);
 
-    void mouseMoveEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *event);
     QWidget* slidePanel;
     FluidLauncher* launcher;
