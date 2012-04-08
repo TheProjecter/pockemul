@@ -84,6 +84,7 @@ bool Ccesimu::exit(void){
 }
 bool Ccesimu::run(void){
 
+    if (!pTIMER) return true;
 
 // Try to introduce a latency
     qint64			deltastate = 0;
