@@ -71,7 +71,6 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     connect(actionAbout_PockEmul,	SIGNAL(triggered()),            this, SLOT(about()));
     connect(actionNew,				SIGNAL(triggered()),            this, SLOT(newsession()));
     connect(actionOpen,				SIGNAL(triggered()),            this, SLOT(opensession()));
-    connect(actionTest,				SIGNAL(triggered()),            this, SLOT(test()));
     connect(actionSave_As,          SIGNAL(triggered()),            this, SLOT(saveassession()));
     connect(actionLog_Messages,		SIGNAL(triggered()),            this, SLOT(Log()));
     connect(actionAnalogic_Port,	SIGNAL(triggered()),            this, SLOT(Analogic()));
