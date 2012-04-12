@@ -24,8 +24,10 @@ int main(int argc, char *argv[])
     app.setFont(f);
 #endif
 
+#ifdef Q_OS_ANDROID
     mainwindow = new MainWindowPockemul;
-
+#endif
+    mainwindow->menuBar()->hide();
 
     QWidget *cw= new QWidget();
     mainwindow->setCentralWidget(cw);
@@ -76,9 +78,15 @@ int main(int argc, char *argv[])
     load->setGeometry(0,200,48,48);
     load->setToolTip("Load an existing session.");
 
+    LaunchButtonWidget* exit = new LaunchButtonWidget(mainwidget,
+                                                      LaunchButtonWidget::Action,
+                                                      "",
+                                                      ":/POCKEMUL/pockemul/exit.png");
+    mainwindow->connect(exit,SIGNAL(clicked()),mainwindow,SLOT(close()));
+    exit->setGeometry(0,250,48,48);
+    exit->setToolTip("Exit PockEmul.");
 
-
-#ifdef Q_OS_ANDROID
+#if 0 //def Q_OS_ANDROID
     DialogStartup dialogstartup(0);
     int result = dialogstartup.exec();
     CPObject * pPC = mainwindow->LoadPocket(result);

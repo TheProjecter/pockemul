@@ -12,5 +12,6 @@
         <file>pockemul/dev.png</file>
         <file>pockemul/save.png</file>
         <file>pockemul/load.png</file>
+        <file>pockemul/exit.png</file>
     </qresource>
 </RCC>

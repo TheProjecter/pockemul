@@ -590,8 +590,10 @@ bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 //    else
 //    if (QGesture *pan = event->gesture(Qt::PanGesture))
 //        panTriggered(static_cast<QPanGesture *>(pan));
-    if (QGesture *pinch = event->gesture(Qt::PinchGesture))
+    if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
         pinchTriggered(static_cast<QPinchGesture *>(pinch));
+        event->accept();
+    }
     return true;
 }
 

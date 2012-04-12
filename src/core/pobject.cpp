@@ -538,11 +538,13 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 	{
         // Move all conected objects
         QPoint delta(event->globalPos() - PosDrag);
-        MoveWithLinked(delta);
-		PosDrag = event->globalPos();
-		repaint();
-        event->accept();
-		return;
+        if (delta.manhattanLength() > 5) {
+            MoveWithLinked(delta);
+            PosDrag = event->globalPos();
+            repaint();
+            event->accept();
+            return;
+        }
 	}
 	
 	if (pKEYB)
