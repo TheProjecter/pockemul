@@ -6,7 +6,6 @@
         <item>QtNetwork</item>
         <item>QtScript</item>
         <item>QtXml</item>
-        <item>QtOpenGL</item>
     </array>
     <array name="bundled_libs"/>
 </resources>

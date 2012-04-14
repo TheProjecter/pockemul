@@ -668,6 +668,7 @@ void MainWindowPockemul::updateFrameTimer()
                 CurrentpPC->pTIMER->nb_state += (Current_State - CurrentpPC->pTIMER->last_state);
                 CurrentpPC->pTIMER->last_state = Current_State;
 
+#ifndef Q_OS_ANDROID
                 // Update ToolTip only one time per second
                 if ( deltaTime >= 1000)
                 {
@@ -683,6 +684,7 @@ void MainWindowPockemul::updateFrameTimer()
                     }
                     CurrentpPC->setToolTip(CurrentpPC->getName()+str);
                 }
+#endif
                 bool disp_on = true;
 #if 1
                 if (CurrentpPC->pLCDC)
@@ -732,7 +734,7 @@ void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){
         }
 
         PosDrag = event->globalPos();
-        repaint();
+        update();
         return;
     }
 }

@@ -6,15 +6,15 @@ CONFIG += release \
     thread \
     warn_on
 CONFIG += rtti
-CONFIG += mobility
+#CONFIG += mobility
 MOBILITY =
-DEFINES += NO_SOUND Q_OS_ANDROID
+#DEFINES += NO_SOUND Q_OS_ANDROID
 QT += core \
     gui \
     network \
-    opengl \
+#    opengl \
     xml \
-#    multimedia \
+    multimedia \
     script
 FORMS += ui/about.ui \
     ui/dialoganalog.ui \

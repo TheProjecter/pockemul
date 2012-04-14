@@ -700,6 +700,7 @@ void PictureFlowPrivate::triggerRender()
 // Render the slides. Updates only the offscreen buffer.
 void PictureFlowPrivate::render()
 {
+    qWarning("start render\n");
   buffer.fill(BACKGROUNDCOLOR);
 
   int nleft = leftSlides.count();
@@ -794,6 +795,7 @@ void PictureFlowPrivate::render()
 
     painter.end();
   }
+  qWarning("end render\n");
 }
 
 static inline uint BYTE_MUL_RGB16(uint x, uint a) {

@@ -317,26 +317,8 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
         delete e;
         return;
     }
-#if 0
 
-
-    if (parentWidget() == mainwidget)
-    {
-        // Search all conected objects then compute them
-        QList<CPObject *> LinkedList;
-        LinkedList.append(this);
-        mainwindow->pdirectLink->findAllObj(this,&LinkedList);
-        for (int i=0;i<LinkedList.size();i++)
-        {
-            LinkedList.at(i)->SwitchFrontBack(this->pos());
-            // Move object at the correct origine
-        }
-
-        //SwitchFrontBack();
-        //update();
-    }
-#endif
-#if 1
+#ifndef Q_OS_ANDROID
     bool detach = (parentWidget() != 0);
     // Search all conected objects then compute them
     QList<CPObject *> LinkedList;
@@ -452,7 +434,18 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 		{
             slotPower();
 		}
-		
+
+        if (pKEYB->LastKey == K_POW_ON)
+        {
+            Power = true;
+            TurnON();
+        }
+        if (pKEYB->LastKey == K_POW_OFF)
+        {
+            Power=false;
+            TurnOFF();
+        }
+
 		if (pKEYB->LastKey != 0)
 		{
 			ComputeKey();
@@ -528,24 +521,24 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 			dialogkeylist->i->Rect.adjust(delta.x(),delta.y(),delta.x(),delta.y());
 			pKEYB->modified = true;
 			KeyDrag = event->globalPos();
-			repaint();
+                        update();
             event->accept();
 			return;
 		}
 	}
 	
-	if (startPosDrag)
-	{
-        // Move all conected objects
-        QPoint delta(event->globalPos() - PosDrag);
-        if (delta.manhattanLength() > 5) {
-            MoveWithLinked(delta);
-            PosDrag = event->globalPos();
-            repaint();
-            event->accept();
-            return;
+        if (startPosDrag)
+        {
+            // Move all conected objects
+            QPoint delta(event->globalPos() - PosDrag);
+            if (delta.manhattanLength() > 5) {
+                MoveWithLinked(delta);
+                PosDrag = event->globalPos();
+                update();
+                event->accept();
+                return;
+            }
         }
-	}
 	
 	if (pKEYB)
 	{
@@ -554,6 +547,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 		{
 			setCursor(Qt::PointingHandCursor);
 			setToolTip(pKEYB->KeyString(pts));
+                        event->accept();
 		}
 		else
 		{
@@ -591,41 +585,43 @@ QList<Cconnector *> CPObject::nearConnectors(Cconnector *refConnector,qint8 snap
 
 void CPObject::mouseReleaseEvent(QMouseEvent *event)
 {
-	// if a connector is free
-	// if an object with free connector is "near"
-	// propose to autolink
+    // if a connector is free
+    // if an object with free connector is "near"
+    // propose to autolink
 
 
-        // Fetch all object
-		for (int k = 0; k < listpPObject.size(); k++)
-		{
-            // fetch all others objects FREE connectors
-            if (listpPObject.at(k) != this) {
-                // Fect object connectors
-                for (int c=0; c < listpPObject.at(k)->ConnList.size(); c++) {
-                    if (!mainwindow->pdirectLink->isLinked(listpPObject.at(k)->ConnList.at(c))) {
-                        // If not already linked
-                        QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
-                        for (int r=0; r<nearList.size();r++) {
-                            if (QMessageBox::question(mainwindow, "PockEmul",
-                                                    "Do you want to link those two materials ?\n"+
-                                                    nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
-                                                    "Yes",
-                                                    "No", 0, 0, 1) == 0) {
-                             // The user clicked the Yes button or pressed Enter
+    // Fetch all object
+    for (int k = 0; k < listpPObject.size(); k++)
+    {
+        // fetch all others objects FREE connectors
+        if (listpPObject.at(k) != this) {
+            // Fect object connectors
+            for (int c=0; c < listpPObject.at(k)->ConnList.size(); c++) {
+                if (!mainwindow->pdirectLink->isLinked(listpPObject.at(k)->ConnList.at(c))) {
+                    // If not already linked
+                    QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
+                    for (int r=0; r<nearList.size();r++) {
+                        qWarning("pre box :%i",mainwindow);
+                        if (QMessageBox::question(mainwindow, "PockEmul",
+                                                  "Do you want to link those two materials ?\n"+
+                                                  nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
+                                                  "Yes",
+                                                  "No", 0, 0, 1) == 0) {
+                            // The user clicked the Yes button or pressed Enter
                             // Connect
 
-                                MoveWithLinked(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
-                                mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
-                                mainwindow->pdirectLink->BConnList.append(nearList.at(r));
-                                QList<CPObject *> list;
-                                listpPObject.at(k)->manageStackPos(&list);
-                            }
+                            MoveWithLinked(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
+                            mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
+                            mainwindow->pdirectLink->BConnList.append(nearList.at(r));
+                            QList<CPObject *> list;
+                            listpPObject.at(k)->manageStackPos(&list);
                         }
+                        qWarning("post box :%i",mainwindow);
                     }
                 }
             }
         }
+    }
 
 	
 	
@@ -740,10 +736,10 @@ void CPObject::focusOutEvent ( QFocusEvent * event )
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {
 
-	QMenu menu(this);
-	BuildContextMenu(&menu);
+    QMenu menu(this);
+    BuildContextMenu(&menu);
 
-	menu.exec(event->globalPos () );
+    menu.exec(event->globalPos () );
     event->accept();
 }
 

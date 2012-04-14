@@ -6,19 +6,19 @@
 #include <QPainter>
 #include <QResizeEvent>
 
-#include	"common.h"
-#include	"pcxxxx.h"
-#include    "Lcdc.h"
-#include    "cpu.h"
-#include    "Connect.h"
-#include	"Log.h"
-#include	"Dasm.h"
-#include	"Debug.h"
-#include	"init.h"
-#include	"dialoganalog.h"
-#include	"extension.h"
-#include	"Keyb.h"
-#include    "xmlwriter.h"
+#include "common.h"
+#include "pcxxxx.h"
+#include "Lcdc.h"
+#include "cpu.h"
+#include "Connect.h"
+#include "Log.h"
+#include "Dasm.h"
+#include "Debug.h"
+#include "init.h"
+#include "dialoganalog.h"
+#include "extension.h"
+#include "Keyb.h"
+#include "xmlwriter.h"
 
 #define		bREAD				0
 
@@ -26,55 +26,53 @@ extern bool	UpdateDisplayRunning;
 
 CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 {								//[constructor]
-	Initial_Session_Fname = "TO DO";
-	pCPU		= 0;
-	pCONNECTOR	= 0;
-	pSIOCONNECTOR	= 0;
+    Initial_Session_Fname = "TO DO";
+    pCPU		= 0;
+    pCONNECTOR	= 0;
+    pSIOCONNECTOR	= 0;
     KeyMapLenght = 0;
 
     fp_log  = 0;
-	off			= TRUE;
-	DialogExtensionID = 0;	
-	setcfgfname(QString("pcXXXX"));
-	SessionHeader	= "PCXXXXPKM";
-	SessionHeaderLen= 9;
+    off			= TRUE;
+    DialogExtensionID = 0;
+    setcfgfname(QString("pcXXXX"));
+    SessionHeader	= "PCXXXXPKM";
+    SessionHeaderLen= 9;
 
-	memsize			= 0;
-	InitMemValue	= 0x00;
-	SoundOn			= 1;
-	IO_A = IO_B = IO_C = IO_F = 0;
+    memsize			= 0;
+    InitMemValue	= 0x00;
+    SoundOn			= 1;
+    IO_A = IO_B = IO_C = IO_F = 0;
     RomBank=RamBank=ProtectMemory=0;
 
-	Japan		= false;
-	
-	Pc_Offset_X	= 0;
-	Pc_Offset_Y	= 0;
+    Japan		= false;
 
-	Lcd_X		= 0;
-	Lcd_Y		= 0;
-	Lcd_DX		= 0;
-	Lcd_DY		= 0;
-	Lcd_ratio_X	= 1;
-	Lcd_ratio_Y	= 1;
+    Pc_Offset_X	= 0;
+    Pc_Offset_Y	= 0;
 
-	Lcd_Symb_X	= 0;
-	Lcd_Symb_Y	= 0;
-	Lcd_Symb_DX	= 0;
-	Lcd_Symb_DY	= 0;;
+    Lcd_X		= 0;
+    Lcd_Y		= 0;
+    Lcd_DX		= 0;
+    Lcd_DY		= 0;
+    Lcd_ratio_X	= 1;
+    Lcd_ratio_Y	= 1;
+
+    Lcd_Symb_X	= 0;
+    Lcd_Symb_Y	= 0;
+    Lcd_Symb_DX	= 0;
+    Lcd_Symb_DY	= 0;;
     Lcd_Symb_ratio_X = Lcd_Symb_ratio_Y	= 1;
 
-	Tape_Base_Freq=4000;
-	
-	
-	
-	ext_11pins		= 0;
-	ext_MemSlot1	= 0;
-	ext_MemSlot2	= 0;
-	ext_Serial		= 0;
-	ext_60pins		= 0;
-	
-	setPosX(0);
-	setPosY(0);
+    Tape_Base_Freq=4000;
+
+    ext_11pins		= 0;
+    ext_MemSlot1	= 0;
+    ext_MemSlot2	= 0;
+    ext_Serial		= 0;
+    ext_60pins		= 0;
+
+    setPosX(0);
+    setPosY(0);
 
     ioFreq = 24000;
     DasmFlag = false;
@@ -86,28 +84,19 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 
 void CpcXXXX::UpdateFinalImage(void)
 {
-	// Paint FinalImage
+    // Paint FinalImage
     QRect                        destRect,srcRect;
     int x,y,z,t;
 
-	QPainter painter;
+    QPainter painter;
 
-//	if (pPC->pLCDC->Refresh) pPC->Refresh_Display = true;
-			
-//	if (!pPC->Refresh_Display) return;
-
-	if ( (BackgroundImage) )//&& pPC->Refresh_Display)
-	{
-		painter.begin(FinalImage);
+    if ( (BackgroundImage) )
+    {
+        painter.begin(FinalImage);
         painter.drawImage(QPoint(0,0),*BackgroundImage);
-		painter.end();		
-	
-//		if (pLCDC->Refresh)
-//			pLCDC->disp();
 
-//		if (pPC->pLCDC->On)
-		{
-			painter.begin(FinalImage);
+        //if (pPC->pLCDC->On)
+        {
             if (SymbImage) {
                 //painter.setRenderHint(QPainter::Antialiasing);
                 x = Lcd_Symb_X + Pc_Offset_X;
@@ -117,19 +106,18 @@ void CpcXXXX::UpdateFinalImage(void)
 
                 painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
             }
-			x	= Lcd_X + Pc_Offset_X;
-			y	= Lcd_Y + Pc_Offset_Y;
-			z	= (int) (Lcd_DX * Lcd_ratio_X);
-			t	= (int) (Lcd_DY * Lcd_ratio_Y);
+            x	= Lcd_X + Pc_Offset_X;
+            y	= Lcd_Y + Pc_Offset_Y;
+            z	= (int) (Lcd_DX * Lcd_ratio_X);
+            t	= (int) (Lcd_DY * Lcd_ratio_Y);
             painter.drawImage(QRect(x,y,z,t),LcdImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
-			
-			painter.end();	
-		}
-		
+
+        }
+        painter.end();
+
         if (pLCDC) pLCDC->Refresh = FALSE;
-	}
-	
-	Refresh_Display = false;
+    }
+    Refresh_Display = false;
 }
 	
 bool CpcXXXX::CompleteDisplay(void)
@@ -142,16 +130,16 @@ bool CpcXXXX::InitDisplay(void)
 {
     CPObject::InitDisplay();
 
-	Refresh_Display = true;
-	UpdateDisplayRunning = FALSE;
+    Refresh_Display = true;
+    UpdateDisplayRunning = FALSE;
     global_w = getDX();
     global_h = getDY();
-	
-	LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
+
+    LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
     if (!SymbFname.isEmpty()) SymbImage	= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
 
-	UpdateDisplayRunning = TRUE;
-	return(1);
+    UpdateDisplayRunning = TRUE;
+    return(1);
 }
 
 void CpcXXXX::TurnOFF(void)
@@ -171,7 +159,7 @@ void CpcXXXX::TurnOFF(void)
     }
 
 
-	off = 1;
+    off = 1;
     Power = false;
     PowerSwitch = PS_OFF;
     if (pLCDC) pLCDC->TurnOFF();
@@ -181,8 +169,8 @@ void CpcXXXX::TurnOFF(void)
 
 void CpcXXXX::TurnON(void)
 {
-	Initial_Session_Load();
-	off = 0;
+    Initial_Session_Load();
+    off = 0;
     Power = true;
     PowerSwitch = PS_RUN;
     if (pLCDC) pLCDC->TurnON();
@@ -190,7 +178,6 @@ void CpcXXXX::TurnON(void)
 
 void CpcXXXX::Reset(void)
 {
-
 	pCPU->Reset();
 }
 

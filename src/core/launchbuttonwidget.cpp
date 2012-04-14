@@ -40,6 +40,7 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 
         launcher = new FluidLauncher(slidePanel,config);
         launcher->show();
+        qWarning("hover2\n");
         QPropertyAnimation *animation = new QPropertyAnimation(slidePanel, "geometry");
         animation->setDuration(500);
         animation->setStartValue(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));

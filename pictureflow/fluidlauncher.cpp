@@ -59,7 +59,7 @@ extern QWidget* mainwidget;
 
 FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(parent)
  {
-
+    qWarning("CFL 1\n");
      pictureFlowWidget = new PictureFlow();
 
      addWidget(pictureFlowWidget);
@@ -82,19 +82,19 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
      pictureFlowWidget->setSlideSize(QSize(ww, hh));
 
      bool success;
-
+qWarning("CFL 2\n");
      success = loadConfig(config);
-
+qWarning("CFL 3\n");
      if (success) {
        populatePictureFlow();
-
+qWarning("CFL 4\n");
        show();
 
      } else {
          pictureFlowWidget->setAttribute(Qt::WA_DeleteOnClose, true);
          pictureFlowWidget->close();
      }
-
+qWarning("CFL 5\n");
  }
 
  FluidLauncher::~FluidLauncher()
@@ -104,7 +104,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
 
  bool FluidLauncher::loadConfig(QString configPath)
  {
-     qWarning("TOTO");
+     qWarning("loadConfig \n");
      QFile xmlFile(configPath);
 
      if (!xmlFile.exists() || (xmlFile.error() != QFile::NoError)) {
@@ -169,6 +169,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
 
  void FluidLauncher::populatePictureFlow()
  {
+     qWarning("Start populatePictureFlow\n");
      pictureFlowWidget->setSlideCount(demoList.count());
 
      for (int i=demoList.count()-1; i>=0; --i) {
@@ -177,6 +178,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
      }
 
      pictureFlowWidget->setCurrentSlide(demoList.count()/2);
+     qWarning("End populatePictureFlow\n");
  }
 
  void FluidLauncher::launchApplication(int index)

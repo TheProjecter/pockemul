@@ -12,7 +12,7 @@ DEFINES += NO_SOUND Q_OS_ANDROID
 QT += core \
     gui \
     network \
-    opengl \
+#    opengl \
     xml \
 #    multimedia \
     script

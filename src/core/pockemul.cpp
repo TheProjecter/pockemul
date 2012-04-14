@@ -24,10 +24,11 @@ int main(int argc, char *argv[])
     app.setFont(f);
 #endif
 
-#ifdef Q_OS_ANDROID
     mainwindow = new MainWindowPockemul;
+
+#ifdef Q_OS_ANDROID
+    //mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
-    mainwindow->menuBar()->hide();
 
     QWidget *cw= new QWidget();
     mainwindow->setCentralWidget(cw);
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
     mainwindow->launch2->setGeometry(0,50,48,48);
     mainwindow->launch2->setToolTip("Start a new Extension Emulation.");
 
+#ifndef Q_OS_ANDROID
     LaunchButtonWidget* dev = new LaunchButtonWidget(mainwidget,
                                                      LaunchButtonWidget::Action,
                                                      "",
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])
     mainwindow->connect(dev,SIGNAL(clicked()),mainwindow,SLOT(IDE()));
     dev->setGeometry(0,100,48,48);
     dev->setToolTip("Start the Integrated development Environment.");
-
+#endif
     LaunchButtonWidget* save = new LaunchButtonWidget(mainwidget,
                                                       LaunchButtonWidget::Action,
                                                       "",
