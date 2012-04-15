@@ -77,10 +77,18 @@ int Ckeyb::KeyClick(QPoint pts)
             tmpDistance = (r.center()-pts).manhattanLength();
         }
 
-        if (tmpDistance < smallerDistance) {
+        if (tmpDistance == smallerDistance) {
+            // compare key size and keep the smallest
+            QRect r1 = Keys.at(nearestIndex).Rect;
+            if (r.width()*r.height() < r1.width()*r1.height()) {
+                nearestIndex = i;
+            }
+        }
+        else if (tmpDistance < smallerDistance) {
             smallerDistance = tmpDistance;
             nearestIndex= i;
         }
+
 //        if ( r.contains(pts) ) return Keys.at(i).ScanCode;
     }
     if ((smallerDistance < 30) && (nearestIndex>=0)) return Keys.at(nearestIndex).ScanCode;

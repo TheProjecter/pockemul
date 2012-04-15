@@ -407,54 +407,43 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
     setFocus();
 
-	if (event->modifiers() == Qt::MetaModifier) return;
-		
-	QPoint pts(event->x() , event->y());
-	
-	if (dialogkeylist)
-	{
- 		// look keyFound
-		if ( dialogkeylist->i->Rect.contains(pts) )
-		{
-			// keydef found start drag mode	
-			// Change mouse pointer
-			setCursor(Qt::SizeAllCursor);
-			startKeyDrag = true;
-			KeyDrag = event->globalPos();
-			return;
-		}
-	}
+    if (event->modifiers() == Qt::MetaModifier) return;
 
-	if (pKEYB)
-	{
-		pKEYB->LastKey = pKEYB->KeyClick(pts);
-//		AddLog(LOG_KEYBOARD,tr("KeyClick(%1,%2)=%3").arg(pts.x()).arg(pts.y()).arg(pKEYB->LastKey));
+    QPoint pts(event->x() , event->y());
 
-		if (pKEYB->LastKey == K_OF)
-		{
-            slotPower();
-		}
-
-        if (pKEYB->LastKey == K_POW_ON)
+    if (dialogkeylist)
+    {
+        // look keyFound
+        if ( dialogkeylist->i->Rect.contains(pts) )
         {
-            Power = true;
-            TurnON();
+            // keydef found start drag mode
+            // Change mouse pointer
+            setCursor(Qt::SizeAllCursor);
+            startKeyDrag = true;
+            KeyDrag = event->globalPos();
+            return;
         }
-        if (pKEYB->LastKey == K_POW_OFF)
-        {
-            Power=false;
-            TurnOFF();
+    }
+
+    if (pKEYB)
+    {
+        pKEYB->LastKey = pKEYB->KeyClick(pts);
+
+        switch (pKEYB->LastKey) {
+        case K_OF : slotPower(); break;
+        case K_POW_ON : Power = true; TurnON(); break;
+        case K_POW_OFF: Power = false;TurnOFF();break;
         }
 
-		if (pKEYB->LastKey != 0)
-		{
-			ComputeKey();
-		}
-		
-		if (pKEYB->LastKey != 0) return;
-	}
+        if (pKEYB->LastKey != 0)
+        {
+            ComputeKey();
+        }
 
-	// NO KEY CLICK Global pobject drag mode
+        if (pKEYB->LastKey != 0) return;
+    }
+
+    // NO KEY CLICK Global pobject drag mode
 
     // raise all connected object and then manage Z-order between them
     raise();
@@ -469,16 +458,16 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
 
     if ( (parentWidget() != mainwidget) //mainwindow
-        && (parentWidget() != 0))
-	{
-		QApplication::sendEvent(parentWidget(), event);
-	}
-	else
-	{
-		setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
-		startPosDrag = true;
-		PosDrag = event->globalPos();
-	}
+         && (parentWidget() != 0))
+    {
+        QApplication::sendEvent(parentWidget(), event);
+    }
+    else
+    {
+        setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
+        startPosDrag = true;
+        PosDrag = event->globalPos();
+    }
 
     event->accept();
 }

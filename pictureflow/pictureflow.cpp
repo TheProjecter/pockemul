@@ -76,7 +76,6 @@
 #include <QVector>
 #include <QWidget>
 #include <QTime>
-#include <QPushButton>
 #include <qcolor.h>
 
 #ifdef Q_WS_QWS
@@ -952,6 +951,7 @@ int col1, int col2)
 
    rect.setTop(0);
    rect.setBottom(h-1);
+
    return rect;
 }
 
@@ -1133,7 +1133,7 @@ PictureFlow::PictureFlow(QWidget* parent): QWidget(parent)
     setAttribute(Qt::WA_PaintOnScreen, true);
 #endif
 
-  QPushButton* pb = new QPushButton(this);
+  pb = new QPushButton(this);
   pb->setPalette(QColor(Qt::black));
   //  QString monStyle = "QPushButton { background-image: url(':/cover/exit.png'); }";
 
@@ -1147,7 +1147,9 @@ PictureFlow::PictureFlow(QWidget* parent): QWidget(parent)
 
 PictureFlow::~PictureFlow()
 {
-  delete d;
+    qWarning("delete d et pb\n");
+    delete d;
+    delete pb;
 }
 
 int PictureFlow::slideCount() const

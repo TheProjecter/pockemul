@@ -69,6 +69,7 @@
  #define PICTUREFLOW_H
 
  #include <QWidget>
+ #include <QPushButton>
 
  class PictureFlowPrivate;
 
@@ -216,6 +217,7 @@
 
  private:
    PictureFlowPrivate* d;
+   QPushButton* pb;
  };
 
  #endif // PICTUREFLOW_H

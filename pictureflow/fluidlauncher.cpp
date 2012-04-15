@@ -58,47 +58,46 @@ extern QWidget* mainwidget;
 
 
 FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(parent)
- {
+{
     qWarning("CFL 1\n");
-     pictureFlowWidget = new PictureFlow();
+    pictureFlowWidget = new PictureFlow();
+    pictureFlowWidget->setAttribute(Qt::WA_DeleteOnClose, true);
+    addWidget(pictureFlowWidget);
 
-     addWidget(pictureFlowWidget);
+    setCurrentWidget(pictureFlowWidget);
+    pictureFlowWidget->setFocus();
 
-     setCurrentWidget(pictureFlowWidget);
-     pictureFlowWidget->setFocus();
+    QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
+    resize(parent->size());
 
-     QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
-     resize(parent->size());
+    QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
 
+    const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
+    const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
 
-     QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
+    const int hh = qMin(h, w);
+    const int ww = hh / 3 * 4;
+    pictureFlowWidget->setSlideSize(QSize(ww, hh));
 
+    bool success;
+    qWarning("CFL 2\n");
+    success = loadConfig(config);
+    qWarning("CFL 3\n");
+    if (success) {
+        populatePictureFlow();
+        qWarning("CFL 4\n");
+        show();
 
-     const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
-     const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
+    } else {
 
-     const int hh = qMin(h, w);
-     const int ww = hh / 3 * 4;
-     pictureFlowWidget->setSlideSize(QSize(ww, hh));
-
-     bool success;
-qWarning("CFL 2\n");
-     success = loadConfig(config);
-qWarning("CFL 3\n");
-     if (success) {
-       populatePictureFlow();
-qWarning("CFL 4\n");
-       show();
-
-     } else {
-         pictureFlowWidget->setAttribute(Qt::WA_DeleteOnClose, true);
-         pictureFlowWidget->close();
-     }
-qWarning("CFL 5\n");
- }
+        pictureFlowWidget->close();
+    }
+    qWarning("CFL 5\n");
+}
 
  FluidLauncher::~FluidLauncher()
  {
+     qWarning("Delete pictureFlowWidget");
      delete pictureFlowWidget;
  }
 
@@ -176,7 +175,7 @@ qWarning("CFL 5\n");
          pictureFlowWidget->setSlide(i, *(demoList[i]->getImage()));
          pictureFlowWidget->setSlideCaption(i, demoList[i]->getCaption());
      }
-
+qWarning("Start populatePictureFlow2\n");
      pictureFlowWidget->setCurrentSlide(demoList.count()/2);
      qWarning("End populatePictureFlow\n");
  }
@@ -191,7 +190,6 @@ qWarning("CFL 5\n");
 
      if ( (index==-1) )//||(index == demoList.size() -1))
      {
-         parentWidget()->close();
          close();
          return;
      }
@@ -257,8 +255,8 @@ qWarning("CFL 5\n");
 
      if (result != EMPTY)	{
          mainwindow->LoadPocket(result);
-         hide();
-         parentWidget()->close();
+         close();
+//         parentWidget()->close();
      }
 
 
@@ -267,7 +265,7 @@ qWarning("CFL 5\n");
 
  void FluidLauncher::exitSlot()
  {
-     parentWidget()->close();
+//     parentWidget()->close();
      close();
  }
 

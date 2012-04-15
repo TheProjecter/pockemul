@@ -26,7 +26,6 @@ public:
 
     void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *event);
-    QWidget* slidePanel;
     FluidLauncher* launcher;
 
     QString config;

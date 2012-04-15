@@ -13,7 +13,6 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
     this->type = type;
     config = param;
     image = img;
-    slidePanel = 0;
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -22,30 +21,21 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
 
 void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 {
-    qWarning("hover : %s  %i\n",image.toAscii().data(),slidePanel);
-
 
     emit clicked();
 
     if (type == PictureFlow)
     {
-
-        // create the sliding widget
-
-        if (slidePanel) slidePanel->close();
-
-        slidePanel = new QWidget(mainwidget);
-        slidePanel->resize(mainwidget->width(),mainwidget->height());
-        slidePanel->show();
-
-        launcher = new FluidLauncher(slidePanel,config);
+qWarning("Launcher:%i",launcher);
+        launcher = new FluidLauncher(mainwidget,config);
+        launcher->setAttribute(Qt::WA_DeleteOnClose);
         launcher->show();
+
         qWarning("hover2\n");
-        QPropertyAnimation *animation = new QPropertyAnimation(slidePanel, "geometry");
+        QPropertyAnimation *animation = new QPropertyAnimation(launcher, "geometry");
         animation->setDuration(500);
         animation->setStartValue(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
         animation->setEndValue(QRect(0, 0, mainwidget->width(), mainwidget->height()));
-
         animation->start();
         qWarning("hover3\n");
     }
