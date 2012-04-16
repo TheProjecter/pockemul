@@ -42,6 +42,8 @@ typedef short	int16;
 typedef unsigned long	uint32;
 typedef long	int32;
 
+//#pragma pack(1)
+
 /* 8bitsƒŒƒWƒXƒ^ */
 typedef struct {
     uint8 *m;
@@ -117,7 +119,7 @@ typedef union {
 } Z80stat;
 
 
-
+//#pragma pack()
 
 /* z80.c */
 class CZ80:public CCPU{
