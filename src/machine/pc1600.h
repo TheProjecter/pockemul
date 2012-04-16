@@ -10,7 +10,7 @@
 #include "cextension.h"
 //#include "pcxxxx.h"
 //#include "Log.h"
-#include "z80.h"
+
 
 #include "lh5803.h"
 
@@ -28,6 +28,8 @@
 
 extern TransMap KeyMap1600[];
 extern int KeyMap1600Lenght;
+
+class CZ80;
 
 class CLH5810_PC1600:public CLH5810{
     Q_OBJECT

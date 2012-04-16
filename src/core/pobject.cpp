@@ -529,6 +529,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
             }
         }
 	
+#ifndef Q_OS_ANDROID
 	if (pKEYB)
 	{
 		QPoint pts(event->x() , event->y());
@@ -543,6 +544,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 			setCursor(Qt::ArrowCursor);
 		}
 	}
+#endif
 	
     if ( (parentWidget() != mainwidget)
         && (parentWidget() != 0))

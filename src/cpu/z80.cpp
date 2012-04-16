@@ -2905,25 +2905,22 @@ inline void CZ80::z80write8(const Z80stat *z, uint16 address, uint8 value)
 }
 
 
-#ifdef Z80_LITTLEENDIAN
+//#ifdef Z80_LITTLEENDIAN
 
 /*
     16bits READ/WRITE (リトルエンディアン)
 */
 uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
 {
-    //return (z80read8(z,address+1)+(z80read8(z,address)<<8));
     return ((CpcXXXX *)pPC)->Get_16(address);
 
 }
 void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
 {
     ((CpcXXXX *)pPC)->Set_16(address,value);
-//    if(address < 0x7fff)
-//        *(uint16 *)(&memory[address]) = value;
 }
 
-#else
+#if 0
 
 /*
     16bits READ/WRITE (エンディアン非依存)

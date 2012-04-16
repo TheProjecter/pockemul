@@ -8,6 +8,7 @@
 
 #include	"common.h"
 #include	"pc1600.h"
+#include "z80.h"
 #include    "Lcdc_pc1600.h"
 #include	"Inter.h"
 #include	"Debug.h"

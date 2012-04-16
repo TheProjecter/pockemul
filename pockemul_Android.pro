@@ -8,7 +8,7 @@ CONFIG += release \
 CONFIG += rtti
 CONFIG += mobility
 MOBILITY =
-DEFINES += NO_SOUND Q_OS_ANDROID POCKEMUL_BIG_ENDIAN
+DEFINES += NO_SOUND Q_OS_ANDROID
 QT += core \
     gui \
     network \

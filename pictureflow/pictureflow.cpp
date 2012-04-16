@@ -600,7 +600,7 @@ void PictureFlowPrivate::resetSlides()
 
 static QImage prepareSurface(QImage img, int w, int h)
 {
-  Qt::TransformationMode mode = Qt::SmoothTransformation;
+  Qt::TransformationMode mode = Qt::FastTransformation;//Qt::SmoothTransformation;
   QImage imgtmp  = img.scaled(w, h, Qt::KeepAspectRatio, mode);
   img = QImage(w,h,QImage::Format_RGB16);
   img.fill(BACKGROUNDCOLOR);
@@ -620,9 +620,16 @@ static QImage prepareSurface(QImage img, int w, int h)
   // transpose the image, this is to speed-up the rendering
   // because we process one column at a time
   // (and much better and faster to work row-wise, i.e in one scanline)
+#if 0
+  painter.begin(&result);
+//  painter.drawImage(hofs,0,img.mirrored(true,false));
+
+  painter.end();
+#else
   for(int x = 0; x < w; x++)
     for(int y = 0; y < h; y++)
       result.setPixel(hofs + y, x, img.pixel(x, y));
+#endif
 
   // create the reflection
   int ht = hs - h - hofs;
@@ -642,7 +649,7 @@ static QImage prepareSurface(QImage img, int w, int h)
 #ifdef PICTUREFLOW_BILINEAR_FILTER
   int hh = BILINEAR_STRETCH_VER*hs;
   int ww = BILINEAR_STRETCH_HOR*w;
-  result = result.scaled(hh, ww, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  result = result.scaled(hh, ww, Qt::KeepAspectRatio, mode);
 #endif
 
   return result;
