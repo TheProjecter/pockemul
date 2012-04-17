@@ -57,14 +57,7 @@ int Ckeyb::KeyClick(QPoint pts)
 {
     // calculate all distance betwwen pts and keys centers
     // Keep the nearest
-#if 0
-    for (int i=0;i<Keys.size();i++)
-    {
-        QRect r = Keys.at(i).Rect;
-        r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+r.height())*mainwindow->zoom/100);
-        if ( r.contains(pts) ) return Keys.at(i).ScanCode;
-    }
-#else
+
     int nearestIndex = -1;
     int smallerDistance = 99999;
     for (int i=0;i<Keys.size();i++)
@@ -91,10 +84,9 @@ int Ckeyb::KeyClick(QPoint pts)
             nearestIndex= i;
         }
 
-//        if ( r.contains(pts) ) return Keys.at(i).ScanCode;
     }
     if ((smallerDistance < 30) && (nearestIndex>=0)) return Keys.at(nearestIndex).ScanCode;
-#endif
+
     return(0);
 }
 
