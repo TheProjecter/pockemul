@@ -74,7 +74,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 
     BackGroundFname	= ":/x07/x07.png";
     LcdFname		= ":/x07/x07lcd.png";
-    SymbFname		= ":/x07/x07symb.png";
+    SymbFname		= "";
 
     memsize		= 0x10000;
     InitMemValue	= 0xff;

@@ -289,7 +289,7 @@
 
 #define DJNZ(x) \
 	if(--B) { \
-		PC += (x) + _length; \
+        PC += (x) + _length; \
 		_state += 5; \
 	} else \
 		PC += _length
