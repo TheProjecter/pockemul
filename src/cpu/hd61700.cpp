@@ -29,6 +29,7 @@
 #include "pb1000.h"
 #include "Log.h"
 #include "pcxxxx.h"
+#include "Inter.h"
 #include "ui/cregshd61700widget.h"
 #include "Debug.h"
 

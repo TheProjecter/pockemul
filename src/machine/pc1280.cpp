@@ -6,6 +6,7 @@
 
 #include "pc1280.h"
 #include "Lcdc.h"
+#include "cextension.h"
 #include "cpu.h"
 #include "init.h"
 #include "Keyb1280.h"

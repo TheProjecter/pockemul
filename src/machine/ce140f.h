@@ -33,7 +33,7 @@ public:
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);
 
-    virtual void UpdateFinalImage(void);
+    virtual bool UpdateFinalImage(void);
 
     virtual void ComputeKey(void);
 

@@ -5,6 +5,7 @@
 
 #include "uart.h"
 #include "common.h"
+#include "Inter.h"
 #include "Log.h"
 #include "sio.h"
 #include "pcxxxx.h"

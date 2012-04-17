@@ -17,7 +17,7 @@ public:
     virtual bool exit(void);				//end
     //virtual void ExportByte(qint8);
     virtual void ComputeKey(void);
-    virtual void UpdateFinalImage(void);
+    virtual bool UpdateFinalImage(void);
 
     Cconnector *pCONNECTOR; qint64 pCONNECTOR_value;
     Cconnector *pSavedCONNECTOR;

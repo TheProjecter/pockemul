@@ -15,9 +15,10 @@
 #include <QThread>
 #include <QTimer>
 
-#include "pobject.h"
+
 class CPocketThread;
 class CWatchPoint;
+class CPObject;
 
 typedef qint64 pwatchfonc(void);
 

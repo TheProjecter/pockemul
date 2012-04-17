@@ -154,7 +154,7 @@ void Cce140p::ComputeKey(void)
     }
 }
 
-void Cce140p::UpdateFinalImage(void) {
+bool Cce140p::UpdateFinalImage(void) {
     Cce515p::UpdateFinalImage();
 
     // Draw switch by 180° rotation
@@ -167,6 +167,8 @@ void Cce140p::UpdateFinalImage(void) {
     painter.end();
 
     Refresh_Display = true;
+
+    return true;
 }
 
 void Cce140p::paintEvent(QPaintEvent *event)

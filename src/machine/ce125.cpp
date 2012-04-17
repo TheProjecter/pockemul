@@ -103,7 +103,7 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     delete pKEYB; pKEYB=new Ckeyb(this,"ce125.map");
 }
 
-void Cce125::UpdateFinalImage(void) {
+bool Cce125::UpdateFinalImage(void) {
     Cprinter::UpdateFinalImage();
 
     // Draw switch by 180° rotation
@@ -116,6 +116,8 @@ void Cce125::UpdateFinalImage(void) {
     painter.end();
 
     Refresh_Display = true;
+
+    return true;
 }
 
 void Cce125::resizeEvent ( QResizeEvent * event ) {

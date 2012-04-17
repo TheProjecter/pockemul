@@ -27,7 +27,7 @@ public:
     virtual bool	run(void);				// emulator main
     virtual bool	init(void);
     virtual void resizeEvent ( QResizeEvent * );
-    virtual void UpdateFinalImage(void);
+    virtual bool UpdateFinalImage(void);
 
     Cce515p  *pce515p;
     Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;

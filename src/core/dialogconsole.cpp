@@ -4,6 +4,7 @@
 #include "dialogconsole.h"
 #include "common.h"
 #include "pcxxxx.h"
+#include "Inter.h"
 #include "sio.h"
 
 //

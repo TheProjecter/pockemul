@@ -9,6 +9,7 @@
 #include "lh5801.h"
 #include "Keyb.h"
 #include "Connect.h"
+#include "Inter.h"
 
 #include "Debug.h"
 #include "Log.h"
@@ -254,21 +255,21 @@ void	CLH5801::set_mem(DWORD adr,int size,DWORD data)
 	}
 }
 
-bool	CLH5801::Get_Xin(void){return(0);};
-void	CLH5801::Set_Xin(bool){};
-bool	CLH5801::Get_Xout(void){return(0);};	
-void	CLH5801::Set_Xout(bool){};
+bool	CLH5801::Get_Xin(void){return(0);}
+void	CLH5801::Set_Xin(bool){}
+bool	CLH5801::Get_Xout(void){return(0);}
+void	CLH5801::Set_Xout(bool){}
 
-DWORD	CLH5801::get_PC(void){return(P);};					//get Program Counter
+DWORD	CLH5801::get_PC(void){return(P);}				//get Program Counter
 
 INLINE UINT8 CLH5801::cpu_readmem(DWORD adr)
 {
-	return (((CpcXXXX *)pPC)->Get_8(adr));
+    return (pPC->Get_8(adr));
 }
 
 INLINE void CLH5801::cpu_writemem(DWORD addr, UINT8 data)
 {
-	((CpcXXXX *)pPC)->Set_8(addr,data);
+    pPC->Set_8(addr,data);
 }
 
 INLINE void CLH5801::change_pc(UINT16 addr)
@@ -304,7 +305,7 @@ INLINE void CLH5801::AddState(UINT8 n)
 
 INLINE UINT8 CLH5801::cpu_readop(DWORD adr)
 {
-	return (((CpcXXXX *)pPC)->Get_8(adr));
+    return (pPC->Get_8(adr));
 }
 
 INLINE UINT16 CLH5801::readop_word(void)
@@ -646,7 +647,7 @@ INLINE void CLH5801::AM(int value)
 
 INLINE void CLH5801::ITA(void)
 {
-    lh5801.a=((CpcXXXX *)pPC)->in(0);
+    lh5801.a=pPC->in(0);
 	CHECK_Z(lh5801.a);
 }
 

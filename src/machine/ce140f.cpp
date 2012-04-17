@@ -74,7 +74,7 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     busyLed = false;
 }
 
-void Cce140f::UpdateFinalImage(void) {
+bool Cce140f::UpdateFinalImage(void) {
     CPObject::UpdateFinalImage();
 // Busy led
     if (busyLed) {
@@ -84,7 +84,7 @@ void Cce140f::UpdateFinalImage(void) {
         painter.end();
     }
 
-
+    return true;
 
 }
 

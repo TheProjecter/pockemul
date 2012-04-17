@@ -4,7 +4,6 @@
 #include <QList>
 #include <QXmlDefaultHandler>
 
-#include "pobject.h"
 
 enum KEY_NAME {
 K_BRK,
@@ -204,6 +203,10 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_IN        0x205
 #define K_MEMO_IN   0x206
 
+class CPObject;
+class CpcXXXX;
+class Ckeyb;
+
 class CKey{
 public:
 	CKey(int ScanCode, QString Description,QRect Rect = QRect());
@@ -217,21 +220,28 @@ protected:
 };
 
 
-class KEYBMAPParser : public QXmlDefaultHandler,CPObject
+class KEYBMAPParser : public QXmlDefaultHandler
 {
 public:
   bool startDocument();
   bool endElement( const QString&, const QString&, const QString &name );
   bool startElement( const QString&, const QString&, const QString &name, const QXmlAttributes &attrs );
 
-    KEYBMAPParser(CPObject *parent = 0)	: CPObject(parent){}
+    KEYBMAPParser(Ckeyb *parent = 0)
+    {
+        this->Parent = parent;
+    }
 private:
   bool inKeyboard;
+  Ckeyb *Parent;
 };
 
-class Ckeyb : public CPObject
+class Ckeyb
 {
 public:
+    CpcXXXX *pPC;
+    CPObject *Parent;
+
 	virtual bool init(void);				//initialize
 	virtual bool exit(void);				//end
     virtual void read_config(void){}		//read key config

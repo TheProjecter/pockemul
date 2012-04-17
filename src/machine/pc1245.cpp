@@ -46,7 +46,7 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 
 }
 
-void Cpc1245::UpdateFinalImage(void)
+bool Cpc1245::UpdateFinalImage(void)
 {
     CpcXXXX::UpdateFinalImage();
 
@@ -66,7 +66,7 @@ void Cpc1245::UpdateFinalImage(void)
 
     painter.end();
 
-
+    return true;
 }
 
 bool Cpc1245::InitDisplay(void)

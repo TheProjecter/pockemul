@@ -86,7 +86,7 @@ Ctrspc3::Ctrspc3(CPObject *parent)	: Cpc1250(this)
     BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
 }
 
-void Cpc1250::UpdateFinalImage(void)
+bool Cpc1250::UpdateFinalImage(void)
 {
     CpcXXXX::UpdateFinalImage();
 

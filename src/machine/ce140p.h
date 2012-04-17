@@ -17,7 +17,7 @@ public:
     virtual bool exit(void);				//end
     //virtual void ExportByte(qint8);
     virtual void ComputeKey(void);
-    virtual void UpdateFinalImage(void);
+    virtual bool UpdateFinalImage(void);
 
     Csio *pSIO;
     Cconnector *pSIOCONNECTOR; qint64 pSIOCONNECTOR_value;

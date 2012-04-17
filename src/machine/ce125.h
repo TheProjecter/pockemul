@@ -39,7 +39,7 @@ public:
 	virtual bool exit(void);				//end
 	virtual	bool run(void);					//check access
     virtual void resizeEvent ( QResizeEvent * );
-    virtual void UpdateFinalImage(void);
+    virtual bool UpdateFinalImage(void);
 
     Cce125(CPObject *parent = 0);
 	

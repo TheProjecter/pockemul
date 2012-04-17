@@ -7,6 +7,7 @@
 #include "Keyb.h"
 
 #include "pc1475.h"
+#include "cextension.h"
 #include "Lcdc.h"
 
 extern TransMap KeyMap1450[];

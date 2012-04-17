@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "pobject.h"
+#include "Inter.h"
 #include "Log.h"
 #include "pcxxxx.h"
 #include "Lcdc.h"
@@ -24,7 +25,7 @@ FILE	*fp_tmp=NULL;
 extern QWidget* mainwidget;
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
-	{
+    {
 		pPC = (CpcXXXX*) parent;
 		Parent	= parent;
 		toDestroy = false;
@@ -902,7 +903,7 @@ bool CPObject::InitDisplay(void)
 	return(1);
 }
 
-void CPObject::UpdateFinalImage(void)
+bool CPObject::UpdateFinalImage(void)
 {
 	QPainter painter;
 	if ( (BackgroundImage) )
@@ -912,6 +913,7 @@ void CPObject::UpdateFinalImage(void)
 		painter.end();
 	}
 	Refresh_Display = false;
+    return true;
 }
 
 void CPObject::KeyList()

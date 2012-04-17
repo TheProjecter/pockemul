@@ -31,7 +31,7 @@ qint64 Ctimer::currentState(void) {
 
 bool Ctimer::init(void)
 {
-	AddLog(LOG_MASTER,tr("Timer init..."));
+    AddLog(LOG_MASTER,QObject::tr("Timer init..."));
 	wTimerRes = 0;
     deltaStep = 0;
 	SetCPUspeed(1);

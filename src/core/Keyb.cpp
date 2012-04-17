@@ -36,8 +36,10 @@ CKey::CKey(int scancode, QString description,QRect rect )
 	Rect = rect;
 }
 
-Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan): CPObject(parent)								//[constructor]
+Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan) //: CPObject(parent)								//[constructor]
 {
+    pPC = (CpcXXXX *)parent;
+    Parent	= parent;
     for(int i=0;i<MAX_KO;i++) pc1350KeyStatus[i]=0;
     for(int j=0;j<200;j++) keym[j]=0;
     access		= 0;							//ko port access?(0:none, 1:access)
@@ -200,6 +202,7 @@ bool Ckeyb::init(void)
     QFile fileRes(":/KEYMAP/keymap/"+fn_KeyMap);
     QXmlInputSource sourceRes(&fileRes);
     result = reader.parse(sourceRes);
+    if (result) qWarning("success read key ressource\n");
     if (result) return true;
 
 	// else load the struct
@@ -221,8 +224,8 @@ bool Ckeyb::exit(void)
 {
 	if (! modified) return true;
 		
-	 int ret = QMessageBox::warning(mainwindow, tr("PockEmul"),
-                   tr("The keyboard layout has been modified.\n"
+     int ret = QMessageBox::warning(mainwindow, QObject::tr("PockEmul"),
+                   QObject::tr("The keyboard layout has been modified.\n"
                       "Do you want to save your changes?"),
                    QMessageBox::Save | QMessageBox::Discard,
                    QMessageBox::Save);
@@ -300,7 +303,7 @@ bool KEYBMAPParser::startElement( const QString&, const QString&, const QString 
 			else if( attrs.localName( i ) == "height" )
 				h = attrs.value( i ).toInt(&ok,10);
 		}
-		((Ckeyb*) Parent)->Keys.append(CKey(scancode,desc,QRect(x,y,w,h)));
+        Parent->Keys.append(CKey(scancode,desc,QRect(x,y,w,h)));
 		AddLog(LOG_KEYBOARD,mainwindow->tr("XML Read key : %1, scan=0x%2 , Rect=(%3,%4,%5,%6)").arg(desc).arg(scancode,0,16).arg(x).arg(y).arg(w).arg(h));
 	}
 	else if( name == "Keyboard" )

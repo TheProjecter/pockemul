@@ -5,6 +5,7 @@
 #include "Log.h"
 #include "sio.h"
 #include "pcxxxx.h"
+#include "Inter.h"
 #include "Connect.h"
 #include "dialogconsole.h"
 #include "init.h"

@@ -106,7 +106,7 @@ public:
 	QRect rect();
 	virtual	bool	init();			// initialize
 	virtual bool	InitDisplay(void);
-	virtual void	UpdateFinalImage(void);
+    virtual bool	UpdateFinalImage(void);
     virtual	bool	run(void){ return true;}					// emulator main step
             qint64     runRange(qint64);
 	virtual bool	exit();					// exit

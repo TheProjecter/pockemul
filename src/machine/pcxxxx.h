@@ -10,14 +10,11 @@
 #include "pobject.h"
 
 
-
-#include "Inter.h"
-
-#include "extension.h"
 class Clcdc;
 class CCPU;
 class Cconnector;
 class CExtension;
+class CExtensionArray;
 class Cprinter;
 class Ckeyb;
 #include "slot.h"
@@ -130,7 +127,7 @@ public:
     virtual void TurnOFF(void);
 	virtual void Reset();
 
-	virtual void UpdateFinalImage();
+    virtual bool UpdateFinalImage();
 
 	virtual bool InitDisplay(void);
 	virtual bool CompleteDisplay(void);

@@ -4,6 +4,8 @@
 #include <QtGui>
 #include "pc2500.h"
 #include "sc61860.h"
+#include "Inter.h"
+#include "cextension.h"
 #include "Lcdc.h"
 #include "Keyb.h"
 #include "Connect.h"
@@ -74,7 +76,7 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
 }
 
 
-void Cpc2500::UpdateFinalImage(void) {
+bool Cpc2500::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();
 
     // Draw switch by 180° rotation
@@ -91,6 +93,8 @@ void Cpc2500::UpdateFinalImage(void) {
         painter.fillRect(139,645,5,5,QColor(Qt::green));
     }
     painter.end();
+
+    return true;
 }
 
 void Cpc2500::resizeEvent ( QResizeEvent * ) {

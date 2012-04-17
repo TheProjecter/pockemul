@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "common.h"
 #include "pcxxxx.h"
+#include "Inter.h"
 #include "Connect.h"
 #include "sio.h"
 #include "init.h"

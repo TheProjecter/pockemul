@@ -8,6 +8,7 @@
 
 #include "common.h"
 #include "pcxxxx.h"
+#include "Inter.h"
 #include "Lcdc.h"
 #include "cpu.h"
 #include "Connect.h"
@@ -82,7 +83,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 
 }
 
-void CpcXXXX::UpdateFinalImage(void)
+bool CpcXXXX::UpdateFinalImage(void)
 {
     // Paint FinalImage
     QRect                        destRect,srcRect;
@@ -90,6 +91,9 @@ void CpcXXXX::UpdateFinalImage(void)
 
     QPainter painter;
 
+    if (pLCDC) {
+        if (pLCDC->Refresh == FALSE) return false;
+    }
     if ( (BackgroundImage) )
     {
         painter.begin(FinalImage);
@@ -118,6 +122,8 @@ void CpcXXXX::UpdateFinalImage(void)
         if (pLCDC) pLCDC->Refresh = FALSE;
     }
     Refresh_Display = false;
+
+    return true;
 }
 	
 bool CpcXXXX::CompleteDisplay(void)

@@ -1,6 +1,7 @@
  
 #include	"common.h"
 #include	"pc1360.h"
+#include "cextension.h"
 #include "Lcdc.h"
 #include "sc61860.h"
 #include	"Inter.h"

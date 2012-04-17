@@ -123,7 +123,7 @@ void Cx710::ComputeKey(void)
 //    }
 }
 
-void Cx710::UpdateFinalImage(void) {
+bool Cx710::UpdateFinalImage(void) {
     Cce515p::UpdateFinalImage();
 
 //    // Draw switch by 180° rotation

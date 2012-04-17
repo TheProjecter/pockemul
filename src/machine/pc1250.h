@@ -31,7 +31,7 @@ public:
 
     virtual bool	InitDisplay(void);
     //bool	CompleteDisplay(void);
-    virtual void UpdateFinalImage(void);
+    virtual bool UpdateFinalImage(void);
 
 	bool	Mem_Mirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);

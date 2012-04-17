@@ -22,14 +22,20 @@
 
 
 #include "common.h"
-#include "pobject.h"
+//#include "pobject.h"
+
+class CPObject;
+class CpcXXXX;
 
 //////////////////////////////////////////////////////////////////////
 // interrupt & timer emulation   /////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-class Ctimer:public CPObject
+class Ctimer //:public CPObject
 {
 public:
+    CpcXXXX *pPC;
+    CPObject *Parent;
+
 	bool init(void);		//initialize
 	bool exit(void);		//end
 	void check(void);				//check for interrupt
@@ -63,8 +69,10 @@ public:
 	qint64 last_state,nb_state;
     int deltaStep;
 	
-	Ctimer(CPObject *parent = 0)	: CPObject(parent)
+    Ctimer(CPObject *parent = 0)//	: CPObject(parent)
 	{						//[constructor]
+        pPC = (CpcXXXX*) parent;
+        Parent	= parent;
 		state	= 0;				// state counter
 		chkspeed= 1;				// speed checker
 		CPUSpeed= 1;

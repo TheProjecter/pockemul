@@ -8,6 +8,7 @@
 
 #include	"common.h"
 #include	"pc1500.h"
+#include "cextension.h"
 #include    "Lcdc.h"
 #include	"Inter.h"
 #include	"Debug.h"
