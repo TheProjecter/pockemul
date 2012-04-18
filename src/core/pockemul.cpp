@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     mainwindow = new MainWindowPockemul;
 
 #ifdef Q_OS_ANDROID
-    //mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
+    mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
 
     QWidget *cw= new QWidget();

@@ -18,6 +18,8 @@
 #include "weblinksparser.h"
 #include "sc61860.h"
 
+#include "tapandholdgesture.h"
+
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
@@ -64,6 +66,8 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
         ioFreq = 0;
         off =true;
 		
+        _gestureHandler = new TapAndHoldGesture(this);
+        connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
     }
 
 
@@ -307,6 +311,7 @@ void CPObject::fillSoundBuffer(BYTE val)
 #endif
 }
 
+
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 {
     // Check if we clic a key
@@ -398,8 +403,22 @@ void CPObject::wheelEvent(QWheelEvent *event) {
 
 }
 
+void CPObject::tapAndHold(QMouseEvent * event)
+{
+#ifdef Q_OS_ANDROIS
+    QContextMenuEvent *cme = new QContextMenuEvent(QContextMenuEvent::Mouse,QPoint(0,0),QPoint(0,0));
+#else
+    QContextMenuEvent *cme = new QContextMenuEvent(QContextMenuEvent::Mouse,event->pos(),event->globalPos());
+#endif
+
+    contextMenuEvent(cme);
+    startPosDrag = false;
+    setCursor(Qt::ArrowCursor);
+}
+
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
+
 
     if (event->button() != Qt::LeftButton) {
         event->ignore();
@@ -445,6 +464,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
     }
 
     // NO KEY CLICK Global pobject drag mode
+
+    _gestureHandler->handleEvent( event );
 
     // raise all connected object and then manage Z-order between them
     raise();
@@ -503,6 +524,7 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
 
 void CPObject::mouseMoveEvent( QMouseEvent * event )
 {
+    _gestureHandler->handleEvent( event );
 	if (dialogkeylist)
 	{
 		if (startKeyDrag)
@@ -577,6 +599,7 @@ QList<Cconnector *> CPObject::nearConnectors(Cconnector *refConnector,qint8 snap
 
 void CPObject::mouseReleaseEvent(QMouseEvent *event)
 {
+    _gestureHandler->handleEvent( event );
     // if a connector is free
     // if an object with free connector is "near"
     // propose to autolink
@@ -724,6 +747,8 @@ void CPObject::focusInEvent ( QFocusEvent * event )
 void CPObject::focusOutEvent ( QFocusEvent * event )
 {
 }
+
+
 
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {

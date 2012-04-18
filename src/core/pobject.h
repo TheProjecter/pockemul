@@ -26,6 +26,7 @@ class CExtensionArray;
 class DialogKeyList;
 class DialogDump;
 class DialogDasm;
+class TapAndHoldGesture;
 
 
 struct URL {
@@ -195,6 +196,7 @@ public slots:
     void audioStateChanged(QAudio::State state);
 #endif
 
+    void tapAndHold(QMouseEvent *);
     void contextMenuEvent ( QContextMenuEvent * event );
 	void slotExit();
 	void KeyList();
@@ -236,6 +238,8 @@ private:
 
     bool disp_on;
     bool disp_onRaised;
+
+    TapAndHoldGesture* _gestureHandler;
 
 };
 
