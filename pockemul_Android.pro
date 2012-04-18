@@ -1,4 +1,4 @@
-
+QMAKE_CXXFLAGS += -fsigned-char
 
 CONFIG += release \
     qt \
@@ -587,7 +587,8 @@ OTHER_FILES += \
     android/src/org/kde/necessitas/origo/QtActivity.java \
     android/src/org/kde/necessitas/origo/QtApplication.java \
     android/version.xml
-#QMAKE_CXXFLAGS += -fpack-struct
+
+
 #QMAKE_LFLAGS_DEBUG += -pg
 
 

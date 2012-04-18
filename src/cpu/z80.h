@@ -36,11 +36,11 @@
 #define Z80_RESET_STATES(z)	((z)->i.total_states = (z)->i.states)
 
 typedef unsigned char	uint8;
-typedef char	int8;
+typedef signed   char	int8;
 typedef unsigned short	uint16;
-typedef short	int16;
+typedef signed   short	int16;
 typedef unsigned long	uint32;
-typedef long	int32;
+typedef signed   long	int32;
 
 //#pragma pack(1)
 

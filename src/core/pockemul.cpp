@@ -1,5 +1,7 @@
 #include <QApplication>
 #include <QtPlugin>
+#include <QDebug>
+#include <QDir>
 
 #include "mainwindowpockemul.h"
 #include "launchbuttonwidget.h"
@@ -18,10 +20,21 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+
+
+
+
+
 #ifdef Q_OS_ANDROID
     QFont f = app.font();
     f.setItalic(true); //bold also works
     app.setFont(f);
+
+    // Change currentPath to /sdcard/pockemul
+    QDir d("/");
+    d.mkdir("/sdcard/pockemul");
+    QDir::setCurrent("/sdcard/pockemul");
+
 #endif
 
     mainwindow = new MainWindowPockemul;

@@ -508,12 +508,19 @@ void MainWindowPockemul::saveassession()
     xml->writeEndElement();  // pml
     //MSG_ERROR(s)
 
-            QString fn = QFileDialog::getSaveFileName(
-                    mainwindow,
-                    tr("Choose a filename to save session"),
-                    ".",
-                   tr("Session File (*.pml)"));
+    QString fn = QFileDialog::getSaveFileName(
+                mainwindow,
+                tr("Choose a filename to save session"),
+                ".",
+                tr("Session File (*.pml)"));
 
+
+    QFileInfo fi( fn );
+            if (fi.suffix().isEmpty())
+            {
+                    // no suffix, adding .pml  - BUG For Android
+                fn.append(".pml");
+            }
     QFile f(fn);
     if (f.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&f);
