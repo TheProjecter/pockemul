@@ -25,6 +25,7 @@ CHD61102::CHD61102(CpcXXXX *parent)
     info.Xadr = 0;
     info.Yadr = 0;
     info.status = 0;
+    updated = false;
 }
 
 BYTE CHD61102::get8(qint16 adr)
@@ -78,25 +79,44 @@ BYTE CHD61102::instruction(qint16 cmd)
 
 void CHD61102::cmd_on_off(qint16 cmd)
 {
-    info.on_off = cmd & 0x01;
+    BYTE newon_off = cmd & 0x01;
+    if (newon_off != info.on_off) {
+        info.on_off = newon_off;
+        updated = true;
+        AddLog(LOG_DISPLAY,tr("UPDATED on_off"));
+    }
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"LCD :%s\n",on_off?"on":"off");
 }
 
 void CHD61102::cmd_displaySL(qint16 cmd)
 {
-    info.displaySL = cmd & 0x3f;
-//    if (pPC->fp_log) fprintf(pPC->fp_log,"LCD DisplaySL:%i\n",displaySL);
+    BYTE newSL = cmd & 0x3f;
+    if (newSL != info.displaySL) {
+        info.displaySL = newSL;
+        AddLog(LOG_DISPLAY,tr("HD61102 SL:%1").arg(cmd&0x3f,4,16,QChar('0')));
+        updated = true;
+        AddLog(LOG_DISPLAY,tr("UPDATED displaySL"));
+    }
 }
 
 void CHD61102::cmd_setX(qint16 cmd)
 {
-    info.Xadr = cmd & 0x07;
-//    if (pPC->fp_log) fprintf(pPC->fp_log,"LCD X:%i\n",Xadr);
+    BYTE newXadr = cmd & 0x07;
+    if (newXadr != info.Xadr) {
+        info.Xadr = newXadr;
+        updated = true;
+        AddLog(LOG_DISPLAY,tr("UPDATED setX"));
+    }
 }
 
 void CHD61102::cmd_setY(qint16 cmd)
 {
-    info.Yadr = cmd & 0x3f;
+    BYTE newYadr = cmd & 0x3f;
+    if (newYadr != info.Yadr) {
+        info.Yadr = newYadr;
+        updated = true;
+        AddLog(LOG_DISPLAY,tr("UPDATED setY"));
+    }
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"LCD Y:%i\n",Yadr);
 }
 
@@ -115,6 +135,8 @@ void CHD61102::cmd_write(qint16 cmd)
     if (info.Yadr == 64) {
         info.Yadr=0;
     }
+    updated = true;
+    AddLog(LOG_DISPLAY,tr("UPDATED write"));
 }
 
 BYTE CHD61102::cmd_read(qint16 cmd)

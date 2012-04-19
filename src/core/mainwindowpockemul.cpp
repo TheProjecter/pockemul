@@ -40,6 +40,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 //#include "lfhex/hexGui.h"
 
 extern	MainWindowPockemul* mainwindow;
+extern QWidget* mainwidget;
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
@@ -675,7 +676,7 @@ void MainWindowPockemul::updateFrameTimer()
                 CurrentpPC->pTIMER->nb_state += (Current_State - CurrentpPC->pTIMER->last_state);
                 CurrentpPC->pTIMER->last_state = Current_State;
 
-#ifndef Q_OS_ANDROID
+
                 // Update ToolTip only one time per second
                 if ( deltaTime >= 1000)
                 {
@@ -685,13 +686,16 @@ void MainWindowPockemul::updateFrameTimer()
                         statepersec = (int) ( CurrentpPC->getfrequency());
                         rate = (int) ((100L*CurrentpPC->pTIMER->nb_state)/((statepersec/1000)*deltaTime));
                         CurrentpPC->pTIMER->nb_state=0;
-
+                        CurrentpPC->rate = rate;
                         str.setNum((int)rate);
                         str = ": "+str+tr("% original speed");
                     }
+#ifndef Q_OS_ANDROID
                     CurrentpPC->setToolTip(CurrentpPC->getName()+str);
-                }
 #endif
+
+                }
+
                 bool disp_on = true;
 #if 1
                 if (CurrentpPC->pLCDC)
@@ -708,6 +712,7 @@ void MainWindowPockemul::updateFrameTimer()
                 }
 #endif
                 if ( CurrentpPC->Refresh_Display) {
+                    qWarning("Refresh Display\n");
                     CurrentpPC->update();
                     CurrentpPC->Refresh_Display= false;
                 }

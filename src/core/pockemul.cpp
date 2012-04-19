@@ -2,6 +2,7 @@
 #include <QtPlugin>
 #include <QDebug>
 #include <QDir>
+//#include <QFeedbackHapticsEffect>
 
 #include "mainwindowpockemul.h"
 #include "launchbuttonwidget.h"
@@ -9,6 +10,7 @@
 #include "pobject.h"
 #include "dialogstartup.h"
 
+//QTM_USE_NAMESPACE
 
 MainWindowPockemul* mainwindow;
 QWidget* mainwidget;
@@ -20,9 +22,18 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+#if 0
+    QFeedbackHapticsEffect rumble;
 
+    rumble.setAttackIntensity(0.0);
+    rumble.setAttackTime(250);
+    rumble.setIntensity(1.0);
+    rumble.setDuration(500);
+    rumble.setFadeTime(250);
+    rumble.setFadeIntensity(0.0);
 
-
+    rumble.start();
+#endif
 
 
 #ifdef Q_OS_ANDROID

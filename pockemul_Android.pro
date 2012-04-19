@@ -7,7 +7,7 @@ CONFIG += release \
     warn_on
 CONFIG += rtti
 CONFIG += mobility
-MOBILITY =
+#MOBILITY += feedback
 DEFINES += NO_SOUND Q_OS_ANDROID
 QT += core \
     gui \

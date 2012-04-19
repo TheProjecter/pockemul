@@ -42,6 +42,7 @@ public:
     void    set8(qint16 adr,BYTE val);
 
     HD61102info info;
+    bool    updated;
 
     void	Load_Internal(QFile *);
     void	save_internal(QFile *);

@@ -24,6 +24,8 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
     First = 1;
     curOnOff = false;
 
+    kana=graph=shift=ctrl = false;
+
 }
 
 const CMD_T6834 CT6834::Cmd_T6834[] =

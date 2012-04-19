@@ -63,8 +63,6 @@ void Clcdc_e500::disp_symb(void)
     disp_one_symb( DEG,         COLOR(SYMB3_e500&0x10),	e500_pos[13].x,	e500_pos[13].y);
     disp_one_symb( REV_BATT,    COLOR(SYMB3_e500&0x80),	e500_pos[14].x,	e500_pos[14].y);
 
-    Refresh = true;
-
     Clcdc::disp_symb();
 }
 INLINE int Clcdc_e500::symbSL(int x)
@@ -90,9 +88,15 @@ void Clcdc_e500::disp(void)
     int ind;
     WORD adr;
 
+    Refresh = false;
 
     if (!ready) return;
     if (!((Ce500 *)pPC)->pHD61102_1 || !((Ce500 *)pPC)->pHD61102_2) return;
+    if (!(((Ce500 *)pPC)->pHD61102_1->updated || ((Ce500 *)pPC)->pHD61102_1->updated)) return;
+
+    ((Ce500 *)pPC)->pHD61102_1->updated = false;
+    ((Ce500 *)pPC)->pHD61102_2->updated = false;
+
     Refresh = true;
 
     disp_symb();

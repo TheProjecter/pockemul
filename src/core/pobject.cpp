@@ -678,6 +678,9 @@ void CPObject::paintEvent(QPaintEvent *event)
 		painter.drawRect(rect);
 	}
 
+
+    painter.drawText(10,100,QString("").setNum((int)rate)+"%");
+
 	painter.end();
 
 }
@@ -935,7 +938,9 @@ bool CPObject::UpdateFinalImage(void)
 	{
 		painter.begin(FinalImage);
         painter.drawImage(QPoint(0,0),*BackgroundImage);
-		painter.end();
+
+
+        painter.end();
 	}
 	Refresh_Display = false;
     return true;

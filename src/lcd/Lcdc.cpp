@@ -403,87 +403,86 @@ void Clcdc_pc1250::disp_symb(void)
 		 (DirtyBuf[SYMB2_ADR_1250-0xF800]) ||
 		 (DirtyBuf[SYMB3_ADR_1250-0xF800])
 		)
-	{
+    {
 
-	disp_one_symb(SHIFT,	COLOR(SYMB2_1250&0x02),	pc1250_pos[0].x,	pc1250_pos[0].y);
-	disp_one_symb(DEF,		COLOR(SYMB1_1250&0x01),	pc1250_pos[1].x,	pc1250_pos[1].y);
-	disp_one_symb(PRO,		COLOR(SYMB3_1250&0x01),	pc1250_pos[2].x,	pc1250_pos[2].y);
-	disp_one_symb(RUN,		COLOR(SYMB3_1250&0x02),	pc1250_pos[3].x,	pc1250_pos[3].y);
-	disp_one_symb(RESERVE,	COLOR(SYMB3_1250&0x04),	pc1250_pos[4].x,	pc1250_pos[4].y);
-	disp_one_symb(DE,		COLOR(SYMB1_1250&0x08),	pc1250_pos[5].x,	pc1250_pos[5].y);
-	disp_one_symb(G,		COLOR(SYMB1_1250&0x04),	pc1250_pos[6].x,	pc1250_pos[6].y);
-	disp_one_symb(RAD,		COLOR(SYMB2_1250&0x04),	pc1250_pos[7].x,	pc1250_pos[7].y);
-	disp_one_symb(E,		COLOR(SYMB2_1250&0x08),	pc1250_pos[8].x,	pc1250_pos[8].y);
-	disp_one_symb(PRINT,	COLOR(SYMB1_1250&0x02),	pc1250_pos[9].x,	pc1250_pos[9].y);
-	disp_one_symb(BUSY,	COLOR(SYMB2_1250&0x01),	pc1250_pos[10].x,	pc1250_pos[10].y);
-	
-	DirtyBuf[SYMB1_ADR_1250-0xF800] = FALSE;				
-	DirtyBuf[SYMB2_ADR_1250-0xF800] = FALSE;				
-	DirtyBuf[SYMB3_ADR_1250-0xF800] = FALSE;				
-	
-	Refresh = TRUE;
-	}
+        disp_one_symb(SHIFT,	COLOR(SYMB2_1250&0x02),	pc1250_pos[0].x,	pc1250_pos[0].y);
+        disp_one_symb(DEF,		COLOR(SYMB1_1250&0x01),	pc1250_pos[1].x,	pc1250_pos[1].y);
+        disp_one_symb(PRO,		COLOR(SYMB3_1250&0x01),	pc1250_pos[2].x,	pc1250_pos[2].y);
+        disp_one_symb(RUN,		COLOR(SYMB3_1250&0x02),	pc1250_pos[3].x,	pc1250_pos[3].y);
+        disp_one_symb(RESERVE,	COLOR(SYMB3_1250&0x04),	pc1250_pos[4].x,	pc1250_pos[4].y);
+        disp_one_symb(DE,		COLOR(SYMB1_1250&0x08),	pc1250_pos[5].x,	pc1250_pos[5].y);
+        disp_one_symb(G,		COLOR(SYMB1_1250&0x04),	pc1250_pos[6].x,	pc1250_pos[6].y);
+        disp_one_symb(RAD,		COLOR(SYMB2_1250&0x04),	pc1250_pos[7].x,	pc1250_pos[7].y);
+        disp_one_symb(E,		COLOR(SYMB2_1250&0x08),	pc1250_pos[8].x,	pc1250_pos[8].y);
+        disp_one_symb(PRINT,	COLOR(SYMB1_1250&0x02),	pc1250_pos[9].x,	pc1250_pos[9].y);
+        disp_one_symb(BUSY,	COLOR(SYMB2_1250&0x01),	pc1250_pos[10].x,	pc1250_pos[10].y);
+
+        DirtyBuf[SYMB1_ADR_1250-0xF800] = FALSE;
+        DirtyBuf[SYMB2_ADR_1250-0xF800] = FALSE;
+        DirtyBuf[SYMB3_ADR_1250-0xF800] = FALSE;
+
+        Refresh = TRUE;
+    }
 	
 	Clcdc::disp_symb();
 
 }
-	
+
 void Clcdc_pc1250::disp(void)
 {
+    BYTE b,data,x,y;
+    int ind;
+    WORD adr;
 
-	BYTE b,data,x,y;
-	int ind;
-	WORD adr;
+    Refresh = FALSE;
 
-	Refresh = FALSE;
+    disp_symb();
 
-	disp_symb();
+    QPainter painter(pPC->LcdImage);
 
-	QPainter painter(pPC->LcdImage);
+    //	hr = g_pDDSTwo->GetDC(&hdc);
 
-//	hr = g_pDDSTwo->GetDC(&hdc);
+    for (ind=0; ind<0x3c; ind++)
+    {	adr = 0xF800 + ind;
+        if (DirtyBuf[adr-0xF800])
+        {
+            Refresh = true;
+            data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 
-	for (ind=0; ind<0x3c; ind++)
-	{	adr = 0xF800 + ind;
-		if (DirtyBuf[adr-0xF800])
-		{
-			Refresh = TRUE;
-			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
-			
             x =ind + (ind/5);			// +1 every 5 cols
-			y = 0;
-			
-			for (b=0; b<7;b++)
-			{
-				painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
-				painter.drawPoint( x, y+b);
-			}
-			DirtyBuf[adr-0xF800] = 0;				
-		}
-	}
+            y = 0;
 
-	for (ind=0x3B; ind>=0; ind--)
-	{	adr = 0xF800 + 0x40 + ind;
-		if (DirtyBuf[adr-0xF800])
-		{
-			Refresh = TRUE;
-			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
-			
+            for (b=0; b<7;b++)
+            {
+                painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
+                painter.drawPoint( x, y+b);
+            }
+            DirtyBuf[adr-0xF800] = 0;
+        }
+    }
+
+    for (ind=0x3B; ind>=0; ind--)
+    {	adr = 0xF800 + 0x40 + ind;
+        if (DirtyBuf[adr-0xF800])
+        {
+            Refresh = true;
+            data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
+
             x = 142 - ind - (ind/5);			// +2 every 5 cols
-			y = 0;
-	
-			for (b=0; b<7;b++)
-			{
-				painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
-				painter.drawPoint( x, y+b);
-			}
-			DirtyBuf[adr-0xF800] = 0;				
-		}
-	}
+            y = 0;
 
-	redraw = 0;
+            for (b=0; b<7;b++)
+            {
+                painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
+                painter.drawPoint( x, y+b);
+            }
+            DirtyBuf[adr-0xF800] = 0;
+        }
+    }
 
-	painter.end();
+    redraw = 0;
+
+    painter.end();
 }
 ///////////////////////////////////////////////////////////////////////
 //

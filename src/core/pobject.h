@@ -62,6 +62,8 @@ public:
 	QString	LcdFname;
 	QString	SymbFname;
 
+    int rate;
+
     bool	off;
 
     void setDisp_on(bool v);
