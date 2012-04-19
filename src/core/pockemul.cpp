@@ -2,7 +2,7 @@
 #include <QtPlugin>
 #include <QDebug>
 #include <QDir>
-//#include <QFeedbackHapticsEffect>
+#include <QFeedbackHapticsEffect>
 
 #include "mainwindowpockemul.h"
 #include "launchbuttonwidget.h"
@@ -10,21 +10,19 @@
 #include "pobject.h"
 #include "dialogstartup.h"
 
-//QTM_USE_NAMESPACE
+QTM_USE_NAMESPACE
 
 MainWindowPockemul* mainwindow;
 QWidget* mainwidget;
-
-//	Q_IMPORT_PLUGIN(qjpeg)
 
 int main(int argc, char *argv[])
 {
 
     QApplication app(argc, argv);
 
-#if 0
-    QFeedbackHapticsEffect rumble;
 
+//    QFeedbackHapticsEffect rumble;
+#if 0
     rumble.setAttackIntensity(0.0);
     rumble.setAttackTime(250);
     rumble.setIntensity(1.0);

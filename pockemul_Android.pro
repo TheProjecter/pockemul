@@ -7,12 +7,13 @@ CONFIG += release \
     warn_on
 CONFIG += rtti
 CONFIG += mobility
-#MOBILITY += feedback
+MOBILITY += feedback
 DEFINES += NO_SOUND Q_OS_ANDROID
 QT += core \
     gui \
     network \
 #    opengl \
+feedback \
     xml \
 #    multimedia \
     script
@@ -588,10 +589,26 @@ OTHER_FILES += \
     android/src/org/kde/necessitas/ministro/IMinistroCallback.aidl \
     android/src/org/kde/necessitas/origo/QtActivity.java \
     android/src/org/kde/necessitas/origo/QtApplication.java \
-    android/version.xml
+    android/version.xml \
+    android/src/eu/licentia/necessitas/industrius/QtSurface.java \
+    android/src/eu/licentia/necessitas/industrius/QtLayout.java \
+    android/src/eu/licentia/necessitas/industrius/QtApplication.java \
+    android/src/eu/licentia/necessitas/industrius/QtActivity.java \
+    android/src/eu/licentia/necessitas/ministro/IMinistroCallback.aidl \
+    android/src/eu/licentia/necessitas/ministro/IMinistro.aidl \
+    android/src/eu/licentia/necessitas/mobile/QtSystemInfo.java \
+    android/src/eu/licentia/necessitas/mobile/QtSensors.java \
+    android/src/eu/licentia/necessitas/mobile/QtMediaPlayer.java \
+    android/src/eu/licentia/necessitas/mobile/QtLocation.java \
+    android/src/eu/licentia/necessitas/mobile/QtFeedback.java \
+    android/src/eu/licentia/necessitas/mobile/QtCamera.java \
+    android/src/eu/licentia/necessitas/mobile/QtAndroidContacts.java
 
 
 #QMAKE_LFLAGS_DEBUG += -pg
+
+
+
 
 
 
