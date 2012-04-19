@@ -712,7 +712,7 @@ void MainWindowPockemul::updateFrameTimer()
                 }
 #endif
                 if ( CurrentpPC->Refresh_Display) {
-                    qWarning("Refresh Display\n");
+                   AddLog(LOG_DISPLAY,tr("Refresh Display"));
                     CurrentpPC->update();
                     CurrentpPC->Refresh_Display= false;
                 }

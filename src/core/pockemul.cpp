@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
                                                 ":/POCKEMUL/pockemul/config.xml",
                                                 ":/POCKEMUL/pockemul/pocket.png");
     mainwindow->launch->setMouseTracking(true);
-    mainwindow->launch->setGeometry(0,0,48,48);
+    mainwindow->launch->setGeometry(0,12,48,48);
     mainwindow->launch->setToolTip("Start a new Pocket Emulation.");
 
     mainwindow->launch2 = new LaunchButtonWidget(mainwidget,
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
                                                  ":/POCKEMUL/pockemul/configExt.xml",
                                                  ":/POCKEMUL/pockemul/ext.png");
     mainwindow->launch2->setMouseTracking(true);
-    mainwindow->launch2->setGeometry(0,50,48,48);
+    mainwindow->launch2->setGeometry(0,75,48,48);
     mainwindow->launch2->setToolTip("Start a new Extension Emulation.");
 
 #ifndef Q_OS_ANDROID
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
                                                      "",
                                                      ":/POCKEMUL/pockemul/dev.png");
     mainwindow->connect(dev,SIGNAL(clicked()),mainwindow,SLOT(IDE()));
-    dev->setGeometry(0,100,48,48);
+    dev->setGeometry(0,150,48,48);
     dev->setToolTip("Start the Integrated development Environment.");
 #endif
     LaunchButtonWidget* save = new LaunchButtonWidget(mainwidget,
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
                                                       "",
                                                       ":/POCKEMUL/pockemul/save.png");
     mainwindow->connect(save,SIGNAL(clicked()),mainwindow,SLOT(saveassession()));
-    save->setGeometry(0,150,48,48);
+    save->setGeometry(0,225,48,48);
     save->setToolTip("Save the current session.");
 
     LaunchButtonWidget* load = new LaunchButtonWidget(mainwidget,
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
                                                       "",
                                                       ":/POCKEMUL/pockemul/load.png");
     mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
-    load->setGeometry(0,200,48,48);
+    load->setGeometry(0,300,48,48);
     load->setToolTip("Load an existing session.");
 
     LaunchButtonWidget* exit = new LaunchButtonWidget(mainwidget,
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
                                                       "",
                                                       ":/POCKEMUL/pockemul/exit.png");
     mainwindow->connect(exit,SIGNAL(clicked()),mainwindow,SLOT(close()));
-    exit->setGeometry(0,250,48,48);
+    exit->setGeometry(0,375,48,48);
     exit->setToolTip("Exit PockEmul.");
 
 #if 0 //def Q_OS_ANDROID

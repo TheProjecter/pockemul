@@ -14,6 +14,10 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
     config = param;
     image = img;
     setAttribute(Qt::WA_DeleteOnClose);
+    if (type == PictureFlow){
+        launcher = new FluidLauncher(mainwidget,config);
+        launcher->hide();
+    }
 }
 
 
@@ -26,9 +30,10 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 
     if (type == PictureFlow)
     {
-qWarning("Launcher:%i",launcher);
-        launcher = new FluidLauncher(mainwidget,config);
-        launcher->setAttribute(Qt::WA_DeleteOnClose);
+//        launcher = new FluidLauncher(mainwidget,config);
+//        launcher->setAttribute(Qt::WA_DeleteOnClose);
+        launcher->setGeometry(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
+        launcher->raise();
         launcher->show();
 
         qWarning("hover2\n");

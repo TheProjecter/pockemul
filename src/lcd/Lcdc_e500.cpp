@@ -84,15 +84,13 @@ INLINE int Clcdc_e500::computeSL(CHD61102* pCtrl,int ord)
 void Clcdc_e500::disp(void)
 {
 
-    BYTE b,data,x;
-    int ind;
-    WORD adr;
+    BYTE b;
 
     Refresh = false;
 
     if (!ready) return;
     if (!((Ce500 *)pPC)->pHD61102_1 || !((Ce500 *)pPC)->pHD61102_2) return;
-    if (!(((Ce500 *)pPC)->pHD61102_1->updated || ((Ce500 *)pPC)->pHD61102_1->updated)) return;
+    if (!(((Ce500 *)pPC)->pHD61102_1->updated || ((Ce500 *)pPC)->pHD61102_2->updated)) return;
 
     ((Ce500 *)pPC)->pHD61102_1->updated = false;
     ((Ce500 *)pPC)->pHD61102_2->updated = false;

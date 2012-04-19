@@ -57,7 +57,7 @@ void Clcdc_pc1600::disp_symb(void)
     disp_one_symb( CTRL,        COLOR(SYMB1_1600&0x02),	pc1600_pos[14].x,	pc1600_pos[14].y);
     disp_one_symb( REV_BATT,    COLOR(0),               pc1600_pos[15].x,	pc1600_pos[15].y);
 
-    Refresh = true;
+
 
     Clcdc::disp_symb();
 }
@@ -80,13 +80,16 @@ INLINE int Clcdc_pc1600::computeSL(CHD61102* pCtrl,int ord)
 void Clcdc_pc1600::disp(void)
 {
 
-    BYTE b,data,x;
-    int ind;
-    WORD adr;
+    BYTE b;
 
+    Refresh = false;
 
     if (!ready) return;
     if (!((Cpc1600 *)pPC)->pHD61102_1 || !((Cpc1600 *)pPC)->pHD61102_2) return;
+    if (!(((Cpc1600 *)pPC)->pHD61102_1->updated || ((Cpc1600 *)pPC)->pHD61102_2->updated)) return;
+
+    ((Cpc1600 *)pPC)->pHD61102_1->updated = false;
+    ((Cpc1600 *)pPC)->pHD61102_2->updated = false;
     Refresh = true;
 
     disp_symb();

@@ -959,6 +959,7 @@ int col1, int col2)
    rect.setTop(0);
    rect.setBottom(h-1);
 
+//   delete src;
    return rect;
 }
 
@@ -1129,6 +1130,7 @@ void PictureFlowPrivate::clearSurfaceCache()
 
 PictureFlow::PictureFlow(QWidget* parent): QWidget(parent)
 {
+  setAttribute(Qt::WA_DeleteOnClose, true);
   d = new PictureFlowPrivate(this);
 
   setAttribute(Qt::WA_StaticContents, true);

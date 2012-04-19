@@ -60,8 +60,9 @@ extern QWidget* mainwidget;
 FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(parent)
 {
     qWarning("CFL 1\n");
+
     pictureFlowWidget = new PictureFlow();
-    pictureFlowWidget->setAttribute(Qt::WA_DeleteOnClose, true);
+
     addWidget(pictureFlowWidget);
 
     setCurrentWidget(pictureFlowWidget);
@@ -86,19 +87,24 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
     if (success) {
         populatePictureFlow();
         qWarning("CFL 4\n");
-        show();
+//        show();
 
     } else {
 
         pictureFlowWidget->close();
     }
     qWarning("CFL 5\n");
+
 }
 
  FluidLauncher::~FluidLauncher()
  {
      qWarning("Delete pictureFlowWidget");
      delete pictureFlowWidget;
+     // Delete demolist
+     for (int i=0;i<demoList.count();i++) {
+         delete demoList.at(i);
+     }
  }
 
  bool FluidLauncher::loadConfig(QString configPath)
@@ -168,16 +174,18 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
 
  void FluidLauncher::populatePictureFlow()
  {
-     qWarning("Start populatePictureFlow\n");
+
      pictureFlowWidget->setSlideCount(demoList.count());
 
      for (int i=demoList.count()-1; i>=0; --i) {
-         pictureFlowWidget->setSlide(i, *(demoList[i]->getImage()));
+         QImage *img = demoList[i]->getImage();
+         pictureFlowWidget->setSlide(i, *img);
          pictureFlowWidget->setSlideCaption(i, demoList[i]->getCaption());
+         delete img;
      }
-qWarning("Start populatePictureFlow2\n");
+
      pictureFlowWidget->setCurrentSlide(demoList.count()/2);
-     qWarning("End populatePictureFlow\n");
+
  }
 
  void FluidLauncher::launchApplication(int index)
@@ -190,7 +198,7 @@ qWarning("Start populatePictureFlow2\n");
 
      if ( (index==-1) )//||(index == demoList.size() -1))
      {
-         close();
+         hide();
          return;
      }
 
