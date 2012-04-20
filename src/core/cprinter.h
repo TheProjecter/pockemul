@@ -20,13 +20,16 @@ public:
 	virtual ~Cprinter();
 
     virtual void resizeEvent ( QResizeEvent * );
+    virtual void moveEvent(QMoveEvent *event);
 	
     QRect pos;
     QRect PaperWidgetRect;
 
     void setPaperPos(QRect);
     QRect PaperPos();
-	
+
+    virtual void raise();
+
 protected:
 	QColor	PaperColor;
 };

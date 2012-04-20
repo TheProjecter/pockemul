@@ -185,7 +185,7 @@ bool Cce126::init(void)
 	ce126display= new QImage(QSize(207, 149),QImage::Format_ARGB32);
 
 
-	
+
 	charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
 	
 //	bells	 = new QSound("ce.wav");	

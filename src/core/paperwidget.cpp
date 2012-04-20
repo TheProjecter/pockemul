@@ -104,7 +104,7 @@ void CpaperWidget::paperSaveText()
 
 void CpaperWidget::paintEvent(QPaintEvent *event)
 {
-    if (!updated) return;
+//    if (!updated) return;
     updated = false;
 
 	float ratio = ( (float) width() ) / ( bufferImage->width() - Offset.x() );

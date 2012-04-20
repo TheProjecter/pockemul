@@ -493,6 +493,9 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
     event->accept();
 }
+void CPObject::raise() {
+    QWidget::raise();
+}
 
 void CPObject::manageStackPos(QList<CPObject *> *l) {
     // fetch connectors connected
@@ -670,7 +673,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 	{
         painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 	}
-		
+
 	if (dialogkeylist)
 	{
 		painter.setPen(QPen(Qt::red));

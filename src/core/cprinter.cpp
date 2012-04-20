@@ -4,6 +4,7 @@
 
 #include "cprinter.h"
 #include "paperwidget.h"
+#include "Log.h"
 
 //TODO  Lorsque pointeur positionné sur papier, afficher scroolbar verticale et gerer mousewheel
 Cprinter::Cprinter(CPObject *parent):CPObject(parent)
@@ -27,8 +28,12 @@ void Cprinter::resizeEvent ( QResizeEvent * ) {
                                     rect.y()*ratio,
                                     rect.width()*ratio,
                                     rect.height()*ratio);
+    this->paperWidget->updated=true;
 }
 
+void Cprinter::moveEvent ( QMoveEvent * event ) {
+    this->paperWidget->updated=true;
+}
 
 void Cprinter::setPaperPos(QRect pos)
 {
@@ -38,4 +43,12 @@ void Cprinter::setPaperPos(QRect pos)
 QRect Cprinter::PaperPos()
 {
     return(pos);
+}
+
+void Cprinter::raise()
+{
+    paperWidget->updated = true;
+    AddLog(LOG_TEMP,"RAISE");
+    CPObject::raise();
+
 }
