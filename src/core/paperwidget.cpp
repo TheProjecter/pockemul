@@ -18,6 +18,7 @@ CpaperWidget::CpaperWidget(QRect rect,QImage * buffer,QWidget * parent):QWidget(
     this->baseRect = rect;
     _gestureHandler = new TapAndHoldGesture(this);
     connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
+    updated = true;
 }
 
 void CpaperWidget::tapAndHold(QMouseEvent * event)
@@ -103,6 +104,9 @@ void CpaperWidget::paperSaveText()
 
 void CpaperWidget::paintEvent(QPaintEvent *event)
 {
+    if (!updated) return;
+    updated = false;
+
 	float ratio = ( (float) width() ) / ( bufferImage->width() - Offset.x() );
 	
 	QRect source = QRect( QPoint(Offset.x() , Offset.y()  - height() / ratio ) , QPoint( bufferImage->width() , Offset.y() ) );

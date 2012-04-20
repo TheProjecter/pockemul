@@ -16,7 +16,7 @@ public:
 	void setOffset(QPoint);
 	QPoint getOffset();
     QRect baseRect;
-	
+    bool updated;
 	
     CpaperWidget(QRect rect,QImage * buffer,QWidget * parent=0);
 	~CpaperWidget()

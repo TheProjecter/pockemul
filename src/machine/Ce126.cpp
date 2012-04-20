@@ -144,6 +144,7 @@ void Cce126::RefreshCe126(qint8 data)
 	Refresh_Display = true;
 	
 	paperWidget->setOffset(QPoint(0,top));
+    paperWidget->updated = true;
 	
 }
 
@@ -160,6 +161,7 @@ void Cce126::clearPaper(void)
 	setposX(0);
 	// empty TextBuffer
 	TextBuffer.clear();
+    paperWidget->updated = true;
 }
 
 
@@ -182,8 +184,7 @@ bool Cce126::init(void)
 	ce126buf	= new QImage(QSize(207, 3000),QImage::Format_ARGB32);
 	ce126display= new QImage(QSize(207, 149),QImage::Format_ARGB32);
 
-	// Fill it blank
-	clearPaper();	
+
 	
 	charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
 	
@@ -192,7 +193,11 @@ bool Cce126::init(void)
 // Create a paper widget
 
     paperWidget = new CpaperWidget(PaperPos(),ce126buf,this);
+    paperWidget->updated = true;
 	paperWidget->show();
+
+    // Fill it blank
+    clearPaper();
 
     Previous_BUSY = GET_PIN(PIN_BUSY);
     Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
