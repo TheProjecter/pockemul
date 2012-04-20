@@ -13,5 +13,6 @@
         <file>pockemul/save.png</file>
         <file>pockemul/load.png</file>
         <file>pockemul/exit.png</file>
+        <file>pockemul/splash.png</file>
     </qresource>
 </RCC>

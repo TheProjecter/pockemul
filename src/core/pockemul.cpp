@@ -2,7 +2,8 @@
 #include <QtPlugin>
 #include <QDebug>
 #include <QDir>
-#include <QFeedbackHapticsEffect>
+#include <QSplashScreen>
+//#include <QFeedbackHapticsEffect>
 
 #include "mainwindowpockemul.h"
 #include "launchbuttonwidget.h"
@@ -10,7 +11,7 @@
 #include "pobject.h"
 #include "dialogstartup.h"
 
-QTM_USE_NAMESPACE
+//QTM_USE_NAMESPACE
 
 MainWindowPockemul* mainwindow;
 QWidget* mainwidget;
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
 #endif
 
 
+
 #ifdef Q_OS_ANDROID
     QFont f = app.font();
     f.setItalic(true); //bold also works
@@ -47,6 +49,14 @@ int main(int argc, char *argv[])
 #endif
 
     mainwindow = new MainWindowPockemul;
+
+    QSplashScreen splash;
+    splash.setPixmap(QPixmap(":/POCKEMUL/pockemul/splash.png"));
+    splash.show();
+    splash.showMessage("Loading modules...",Qt::AlignLeft,Qt::white);
+    app.processEvents();
+    splash.finish(mainwindow);
+
 
 #ifdef Q_OS_ANDROID
     mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
@@ -117,6 +127,7 @@ int main(int argc, char *argv[])
     pPC->setParent(0,Qt::FramelessWindowHint);
     pPC->show();
 #else
+
     mainwindow->show();
 
 #endif
