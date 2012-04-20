@@ -1,8 +1,10 @@
 #ifndef _PAPERWIDGET_H
 #define _PAPERWIDGET_H
 
-//#include "cprinter.h"
-#include "pobject.h"
+#include <QWidget>
+
+class CPObject;
+class TapAndHoldGesture;
 
 class CpaperWidget:public QWidget{
 Q_OBJECT
@@ -16,18 +18,7 @@ public:
     QRect baseRect;
 	
 	
-	CpaperWidget(QRect rect,QImage * buffer,QWidget * parent):QWidget(parent)
-	{
-		pPC = (CPObject *)parent;
-		bufferImage = buffer;
-
-		setMouseTracking(true);
-		setCursor(Qt::PointingHandCursor);
-		resize(rect.width(),rect.height());
-		move(rect.x(),rect.y());
-		Offset = QPoint(0,0);
-        this->baseRect = rect;
-	}
+    CpaperWidget(QRect rect,QImage * buffer,QWidget * parent=0);
 	~CpaperWidget()
 	{
 
@@ -38,12 +29,17 @@ private slots:
 	void paperCut();
 	void paperSaveImage();
 	void paperSaveText();
+    void tapAndHold(QMouseEvent *);
 
 protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent( QMouseEvent * event );
 	void paintEvent(QPaintEvent *);
 	
 private:
 	QPoint Offset;
+    TapAndHoldGesture* _gestureHandler;
 };
 
 

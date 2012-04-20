@@ -643,7 +643,8 @@ bool CpcXXXX::SaveSession_File(QFile *file)
 }
 
 bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
-    if (xmlIn->readNextStartElement()) {
+
+    if ((xmlIn->name()=="session") || (xmlIn->readNextStartElement())) {
         if ( (xmlIn->name() == "session") &&
              (xmlIn->attributes().value("version") == "1.0") &&
              (xmlIn->attributes().value("model") == SessionHeader) ) {

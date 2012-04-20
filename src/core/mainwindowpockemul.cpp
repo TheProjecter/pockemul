@@ -385,7 +385,7 @@ void MainWindowPockemul::opensession()
     xml.setDevice(&file);
 
     CPObject * firstPC = 0;
-
+//TODO: Add Load session
     if (xml.readNextStartElement()) {
         if (xml.name() == "pml" && xml.attributes().value("version") == "1.0") {
             zoom = xml.attributes().value("zoom").toString().toFloat();
@@ -407,6 +407,7 @@ void MainWindowPockemul::opensession()
 
                         while (xml.readNextStartElement()) {
                             QString eltname = xml.name().toString();
+//                            AddLog(LOG_TEMP,eltname);
                             if (eltname == "position") {
                                 QString posX = xml.attributes().value("x").toString();
                                 QString posY = xml.attributes().value("y").toString();
@@ -420,8 +421,14 @@ void MainWindowPockemul::opensession()
                                     locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);
 
                                 }
+                                xml.skipCurrentElement();
 
-
+                            }
+                            else
+                            if (eltname == "session") {
+//                                AddLog(LOG_MASTER,"OK");
+                                ((CpcXXXX*)locPC)->LoadSession_File(&xml);
+                                xml.skipCurrentElement();
                             }
                             else
                                 xml.skipCurrentElement();

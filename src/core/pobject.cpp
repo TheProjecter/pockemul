@@ -292,7 +292,7 @@ void CPObject::fillSoundBuffer(BYTE val)
 
         if (audioBuff.size() >= (2*ps)) {
             m_output->write(audioBuff.constData(),ps);
-            AddLog(LOG_TEMP,tr("audiobuffsize:%1  outbuffer:%2").arg(audioBuff.size()).arg(m_audioOutput->bufferSize()-m_audioOutput->bytesFree()));
+//            AddLog(LOG_TEMP,tr("audiobuffsize:%1  outbuffer:%2").arg(audioBuff.size()).arg(m_audioOutput->bufferSize()-m_audioOutput->bytesFree()));
             //audioBuff.clear();
             audioBuff.remove(0,ps);
         }

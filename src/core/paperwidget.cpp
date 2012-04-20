@@ -1,7 +1,50 @@
 #include <QtGui>
+
 #include "paperwidget.h"
 #include "cprinter.h"
 #include "Log.h"
+#include "tapandholdgesture.h"
+
+CpaperWidget::CpaperWidget(QRect rect,QImage * buffer,QWidget * parent):QWidget(parent)
+{
+    pPC = (CPObject *)parent;
+    bufferImage = buffer;
+
+    setMouseTracking(true);
+    setCursor(Qt::PointingHandCursor);
+    resize(rect.width(),rect.height());
+    move(rect.x(),rect.y());
+    Offset = QPoint(0,0);
+    this->baseRect = rect;
+    _gestureHandler = new TapAndHoldGesture(this);
+    connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
+}
+
+void CpaperWidget::tapAndHold(QMouseEvent * event)
+{
+#ifdef Q_OS_ANDROIS
+    QContextMenuEvent *cme = new QContextMenuEvent(QContextMenuEvent::Mouse,QPoint(0,0),QPoint(0,0));
+#else
+    QContextMenuEvent *cme = new QContextMenuEvent(QContextMenuEvent::Mouse,event->pos(),event->globalPos());
+#endif
+
+    contextMenuEvent(cme);
+}
+
+void CpaperWidget::mousePressEvent(QMouseEvent *event)
+{
+    _gestureHandler->handleEvent( event );
+}
+
+void CpaperWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    _gestureHandler->handleEvent( event );
+}
+
+void CpaperWidget::mouseMoveEvent( QMouseEvent * event )
+{
+    _gestureHandler->handleEvent( event );
+}
 
 void CpaperWidget::setOffset(QPoint val)
 {
