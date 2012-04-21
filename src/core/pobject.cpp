@@ -682,9 +682,9 @@ void CPObject::paintEvent(QPaintEvent *event)
 	}
 
 
-    if (getfrequency()>0) {
-        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
-    }
+//    if (getfrequency()>0) {
+//        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
+//    }
 	painter.end();
 
 }

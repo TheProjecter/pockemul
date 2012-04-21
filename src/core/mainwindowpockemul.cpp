@@ -801,6 +801,7 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
     }
 
     pObject->exit();
+    pObject->close();
     pObject->deleteLater();
 }
 
