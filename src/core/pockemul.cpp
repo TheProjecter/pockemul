@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
 
     mainwindow = new MainWindowPockemul;
 
+#ifdef Q_OS_ANDROID
     QSplashScreen splash;
     splash.setPixmap(QPixmap(":/POCKEMUL/pockemul/splash.png"));
     splash.show();
@@ -57,8 +58,6 @@ int main(int argc, char *argv[])
     app.processEvents();
     splash.finish(mainwindow);
 
-
-#ifdef Q_OS_ANDROID
     mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
 

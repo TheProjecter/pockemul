@@ -1,6 +1,6 @@
 
 
-CONFIG += release \
+CONFIG += debug_and_release \
     qt \
     resources \
     thread \
@@ -471,8 +471,14 @@ TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
 UI_DIR += build/ui
-mac:OBJECTS_DIR += build/o/mac
-unix:OBJECTS_DIR += build/o/unix
+mac {
+    debug:OBJECTS_DIR += build/o/wd
+    release:OBJECTS_DIR += build/o/wr
+}
+unix {
+    debug:OBJECTS_DIR += build/o/wd
+    release:OBJECTS_DIR += build/o/wr
+}
 win32 { 
     debug:OBJECTS_DIR += build/o/wd
     release:OBJECTS_DIR += build/o/wr
