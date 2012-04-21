@@ -220,7 +220,7 @@ void CPObject::audioStateChanged(QAudio::State state)
 
     }
     //AddLog(LOG_TEMP,tr("state = %1").arg(state))
-    qWarning() << "state = " << state;
+//    qWarning() << "state = " << state;
 }
 #endif
 int CPObject::initsound()
