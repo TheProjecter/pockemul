@@ -1,4 +1,4 @@
-
+QMAKE_CXXFLAGS += -fsigned-char
 
 CONFIG += debug_and_release \
     qt \
