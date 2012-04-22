@@ -69,6 +69,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_SML		0x14
 #define K_DEF		0xde
 #define K_SHT		0x11
+#define K_SHT2		0x12
 #define K_OB		0x3f
 #define K_OF		0x3e
 #define K_DBLQUOTE  0x22
@@ -202,6 +203,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_OUT       0x204
 #define K_IN        0x205
 #define K_MEMO_IN   0x206
+#define K_ANS       0x207
 
 class CPObject;
 class CpcXXXX;

@@ -71,6 +71,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     pHD44352    = new CHD44352(this);
 
     m_kb_matrix = 0;
+    shift=fct = false;
 
 }
 
@@ -171,6 +172,7 @@ void Cpb1000::TurnOFF(void) {
 
 void Cpb1000::TurnON(void){
     CpcXXXX::TurnON();
+    Reset();
 
 }
 
@@ -274,8 +276,11 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY(K_INS))			data|=0x08;
             if (KEY(K_STOP))		data|=0x10;
             if (KEY(')'))			data|=0x20;
+//            if (KEY(K_CONTRAST))	data|=0x40;
 //            if (KEY(K_CONTRAST))	data|=0x80;
             if (KEY(K_LCKEY))		data|=0x2000;
+//            if (KEY(K_CONTRAST))	data|=0x4000;
+//            if (KEY(K_CONTRAST))	data|=0x8000;
         }
 
         if (ko&0x40) {
@@ -324,7 +329,7 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
 //            if (KEY(K_AA))			data|=0x01;
             if (KEY('0'))			data|=0x02;
             if (KEY('.'))			data|=0x04;
-//            if (KEY(K_ANS))			data|=0x08;
+            if (KEY(K_ANS))			data|=0x08;
             if (KEY(K_RET))			data|=0x10;
             if (KEY('-'))			data|=0x20;
             if (KEY(' '))			data|=0x80;
@@ -332,6 +337,16 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
             if (KEY(K_TS_31))       data|=0x2000;
             if (KEY(K_TS_32))       data|=0x4000;
             if (KEY(K_TS_33))       data|=0x8000;
+        }
+
+        if (ko&0x400) {
+            if (shift)              data|=0x40;
+            if (KEY(K_SHT))			data|=0x40;
+            if (KEY(K_SHT2))		data|=0x40;
+        }
+        if (ko&0x800) {
+            if (fct)                data|=0x40;
+            if (KEY(K_F1))			data|=0x40;
         }
     }
 
@@ -346,6 +361,19 @@ void Cpb1000::setKey(UINT8 data) {
     m_kb_matrix = data;
 }
 
+void Cpb1000::keyPressEvent(QKeyEvent *event) {
+    switch (event->modifiers()) {
+        case Qt::ShiftModifier : shift = true; event->accept();qWarning("SHIFT");break;
+        case Qt::AltModifier:   fct = true; event->accept();qWarning("FCT");break;
+//        case Qt::ControlModifier: ctrl = true; break;
+    }
+    event->ignore();
+}
+void Cpb1000::keyReleaseEvent(QKeyEvent *event)
+{
+    shift=fct = false;
+    event->ignore();
+}
 UINT8 Cpb1000::readPort()
 {
 //    AddLog(LOG_TEMP,"Read Port");

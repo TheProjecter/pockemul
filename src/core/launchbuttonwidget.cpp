@@ -35,7 +35,7 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
         launcher->setGeometry(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
         launcher->raise();
         launcher->show();
-
+        launcher->currentWidget()->setFocus();
         qWarning("hover2\n");
         QPropertyAnimation *animation = new QPropertyAnimation(launcher, "geometry");
         animation->setDuration(500);

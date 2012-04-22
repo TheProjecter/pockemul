@@ -1254,13 +1254,20 @@ void PictureFlow::showSlide(int index)
 
 void PictureFlow::keyPressEvent(QKeyEvent* event)
 {
+
+
   if(event->key() == Qt::Key_Left)
   {
-    if(event->modifiers() == Qt::ControlModifier)
+
+    if(event->modifiers() == Qt::ControlModifier) {
       showSlide(currentSlide()-10);
-    else
+    }
+    else {
+        qWarning("KEY PRESS :%i",event->key());
       showPrevious();
+    }
     event->accept();
+    emit inputReceived();
     return;
   }
 
@@ -1274,12 +1281,17 @@ void PictureFlow::keyPressEvent(QKeyEvent* event)
     return;
   }
 
-  if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Select) {
+  if (event->key() == Qt::Key_Return || event->key()==Qt::Key_Enter || event->key() == Qt::Key_Select) {
     emit itemActivated(d->getTarget());
     event->accept();
     return;
   }
 
+  if (event->key() == Qt::Key_Escape) {
+      exitSlot();
+      event->accept();
+      return;
+  }
   event->ignore();
 }
 

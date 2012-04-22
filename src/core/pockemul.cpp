@@ -76,22 +76,19 @@ int main(int argc, char *argv[])
     mainwindow->resize(680,505);
 
 
-
-    mainwindow->launch = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwidget,
                                                 LaunchButtonWidget::PictureFlow,
                                                 ":/POCKEMUL/pockemul/config.xml",
                                                 ":/POCKEMUL/pockemul/pocket.png");
-    mainwindow->launch->setMouseTracking(true);
-    mainwindow->launch->setGeometry(0,12,48,48);
-    mainwindow->launch->setToolTip("Start a new Pocket Emulation.");
+    launch1->setGeometry(0,12,48,48);
+    launch1->setToolTip("Start a new Pocket Emulation.");
 
-    mainwindow->launch2 = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwidget,
                                                  LaunchButtonWidget::PictureFlow,
                                                  ":/POCKEMUL/pockemul/configExt.xml",
                                                  ":/POCKEMUL/pockemul/ext.png");
-    mainwindow->launch2->setMouseTracking(true);
-    mainwindow->launch2->setGeometry(0,75,48,48);
-    mainwindow->launch2->setToolTip("Start a new Extension Emulation.");
+    launch2->setGeometry(0,75,48,48);
+    launch2->setToolTip("Start a new Extension Emulation.");
 
 #ifndef Q_OS_ANDROID
     LaunchButtonWidget* dev = new LaunchButtonWidget(mainwidget,

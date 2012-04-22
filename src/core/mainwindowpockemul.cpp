@@ -765,7 +765,9 @@ void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
 
 void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
 
-void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){}
+void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
+    event->ignore();
+}
 
 void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){}
 
