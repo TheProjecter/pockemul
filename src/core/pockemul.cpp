@@ -21,6 +21,13 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+#ifdef Q_OS_MAC
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    dir.cd("plugins");
+    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    qWarning()<<QApplication::libraryPaths();
+#endif
 
 //    QFeedbackHapticsEffect rumble;
 #if 0
