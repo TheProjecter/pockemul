@@ -22,7 +22,7 @@
      <example idpocket="PC 1421" filename="./" name="Sharp pc-1421" image=":/PC1421/pc1421/pc-1421.jpg"/>
      <example idpocket="PC 1450" filename="./" name="Sharp pc-1450" image=":/PC1450/pc1450/pc1450.jpg"/>
      <!--example idpocket="PC 1460" filename="./" name="Sharp pc-1460" image=":/cover/pc-1460.jpg"/-->
-     <example idpocket="PC 1475" filename="./" name="Sharp pc-1475" image=":/PC1475/pc1475/pc1475.jpg"/>
+     <example idpocket="PC 1475" filename="./" name="Sharp pc-1475" image=":/PC1475/pc1475/pc1475.png"/>
      <example idpocket="PC 1500" filename="./" name="Sharp pc-1500" image=":/PC1500/pc1500/pc1500.jpg"/>
      <example idpocket="Tandy PC-2" filename="./" name="Tandy PC-2" image=":/TRSPC2/pc1500/trspc2.jpg"/>
      <example idpocket="PC 1500A" filename="./" name="Sharp pc-1500A" image=":/PC1500A/pc1500A/pc1500A.jpg"/>

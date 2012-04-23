@@ -23,9 +23,9 @@ Cpc1475::Cpc1475(CPObject *parent)	: Cpc1360(parent)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1475.pkm";
 
-    BackGroundFname	= ":/PC1475/pc1475/pc1475.jpg";
-    LcdFname		= ":/PC1475/pc1475/1475lcd.jpg";
-    SymbFname		= ":/PC1475/pc1475/1475symb.jpg";
+    BackGroundFname	= ":/PC1475/pc1475/pc1475.png";
+    LcdFname		= ":/PC1475/pc1475/1475lcd.png";
+    SymbFname		= ":/PC1475/pc1475/1475symb.png";
     memsize			= 0x40000;
 //		NbSlot		= 14;
 
