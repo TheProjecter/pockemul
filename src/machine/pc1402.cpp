@@ -12,9 +12,9 @@ Cpc1402::Cpc1402(CPObject *parent)	: Cpc1401(parent)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1402.pkm";
 
-    BackGroundFname	= ":/PC1402/pc1402/pc1402.jpg";
-    LcdFname		= ":/PC1402/pc1402/1402lcd.jpg";
-    SymbFname		= ":/PC1402/pc1402/1402symb.jpg";
+    BackGroundFname	= ":/PC1402/pc1402/pc1402.png";
+    LcdFname		= ":/PC1402/pc1402/1402lcd.png";
+    SymbFname		= ":/PC1402/pc1402/1402symb.png";
 
 
     memsize			= 0x10000;

@@ -57,9 +57,9 @@ Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1403.pkm";
 
-    BackGroundFname	= ":/PC1403/pc1403/pc1403.jpg";
-    LcdFname		= ":/PC1403/pc1403/1403lcd.jpg";
-    SymbFname		= ":/PC1403/pc1403/1403symb.jpg";
+    BackGroundFname	= ":/PC1403/pc1403/pc1403.png";
+    LcdFname		= ":/PC1403/pc1403/1403lcd.png";
+    SymbFname		= ":/PC1403/pc1403/1403symb.png";
     memsize			= 0x20000;
 //		NbSlot		= 8;
 
@@ -184,9 +184,9 @@ Cpc1403H::Cpc1403H(CPObject *parent) : Cpc1403(parent)
     SessionHeaderLen= 10;
     Initial_Session_Fname ="pc1403H.pkm";
 
-    BackGroundFname	= ":/PC1403/pc1403/pc1403h.jpg";
-    LcdFname		= ":/PC1403/pc1403/1403lcd.jpg";
-    SymbFname		= ":/PC1403/pc1403/1403symb.jpg";
+    BackGroundFname	= ":/PC1403/pc1403/pc1403h.png";
+    LcdFname		= ":/PC1403/pc1403/1403lcd.png";
+    SymbFname		= ":/PC1403/pc1403/1403symb.png";
 
 
 }

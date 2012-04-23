@@ -16,10 +16,10 @@
      <example idpocket="PC 1350" filename="./" name="Sharp pc-1350" image=":/PC1350/pc1350/pc1350.png"/>
      <example idpocket="PC 1360" filename="./" name="Sharp pc-1360" image=":/PC1360/pc1360/pc1360.jpg"/>
      <example idpocket="PC 1401" filename="./" name="Sharp pc-1401" image=":/PC1401/pc1401/pc1401.jpg"/>
-     <example idpocket="PC 1402" filename="./" name="Sharp pc-1402" image=":/PC1402/pc1402/pc1402.jpg"/>
-     <example idpocket="PC 1403" filename="./" name="Sharp pc-1403" image=":/PC1403/pc1403/pc1403.jpg"/>
-     <example idpocket="PC 1403H" filename="./" name="Sharp pc-1403H" image=":/PC1403/pc1403/pc1403h.jpg"/>
-     <example idpocket="PC 1421" filename="./" name="Sharp pc-1421" image=":/PC1421/pc1421/pc-1421.jpg"/>
+     <example idpocket="PC 1402" filename="./" name="Sharp pc-1402" image=":/PC1402/pc1402/pc1402.png"/>
+     <example idpocket="PC 1403" filename="./" name="Sharp pc-1403" image=":/PC1403/pc1403/pc1403.png"/>
+     <example idpocket="PC 1403H" filename="./" name="Sharp pc-1403H" image=":/PC1403/pc1403/pc1403h.png"/>
+     <example idpocket="PC 1421" filename="./" name="Sharp pc-1421" image=":/PC1421/pc1421/pc-1421.png"/>
      <example idpocket="PC 1450" filename="./" name="Sharp pc-1450" image=":/PC1450/pc1450/pc1450.jpg"/>
      <!--example idpocket="PC 1460" filename="./" name="Sharp pc-1460" image=":/cover/pc-1460.jpg"/-->
      <example idpocket="PC 1475" filename="./" name="Sharp pc-1475" image=":/PC1475/pc1475/pc1475.png"/>

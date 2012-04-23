@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/PC1421">
-        <file>pc1421/pc-1421.jpg</file>
         <file>pc1421/bas-1421.rom</file>
         <file>pc1421/cpu-1421.rom</file>
+        <file>pc1421/pc-1421.png</file>
     </qresource>
 </RCC>

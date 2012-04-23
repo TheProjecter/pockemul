@@ -14,9 +14,9 @@ Cpc1421::Cpc1421(CPObject *parent)	: Cpc1401(parent)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1421.pkm";
 
-    BackGroundFname	= ":/PC1421/pc1421/pc-1421.jpg";
-//		LcdFname		= ":/PC1402/pc1402/1402lcd.jpg";
-//		SymbFname		= ":/PC1402/pc1402/1402symb.jpg";
+    BackGroundFname	= ":/PC1421/pc1421/pc-1421.png";
+//		LcdFname		= ":/PC1402/pc1402/1402lcd.jpng";
+//		SymbFname		= ":/PC1402/pc1402/1402symb.png";
 
 
 //    memsize			= 0x10000;
