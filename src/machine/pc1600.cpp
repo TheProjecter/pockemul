@@ -210,6 +210,7 @@ void Cpc1600::TurnON(void)
     //remove(Initial_Session_Fname.toStdString().c_str());
     //pCPU->Reset();
     CpcXXXX::TurnON();
+    pHD61102_1->updated = pHD61102_2->updated = true;
 }
 
 void	Cpc1600::initExtension(void)

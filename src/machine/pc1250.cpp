@@ -237,6 +237,7 @@ BYTE	Cpc1250::Get_PortA(void)
 		if (KEY('2'))			data|=0x04;
 		if (KEY('5'))			data|=0x08;
 		if (KEY(K_DEF))			data|=0x10;
+        if (KEY(K_CTRL))		data|=0x10;
 		if (KEY('Q'))			data|=0x20;
 		if (KEY('A'))			data|=0x40;
 		if (KEY('Z'))			data|=0x80;
@@ -300,7 +301,7 @@ BYTE	Cpc1250::Get_PortB(void)
         case PS_RSV : PowerSwitch = PS_RUN; break;
 		}
 	}
-	previous_key = pKEYB->LastKey;
+    previous_key = pKEYB->LastKey;
 
 	if (IO_B&8)
 	{

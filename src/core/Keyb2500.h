@@ -14,12 +14,12 @@ K_DEL,		K_5,		K_4,		'n',		'h',		'y',		'6',		NUL,
 K_INS,		K_8,		K_7,		'm',		'j',		'u',		'7',		NUL,
 K_CLR,		K_9,		K_SLH,		',',		'k',		'i',		'8',		NUL,
 
-NUL,		K_MOD,		NUL,		'.',		'l',		'o',		'9',		NUL,
+NUL,		K_MOD,		K_PEN,		'.',		'l',		'o',		'9',		NUL,
 NUL,		NUL,		K_DA,		NUL,		';',		'p',		'0',		NUL,
 NUL,		NUL,		NUL,		K_UA,		NUL,		'/',		'-',		NUL,
 NUL,		NUL,		NUL,		NUL,		K_RA,		K_BRACKET,	'=',		NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		K_LA,		K_QUOTE,	NUL,
-NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		K_DEF,		NUL,
+NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		K_CTRL,		NUL,
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL
 };
 
@@ -36,7 +36,7 @@ TransMap KeyMap2500[]={
 {9,     "  ;         ",	';',	584,	181,	2},
 {11,	"  +         ",	'+',	500,	218,	2},
 {12,	" CLS        ",	K_CLR,	556,	48,		1},
-{13,	" DEF        ",	K_DEF,	22,		189,	1},
+{13,	" DEF        ",	K_CTRL,	22,		189,	1},
 {14,	" DEL        ",	K_DEL,	486,	77,		1},
 {15,	" Down Arrow ",	K_DA,	416,	48,		1},
 {16,	" ENTER      ",	K_RET,	336,	221,	3},

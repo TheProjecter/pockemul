@@ -32,11 +32,11 @@ public:
     void lcdDataWrite(UINT8 data);
     void lcdControlWrite(UINT8 data);
 
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
+//    void keyPressEvent(QKeyEvent *event);
+//    void keyReleaseEvent(QKeyEvent *event);
 
-    bool shift;
-    bool fct;
+//    bool shift;
+//    bool fct;
 };
 
 #endif // CPB1000_H

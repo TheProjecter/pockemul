@@ -215,14 +215,14 @@ static const struct {
 void Clcdc_pc2500::disp_symb(void)
 {
 
-    if (DirtyBuf[SYMB1_ADR_2500-0x7000] )
+    if (DirtyBuf[SYMB1_ADR_2500-0x7000] || DirtyBuf[SYMB2_ADR_2500-0x7000])
 	{
-        for (int ii=0;ii<5;ii++)
+        for (int ii=0;ii<6;ii++)
             disp_one_symb( pc2500_pos[ii].symb,		COLOR((pPC->Get_8(pc2500_pos[ii].addr)) & pc2500_pos[ii].bit),	pc2500_pos[ii].x,	pc2500_pos[ii].y);
 
         DirtyBuf[SYMB1_ADR_2500-0x7000] = 0;
 
-		Refresh = TRUE;
+        Refresh = true;
 	}
 	
 	Clcdc::disp_symb();
@@ -1165,7 +1165,7 @@ static const struct {
 	{20 , 0},		// DEF
 	{45 , 0},		// SHIFT
 	{67 , 0},		// HYP
-	{0  , 0},		// SML
+    {105 , 0},		// SML
 	{125, 0},		// DE
 	{133, 0},		// G
 	{138, 0},		// RAD
@@ -1199,6 +1199,7 @@ void Clcdc_pc1450::disp_symb(void)
 	disp_one_symb(DEF,		COLOR(SYMB2_1450&0x02),	pc1450_pos[1].x,	pc1450_pos[1].y);
 	disp_one_symb(SHIFT,	COLOR(SYMB2_1450&0x04),	pc1450_pos[2].x,	pc1450_pos[2].y);
 	disp_one_symb(HYP,		COLOR(SYMB2_1450&0x08),	pc1450_pos[3].x,	pc1450_pos[3].y);
+    disp_one_symb(SML,		COLOR(SYMB1_1450&0x04),	pc1450_pos[4].x,	pc1450_pos[4].y);
 	disp_one_symb(DE,		COLOR(SYMB3_1450&0x20),	pc1450_pos[5].x,	pc1450_pos[5].y);
 	disp_one_symb(G,		COLOR(SYMB3_1450&0x10),	pc1450_pos[6].x,	pc1450_pos[6].y);
 	disp_one_symb(RAD,		COLOR(SYMB3_1450&0x08),	pc1450_pos[7].x,	pc1450_pos[7].y);
@@ -1220,7 +1221,8 @@ void Clcdc_pc1450::disp_symb(void)
 	
 	DirtyBuf[SYMB1_ADR_1450-0x7000] = 0;				
 	DirtyBuf[SYMB2_ADR_1450-0x7000] = 0;				
-	DirtyBuf[SYMB3_ADR_1450-0x7000] = 0;				
+    DirtyBuf[SYMB3_ADR_1450-0x7000] = 0;
+    Refresh = true;
 
 	}
 

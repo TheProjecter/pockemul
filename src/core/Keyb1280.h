@@ -7,7 +7,7 @@ K_SQR,		K_LA,		K_DA,       K_RA,		K_UA,		'7',		K_BS,		K_CAL,
 '(',		'i',		')',		'4',		'5',		'8',		K_DEL,		K_MOD,
 NUL,		'k',		'o',		'p',		'6',		'9',		K_INS,		K_CAL_PER,
 NUL,		' ',		'l',		'=',		'*',		'/',		K_MPLUS,	K_CLR,
-NUL,		',',		'y',		';',		'$',		K_SML,		K_SHT,		K_DEF,
+NUL,		',',		'y',		';',		'$',		K_SML,		K_SHT,		K_CTRL,
 NUL,		K_F1,		'h',		't',		K_F3,		'#',		'"',		'!',
 NUL,		'%',		'u',		'j',		'r',		'e',		'w',		'q',
 NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,		NUL,
@@ -32,7 +32,7 @@ TransMap KeyMap1280[]={
 {9,	"  ;         ",	';',	584,	181,	2},		//OK
 {11,	"  +         ",	'+',	500,	218,	2},		//OK
 {12,	" CLS        ",	K_CLR,	556,	48,		10},		//OK
-{13,	" DEF        ",	K_DEF,	22,		189,	10},		//OK
+{13,	" DEF        ",	K_CTRL,	22,		189,	10},		//OK
 {14,	" DEL        ",	K_DEL,	486,	77,		10},		//OK
 {15,	" Down Arrow ",	K_DA,	416,	48,		10},		//OK
 {16,	" ENTER      ",	K_RET,	336,	221,	3},		//OK

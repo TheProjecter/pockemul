@@ -199,7 +199,7 @@ bool Cce150::run(void)
 	{
 		Print_Mode = ! Print_Mode;
 		pLH5810->SetRegBit(LH5810_OPA,5,Print_Mode);
-		pKEYB->LastKey = 0;
+        pKEYB->LastKey = 0;
 	}
 	
 	////////////////////////////////////////////////////////////////////

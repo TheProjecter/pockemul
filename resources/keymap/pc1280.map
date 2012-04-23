@@ -17,7 +17,7 @@
     <KEY description=";" height="16" left="134" scancode="0x3b" top="362" width="16"/>
     <KEY description="+" height="19" left="435" scancode="0x2b" top="462" width="27"/>
     <KEY description="CLS" height="16" left="434" scancode="0xc" top="294" width="27"/>
-    <KEY description="DEF" height="16" left="20" scancode="0xde" top="328" width="27"/>
+    <KEY description="DEF" height="16" left="20" scancode="0xd5" top="328" width="27"/>
     <KEY description="DEL" height="16" left="348" scancode="0xa" top="328" width="27"/>
     <KEY description="Down Arrow" height="16" left="225" scancode="0x4" top="295" width="27"/>
     <KEY description="ENTER" height="16" left="247" scancode="0xd" top="464" width="46"/>
@@ -74,6 +74,5 @@
     <KEY description="BS" height="16" left="307" scancode="0xd6" top="328" width="26"/>
     <KEY description="M+" height="16" left="435" scancode="0xee" top="328" width="26"/>
     <KEY description="=(CAL)" height="16" left="393" scancode="0xd9" top="465" width="26"/>
-    <KEY description="" height="500" left="1" scancode="0x0" top="0" width="0"/>
 </Keyboard>
 </KEYBMAP>

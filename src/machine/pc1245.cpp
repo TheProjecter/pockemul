@@ -94,7 +94,7 @@ BYTE	Cpc1245::Get_PortB(void)
 		case PS_PRO : PowerSwitch = PS_RUN; break;
 		}
 	}
-	previous_key = pKEYB->LastKey;
+    previous_key = pKEYB->LastKey;
 
 	if (IO_B&8)
 	{

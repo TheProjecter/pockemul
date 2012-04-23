@@ -12,7 +12,7 @@
     <KEY description=";" height="16" left="1" scancode="0x3b" top="0" width="25"/>
     <KEY description="+" height="22" left="537" scancode="0x2b" top="217" width="32"/>
     <KEY description="CLS" height="16" left="589" scancode="0xef" top="22" width="25"/>
-    <KEY description="DEF" height="16" left="136" scancode="0xde" top="126" width="25"/>
+    <KEY description="DEF" height="16" left="136" scancode="0xd5" top="126" width="25"/>
     <KEY description="DEL" height="16" left="1" scancode="0xa" top="0" width="25"/>
     <KEY description="Down Arrow" height="16" left="174" scancode="0x4" top="126" width="25"/>
     <KEY description="ENTER" height="16" left="323" scancode="0xd" top="220" width="59"/>

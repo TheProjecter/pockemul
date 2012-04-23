@@ -25,7 +25,7 @@ int KeyMapce125Lenght = 5;
 void Cce125tape::ComputeKey(void)
 {
 
-	if (pKEYB->LastKey == K_PLAY) 
+    if (pKEYB->LastKey == K_PLAY)
 		{
             if (mode == LOAD)
 				{

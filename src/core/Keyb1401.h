@@ -7,7 +7,7 @@ BYTE scandef_pc1401[] = {
 //+0		+1			+2			+3			+4			+5			+6			+7
 K_SIGN,		'8',		'2',		'5',		K_CAL,		'q',		'a',		'z',
 '.',		'9',		'3',		'6',		K_BASIC,	'w',		's',		'x',
-'+',		'/',		'-',		'*',		K_DEF,		'e',		'd',		'c',
+'+',		'/',		'-',		'*',		K_CTRL,		'e',		'd',		'c',
 ')',		'(',		K_SQR,		K_ROOT,		K_POT,		K_EXP,		K_XM,		'=',
 K_STAT,		K_1X,		K_LOG,		K_LN,		K_DEG,		K_HEX,		NUL,		K_MPLUS,
 K_CCE,		K_FSE,		K_TAN,		K_COS,		K_SIN,		K_HYP,		K_SHT,		K_RM,
@@ -37,7 +37,7 @@ TransMap KeyMap1401[]={
 9,	"  ;         ",	';',	0,		0,		1,		//OK
 10,	"  +         ",	'+',	537,	217,	2,		//OK
 11,	" CLS        ",	K_CCE,	589,	22,		1,		//OK
-12,	" DEF        ",	K_DEF,	136,	126,	1,		//OK
+12,	" DEF        ",	K_CTRL,	136,	126,	1,		//OK
 13,	" DEL        ",	K_DEL,	0,		0,		1,
 14,	" Down Arrow ",	K_DA,	174,	126,	1,		//OK	
 15,	" ENTER      ",	K_RET,	323,	220,	3,		//OK

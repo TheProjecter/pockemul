@@ -628,7 +628,7 @@ UINT8 Cpc15XX::in(UINT8 address)
 		if (KEY(K_MOD))			data|=2;			// MODE
 		if (KEY(K_CLR))			data|=4;			// CLS
 		if (KEY('A'))			data|=8;
-		if (KEY(K_DEF))			data|=0x10;
+        if (KEY(K_CTRL))		data|=0x10;         // DEF
 		if (KEY('Q'))			data|=0x20;
 		if (KEY('Z'))			data|=0x40;
 		if (KEY(K_SML))			data|=0x80;

@@ -703,9 +703,10 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 	if (!pKEYB) return;	// if no Keyboard then return;
 
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
-
+    pKEYB->isCtrl = (QApplication::keyboardModifiers() == Qt::ControlModifier);
    	switch (event->key()) {
-        //case Qt::Key_Shift:		pKEYB->LastKey = K_SHT;		event->accept();	break;
+        case Qt::Key_Shift:		pKEYB->LastKey = K_SHT;		event->accept();	break;
+        case Qt::Key_Control:	pKEYB->LastKey = K_CTRL;	event->accept();	break;
    		case Qt::Key_Return:	pKEYB->LastKey = K_RET;		event->accept();	break;
         case Qt::Key_Delete:	pKEYB->LastKey = K_DEL;		event->accept();	break;
         case Qt::Key_Insert:	pKEYB->LastKey = K_INS;		event->accept();	break;

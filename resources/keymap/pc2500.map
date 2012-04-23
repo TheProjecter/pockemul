@@ -1,5 +1,5 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
-<model>PC2500</model>
+<model>pc2500</model>
 <Keyboard>
     <KEY description="-" height="45" left="641" scancode="0x2d" top="358" width="45"/>
     <KEY description="(" height="22" left="542" scancode="0x28" top="107" width="32"/>
@@ -12,7 +12,7 @@
     <KEY description=";" height="45" left="625" scancode="0x3b" top="481" width="45"/>
     <KEY description="+" height="41" left="898" scancode="0x2b" top="605" width="37"/>
     <KEY description="CLS" height="16" left="858" scancode="0xc" top="274" width="48"/>
-    <KEY description="DEF" height="16" left="586" scancode="0xde" top="311" width="48"/>
+    <KEY description="DEF" height="16" left="586" scancode="0xd5" top="311" width="48"/>
     <KEY description="DEL" height="36" left="898" scancode="0xa" top="362" width="36"/>
     <KEY description="Down Arrow" height="16" left="724" scancode="0x4" top="311" width="48"/>
     <KEY description="ENTER" height="46" left="594" scancode="0xd" top="604" width="120"/>
@@ -20,6 +20,7 @@
     <KEY description="INS" height="36" left="898" scancode="0x9" top="423" width="36"/>
     <KEY description="Left Arrow" height="16" left="651" scancode="0x6" top="311" width="52"/>
     <KEY description="MODE" height="16" left="858" scancode="0x8" top="312" width="48"/>
+    <KEY description="PEN" height="16" left="653" scancode="0xe" top="274" width="48"/>
     <KEY description="On/Brk" height="20" left="786" scancode="0x3" top="271" width="56"/>
     <KEY description="On/Off" height="13" left="855" scancode="0x3e" top="239" width="53"/>
     <KEY description="Rigth Arrow" height="16" left="789" scancode="0x7" top="311" width="52"/>
