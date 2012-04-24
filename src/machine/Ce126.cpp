@@ -346,14 +346,17 @@ bool Cce126::run(void)
 	
 
     switch (code_transfer_step) {
-    case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
+    case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP))
+                {
                     lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
+                    t=0; c=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
                 }
                 break;
-    case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP)) {
-                    if (pTIMER->msElapsed(lastState) > 40) {
+    case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP))
+                {
+                    if (pTIMER->msElapsed(lastState) > 30) {
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
@@ -393,7 +396,7 @@ bool Cce126::run(void)
                             lastState = pTIMER->state;
                         }
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(17);
-                        //t=0; c=0;
+                        t=0; c=0;
                     }
                     else {
                         ACK = DOWN;
@@ -447,6 +450,7 @@ bool Cce126::run(void)
             case 0xff:
             case 0x0f:
             case 0x21:
+            case 0x45:
 
                 if ( (BUSY == Previous_BUSY ) && (Previous_BUSY == DOWN) &&
                      (MT_OUT1 == Previous_MT_OUT1) &&	(Previous_MT_OUT1 == DOWN) &&
@@ -459,9 +463,9 @@ bool Cce126::run(void)
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
 				}
 #if 0
-				if ( (Previous_PIN_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP ))
+                if ( (Previous_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP ))
 				{
-					Previous_PIN_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
+                    Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
 					AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
                     t=0;
                     c=0;
@@ -471,7 +475,7 @@ bool Cce126::run(void)
 						time.restart();
 						SET_PIN(PIN_ACK,UP);
 						AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
-						Previous_PIN_BUSY = GET_PIN(PIN_BUSY);
+                        Previous_BUSY = GET_PIN(PIN_BUSY);
 //						return;
 					}
 				}

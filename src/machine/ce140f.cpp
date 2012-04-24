@@ -881,12 +881,18 @@ void Cce140f::process_KILL(int cmd) {
 
 void Cce140f::process_CLOSE(int cmd) {
     QString s = "";
-    switch (cmd) {
+    BYTE arg = data.at(1);
+    AddLog(LOG_PRINTER,tr("process_CLOSE qrg=%1").arg(arg));
+    switch (arg) {
 
     case 0: // Close files open
         // si 0xFF close all files
         // si 0-8 close the corresponding file
         data_out.append(0x00);
+        break;
+    case 0xff: // Close all files
+        data_out.append(0xff);
+        AddLog(LOG_PRINTER,tr("CLOSE all files"));
         break;
     }
 

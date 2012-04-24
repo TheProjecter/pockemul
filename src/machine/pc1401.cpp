@@ -58,7 +58,7 @@ Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
     Lcd_Y	= 53;
     Lcd_DX	= 96;//206;
     Lcd_DY	= 7;//21;
-    Lcd_ratio_X	= 206/96;
+    Lcd_ratio_X	= 206.0/96;
     Lcd_ratio_Y	= 21/7;
 
     Lcd_Symb_X	= 119;
@@ -143,26 +143,24 @@ void	Cpc1401::Set_PortB(BYTE data)
 
 bool Cpc1401::Set_Connector(void)
 {
-#if 1
-	pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
+    pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
 	pCONNECTOR->Set_pin(PIN_VGG		,1);
-	pCONNECTOR->Set_pin(PIN_BUSY	,GET_PORT_BIT(PORT_F,1));		// F01
-	pCONNECTOR->Set_pin(PIN_D_OUT	,GET_PORT_BIT(PORT_F,2));		// F02
+    pCONNECTOR->Set_pin(PIN_BUSY	,GET_PORT_BIT(PORT_F,1));		// F01
+    pCONNECTOR->Set_pin(PIN_D_OUT	,GET_PORT_BIT(PORT_F,2));		// F02
 	pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
-	pCONNECTOR->Set_pin(PIN_SEL2	,GET_PORT_BIT(PORT_B,6));		// B06
-	pCONNECTOR->Set_pin(PIN_SEL1	,GET_PORT_BIT(PORT_B,5));		// B05
-#endif
-	return(1);
+    pCONNECTOR->Set_pin(PIN_SEL2	,0);
+    pCONNECTOR->Set_pin(PIN_SEL1	,0);
+
+    return(1);
 }
 
 bool Cpc1401::Get_Connector(void)
 {
-#if 1
 	Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB7
 	Set_Port_Bit(PORT_B,7,pCONNECTOR->Get_pin(PIN_ACK));	// ACK	:	IB8
 	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
-#endif
-	return(1);
+
+    return(1);
 }
 
 
