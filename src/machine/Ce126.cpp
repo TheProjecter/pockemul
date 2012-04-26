@@ -343,7 +343,31 @@ bool Cce126::run(void)
 	run_oldstate	= pTIMER->state;
 #endif
 
-	
+#if 0
+                if ( (Previous_MT_OUT1 == DOWN) && (MT_OUT1 == UP ))
+                {
+                    pTIMER->resetTimer(0);
+//                    AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
+                }
+                if ( (Previous_MT_OUT1 == UP) && (MT_OUT1 == UP ) && (pTIMER->msElapsedId(0)>2))
+                {
+                    t=0;
+                    c=0;
+                    if (BUSY == DOWN )
+                    {
+                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
+                        ACK = UP;
+//                        AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
+//                        Previous_BUSY = GET_PIN(PIN_BUSY);
+//						return;
+                    }
+                    else {
+                        // Works for 1350 but fail with others
+//                        ACK = DOWN;
+                    }
+                }
+#endif
 
     switch (code_transfer_step) {
     case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP))
@@ -462,24 +486,7 @@ bool Cce126::run(void)
                     ACK = DOWN;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
 				}
-#if 0
-                if ( (Previous_MT_OUT1 == DOWN) && (GET_PIN(PIN_MT_OUT1) == UP ))
-				{
-                    Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
-					AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
-                    t=0;
-                    c=0;
-					if (GET_PIN(PIN_BUSY) == DOWN )
-					{
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
-						time.restart();
-						SET_PIN(PIN_ACK,UP);
-						AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
-                        Previous_BUSY = GET_PIN(PIN_BUSY);
-//						return;
-					}
-				}
-#endif
+
                 if (SEL1 == UP )
                 {
                     t=0;

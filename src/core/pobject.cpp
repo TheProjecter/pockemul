@@ -451,7 +451,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
         switch (pKEYB->LastKey) {
         case K_OF : slotPower(); break;
-        case K_POW_ON : Power = true; TurnON(); break;
+        case K_BRK :
+        case K_POW_ON : TurnON(); break;
         case K_POW_OFF: Power = false;TurnOFF();break;
         }
 

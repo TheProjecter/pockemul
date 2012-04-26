@@ -175,11 +175,15 @@ void CpcXXXX::TurnOFF(void)
 
 void CpcXXXX::TurnON(void)
 {
-    Initial_Session_Load();
-    off = 0;
-    Power = true;
-    PowerSwitch = PS_RUN;
-    if (pLCDC) pLCDC->TurnON();
+    if ( (pKEYB->LastKey == K_POW_ON) ||
+         (Power && pKEYB->LastKey == K_OF))
+    {
+        Initial_Session_Load();
+        off = 0;
+        Power = true;
+        PowerSwitch = PS_RUN;
+        if (pLCDC) pLCDC->TurnON();
+    }
 }
 
 void CpcXXXX::Reset(void)

@@ -220,3 +220,14 @@ bool Cpc1280::Get_Connector(void)
 
     return(1);
 }
+
+void Cpc1280::TurnON(void)
+{
+    if (!Power && pKEYB->LastKey == K_BRK) {
+        Initial_Session_Load();
+        off = 0;
+        Power = true;
+        PowerSwitch = PS_RUN;
+        if (pLCDC) pLCDC->TurnON();
+    }
+}

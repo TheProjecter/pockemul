@@ -20,6 +20,7 @@ public:
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);
     virtual void	initExtension(void);
+    virtual void TurnON(void);
 
     Cpc1280(CPObject *parent = 0);
 
