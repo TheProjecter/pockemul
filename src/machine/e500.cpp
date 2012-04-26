@@ -365,7 +365,14 @@ BYTE Ce500::Get_PortB()
 
 void Ce500::TurnON()
 {
-    CpcXXXX::TurnON();
+    if (!Power && pKEYB->LastKey == K_BRK) {
+        AddLog(LOG_MASTER,"TURN ON");
+        Initial_Session_Load();
+        off = 0;
+        Power = true;
+        PowerSwitch = PS_RUN;
+        if (pLCDC) pLCDC->TurnON();
+    }
 }
 
 bool Ce500::LoadExtra(QFile *)
@@ -627,7 +634,7 @@ BYTE Ce500::getKey()
         }
         if (ks&0x800) {
             if (KEY(K_POW_OFF))		data|=0x01;
-            if (KEY(K_POW_ON))		data|=0x02;
+            if (KEY(K_BRK))		data|=0x02;
         }
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
         //SetReg(LH5810_OPA,data^0xff);
