@@ -175,8 +175,10 @@ void CpcXXXX::TurnOFF(void)
 
 void CpcXXXX::TurnON(void)
 {
+    if (pKEYB->LastKey == 0) pKEYB->LastKey = K_POW_ON;
     if ( (pKEYB->LastKey == K_POW_ON) ||
-         (Power && pKEYB->LastKey == K_OF))
+         (Power && pKEYB->LastKey == K_OF) ||
+         (!Power && pKEYB->LastKey == K_BRK))
     {
         Initial_Session_Load();
         off = 0;

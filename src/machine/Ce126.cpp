@@ -292,10 +292,7 @@ bool Cce126::Get_Connector(void) {
     MT_OUT2	= GET_PIN(PIN_MT_OUT2);
     BUSY    = GET_PIN(PIN_BUSY);
     D_OUT	= GET_PIN(PIN_D_OUT);
-    //MT_IN	= GET_PIN(PIN_MT_IN);
     MT_OUT1	= GET_PIN(PIN_MT_OUT1);
-    //D_IN	= GET_PIN(PIN_D_IN);
-    //ACK		= GET_PIN(PIN_ACK);
     SEL2	= GET_PIN(PIN_SEL2);
     SEL1	= GET_PIN(PIN_SEL1);
 
@@ -303,18 +300,15 @@ bool Cce126::Get_Connector(void) {
 }
 
 bool Cce126::Set_Connector(void) {
-    //SET_PIN(PIN_MT_OUT2,MT_OUT2);
-    //SET_PIN(PIN_BUSY,BUSY);
-    //SET_PIN(PIN_D_OUT,D_OUT);
     SET_PIN(PIN_MT_IN,MT_IN);
-    //SET_PIN(PIN_MT_OUT1,MT_OUT1);
     SET_PIN(PIN_D_IN,D_IN);
     SET_PIN(PIN_ACK,ACK);
-    //SET_PIN(PIN_SEL2,SEL2);
-    //SET_PIN(PIN_SEL1,SEL1);
 
     return true;
 }
+
+#define INIT_MODE   0
+#define BASIC_MODE  10
 
 #define CE126LATENCY (pTIMER->pPC->getfrequency()/3200)
 //#define CE126LATENCY (getfrequency()/3200)
@@ -344,7 +338,7 @@ bool Cce126::run(void)
 #endif
 
 #if 1
-    if ((code_transfer_step==10) || (code_transfer_step == 0)) {
+    if ((code_transfer_step == BASIC_MODE) || (code_transfer_step == INIT_MODE)) {
                 if ( (Previous_MT_OUT1 == DOWN) && (MT_OUT1 == UP ) && (D_OUT==DOWN))
                 {
                     code_transfer_step = 10;
@@ -373,7 +367,7 @@ bool Cce126::run(void)
 #endif
 
     switch (code_transfer_step) {
-    case 0 :    if ((MT_OUT1 == UP) && (D_OUT==UP))
+    case INIT_MODE :    if ((MT_OUT1 == UP) && (D_OUT==UP))
                 {
                     pTIMER->resetTimer(1);//lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
@@ -392,7 +386,7 @@ bool Cce126::run(void)
                     }
                 }
                 else {
-                    code_transfer_step=0;
+                    code_transfer_step=INIT_MODE;
                     //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(7);
                 }
                 break;
@@ -451,14 +445,14 @@ bool Cce126::run(void)
                 break;
     case 5:     if (pTIMER->msElapsedId(1)>9) {
                     ACK = DOWN;
-                    code_transfer_step=0;
+                    code_transfer_step=INIT_MODE;
                     pTIMER->resetTimer(1);//lastState=pTIMER->state;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(14);
                 }
                 break;
     case 6:     if ((pTIMER->msElapsedId(1)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
                     ACK = DOWN;
-                    code_transfer_step=0;
+                    code_transfer_step=INIT_MODE;
 //                    pTIMER->resetTimer(1);
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(19);
 
@@ -469,7 +463,7 @@ bool Cce126::run(void)
 
 
 
-   if ((code_transfer_step==10) || (code_transfer_step == 0)) {
+   if ((code_transfer_step==BASIC_MODE) || (code_transfer_step == INIT_MODE)) {
 
         switch (device_code)
         {

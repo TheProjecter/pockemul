@@ -283,13 +283,14 @@ void Clcdc_pc2500::disp(void)
 
 static const struct {
 	int x,y;
-} pc1360_pos[6]={
-	{4, 3},		// RUN
+} pc1360_pos[7]={
+    {8, 3},		// RUN
 	{4, 11},	// PRO
 	{6, 21},	// JAP
 	{4, 29},	// SML
 	{1, 39},	// SHIFT
-	{4, 47}		// DEF
+    {4, 47},	// DEF
+    {1, 3}      // PRINT
 };
 
 
@@ -308,10 +309,11 @@ void Clcdc_pc1360::disp_symb(void)
 	disp_one_symb(SML,		COLOR(SYMB1_1360&0x80),	pc1360_pos[3].x,	pc1360_pos[3].y);
 	disp_one_symb(SHIFT,	COLOR(SYMB1_1360&0x01),	pc1360_pos[4].x,	pc1360_pos[4].y);
 	disp_one_symb(DEF,		COLOR(SYMB1_1360&0x02),	pc1360_pos[5].x,	pc1360_pos[5].y);
+    disp_one_symb(PRINT,	COLOR(SYMB1_1360&0x04),	pc1360_pos[6].x,	pc1360_pos[6].y);
 	
 	DirtyBuf[SYMB1_ADR_1360-0x2800] = FALSE;				
 
-	Refresh = TRUE;
+    Refresh = true;
 	}
 	
 	Clcdc::disp_symb();
@@ -324,7 +326,7 @@ void Clcdc_pc1360::disp(void)
 	BYTE co,li,ind,b,data,x,y;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 	
 	disp_symb();
 	
