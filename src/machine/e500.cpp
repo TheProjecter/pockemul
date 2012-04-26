@@ -372,6 +372,7 @@ void Ce500::TurnON()
         Power = true;
         PowerSwitch = PS_RUN;
         if (pLCDC) pLCDC->TurnON();
+        this->Reset();
     }
 }
 
