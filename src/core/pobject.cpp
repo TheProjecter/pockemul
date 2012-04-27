@@ -65,6 +65,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 
         ioFreq = 0;
         off =true;
+        closed = false;
 		
         _gestureHandler = new TapAndHoldGesture(this);
         connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
@@ -450,10 +451,10 @@ void CPObject::mousePressEvent(QMouseEvent *event)
         pKEYB->LastKey = pKEYB->KeyClick(pts);
 
         switch (pKEYB->LastKey) {
-        case K_OF : slotPower(); break;
+        case K_OF : slotPower();return; break;
         case K_BRK :
         case K_POW_ON : TurnON(); break;
-        case K_POW_OFF: Power = false;TurnOFF();break;
+        case K_POW_OFF: Power = false;TurnOFF();return;break;
         case K_CLOSE: TurnCLOSE();break;
         }
 
