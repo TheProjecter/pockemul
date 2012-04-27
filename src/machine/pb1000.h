@@ -56,6 +56,9 @@ public:
     void setZoom(qreal value);
     qreal zoom() const { return m_zoom; }
     qreal m_zoom;
+
+public slots:
+    void endAnimation(void);
 };
 
 #endif // CPB1000_H
