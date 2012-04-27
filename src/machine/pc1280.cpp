@@ -11,6 +11,7 @@
 #include "cpu.h"
 #include "init.h"
 #include "Keyb1280.h"
+#include "clink.h"
 
 Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
 {								//[constructor]
@@ -288,6 +289,10 @@ void Cpc1280::paintEvent(QPaintEvent *event)
 }
 
 void Cpc1280::TurnCLOSE(void) {
+    // IF CONNECTED to printer , exit
+    QList<CPObject *> ConList;
+    mainwindow->pdirectLink->findAllObj(this,&ConList);
+    if (!ConList.isEmpty()) return;
     // Animate close
     closed = !closed;
 
