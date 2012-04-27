@@ -33,6 +33,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
     BackGroundFname	= ":/pb1000/pb-1000.png";
     LcdFname		= ":/pb1000/pb-1000lcd.png";
+    back = new QImage(":/pb1000/pb1000back.png");
     SymbFname		= "";
 
     memsize         = 0x20000;
@@ -73,9 +74,10 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     m_kb_matrix = 0;
 //    shift=fct = false;
 
-    closed = false;
-    flipping = false;
-    m_angle = 0;
+    closed = true;
+    flipping = true;
+    m_angle = 180;
+    m_zoom = 1;
 
 }
 
@@ -211,19 +213,32 @@ void Cpb1000::paintEvent(QPaintEvent *event)
 
         if (FinalImage)
         {
-            painter.translate(this->width()/2,355);
-//            AddLog(LOG_MASTER,tr("angle%1").arg(m_angle));
-            painter.drawImage(QPoint(-this->width()/2,-355),
-                              FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
-                              QRect(0,0,this->width(),355));
-            QTransform matrix;
-            matrix.rotate(m_angle, Qt::XAxis);
-            painter.setTransform(matrix,true);
-//            painter.translate(0,355);
-            painter.drawImage(QPoint(-this->width()/2,0),
-                              FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
-                              QRect(0,355,this->width(),this->height()-355));
+            int w = this->width();
+            int h = this->height();
+            painter.translate(w/2,355);
+//            AddLog(LOG_MASTER,tr("zoom%1").arg(m_zoom));
 
+            QTransform matrix;
+            matrix.scale(m_zoom,m_zoom);
+            painter.setTransform(matrix,true);
+            painter.drawImage(QPoint(-w/2,-355),
+                              FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                              QRect(0,0,w,355));
+
+            QTransform matrix2;
+            matrix2.rotate(m_angle, Qt::XAxis);
+            painter.setTransform(matrix2,true);
+            if (m_angle >90) {
+                painter.drawImage(QPoint(-w/2,0),
+                                  back->scaled(painter.viewport().size(),Qt::KeepAspectRatio,Qt::SmoothTransformation)
+                                  );
+
+            }
+            else {
+                painter.drawImage(QPoint(-w/2,0),
+                                  FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                                  QRect(0,355,w,h-355));
+            }
         }
         painter.end();
     }
@@ -438,21 +453,36 @@ void Cpb1000::TurnCLOSE(void) {
     // Animate close
     closed = !closed;
 
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "angle");
-     animation->setDuration(3000);
+    QPropertyAnimation *animation1 = new QPropertyAnimation(this, "angle");
+    QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
+     animation1->setDuration(3000);
+     animation2->setDuration(3000);
      if (closed) {
-         animation->setStartValue(0);
-         animation->setEndValue(180);
+         animation1->setStartValue(0);
+         animation1->setEndValue(180);
+         animation2->setKeyValueAt(0.0,1.0);
+         animation2->setKeyValueAt(0.5,.6);
+         animation2->setKeyValueAt(1.0,1.0);
+
      }
      else {
-         animation->setStartValue(180);
-         animation->setEndValue(0);
-
+         animation1->setStartValue(180);
+         animation1->setEndValue(0);
+         animation2->setKeyValueAt(0,1.0);
+         animation2->setKeyValueAt(0.5,.6);
+         animation2->setKeyValueAt(1,1.0);
      }
-     connect(animation,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
-     animation->start();
-    flipping = true;
 
+     QParallelAnimationGroup *group = new QParallelAnimationGroup;
+      group->addAnimation(animation1);
+      group->addAnimation(animation2);
+//      connect(group,SIGNAL(stateChanged(QAbstractAnimation::State,QAbstractAnimation::State)),this,SLOT(update()));
+
+
+      connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     //animation->start();
+    flipping = true;
+    group->start();
     // creation de deux widget haut et bas
     // animation recul du tout
     // animation widget du bas
@@ -465,5 +495,10 @@ void Cpb1000::TurnCLOSE(void) {
 
 void Cpb1000::setAngle(int value) {
     this->m_angle = value;
+}
+
+void Cpb1000::setZoom(qreal value)
+{
+    this->m_zoom = value;
 }
 

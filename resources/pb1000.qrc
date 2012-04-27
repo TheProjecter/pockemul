@@ -8,5 +8,6 @@
         <file>pb1000/pb-1000.png</file>
         <file>pb1000/pb-1000lcd.png</file>
         <file>pb1000/pb-1000symb.png</file>
+        <file>pb1000/pb1000back.png</file>
     </qresource>
 </RCC>

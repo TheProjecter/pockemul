@@ -144,7 +144,7 @@ CPObject *pPC=0;
  
 //	int l = mainwindow->menuBar()->height();
 //	mainwindow->resize(QSize(pPC->Pc_DX, pPC->Pc_DY+l));
-	
+
     pPC->FinalImage = new QImage(QSize(pPC->getDX(), pPC->getDY()),QImage::Format_RGB32);
 
 
