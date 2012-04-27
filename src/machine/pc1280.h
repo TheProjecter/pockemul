@@ -35,8 +35,6 @@ public:
     qreal zoom() const { return m_zoom; }
     qreal m_zoom;
 
-
-    bool closed;
     bool flipping;
     QImage *back;
     Cpc1280(CPObject *parent = 0);

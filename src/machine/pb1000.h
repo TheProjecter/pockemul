@@ -38,7 +38,7 @@ public:
     void lcdDataWrite(UINT8 data);
     void lcdControlWrite(UINT8 data);
 
-    bool closed;
+
     bool flipping;
     QImage *back;
 

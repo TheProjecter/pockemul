@@ -65,6 +65,7 @@ public:
     int rate;
 
     bool	off;
+    bool closed;
 
     void setDisp_on(bool v);
     bool getdisp_onRaised();

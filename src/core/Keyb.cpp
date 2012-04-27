@@ -85,8 +85,15 @@ int Ckeyb::KeyClick(QPoint pts)
         }
 
     }
-    if ((smallerDistance < 30) && (nearestIndex>=0)) return Keys.at(nearestIndex).ScanCode;
-
+    if ((smallerDistance < 30) && (nearestIndex>=0)) {
+        if (!pPC->closed) {
+        return Keys.at(nearestIndex).ScanCode;
+}
+        else
+        {
+            if (Keys.at(nearestIndex).ScanCode == K_CLOSE) return Keys.at(nearestIndex).ScanCode;
+        }
+    }
     return(0);
 }
 
