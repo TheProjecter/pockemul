@@ -1,5 +1,6 @@
 //TODO  Save session needs to be checked
 //TODO  resize screen to avoid aliasing
+#include <QtGui>
 
 #include "common.h"
 #include "Log.h"
@@ -71,6 +72,12 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     //Lcd_Symb_ratio_Y = 1.22;
 
      remove(pSIOCONNECTOR);
+
+     closed = true;
+     flipping = false;
+     m_angle = -180;
+     m_zoom = 1;
+     back = new QImage(":/PC1280/pc1280/pc-1280back.png");
 }
 
 bool Cpc1280::init(void) {
@@ -230,4 +237,100 @@ void Cpc1280::TurnON(void)
         PowerSwitch = PS_RUN;
         if (pLCDC) pLCDC->TurnON();
     }
+}
+
+#define RATIO (251.0/502.0)
+
+void Cpc1280::paintEvent(QPaintEvent *event)
+{
+    if (closed | flipping) {
+        QPainter painter;
+
+        UpdateFinalImage();
+
+        painter.begin(this);
+
+        if (FinalImage)
+        {
+            int w = this->width();
+            int h = this->height();
+            painter.translate(w/2,h*RATIO);
+//            AddLog(LOG_MASTER,tr("zoom%1").arg(m_zoom));
+
+            QTransform matrix;
+            matrix.scale(m_zoom,m_zoom);
+            painter.setTransform(matrix,true);
+            painter.drawImage(QPoint(-w/2,0),
+                              FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                              QRect(0,h*RATIO,w,h-h*RATIO));
+
+            QTransform matrix2;
+            matrix2.rotate(m_angle, Qt::XAxis);
+            painter.setTransform(matrix2,true);
+            if (m_angle <-90) {
+                painter.drawImage(QPoint(-w/2,-h*RATIO),
+                                  back->scaled(painter.viewport().size(),Qt::KeepAspectRatio,Qt::SmoothTransformation)
+                                  );
+
+            }
+            else {
+                painter.drawImage(QPoint(-w/2,-h*RATIO),
+                                  FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                                  QRect(0,0,w,h*RATIO));
+            }
+        }
+        painter.end();
+    }
+    else {
+        CPObject::paintEvent(event);
+    }
+}
+
+void Cpc1280::TurnCLOSE(void) {
+    // Animate close
+    closed = !closed;
+
+    QPropertyAnimation *animation1 = new QPropertyAnimation(this, "angle");
+    QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
+     animation1->setDuration(1500);
+     animation2->setDuration(1500);
+     if (closed) {
+         animation1->setStartValue(0);
+         animation1->setEndValue(-180);
+         animation2->setKeyValueAt(0.0,1.0);
+         animation2->setKeyValueAt(0.5,.55);
+         animation2->setKeyValueAt(1.0,1.0);
+
+     }
+     else {
+         animation1->setStartValue(-180);
+         animation1->setEndValue(0);
+         animation2->setKeyValueAt(0,1.0);
+         animation2->setKeyValueAt(0.5,.55);
+         animation2->setKeyValueAt(1,1.0);
+     }
+
+     QParallelAnimationGroup *group = new QParallelAnimationGroup;
+     group->addAnimation(animation1);
+     group->addAnimation(animation2);
+
+     connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     connect(animation1,SIGNAL(finished()),this,SLOT(endAnimation()));
+     flipping = true;
+     group->start();
+
+}
+
+void Cpc1280::setAngle(int value) {
+    this->m_angle = value;
+}
+
+void Cpc1280::setZoom(qreal value)
+{
+    this->m_zoom = value;
+}
+
+void Cpc1280::endAnimation()
+{
+    flipping = false;
 }

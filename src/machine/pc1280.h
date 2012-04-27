@@ -10,8 +10,12 @@
 
 
 class Cpc1280:public Cpc1360{						//PC1350 emulator main class
+    Q_OBJECT
+
+    Q_PROPERTY(int angle READ angle WRITE setAngle)
+    Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)
 public:
-    const char*	GetClassName(){ return("Cpc1280");};
+    const char*	GetClassName(){ return("Cpc1280");}
 
     bool Chk_Adr(DWORD *d,DWORD data);
     bool Chk_Adr_R(DWORD *d,DWORD data);
@@ -21,13 +25,30 @@ public:
     virtual bool	Get_Connector(void);
     virtual void	initExtension(void);
     virtual void TurnON(void);
+    virtual void paintEvent(QPaintEvent *event);
+    virtual void TurnCLOSE(void);
+    void setAngle(int value);
+    int angle() const { return m_angle; }
+    int m_angle;
 
+    void setZoom(qreal value);
+    qreal zoom() const { return m_zoom; }
+    qreal m_zoom;
+
+
+    bool closed;
+    bool flipping;
+    QImage *back;
     Cpc1280(CPObject *parent = 0);
 
     ~Cpc1280()
     {								//[constructor]
     }
+
 private:
+
+public slots:
+    void endAnimation(void);
 };
 
 

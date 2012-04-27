@@ -84,9 +84,10 @@ TransMap KeyMap1280[]={
 {62,	"X           ",	'x',	88,		221,	10},
 {63,	"Y           ",	'y',	224,	157,	10},
 {64,	"Z           ",	'z',	57,		221,	10},		//OK
-{65,	"CAL         ",	K_CAL,	57,		221,	10}
+{65,	"CAL         ",	K_CAL,	57,		221,	10},
+{66,	"CLOSE       ",	K_CLOSE,57,		221,	10}
 };
-int KeyMap1280Lenght = 65;
+int KeyMap1280Lenght = 66;
 
 
 #endif // KEYB1280_H

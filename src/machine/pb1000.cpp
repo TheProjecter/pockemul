@@ -202,9 +202,10 @@ bool Cpb1000::SaveConfig(QXmlStreamWriter *xmlOut)
     return true;
 }
 
+#define RATIO (355.0/633.0)
 void Cpb1000::paintEvent(QPaintEvent *event)
 {
-    if (flipping) {
+    if (closed | flipping) {
         QPainter painter;
 
         UpdateFinalImage();
@@ -215,15 +216,15 @@ void Cpb1000::paintEvent(QPaintEvent *event)
         {
             int w = this->width();
             int h = this->height();
-            painter.translate(w/2,h*(355.0/633.0));
+            painter.translate(w/2,h*RATIO);
 //            AddLog(LOG_MASTER,tr("zoom%1").arg(m_zoom));
 
             QTransform matrix;
             matrix.scale(m_zoom,m_zoom);
             painter.setTransform(matrix,true);
-            painter.drawImage(QPoint(-w/2,-h*(355.0/633.0)),
+            painter.drawImage(QPoint(-w/2,-h*RATIO),
                               FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
-                              QRect(0,0,w,h*(355.0/633.0)));
+                              QRect(0,0,w,h*RATIO));
 
             QTransform matrix2;
             matrix2.rotate(m_angle, Qt::XAxis);
@@ -237,7 +238,7 @@ void Cpb1000::paintEvent(QPaintEvent *event)
             else {
                 painter.drawImage(QPoint(-w/2,0),
                                   FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
-                                  QRect(0,h*(355.0/633.0),w,h-h*(355.0/633.0)));
+                                  QRect(0,h*RATIO,w,h-h*RATIO));
             }
         }
         painter.end();
@@ -474,24 +475,14 @@ void Cpb1000::TurnCLOSE(void) {
      }
 
      QParallelAnimationGroup *group = new QParallelAnimationGroup;
-      group->addAnimation(animation1);
-      group->addAnimation(animation2);
-//      connect(group,SIGNAL(stateChanged(QAbstractAnimation::State,QAbstractAnimation::State)),this,SLOT(update()));
+     group->addAnimation(animation1);
+     group->addAnimation(animation2);
 
+     connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     connect(animation1,SIGNAL(finished()),this,SLOT(endAnimation()));
+     flipping = true;
+     group->start();
 
-      connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
-      connect(animation1,SIGNAL(finished()),this,SLOT(endAnimation()));
-      //animation->start();
-    flipping = true;
-    group->start();
-    // creation de deux widget haut et bas
-    // animation recul du tout
-    // animation widget du bas
-//    QTransform matrix;
-//        matrix.rotate(45, Qt::YAxis);
-//        this->setTransform(matrix);
-    AddLog(LOG_MASTER,"CLOSE");
-    // Animate Exit
 }
 
 void Cpb1000::setAngle(int value) {
@@ -505,6 +496,6 @@ void Cpb1000::setZoom(qreal value)
 
 void Cpb1000::endAnimation()
 {
-
+    flipping = false;
 }
 
