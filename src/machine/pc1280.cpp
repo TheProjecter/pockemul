@@ -22,8 +22,9 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     Initial_Session_Fname ="pc1280.pkm";
 
     BackGroundFname	= ":/PC1280/pc1280/pc-1280.png";
-    LcdFname		= ":/PC1280/pc1280/1280lcd.jpg";
-    SymbFname		= ":/PC1280/pc1280/1280symb.jpg";
+    LcdFname		= ":/PC1280/pc1280/1280lcd.png";
+    SymbFname		= ":/PC1280/pc1280/1280symb.png";
+    back = new QImage(":/PC1280/pc1280/pc-1280back.png");
     memsize			= 0x40000;
 //		NbSlot		= 14;
 
@@ -77,7 +78,7 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
      flipping = false;
      m_angle = -180;
      m_zoom = 1;
-     back = new QImage(":/PC1280/pc1280/pc-1280back.png");
+
 }
 
 bool Cpc1280::init(void) {
@@ -244,10 +245,10 @@ void Cpc1280::TurnON(void)
 void Cpc1280::paintEvent(QPaintEvent *event)
 {
     if (closed | flipping) {
-        QPainter painter;
 
         UpdateFinalImage();
 
+        QPainter painter;
         painter.begin(this);
 
         if (FinalImage)

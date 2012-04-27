@@ -178,7 +178,7 @@ public:
 		
 public:
 
-	void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	void mouseDoubleClickEvent ( QMouseEvent * event );

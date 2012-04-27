@@ -25,7 +25,7 @@ public:
     virtual bool	Get_Connector(void);
     virtual void	initExtension(void);
     virtual void TurnON(void);
-    virtual void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
     virtual void TurnCLOSE(void);
     void setAngle(int value);
     int angle() const { return m_angle; }
