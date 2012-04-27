@@ -14,6 +14,7 @@
     <KEY description=":" height="16" left="268" scancode="0x3a" top="438" width="25"/>
     <KEY description=";" height="16" left="228" scancode="0x3b" top="439" width="25"/>
     <KEY description="+" height="22" left="545" scancode="0x2b" top="531" width="32"/>
+    <KEY description="CLOSE" height="55" left="502" scancode="0x10" top="2" width="130"/>
     <KEY description="OFF" height="16" left="37" scancode="0xc8" top="392" width="25"/>
     <KEY description="ON" height="16" left="66" scancode="0xc7" top="391" width="25"/>
     <KEY description="CLS" height="21" left="469" scancode="0xef" top="411" width="27"/>

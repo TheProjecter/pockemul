@@ -73,6 +73,10 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     m_kb_matrix = 0;
 //    shift=fct = false;
 
+    closed = false;
+    flipping = false;
+    m_angle = 0;
+
 }
 
 bool Cpb1000::init(void)				// initialize
@@ -194,6 +198,38 @@ bool Cpb1000::SaveConfig(QXmlStreamWriter *xmlOut)
 {
 
     return true;
+}
+
+void Cpb1000::paintEvent(QPaintEvent *event)
+{
+    if (flipping) {
+        QPainter painter;
+
+        UpdateFinalImage();
+
+        painter.begin(this);
+
+        if (FinalImage)
+        {
+            painter.translate(this->width()/2,355);
+//            AddLog(LOG_MASTER,tr("angle%1").arg(m_angle));
+            painter.drawImage(QPoint(-this->width()/2,-355),
+                              FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                              QRect(0,0,this->width(),355));
+            QTransform matrix;
+            matrix.rotate(m_angle, Qt::XAxis);
+            painter.setTransform(matrix,true);
+//            painter.translate(0,355);
+            painter.drawImage(QPoint(-this->width()/2,0),
+                              FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                              QRect(0,355,this->width(),this->height()-355));
+
+        }
+        painter.end();
+    }
+    else {
+        CPObject::paintEvent(event);
+    }
 }
 
 #define toupper( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
@@ -396,3 +432,38 @@ void Cpb1000::lcdDataWrite(UINT8 data) {
 UINT8 Cpb1000::lcdDataRead() {
     return pHD44352->data_read();
 }
+
+
+void Cpb1000::TurnCLOSE(void) {
+    // Animate close
+    closed = !closed;
+
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "angle");
+     animation->setDuration(3000);
+     if (closed) {
+         animation->setStartValue(0);
+         animation->setEndValue(180);
+     }
+     else {
+         animation->setStartValue(180);
+         animation->setEndValue(0);
+
+     }
+     connect(animation,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     animation->start();
+    flipping = true;
+
+    // creation de deux widget haut et bas
+    // animation recul du tout
+    // animation widget du bas
+//    QTransform matrix;
+//        matrix.rotate(45, Qt::YAxis);
+//        this->setTransform(matrix);
+    AddLog(LOG_MASTER,"CLOSE");
+    // Animate Exit
+}
+
+void Cpb1000::setAngle(int value) {
+    this->m_angle = value;
+}
+

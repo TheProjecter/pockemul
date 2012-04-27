@@ -7,6 +7,9 @@ class CHD44352;
 
 class Cpb1000 : public CpcXXXX
 {
+    Q_OBJECT
+
+    Q_PROPERTY(int angle READ angle WRITE setAngle)
 public:
     Cpb1000(CPObject *parent = 0);
     bool init();
@@ -21,6 +24,8 @@ public:
     bool LoadConfig(QXmlStreamReader *xmlIn);
     bool SaveConfig(QXmlStreamWriter *xmlOut);
 
+    void paintEvent(QPaintEvent *event);
+
     CHD44352 *pHD44352;
     UINT16 getKey();
     void setKey(UINT8 data);
@@ -32,11 +37,19 @@ public:
     void lcdDataWrite(UINT8 data);
     void lcdControlWrite(UINT8 data);
 
+    bool closed;
+    bool flipping;
+
+
 //    void keyPressEvent(QKeyEvent *event);
 //    void keyReleaseEvent(QKeyEvent *event);
 
 //    bool shift;
-//    bool fct;
+    //    bool fct;
+    virtual void TurnCLOSE(void);
+    void setAngle(int value);
+    int angle() const { return m_angle; }
+    int m_angle;
 };
 
 #endif // CPB1000_H

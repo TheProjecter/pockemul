@@ -63,6 +63,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_RA		0x07 // ???
 #define K_MOD		0x08
 #define K_INS		0x09
+#define K_CLOSE     0x10
 #define K_DEL		0x0a
 #define K_CLR		0x0c
 #define K_RET		0x0d

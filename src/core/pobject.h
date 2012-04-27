@@ -194,6 +194,9 @@ public:
     void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
 
     virtual void raise();
+
+    virtual void TurnCLOSE(void);
+
 public slots:
 #ifndef NO_SOUND
     void audioStateChanged(QAudio::State state);

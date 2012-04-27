@@ -454,6 +454,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
         case K_BRK :
         case K_POW_ON : TurnON(); break;
         case K_POW_OFF: Power = false;TurnOFF();break;
+        case K_CLOSE: TurnCLOSE();break;
         }
 
         if (pKEYB->LastKey != 0)
@@ -496,6 +497,11 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 }
 void CPObject::raise() {
     QWidget::raise();
+}
+
+void CPObject::TurnCLOSE()
+{
+
 }
 
 void CPObject::manageStackPos(QList<CPObject *> *l) {
