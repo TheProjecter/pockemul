@@ -260,6 +260,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
      if (ItemText == "Canon X-710") result = X710;
      if (ItemText == "PC-E500") result = E500;
      if (ItemText == "Casio PB-1000") result = PB1000;
+     if (ItemText == "Casio PB-2000C") result = PB2000;
 
      if (result != EMPTY)	{
          mainwindow->LoadPocket(result);

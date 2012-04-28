@@ -69,7 +69,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new CHD61700(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pb1000.map");
-    pHD44352    = new CHD44352(this);
+    pHD44352    = new CHD44352(":/pb1000/chr.bin",this);
 
     m_kb_matrix = 0;
 //    shift=fct = false;

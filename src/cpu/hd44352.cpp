@@ -29,9 +29,10 @@
 //-------------------------------------------------
 
 
-CHD44352::CHD44352(QObject *parent) :
+CHD44352::CHD44352(QString fnCharSet,QObject *parent) :
     QObject(parent)
 {
+    this->fncharset = fnCharSet;
     Reset();
 }
 
@@ -44,7 +45,7 @@ bool CHD44352::init()
     Reset();
 
     QFile file;
-    file.setFileName(":/pb1000/chr.bin");
+    file.setFileName(fncharset);
     file.open(QIODevice::ReadOnly);
     QDataStream in(&file);
     in.readRawData ((char *) &charset,0x800 );

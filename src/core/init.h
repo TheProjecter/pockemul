@@ -146,7 +146,8 @@ enum Models {
     X07,
     X710,
     E500,
-    PB1000
+    PB1000,
+    PB2000
 };
 
 #endif

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/pb2000">
+    <qresource prefix="/">
         <file>pb2000/charset.bin</file>
         <file>pb2000/pb-2000.png</file>
         <file>pb2000/pb-2000lcd.png</file>

@@ -61,6 +61,7 @@
 #include "cx710.h"
 #include "e500.h"
 #include "pb1000.h"
+#include "pb2000.h"
 
 
 extern QList<CPObject *> listpPObject;  
@@ -136,7 +137,7 @@ CPObject *pPC=0;
         case X710   : pPC = new Cx710;      pPC->setName("Canon X-710"); break;
         case E500   : pPC = new Ce500;      pPC->setName("PC-E500"); break;
         case PB1000 : pPC = new Cpb1000;    pPC->setName("Casio PB-1000"); break;
-
+        case PB2000 : pPC = new Cpb2000;    pPC->setName("Casio PB-2000C"); break;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");

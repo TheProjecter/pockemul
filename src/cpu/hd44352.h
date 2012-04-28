@@ -51,9 +51,10 @@ class CHD44352 : public QObject
 {
 public:
     // construction/destruction
-    explicit CHD44352(QObject *parent = 0);
+    explicit CHD44352(QString fnCharSet,QObject *parent = 0);
 
     // device interface
+    QString fncharset;
     UINT8 data_read();
     void data_write(UINT8 data);
     void control_write(UINT8 data);

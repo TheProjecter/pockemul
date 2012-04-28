@@ -13,19 +13,19 @@ class Cpb1000 : public CpcXXXX
     Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)
 public:
     Cpb1000(CPObject *parent = 0);
-    bool init();
-    bool run();
-    bool Chk_Adr(DWORD *d, DWORD data);
-    bool Chk_Adr_R(DWORD *d, DWORD data);
-    UINT8 in(UINT8 Port);
-    UINT8 out(UINT8 Port, UINT8 Value);
-    void TurnOFF();
-    void TurnON();
-    void Reset();
-    bool LoadConfig(QXmlStreamReader *xmlIn);
-    bool SaveConfig(QXmlStreamWriter *xmlOut);
+    virtual bool init();
+    virtual bool run();
+    virtual bool Chk_Adr(DWORD *d, DWORD data);
+    virtual bool Chk_Adr_R(DWORD *d, DWORD data);
+    virtual UINT8 in(UINT8 Port);
+    virtual UINT8 out(UINT8 Port, UINT8 Value);
+    virtual void TurnOFF();
+    virtual void TurnON();
+    virtual void Reset();
+    virtual bool LoadConfig(QXmlStreamReader *xmlIn);
+    virtual bool SaveConfig(QXmlStreamWriter *xmlOut);
 
-    void paintEvent(QPaintEvent *event);
+    virtual void paintEvent(QPaintEvent *event);
 
     CHD44352 *pHD44352;
     UINT16 getKey();

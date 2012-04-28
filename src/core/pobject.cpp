@@ -49,6 +49,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		extensionArray[3] = 0;
 		extensionArray[4] = 0;
 		frequency	= 0;
+        PowerSwitch	= 0;
 		setFocusPolicy(Qt::StrongFocus);	
 		Refresh_Display = false;
 

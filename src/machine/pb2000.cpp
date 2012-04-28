@@ -23,7 +23,7 @@
 #define PD_STR 0x04;	// transfer direction strobe: 1=write, 0=read
 #define PD_ACK 0x01;	// transfer direction acknowledge
 
-Cpb2000::Cpb2000(CPObject *parent)	: CpcXXXX(parent)
+Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 {								//[constructor]
     setfrequency( (int) 910000/1);
     setcfgfname(QString("pb2000"));
@@ -34,31 +34,36 @@ Cpb2000::Cpb2000(CPObject *parent)	: CpcXXXX(parent)
 
     BackGroundFname	= ":/pb2000/pb-2000.png";
     LcdFname		= ":/pb2000/pb-2000lcd.png";
-//    back = new QImage(":/pb2000/pb2000back.png");
+
     SymbFname		= "";
 
-    memsize         = 0x20000;
+    memsize         = 0x60000;
     InitMemValue	= 0xff;
 
 
     SlotList.clear();
     SlotList.append(CSlot(6 , 0x0000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "RAM0"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/pb2000/rom1.bin"	, ""	, ROM , "ROM"));
-    SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, RAM , "RAM1"));
 
-    PowerSwitch	= 0;
+    SlotList.append(CSlot(32, 0x10000 ,	":/pb2000/rom1.bin"	, ""	, ROM , "ROM 1"));
+
+    SlotList.append(CSlot(64, 0x20000 ,	""					, ""	, RAM , "RAM 0"));
+    SlotList.append(CSlot(64, 0x30000 ,	""					, ""	, RAM , "RAM 1"));
+
+    SlotList.append(CSlot(64, 0x40000 ,	":/pb2000/rom2.bin"	, ""	, ROM , "ROM 2"));
+    SlotList.append(CSlot(64, 0x50000 ,	":/pb2000/rom3.bin"	, ""	, ROM , "ROM 3"));;
+
+
     Pc_Offset_X = Pc_Offset_Y = 0;
 
-    setDXmm(187);
-    setDYmm(177);
-    setDZmm(24);
+    setDXmm(188);
+    setDYmm(83);
+    setDZmm(15);
 
     setDX(668);//715);
-    setDY(633);//465);
+    setDY(294);//465);
 
-    Lcd_X		= 90;
-    Lcd_Y		= 130;
+    Lcd_X		= 65;
+    Lcd_Y		= 45;
     Lcd_DX		= 192;//168;//144 ;
     Lcd_DY		= 32;
     Lcd_ratio_X	= 2;// * 1.18;
@@ -66,43 +71,45 @@ Cpb2000::Cpb2000(CPObject *parent)	: CpcXXXX(parent)
 
     PowerSwitch = 0;
 
-    pLCDC		= new Clcdc_pb1000(this);
-    pCPU		= new CHD61700(this);
-    pTIMER		= new Ctimer(this);
-    pKEYB		= new Ckeyb(this,"pb2000.map");
-    pHD44352    = new CHD44352(this);
+    delete pLCDC;       pLCDC		= new Clcdc_pb1000(this);
+    //pCPU		= new CHD61700(this);
+    //pTIMER		= new Ctimer(this);
+    //pKEYB		= new Ckeyb(this,"pb2000.map");
+    delete pHD44352;    pHD44352    = new CHD44352(":/pb2000/charset.bin",this);
 
-    m_kb_matrix = 0;
-
-}
-
-bool Cpb2000::init(void)				// initialize
-{
-
-#ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
-#endif
-    CpcXXXX::init();
-
-    return true;
-}
-
-bool Cpb2000::run() {
-
-    if (off && pKEYB->LastKey == K_POW_ON)
-    {
-        TurnON();
-        pKEYB->LastKey = 0;
-    }
-
-    CpcXXXX::run();
-
-    if (pKEYB->LastKey) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
-        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
-    }
+    closed = false;
 
 }
+
+//bool Cpb2000::MemBank(DWORD *d) {
+//    if (*d >= 0x0C12) {
+////        BYTE m = 1 <<  (address >> 15);
+//        //    m := byte(1) shl (cardinal(address) shr 15);
+//        //    ga_reg := ptrw(memdef[GATEARRAY].storage)^;
+//        //    if (Lo(ga_reg) and m) <> 0 then		{ Gate Array register $0C10 }
+//        //      SelectRom := address or $70000		{ ROM2 selected }
+//        //    else if (Hi(ga_reg) and m) <> 0 then	{ Gate Array register $0C11 }
+//        //      SelectRom := address or $B0000		{ ROM3 selected }
+//    }
+//}
+
+//function SelectRom (address: integer) : integer;
+//var
+//  m: byte;
+//  ga_reg: word;
+//begin
+//  SelectRom := address;
+//  if address >= $00C12 then
+//  begin
+//    m := byte(1) shl (cardinal(address) shr 15);
+//    ga_reg := ptrw(memdef[GATEARRAY].storage)^;
+//    if (Lo(ga_reg) and m) <> 0 then		{ Gate Array register $0C10 }
+//      SelectRom := address or $70000		{ ROM2 selected }
+//    else if (Hi(ga_reg) and m) <> 0 then	{ Gate Array register $0C11 }
+//      SelectRom := address or $B0000		{ ROM3 selected }
+//  end {if};
+//end {SelectRom};
+
 
 bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
 {
@@ -113,29 +120,18 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
         return(true);		// RAM area()
     }
 
-    if ( (*d>=0x06100) && (*d<=0x061FF) )	{
-//        pLCDC->Refresh = true;
-//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04X] = %02x\n",*d,data);
-        return(true);		// RAM area()
-    }
-    if ( (*d>=0x06000) && (*d<=0x07FFF) ) {
-//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04X] = %02x\n",*d,data);
-        return(true);		// RAM area()
-    }
-    if ( (*d>=0x18000) && (*d<=0x1FFFF) ) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE BANK 1 [%04X] = %02x\n",*d,data);
-        return(true);		// RAM area()
-    }
-//    if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE REJETEE [%04X] = %02x\n",*d,data);
+    *d += 0x10000;
+
+    if ( (*d>=0x10000) && (*d<0x20000) )	return(true);		// ROM 1 area()
+    if ( (*d>=0x20000) && (*d<0x30000) )	return(true);		// RAM 0 area()
+    if ( (*d>=0x30000) && (*d<0x40000) )	return(true);		// RAM 1 area()
+
+    if ( (*d>=0x80000) && (*d<0x90000) ) { *d -= 0x40000;	return(true); }		// ROM 2 area()
+    if ( (*d>=0xC0000) && (*d<0xD0000) ) { *d -= 0x70000;	return(true); }		// ROM 3 area()
+
     return false;
 }
 
-WORD Cpb2000::Get_16rPC(DWORD adr)
-{
-    DWORD	a;
-    a=adr+1;
-    return((mem[adr]<<8)+mem[a]);
-}
 
 bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 {
@@ -146,56 +142,15 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
         return(true);		// RAM area()
     }
-    if ( (*d>=0x18000) && (*d<=0x1FFFF) ) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE BANK 1 [%04X]\n",*d);
+
+    if ( (*d>=0x20000) && (*d<=0x3FFFF) ) {
+//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE BANK 1 [%04X]\n",*d);
         return(true);		// RAM area()
     }
 //    if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04X]\n",*d);
     return true;
 }
 
-UINT8 Cpb2000::in(UINT8 Port)
-{
-
-}
-
-UINT8 Cpb2000::out(UINT8 Port, UINT8 Value)
-{
-
- return 0;
-}
-
-void Cpb2000::TurnOFF(void) {
-    mainwindow->saveAll = YES;
-    CpcXXXX::TurnOFF();
-    mainwindow->saveAll = ASK;
-}
-
-void Cpb2000::TurnON(void){
-    CpcXXXX::TurnON();
-    Reset();
-
-}
-
-
-void Cpb2000::Reset()
-{
-
-    CpcXXXX::Reset();
-
-}
-
-bool Cpb2000::LoadConfig(QXmlStreamReader *xmlIn)
-{
-
-    return true;
-}
-
-bool Cpb2000::SaveConfig(QXmlStreamWriter *xmlOut)
-{
-
-    return true;
-}
 
 
 #define toupper( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
@@ -358,45 +313,11 @@ if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
 
 }
 
-void Cpb2000::setKey(UINT8 data) {
-    AddLog(LOG_KEYBOARD,tr("set matrix to %1").arg(data,2,16,QChar('0')));
-    m_kb_matrix = data;
-}
+void Cpb2000::TurnCLOSE(void) { }
 
-//void Cpb2000::keyPressEvent(QKeyEvent *event) {
-//    switch (event->modifiers()) {
-//        case Qt::ShiftModifier : shift = true; event->accept();qWarning("SHIFT");break;
-//        case Qt::AltModifier:   fct = true; event->accept();qWarning("FCT");break;
-////        case Qt::ControlModifier: ctrl = true; break;
-//    }
-//    event->ignore();
-//}
-//void Cpb2000::keyReleaseEvent(QKeyEvent *event)
-//{
-//    shift=fct = false;
-//    event->ignore();
-//}
-UINT8 Cpb2000::readPort()
+
+
+void Cpb2000::paintEvent(QPaintEvent *event)
 {
-//    AddLog(LOG_TEMP,"Read Port");
-    return 0x00;
+    CPObject::paintEvent(event);
 }
-
-void Cpb2000::writePort(UINT8 data)
-{
-    AddLog(LOG_TEMP,tr("Write Port:%1").arg(data,2,16,QChar('0')));
-}
-
-void Cpb2000::lcdControlWrite(UINT8 data) {
-    pLCDC->redraw = true;
-    pHD44352->control_write(data);
-}
-void Cpb2000::lcdDataWrite(UINT8 data) {
-    pLCDC->redraw = true;
-    pHD44352->data_write(data);
-}
-UINT8 Cpb2000::lcdDataRead() {
-    return pHD44352->data_read();
-}
-
-

@@ -383,6 +383,15 @@
             <normaloff>:/pb1000/pb-1000.png</normaloff>:/pb1000/pb-1000.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Casio PB-2000C</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pb2000.qrc">
+            <normaloff>:/pb2000/pb-2000.png</normaloff>:/pb2000/pb-2000.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -673,6 +682,7 @@
   <include location="../resources/e500.qrc"/>
   <include location="../resources/ext.qrc"/>
   <include location="../resources/pb1000.qrc"/>
+  <include location="../resources/pb2000.qrc"/>
   <include location="../resources/pc1245.qrc"/>
   <include location="../resources/pc1250.qrc"/>
   <include location="../resources/pc1251.qrc"/>
