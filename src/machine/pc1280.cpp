@@ -254,16 +254,16 @@ void Cpc1280::paintEvent(QPaintEvent *event)
 
         if (FinalImage)
         {
-            int w = this->width();
-            int h = this->height();
-            painter.translate(w/2,h*RATIO);
+            int w = getDX() * mainwindow->zoom/100.0;//this->width();
+            int h = getDY() * mainwindow->zoom/100.0;//this->height();
+            painter.translate(w/2 ,(h*RATIO)*(1+m_angle/180.0));
 //            AddLog(LOG_MASTER,tr("zoom%1").arg(m_zoom));
 
             QTransform matrix;
             matrix.scale(m_zoom,m_zoom);
             painter.setTransform(matrix,true);
             painter.drawImage(QPoint(-w/2,0),
-                              FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                              FinalImage->scaled(QSize(w,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
                               QRect(0,h*RATIO,w,h-h*RATIO));
 
             QTransform matrix2;
@@ -271,13 +271,13 @@ void Cpc1280::paintEvent(QPaintEvent *event)
             painter.setTransform(matrix2,true);
             if (m_angle <-90) {
                 painter.drawImage(QPoint(-w/2,-h*RATIO),
-                                  back->scaled(painter.viewport().size(),Qt::KeepAspectRatio,Qt::SmoothTransformation)
+                                  back->scaled(QSize(w,h),Qt::KeepAspectRatio,Qt::SmoothTransformation)
                                   );
 
             }
             else {
                 painter.drawImage(QPoint(-w/2,-h*RATIO),
-                                  FinalImage->scaled(painter.viewport().size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+                                  FinalImage->scaled(QSize(w,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
                                   QRect(0,0,w,h*RATIO));
             }
         }
@@ -306,7 +306,7 @@ void Cpc1280::TurnCLOSE(void) {
          animation2->setKeyValueAt(0.0,1.0);
          animation2->setKeyValueAt(0.5,.55);
          animation2->setKeyValueAt(1.0,1.0);
-
+         clearMask();
      }
      else {
          animation1->setStartValue(-180);
@@ -314,6 +314,7 @@ void Cpc1280::TurnCLOSE(void) {
          animation2->setKeyValueAt(0,1.0);
          animation2->setKeyValueAt(0.5,.55);
          animation2->setKeyValueAt(1,1.0);
+         changeGeometry(this->posx(),this->posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*mainwindow->zoom/100.0);
      }
 
      QParallelAnimationGroup *group = new QParallelAnimationGroup;
@@ -339,4 +340,7 @@ void Cpc1280::setZoom(qreal value)
 void Cpc1280::endAnimation()
 {
     flipping = false;
+    if (closed) {
+        setGeometry(posx(),posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*RATIO*mainwindow->zoom/100.0);
+    }
 }

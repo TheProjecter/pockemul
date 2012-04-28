@@ -17,7 +17,7 @@
     <KEY description=";" height="16" left="134" scancode="0x3b" top="362" width="16"/>
     <KEY description="+" height="19" left="435" scancode="0x2b" top="462" width="27"/>
     <KEY description="CLOSE" height="20" left="184" scancode="0x10" top="O" width="120"/>
-    <KEY description="CLOSE" height="20" left="184" scancode="0x10" top="492" width="120"/>
+    <KEY description="CLOSE" height="20" left="184" scancode="0x10" top="231" width="120"/>
     <KEY description="CLS" height="16" left="434" scancode="0xc" top="294" width="27"/>
     <KEY description="DEF" height="16" left="20" scancode="0xd5" top="328" width="27"/>
     <KEY description="DEL" height="16" left="348" scancode="0xa" top="328" width="27"/>
