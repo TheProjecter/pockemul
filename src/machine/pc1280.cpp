@@ -314,7 +314,8 @@ void Cpc1280::TurnCLOSE(void) {
          animation2->setKeyValueAt(0,1.0);
          animation2->setKeyValueAt(0.5,.55);
          animation2->setKeyValueAt(1,1.0);
-         changeGeometry(this->posx(),this->posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*mainwindow->zoom/100.0);
+         clearMask();
+         setGeometry(this->posx(),this->posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*mainwindow->zoom/100.0);
      }
 
      QParallelAnimationGroup *group = new QParallelAnimationGroup;
@@ -342,5 +343,8 @@ void Cpc1280::endAnimation()
     flipping = false;
     if (closed) {
         setGeometry(posx(),posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*RATIO*mainwindow->zoom/100.0);
+    }
+    else {
+        changeGeometry(this->posx(),this->posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*mainwindow->zoom/100.0);
     }
 }
