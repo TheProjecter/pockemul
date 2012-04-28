@@ -258,7 +258,8 @@ HEADERS += src/core/Connect.h \
     pictureflow/launcher.h \
     pictureflow/slideshow.h \
     src/core/launchbuttonwidget.h \
-    src/core/tapandholdgesture.h
+    src/core/tapandholdgesture.h \
+    src/machine/pb2000.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -465,7 +466,8 @@ SOURCES += src/core/Connect.cpp \
     pictureflow/launcher.cpp \
     pictureflow/slideshow.cpp \
     src/core/launchbuttonwidget.cpp \
-    src/core/tapandholdgesture.cpp
+    src/core/tapandholdgesture.cpp \
+    src/machine/pb2000.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

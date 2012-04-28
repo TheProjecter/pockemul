@@ -83,11 +83,11 @@ CPObject::~CPObject()
     delete LcdImage;
     delete SymbImage;
 
-    delete extensionArray[0];
-    delete extensionArray[1];
-    delete extensionArray[2];
-    delete extensionArray[3];
-    delete extensionArray[4];
+//    delete extensionArray[0];
+//    delete extensionArray[1];
+//    delete extensionArray[2];
+//    delete extensionArray[3];
+//    delete extensionArray[4];
 }
 
 void CPObject::serialize(QXmlStreamWriter *xml,int id) {
