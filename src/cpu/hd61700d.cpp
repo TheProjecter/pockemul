@@ -214,7 +214,7 @@ inline int Cdebug_hd61700::dasm_im8(char *buffer, UINT16 pc, int arg, const UINT
     if (((arg>>5) & 0x03) == 0x03)
     {
         INC_POS;
-        UINT8 ret = sprintf( buffer, "0x%02x", oprom[POS] & 0x1f );
+        UINT8 ret = sprintf( buffer, "0x%02x", getMem(POS) & 0x1f );
         return ret;
     }
     else
@@ -246,29 +246,29 @@ int Cdebug_hd61700::dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const U
     {
         case OP_MREG:
         case OP_MREG2:
-            buffer += sprintf( buffer, "$%02u", oprom[POS] & 0x1f );
+            buffer += sprintf( buffer, "$%02u", getMem(POS) & 0x1f );
             if (arg == OP_MREG2) INC_POS;
             break;
 
         case OP_RSIR:
-            buffer += sprintf( buffer, "%s", reg_5b[(oprom[POS]>>5) & 0x03] );
+            buffer += sprintf( buffer, "%s", reg_5b[(getMem(POS)>>5) & 0x03] );
             break;
 
         case OP_REG8:
         case OP_REG8_:
-            buffer += sprintf( buffer, "%s", reg_8b[(BIT(op,0)<<2) + ((oprom[POS]>>5&3))]);
+            buffer += sprintf( buffer, "%s", reg_8b[(BIT(op,0)<<2) + ((getMem(POS)>>5&3))]);
             if (arg == OP_REG8_) INC_POS;
             break;
 
         case OP_MR_SIR:
-            buffer += dasm_im8(buffer, pc, oprom[POS], oprom, pos, type);
+            buffer += dasm_im8(buffer, pc, getMem(POS), oprom, pos, type);
             INC_POS;
             break;
 
         case OP_IR_IM8:
         case OP_IR_IM8_:
-            buffer += sprintf( buffer, "(%s%s", (op&1) ? "iz": "ix", (oprom[POS]&0x80) ? "-": "+");
-            buffer += dasm_im8(buffer, pc, oprom[POS], oprom, pos, type);
+            buffer += sprintf( buffer, "(%s%s", (op&1) ? "iz": "ix", (getMem(POS)&0x80) ? "-": "+");
+            buffer += dasm_im8(buffer, pc, getMem(POS), oprom, pos, type);
             buffer += sprintf( buffer, ")");
             if (arg == OP_IR_IM8_) INC_POS;
             break;
@@ -276,18 +276,18 @@ int Cdebug_hd61700::dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const U
         case OP_IM8_:
             INC_POS;
         case OP_IM8:
-            buffer += sprintf( buffer, "0x%02x", oprom[POS] );
+            buffer += sprintf( buffer, "0x%02x", getMem(POS) );
             INC_POS;
             break;
 
         case OP_IM8I:
-            buffer += sprintf( buffer, "(0x%02x)", oprom[POS] );
+            buffer += sprintf( buffer, "(0x%02x)", getMem(POS) );
             INC_POS;
             break;
 
         case OP_REGIM8:
-            buffer += sprintf( buffer, "(%s%s", (op&1) ? "iz": "ix", (oprom[POS]&0x80) ? "-": "+");
-            buffer += sprintf( buffer, "%x)", oprom[POS] & 0x1f);
+            buffer += sprintf( buffer, "(%s%s", (op&1) ? "iz": "ix", (getMem(POS)&0x80) ? "-": "+");
+            buffer += sprintf( buffer, "%x)", getMem(POS) & 0x1f);
             INC_POS;
             break;
 
@@ -298,9 +298,9 @@ int Cdebug_hd61700::dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const U
 
         case OP_RMSIM3:
             {
-                UINT8 tmp = oprom[POS];
+                UINT8 tmp = getMem(POS);
                 INC_POS;
-                buffer += dasm_im8(buffer, pc, tmp, oprom[POS], oprom, pos);
+                buffer += dasm_im8(buffer, pc, tmp, getMem(POS), oprom, pos);
                 buffer += sprintf( buffer, ", 0x%02x", ((tmp>>5)&7)+1);
                 INC_POS;
             }
@@ -308,30 +308,30 @@ int Cdebug_hd61700::dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const U
 
         case OP_IR_IM3:
             {
-                UINT8 tmp = oprom[POS];
+                UINT8 tmp = getMem(POS);
                 INC_POS;
                 buffer += sprintf( buffer, "(%s%s", (op&1) ? "iz": "ix", (tmp&0x80) ? "-": "+");
-                buffer += dasm_im8(buffer, pc, tmp, oprom[POS], oprom, pos);
-                buffer += sprintf( buffer, "), 0x%02x", ((oprom[POS]>>5)&7)+1 );
+                buffer += dasm_im8(buffer, pc, tmp, getMem(POS), oprom, pos);
+                buffer += sprintf( buffer, "), 0x%02x", ((getMem(POS)>>5)&7)+1 );
                 INC_POS;
             }
             break;
 
         case OP_IM3:
-            buffer += sprintf( buffer, "0x%02x", ((oprom[POS]>>5)&7)+1 );
+            buffer += sprintf( buffer, "0x%02x", ((getMem(POS)>>5)&7)+1 );
             INC_POS;
             break;
 
         case OP_MR_SIRI:
             buffer += sprintf( buffer, "(");
-            buffer += dasm_im8(buffer, pc, oprom[POS], oprom, pos, type);
+            buffer += dasm_im8(buffer, pc, getMem(POS), oprom, pos, type);
             buffer += sprintf( buffer, ")");
             INC_POS;
             break;
 
         case OP_IM7:
             {
-                int tmp = oprom[POS];
+                int tmp = getMem(POS);
                 if (tmp&0x80)		tmp = 0x80 - tmp;
 
                 buffer += sprintf( buffer, "0x%04x", (pc + tmp + EXT_ROM) & 0xffff );
@@ -340,23 +340,23 @@ int Cdebug_hd61700::dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const U
             break;
 
         case OP_IM5:
-            buffer += sprintf( buffer, "0x%02x", oprom[POS]&0x1f );
+            buffer += sprintf( buffer, "0x%02x", getMem(POS)&0x1f );
             INC_POS;
             break;
 
         case OP_REG16:
         case OP_REG16_:
-            buffer += sprintf( buffer, "%s", reg_16b[(BIT(op,0)<<2) + ((oprom[POS]>>5&3))]);
+            buffer += sprintf( buffer, "%s", reg_16b[(BIT(op,0)<<2) + ((getMem(POS)>>5&3))]);
             if (arg == OP_REG16_) INC_POS;
             break;
 
         case OP_IM16:
         case OP_IM16A:
             {
-                UINT8 tmp1 = oprom[POS];
+                UINT8 tmp1 = getMem(POS);
                 INC_POS;
                 if (!EXT_ROM && arg == OP_IM16A)	INC_POS;
-                UINT8 tmp2 = oprom[POS];
+                UINT8 tmp2 = getMem(POS);
                 buffer += sprintf( buffer, "0x%04x", ((tmp2<<8) | tmp1));
                 INC_POS;
             }
@@ -391,6 +391,11 @@ UINT32 Cdebug_hd61700::get_dasmflags(UINT8 op)
     return 0;
 }
 
+UINT8 Cdebug_hd61700::getMem(int adr) {
+
+    return pPC->Get_8(adr);
+}
+
 DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
 {
 
@@ -399,7 +404,7 @@ DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
     const hd61700_dasm *inst;
     UINT32 dasmflags = 0;
     UINT8 op, op1;
-    UINT8 *oprom =  pPC->mem;//&pPC->mem[0];
+
     int pos =adr, type = 0;//(adr>0x0C00);
     if (adr<0x0C00) pos<<=1;
 
@@ -408,33 +413,33 @@ DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
 
     buffer[0] = '\0';
 
-    op = oprom[POS];
+    op = getMem(POS);//oprom[POS];
     INC_POS;
 
     dasmflags = get_dasmflags(op);
 
 
-    op1 = oprom[POS];
+    op1 = getMem(POS);//oprom[POS];
 
     inst = &hd61700_ops[op];
 
     buffer += sprintf(buffer,"%-8s", inst->str);
 
     //dasm first arg
-    buffer += dasm_arg(buffer, op, adr, inst->arg1, oprom, pos);
+    buffer += dasm_arg(buffer, op, adr, inst->arg1,NULL, pos);
 
     //if present dasm second arg
     if (inst->arg2 != OP_NULL)
     {
         buffer += sprintf(buffer,", ");
-        buffer += dasm_arg(buffer, op, adr, inst->arg2, oprom, pos);
+        buffer += dasm_arg(buffer, op, adr, inst->arg2, NULL, pos);
     }
 
     //if required add the optional jr
     if (inst->optjr == true && BIT(op1, 7))
     {
         buffer += sprintf( buffer, ", jr ");
-        buffer += dasm_arg(buffer, op, adr+1, OP_IM7, oprom, pos);
+        buffer += dasm_arg(buffer, op, adr+1, OP_IM7,NULL,  pos);
 
 //        dasmflags = DASMFLAG_STEP_OVER;
     }

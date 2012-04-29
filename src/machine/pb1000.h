@@ -28,15 +28,15 @@ public:
     virtual void paintEvent(QPaintEvent *event);
 
     CHD44352 *pHD44352;
-    UINT16 getKey();
-    void setKey(UINT8 data);
+    virtual UINT16 getKey();
+    virtual void setKey(UINT8 data);
     UINT8 m_kb_matrix;
-    WORD Get_16rPC(DWORD adr);
-    UINT8 readPort(void);
-    void writePort(UINT8);
-    UINT8 lcdDataRead();
-    void lcdDataWrite(UINT8 data);
-    void lcdControlWrite(UINT8 data);
+    virtual WORD Get_16rPC(DWORD adr);
+    virtual UINT8 readPort(void);
+    virtual void writePort(UINT8);
+    virtual UINT8 lcdDataRead();
+    virtual void lcdDataWrite(UINT8 data);
+    virtual void lcdControlWrite(UINT8 data);
 
 
     bool flipping;

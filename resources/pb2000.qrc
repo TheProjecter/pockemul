@@ -8,5 +8,7 @@
         <file>pb2000/ram1.bin</file>
         <file>pb2000/rom0.bin</file>
         <file>pb2000/rom1.bin</file>
+        <file>pb2000/om51p.bin</file>
+        <file>pb2000/om53b.bin</file>
     </qresource>
 </RCC>

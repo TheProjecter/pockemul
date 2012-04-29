@@ -994,6 +994,8 @@ void CPObject::slotPower()
 		TurnON();
 	else
         TurnOFF();
+
+    pKEYB->LastKey = 0;
 }
 
 void CPObject::slotReset() {

@@ -12,16 +12,16 @@ class Cpb2000 : public Cpb1000
 public:
     Cpb2000(CPObject *parent = 0);
 
-    bool Chk_Adr(DWORD *d, DWORD data);
-    bool Chk_Adr_R(DWORD *d, DWORD data);
+    virtual bool Chk_Adr(DWORD *d, DWORD data);
+    virtual bool Chk_Adr_R(DWORD *d, DWORD data);
 
-    CHD44352 *pHD44352;
-    UINT16 getKey();
-    void setKey(UINT8 data);
-    UINT8 m_kb_matrix;
+    virtual UINT16 getKey();
 
     virtual void paintEvent(QPaintEvent *event);
     virtual void TurnCLOSE();
+    virtual UINT8 readPort();
+    virtual WORD Get_16rPC(DWORD adr);
+    virtual void MemBank(DWORD *d);
 };
 
 #endif // CPB2000_H

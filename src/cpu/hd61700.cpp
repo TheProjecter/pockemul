@@ -319,6 +319,7 @@ bool CHD61700::check_irqs(void)
     {
         if (REG_IB & (1<<i) && !(m_irq_status & (1<<i)))
         {
+            AddLog(LOG_KEYBOARD,"INTERRUPT");
             m_irq_status |= (1<<i);
             push(REG_SS, (m_pc>>8)&0xff);
             push(REG_SS, (m_pc>>0)&0xff);
@@ -371,6 +372,7 @@ void CHD61700::step(void) {
     // Pulse Timer
     if (pPC->pTIMER->msElapsedId(PULSE_TIMER) >= pulseInterval) {
         if (fp_log) fprintf(fp_log,"PULSE TIMER\n");
+//        AddLog(LOG_KEYBOARD,"PULSE TIMER");
         if ((REG_IA & 0x80) == 0) execute_set_input(HD61700_KEY_INT,1);
         if ((REG_IA & 40) == 0) {
             pulseInterval = 4;
@@ -384,6 +386,7 @@ void CHD61700::step(void) {
     // Keyboard timer
     if (pPC->pTIMER->msElapsedId(KEY_TIMER) >= 4) {
         if (fp_log) fprintf(fp_log,"KEYBOARD TIMER\n");
+//        AddLog(LOG_KEYBOARD,"KEYBOARD TIMER");
         pPC->pTIMER->resetTimer(KEY_TIMER);
         execute_set_input(HD61700_KEY_INT,1);
     }
@@ -1740,7 +1743,7 @@ void CHD61700::execute_run()
                         UINT8 arg = read_op();
                         UINT8 idx = GET_REG_IDX(op, arg);
                         UINT16 src;
-
+                        AddLog(LOG_CPU,"gre");
                         if (idx >= 5)
                         {
                             UINT16 port = 0xff;
@@ -2791,6 +2794,7 @@ void CHD61700::execute_run()
 
 void CHD61700::execute_set_input(int inputnum, int state)
 {
+//    AddLog(LOG_CPU,"Execute Interrupt");
     switch (inputnum)
     {
         case 1000:// INPUT_LINE_RESET:

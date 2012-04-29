@@ -114,6 +114,7 @@ public:
         }
         virtual ~Cdebug_hd61700(){}
 
+        UINT8 getMem(int);
         UINT32 get_dasmflags(UINT8 op);
         int dasm_arg(char *buffer, UINT8 op, UINT16 pc, int arg, const UINT8 *oprom, int &pos);
         int dasm_im8(char *buffer, UINT16 pc, int arg, int arg1, const UINT8 *oprom, int &pos);

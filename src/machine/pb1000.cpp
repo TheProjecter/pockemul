@@ -69,7 +69,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new CHD61700(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pb1000.map");
-    pHD44352    = new CHD44352(":/pb1000/chr.bin",this);
+    pHD44352    = new CHD44352(":/pb1000/chr.bin");
 
     m_kb_matrix = 0;
 //    shift=fct = false;
@@ -104,6 +104,8 @@ bool Cpb1000::run() {
 
     if (pKEYB->LastKey) {
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
+//        AddLog(LOG_KEYBOARD,tr("Execute Interrupt : %1").arg(pKEYB->LastKey));
+//        DasmStep = true;
         ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
     }
 
@@ -112,6 +114,7 @@ bool Cpb1000::run() {
 bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
+        *d+=0xC00;
 //        pLCDC->Refresh = true;
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE IO [%04X] = %02x\n",*d,data);
         AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
@@ -145,7 +148,7 @@ WORD Cpb1000::Get_16rPC(DWORD adr)
 bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
 {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
-//        pLCDC->Refresh = true;
+        *d+=0xC00;
         mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
@@ -256,6 +259,7 @@ UINT16 Cpb1000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
 
+    AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-1000"));
 
     switch (m_kb_matrix) {
         case 0: return 0;

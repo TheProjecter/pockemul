@@ -564,7 +564,8 @@ OTHER_FILES += \
     resources/keymap/pb1000.map \
     resources/keymap/x710.map \
     resources/pockemul/config.xml \
-    resources/pockemul/configExt.xml
+    resources/pockemul/configExt.xml \
+    resources/keymap/pb2000.map
 
 
 
