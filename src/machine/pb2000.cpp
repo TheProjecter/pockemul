@@ -79,15 +79,15 @@ void Cpb2000::MemBank(DWORD *d) {
         *d += 0x20000;
         return;
     }
-    if ((*d >= 0x00C12) ){
+    if ((*d >= 0x00C12)) {
         BYTE m = 1 <<  (*d >> 15);
         if (mem[0x20C10] & m) {
-            AddLog(LOG_TEMP,"SWITCH BANK");
+            AddLog(LOG_RAM,"SWITCH BANK1");
             *d += 0x30000;
         }
         else if (mem[0x20C11] & m) {
             *d += 0x40000;
-            AddLog(LOG_TEMP,"SWITCH BANK");
+            AddLog(LOG_RAM,"SWITCH BANK2");
         }
     }
 }
@@ -228,8 +228,7 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY(';'))			data|=0x08;
 
             if (KEY(K_ANS))			data|=0x20;
-            if (KEY(K_F))			data|=0x40;
-            if (KEY(K_SHT))			data|=0x80;
+            if (KEY(K_SHT))			data|=0x40;
 
             if (KEY(K_EXTMENU))		data|=0x1000;
             if (KEY(K_CALC))		data|=0x8000;
