@@ -96,7 +96,8 @@ void Cpb2000::MemBank(DWORD *d) {
 WORD Cpb2000::Get_16rPC(DWORD adr)
 {
     DWORD	a;
-    MemBank(&adr);
+//    MemBank(&adr);
+    adr += 0x20000;
     a=adr+1;
     return((mem[adr]<<8)+mem[a]);
 }
@@ -154,92 +155,99 @@ UINT16 Cpb2000::getKey(void) {
 
 //AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&1) {
-            if (KEY(K_POW_OFF))          data|=0x20;
+            if (KEY(K_POW_OFF))     data|=0x20;
             if (KEY(K_BRK))         data|=0x80;
         }
 
         if (ko&0x02) {
-            if (KEY(':'))			data|=0x01;
-            if (KEY(';'))			data|=0x02;
-            if (KEY('='))			data|=0x04;
-            if (KEY('&'))			data|=0x08;
-            if (KEY('$'))			data|=0x10;
-            if (KEY('"'))			data|=0x20;
-            if (KEY(','))			data|=0x80;
-            if (KEY(K_MEMO_IN))		data|=0x2000;
-            if (KEY(K_IN))			data|=0x4000;
-//            if (KEY(K_RET))			data|=0x8000;
+            if (KEY('W'))           data|=0x01;
+            if (KEY('Q'))			data|=0x02;
+            if (KEY('A'))			data|=0x04;
+
+            if (KEY('Z'))			data|=0x10;
+            if (KEY(K_SML))			data|=0x20;
+
+            if (KEY(K_QUOTE))		data|=0x4000;
+            if (KEY(K_TAB))         data|=0x8000;
         }
+
         if (ko&0x04) {
-            if (KEY('Y'))			data|=0x01;
-            if (KEY('T'))			data|=0x02;
-            if (KEY('R'))			data|=0x04;
-            if (KEY('E'))			data|=0x08;
-            if (KEY('W'))			data|=0x10;
-            if (KEY('Q'))			data|=0x20;
-            if (KEY('U'))			data|=0x80;
-            if (KEY(K_MEMO))		data|=0x2000;
-            if (KEY(K_OUT))			data|=0x4000;
-            if (KEY(K_RA))			data|=0x8000;
-        }
-        if (ko&0x08) {
-            if (KEY('G'))			data|=0x01;
-            if (KEY('F'))			data|=0x02;
+            if (KEY('R'))			data|=0x01;
+            if (KEY('E'))			data|=0x02;
             if (KEY('D'))			data|=0x04;
             if (KEY('S'))			data|=0x08;
-            if (KEY('A'))			data|=0x10;
-            if (KEY(K_SML))			data|=0x20;
-            if (KEY('H'))			data|=0x80;
-            if (KEY(K_CAL))         data|=0x2000;
-            if (KEY(K_CALC))		data|=0x4000;
-            if (KEY(K_DA))			data|=0x8000;
+            if (KEY('C'))			data|=0x10;
+            if (KEY('X'))			data|=0x20;
+
+            if (KEY(K_F1))			data|=0x1000;
+            if (KEY(')'))			data|=0x4000;
+            if (KEY('('))			data|=0x8000;
+        }
+        if (ko&0x08) {
+            if (KEY('Y'))			data|=0x01;
+            if (KEY('T'))			data|=0x02;
+            if (KEY('G'))			data|=0x04;
+            if (KEY('F'))			data|=0x08;
+            if (KEY('B'))			data|=0x10;
+            if (KEY('V'))			data|=0x20;
+
+            if (KEY(K_F2))			data|=0x1000;
+            if (KEY(']'))           data|=0x4000;
+            if (KEY('['))           data|=0x8000;
         }
         if (ko&0x10) {
-            if (KEY('N'))			data|=0x01;
-            if (KEY('B'))			data|=0x02;
-            if (KEY('V'))			data|=0x04;
-            if (KEY('C'))			data|=0x08;
-            if (KEY('X'))			data|=0x10;
-            if (KEY('Z'))			data|=0x20;
-            if (KEY('M'))			data|=0x80;
-            if (KEY(K_MENU))		data|=0x2000;
-            if (KEY(K_LA))			data|=0x4000;
-            if (KEY(K_UA))			data|=0x8000;
+            if (KEY('I'))			data|=0x01;
+            if (KEY('U'))			data|=0x02;
+            if (KEY('J'))			data|=0x04;
+            if (KEY('H'))			data|=0x08;
+            if (KEY('M'))			data|=0x10;
+            if (KEY('N'))			data|=0x20;
+
+            if (KEY(K_F3))			data|=010000;
+            if (KEY(K_MEMO))		data|=0x4000;
+            if (KEY('|'))			data|=0x8000;
         }
 
         if (ko&0x20) {
-            if (KEY(K_CLR))			data|=0x01;
-            if (KEY(K_BS))			data|=0x02;
-            if (KEY(K_NEWALL))		data|=0x04;
-            if (KEY(K_INS))			data|=0x08;
-            if (KEY(K_STOP))		data|=0x10;
-            if (KEY(')'))			data|=0x20;
-//            if (KEY(K_CONTRAST))	data|=0x40;
-//            if (KEY(K_CONTRAST))	data|=0x80;
-            if (KEY(K_LCKEY))		data|=0x2000;
-//            if (KEY(K_CONTRAST))	data|=0x4000;
-//            if (KEY(K_CONTRAST))	data|=0x8000;
+            if (KEY('P'))			data|=0x01;
+            if (KEY('O'))			data|=0x02;
+            if (KEY('L'))   		data|=0x04;
+            if (KEY('K'))			data|=0x08;
+            if (KEY(' '))   		data|=0x10;
+            if (KEY(','))			data|=0x20;
+
+            if (KEY(K_F4))          data|=0x1000;
+            if (KEY(K_IN))          data|=0x4000;
+            if (KEY(K_OUT))         data|=0x8000;
         }
 
         if (ko&0x40) {
-//            if (KEY(K_ENG))			data|=0x01;
-            if (KEY('7'))			data|=0x02;
-            if (KEY('8'))			data|=0x04;
-            if (KEY('9'))			data|=0x08;
-            if (KEY('('))			data|=0x10;
-            if (KEY('/'))			data|=0x20;
-            if (KEY('^'))			data|=0x80;
+
+            if (KEY('='))			data|=0x02;
+            if (KEY(':'))			data|=0x04;
+            if (KEY(';'))			data|=0x08;
+
+            if (KEY(K_ANS))			data|=0x20;
+            if (KEY(K_F))			data|=0x40;
+            if (KEY(K_SHT))			data|=0x80;
+
+            if (KEY(K_EXTMENU))		data|=0x1000;
+            if (KEY(K_CALC))		data|=0x8000;
+
 
         }
 
         if (ko&0x80) {
-            if (KEY('O'))			data|=0x01;
-            if (KEY('P'))			data|=0x02;
-            if (KEY('4'))			data|=0x04;
-            if (KEY('5'))			data|=0x08;
-            if (KEY('6'))			data|=0x10;
-            if (KEY('*'))			data|=0x20;
-            if (KEY('I'))			data|=0x80;
+            if (KEY('5'))			data|=0x01;
+            if (KEY('4'))			data|=0x02;
+            if (KEY('2'))			data|=0x04;
+            if (KEY('1'))			data|=0x08;
+
+            if (KEY('0'))			data|=0x20;
+
+            if (KEY('7'))			data|=0x80;
+
+            if (KEY(K_NEWALL))		data|=0x2000;
 
         }
 
@@ -256,24 +264,25 @@ UINT16 Cpb2000::getKey(void) {
         }
 
         if (ko&0x200) {
-//            if (KEY(K_AA))			data|=0x01;
-            if (KEY('0'))			data|=0x02;
-            if (KEY('.'))			data|=0x04;
-            if (KEY(K_ANS))			data|=0x08;
-//            if (KEY(K_RET))			data|=0x10;
-            if (KEY('-'))			data|=0x20;
-            if (KEY(' '))			data|=0x80;
+            if (KEY(K_CAL))			data|=0x01;
+            if (KEY(K_RA))			data|=0x02;
+            if (KEY('/'))			data|=0x04;
+            if (KEY(K_BS))			data|=0x08;
 
+            if (KEY('*'))			data|=0x80;
+            if (KEY(K_MENU))		data|=0x4000;
+            if (KEY(K_DEL))			data|=0x8000;
         }
 
         if (ko&0x400) {
-            if (pKEYB->isShift)     data|=0x40;
-            if (KEY(K_SHT))			data|=0x40;
-            if (KEY(K_SHT2))		data|=0x40;
-        }
-        if (ko&0x800) {
-            if (pKEYB->isCtrl)      data|=0x40;
-            if (KEY(K_F1))			data|=0x40;
+            if (KEY(K_DA))			data|=0x01;
+            if (KEY(K_LA))			data|=0x02;
+            if (KEY(K_CLR))			data|=0x04;
+
+            if (KEY('8'))			data|=0x80;
+
+            if (KEY(K_UA))			data|=0x4000;
+            if (KEY(K_INS))			data|=0x8000;
         }
     }
 

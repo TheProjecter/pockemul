@@ -719,6 +719,8 @@ void CPObject::keyPressEvent (QKeyEvent * event )
    		case Qt::Key_Return:	pKEYB->LastKey = K_RET;		event->accept();	break;
         case Qt::Key_Delete:	pKEYB->LastKey = K_DEL;		event->accept();	break;
         case Qt::Key_Insert:	pKEYB->LastKey = K_INS;		event->accept();	break;
+        case Qt::Key_QuoteLeft: pKEYB->LastKey = K_QUOTE;   event->accept();    break;
+        case Qt::Key_Tab:       pKEYB->LastKey = K_TAB;     event->accept();    break;
         case Qt::Key_Space:		pKEYB->LastKey = ' ';		event->accept();	break;
 		case Qt::Key_Period:	pKEYB->LastKey = '.';		event->accept();	break;
 		case Qt::Key_Plus:		pKEYB->LastKey = '+';		event->accept();	break;

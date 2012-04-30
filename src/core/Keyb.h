@@ -68,6 +68,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_CLR		0x0c
 #define K_RET		0x0d
 #define K_PEN		0x0e
+#define K_TAB       0x0f
 #define K_SML		0x14
 #define K_DEF		0xde
 #define K_SHT		0x11
