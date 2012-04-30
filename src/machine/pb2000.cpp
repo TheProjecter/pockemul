@@ -140,19 +140,19 @@ UINT16 Cpb2000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
 
-AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-2000C"));
-    switch (m_kb_matrix) {
+//AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-2000C"));
+    switch (m_kb_matrix & 0x0f) {
         case 0: return 0;
         case 13: ko = 0xffff; break;
         case 14:
         case 15: ko = 0; break;
         default: ko = (1<<(m_kb_matrix-1)); break;
     }
-    AddLog(LOG_KEYBOARD,tr("   matrix=%1    ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
+    AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
     if ((pKEYB->LastKey) )
     {
 
-AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
+//AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&1) {
             if (KEY(K_POW_OFF))          data|=0x20;
             if (KEY(K_BRK))         data|=0x80;
@@ -244,14 +244,13 @@ AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         }
 
         if (ko&0x100) {
-            if (KEY('9'))			data|=0x01;
-
             if (KEY('-'))			data|=0x01;
-            if (KEY('6'))			data|=0x02;     // OK
-            if (KEY('+'))			data|=0x04;
+            if (KEY('6'))			data|=0x02;
+            if (KEY('+'))			data|=0x04;     // OK
             if (KEY('3'))			data|=0x08;
             if (KEY(K_RET))			data|=0x10;
             if (KEY('.'))			data|=0x20;
+
             if (KEY('9'))			data|=0x80;
 
         }

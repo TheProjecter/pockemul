@@ -54,6 +54,7 @@ public:
 	void SetCPUspeed(float);
     int     msElapsed(qint64 stateRef);
     qint64  usElapsed(qint64 stateRef);
+    qint64  stElapsedId(int id);
     int     msElapsedId(int id);
     qint64  usElapsedId(int id);
 
@@ -90,6 +91,7 @@ public:
 	~Ctimer()
 	{
     }
+
 
 private:
     qint64 previous_state_tp[10];

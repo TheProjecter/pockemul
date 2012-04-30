@@ -60,6 +60,7 @@ public:
     void control_write(UINT8 data);
     HD44352info getInfo();
 
+    quint64 on_timer_rate;
 //    int video_update(bitmap_t &bitmap, const rectangle &cliprect);
 static UINT8 compute_newval(UINT8 type, UINT8 oldval, UINT8 newval);
 protected:

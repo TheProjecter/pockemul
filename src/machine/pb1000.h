@@ -57,6 +57,8 @@ public:
     qreal zoom() const { return m_zoom; }
     qreal m_zoom;
 
+    qint64 lcd_on_timer_rate;
+
 public slots:
     void endAnimation(void);
 };

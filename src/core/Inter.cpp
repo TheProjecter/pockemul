@@ -65,6 +65,10 @@ bool Ctimer::resetTimer(int id) {
     return false;
 }
 
+qint64 Ctimer::stElapsedId(int id) {
+    return (state - timerSate[id]);
+}
+
 int Ctimer::msElapsedId(int id) {
 
     qint64 r = (state - timerSate[id]) * 1000L / (CPUSpeed *pPC->getfrequency());

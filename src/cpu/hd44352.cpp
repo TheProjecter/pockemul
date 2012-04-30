@@ -267,7 +267,7 @@ void CHD44352::data_write(UINT8 data)
                 {
                     if (info.m_state == 1)
                     {
-                        quint64 on_timer_rate;
+
 
                         switch((data>>4) & 0x0f)
                         {

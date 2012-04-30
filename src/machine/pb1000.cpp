@@ -94,6 +94,8 @@ bool Cpb1000::init(void)				// initialize
 
 bool Cpb1000::run() {
 
+    lcd_on_timer_rate = pHD44352->on_timer_rate;
+
     if (off && pKEYB->LastKey == K_POW_ON)
     {
         TurnON();
@@ -102,12 +104,12 @@ bool Cpb1000::run() {
 
     CpcXXXX::run();
 
-    if (pKEYB->LastKey) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
-//        AddLog(LOG_KEYBOARD,tr("Execute Interrupt : %1").arg(pKEYB->LastKey));
-//        DasmStep = true;
-        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
-    }
+//    if (pKEYB->LastKey) {
+//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
+////        AddLog(LOG_KEYBOARD,tr("Execute Interrupt : %1").arg(pKEYB->LastKey));
+////        DasmStep = true;
+//        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
+//    }
 
 }
 
@@ -259,20 +261,20 @@ UINT16 Cpb1000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
 
-    AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-1000"));
+//    AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-1000"));
 
-    switch (m_kb_matrix) {
+    switch (m_kb_matrix & 0x0f) {
         case 0: return 0;
         case 13: ko = 0xffff; break;
         case 14:
         case 15: ko = 0; break;
         default: ko = (1<<(m_kb_matrix-1)); break;
     }
-
+AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
     if ((pKEYB->LastKey) )
     {
 
-AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
+//AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&1) {
             if (KEY(K_POW_OFF))          data|=0x20;
             if (KEY(K_BRK))         data|=0x80;
@@ -415,7 +417,7 @@ if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
 }
 
 void Cpb1000::setKey(UINT8 data) {
-    AddLog(LOG_KEYBOARD,tr("set matrix to %1").arg(data,2,16,QChar('0')));
+//    AddLog(LOG_KEYBOARD,tr("set matrix to %1").arg(data,2,16,QChar('0')));
     m_kb_matrix = data;
 }
 

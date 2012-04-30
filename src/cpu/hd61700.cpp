@@ -37,6 +37,7 @@
 #define SEC_TIMER   0
 #define PULSE_TIMER 1
 #define KEY_TIMER   2
+#define ON_TIMER    3
 
 // internal ROM
 #define INT_ROM					0x0c00
@@ -148,6 +149,7 @@ bool CHD61700::init() {
     pPC->pTIMER->resetTimer(SEC_TIMER);
     pPC->pTIMER->resetTimer(PULSE_TIMER);
     pPC->pTIMER->resetTimer(KEY_TIMER);
+    pPC->pTIMER->resetTimer(ON_TIMER);
 
     memset(m_regsir, 0, sizeof(m_regsir));
     memset(m_reg8bit, 0, sizeof(m_reg8bit));
@@ -319,7 +321,7 @@ bool CHD61700::check_irqs(void)
     {
         if (REG_IB & (1<<i) && !(m_irq_status & (1<<i)))
         {
-            AddLog(LOG_KEYBOARD,"INTERRUPT");
+            AddLog(LOG_TEMP,"INTERRUPT");
             m_irq_status |= (1<<i);
             push(REG_SS, (m_pc>>8)&0xff);
             push(REG_SS, (m_pc>>0)&0xff);
@@ -338,6 +340,7 @@ void CHD61700::secTimer(void) {
 
     REG_TM++;
     if (fp_log) fprintf(fp_log,"SEC TIMER : %d",REG_TM);
+    AddLog(LOG_TEMP,"SEC TIMER");
     if ((REG_TM&0x3f) == 60)
     {
         REG_TM = (REG_TM & 0xc0) + 0x40;
@@ -362,13 +365,19 @@ void CHD61700::step(void) {
     m_icount = 1;
     execute_run();
 
-    // Sec Timer
     pPC->pTIMER->state-=(m_icount-1);
+
+    // Sec Timer
     if (pPC->pTIMER->msElapsedId(SEC_TIMER) >=1000) {
         pPC->pTIMER->resetTimer(SEC_TIMER);
         secTimer();
     }
 
+    // On Timer
+    if (pPC->pTIMER->stElapsedId(ON_TIMER) >= ((Cpb1000*)pPC)->lcd_on_timer_rate) {
+        pPC->pTIMER->resetTimer(ON_TIMER);
+        execute_set_input(HD61700_ON_INT,1);
+    }
     // Pulse Timer
     if (pPC->pTIMER->msElapsedId(PULSE_TIMER) >= pulseInterval) {
         if (fp_log) fprintf(fp_log,"PULSE TIMER\n");
@@ -386,7 +395,7 @@ void CHD61700::step(void) {
     // Keyboard timer
     if (pPC->pTIMER->msElapsedId(KEY_TIMER) >= 4) {
         if (fp_log) fprintf(fp_log,"KEYBOARD TIMER\n");
-//        AddLog(LOG_KEYBOARD,"KEYBOARD TIMER");
+        AddLog(LOG_TEMP,"KEYBOARD TIMER");
         pPC->pTIMER->resetTimer(KEY_TIMER);
         execute_set_input(HD61700_KEY_INT,1);
     }
@@ -2811,7 +2820,7 @@ void CHD61700::execute_set_input(int inputnum, int state)
             break;
         case HD61700_KEY_INT:	//level sensitive line
             if (((REG_IE>>3) & (1<<inputnum)) && state != CLEAR_LINE) {
-                AddLog(LOG_KEYBOARD,"Execute Interrupt");
+//                AddLog(LOG_KEYBOARD,"Execute Interrupt");
                 REG_IB |= (1<<inputnum);
             }
             break;
