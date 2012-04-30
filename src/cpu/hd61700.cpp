@@ -2794,7 +2794,7 @@ void CHD61700::execute_run()
 
 void CHD61700::execute_set_input(int inputnum, int state)
 {
-//    AddLog(LOG_CPU,"Execute Interrupt");
+
     switch (inputnum)
     {
         case 1000:// INPUT_LINE_RESET:
@@ -2810,13 +2810,17 @@ void CHD61700::execute_set_input(int inputnum, int state)
             set_pc(0x0000);
             break;
         case HD61700_KEY_INT:	//level sensitive line
-            if (((REG_IE>>3) & (1<<inputnum)) && state != CLEAR_LINE)
+            if (((REG_IE>>3) & (1<<inputnum)) && state != CLEAR_LINE) {
+                AddLog(LOG_KEYBOARD,"Execute Interrupt");
                 REG_IB |= (1<<inputnum);
+            }
             break;
 
         case HD61700_INT1:	//edge sensitive line
-            if (((REG_IE>>3) & (1<<inputnum)) && (m_lines_status[inputnum] != state))
+            if (((REG_IE>>3) & (1<<inputnum)) && (m_lines_status[inputnum] != state)) {
                 REG_IB |= (1<<inputnum);
+
+            }
 
             if (m_lines_status[inputnum] == CLEAR_LINE && state != CLEAR_LINE)
                 REG_IE = (REG_IE & 0xfd) | 0x02;	//rising edge

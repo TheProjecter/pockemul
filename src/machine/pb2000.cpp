@@ -39,8 +39,8 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, RAM , "RAM 0"));
     SlotList.append(CSlot(6 , 0x20000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
-    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om51p.bin", ""	, ROM , "PROLOG"));      // Originally in 70000
-    SlotList.append(CSlot(64, 0x40000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
+//    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om51p.bin", ""	, ROM , "PROLOG"));      // Originally in 70000
+//    SlotList.append(CSlot(64, 0x40000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
@@ -75,42 +75,28 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 }
 
 void Cpb2000::MemBank(DWORD *d) {
-    if ((*d >= 0x00000)&& (*d<0x00C12)) {
+    if ((*d >= 0x00000)&& (*d<0x00C00)) {
         *d += 0x20000;
         return;
     }
     if ((*d >= 0x00C12) ){
         BYTE m = 1 <<  (*d >> 15);
         if (mem[0x20C10] & m) {
+            AddLog(LOG_TEMP,"SWITCH BANK");
             *d += 0x30000;
         }
         else if (mem[0x20C11] & m) {
             *d += 0x40000;
+            AddLog(LOG_TEMP,"SWITCH BANK");
         }
     }
 }
 
-//function SelectRom (address: integer) : integer;
-//var
-//  m: byte;
-//  ga_reg: word;
-//begin
-//  SelectRom := address;
-//  if address >= $00C12 then
-//  begin
-//    m := byte(1) shl (cardinal(address) shr 15);
-//    ga_reg := ptrw(memdef[GATEARRAY].storage)^;
-//    if (Lo(ga_reg) and m) <> 0 then		{ Gate Array register $0C10 }
-//      SelectRom := address or $70000		{ ROM2 selected }
-//    else if (Hi(ga_reg) and m) <> 0 then	{ Gate Array register $0C11 }
-//      SelectRom := address or $B0000		{ ROM3 selected }
-//  end {if};
-//end {SelectRom};
 
 WORD Cpb2000::Get_16rPC(DWORD adr)
 {
     DWORD	a;
-    adr+=0x20000;
+    MemBank(&adr);
     a=adr+1;
     return((mem[adr]<<8)+mem[a]);
 }
@@ -118,10 +104,8 @@ WORD Cpb2000::Get_16rPC(DWORD adr)
 bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
 {
     MemBank(d);
-    AddLog(LOG_TEMP,tr("Write %1").arg(*d));
-    if ( (*d>=0x20C00) && (*d<=0x20C11) )	{
-//        pLCDC->Refresh = true;
-//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE IO [%04X] = %02x\n",*d,data);
+//    AddLog(LOG_TEMP,tr("Write %1").arg(*d));
+    if ( (*d>=0x00C00) && (*d<=0x00C11) )	{
         AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
         return(true);		// RAM area()
     }
@@ -138,8 +122,8 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 {
     MemBank(d);
 
-    if ( (*d>=0x20C00) && (*d<=0x20C0F) )	{
-        mem[*d] = 0xff;
+    if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
+//        mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
         return(true);		// RAM area()
@@ -164,7 +148,7 @@ AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-2000C"));
         case 15: ko = 0; break;
         default: ko = (1<<(m_kb_matrix-1)); break;
     }
-
+    AddLog(LOG_KEYBOARD,tr("   matrix=%1    ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
     if ((pKEYB->LastKey) )
     {
 
@@ -312,5 +296,5 @@ void Cpb2000::paintEvent(QPaintEvent *event)
 UINT8 Cpb2000::readPort()
 {
 //    AddLog(LOG_TEMP,"Read Port");
-    return 0xfc;
+    return 0x03;
 }
