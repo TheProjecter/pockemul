@@ -41,9 +41,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, RAM , "RAM 0"));
     SlotList.append(CSlot(6 , 0x20000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
-    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om55l.bin", ""	, ROM , "EXT ROM"));      // Originally in 70000
-//    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
-//    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om55l.bin", ""	, ROM , "LISP"));      // Originally in B0000 - C0000
+    SlotList.append(CSlot(64, 0x30000 ,	"EMPTY", ""	, ROM , "EXT ROM"));      // Originally in 70000
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
@@ -80,21 +78,23 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 void Cpb2000::TurnON(void){
 
 
-//    if (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) {
-//        SlotList[4].setFileName(":/pb2000/om51p.bin");
-//        SlotList[4].setLabel("PROLOG");
-//        Mem_Load(4);
-//    }
-//    if (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) {
-//        SlotList[4].setFileName(":/pb2000/om53b.bin");
-//        SlotList[4].setLabel("BASIC");
-//        Mem_Load(4);
-//    }
-//    if (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) {
-//        SlotList[4].setFileName(":/pb2000/om55l.bin");
-//        SlotList[4].setLabel("LISP");
-//        Mem_Load(4);
-//    }
+    memset((void *)&mem[SlotList[4].getAdr()] ,InitMemValue,SlotList[4].getSize()*1024);
+
+    if (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) {
+        SlotList[4].setFileName(":/pb2000/om51p.bin");
+        SlotList[4].setLabel("PROLOG");
+        Mem_Load(4);
+    }
+    if (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) {
+        SlotList[4].setFileName(":/pb2000/om53b.bin");
+        SlotList[4].setLabel("BASIC");
+        Mem_Load(4);
+    }
+    if (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) {
+        SlotList[4].setFileName(":/pb2000/om55l.bin");
+        SlotList[4].setLabel("LISP");
+        Mem_Load(4);
+    }
 
     Cpb1000::TurnON();
 }
@@ -105,9 +105,11 @@ void	Cpb2000::initExtension(void)
     AddLog(LOG_MASTER,"INIT EXT PB2000");
     // initialise ext_MemSlot1
     ext_MemSlot1 = new CExtensionArray("ROM Slot 1","Add ROM Module");
-    ext_MemSlot1->setAvailable(ID_OM51P,true);//		ext_MemSlot1->setChecked(ID_CE202M,true);
+    ext_MemSlot1->setAvailable(ID_OM51P,true);
     ext_MemSlot1->setAvailable(ID_OM53B,true);
     ext_MemSlot1->setAvailable(ID_OM55L,true);
+
+    ext_MemSlot1->setChecked(ID_OM53B,true);
 
     addExtMenu(ext_MemSlot1);
     extensionArray[0] = ext_MemSlot1;
@@ -126,7 +128,7 @@ bool Cpb2000::init(void)				// initialize
 }
 void Cpb2000::MemBank(DWORD *d) {
     if ((*d >= 0x00000)&& (*d<0x00C00)) {
-        *d += 0x20000;
+        *d |= 0x20000;
         return;
     }
     if ((*d >= 0x00C12)) {
@@ -202,9 +204,9 @@ UINT16 Cpb2000::getKey(void) {
         case 15: ko = 0; break;
         default: ko = (1<<(m_kb_matrix-1)); break;
     }
-    AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
     if ((pKEYB->LastKey) )
     {
+        if (ko >= 0xfff) AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
 
 //AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
         if (ko&1) {
@@ -322,7 +324,7 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY(K_BS))			data|=0x08;
 
             if (KEY('*'))			data|=0x80;
-            if (KEY(K_MENU))		data|=0x4000;
+            if (KEY(K_MENU))		{data|=0x4000;AddLog(LOG_KEYBOARD,"MENU PRESSED");}
             if (KEY(K_DEL))			data|=0x8000;
         }
 
@@ -357,5 +359,9 @@ UINT8 Cpb2000::readPort()
 {
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"READ PORT\n");
 
-    return 0xf8;
+    if ( (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) ||
+         (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) ||
+         (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) ) return 0xf8;
+
+    return 0xf9;
 }

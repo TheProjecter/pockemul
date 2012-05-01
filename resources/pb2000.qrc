@@ -4,8 +4,6 @@
         <file>pb2000/pb-2000.png</file>
         <file>pb2000/pb-2000lcd.png</file>
         <file>pb2000/pb-2000symb.png</file>
-        <file>pb2000/ram0.bin</file>
-        <file>pb2000/ram1.bin</file>
         <file>pb2000/rom0.bin</file>
         <file>pb2000/rom1.bin</file>
         <file>pb2000/om51p.bin</file>
