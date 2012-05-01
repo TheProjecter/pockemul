@@ -40,13 +40,20 @@
 #define ID_CE16224  26      // 224 Kb module
 #define ID_CE16256  27      // 256 Kb module
 
+// CASIO PB Module
+#define ID_OM51P    28      // PROLOG
+#define ID_OM52C    29      // C
+#define ID_OM53B    30      // BASIC
+#define ID_OM54A    31      // CASL
+#define ID_OM55L    32      // LISP
+
 
 
 
 
 class CExtension{
 public:
-    const char*	GetClassName(){ return("CExtension"); };
+    const char*	GetClassName(){ return("CExtension"); }
 
     QString	Id;
     QString Description;
@@ -68,7 +75,7 @@ public:
 
 class CExtensionArray{
 public:
-    const char*	GetClassName(){ return("CExtensionArray"); };
+    const char*	GetClassName(){ return("CExtensionArray"); }
 
     QString Id;
     QString Description;
@@ -79,7 +86,7 @@ public:
 
     QActionGroup *actionGroup;
 
-    CExtension	*ExtArray[30];
+    CExtension	*ExtArray[40];
 //    QList<CExtension> ExtList;
 
     void setAvailable(int ind,bool value);
@@ -95,7 +102,7 @@ public:
         delete loadAction;
         delete saveAction;
         delete actionGroup;
-        for (int i=0;i<30;i++) delete ExtArray[i];
+        for (int i=0;i<40;i++) delete ExtArray[i];
 
     }
 };

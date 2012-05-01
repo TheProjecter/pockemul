@@ -12,6 +12,9 @@ class Cpb2000 : public Cpb1000
 public:
     Cpb2000(CPObject *parent = 0);
 
+    virtual void initExtension(void);
+    virtual void TurnON();
+    virtual bool init();
     virtual bool Chk_Adr(DWORD *d, DWORD data);
     virtual bool Chk_Adr_R(DWORD *d, DWORD data);
 

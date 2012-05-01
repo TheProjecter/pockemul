@@ -69,9 +69,14 @@ CExtensionArray::CExtensionArray(QString value1,QString value2)							//[constru
     ExtArray[ID_CE16224]= new CExtension("ce-16224",	"224 Kb custom RAM Module");
     ExtArray[ID_CE16256]= new CExtension("ce-16256",	"256 Kb custom RAM Module");
 
+    ExtArray[ID_OM51P]= new CExtension("OM-51P",	"PROLOG Interpreter");
+    ExtArray[ID_OM52C]= new CExtension("OM-52C",	"C Interpreter");
+    ExtArray[ID_OM53B]= new CExtension("OM-53B",	"BASIC Interpreter");
+    ExtArray[ID_OM54A]= new CExtension("OM-54A",	"CASL Interpreter");
+    ExtArray[ID_OM55L]= new CExtension("OM-55L",	"LISP Interpreter");
 
 
-    for (int i = ID_CE16256+1;i<30;i++)
+    for (int i = ID_OM55L+1;i<40;i++)
             ExtArray[i]= new CExtension();
 
 
@@ -126,7 +131,7 @@ void CExtensionArray::setAvailable(int ind,bool value,bool checked)
 
 void CExtensionArray::setChecked(int ind,bool value)
 {
-    for (int i = 0;i<30;i++)
+    for (int i = 0;i<40;i++)
         ExtArray[i]->IsChecked = false;
 
     ExtArray[ind]->IsChecked = value;

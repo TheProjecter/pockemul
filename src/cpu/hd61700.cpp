@@ -756,7 +756,8 @@ void CHD61700::execute_run()
 //                                src = (*m_port_r)(*this);
                             src = ((Cpb1000*)pPC)->readPort();
 
-                            src&=(~REG_PE);
+                            src &=(~REG_PE);
+                            src |= (REG_PD & REG_PE);
                         }
 
                         WRITE_REG(arg, src);
@@ -1730,11 +1731,13 @@ void CHD61700::execute_run()
 //                            }
 //                            else
 //                                reg0 = reg1 = 0xff;
-                            reg0=((Cpb1000*)pPC)->readPort();;
-                            reg1=((Cpb1000*)pPC)->readPort();;
+                            reg0=((Cpb1000*)pPC)->readPort();
+                            reg1=((Cpb1000*)pPC)->readPort();
 
-                            reg0&=(~REG_PE);
-                            reg1&=(~REG_PE);
+                            reg0 &=(~REG_PE);
+                            reg0 |= (REG_PD & REG_PE);
+                            reg1 &=(~REG_PE);
+                            reg1 |= (REG_PD & REG_PE);
 
                         }
 

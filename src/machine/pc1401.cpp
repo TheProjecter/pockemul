@@ -11,7 +11,7 @@
 #include "Inter.h"
 #include "Keyb.h"
 #include "Keyb1401.h"
-#include "extension.h"
+#include "cextension.h"
 #include "sc61860.h"
 #include "Keyb.h"
 #include "Connect.h"

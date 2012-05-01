@@ -1,9 +1,10 @@
 #include "common.h"
 #include "pcxxxx.h"
-#include "extension.h"
+#include "cextension.h"
+#include "mainwindowpockemul.h"
 
-
-
+extern MainWindowPockemul* mainwindow;
+#define MAXEXT  40
 bool CpcXXXX::CheckUpdateExtension(CExtension *ext)
 {
 	return true;
@@ -11,7 +12,7 @@ bool CpcXXXX::CheckUpdateExtension(CExtension *ext)
 
 void CpcXXXX::updateExtension(CExtensionArray *array,QAction *action)
 {
-		for (int ind = 0 ; ind < 30; ind++){
+        for (int ind = 0 ; ind < MAXEXT; ind++){
 			if (array->ExtArray[ind]->Action == action)
 			{
 				if (CheckUpdateExtension(array->ExtArray[ind]))
@@ -37,7 +38,7 @@ void CpcXXXX::updateMenuFromExtension(void)
 
 	for (int indArray = 0; indArray < 5; indArray++){
 		if (extensionArray[indArray]) 
-		for (int indExt = 0; indExt < 30 ; indExt++) {
+        for (int indExt = 0; indExt < MAXEXT ; indExt++) {
 			checked = extensionArray[indArray]->ExtArray[indExt]->IsChecked;
 			action = extensionArray[indArray]->ExtArray[indExt]->Action;
 			if (action) action->setChecked(false);
@@ -49,7 +50,7 @@ void CpcXXXX::updateMenuFromExtension(void)
 
 CExtension * CpcXXXX::findExtension(CExtensionArray *array,QAction *action)
 {
-	for (int ind = 0 ; ind < 30; ind++){
+    for (int ind = 0 ; ind < MAXEXT; ind++){
 		if (array->ExtArray[ind]->Action == action)
 		{
 			return(array->ExtArray[ind]);
@@ -61,7 +62,10 @@ CExtension * CpcXXXX::findExtension(CExtensionArray *array,QAction *action)
 
 void CpcXXXX::addExtMenu(CExtensionArray *ext)
 {
-	if (! ext) return;	
+    if (! ext) {
+//        MSG_ERROR("ERREUR");
+        return;
+    }
 	
 	delete ext->Menu;
 	
@@ -73,7 +77,7 @@ void CpcXXXX::addExtMenu(CExtensionArray *ext)
 	ext->Menu->addSeparator();
 	ext->actionGroup = new QActionGroup(this);
 	connect(ext->actionGroup, SIGNAL(triggered(QAction *)), this, SLOT(manageExtensions(QAction *)));
-	for (int ind = 0 ; ind < 30; ind++){
+    for (int ind = 0 ; ind < MAXEXT; ind++){
 		if (ext->ExtArray[ind]->IsAvailable){
 			ext->ExtArray[ind]->Action = ext->Menu->addAction(ext->ExtArray[ind]->Id + " ("+ext->ExtArray[ind]->Description+")");
 			ext->ExtArray[ind]->Action->setToolTip(ext->ExtArray[ind]->Description);
@@ -102,7 +106,7 @@ void CpcXXXX::emptyExtensionArray(QAction *action)
 			{
 				// is this array empty or not ?
 //				bool isempty=true;
-				for (int indExt = 0;indExt<30; indExt++)
+                for (int indExt = 0;indExt<MAXEXT; indExt++)
 				{
 					if (extensionArray[ind]->ExtArray[indExt]->IsChecked)
 						{

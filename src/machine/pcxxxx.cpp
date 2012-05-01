@@ -17,7 +17,7 @@
 #include "Debug.h"
 #include "init.h"
 #include "dialoganalog.h"
-#include "extension.h"
+#include "cextension.h"
 #include "Keyb.h"
 #include "xmlwriter.h"
 
@@ -886,6 +886,8 @@ void CpcXXXX::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
 bool CpcXXXX::Mem_Load(BYTE s)
 {
 	QFile file;
+
+    if (SlotList[s].getFileName() == "EMPTY") return true;
 
 	file.setFileName(SlotList[s].getFileName());
 	

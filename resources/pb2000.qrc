@@ -10,5 +10,6 @@
         <file>pb2000/rom1.bin</file>
         <file>pb2000/om51p.bin</file>
         <file>pb2000/om53b.bin</file>
+        <file>pb2000/om55l.bin</file>
     </qresource>
 </RCC>

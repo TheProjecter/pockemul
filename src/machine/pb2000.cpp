@@ -9,6 +9,8 @@
 #include "Log.h"
 #include "cpu.h"
 #include "Lcdc_pb1000.h"
+#include "hd61700.h"
+#include "cextension.h"
 
 
 #define PD_RES 0x10;	// 1=reset, 0=normal_operation
@@ -30,7 +32,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
     SymbFname		= "";
 
-    memsize         = 0x60000;
+    memsize         = 0x70000;
     InitMemValue	= 0xff;
 
 
@@ -39,8 +41,9 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, RAM , "RAM 0"));
     SlotList.append(CSlot(6 , 0x20000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
-//    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om51p.bin", ""	, ROM , "PROLOG"));      // Originally in 70000
-    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
+    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om55l.bin", ""	, ROM , "EXT ROM"));      // Originally in 70000
+//    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
+//    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om55l.bin", ""	, ROM , "LISP"));      // Originally in B0000 - C0000
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
@@ -74,6 +77,53 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
 }
 
+void Cpb2000::TurnON(void){
+
+
+//    if (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) {
+//        SlotList[4].setFileName(":/pb2000/om51p.bin");
+//        SlotList[4].setLabel("PROLOG");
+//        Mem_Load(4);
+//    }
+//    if (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) {
+//        SlotList[4].setFileName(":/pb2000/om53b.bin");
+//        SlotList[4].setLabel("BASIC");
+//        Mem_Load(4);
+//    }
+//    if (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) {
+//        SlotList[4].setFileName(":/pb2000/om55l.bin");
+//        SlotList[4].setLabel("LISP");
+//        Mem_Load(4);
+//    }
+
+    Cpb1000::TurnON();
+}
+
+
+void	Cpb2000::initExtension(void)
+{
+    AddLog(LOG_MASTER,"INIT EXT PB2000");
+    // initialise ext_MemSlot1
+    ext_MemSlot1 = new CExtensionArray("ROM Slot 1","Add ROM Module");
+    ext_MemSlot1->setAvailable(ID_OM51P,true);//		ext_MemSlot1->setChecked(ID_CE202M,true);
+    ext_MemSlot1->setAvailable(ID_OM53B,true);
+    ext_MemSlot1->setAvailable(ID_OM55L,true);
+
+    addExtMenu(ext_MemSlot1);
+    extensionArray[0] = ext_MemSlot1;
+}
+
+
+bool Cpb2000::init(void)				// initialize
+{
+//pCPU->logsw = true;
+#ifndef QT_NO_DEBUG
+    pCPU->logsw = true;
+#endif
+    Cpb1000::init();
+    initExtension();
+    return true;
+}
 void Cpb2000::MemBank(DWORD *d) {
     if ((*d >= 0x00000)&& (*d<0x00C00)) {
         *d += 0x20000;
@@ -81,14 +131,14 @@ void Cpb2000::MemBank(DWORD *d) {
     }
     if ((*d >= 0x00C12)) {
         BYTE m = 1 <<  (*d >> 15);
-        if (mem[0x20C10] & m) {
+        if (mem[0x0C10] & m) {
             AddLog(LOG_RAM,"SWITCH BANK1");
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 1  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x20C10]);
-            *d += 0x30000;
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 1  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x0C10]);
+                *d |= 0x30000;
         }
-        else if (mem[0x20C11] & m) {
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 2  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x20C11]);
-            *d += 0x40000;
+        else if (mem[0x0C11] & m) {
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 2  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x0C11]);
+            *d |= 0x40000;
             AddLog(LOG_RAM,"SWITCH BANK2");
         }
     }
@@ -108,8 +158,9 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
 {
     MemBank(d);
 //    AddLog(LOG_TEMP,tr("Write %1").arg(*d));
-    if ( (*d>=0x00C00) && (*d<=0x00C11) )	{
+    if ( (*d>=0x00C10) && (*d<=0x00C11) )	{
         AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"Write port [%05X] = %02X\n",*d,data);
         return(true);		// RAM area()
     }
 
@@ -125,7 +176,7 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 {
     MemBank(d);
 
-    if ( (*d>=0x20C00) && (*d<=0x20C0F) )	{
+    if ( (*d>=0x0C00) && (*d<=0x0C0F) )	{
 //        mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
@@ -304,6 +355,7 @@ void Cpb2000::paintEvent(QPaintEvent *event)
 
 UINT8 Cpb2000::readPort()
 {
-//    AddLog(LOG_TEMP,"Read Port");
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"READ PORT\n");
+
     return 0xf8;
 }

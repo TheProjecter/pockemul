@@ -8,7 +8,7 @@
 #include "pcxxxx.h"
 #include "Lcdc.h"
 #include "Keyb.h"
-#include "extension.h"
+#include "cextension.h"
 #include "Connect.h"
 #include "clink.h"
 #include "dialogkeylist.h"

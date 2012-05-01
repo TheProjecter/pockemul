@@ -83,7 +83,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
 bool Cpb1000::init(void)				// initialize
 {
-//pCPU->logsw = true;
+
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
