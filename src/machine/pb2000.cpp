@@ -40,7 +40,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     SlotList.append(CSlot(6 , 0x20000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
 //    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om51p.bin", ""	, ROM , "PROLOG"));      // Originally in 70000
-//    SlotList.append(CSlot(64, 0x40000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
+    SlotList.append(CSlot(64, 0x30000 ,	":/pb2000/om53b.bin", ""	, ROM , "BASIC"));      // Originally in B0000 - C0000
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
@@ -83,9 +83,11 @@ void Cpb2000::MemBank(DWORD *d) {
         BYTE m = 1 <<  (*d >> 15);
         if (mem[0x20C10] & m) {
             AddLog(LOG_RAM,"SWITCH BANK1");
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 1  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x20C10]);
             *d += 0x30000;
         }
         else if (mem[0x20C11] & m) {
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 2  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x20C11]);
             *d += 0x40000;
             AddLog(LOG_RAM,"SWITCH BANK2");
         }
@@ -123,7 +125,7 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 {
     MemBank(d);
 
-    if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
+    if ( (*d>=0x20C00) && (*d<=0x20C0F) )	{
 //        mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
@@ -303,5 +305,5 @@ void Cpb2000::paintEvent(QPaintEvent *event)
 UINT8 Cpb2000::readPort()
 {
 //    AddLog(LOG_TEMP,"Read Port");
-    return 0x03;
+    return 0xf8;
 }
