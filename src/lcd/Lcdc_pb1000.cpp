@@ -16,44 +16,9 @@ Clcdc_pb1000::Clcdc_pb1000(CPObject *parent)	: Clcdc(parent){						//[constructo
                         (int) (99*contrast));
 }
 
-static const struct {
-    int x,y;
-} pb1000_pos[16]={
-    {0, 0},     // BUSY
-    {18, 0},    // SHIFT
-    {40, 0},    // JAP
-    {50, 0},    // SMALL
-    {75 ,0},    // DE
-    {83 ,0},    // G
-    {88 ,0},    // RAD
-    {160,0},    // RUN
-    {175,0},    // PRO
-    {190,0},    // RESERVE
-    {220,0},    // DEF
-    {240,0},    // ROMEAN_I
-    {245,0},    // ROMEAN_II
-    {255,0},    // ROMEAN_III
-    {265,0},    // CTRL
-    {290,0}     // REV_BAT
-};
-/* busy  shift   small   de g rad   run  pro  reserve  def  i ii iii battery */
-/* japanese? */
-
-
-//      b7      b6      b5      b4      b3      b2      b1      b0
-// S1   KBII                            S       x       CTRL    BATT    F3C7
-// S2           RUN     PRO     RESERVE         RAD     G       DE      F64F
-// S3   DEF     I       II      III     SML     x       SHIFT   BUSY    F64E
-
-#define SYMB1_1600		((Cpb1000 *)pPC)->pHD61102_2->info.imem[symbSL(4)]
-#define SYMB2_1600		((Cpb1000 *)pPC)->pHD61102_2->info.imem[symbSL(6)]
-#define SYMB3_1600		((Cpb1000 *)pPC)->pHD61102_2->info.imem[symbSL(7)]
 
 void Clcdc_pb1000::disp_symb(void)
 {
-
-
-
     Refresh = true;
 
     Clcdc::disp_symb();
@@ -74,7 +39,6 @@ void Clcdc_pb1000::disp(void)
 
     UINT8 cw = info.m_char_width;
 
-    //        bitmap_fill(&bitmap, &cliprect, 0);
 
     if (info.m_control_lines&0x80 && info.m_lcd_on)
     {
@@ -91,7 +55,6 @@ void Clcdc_pb1000::disp(void)
                             {
                                 painter.setPen((BIT(d, 7-b)) ? Color_On : Color_Off );
                                 painter.drawPoint( a*cw*16 + px*cw + c, py*8 + b );
-                                //                                    *BITMAP_ADDR16(&bitmap, py*8 + b, a*cw*16 + px*cw + c) = BIT(d, 7-b);
                             }
                         }
                     }
@@ -104,7 +67,6 @@ void Clcdc_pb1000::disp(void)
                             {
                                 painter.setPen((BIT(d, 7-b)) ? Color_On : Color_Off );
                                 painter.drawPoint( a*cw*16 + px*cw + c, py*8 + b );
-                                //                                    *BITMAP_ADDR16(&bitmap, py*8 + b, a*cw*16 + px*cw + c) = BIT(d, 7-b);
                             }
                         }
                     }

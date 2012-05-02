@@ -42,6 +42,8 @@ public:
     bool flipping;
     QImage *back;
 
+    BYTE pdi;
+
 
 //    void keyPressEvent(QKeyEvent *event);
 //    void keyReleaseEvent(QKeyEvent *event);

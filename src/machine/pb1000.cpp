@@ -102,14 +102,14 @@ bool Cpb1000::run() {
         pKEYB->LastKey = 0;
     }
 
-    CpcXXXX::run();
-
     if (pKEYB->LastKey) {
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
 //        AddLog(LOG_KEYBOARD,tr("Execute Interrupt : %1").arg(pKEYB->LastKey));
 //        DasmStep = true;
         ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
     }
+
+    CpcXXXX::run();
 
 }
 
@@ -192,6 +192,8 @@ void Cpb1000::Reset()
 {
 
     CpcXXXX::Reset();
+
+    pdi = 0xdc;
 
 }
 

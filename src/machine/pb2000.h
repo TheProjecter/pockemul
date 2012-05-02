@@ -15,6 +15,8 @@ public:
     virtual void initExtension(void);
     virtual void TurnON();
     virtual bool init();
+    virtual void Reset();
+    virtual bool run();
     virtual bool Chk_Adr(DWORD *d, DWORD data);
     virtual bool Chk_Adr_R(DWORD *d, DWORD data);
 
@@ -25,6 +27,7 @@ public:
     virtual UINT8 readPort();
     virtual WORD Get_16rPC(DWORD adr);
     virtual void MemBank(DWORD *d);
+
 };
 
 #endif // CPB2000_H

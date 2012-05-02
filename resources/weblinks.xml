@@ -105,6 +105,11 @@
     <model value="pb1000">
         <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=29&amp;serie=6"/>
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/pb-1000_e.html"/>
+        <url desc="Silicium wiki" link="http://www.silicium.org/wiki/index.php/CASIO_PB_1000"/>
+    </model>
+    <model value="pb2000">
+        <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=60"/>
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/pb-2000c_e.html"/>
     </model>
     <model value="e500">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-e500_e.html"/>

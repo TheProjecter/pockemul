@@ -241,6 +241,7 @@ void CHD61700::device_reset()
     m_state = 0;
     m_irq_status = 0;
     prev_ua = 0;
+    REG_PE = 0;
 
 
 }
@@ -322,6 +323,7 @@ bool CHD61700::check_irqs(void)
         if (REG_IB & (1<<i) && !(m_irq_status & (1<<i)))
         {
             AddLog(LOG_TEMP,"INTERRUPT");
+            if (fp_log) fprintf(fp_log,"\nINTERRUPT level %i\n",i);
             m_irq_status |= (1<<i);
             push(REG_SS, (m_pc>>8)&0xff);
             push(REG_SS, (m_pc>>0)&0xff);

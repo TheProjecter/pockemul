@@ -41,7 +41,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, RAM , "RAM 0"));
     SlotList.append(CSlot(6 , 0x20000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
-    SlotList.append(CSlot(64, 0x30000 ,	"EMPTY", ""	, ROM , "EXT ROM"));      // Originally in 70000
+    SlotList.append(CSlot(64, 0x30000 ,	"EMPTY"             , ""	, ROM , "EXT ROM"));      // Originally in 70000
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
@@ -79,6 +79,7 @@ void Cpb2000::TurnON(void){
 
 
     memset((void *)&mem[SlotList[4].getAdr()] ,InitMemValue,SlotList[4].getSize()*1024);
+    SlotList[4].setLabel("EMPTY");
 
     if (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) {
         SlotList[4].setFileName(":/pb2000/om51p.bin");
@@ -97,6 +98,7 @@ void Cpb2000::TurnON(void){
     }
 
     Cpb1000::TurnON();
+    pCPU->init();
 }
 
 
@@ -124,8 +126,33 @@ bool Cpb2000::init(void)				// initialize
 #endif
     Cpb1000::init();
     initExtension();
+    pdi = 0xfb;
     return true;
 }
+
+void Cpb2000::Reset()
+{
+
+    CpcXXXX::Reset();
+
+    pdi = (pdi & 0x03) | 0xf8;
+
+}
+
+bool Cpb2000::run() {
+
+    lcd_on_timer_rate = pHD44352->on_timer_rate;
+
+    if (off && pKEYB->LastKey == K_POW_ON)
+    {
+        TurnON();
+        pKEYB->LastKey = 0;
+    }
+
+    CpcXXXX::run();
+
+}
+
 void Cpb2000::MemBank(DWORD *d) {
     if ((*d >= 0x00000)&& (*d<0x00C00)) {
         *d |= 0x20000;
@@ -135,7 +162,8 @@ void Cpb2000::MemBank(DWORD *d) {
         BYTE m = 1 <<  (*d >> 15);
         if (mem[0x0C10] & m) {
             AddLog(LOG_RAM,"SWITCH BANK1");
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 1  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x0C10]);
+//            if (pCPU->fp_log) fprintf(pCPU->fp_log,"SWITCH BANK 1  [%05X]  m=%i    [C10]=%02x\n",*d,m,mem[0x0C10]);
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"S");
                 *d |= 0x30000;
         }
         else if (mem[0x0C11] & m) {
@@ -340,7 +368,7 @@ UINT16 Cpb2000::getKey(void) {
         }
     }
 
-if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
+if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY : %05X\n",data);
 
     return data;
 
@@ -361,7 +389,8 @@ UINT8 Cpb2000::readPort()
 
     if ( (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) ||
          (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) ||
-         (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) ) return 0xf8;
+         (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) ) pdi = pdi & 0xfd;
 
-    return 0xf9;
+    pdi = pdi & 0xfe;   // no kana key
+    return pdi;
 }
