@@ -77,6 +77,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
 void Cpb2000::TurnON(void){
 
+    Cpb1000::TurnON();
 
     memset((void *)&mem[SlotList[4].getAdr()] ,InitMemValue,SlotList[4].getSize()*1024);
     SlotList[4].setLabel("EMPTY");
@@ -97,7 +98,7 @@ void Cpb2000::TurnON(void){
         Mem_Load(4);
     }
 
-    Cpb1000::TurnON();
+
     pCPU->init();
 }
 
@@ -393,4 +394,35 @@ UINT8 Cpb2000::readPort()
 
     pdi = pdi & 0xfe;   // no kana key
     return pdi;
+}
+
+
+bool Cpb2000::LoadConfig(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "config" && xmlIn->attributes().value("version") == "1.0") {
+            if (xmlIn->readNextStartElement() && xmlIn->name() == "internal" ) {
+                pdi = xmlIn->attributes().value("pdi").toString().toInt(0,16);
+                xmlIn->skipCurrentElement();
+            }
+            // call extension Load Config
+        }
+        xmlIn->skipCurrentElement();
+    }
+
+    return true;
+}
+
+
+bool Cpb2000::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("config");
+    xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeStartElement("internal");
+            xmlOut->writeAttribute("pdi",QString("%1").arg(pdi,2,16));
+            // call extension Save Config
+        xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
+
+    return true;
 }

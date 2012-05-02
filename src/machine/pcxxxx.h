@@ -178,8 +178,10 @@ public:
 
 	virtual bool	LoadConfig(QFile *);	// Load PC Configuration
     virtual bool	LoadConfig(QXmlStreamReader *);	// Load PC Configuration
+    virtual bool	LoadExt(QXmlStreamReader *);	// Load PC Configuration
 	virtual bool	SaveConfig(QFile *);	// Save PC Configuration
     virtual bool	SaveConfig(QXmlStreamWriter *);	// Save PC Configuration
+    virtual bool	SaveExt(QXmlStreamWriter *);	// Save PC Configuration
 
 	virtual bool	LoadExtra(QFile *);
 	virtual bool	SaveExtra(QFile *);

@@ -616,11 +616,14 @@ void CpcXXXX::Mem_Save(BYTE s)
 }
 
 
+
+
 bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
     xmlOut->writeStartElement("session");
-        xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeAttribute("version", "2.0");
         xmlOut->writeAttribute("model", SessionHeader );
         SaveConfig(xmlOut);
+        SaveExt(xmlOut);
         pCPU->save_internal(xmlOut);
         xmlOut->writeStartElement("memory");
             for (int s=0; s<SlotList.size(); s++)				// Save Memory
@@ -629,8 +632,11 @@ bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
             }
         xmlOut->writeEndElement();  // memory
     xmlOut->writeEndElement();  // session
-    //SaveExtra(&xw);									// Save all other data  (virtual)
+//    SaveExtra(&xw);									// Save all other data  (virtual)
 }
+
+
+
 
 bool CpcXXXX::SaveSession_File(QFile *file)
 {
@@ -652,9 +658,10 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
 
     if ((xmlIn->name()=="session") || (xmlIn->readNextStartElement())) {
         if ( (xmlIn->name() == "session") &&
-             (xmlIn->attributes().value("version") == "1.0") &&
              (xmlIn->attributes().value("model") == SessionHeader) ) {
+            QString version = xmlIn->attributes().value("version").toString();
             if (!LoadConfig(xmlIn)) return false;
+            if ( (version == "2.0") && !LoadExt(xmlIn)) return false;
 
             pCPU->Load_Internal(xmlIn);
             if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
@@ -667,6 +674,8 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
             }
         }
     }
+
+    updateMenuFromExtension();
     return true;
 }
 
@@ -774,6 +783,53 @@ bool CpcXXXX::SaveConfig(QXmlStreamWriter *xmlOut)
             xmlOut->writeAttribute("ProtectMemory",QString("%1").arg(ProtectMemory));
             xmlOut->writeAttribute("Japan",QString("%1").arg(Japan));
         xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
+
+    return true;
+}
+
+bool CpcXXXX::LoadExt(QXmlStreamReader *xmlIn)
+{
+    AddLog(LOG_MASTER,"LoadExt");
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "extarray" && xmlIn->attributes().value("version") == "1.0") {
+            if (xmlIn->readNextStartElement() && xmlIn->name() == "ext" ) {
+                int i = xmlIn->attributes().value("idarray").toString().toInt(0,10);
+                QString Id = xmlIn->attributes().value("idext").toString();
+                AddLog(LOG_MASTER,"Found : "+Id);
+                for (int j = 0;j<40;j++) {
+                    if (extensionArray[i]->ExtArray[j]->Id == Id) {
+                        extensionArray[i]->ExtArray[j]->IsChecked = true;
+                        AddLog(LOG_MASTER,tr("Found : %1").arg(j));
+                    }
+                }
+                xmlIn->skipCurrentElement();
+            }
+        }
+        xmlIn->skipCurrentElement();
+    }
+
+    return true;
+}
+
+bool CpcXXXX::SaveExt(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("extarray");
+    xmlOut->writeAttribute("version", "1.0");
+    for (int i = 0; i<4;i++) {
+        if (extensionArray[i]) {
+            for (int j = 0; j<40;j++) {
+                CExtension* e = extensionArray[i]->ExtArray[j];
+                if (e && e->IsChecked) {
+                    xmlOut->writeStartElement("ext");
+                        xmlOut->writeAttribute("idarray",QString("%1").arg(i));
+                        xmlOut->writeAttribute("idext",e->Id);
+                        xmlOut->writeAttribute("desc",e->Description);
+                    xmlOut->writeEndElement();
+                }
+            }
+        }
+    }
     xmlOut->writeEndElement();
 
     return true;

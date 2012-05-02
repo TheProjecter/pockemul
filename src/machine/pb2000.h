@@ -12,6 +12,9 @@ class Cpb2000 : public Cpb1000
 public:
     Cpb2000(CPObject *parent = 0);
 
+    virtual bool	LoadConfig(QXmlStreamReader *);
+    virtual bool	SaveConfig(QXmlStreamWriter *);
+
     virtual void initExtension(void);
     virtual void TurnON();
     virtual bool init();
