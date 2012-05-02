@@ -111,7 +111,7 @@ void	Cpb2000::initExtension(void)
     ext_MemSlot1->setAvailable(ID_OM53B,true);
     ext_MemSlot1->setAvailable(ID_OM55L,true);
 
-    ext_MemSlot1->setChecked(ID_OM53B,true);
+//    ext_MemSlot1->setChecked(ID_OM53B,true);
 
     addExtMenu(ext_MemSlot1);
     extensionArray[0] = ext_MemSlot1;
