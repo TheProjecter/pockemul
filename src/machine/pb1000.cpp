@@ -184,7 +184,7 @@ void Cpb1000::TurnOFF(void) {
 void Cpb1000::TurnON(void){
     CpcXXXX::TurnON();
     Reset();
-//    pCPU->init();
+    pCPU->init();
 
 }
 

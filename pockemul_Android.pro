@@ -259,7 +259,8 @@ HEADERS += src/core/Connect.h \
     pictureflow/launcher.h \
     pictureflow/slideshow.h \
     src/core/launchbuttonwidget.h \
-    src/core/tapandholdgesture.h
+    src/core/tapandholdgesture.h \
+    src/machine/pb2000.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -305,7 +306,8 @@ RESOURCES += resources/ext.qrc \
     resources/asmlibs.qrc \
     resources/x07.qrc \
     resources/pb1000.qrc \
-    resources/e500.qrc
+    resources/e500.qrc \
+    resources/pb2000.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -466,7 +468,8 @@ SOURCES += src/core/Connect.cpp \
     pictureflow/launcher.cpp \
     pictureflow/slideshow.cpp \
     src/core/launchbuttonwidget.cpp \
-    src/core/tapandholdgesture.cpp
+    src/core/tapandholdgesture.cpp \
+    src/machine/pb2000.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -602,10 +605,15 @@ OTHER_FILES += \
     android/src/eu/licentia/necessitas/mobile/QtLocation.java \
     android/src/eu/licentia/necessitas/mobile/QtFeedback.java \
     android/src/eu/licentia/necessitas/mobile/QtCamera.java \
-    android/src/eu/licentia/necessitas/mobile/QtAndroidContacts.java
+    android/src/eu/licentia/necessitas/mobile/QtAndroidContacts.java \
+    resources/keymap/pb2000.map
 
 
 #QMAKE_LFLAGS_DEBUG += -pg
+
+
+
+
 
 
 
