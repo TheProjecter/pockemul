@@ -671,9 +671,11 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
 
             pCPU->Load_Internal(xmlIn);
             if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
+                AddLog(LOG_MASTER,"Load Memory");
                 for (int s=0; s<SlotList.size(); s++)				// Save Memory
                 {
                     if (SlotList[s].getType() == RAM) {
+                        AddLog(LOG_MASTER,"    Load Slot"+SlotList[s].getLabel());
                         Mem_Load(xmlIn,s);
                     }
                 }
@@ -798,21 +800,30 @@ bool CpcXXXX::LoadExt(QXmlStreamReader *xmlIn)
 {
     AddLog(LOG_MASTER,"LoadExt");
     if (xmlIn->readNextStartElement()) {
+        AddLog(LOG_MASTER,"Loadext name1:"+xmlIn->name().toString());
         if (xmlIn->name() == "extarray" && xmlIn->attributes().value("version") == "1.0") {
-            if (xmlIn->readNextStartElement() && xmlIn->name() == "ext" ) {
-                int i = xmlIn->attributes().value("idarray").toString().toInt(0,10);
-                QString Id = xmlIn->attributes().value("idext").toString();
-                AddLog(LOG_MASTER,"Found : "+Id);
-                for (int j = 0;j<40;j++) {
-                    if (extensionArray[i]->ExtArray[j]->Id == Id) {
-                        extensionArray[i]->ExtArray[j]->IsChecked = true;
-                        AddLog(LOG_MASTER,tr("Found : %1").arg(j));
+            bool found = false;
+            while (xmlIn->readNextStartElement()) {
+                AddLog(LOG_MASTER,"Loadext name2:"+xmlIn->name().toString());
+                if ( xmlIn->name() == "ext" ) {
+                    found = true;
+                    int i = xmlIn->attributes().value("idarray").toString().toInt(0,10);
+                    QString Id = xmlIn->attributes().value("idext").toString();
+                    AddLog(LOG_MASTER,"Found : "+Id);
+                    for (int j = 0;j<40;j++) {
+                        if (extensionArray[i]->ExtArray[j]->Id == Id) {
+                            extensionArray[i]->ExtArray[j]->IsChecked = true;
+                            AddLog(LOG_MASTER,tr("Found : %1").arg(j));
+                        }
                     }
                 }
-                xmlIn->skipCurrentElement();
+                else
+                    xmlIn->skipCurrentElement();
             }
+            AddLog(LOG_MASTER,"Loadext end name:"+xmlIn->name().toString());
+            if (found) xmlIn->skipCurrentElement();
         }
-        xmlIn->skipCurrentElement();
+
     }
 
     return true;

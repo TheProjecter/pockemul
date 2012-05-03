@@ -225,9 +225,7 @@ void Cpb1000::paintEvent(QPaintEvent *event)
             int w = getDX() * mainwindow->zoom/100.0;//this->width();
             int h = getDY() * mainwindow->zoom/100.0;//this->height();
 
-            AddLog(LOG_MASTER,tr("w=%1   h=%2").arg(w).arg(h));
             painter.translate(w/2,h*RATIO);
-//            AddLog(LOG_MASTER,tr("zoom%1").arg(m_zoom));
 
             QTransform matrix;
             matrix.scale(m_zoom,m_zoom);
