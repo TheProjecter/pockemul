@@ -184,6 +184,7 @@ void Cpb1000::TurnOFF(void) {
 void Cpb1000::TurnON(void){
     CpcXXXX::TurnON();
     Reset();
+//    pCPU->init();
 
 }
 
@@ -193,7 +194,7 @@ void Cpb1000::Reset()
 
     CpcXXXX::Reset();
 
-    pdi = 0xdc;
+//    pdi = 0xdc;
 
 }
 

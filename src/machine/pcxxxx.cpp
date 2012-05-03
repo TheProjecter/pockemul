@@ -660,8 +660,14 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
         if ( (xmlIn->name() == "session") &&
              (xmlIn->attributes().value("model") == SessionHeader) ) {
             QString version = xmlIn->attributes().value("version").toString();
-            if (!LoadConfig(xmlIn)) return false;
-            if ( (version == "2.0") && !LoadExt(xmlIn)) return false;
+            if (!LoadConfig(xmlIn)) {
+                MSG_ERROR("ERROR Loading Session Config");
+                return false;
+            }
+            if ( (version == "2.0") && !LoadExt(xmlIn)) {
+                MSG_ERROR("ERROR Loading Session Extensions");
+                return false;
+            }
 
             pCPU->Load_Internal(xmlIn);
             if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
