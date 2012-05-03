@@ -11,6 +11,7 @@
 #include "Lcdc_pb1000.h"
 #include "hd61700.h"
 #include "cextension.h"
+#include "Connect.h"
 
 
 #define PD_RES 0x10;	// 1=reset, 0=normal_operation
@@ -71,8 +72,25 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     //delete pKEYB;       pKEYB		= new Ckeyb(this,"pb2000.map");
     //delete pHD44352;    pHD44352    = new CHD44352(":/pb2000/charset.bin",this);
 
+    pCONNECTOR->setSnap(QPoint(668,77));
+
     closed = false;
 
+}
+
+bool Cpb2000::UpdateFinalImage(void) {
+    CpcXXXX::UpdateFinalImage();
+
+    // Draw switch by 180° rotation
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    // POWER SWITCH
+    painter.drawImage(0,29,FinalImage->copy(0,29,10,95).mirrored(false,!off));
+
+    painter.end();
+
+    return true;
 }
 
 void Cpb2000::TurnON(void){

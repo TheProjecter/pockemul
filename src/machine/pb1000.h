@@ -25,6 +25,7 @@ public:
     virtual bool LoadConfig(QXmlStreamReader *xmlIn);
     virtual bool SaveConfig(QXmlStreamWriter *xmlOut);
 
+    virtual bool UpdateFinalImage(void);
     virtual void paintEvent(QPaintEvent *event);
 
     CHD44352 *pHD44352;

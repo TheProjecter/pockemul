@@ -32,7 +32,8 @@ public:
         Canon_15,
         Canon_9,
         Canon_40,
-        Canon_Din
+        Canon_Din,
+        Casio_30
     };
 
 	bool	refresh;

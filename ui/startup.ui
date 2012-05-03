@@ -571,6 +571,15 @@
             <normaloff>:/x07/x710.png</normaloff>:/x07/x710.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Casio MD-100</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/md-100.png</normaloff>:/EXT/ext/md-100.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>

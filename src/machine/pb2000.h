@@ -25,6 +25,7 @@ public:
 
     virtual UINT16 getKey();
 
+    virtual bool UpdateFinalImage(void);
     virtual void paintEvent(QPaintEvent *event);
     virtual void TurnCLOSE();
     virtual UINT8 readPort();

@@ -71,6 +71,9 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     pKEYB		= new Ckeyb(this,"pb1000.map");
     pHD44352    = new CHD44352(":/pb1000/chr.bin");
 
+    pCONNECTOR	= new Cconnector(this,30,0,Cconnector::Casio_30,"Connector 30 pins",false,QPoint(668,415));	publish(pCONNECTOR);
+
+
     m_kb_matrix = 0;
 //    shift=fct = false;
 
@@ -79,6 +82,21 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     m_angle = 180;
     m_zoom = 1;
 
+}
+
+bool Cpb1000::UpdateFinalImage(void) {
+    CpcXXXX::UpdateFinalImage();
+
+    // Draw switch by 180° rotation
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    // POWER SWITCH
+    painter.drawImage(38,388,FinalImage->copy(38,388,56,23).mirrored(off,false));
+
+    painter.end();
+
+    return true;
 }
 
 bool Cpb1000::init(void)				// initialize
