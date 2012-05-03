@@ -301,8 +301,8 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY(','))			data|=0x20;
 
             if (KEY(K_F4))          data|=0x1000;
-            if (KEY(K_IN))          data|=0x4000;
-            if (KEY(K_OUT))         data|=0x8000;
+            if (KEY(K_OUT))         data|=0x4000;
+            if (KEY(K_IN))          data|=0x8000;
         }
 
         if (ko&0x40) {
@@ -314,7 +314,7 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY(K_ANS))			data|=0x20;
             if (KEY(K_SHT))			data|=0x40;
 
-            if (KEY(K_EXTMENU))		data|=0x1000;
+            if (KEY(K_F5))          data|=0x1000;
             if (KEY(K_CALC))		data|=0x8000;
 
 
