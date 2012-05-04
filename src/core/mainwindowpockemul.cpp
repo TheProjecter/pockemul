@@ -105,6 +105,17 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 
 }
 
+MainWindowPockemul::~MainWindowPockemul() {
+    delete dialoglog;
+    delete dialoganalogic;
+    delete windowide;
+    delete FrameTimer;
+    delete pdirectLink;
+    delete launch;
+    delete launch2;
+
+}
+
 //
 void MainWindowPockemul::SendSignal_AddLogItem(QString str) {
     emit AddLogItem(str);

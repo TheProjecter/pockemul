@@ -281,7 +281,7 @@ public:
 	KEYBMAPParser *handler;
 		
     Ckeyb(CPObject *parent = 0,QString map = "",BYTE *scan=0);
-    virtual ~Ckeyb(){}
+    virtual ~Ckeyb();
 					
 protected:
 	BYTE pc1350KeyStatus[MAX_KO];			//Ko0-11

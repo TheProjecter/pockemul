@@ -53,6 +53,10 @@ Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan) //: CPObject(parent)						
     LastKey = 0;
 }
 
+Ckeyb::~Ckeyb() {
+    delete handler;
+}
+
 int Ckeyb::KeyClick(QPoint pts)
 {
     // calculate all distance betwwen pts and keys centers

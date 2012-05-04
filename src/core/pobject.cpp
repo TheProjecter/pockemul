@@ -81,6 +81,7 @@ CPObject::~CPObject()
 	
     delete FinalImage;
     delete BackgroundImage;
+    delete BackgroundImageBackup;
     delete LcdImage;
     delete SymbImage;
 

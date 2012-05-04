@@ -273,9 +273,7 @@ public:
 
 	CpcXXXX(CPObject *parent = 0);
 	
-	virtual ~CpcXXXX()
-	{								//[constructor]
-	}
+    virtual ~CpcXXXX();
 
 
 private slots:

@@ -73,6 +73,7 @@ public:
 	virtual void	Reset(void) = 0;
 
     CCPU(CPObject *parent);
+    ~CCPU();
 
     virtual QByteArray getimem();
 

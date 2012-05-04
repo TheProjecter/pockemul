@@ -83,6 +83,15 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 
 }
 
+CpcXXXX::~CpcXXXX()
+{
+    free(mem);
+    delete pCONNECTOR;
+    delete pSIOCONNECTOR;
+    delete pCPU;
+}
+
+
 bool CpcXXXX::UpdateFinalImage(void)
 {
     // Paint FinalImage

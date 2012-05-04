@@ -27,6 +27,8 @@ public:
     QMutex audioMutex,analogMutex;
 
     MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
+    ~MainWindowPockemul();
+
     void setZoom(int );
     void setCpu(int );
 

@@ -28,6 +28,11 @@ CCPU::CCPU(CPObject *parent)
 
 }
 
+CCPU::~CCPU() {
+    delete regwidget;
+    delete pDEBUG;
+}
+
 void CCPU::save(void)
 {
 	AddLog(LOG_MASTER,tr("Save status..."));
