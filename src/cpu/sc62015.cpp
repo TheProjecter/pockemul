@@ -5,8 +5,8 @@
 
 
 
-#include <stdlib.h>
-#include <string.h>
+//#include <stdlib.h>
+//#include <string.h>
 #include "sc62015.h"
 #include "pcxxxx.h"
 #include "Inter.h"

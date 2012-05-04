@@ -111,6 +111,9 @@ void WindowIDE::setupEditor()
 }
 
 QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
+
+#ifndef Q_OS_ANDROID
+
     QMap<QString,QByteArray> mapSRC;
     QMap<QString,QByteArray> mapPP;
     QMap<QString,QByteArray> mapASM;
@@ -190,6 +193,7 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
 
         return nodes;
     }
+#endif
 }
 
 QStringList WindowIDE::getProc(QString s) {
@@ -215,7 +219,7 @@ QStringList WindowIDE::getProc(QString s) {
 
 */
 void WindowIDE::compile(void) {
-
+#ifndef Q_OS_ANDROID
     mapSRC.clear();
     mapPP.clear();
     mapASM.clear();
@@ -280,7 +284,7 @@ void WindowIDE::compile(void) {
 //        MSG_ERROR("*"+mapLM["_ORG"]+"*");
 //        MSG_ERROR(QString("%1").arg(hexpanel->startadr));
     }
-
+#endif
 }
 
 

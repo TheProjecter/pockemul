@@ -1,8 +1,8 @@
 /*** POCKEMUL [PC1401.CPP] ********************************/
 /* PC1401 emulator main class                             */
 /**********************************************************/
-#include <string.h>
-#include <stdlib.h>
+//#include <string.h>
+//#include <stdlib.h>
  
 #include "common.h"
 #include "pc1401.h"

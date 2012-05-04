@@ -99,21 +99,13 @@ bool Cmd100::exit(void)
 {
     AddLog(LOG_PRINTER,"MD-100 Closing...");
     AddLog(LOG_PRINTER,"done.");
-    CPObject::exit();//Cprinter::exit();
+    CPObject::exit();
     return true;
 }
 
 
 bool Cmd100::Get_Connector(void) {
-//    MT_OUT2	= GET_PIN(PIN_MT_OUT2);
-//    BUSY    = GET_PIN(PIN_BUSY);
-//    D_OUT	= GET_PIN(PIN_D_OUT);
-//    MT_IN	= GET_PIN(PIN_MT_IN);
-//    MT_OUT1	= GET_PIN(PIN_MT_OUT1);
-//    D_IN	= GET_PIN(PIN_D_IN);
-//    //ACK		= GET_PIN(PIN_ACK);
-//    SEL2	= GET_PIN(PIN_SEL2);
-//    SEL1	= GET_PIN(PIN_SEL1);
+
 
     return true;
 }
@@ -132,6 +124,7 @@ bool Cmd100::run(void)
     Get_Connector();
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
+
 
 
     Set_Connector();

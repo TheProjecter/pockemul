@@ -6,7 +6,6 @@
  * LICENSE      : GPL
  * COMMENTARY   : 
  ********************************************************************************************************/
-#include <string.h> 
 #include <QtGui>
 #include <QString>
 #include <QPainter>

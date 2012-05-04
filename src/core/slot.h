@@ -1,7 +1,7 @@
 #ifndef _SLOT_H_
 #define _SLOT_H_
 
-#include <qstring.h>
+#include <QString>
 
 class CSlot 
 {

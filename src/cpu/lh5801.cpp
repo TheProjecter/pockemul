@@ -2,7 +2,7 @@
 /* LH5801 CPU emulation                                  */
 /**********************************************************/
 #include <stdlib.h>
-#include <string.h>
+
 
 #include "common.h"
 #include "pcxxxx.h"

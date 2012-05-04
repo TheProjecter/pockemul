@@ -1,14 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#ifdef WIN32
-  
-// disable warnings about long names
-//  #pragma warning( disable : 4786)
-
-#endif
 
 #include <string>
+
 #include <map>
 #include <stdexcept>
 #include <sstream>
@@ -16,6 +11,7 @@
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
+
 
 class Parser
   {

@@ -29,8 +29,8 @@
 #ifndef XMLWRITER_H
 #define XMLWRITER_H
 
-#include <qmap.h>
-#include <qstring.h>
+#include <QMap>
+#include <QString>
 #include <qtextstream.h>
 
 class AttrMap : public QMap<QString, QString>

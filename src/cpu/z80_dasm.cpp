@@ -2,8 +2,8 @@
     Zilog Z80 Emulator Disassembler
 */
 
-#include <stdio.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <string.h>
 
 #include "common.h"
 #include "Debug.h"

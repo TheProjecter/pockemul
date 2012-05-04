@@ -1,8 +1,8 @@
 /*** POCKEMUL [PC1600.CPP] ********************************/
 /* PC1600 emulator main class                             */
 /**********************************************************/
-#include	<string.h>
-#include	<stdlib.h>
+//#include	<string.h>
+//#include	<stdlib.h>
 
 #include    <QtGui>
 

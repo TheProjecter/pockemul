@@ -1,4 +1,4 @@
-QMAKE_CXXFLAGS += -fsigned-char
+QMAKE_CXXFLAGS += -fsigned-char -lstdc++
 
 CONFIG += release \
     qt \
@@ -8,7 +8,7 @@ CONFIG += release \
 CONFIG += rtti
 CONFIG += mobility
 MOBILITY += feedback
-DEFINES += NO_SOUND Q_OS_ANDROID
+DEFINES += NO_SOUND
 QT += core \
     gui \
     network \
@@ -128,16 +128,15 @@ HEADERS += src/core/Connect.h \
     src/machine/ce140p.h \
     src/core/weblinksparser.h \
     src/core/wavfile.h \
-    src/core/lcc/lcc.h \
-    src/core/ide/highlighter.h \
-    src/core/lcc/lcpp.h \
-    src/core/lcc/codegen.h \
-    src/core/lcc/pasm.h \
-    resources/lcc/model/PC-1350/stdio.h \
-    resources/lcc/model/PC-1350/stdio.h \
-    src/core/lcc/cstdlib.h \
-    resources/lcc/model/PC-1350/graph.h \
-    src/core/lcc/parser/parser.h \
+#    src/core/lcc/lcc.h \
+#    src/core/ide/highlighter.h \
+#    src/core/lcc/lcpp.h \
+#    src/core/lcc/codegen.h \
+#    src/core/lcc/pasm.h \
+#    resources/lcc/model/PC-1350/stdio.h \
+#    resources/lcc/model/PC-1350/stdio.h \
+#    src/core/lcc/cstdlib.h \
+#    resources/lcc/model/PC-1350/graph.h \
     src/machine/ce140f.h \
     src/machine/cesimu.h \
     src/core/dialogsimulator.h \
@@ -197,39 +196,39 @@ HEADERS += src/core/Connect.h \
     ui/windowide.h \
     qcodeedit/widgets/qhexpanel.h \
     qcodeedit/widgets/qoutpanel.h \
-    resources/lcc/model/PC-1350/sound.h \
-    resources/lcc/model/__sound.h \
-    resources/lcc/model/PC-1350/internal.h \
-    resources/lcc/model/PC-1251/internal.h \
-    resources/lcc/model/PC-1251/sound.h \
-    resources/lcc/model/__stdio.h \
-    resources/lcc/model/PC-1251/stdio.h \
-    resources/lcc/model/__internal.h \
-    resources/lcc/model/PC-1262/stdio.h \
-    resources/lcc/model/PC-1262/sound.h \
-    resources/lcc/model/PC-1262/internal.h \
-    resources/lcc/model/PC-1360/stdio.h \
-    resources/lcc/model/PC-1360/sound.h \
-    resources/lcc/model/PC-1360/internal.h \
-    resources/lcc/model/PC-1360/graph.h \
+#    resources/lcc/model/PC-1350/sound.h \
+#    resources/lcc/model/__sound.h \
+#    resources/lcc/model/PC-1350/internal.h \
+#    resources/lcc/model/PC-1251/internal.h \
+#    resources/lcc/model/PC-1251/sound.h \
+#    resources/lcc/model/__stdio.h \
+#    resources/lcc/model/PC-1251/stdio.h \
+#    resources/lcc/model/__internal.h \
+#    resources/lcc/model/PC-1262/stdio.h \
+#    resources/lcc/model/PC-1262/sound.h \
+#    resources/lcc/model/PC-1262/internal.h \
+#    resources/lcc/model/PC-1360/stdio.h \
+#    resources/lcc/model/PC-1360/sound.h \
+#    resources/lcc/model/PC-1360/internal.h \
+#    resources/lcc/model/PC-1360/graph.h \
     qcodeedit/ccompletion.h \
     qcodeedit/qcodecompletionwidget_p.h \
     qcodeedit/qcodecompletionwidget.h \
-    resources/lcc/model/PC-1261/stdio.h \
-    resources/lcc/model/PC-1261/sound.h \
-    resources/lcc/model/PC-1261/internal.h \
-    resources/lcc/model/PC-1250/stdio.h \
-    resources/lcc/model/PC-1250/sound.h \
-    resources/lcc/model/PC-1250/internal.h \
-    resources/lcc/model/PC-1255/stdio.h \
-    resources/lcc/model/PC-1255/sound.h \
-    resources/lcc/model/PC-1255/internal.h \
-    resources/lcc/model/PC-1260/stdio.h \
-    resources/lcc/model/PC-1260/sound.h \
-    resources/lcc/model/PC-1260/internal.h \
-    resources/lcc/model/PC-1475/stdio.h \
-    resources/lcc/model/PC-1475/sound.h \
-    resources/lcc/model/PC-1475/internal.h \
+#    resources/lcc/model/PC-1261/stdio.h \
+#    resources/lcc/model/PC-1261/sound.h \
+#    resources/lcc/model/PC-1261/internal.h \
+#    resources/lcc/model/PC-1250/stdio.h \
+#    resources/lcc/model/PC-1250/sound.h \
+#    resources/lcc/model/PC-1250/internal.h \
+#    resources/lcc/model/PC-1255/stdio.h \
+#    resources/lcc/model/PC-1255/sound.h \
+#    resources/lcc/model/PC-1255/internal.h \
+#    resources/lcc/model/PC-1260/stdio.h \
+#    resources/lcc/model/PC-1260/sound.h \
+#    resources/lcc/model/PC-1260/internal.h \
+#    resources/lcc/model/PC-1475/stdio.h \
+#    resources/lcc/model/PC-1475/sound.h \
+#    resources/lcc/model/PC-1475/internal.h \
     qcodemodel2/qcodenode.h \
     ui/dialogdasm.h \
     ui/cregssc61860widget.h \
@@ -260,7 +259,9 @@ HEADERS += src/core/Connect.h \
     pictureflow/slideshow.h \
     src/core/launchbuttonwidget.h \
     src/core/tapandholdgesture.h \
-    src/machine/pb2000.h
+    src/machine/pb2000.h \
+    src/machine/md100.h
+#    src/core/lcc/parser/parser.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -301,7 +302,7 @@ RESOURCES += resources/ext.qrc \
     resources/pc1460.qrc \
     resources/pc1280.qrc \
     resources/keymap.qrc \
-    resources/stdlibs.qrc \
+#    resources/stdlibs.qrc \
     qcodeedit/qxs/qxs.qrc \
     resources/asmlibs.qrc \
     resources/x07.qrc \
@@ -382,14 +383,14 @@ SOURCES += src/core/Connect.cpp \
     src/machine/ce140p.cpp \
     src/core/weblinksparser.cpp \
     src/core/wavfile.cpp \
-    src/core/lcc/lcc.cpp \
-    src/core/lcc/calcunit.cpp \
-    src/core/ide/highlighter.cpp \
-    src/core/lcc/lcpp.cpp \
-    src/core/lcc/codegen.cpp \
-    src/core/lcc/pasm.cpp \
-    src/core/lcc/cstdlib.cpp \
-    src/core/lcc/parser/parser.cpp \
+#    src/core/lcc/lcc.cpp \
+#    src/core/lcc/calcunit.cpp \
+#    src/core/ide/highlighter.cpp \
+#    src/core/lcc/lcpp.cpp \
+#    src/core/lcc/codegen.cpp \
+#    src/core/lcc/pasm.cpp \
+#    src/core/lcc/cstdlib.cpp \
+#    src/core/lcc/parser/parser.cpp \
     src/machine/ce140f.cpp \
     src/machine/cesimu.cpp \
     src/core/dialogsimulator.cpp \
@@ -469,7 +470,8 @@ SOURCES += src/core/Connect.cpp \
     pictureflow/slideshow.cpp \
     src/core/launchbuttonwidget.cpp \
     src/core/tapandholdgesture.cpp \
-    src/machine/pb2000.cpp
+    src/machine/pb2000.cpp \
+    src/machine/md100.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -610,6 +612,10 @@ OTHER_FILES += \
 
 
 #QMAKE_LFLAGS_DEBUG += -pg
+
+
+
+
 
 
 
