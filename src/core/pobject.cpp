@@ -28,7 +28,7 @@ FILE	*fp_tmp=NULL;
 
 extern MainWindowPockemul* mainwidow;
 
-CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
+CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
     {
 		pPC = (CpcXXXX*) parent;
 		Parent	= parent;
@@ -487,7 +487,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
     manageStackPos(&list);
 
 
-    if ( (parentWidget() != mainwindow) //mainwindow
+    if ( (parentWidget() != mainwindow->centralwidget) //mainwindow
          && (parentWidget() != 0))
     {
         QApplication::sendEvent(parentWidget(), event);
@@ -585,7 +585,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 	}
 #endif
 	
-    if ( (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwindow->centralwidget)
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
@@ -661,7 +661,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	setCursor(Qt::ArrowCursor);
 	if (pKEYB) pKEYB->LastKey = 0;
 
-    if ( (parentWidget() != mainwindow)
+    if ( (parentWidget() != mainwindow->centralwidget)
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
