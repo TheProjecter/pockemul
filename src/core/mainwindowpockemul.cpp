@@ -40,7 +40,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 //#include "lfhex/hexGui.h"
 
 extern	MainWindowPockemul* mainwindow;
-extern QWidget* mainwidget;
+
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)

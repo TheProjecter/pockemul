@@ -14,7 +14,7 @@
 //QTM_USE_NAMESPACE
 
 MainWindowPockemul* mainwindow;
-QWidget* mainwidget;
+
 
 int main(int argc, char *argv[])
 {
@@ -68,22 +68,22 @@ int main(int argc, char *argv[])
     mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
 
-    QWidget *cw= new QWidget();
-    mainwindow->setCentralWidget(cw);
+//    QWidget *cw= new QWidget();
+//    mainwindow->setCentralWidget(cw);
 
-    mainwidget = mainwindow->centralWidget();
+//    mainwidget = mainwindow();
     mainwindow->setWindowIcon ( QIcon(":/POCKEMUL/pockemul/pockemul.bmp") );
     mainwindow->resize(680,505);
 
 
-    LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow,
                                                 LaunchButtonWidget::PictureFlow,
                                                 ":/POCKEMUL/pockemul/config.xml",
                                                 ":/POCKEMUL/pockemul/pocket.png");
     launch1->setGeometry(0,12,48,48);
     launch1->setToolTip("Start a new Pocket Emulation.");
 
-    LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwindow,
                                                  LaunchButtonWidget::PictureFlow,
                                                  ":/POCKEMUL/pockemul/configExt.xml",
                                                  ":/POCKEMUL/pockemul/ext.png");
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     launch2->setToolTip("Start a new Extension Emulation.");
 
 #ifndef Q_OS_ANDROID
-    LaunchButtonWidget* dev = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* dev = new LaunchButtonWidget(mainwindow,
                                                      LaunchButtonWidget::Action,
                                                      "",
                                                      ":/POCKEMUL/pockemul/dev.png");
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     dev->setGeometry(0,150,48,48);
     dev->setToolTip("Start the Integrated development Environment.");
 #endif
-    LaunchButtonWidget* save = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* save = new LaunchButtonWidget(mainwindow,
                                                       LaunchButtonWidget::Action,
                                                       "",
                                                       ":/POCKEMUL/pockemul/save.png");
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     save->setGeometry(0,225,48,48);
     save->setToolTip("Save the current session.");
 
-    LaunchButtonWidget* load = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow,
                                                       LaunchButtonWidget::Action,
                                                       "",
                                                       ":/POCKEMUL/pockemul/load.png");
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     load->setGeometry(0,300,48,48);
     load->setToolTip("Load an existing session.");
 
-    LaunchButtonWidget* exit = new LaunchButtonWidget(mainwidget,
+    LaunchButtonWidget* exit = new LaunchButtonWidget(mainwindow,
                                                       LaunchButtonWidget::Action,
                                                       "",
                                                       ":/POCKEMUL/pockemul/exit.png");

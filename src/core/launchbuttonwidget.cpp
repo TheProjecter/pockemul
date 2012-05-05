@@ -2,8 +2,9 @@
 
 #include "launchbuttonwidget.h"
 #include "fluidlauncher.h"
+#include "mainwindowpockemul.h"
 
-extern QWidget* mainwidget;
+extern MainWindowPockemul* mainwindow;
 
 
 
@@ -15,7 +16,7 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
     image = img;
     setAttribute(Qt::WA_DeleteOnClose);
     if (type == PictureFlow){
-        launcher = new FluidLauncher(mainwidget,config);
+        launcher = new FluidLauncher(mainwindow,config);
         launcher->hide();
     }
 }
@@ -30,17 +31,17 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 
     if (type == PictureFlow)
     {
-//        launcher = new FluidLauncher(mainwidget,config);
+//        launcher = new FluidLauncher(mainwindow,config);
 //        launcher->setAttribute(Qt::WA_DeleteOnClose);
-        launcher->setGeometry(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
+        launcher->setGeometry(QRect(-mainwindow->width(), 0, mainwindow->width(), mainwindow->height()));
         launcher->raise();
         launcher->show();
         launcher->currentWidget()->setFocus();
         qWarning("hover2\n");
         QPropertyAnimation *animation = new QPropertyAnimation(launcher, "geometry");
         animation->setDuration(500);
-        animation->setStartValue(QRect(-mainwidget->width(), 0, mainwidget->width(), mainwidget->height()));
-        animation->setEndValue(QRect(0, 0, mainwidget->width(), mainwidget->height()));
+        animation->setStartValue(QRect(-mainwindow->width(), 0, mainwindow->width(), mainwindow->height()));
+        animation->setEndValue(QRect(0, 0, mainwindow->width(), mainwindow->height()));
         animation->start();
         qWarning("hover3\n");
     }

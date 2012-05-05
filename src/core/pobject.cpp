@@ -20,13 +20,15 @@
 
 #include "tapandholdgesture.h"
 
+#include "mainwindowpockemul.h"
+
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
 
-extern QWidget* mainwidget;
+extern MainWindowPockemul* mainwidow;
 
-CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
+CPObject::CPObject(CPObject *parent):QWidget(mainwindow)
     {
 		pPC = (CpcXXXX*) parent;
 		Parent	= parent;
@@ -342,7 +344,7 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
             LinkedList.at(i)->show();
         }
         else {
-            LinkedList.at(i)->setParent(mainwidget);
+            LinkedList.at(i)->setParent(mainwindow);
             LinkedList.at(i)->show();
         }
     }
@@ -485,7 +487,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
     manageStackPos(&list);
 
 
-    if ( (parentWidget() != mainwidget) //mainwindow
+    if ( (parentWidget() != mainwindow) //mainwindow
          && (parentWidget() != 0))
     {
         QApplication::sendEvent(parentWidget(), event);
@@ -583,7 +585,7 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
 	}
 #endif
 	
-    if ( (parentWidget() != mainwidget)
+    if ( (parentWidget() != mainwindow)
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);
@@ -659,7 +661,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 	setCursor(Qt::ArrowCursor);
 	if (pKEYB) pKEYB->LastKey = 0;
 
-    if ( (parentWidget() != mainwidget)
+    if ( (parentWidget() != mainwindow)
         && (parentWidget() != 0))
 	{
 		QApplication::sendEvent(parentWidget(), event);

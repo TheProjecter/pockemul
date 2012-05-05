@@ -51,11 +51,6 @@ extern MainWindowPockemul *mainwindow;
  #define SIZING_FACTOR_HEIGHT 6/10
  #define SIZING_FACTOR_WIDTH 6/10
 
-extern QWidget* mainwidget;
-
-
-
-
 
 FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(parent)
 {
@@ -70,6 +65,9 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
 
     QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
     resize(parent->size());
+
+    qWarning()<<screen_size;
+    qWarning()<<mainwindow->centralwidget->geometry();
 
     QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
 
