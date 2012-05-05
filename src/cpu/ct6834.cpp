@@ -28,6 +28,10 @@ CT6834::CT6834(CPObject *parent)	: CPObject(this)
 
 }
 
+CT6834::~CT6834(){
+    free(mem);
+}
+
 const CMD_T6834 CT6834::Cmd_T6834[] =
 {{   1,   0,"Unknown"},          // 0x00
  {   1,   8,"TimeCall"},         // 0x01

@@ -85,6 +85,12 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	extensionArray[1] = ext_MemSlot1;
 }
 
+Cpc15XX::~Cpc15XX()
+{
+    delete pLH5810;
+    delete pce152;
+}
+
 Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
 {								//[constructor]
     setfrequency( (int) 2600000/2);

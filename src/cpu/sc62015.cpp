@@ -72,6 +72,10 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
      regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
+Csc62015::~Csc62015() {
+
+}
+
 #define		XTICKS      ( pPC->getfrequency() / 2)              // 0.5s counter
 #define		XTICK2      ( pPC->getfrequency() / 1000 * 2)       // 2ms counter
 #define		Set_ISR(d)	opr_imem(IMEM_ISR,OPR_OR,d)	// set status to ISR

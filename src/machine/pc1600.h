@@ -127,14 +127,8 @@ public:
     void    hack(DWORD pc);
 
     Cpc1600(CPObject *parent = 0);
+    virtual ~Cpc1600();
 
-    virtual ~Cpc1600()
-    {								//[constructor]
-        delete pLH5810;
-        delete pce152;
-        delete pHD61102_1;
-        delete pHD61102_2;
-    }
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * event );
 };

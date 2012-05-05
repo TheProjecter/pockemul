@@ -127,6 +127,7 @@ public:
     virtual const char*	GetClassName(){ return("Csc");}
 
     Csc(CPObject *parent);
+    virtual ~Csc();
 
 private:
     bool	div500;

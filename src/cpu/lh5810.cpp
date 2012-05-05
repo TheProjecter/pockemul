@@ -22,10 +22,11 @@ CLH5810::CLH5810(CPObject *parent)	: CPObject(parent)				//[constructor]
 	IRQ=INT=FALSE;
 	OPA=OPB=0;
 
-};
+}
 
 CLH5810::~CLH5810(){			//[destructor]
-};
+
+}
 
 
 bool	CLH5810::init(void){return true;}					//initialize

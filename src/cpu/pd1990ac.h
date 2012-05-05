@@ -17,7 +17,7 @@ class CPD1990AC:public QObject{
 };
 
 public:
-    const char*	GetClassName(){ return("CPD1990AC");};
+    const char*	GetClassName(){ return("CPD1990AC");}
 
 
 	bool	init(void);						//initialize
@@ -44,7 +44,7 @@ public:
 	void	Set_data(bool);
 	void	Set_gnd(bool);
 	void	Set_clk(bool);
-	void	Set_out_enable(bool);;
+    void	Set_out_enable(bool);
 	void	Set_n_xtal(bool);
 	void	Set_xtal(bool);
 	void	Set_vdd(bool);
@@ -53,7 +53,7 @@ public:
 	bool	c0,c1,c2,stb,cs,data_in,gnd,clk,data_out,tp,out_enable,n_xtal,xtal,vdd;
 
 	CPD1990AC(CPObject *parent);
-	~CPD1990AC();
+    virtual ~CPD1990AC();
 	
 	void	addretrace (void);
     //UINT	TP_FREQUENCY;

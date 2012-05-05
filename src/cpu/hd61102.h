@@ -50,7 +50,7 @@ public:
     void	save_internal(QXmlStreamWriter *);
 
     CHD61102(CpcXXXX *parent);
-//    ~CHD61102();
+    virtual ~CHD61102();
 
     void	addretrace (void);
 

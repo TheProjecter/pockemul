@@ -40,6 +40,10 @@ Cmd100::Cmd100(CPObject *parent):CPObject(parent)
 
 }
 
+Cmd100::~Cmd100() {
+    delete pCONNECTOR;
+}
+
 bool Cmd100::UpdateFinalImage(void) {
     CPObject::UpdateFinalImage();
 

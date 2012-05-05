@@ -41,6 +41,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwidget)
 		pLCDC	= 0;
 		FinalImage = 0;
 		BackgroundImage = 0;
+        BackgroundImageBackup = 0;
 		LcdImage = 0;
 		SymbImage = 0;
 		extensionArray[0] = 0;

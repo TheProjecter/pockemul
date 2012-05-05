@@ -82,6 +82,10 @@ CLH5801::CLH5801(CPObject *parent)	: CCPU(parent)
     regwidget = (CregCPU*) new Cregslh5801Widget(0,this);
 }
 
+CLH5801::~CLH5801() {
+
+}
+
 bool CLH5801::init(void)
 {
 	Check_Log();

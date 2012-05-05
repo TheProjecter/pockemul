@@ -73,7 +73,7 @@ public:
 	UINT8	OPA,OPB;
 
 	CLH5810(CPObject *parent);
-	~CLH5810();
+    virtual ~CLH5810();
 
 private:
 };

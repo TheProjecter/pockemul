@@ -25,6 +25,8 @@ public:
 
 
     Cce140p(CPObject *parent = 0);
+    virtual ~Cce140p();
+
 protected:
     void paintEvent(QPaintEvent *);
 protected slots:

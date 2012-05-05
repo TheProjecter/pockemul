@@ -129,6 +129,10 @@ CHD61700::CHD61700(CPObject *parent):CCPU(parent) {
     regwidget = (CregCPU*) new Cregshd61700Widget(0,this);
 }
 
+CHD61700::~CHD61700() {
+
+}
+
 //-------------------------------------------------
 //  static_set_config - set the configuration
 //  structure

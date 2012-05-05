@@ -13,6 +13,10 @@ CTC8576P::CTC8576P(CpcXXXX *parent, int clk)
     r.ssr=0;
 }
 
+CTC8576P::~CTC8576P() {
+
+}
+
 bool CTC8576P::init(void)
 {
     return true;

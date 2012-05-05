@@ -58,6 +58,7 @@ class Cx07 : public CpcXXXX
 {
 public:
     Cx07(CPObject *parent = 0);
+    virtual ~Cx07();
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data);

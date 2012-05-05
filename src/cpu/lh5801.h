@@ -92,10 +92,11 @@ public:
 	LH5801REG lh5801;
 	long	ticks;
 
-    const char*	GetClassName(){ return("CLH5801");};
+    const char*	GetClassName(){ return("CLH5801");}
 
 
     CLH5801(CPObject *parent);
+    virtual ~CLH5801();
 
 	void	RTN(void);
 	void	Set_C(void);

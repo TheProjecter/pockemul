@@ -74,6 +74,12 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     busyLed = false;
 }
 
+Cce140f::~Cce140f() {
+    delete bells;
+    delete pCONNECTOR;
+    delete pCONNECTOR_Ext;
+}
+
 bool Cce140f::UpdateFinalImage(void) {
     CPObject::UpdateFinalImage();
 // Busy led

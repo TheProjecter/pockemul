@@ -29,7 +29,7 @@ public:
 			
     Cpc1401(CPObject *parent = 0);
 
-	~Cpc1401()
+    virtual ~Cpc1401()
 	{								//[constructor]
 	}
 private:

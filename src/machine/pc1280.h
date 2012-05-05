@@ -39,9 +39,7 @@ public:
     QImage *back;
     Cpc1280(CPObject *parent = 0);
 
-    ~Cpc1280()
-    {								//[constructor]
-    }
+    virtual ~Cpc1280();
 
 private:
 

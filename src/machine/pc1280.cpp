@@ -82,6 +82,10 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
 
 }
 
+Cpc1280::~Cpc1280() {
+    delete back;
+}
+
 bool Cpc1280::init(void) {
     Cpc1360::init();
     WatchPoint.remove(&pSIOCONNECTOR_value);

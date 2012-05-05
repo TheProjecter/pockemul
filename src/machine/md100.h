@@ -26,16 +26,14 @@ public:
 
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
-    Cconnector	*pCONNECTOR_Ext;	qint64 pCONNECTOR_Ext_value;
+
 
 
 
 
     Cmd100(CPObject *parent = 0);
 
-    ~Cmd100()
-    {
-    }
+    virtual ~Cmd100();
 
 public:
 

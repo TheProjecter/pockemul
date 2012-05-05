@@ -57,6 +57,10 @@ Csc::Csc(CPObject *parent)	: CCPU(parent)
     op_local_counter = 0;
 }
 
+Csc::~Csc() {
+
+}
+
 INLINE void Csc::AddState(BYTE n)
 {
 	pPC->pTIMER->state+=(n);

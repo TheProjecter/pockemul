@@ -46,6 +46,11 @@ Cx710::Cx710(CPObject *parent):Cce515p(this) {
 
 }
 
+Cx710::~Cx710() {
+    delete pCONNECTOR;
+    delete pSavedCONNECTOR;
+}
+
 bool Cx710::init(void) {
 
     Cce515p::init();

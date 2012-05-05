@@ -78,6 +78,10 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
 }
 
+Cpb2000::~Cpb2000() {
+
+}
+
 bool Cpb2000::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();
 

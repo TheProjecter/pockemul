@@ -39,6 +39,7 @@ class CT6834 : public CPObject
 {
 public:
     CT6834(CPObject *parent = 0);
+    virtual ~CT6834();
 
     bool init(void);
     void Reset(void);

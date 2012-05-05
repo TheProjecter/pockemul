@@ -53,9 +53,7 @@ public:
 
     Clcdc(CPObject *parent);
 
-	virtual ~Clcdc()
-	{						//[constructor]
-    }
+    virtual ~Clcdc();
 	
 protected:
 	QColor origColor_Off;

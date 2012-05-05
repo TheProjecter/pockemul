@@ -75,6 +75,11 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     capslock = false;
 }
 
+Cpc2500::~Cpc2500()
+{
+    delete pTAPECONNECTOR;
+    delete pce515p;
+}
 
 bool Cpc2500::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();

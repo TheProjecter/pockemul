@@ -71,7 +71,7 @@ public:
     bool	c0,c1,c2,stb,cs,data_in,gnd,clk,data_out,tp,out_enable,n_xtal,xtal,vdd;
 
     CLU57813P(CpcXXXX *parent);
-    ~CLU57813P();
+    virtual ~CLU57813P();
 
     void	addretrace (void);
     //UINT	TP_FREQUENCY;

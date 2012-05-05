@@ -13,6 +13,8 @@ class Cpb1000 : public CpcXXXX
     Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)
 public:
     Cpb1000(CPObject *parent = 0);
+    virtual ~Cpb1000();
+
     virtual bool init();
     virtual bool run();
     virtual bool Chk_Adr(DWORD *d, DWORD data);

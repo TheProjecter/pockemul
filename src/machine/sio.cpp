@@ -30,7 +30,9 @@
 #define SIO_PRQ		15
 
 
-
+Csio::~Csio(){
+    delete(pSIOCONNECTOR);
+}
 
 qint8 Csio::getPinId(SIGNAME signal) {
     return signalMap[signal];

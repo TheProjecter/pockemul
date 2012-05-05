@@ -53,9 +53,7 @@ int ce126_Mode;
 					
     Cce126(CPObject *parent = 0);
 	
-	~Cce126()
-	{
-	}
+    virtual ~Cce126();
 
 public:
     bool    rmtSwitch;

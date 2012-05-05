@@ -1140,6 +1140,10 @@ CZ80::CZ80(CPObject *parent)	: CCPU(parent)
     regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
+CZ80::~CZ80() {
+
+}
+
 int CZ80::z80retn(Z80stat *z) {
     uint16 _length = 0;
     uint16 _state = 0;

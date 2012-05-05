@@ -26,7 +26,7 @@ public:
     const char*	GetClassName(){ return("CLH5810_CE150");}
 
     CLH5810_CE150(CPObject *parent)	: CLH5810(parent){}
-    ~CLH5810_CE150(){}
+    virtual ~CLH5810_CE150(){}
 
 private:
 };
@@ -65,6 +65,8 @@ public:
 
 
     Cce150(CPObject *parent = 0);
+    virtual ~Cce150();
+
 public:
 
 

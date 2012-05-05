@@ -27,6 +27,18 @@ Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
 
 }
 
+Ccesimu::~Ccesimu() {
+    delete pCONNECTOR;
+    delete pSavedCONNECTOR;
+    delete engine;
+    delete script;
+    delete mainfunction;
+
+    delete helpDialog;
+    delete textbrowser;
+    delete layout;
+}
+
 void Ccesimu::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);

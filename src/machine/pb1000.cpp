@@ -84,6 +84,11 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
 }
 
+Cpb1000::~Cpb1000() {
+    delete pHD44352;
+    delete back;
+}
+
 bool Cpb1000::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();
 

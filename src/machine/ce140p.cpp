@@ -45,6 +45,11 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
 
 }
 
+Cce140p::~Cce140p() {
+    delete pSIO;
+    delete pSIOCONNECTOR;
+    delete pSIOCONNECTOR_OUT;
+}
 
 bool Cce140p::init(void) {
 

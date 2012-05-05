@@ -29,7 +29,7 @@ public:
 	CLH5810_PC1500(CPObject *parent)	: CLH5810(parent)
 	{
 		pPD1990AC	= new CPD1990AC(parent);
-	};
+    }
 	~CLH5810_PC1500()
 	{
 		delete pPD1990AC;
@@ -88,11 +88,8 @@ public:
 	
 	Cpc15XX(CPObject *parent = 0);
 
-	virtual ~Cpc15XX()
-	{								//[constructor]
-		delete pLH5810;
-		delete pce152;
-	}
+    virtual ~Cpc15XX();
+
 protected slots:
 	void contextMenuEvent ( QContextMenuEvent * event );
 };

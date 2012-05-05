@@ -21,6 +21,10 @@ Cpotar::Cpotar(CPObject *parent )	: CPObject(this)
     value = 0;
 }
 
+Cpotar::~Cpotar(){
+    delete(pADCONNECTOR);
+}
+
 BYTE Cpotar::get_value(void) {
     return this->value;
 }

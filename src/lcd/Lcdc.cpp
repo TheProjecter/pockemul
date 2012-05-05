@@ -27,6 +27,10 @@ Clcdc::Clcdc(CPObject *parent)
     ready = false;
 }
 
+Clcdc::~Clcdc() {
+
+}
+
 void Clcdc::Contrast(int command)
 {
 	origColor_Off = Color_Off;

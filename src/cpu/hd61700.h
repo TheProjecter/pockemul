@@ -72,6 +72,7 @@ class CHD61700 : public CCPU
 {
 public:
     CHD61700(CPObject *);
+    virtual ~CHD61700();
 
     virtual	bool	init(void);						//initialize
     virtual	bool	exit(void);						//end

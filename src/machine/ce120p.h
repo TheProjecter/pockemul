@@ -16,7 +16,7 @@ public:
     Cconnector	*pCONNECTOR_Ext;	qint64 pCONNECTOR_Ext_value;
 
     Cce120p();
-
+    virtual ~Cce120p();
 };
 
 #endif // CE120P_H

@@ -11,7 +11,7 @@ class DialogPotar;
 
 class Cpotar:public CPObject{
 public:
-    const char*	GetClassName(){ return("Cpotar");};
+    const char*	GetClassName(){ return("Cpotar");}
 
     Cconnector	*pADCONNECTOR;
 
@@ -23,10 +23,8 @@ public:
     void set_value(BYTE);
 
     Cpotar(CPObject *parent = 0);
+    virtual ~Cpotar();
 
-    virtual ~Cpotar(){
-        delete(pADCONNECTOR);
-    };
 protected:
     void paintEvent(QPaintEvent *);
 

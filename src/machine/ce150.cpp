@@ -101,6 +101,14 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     Change_Color = true;
 }
 
+Cce150::~Cce150() {
+    delete ce150buf;
+    delete ce150display;
+    delete ce150pen;
+    delete pCONNECTOR;
+    delete pLH5810;
+}
+
 bool Cce150::init(void)
 {
     CPObject::init();

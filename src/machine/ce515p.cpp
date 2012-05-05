@@ -85,6 +85,15 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
     waitbitstop=0;
 }
 
+Cce515p::~Cce515p() {
+    delete ce515pbuf;
+    delete ce515pdisplay;
+    delete ce515ppen;
+#ifndef NO_SOUND
+    delete clac;
+#endif
+}
+
 void Cce515p::set_SD(quint8 val) {
     SD = val;
 }

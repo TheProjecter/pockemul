@@ -28,6 +28,10 @@ CHD61102::CHD61102(CpcXXXX *parent)
     updated = false;
 }
 
+CHD61102::~CHD61102() {
+
+}
+
 BYTE CHD61102::get8(qint16 adr)
 {
     if (adr >= 0x200)

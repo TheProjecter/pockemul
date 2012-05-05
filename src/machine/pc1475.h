@@ -13,7 +13,7 @@ public:
     virtual bool Chk_Adr_R(DWORD *d,DWORD data);
 
     Cpc1475(CPObject *parent = 0);
-	~Cpc1475()
+    virtual ~Cpc1475()
 	{								//[constructor]
 	}
 private:

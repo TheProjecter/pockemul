@@ -76,9 +76,7 @@ int ce140f_Mode;
 
     Cce140f(CPObject *parent = 0);
 
-    ~Cce140f()
-    {
-    }
+    virtual ~Cce140f();
 
 public:
     bool    rmtSwitch;

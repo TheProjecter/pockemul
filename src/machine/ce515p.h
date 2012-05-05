@@ -78,6 +78,7 @@ public:
     void    Draw(void);
 
     Cce515p(CPObject *parent = 0);
+    virtual ~Cce515p();
 
 protected:
     bool		Next_Color(void);

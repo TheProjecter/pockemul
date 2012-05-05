@@ -82,6 +82,7 @@ union {
 class Csc62015:public CCPU{
 public:
     Csc62015(CPObject *);
+    virtual ~Csc62015();
 
     bool init(void);						//initialize
     bool exit(void);						//end

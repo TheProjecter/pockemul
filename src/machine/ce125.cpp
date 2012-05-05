@@ -103,6 +103,10 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
     delete pKEYB; pKEYB=new Ckeyb(this,"ce125.map");
 }
 
+Cce125::~Cce125() {
+    delete pTAPE;
+}
+
 bool Cce125::UpdateFinalImage(void) {
     Cprinter::UpdateFinalImage();
 

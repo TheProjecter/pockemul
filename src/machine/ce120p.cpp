@@ -23,6 +23,9 @@ Cce120p::Cce120p()
     //internal_device_code = 0x21;
 }
 
+Cce120p::~Cce120p() {
+    delete pCONNECTOR_Ext;
+}
 
 bool Cce120p::init(void) {
 

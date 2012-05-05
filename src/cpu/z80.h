@@ -231,6 +231,7 @@ public:
     static void daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f);
 
     CZ80(CPObject *parent);
+    virtual ~CZ80();
 
     int z80nsc800intr(Z80stat *z, uint8 vector);
 };

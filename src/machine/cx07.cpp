@@ -138,6 +138,13 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
 
 }
 
+Cx07::~Cx07() {
+    delete pPARConnector;
+    delete pSERConnector;
+    delete pT6834;
+    delete pUART;
+}
+
 bool Cx07::init(void)				// initialize
 {
 

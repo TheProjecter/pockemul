@@ -42,9 +42,8 @@ public:
 
     Ccesimu(CPObject *parent = 0);
 
-    virtual ~Ccesimu(){
-        delete(pCONNECTOR);
-    };
+    virtual ~Ccesimu();
+
 public:
     void paintEvent(QPaintEvent *);
     QScriptEngine   *engine;

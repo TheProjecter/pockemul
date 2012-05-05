@@ -193,6 +193,15 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     SlotList.append(CSlot(16, 0xDC000 ,	""								, "" , RAM , "RAM"));
 
 }
+
+Cpc1600::~Cpc1600()
+{
+    delete pLH5810;
+    delete pce152;
+    delete pHD61102_1;
+    delete pHD61102_2;
+}
+
 void Cpc1600::Reset(void)
 {
     pZ80->Reset();

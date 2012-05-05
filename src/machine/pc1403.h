@@ -27,7 +27,7 @@ public:
     virtual UINT8 out(UINT8 address,UINT8 value){return(1);}
 
     Cpc1403(CPObject *parent = 0);
-	~Cpc1403()
+    virtual ~Cpc1403()
 	{								//[constructor]
 	}
 private:

@@ -42,6 +42,7 @@ public:
     virtual bool UpdateFinalImage(void);
 
     Cce125(CPObject *parent = 0);
+    virtual ~Cce125();
 	
 private:
 	Cce125tape* pTAPE;

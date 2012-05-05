@@ -67,6 +67,15 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     internal_device_code = 0x0f;
 }
 
+Cce126::~Cce126() {
+    delete ce126buf;
+    delete ce126display;
+    delete pCONNECTOR;
+    delete pTAPECONNECTOR;
+    delete charTable;
+    delete bells;
+}
+
 void Cce126::ComputeKey(void)
 {
     if (pKEYB->LastKey == K_PFEED) {

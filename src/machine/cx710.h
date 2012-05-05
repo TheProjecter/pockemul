@@ -24,6 +24,8 @@ public:
 
 
     Cx710(CPObject *parent = 0);
+    virtual ~Cx710();
+
     bool GoDown(int pin);
     bool GoUp(int pin);
     bool Change(int pin);

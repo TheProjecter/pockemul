@@ -125,7 +125,7 @@ public:
     void	save_internal(QXmlStreamWriter *);
 
     CTC8576P(CpcXXXX *parent,int clk);
-//    ~CTC8576P();
+    virtual ~CTC8576P();
 
     void    set_xclk(int value) { r.xclk = value;}
 

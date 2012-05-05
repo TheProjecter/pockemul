@@ -33,10 +33,8 @@ public:
     Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
 
     Cpc2500(CPObject *parent = 0);
+    virtual ~Cpc2500();
 
-    virtual ~Cpc2500()
-    {								//[constructor]
-    }
 private:
     bool printMode;
     bool capslock;

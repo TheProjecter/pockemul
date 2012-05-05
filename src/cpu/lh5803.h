@@ -9,7 +9,7 @@ public:
     CLH5803(CPObject *parent)	: CLH5801(parent)
     {
         fn_status="LH5803.sta";
-    };
+    }
 };
 
 

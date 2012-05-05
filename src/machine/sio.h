@@ -86,9 +86,8 @@ public:
 	
     Csio(CPObject *parent = 0);
 
-	virtual ~Csio(){
-		delete(pSIOCONNECTOR);
-    }
+    virtual ~Csio();
+
 public:
 	void paintEvent(QPaintEvent *);
 
