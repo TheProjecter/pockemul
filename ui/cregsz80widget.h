@@ -15,7 +15,7 @@ class Cregsz80Widget : public CregCPU
     Q_OBJECT
 
 public:
-    explicit Cregsz80Widget(QWidget *parent = 0,CCPU *pCPU = 0);
+    explicit Cregsz80Widget(CPObject *parent = 0,CCPU *pCPU = 0);
     ~Cregsz80Widget();
 
     void refresh();

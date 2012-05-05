@@ -4,7 +4,7 @@
 #include "cpu.h"
 #include "z80.h"
 
-Cregsz80Widget::Cregsz80Widget(QWidget *parent,CCPU *pCPU) :
+Cregsz80Widget::Cregsz80Widget(CPObject *parent,CCPU *pCPU) :
     CregCPU(parent,pCPU),
     ui(new Ui::Cregsz80Widget)
 {

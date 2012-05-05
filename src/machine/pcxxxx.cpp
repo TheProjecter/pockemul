@@ -161,7 +161,7 @@ void CpcXXXX::TurnOFF(void)
 {
     switch (mainwindow->saveAll) {
     case ASK:
-        if ( QMessageBox::question(mainwindow, "PockEmul",
+        if ( QMessageBox::question(this, "PockEmul",
                                                          "Do you want to save the session ?",
                                                          "Yes",
                                                          "No", 0, 0, 1) == 0) {
@@ -479,6 +479,7 @@ bool CpcXXXX::init(void)
 /*****************************************************************************/
 bool CpcXXXX::exit(void)
 {
+
 	TurnOFF();
 
 	if (pLCDC)		pLCDC->exit();

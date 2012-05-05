@@ -1,8 +1,9 @@
 #include "cregcpu.h"
 
+class CPObject;
 
-CregCPU::CregCPU(QWidget *parent,CCPU *pCPU) :
-    QWidget(parent)
+CregCPU::CregCPU(CPObject *parent,CCPU *pCPU)
 {
     this->pCPU = pCPU;
+    this->setParent((QWidget*)parent);
 }

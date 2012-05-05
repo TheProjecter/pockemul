@@ -211,7 +211,7 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
 
                     QAction * actionDistConn = menuPockets->addAction(newpPC->getName());
                     actionDistConn->setData(tr("%1").arg((long)newpPC));
-                    QMenu *ctxMenu = new QMenu(this);
+                    QMenu *ctxMenu = new QMenu(newpPC);
                     newpPC->BuildContextMenu(ctxMenu);
                     actionDistConn->setMenu(ctxMenu);
 
@@ -793,7 +793,7 @@ void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
 
 void MainWindowPockemul::DestroySlot( CPObject *pObject)
 {
-
+qWarning()<< QApplication::topLevelWidgets();
     QList< QAction *> actionList = menuPockets->actions();
     for (int i=0; i< actionList.size();i++) {
         QAction* action = actionList.at(i);
@@ -813,6 +813,8 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
     if (windowide) {
         windowide->removetargetCB(pObject);
     }
+
+
 
     pObject->exit();
     pObject->close();

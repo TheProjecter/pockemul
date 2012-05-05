@@ -3,7 +3,7 @@
 #include "ui/cregcpu.h"
 #include "cpu.h"
 
-Cregshd61700Widget::Cregshd61700Widget(QWidget *parent,CCPU *pCPU) :
+Cregshd61700Widget::Cregshd61700Widget(CPObject *parent,CCPU *pCPU) :
     CregCPU(parent,pCPU),
     ui(new Ui::Cregshd61700Widget)
 {

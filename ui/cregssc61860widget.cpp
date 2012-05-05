@@ -4,7 +4,7 @@
 #include "cpu.h"
 #include "sc61860.h"
 
-Cregssc61860Widget::Cregssc61860Widget(QWidget *parent,CCPU *pCPU) :
+Cregssc61860Widget::Cregssc61860Widget(CPObject *parent,CCPU *pCPU) :
     CregCPU(parent,pCPU),
     ui(new Ui::Cregssc61860Widget)
 {

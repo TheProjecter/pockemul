@@ -4,7 +4,7 @@
 #include "cpu.h"
 #include "lh5801.h"
 
-Cregslh5801Widget::Cregslh5801Widget(QWidget *parent,CCPU *pCPU) :
+Cregslh5801Widget::Cregslh5801Widget(CPObject *parent,CCPU *pCPU) :
     CregCPU(parent,pCPU),
     ui(new Ui::Cregslh5801Widget)
 {

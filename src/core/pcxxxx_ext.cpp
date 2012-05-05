@@ -69,7 +69,7 @@ void CpcXXXX::addExtMenu(CExtensionArray *ext)
 	
 	delete ext->Menu;
 	
-	ext->Menu = new QMenu(ext->Id);
+    ext->Menu = new QMenu(ext->Id,this);
 
 	ext->emptyAction = ext->Menu->addAction("Empty");
 	connect(ext->emptyAction, SIGNAL(triggered()), this, SLOT(manageEmptyExtensions()));

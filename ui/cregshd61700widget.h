@@ -15,7 +15,7 @@ class Cregshd61700Widget : public CregCPU
     Q_OBJECT
 
 public:
-    explicit Cregshd61700Widget(QWidget *parent = 0,CCPU *pCPU = 0);
+    explicit Cregshd61700Widget(CPObject *parent = 0,CCPU *pCPU = 0);
     ~Cregshd61700Widget();
 
     void refresh();
