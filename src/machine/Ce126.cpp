@@ -6,6 +6,9 @@
  * LICENSE      : GPL
  * COMMENTARY   : 
  ********************************************************************************************************/
+
+
+
 #include <QPainter>
 #include <QTime>
 #include <QSound>
@@ -346,7 +349,10 @@ bool Cce126::run(void)
 	run_oldstate	= pTIMER->state;
 #endif
 
+
+    //FIXME: Still not working with old generation pockets
 #if 0
+
     if ((code_transfer_step == BASIC_MODE) || (code_transfer_step == INIT_MODE)) {
                 if ( (Previous_MT_OUT1 == DOWN) && (MT_OUT1 == UP ) && (D_OUT==DOWN))
                 {

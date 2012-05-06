@@ -116,7 +116,7 @@ bool Cce125::UpdateFinalImage(void) {
 
     // PRINTER SWITCH
     painter.begin(FinalImage);
-    painter.drawImage(282,235,FinalImage->copy(282,235,30,20).mirrored(rmtSwitch,false));
+    painter.drawImage(282,235,BackgroundImageBackup->copy(282,235,30,20).mirrored(rmtSwitch,false));
 
     painter.end();
 

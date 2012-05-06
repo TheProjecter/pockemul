@@ -167,7 +167,7 @@ bool Cce140p::UpdateFinalImage(void) {
 
     // PRINTER SWITCH
     painter.begin(FinalImage);
-    painter.drawImage(800,430,FinalImage->copy(800,430,22,14).mirrored(!printerSwitch,false));
+    painter.drawImage(800,430,BackgroundImageBackup->copy(800,430,22,14).mirrored(!printerSwitch,false));
 
     painter.end();
 

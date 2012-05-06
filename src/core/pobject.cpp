@@ -681,6 +681,7 @@ qreal CPObject::RangeFrom(CPObject * target)
 
 void CPObject::paintEvent(QPaintEvent *event)
 {
+
 	QPainter painter;
 
 	UpdateFinalImage();
@@ -964,6 +965,7 @@ bool CPObject::InitDisplay(void)
 
 bool CPObject::UpdateFinalImage(void)
 {
+
 	QPainter painter;
 	if ( (BackgroundImage) )
 	{

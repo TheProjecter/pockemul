@@ -83,6 +83,7 @@ Cpb2000::~Cpb2000() {
 }
 
 bool Cpb2000::UpdateFinalImage(void) {
+
     CpcXXXX::UpdateFinalImage();
 
     // Draw switch by 180° rotation
@@ -90,7 +91,7 @@ bool Cpb2000::UpdateFinalImage(void) {
     painter.begin(FinalImage);
 
     // POWER SWITCH
-    painter.drawImage(0,29,FinalImage->copy(0,29,10,95).mirrored(false,!off));
+    painter.drawImage(0,29,BackgroundImageBackup->copy(0,29,10,95).mirrored(false,!off));
 
     painter.end();
 

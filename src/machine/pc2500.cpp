@@ -89,7 +89,7 @@ bool Cpc2500::UpdateFinalImage(void) {
 
     // PRINTER SWITCH
     painter.begin(FinalImage);
-    painter.drawImage(580,239,FinalImage->copy(580,239,59,15).mirrored(!printMode,false));
+    painter.drawImage(580,239,BackgroundImageBackup->copy(580,239,59,15).mirrored(!printMode,false));
 
 
     // CAPS LOCK
