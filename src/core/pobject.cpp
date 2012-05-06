@@ -79,7 +79,8 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
 CPObject::~CPObject()
 {
     delete pKEYB;
-    delete pTIMER;
+    //FIXME: When extension are connected , they share the timer with the host.
+    //delete pTIMER;
     delete pLCDC;
 	
     delete FinalImage;

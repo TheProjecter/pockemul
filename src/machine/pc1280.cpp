@@ -89,7 +89,7 @@ Cpc1280::~Cpc1280() {
 bool Cpc1280::init(void) {
     Cpc1360::init();
     WatchPoint.remove(&pSIOCONNECTOR_value);
-    delete pSIOCONNECTOR;
+//    delete pSIOCONNECTOR;
 
     return true;
 }

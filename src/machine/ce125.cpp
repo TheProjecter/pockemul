@@ -104,7 +104,8 @@ Cce125::Cce125(CPObject *parent):Cce126(parent)
 }
 
 Cce125::~Cce125() {
-    delete pTAPE;
+    //FIXME: Crash when close
+//    delete pTAPE;
 }
 
 bool Cce125::UpdateFinalImage(void) {
