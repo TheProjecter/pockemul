@@ -32,8 +32,9 @@ protected:
     bool DiskClose();
     bool DiskOpen();
 
-    QByteArray secbuf;
+    char *secbuf;
     int sectors;	// available number of sectors
+    int secnum;	// number of the sector in the 'secbuf', otherwise -1 }
     QFile diskFile;
 };
 
@@ -54,6 +55,11 @@ class CcasioDOS:public CcasioDisk {
 
 public:
 
+    enum TStorageProperty {
+        spError,
+        spFree,
+        spOccupied
+    };
     enum TDosStatusCode {
         dsNoError,
         dsRenameFailed,		// file of specified new name already exists }
@@ -88,7 +94,21 @@ public:
 
     TDosStatusCode DosStatus;
     TFileInfo fileinfo[MAX_FILES]; //: array [0..MAX_FILES-1] of TFileInfo;
+    TDirEntry direntrybuf;
 
+    int GetDiskFileTag(int handle);
+    void PutDiskFileTag(int handle, int value);
+    int DosSecRead(int x, char *data);
+    int DosSecWrite(int x, char *data);
+    bool MySecRead(int x);
+    bool MySecWrite(int x);
+    bool DosInit();
+    bool DosClose();
+    bool WriteDirEntry(char *ptr, int i);
+    CcasioDOS::TStorageProperty ReadDirEntry(TDirEntry *dir, int i);
+    int FindDirEntry(char *filename);
+    bool WriteFatEntry(qint32 x, qint32 y);
+    qint32 ReadFatEntry(qint32 x);
 };
 
 #endif // CASIODISK_H
