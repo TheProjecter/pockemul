@@ -26,7 +26,7 @@ extern QList<CPObject *> listpPObject;
 FILE	*fp_tmp=NULL;
 
 
-extern MainWindowPockemul* mainwidow;
+extern MainWindowPockemul* mainwindow;
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
     {
@@ -73,6 +73,9 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
 		
         _gestureHandler = new TapAndHoldGesture(this);
         connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
+
+        // ERROR MESSAGE
+        connect( this,SIGNAL(msgError(QString)),mainwindow,SLOT(slotMsgError(QString)));
     }
 
 
@@ -257,7 +260,7 @@ int CPObject::initsound()
 
     m_output = m_audioOutput->start();
     int p = m_audioOutput->periodSize();
-    qWarning()<<p;
+//    qWarning()<<p;
 #endif
 
 }
@@ -633,7 +636,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                     // If not already linked
                     QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
                     for (int r=0; r<nearList.size();r++) {
-                        qWarning("pre box :%i",mainwindow);
+//                        qWarning("pre box :%i",mainwindow);
                         if (QMessageBox::question(mainwindow, "PockEmul",
                                                   "Do you want to link those two materials ?\n"+
                                                   nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
@@ -648,7 +651,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                             QList<CPObject *> list;
                             listpPObject.at(k)->manageStackPos(&list);
                         }
-                        qWarning("post box :%i",mainwindow);
+//                        qWarning("post box :%i",mainwindow);
                     }
                 }
             }

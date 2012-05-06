@@ -2388,7 +2388,7 @@ INLINE void Csc::Op_7a(void)
 	if (op != 0x69)
 	{
 		AddLog(LOG_CPU,"ERREUR !!! CASE1 Without CASE2");
-        MSG_ERROR("ERREUR SC61860 !!! CASE1 Without CASE2");
+        emit msgError("ERREUR SC61860 !!! CASE1 Without CASE2");
 	}
 
 	ind = 0;

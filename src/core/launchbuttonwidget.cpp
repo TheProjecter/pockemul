@@ -37,13 +37,13 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
         launcher->raise();
         launcher->show();
         launcher->currentWidget()->setFocus();
-        qWarning("hover2\n");
+//        qWarning("hover2\n");
         QPropertyAnimation *animation = new QPropertyAnimation(launcher, "geometry");
         animation->setDuration(500);
         animation->setStartValue(QRect(-mainwindow->width(), 0, mainwindow->width(), mainwindow->height()));
         animation->setEndValue(QRect(0, 0, mainwindow->width(), mainwindow->height()));
         animation->start();
-        qWarning("hover3\n");
+//        qWarning("hover3\n");
     }
     event->accept();
 }

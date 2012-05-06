@@ -79,6 +79,10 @@ public:
 
     CregCPU * regwidget;
     void setImemBit(WORD adr, int bit, BYTE data);
+
+signals:
+    void msgError(QString);
+
 private:
 	FILE *fp_status;		//pointer to status file
 };

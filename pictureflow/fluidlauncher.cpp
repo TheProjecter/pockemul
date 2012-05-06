@@ -54,7 +54,7 @@ extern MainWindowPockemul *mainwindow;
 
 FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(parent)
 {
-    qWarning("CFL 1\n");
+//    qWarning("CFL 1\n");
 
     pictureFlowWidget = new PictureFlow();
 
@@ -66,8 +66,8 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
     QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
     resize(parent->size());
 
-    qWarning()<<screen_size;
-    qWarning()<<mainwindow->centralwidget->geometry();
+//    qWarning()<<screen_size;
+//    qWarning()<<mainwindow->centralwidget->geometry();
 
     QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
 
@@ -79,25 +79,25 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
     pictureFlowWidget->setSlideSize(QSize(ww, hh));
 
     bool success;
-    qWarning("CFL 2\n");
+//    qWarning("CFL 2\n");
     success = loadConfig(config);
-    qWarning("CFL 3\n");
+//    qWarning("CFL 3\n");
     if (success) {
         populatePictureFlow();
-        qWarning("CFL 4\n");
+//        qWarning("CFL 4\n");
 //        show();
 
     } else {
 
         pictureFlowWidget->close();
     }
-    qWarning("CFL 5\n");
+//    qWarning("CFL 5\n");
 
 }
 
  FluidLauncher::~FluidLauncher()
  {
-     qWarning("Delete pictureFlowWidget");
+//     qWarning("Delete pictureFlowWidget");
      delete pictureFlowWidget;
      // Delete demolist
      for (int i=0;i<demoList.count();i++) {
@@ -107,7 +107,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
 
  bool FluidLauncher::loadConfig(QString configPath)
  {
-     qWarning("loadConfig \n");
+//     qWarning("loadConfig \n");
      QFile xmlFile(configPath);
 
      if (!xmlFile.exists() || (xmlFile.error() != QFile::NoError)) {

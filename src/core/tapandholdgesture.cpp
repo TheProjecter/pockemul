@@ -12,7 +12,7 @@ TapAndHoldGesture::TapAndHoldGesture( QObject *parent )
 void TapAndHoldGesture::handleEvent( QMouseEvent *event)
 {
     if( event->type() == QMouseEvent::MouseButtonPress ) {
-        qWarning("tapevent\n");
+//        qWarning("tapevent\n");
         _e = new QMouseEvent(event->type(),event->pos(),event->globalPos(),event->button(),event->buttons(),event->modifiers());
         _timer->start( 1000 );
     } else if( event->type() == QMouseEvent::MouseButtonRelease ) {
@@ -29,6 +29,6 @@ void TapAndHoldGesture::handleEvent( QMouseEvent *event)
 void TapAndHoldGesture::timeout()
 {
     emit handleTapAndHold(_e);
-    qWarning("tap event pos (%i,%i)\n",_e->globalPos().x(),_e->globalPos().y());
+//    qWarning("tap event pos (%i,%i)\n",_e->globalPos().x(),_e->globalPos().y());
     _timer->stop();
 }

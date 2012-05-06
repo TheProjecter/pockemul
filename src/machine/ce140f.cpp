@@ -179,7 +179,7 @@ void Cce140f::contextMenuEvent ( QContextMenuEvent * event )
 }
 
 void Cce140f::definePath(void){
-    MSG_ERROR("test")
+//    MSG_ERROR("test")
     QString path = QFileDialog::getExistingDirectory (this, tr("Directory"));
     if ( path.isNull() == false )
     {
@@ -582,7 +582,7 @@ void Cce140f::processCommand(void) {
         case 0x1D: process_DSKF(); break;
         case 0xFE: process_SAVE(0xfe);break;    // Handle ascii saved data stream
         case 0xFF: process_SAVE(0xff);break;    // Handle saved data stream
-    default: MSG_ERROR("CE-140F : Unknown command.")
+    default: emit msgError("CE-140F : Unknown command.");
     }
 }
 
@@ -695,7 +695,7 @@ void Cce140f::process_SAVE(int cmd) {
             file_save.setFileName(s);
 
             if (!file_save.open(QIODevice::WriteOnly)) {
-                MSG_ERROR(tr("ERROR creating file : %1").arg(s))
+                emit msgError(tr("ERROR creating file : %1").arg(s));
             }
 
             data_out.append(0x00);
@@ -773,7 +773,7 @@ void Cce140f::process_LOAD(int cmd) {
             file_load.setFileName(s);
 
             if (!file_load.open(QIODevice::ReadOnly)) {
-                MSG_ERROR(tr("ERROR opening file : %1").arg(s))
+                emit msgError(tr("ERROR opening file : %1").arg(s));
             }
 
             file_size = file_load.size();

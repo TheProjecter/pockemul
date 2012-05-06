@@ -80,6 +80,7 @@ private slots:
     void slotWebLink(QAction *);
     void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
+    void slotMsgError(QString);
 
 protected:
     void paintEvent(QPaintEvent *);

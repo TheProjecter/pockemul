@@ -198,6 +198,9 @@ public:
 
     virtual void TurnCLOSE(void);
 
+signals:
+    void msgError(QString);
+
 public slots:
 #ifndef NO_SOUND
     void audioStateChanged(QAudio::State state);

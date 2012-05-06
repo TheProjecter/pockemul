@@ -25,7 +25,7 @@ CCPU::CCPU(CPObject *parent)
 
     regwidget = 0;
 
-
+    connect(this,SIGNAL(msgError(QString)),mainwindow,SLOT(slotMsgError(QString)));
 }
 
 CCPU::~CCPU() {

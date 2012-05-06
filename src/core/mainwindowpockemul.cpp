@@ -825,3 +825,7 @@ void MainWindowPockemul::closeEvent(QCloseEvent *event)
 {
 
 }
+
+void MainWindowPockemul::slotMsgError(QString msg) {
+    MSG_ERROR(msg);
+}

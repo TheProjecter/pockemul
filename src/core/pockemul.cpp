@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
     mainwindow = new MainWindowPockemul;
 
-    qWarning()<<app.topLevelWidgets();
+//    qWarning()<<app.topLevelWidgets();
 
 #ifdef Q_OS_ANDROID
     QSplashScreen splash;
