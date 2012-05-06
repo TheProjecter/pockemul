@@ -150,9 +150,12 @@ bool CpcXXXX::InitDisplay(void)
     global_w = getDX();
     global_h = getDY();
 
+    delete LcdImage;
     LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
-    if (!SymbFname.isEmpty()) SymbImage	= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
-
+    if (!SymbFname.isEmpty()) {
+        delete SymbImage;
+        SymbImage	= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
+    }
     UpdateDisplayRunning = TRUE;
     return(1);
 }

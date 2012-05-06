@@ -918,6 +918,7 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 
 QImage * CPObject::LoadImage(QSize size,QString fname)
 {
+    qWarning("LoadImage : %s",fname.toAscii().data());
 	QImage *tempImage;
     QImage loc = QImage(fname).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 	tempImage = new QImage(loc);
@@ -942,9 +943,15 @@ void CPObject::slotExit(void)
 
 bool CPObject::InitDisplay(void)
 {
+    qWarning("INIT DISPLAY");
+    delete BackgroundImageBackup;
 	BackgroundImageBackup = LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
-	BackgroundImage  =  LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
-	FinalImage  =  LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
+    delete BackgroundImage;
+//    BackgroundImage  =  LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
+    BackgroundImage = new QImage(*BackgroundImageBackup);
+    delete FinalImage;
+//    FinalImage  =  LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
+    FinalImage = new QImage(*BackgroundImageBackup);
 
     mask = QPixmap(BackGroundFname).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
     setMask(mask.mask());
