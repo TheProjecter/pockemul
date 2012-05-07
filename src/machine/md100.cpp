@@ -1,4 +1,8 @@
-
+/* BASED ON Piotr Piatek emulator  (http://www.pisi.com.pl/piotr433/index.htm)
+ *
+ *
+ *
+ */
 
 #include <QPainter>
 #include <QTime>
@@ -51,10 +55,6 @@ bool Cmd100::UpdateFinalImage(void) {
     return true;
 
 }
-
-
-
-
 
 
 
@@ -148,6 +148,11 @@ bool Cmd100::run(void)
 
     return true;
 }
+
+BYTE Cmd100::FddTransfer (BYTE DataIn) {
+  return (this->*cmdtab[index]) (DataIn);
+}
+
 
 void Cmd100::FddOpen(void) {
   index = 0;
@@ -311,13 +316,180 @@ BYTE Cmd100::AcceptBlock(BYTE x) {
     return opstatus;
 }
 
-BYTE Cmd100::ExecOpenFile(BYTE x) {}		// + return the number of data bytes, LSB }
-BYTE Cmd100::ExecReadFile(BYTE x) {}		// + return the number of data bytes, LSB }
-BYTE Cmd100::ExecReadSector(BYTE x) {}	// + get the sector number }
-BYTE Cmd100::ExecKillFile(BYTE x) {}		// + return the number of data bytes, LSB }
-BYTE Cmd100::ExecRenameFile(BYTE x) {}	// + return the number of data bytes, LSB }
-BYTE Cmd100::ExecWriteSector(BYTE x) {}
-BYTE Cmd100::ExecWriteFile(BYTE x) {}
+BYTE Cmd100::ExecOpenFile(BYTE x) {		// + return the number of data bytes, LSB }
+
+    qint32 file_handle, position;
+
+    index++;
+    file_handle = buffer[1] & 0x0F;
+    fdd.PutDiskFileTag(file_handle, cmdcode);
+    int i = -1;
+    if (cmdcode != 0x30) i = fdd.OpenDiskFile( file_handle,(char*)&buffer[3]);
+    if ((i < 0) && (cmdcode < 0x32)) i = fdd.CreateDiskFile ( file_handle,(char*)&buffer[3],buffer[2]);
+    count = 1;
+    if (i >= 0) {
+        if (cmdcode != 0x30) {
+            if (fdd.ReadDirEntry((TDirEntry*)&buffer[1], i) == CcasioDOS::spOccupied) {
+
+                count = 17;
+                if (cmdcode == 0x34) {
+                    position = fdd.SizeOfDiskFile (file_handle);
+                    if (position > 0) {
+                        fdd.SeekAbsDiskFile (file_handle, position - 1);
+                        count += fdd.ReadDiskFile (file_handle, (char*)&buffer[17]);
+                        // trailing zeros and Ctrl-Z aren't transferred
+                        while ((count > 17) && (buffer[count] == 0)) count--;
+                        if ((count > 17) && (buffer[count] == 0x1A)) count--;
+                    }
+                };
+            };
+        };
+    };
+    opstatus = CnvStatus (fdd.DosStatus);
+    if (count > 1) opstatus = opstatus | mdFileFound;
+    buffer[0] = opstatus;
+    bufindex = 0;
+    return count & 0xff;
+}
+
+
+BYTE Cmd100::ExecReadFile(BYTE x) {		// + return the number of data bytes, LSB }
+    qint32 file_handle, position;
+    index++;
+    file_handle = buffer[1] & 0x0F;
+    if (cmdcode == 0x21) {
+        position = buffer[2] + (buffer[3] << 8);
+        if (position == 0) position = 1;
+        fdd.SeekAbsDiskFile(file_handle, position - 1);
+    }
+    count = fdd.ReadDiskFile (file_handle,(char*)&buffer[1]); // pointer to the data buffer
+    fdd.SeekRelDiskFile (file_handle, 1);
+    if (fdd.DosStatus == CcasioDOS::dsNoError) {
+        if (fdd.IsEndOfDiskFile (file_handle)) {
+            // for the last record skip the trailing zeros and the trailing Ctrl-Z
+            while ((count > 0) && (buffer[count] == 0)) count--;
+            if ((count > 0) && (buffer[count] == 0x1A)) count--;
+            opstatus = mdEndOfFile;
+        }
+    }
+    else opstatus = CnvStatus(fdd.DosStatus);
+    count++;
+    buffer[0] = opstatus;
+    bufindex = 0;
+    return  (count & 0x0f);
+}
+
+
+BYTE Cmd100::ExecReadSector(BYTE x) {	// + get the sector number
+    // the track number specified in 'count' }
+
+    index++;
+    count = fdd.DosSecRead(count * SEC_COUNT + x - SEC_BASE,(char*)&buffer[0]);
+    if (count == 0) {
+        opstatus = mdInvalidCommand;
+        index = 0;
+    }
+    bufindex = 0;
+    return opstatus;
+}
+
+BYTE Cmd100::ExecKillFile(BYTE x) {		// + return the number of data bytes, LSB }
+    index++;
+    fdd.DeleteDiskFile ((char*)&buffer[2]);
+    if (fdd.DosStatus == CcasioDOS::dsNoError) opstatus = mdFileFound;
+    else if (fdd.DosStatus == CcasioDOS::dsFileNotFound) opstatus = mdOK;
+    else opstatus = CnvStatus (fdd.DosStatus);
+    count = 1;
+    buffer[0] = opstatus;
+    bufindex = 0;
+    return (count & 0xff);
+}
+
+BYTE Cmd100::ExecRenameFile(BYTE x) {	// + return the number of data bytes, LSB }
+    index++;
+    fdd.RenameDiskFile((char*)&buffer[2] , (char*)&buffer[19] );
+    if (fdd.DosStatus == CcasioDOS::dsNoError) opstatus = mdFileFound;
+    else if (fdd.DosStatus == CcasioDOS::dsFileNotFound) opstatus = mdOK;
+    else opstatus = CnvStatus (fdd.DosStatus);
+    count = 1;
+    buffer[0] = opstatus;
+    bufindex = 0;
+    return (count & 0xff);
+}
+
+BYTE Cmd100::ExecWriteSector(BYTE x) {
+    if (bufindex < BUFSIZE) {
+        buffer[bufindex] = x;
+        bufindex++;
+    }
+    count--;
+    if (count <= 0) {
+        index++;
+        if (fdd.DosSecWrite (buffer[1] * SEC_COUNT + buffer[2] - SEC_BASE, (char*)&buffer[3]) == 0) {
+            opstatus = mdWriteProtected;
+        }
+        bufindex = 0;
+        count = 0;
+    }
+    return opstatus;
+
+}
+
+BYTE Cmd100::ExecWriteFile(BYTE x) {
+    qint32 file_handle, position, i;
+    if (bufindex < BUFSIZE) {
+        buffer[bufindex] = x;
+        bufindex++;
+    }
+    count--;
+
+    if (count <= 0) {
+        // last record
+        index++;
+        if (cmdcode == 0) {
+            file_handle = buffer[1] & 0x0F;
+            if (fdd.IsEndOfDiskFile (file_handle) && (bufindex < BUFSIZE - 1)) {
+                buffer[bufindex] = 0x1A;
+                bufindex++;
+            }
+            memset((char*)&buffer[bufindex],0x00,BUFSIZE - bufindex);
+            i = 2;
+            while (i < bufindex) {
+                if (fdd.WriteDiskFile (file_handle, (char*)&buffer[i]) != SIZE_RECORD) break;
+                i+= SIZE_RECORD;
+                if (i <= bufindex) fdd.SeekRelDiskFile (file_handle, 1);
+            }
+            if (opstatus == mdOK) opstatus = CnvStatus (fdd.DosStatus);
+        }
+        buffer[0] = opstatus;
+        count = 1;
+    }
+
+    else {
+        // not the last record
+        if ((cmdcode == 0) && (bufindex == SIZE_RECORD + 2)) {
+            bufindex = 2;
+            file_handle = buffer[1] & 0x0F;
+            if (fdd.WriteDiskFile (file_handle,(char*)&buffer[2]) != SIZE_RECORD) {
+                if (opstatus == mdOK) opstatus = CnvStatus (fdd.DosStatus);
+            }
+            fdd.SeekRelDiskFile (file_handle, 1);
+        }
+        else if ((cmdcode == 0x10) && (bufindex == 2)) {
+            cmdcode = 0;
+        }
+        else if ((cmdcode == 0x11) && (bufindex == 4)) {
+            cmdcode = 0;
+            bufindex = 2;
+            file_handle = buffer[1] & 0x0F;
+            position = buffer[2] + (buffer[3] << 8);
+            if (position == 0) position = 1;
+            fdd.SeekAbsDiskFile (file_handle, position - 1);
+        }
+    }
+
+    return mdOK;
+}
 
 // expects file handle in buffer[0], returns file size in 'count' }
 BYTE Cmd100::ExecGetSize(BYTE x) {

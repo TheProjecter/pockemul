@@ -7,6 +7,7 @@
 
 #define SIZE_SECTOR     256
 #define SIZE_DIR_ENTRY  16
+#define SIZE_RECORD     256
 
 #define SECTORS_FAT     4
 #define SECTORS_DIR     12
@@ -119,6 +120,16 @@ public:
     qint32 SizeOfDiskFile(qint32 handle);
     qint32 FatNextSector(qint32 x, bool allocate);
     qint32 FindFreeBlock();
+    int OpenDiskFile(qint32 handle, char *filename);
+    int CreateDiskFile(qint32 handle, char *filename, BYTE filekind);
+    void SeekAbsDiskFile(qint32 handle, qint32 position);
+    qint32 ReadDiskFile(qint32 handle, char *data);
+    void DeleteDiskFile(char *filename);
+    bool FatFreeChain(qint32 x);
+    void SeekRelDiskFile(qint32 handle, qint32 offset);
+    bool IsEndOfDiskFile(qint32 handle);
+    void RenameDiskFile(char *oldname, char *newname);
+    qint32 WriteDiskFile(qint32 handle, char *data);
 };
 
 #endif // CASIODISK_H

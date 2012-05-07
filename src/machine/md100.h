@@ -13,6 +13,8 @@
 #define SEC_COUNT   16      //	{ number of sectors on the track }
 #define SEC_BASE    1       //	{ number of the first sector on the track }
 #define BUFSIZE     1024    //	{ at least 2 * SIZE_RECORD + 4 }
+#define SIZE_RECORD     256
+
 
 class Cmd100:public CPObject{
     Q_OBJECT
@@ -62,6 +64,8 @@ public:
     void FddOpen();
     void FddClose();
     BYTE CnvStatus(CcasioDOS::TDosStatusCode x);
+
+    BYTE FddTransfer(BYTE DataIn);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void definePath(void);
