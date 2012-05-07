@@ -6,10 +6,12 @@
 #include <QSound>
 #include <QDir>
 
-
+#include "common.h"
 #include "pobject.h"
 
-
+#define SEC_COUNT   16      //	{ number of sectors on the track }
+#define SEC_BASE    1       //	{ number of the first sector on the track }
+#define BUFSIZE     1024    //	{ at least 2 * SIZE_RECORD + 4 }
 
 class Cmd100:public CPObject{
     Q_OBJECT
@@ -38,12 +40,37 @@ public:
 public:
 
 
+    BYTE SwitchCmd(BYTE x);
+    BYTE ExecDir(BYTE x);
+    BYTE ReturnCountHi(BYTE x);
+    BYTE ReturnCountLo(BYTE x);
+    BYTE ReturnBlock(BYTE x);
+    BYTE ExecCloseFile(BYTE x);
+    BYTE AcceptCountLo(BYTE x);
+    BYTE AcceptCountHi(BYTE x);
+    BYTE AcceptBlock(BYTE x);
+    BYTE ExecOpenFile(BYTE x);
+    BYTE ExecReadFile(BYTE x);
+    BYTE ExecReadSector(BYTE x);
+    BYTE ExecKillFile(BYTE x);
+    BYTE ExecRenameFile(BYTE x);
+    BYTE ExecWriteSector(BYTE x);
+    BYTE ExecWriteFile(BYTE x);
+    BYTE ExecGetSize(BYTE x);
+
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void definePath(void);
 
 private:
     QDir    directory;
+    typedef BYTE (Cmd100::* funcPtr)(BYTE);
+    static const funcPtr cmdtab[55];
+
+    int count;
+    int index;
+    int bufindex;
+    BYTE buffer[BUFSIZE];
 };
 
 
