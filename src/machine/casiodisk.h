@@ -18,6 +18,13 @@
 #define SIZE_FILE_NAME  (8+3)
 #define SIZE_BLOCK      4			// 4 sectors per block }
 
+
+#define FB_IN_USE   0x8000  // marks a used entry }
+#define FB_LAST     0x4000  // marks end of chain }
+#define FB_SECTORS  0x3000  // number of last sector in last block }
+#define FB_BLOCK    0x0FFF  // number of block (this or next in chain) }
+
+
 class CcasioDisk: public CPObject
 {
     Q_OBJECT
@@ -109,6 +116,9 @@ public:
     int FindDirEntry(char *filename);
     bool WriteFatEntry(qint32 x, qint32 y);
     qint32 ReadFatEntry(qint32 x);
+    qint32 SizeOfDiskFile(qint32 handle);
+    qint32 FatNextSector(qint32 x, bool allocate);
+    qint32 FindFreeBlock();
 };
 
 #endif // CASIODISK_H

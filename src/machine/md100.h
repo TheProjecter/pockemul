@@ -8,6 +8,7 @@
 
 #include "common.h"
 #include "pobject.h"
+#include "casiodisk.h"
 
 #define SEC_COUNT   16      //	{ number of sectors on the track }
 #define SEC_BASE    1       //	{ number of the first sector on the track }
@@ -58,6 +59,9 @@ public:
     BYTE ExecWriteFile(BYTE x);
     BYTE ExecGetSize(BYTE x);
 
+    void FddOpen();
+    void FddClose();
+    BYTE CnvStatus(CcasioDOS::TDosStatusCode x);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void definePath(void);
@@ -71,6 +75,23 @@ private:
     int index;
     int bufindex;
     BYTE buffer[BUFSIZE];
+    int opstatus;
+
+    int mdFileNotOpened;
+    int mdNoRoom;
+    int mdInvalidCommand;
+    int mdFileFound;
+    int mdRenameFailed;
+    int mdNoData;
+    int mdWriteProtected;
+    int mdEndOfFile;
+    int mdOK;
+
+    bool isdisk;
+    int deindex;	// directory entry index }
+    BYTE cmdcode;
+
+    CcasioDOS fdd;
 };
 
 

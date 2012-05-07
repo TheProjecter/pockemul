@@ -224,4 +224,107 @@ bool CcasioDOS::WriteFatEntry (qint32 x, qint32 y ) {
 }
 
 
+// returns the file size in records or 0 in case of an error,
+//  'DosStatus' isn't modified }
+qint32 CcasioDOS::SizeOfDiskFile (qint32 handle) { // number of records};
+    if (CheckFileHandle(handle) != dsNoError) return 0;
+    // scan the FAT chain for the last record number }
+    int fromrec = fileinfo[handle].lastrec;
+    int fromsec = fileinfo[handle].lastsec;
+    do {
+        fromsec = FatNextSector(fromsec, false);
+        fromrec++;
+    } while (fromsec != 0);
+    return fromrec;
+}
+
+// find or allocate (if allowed) the next sector in the FAT chain,
+//  returns 0 if none found }
+qint32 CcasioDOS::FatNextSector (qint32 x, bool allocate) {
+
+    qint32 y ; // sector of a newly allocated block}
+    qint32 entry; // FAT entry}: cardinal;
+
+    qint32 ret = 0;
+    if (x < START_DATA) {
+
+        // new file }
+        if (! allocate) return ret;
+        y = FindFreeBlock();
+        if (y == 0) return ret;
+        entry = FB_IN_USE + FB_LAST + y / SIZE_BLOCK;
+        if (! WriteFatEntry(y, entry)) return ret;
+        ret = y;
+
+    }
+    else
+
+        // existing file }
+    {
+        entry = ReadFatEntry (x);
+        if (entry > 0xFFFF) return ret;			// no valid FAT entry }
+        if ((entry & FB_IN_USE) == 0) return ret;	// FAT error, sector marked as free }
+        if ((entry & FB_LAST) != 0) {
+            // last block in the chain }
+            if ( (x & (SIZE_BLOCK - 1)) >= ((entry & FB_SECTORS) >> 12)) {
+                // end of file }
+                if (!allocate) return ret;
+                if ((x & (SIZE_BLOCK - 1)) < (SIZE_BLOCK - 1)) {
+                    // allocate next sector in the same block }
+                    if (! WriteFatEntry(x + 1, entry + 0x1000)) return ret;
+                    ret = x + 1;
+                }
+                else
+                    // allocate next sector in a new block }
+                {
+                    y = FindFreeBlock();
+                    if (y == 0) return ret;
+                    entry = FB_IN_USE + y / SIZE_BLOCK;
+                    if (! WriteFatEntry(x, entry)) return ret;	// previous in chain }
+                    entry = FB_IN_USE + FB_LAST + y / SIZE_BLOCK;
+                    if (!WriteFatEntry(y, entry)) return ret;	// last in chain }
+                    ret = y;
+                }
+            }
+            else
+                // not the end of file }
+            {
+                ret = x + 1;
+            }
+        }
+        else
+
+            // not the last block in the chain }
+        {
+            if ((x & (SIZE_BLOCK - 1)) < (SIZE_BLOCK - 1)) {
+                // next sector is in the same block }
+
+                ret = x + 1;
+            }
+            else
+                // next sector is in another block }
+            {
+                x = (entry & FB_BLOCK) * SIZE_BLOCK;	// follow the FAT chain }
+                entry = ReadFatEntry (x);
+                if (entry > 0xFFFF) return ret;		// no valid FAT entry }
+                if ((entry & FB_IN_USE) != 0) ret= x;
+            }
+        }
+
+    }
+    return ret;
+}
+
+// find first free block,
+//  returns the number of first sector of the block, or 0 if none found }
+qint32 CcasioDOS::FindFreeBlock(void) {
+    qint32 maxsector = MIN(sectors, SECTORS_FAT * SIZE_SECTOR / 2);
+    qint32 ret = START_DATA;
+    do {
+        if ((ReadFatEntry(ret) & FB_IN_USE) == 0) return ret;
+        ret += SIZE_BLOCK;
+    } while (ret < maxsector);
+    ret = 0;
+    return ret;
+}
 
