@@ -449,3 +449,33 @@ bool Cpb2000::SaveConfig(QXmlStreamWriter *xmlOut)
 
     return true;
 }
+
+bool Cpb2000::Set_Connector(void)
+{
+//    pCONNECTOR->Set_pin(9	,I00);
+//    pCONNECTOR->Set_pin(19	,I01);
+//    pCONNECTOR->Set_pin(9	,I02);
+//    pCONNECTOR->Set_pin(24	,I03);
+//    pCONNECTOR->Set_pin(21	,I04);
+//    pCONNECTOR->Set_pin(8	,I05);
+//    pCONNECTOR->Set_pin(20	,I06);
+//    pCONNECTOR->Set_pin(23	,I07);
+
+//    pCONNECTOR->Set_pin(25	,P2);
+//    pCONNECTOR->Set_pin(11	,P1);
+//    pCONNECTOR->Set_pin(26	,P3);
+//    pCONNECTOR->Set_pin(12	,P4);
+//    pCONNECTOR->Set_pin(27	,P5);
+
+
+    return(1);
+}
+
+bool Cpb2000::Get_Connector(void)
+{
+//	Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB7
+//	Set_Port_Bit(PORT_B,7,pCONNECTOR->Get_pin(PIN_ACK));	// ACK	:	IB8
+//	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+
+    return(1);
+}

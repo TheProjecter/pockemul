@@ -93,6 +93,9 @@ public:
     virtual	DWORD	get_PC(void);					//get Program Counter
     virtual void	Regs_Info(UINT8);
 
+            UINT8 Get_PD(void);
+            UINT8 Get_PE(void);
+
     // construction/destruction
 //    CHD61700(const machine_config &mconfig, const char *_tag, device_t *_owner, UINT32 _clock);
 

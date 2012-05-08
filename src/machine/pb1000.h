@@ -27,6 +27,9 @@ public:
     virtual bool LoadConfig(QXmlStreamReader *xmlIn);
     virtual bool SaveConfig(QXmlStreamWriter *xmlOut);
 
+    virtual bool Set_Connector(void);
+    virtual bool Get_Connector(void);
+
     virtual bool UpdateFinalImage(void);
     virtual void paintEvent(QPaintEvent *event);
 
@@ -45,7 +48,7 @@ public:
     bool flipping;
     QImage *back;
 
-    BYTE pdi;
+    BYTE pdi,OptionCode,FddWrData, FddRdData, OldPort;
 
 
 //    void keyPressEvent(QKeyEvent *event);

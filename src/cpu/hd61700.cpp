@@ -315,6 +315,8 @@ void CHD61700::Regs_Info(UINT8 Type)
     }
 }
 
+UINT8 CHD61700::Get_PD() { return REG_PD; }
+UINT8 CHD61700::Get_PE() { return REG_PE; }
 
 //-------------------------------------------------
 //  check_irqs - check if need interrupts

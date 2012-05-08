@@ -17,10 +17,10 @@
 #include "Connect.h"
 #include "dialoganalog.h"
 
-#define PD_RES 0x10;	// 1=reset, 0=normal_operation
-#define PD_PWR 0x08;	// power control: 1=power_off, 0=power_on
-#define PD_STR 0x04;	// transfer direction strobe: 1=write, 0=read
-#define PD_ACK 0x01;	// transfer direction acknowledge
+#define PD_RES 0x10	// 1=reset, 0=normal_operation
+#define PD_PWR 0x08	// power control: 1=power_off, 0=power_on
+#define PD_STR 0x04	// transfer direction strobe: 1=write, 0=read
+#define PD_ACK 0x01	// transfer direction acknowledge
 
 Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -111,6 +111,9 @@ bool Cpb1000::init(void)				// initialize
     pCPU->logsw = true;
 #endif
     CpcXXXX::init();
+
+    WatchPoint.remove(this);
+    WatchPoint.add(&pCONNECTOR_value,64,30,this,"30 pins connector");
 
     return true;
 }
@@ -445,23 +448,10 @@ void Cpb1000::setKey(UINT8 data) {
     m_kb_matrix = data;
 }
 
-//void Cpb1000::keyPressEvent(QKeyEvent *event) {
-//    switch (event->modifiers()) {
-//        case Qt::ShiftModifier : shift = true; event->accept();qWarning("SHIFT");break;
-//        case Qt::AltModifier:   fct = true; event->accept();qWarning("FCT");break;
-////        case Qt::ControlModifier: ctrl = true; break;
-//    }
-//    event->ignore();
-//}
-//void Cpb1000::keyReleaseEvent(QKeyEvent *event)
-//{
-//    shift=fct = false;
-//    event->ignore();
-//}
+
 UINT8 Cpb1000::readPort()
 {
-//    AddLog(LOG_TEMP,"Read Port");
-    return 0x00;
+    return pdi;
 }
 
 void Cpb1000::writePort(UINT8 data)
@@ -536,3 +526,53 @@ void Cpb1000::endAnimation()
 
 }
 
+
+#define P0  (x & 0x01)
+#define P1  (x & 0x02)
+#define P2  (x & 0x04)
+#define P3  (x & 0x08)
+#define P4  (x & 0x10)
+
+#define I00 (d & 0x01)
+#define I01 (d & 0x02)
+#define I02 (d & 0x04)
+#define I03 (d & 0x08)
+#define I04 (d & 0x10)
+#define I05 (d & 0x20)
+#define I06 (d & 0x40)
+#define I07 (d & 0x80)
+
+bool Cpb1000::Set_Connector(void)
+{
+    CHD61700* hd = (CHD61700*)pCPU;
+    BYTE x = ( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
+
+    BYTE d = Get_8(0xC04);
+
+    pCONNECTOR->Set_pin(22	,I00);
+    pCONNECTOR->Set_pin(19	,I01);
+    pCONNECTOR->Set_pin(9	,I02);
+    pCONNECTOR->Set_pin(24	,I03);
+    pCONNECTOR->Set_pin(21	,I04);
+    pCONNECTOR->Set_pin(8	,I05);
+    pCONNECTOR->Set_pin(20	,I06);
+    pCONNECTOR->Set_pin(23	,I07);
+
+    pCONNECTOR->Set_pin(25	,P0);
+    pCONNECTOR->Set_pin(11	,P1);
+    pCONNECTOR->Set_pin(26	,P2);
+    pCONNECTOR->Set_pin(12	,P3);
+    pCONNECTOR->Set_pin(27	,P4);
+
+
+    return(1);
+}
+
+bool Cpb1000::Get_Connector(void)
+{
+//	Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB7
+//	Set_Port_Bit(PORT_B,7,pCONNECTOR->Get_pin(PIN_ACK));	// ACK	:	IB8
+//	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+
+    return(1);
+}
