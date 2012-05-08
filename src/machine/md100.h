@@ -96,6 +96,8 @@ private:
     BYTE cmdcode;
 
     CcasioDOS fdd;
+
+    BYTE port,data;
 };
 
 

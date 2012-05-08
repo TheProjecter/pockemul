@@ -14,6 +14,7 @@
 #include <QCustomEvent>
 #include <QThread>
 #include <QTimer>
+#include <QStringList>
 
 
 class CPocketThread;
@@ -35,6 +36,7 @@ public:
 	QList<qint8> nbBits;
 	QList<CPObject *> PObject;
 	QList<QString> WatchPointName; 
+    QHash<int,QString> Labels;
 	
 	void remove(CPObject * object)
 	{
@@ -51,13 +53,14 @@ public:
 		}
     }
 	
-	void add( qint64 * watchpoint, qint8 ptrSize,qint8 nbbits,CPObject * object, QString name)
+    void add( qint64 * watchpoint, qint8 ptrSize,qint8 nbbits,CPObject * object, QString name,QHash<int,QString> lblList = QHash<int,QString>())
 	{
 		Point.append(watchpoint);
 		PointSize.append(ptrSize);
 		nbBits.append(nbbits);
 		PObject.append(object);
 		WatchPointName.append(name);
+        Labels = lblList;
     }
     void remove( qint64 * watchpoint)
     {

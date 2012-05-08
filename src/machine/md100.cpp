@@ -19,6 +19,7 @@
 #include "Inter.h"
 #include "init.h"
 #include "Log.h"
+#include "dialoganalog.h"
 
 
 Cmd100::Cmd100(CPObject *parent):CPObject(parent)
@@ -119,16 +120,45 @@ bool Cmd100::exit(void)
     return true;
 }
 
-
+#define PIN(x)    pCONNECTOR->Get_pin(x)
 bool Cmd100::Get_Connector(void) {
 
+    PUT_BIT(port,0,PIN(25));
+    PUT_BIT(port,1,PIN(11));
+    PUT_BIT(port,2,PIN(26));
+    PUT_BIT(port,3,PIN(12));
+    PUT_BIT(port,4,PIN(27));
+
+    data =  PIN(22) |
+            (PIN(19)<<1) |
+            (PIN(9)<<2) |
+            (PIN(24)<<3) |
+            (PIN(21)<<4) |
+            (PIN(8)<<5) |
+            (PIN(20)<<6) |
+            (PIN(23)<<7);
 
     return true;
 }
 
+#define PORT(x)  (port << (x))
 bool Cmd100::Set_Connector(void) {
 
+    pCONNECTOR->Set_pin(22	,READ_BIT(data,0));
+    pCONNECTOR->Set_pin(19	,READ_BIT(data,1));
+    pCONNECTOR->Set_pin(9	,READ_BIT(data,2));
+    pCONNECTOR->Set_pin(24	,READ_BIT(data,3));
+    pCONNECTOR->Set_pin(21	,READ_BIT(data,4));
+    pCONNECTOR->Set_pin(8	,READ_BIT(data,5));
+    pCONNECTOR->Set_pin(20	,READ_BIT(data,6));
+    pCONNECTOR->Set_pin(23	,READ_BIT(data,7));
 
+
+    SET_PIN(25	,READ_BIT(port,0));
+    SET_PIN(11	,READ_BIT(port,1));
+    SET_PIN(26	,READ_BIT(port,2));
+    SET_PIN(12	,READ_BIT(port,3));
+    SET_PIN(27	,READ_BIT(port,4));
 
     return true;
 }
@@ -141,7 +171,24 @@ bool Cmd100::run(void)
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
 
+    // Port 27 (P4) from 1 to 0 = reset  : reply 0x55
+    if ( (port & 0x10) == 0) {
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(0);
+        data = 0x55;
+    }
+    else {
+        data = 0x00;
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
+    }
 
+    port &= 0xf7; //P3 to 0
+
+
+    // IF P2 is 1 , then store and compute data , then ACK
+    if ( (port & 0x04) ) {
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
+        port &= 0x01;
+    }
 
     Set_Connector();
     pCONNECTOR_value = pCONNECTOR->Get_values();

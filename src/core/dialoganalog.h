@@ -50,6 +50,7 @@ public:
 	CData	dataplot;
 	CData	dataplot2;
 
+
 	void	fill_twWatchPoint(void);
 
 	

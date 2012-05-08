@@ -82,6 +82,8 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     m_angle = 180;
     m_zoom = 1;
 
+
+
 }
 
 Cpb1000::~Cpb1000() {
@@ -112,8 +114,24 @@ bool Cpb1000::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
+    QHash<int,QString> lbl;
+    lbl[22]="I00";
+    lbl[19]="I01";
+    lbl[ 9]="I02";
+    lbl[24]="I03";
+    lbl[21]="I04";
+    lbl[ 8]="I05";
+    lbl[20]="I06";
+    lbl[23]="I07";
+
+    lbl[25]="P0";
+    lbl[11]="P1";
+    lbl[26]="P2";
+    lbl[12]="P3";
+    lbl[27]="P4";
+
     WatchPoint.remove(this);
-    WatchPoint.add(&pCONNECTOR_value,64,30,this,"30 pins connector");
+    WatchPoint.add(&pCONNECTOR_value,64,30,this,"30 pins connector",lbl);
 
     return true;
 }
@@ -177,7 +195,7 @@ bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
 {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
         *d+=0xC00;
-        mem[*d] = 0xff;
+//        mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
         return(true);		// RAM area()
@@ -547,7 +565,7 @@ bool Cpb1000::Set_Connector(void)
     CHD61700* hd = (CHD61700*)pCPU;
     BYTE x = ( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
 
-    BYTE d = Get_8(0xC04);
+    BYTE d = Get_8(0x0C04);
 
     pCONNECTOR->Set_pin(22	,I00);
     pCONNECTOR->Set_pin(19	,I01);
@@ -568,11 +586,25 @@ bool Cpb1000::Set_Connector(void)
     return(1);
 }
 
+
+#define PIN(x)    pCONNECTOR->Get_pin(x)
 bool Cpb1000::Get_Connector(void)
 {
-//	Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB7
-//	Set_Port_Bit(PORT_B,7,pCONNECTOR->Get_pin(PIN_ACK));	// ACK	:	IB8
-//	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+    BYTE p = PIN(22) |
+            (PIN(19)<<1) |
+            (PIN(9)<<2) |
+            (PIN(24)<<3) |
+            (PIN(21)<<4) |
+            (PIN(8)<<5) |
+            (PIN(20)<<6) |
+            (PIN(23)<<7);
+    Set_8(0x0C03,p);
+
+    PUT_BIT(pdi,0,PIN(25));
+    PUT_BIT(pdi,1,PIN(11));
+    PUT_BIT(pdi,2,PIN(26));
+    PUT_BIT(pdi,3,PIN(12));
+    PUT_BIT(pdi,4,PIN(27));
 
     return(1);
 }

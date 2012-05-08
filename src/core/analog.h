@@ -1,6 +1,7 @@
 #ifndef ANALOG_H
 #define ANALOG_H
 #include <QList>
+#include <QHash>
 
 typedef	struct 
 {

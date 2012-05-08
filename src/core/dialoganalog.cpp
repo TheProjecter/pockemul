@@ -364,7 +364,9 @@ void dialogAnalog::initPixmap(QSize size)
             painter.drawLine(0, current, size.width(), current);
             
             painter.setPen(textPen);
-            painter.drawText(10, current - heightPerField / 3, QString::number(i+1));
+            QString lbl = QString::number(i+1);
+            if (WatchPoint.Labels.contains(i)) lbl += "-"+WatchPoint.Labels[i+1];
+            painter.drawText(10, current - heightPerField / 3, lbl);
             current += heightPerField;
         }
         painter.setPen(textPen);
@@ -501,5 +503,6 @@ long dialogAnalog::XToState(long x)
     long loc_State;
 	float ratio = (float) frame_dataview->width() / hlScrollBar->pageStep();
 	loc_State= (long) (((float)x / ratio) + hlScrollBar->value());
-	return loc_State;
+    return loc_State;
 }
+
