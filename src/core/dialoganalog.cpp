@@ -32,6 +32,7 @@ dialogAnalog::dialogAnalog( int nbbits,QWidget * parent, Qt::WFlags f) : QDialog
     connect(pbMarker, SIGNAL(clicked()), this, SLOT(slotMarker())); 
     connect(twWatchPoint, SIGNAL(currentItemChanged ( QTreeWidgetItem * , QTreeWidgetItem * )), this, SLOT(slotChangeWatchPoint( QTreeWidgetItem * , QTreeWidgetItem * ))); 
 
+
 	Capture = false; 
     NbBits = nbbits;
     m_zoom = 1.0;
@@ -47,10 +48,11 @@ void dialogAnalog::slotChangeWatchPoint( QTreeWidgetItem * current , QTreeWidget
 {
     if (current) {
         int pos = current->data(0,Qt::UserRole).toInt();
-        currentWatchPoint = WatchPoint.Point.at( pos );
-        currentWatchPointSize = WatchPoint.PointSize.at( pos );
-        NbBits = WatchPoint.nbBits.at( pos );
-        pPC = WatchPoint.PObject.at( pos );
+        currentWatchPoint = WatchPoint.items.at( pos ).Point;
+        currentWatchPointSize = WatchPoint.items.at( pos ).PointSize;
+        NbBits = WatchPoint.items.at( pos ).nbBits;
+        pPC = WatchPoint.items.at( pos ).PObject;
+        currentlabels = WatchPoint.items.at( pos ).Labels;
     }
 }
 
@@ -63,11 +65,11 @@ void dialogAnalog::fill_twWatchPoint(void)
 	for (int i = 0; i < listpPObject.size(); i++)
 	{
 		QTreeWidgetItem *material = new QTreeWidgetItem(twWatchPoint,QStringList(listpPObject.at(i)->getName()));
-		for (int j = 0; j < WatchPoint.PObject.size(); j++)
+        for (int j = 0; j < WatchPoint.items.size(); j++)
 		{
-			if (listpPObject.at(i) == WatchPoint.PObject.at(j)) 
+            if (listpPObject.at(i) == WatchPoint.items.at(j).PObject)
 			{
-				QTreeWidgetItem *Point = new QTreeWidgetItem(material,QStringList(WatchPoint.WatchPointName.at(j)));
+                QTreeWidgetItem *Point = new QTreeWidgetItem(material,QStringList(WatchPoint.items.at(j).WatchPointName));
 				Point->setData(0,Qt::UserRole,j);
 			}
 		}
@@ -365,7 +367,7 @@ void dialogAnalog::initPixmap(QSize size)
             
             painter.setPen(textPen);
             QString lbl = QString::number(i+1);
-            if (WatchPoint.Labels.contains(i)) lbl += "-"+WatchPoint.Labels[i+1];
+            if (currentlabels.contains(i)) lbl += "-"+currentlabels[i+1];
             painter.drawText(10, current - heightPerField / 3, lbl);
             current += heightPerField;
         }

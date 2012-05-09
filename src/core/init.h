@@ -27,49 +27,81 @@ extern CPObject * InitApp(int idPC);
 extern QList<CPocketThread*> listPcThread;	
 extern CWatchPoint WatchPoint;
 
+class CWatchPointItem {
+public:
+    CWatchPointItem(qint64* Point,qint8 PointSize,qint8 nbBits,CPObject* PObject,QString WatchPointName,QHash<int,QString> Labels) {
+        this->Point = Point;
+        this->PointSize = PointSize;
+        this->nbBits = nbBits;
+        this->PObject = PObject;
+        this->WatchPointName = WatchPointName;
+        this->Labels = Labels;
+    }
+
+    qint64 *Point;
+    qint8   PointSize;
+    qint8   nbBits;
+    CPObject* PObject;
+    QString WatchPointName;
+    QHash<int,QString> Labels;
+};
 
 class CWatchPoint
 {
 public:
-	QList<qint64 *> Point;
-	QList<qint8> PointSize;
-	QList<qint8> nbBits;
-	QList<CPObject *> PObject;
-	QList<QString> WatchPointName; 
-    QHash<int,QString> Labels;
+    QList<CWatchPointItem> items;
+//	QList<qint64 *> Point;
+//	QList<qint8> PointSize;
+//	QList<qint8> nbBits;
+//	QList<CPObject *> PObject;
+//	QList<QString> WatchPointName;
+//    QList< QHash<int,QString> > Labels;
 	
 	void remove(CPObject * object)
 	{
-		for (int i=PObject.size()-1;i>=0;i--)
+        for (int i=items.size()-1;i>=0;i--)
 		{
-			if (PObject.at(i) == object)
+            if (items.at(i).PObject == object)
 			{
-				Point.removeAt(i);
-				PointSize.removeAt(i);
-				nbBits.removeAt(i);
-				PObject.removeAt(i);
-				WatchPointName.removeAt(i);
+                items.removeAt(i);
+//				Point.removeAt(i);
+//				PointSize.removeAt(i);
+//				nbBits.removeAt(i);
+//				PObject.removeAt(i);
+//				WatchPointName.removeAt(i);
+//                Labels.removeAt(i);
 			}
 		}
     }
 	
     void add( qint64 * watchpoint, qint8 ptrSize,qint8 nbbits,CPObject * object, QString name,QHash<int,QString> lblList = QHash<int,QString>())
-	{
-		Point.append(watchpoint);
-		PointSize.append(ptrSize);
-		nbBits.append(nbbits);
-		PObject.append(object);
-		WatchPointName.append(name);
-        Labels = lblList;
+    {
+        CWatchPointItem * item = new CWatchPointItem(watchpoint,ptrSize,nbbits,object,name,lblList);
+        items.append(*item);
+        delete item;
+//		Point.append(watchpoint);
+//		PointSize.append(ptrSize);
+//		nbBits.append(nbbits);
+//		PObject.append(object);
+//		WatchPointName.append(name);
+//        Labels.append(lblList);
     }
+
     void remove( qint64 * watchpoint)
     {
-        int i = Point.indexOf(watchpoint);
-        Point.removeAt(i);
-        PointSize.removeAt(i);
-        nbBits.removeAt(i);
-        PObject.removeAt(i);
-        WatchPointName.removeAt(i);
+        for (int i =0;i< items.size();i++) {
+            if (items.at(i).Point == watchpoint) {
+                items.removeAt(i);
+                return;
+            }
+        }
+//        int i = Point.indexOf(watchpoint);
+//        Point.removeAt(i);
+//        PointSize.removeAt(i);
+//        nbBits.removeAt(i);
+//        PObject.removeAt(i);
+//        WatchPointName.removeAt(i);
+//        Labels.remove.at(i);
     }
 };
 

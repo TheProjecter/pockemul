@@ -80,8 +80,10 @@ private:
 	void	fillPixmap(CData *, QPen *);
 	int		NbBits;
 	CPObject *pPC;
-	qint64 * currentWatchPoint;
-	qint8	currentWatchPointSize;
+    qint64 * currentWatchPoint;
+    qint8	currentWatchPointSize;
+    QHash<int,QString> currentlabels;
+
 };
 #endif
 
