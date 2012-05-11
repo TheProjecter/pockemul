@@ -45,6 +45,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "RAM0"));
     SlotList.append(CSlot(32, 0x8000 ,	":/pb1000/rom1.bin"	, ""	, ROM , "ROM"));
     SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, RAM , "RAM1"));
+    SlotList.append(CSlot(1 , 0x1800 ,	""					, ""	, ROM , "PORT"));
 
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;
@@ -161,9 +162,11 @@ bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
         *d+=0xC00;
+//        if (*d==(0xC04+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));}
+//        if (*d==(0xC03+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C03 : %1").arg(data,0,16,QChar('0')));}
 //        pLCDC->Refresh = true;
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE IO [%04X] = %02x\n",*d,data);
-        AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
+//        AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
         return(true);		// RAM area()
     }
 
@@ -194,7 +197,10 @@ WORD Cpb1000::Get_16rPC(DWORD adr)
 bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
 {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
+
         *d+=0xC00;
+//        if (*d==(0xC03+0xc00)) {AddLog(LOG_PRINTER,tr("Read 0C03 : %1").arg(mem[*d],0,16,QChar('0')));}
+//        if (*d==(0xC04+0xc00)) {AddLog(LOG_PRINTER,tr("Read 0C04 : %1").arg(mem[*d],0,16,QChar('0')));}
 //        mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
@@ -474,7 +480,10 @@ UINT8 Cpb1000::readPort()
 
 void Cpb1000::writePort(UINT8 data)
 {
-    AddLog(LOG_TEMP,tr("Write Port:%1").arg(data,2,16,QChar('0')));
+    pdi=data;
+    if ((data !=0x80) && (data!=0x40) && (data!=0xc0)) {
+//        AddLog(LOG_PRINTER,tr("Write Port:%1").arg(data,2,16,QChar('0')));
+    }
 }
 
 void Cpb1000::lcdControlWrite(UINT8 data) {
@@ -545,61 +554,54 @@ void Cpb1000::endAnimation()
 }
 
 
-#define P0  (x & 0x01)
-#define P1  (x & 0x02)
-#define P2  (x & 0x04)
-#define P3  (x & 0x08)
-#define P4  (x & 0x10)
-
-#define I00 (d & 0x01)
-#define I01 (d & 0x02)
-#define I02 (d & 0x04)
-#define I03 (d & 0x08)
-#define I04 (d & 0x10)
-#define I05 (d & 0x20)
-#define I06 (d & 0x40)
-#define I07 (d & 0x80)
-
+#define P(a)  (((x)>>(a)) & 0x01)
+#define I(a) (((d)>>(a))&0x01)
+#define PIN(x)    pCONNECTOR->Get_pin(x)
 bool Cpb1000::Set_Connector(void)
 {
     CHD61700* hd = (CHD61700*)pCPU;
-    BYTE x = ( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
+    BYTE x = pdi; //( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
 
+
+    if (!PIN(26)) {
     BYTE d = Get_8(0x0C04);
-
-    pCONNECTOR->Set_pin(22	,I00);
-    pCONNECTOR->Set_pin(19	,I01);
-    pCONNECTOR->Set_pin(9	,I02);
-    pCONNECTOR->Set_pin(24	,I03);
-    pCONNECTOR->Set_pin(21	,I04);
-    pCONNECTOR->Set_pin(8	,I05);
-    pCONNECTOR->Set_pin(20	,I06);
-    pCONNECTOR->Set_pin(23	,I07);
-
-    pCONNECTOR->Set_pin(25	,P0);
-    pCONNECTOR->Set_pin(11	,P1);
-    pCONNECTOR->Set_pin(26	,P2);
-    pCONNECTOR->Set_pin(12	,P3);
-    pCONNECTOR->Set_pin(27	,P4);
+    pCONNECTOR->Set_pin(22	,I(0));
+    pCONNECTOR->Set_pin(19	,I(1));
+    pCONNECTOR->Set_pin(9	,I(2));
+    pCONNECTOR->Set_pin(24	,I(3));
+    pCONNECTOR->Set_pin(21	,I(4));
+    pCONNECTOR->Set_pin(8	,I(5));
+    pCONNECTOR->Set_pin(20	,I(6));
+    pCONNECTOR->Set_pin(23	,I(7));
+}
+    pCONNECTOR->Set_pin(25	,P(0));
+    pCONNECTOR->Set_pin(11	,P(1));
+    pCONNECTOR->Set_pin(26	,P(2));
+    pCONNECTOR->Set_pin(12	,P(3));
+    pCONNECTOR->Set_pin(27	,P(4));
 
 
     return(1);
 }
 
 
-#define PIN(x)    pCONNECTOR->Get_pin(x)
+
 bool Cpb1000::Get_Connector(void)
 {
     BYTE p = PIN(22) |
             (PIN(19)<<1) |
-            (PIN(9)<<2) |
+            (PIN(9) <<2) |
             (PIN(24)<<3) |
             (PIN(21)<<4) |
-            (PIN(8)<<5) |
+            (PIN(8) <<5) |
             (PIN(20)<<6) |
             (PIN(23)<<7);
+//    if (p==0x55) {
+//        AddLog(LOG_PRINTER,"PB-1000 receive 0x55");
+//    }
+    if (PIN(26)) {
     Set_8(0x0C03,p);
-
+}
     PUT_BIT(pdi,0,PIN(25));
     PUT_BIT(pdi,1,PIN(11));
     PUT_BIT(pdi,2,PIN(26));

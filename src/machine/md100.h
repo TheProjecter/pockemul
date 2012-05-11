@@ -97,7 +97,14 @@ private:
 
     CcasioDOS fdd;
 
-    BYTE port,data;
+    BYTE port,data,sendData;
+    bool send;
+
+    bool prev_P0;
+    bool prev_P1;
+    bool prev_P2;
+    bool prev_P3;
+    bool prev_P4;
 };
 
 

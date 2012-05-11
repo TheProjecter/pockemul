@@ -367,7 +367,7 @@ void dialogAnalog::initPixmap(QSize size)
             
             painter.setPen(textPen);
             QString lbl = QString::number(i+1);
-            if (currentlabels.contains(i)) lbl += "-"+currentlabels[i+1];
+            if (currentlabels.contains(i+1)) lbl += "-"+currentlabels[i+1];
             painter.drawText(10, current - heightPerField / 3, lbl);
             current += heightPerField;
         }

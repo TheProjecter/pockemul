@@ -468,7 +468,20 @@ bool CpcXXXX::init(void)
 	if(pTIMER)	pTIMER->init();
 	if(pLCDC)	pLCDC->init_screen();
 
-    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
+
+    QHash<int,QString> lbl;
+    lbl[1]="MT_OUT2";
+    lbl[2]="GND";
+    lbl[3]="VGG";
+    lbl[4]="BUSY";
+    lbl[5]="D_OUT";
+    lbl[6]="MT_IN";
+    lbl[7]="MT_OUT1";
+    lbl[8]="D_IN";
+    lbl[9]="ACK";
+    lbl[10]="SEL2";
+    lbl[11]="SEL1";
+    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector",lbl);
     WatchPoint.add((qint64 *) &IO_A,8,8,this,"Port A");
     WatchPoint.add((qint64 *) &IO_B,8,8,this,"Port B");
     WatchPoint.add((qint64 *) &IO_C,8,8,this,"Port C");
@@ -507,13 +520,13 @@ bool CpcXXXX::run(void)
 	
 	old_state = pTIMER->state;
 
-	// Read the connectors
-    if (pCONNECTOR) {
-        pCONNECTOR_value = pCONNECTOR->Get_values();
-    }
+
 
         Get_Connector();
-
+        // Read the connectors
+        if (pCONNECTOR) {
+            pCONNECTOR_value = pCONNECTOR->Get_values();
+        }
 
 	if(!pCPU->halt && !off)
 	{
@@ -593,7 +606,9 @@ bool CpcXXXX::run(void)
 
 
     Set_Connector();		//Write the connectors
-	
+    if (pCONNECTOR) {
+        pCONNECTOR_value = pCONNECTOR->Get_values();
+    }
 	return(1);
 }
 
