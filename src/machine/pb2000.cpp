@@ -166,14 +166,14 @@ void Cpb2000::Reset()
 bool Cpb2000::run() {
 
     lcd_on_timer_rate = pHD44352->on_timer_rate;
-
+CpcXXXX::run();
     if (off && pKEYB->LastKey == K_POW_ON)
     {
         TurnON();
         pKEYB->LastKey = 0;
     }
 
-    CpcXXXX::run();
+
 
 }
 

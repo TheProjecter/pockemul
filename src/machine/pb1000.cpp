@@ -115,6 +115,8 @@ bool Cpb1000::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
+    ioFreq = 0;
+
     QHash<int,QString> lbl;
     lbl[22]="I00";
     lbl[19]="I01";
@@ -140,7 +142,7 @@ bool Cpb1000::init(void)				// initialize
 bool Cpb1000::run() {
 
     lcd_on_timer_rate = pHD44352->on_timer_rate;
-
+CpcXXXX::run();
     if (off && pKEYB->LastKey == K_POW_ON)
     {
         TurnON();
@@ -154,7 +156,7 @@ bool Cpb1000::run() {
         ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
     }
 
-    CpcXXXX::run();
+
 
 }
 
@@ -162,8 +164,13 @@ bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
         *d+=0xC00;
-//        if (*d==(0xC04+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));}
-//        if (*d==(0xC03+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C03 : %1").arg(data,0,16,QChar('0')));}
+        if (*d==(0xC04+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));}
+        if (*d==(0xC03+0xc00)) {
+            if (mem[*d] != data) {
+                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(21);
+                AddLog(LOG_PRINTER,tr("Write 0C03 : %1").arg(data,2,16,QChar('0')));
+            }
+        }
 //        pLCDC->Refresh = true;
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE IO [%04X] = %02x\n",*d,data);
 //        AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
@@ -199,7 +206,9 @@ bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
 
         *d+=0xC00;
-//        if (*d==(0xC03+0xc00)) {AddLog(LOG_PRINTER,tr("Read 0C03 : %1").arg(mem[*d],0,16,QChar('0')));}
+        if (*d==(0xC03+0xc00)) {
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(20);
+            AddLog(LOG_PRINTER,tr("Read 0C03 : %1").arg(mem[*d],0,16,QChar('0')));}
 //        if (*d==(0xC04+0xc00)) {AddLog(LOG_PRINTER,tr("Read 0C04 : %1").arg(mem[*d],0,16,QChar('0')));}
 //        mem[*d] = 0xff;
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
@@ -480,7 +489,12 @@ UINT8 Cpb1000::readPort()
 
 void Cpb1000::writePort(UINT8 data)
 {
+#if 1
     pdi=data;
+#else
+    CHD61700* hd = (CHD61700*)pCPU;
+    pdi = data | (pdi & ~(hd->Get_PE()));
+#endif
     if ((data !=0x80) && (data!=0x40) && (data!=0xc0)) {
 //        AddLog(LOG_PRINTER,tr("Write Port:%1").arg(data,2,16,QChar('0')));
     }
@@ -556,14 +570,14 @@ void Cpb1000::endAnimation()
 
 #define P(a)  (((x)>>(a)) & 0x01)
 #define I(a) (((d)>>(a))&0x01)
-#define PIN(x)    pCONNECTOR->Get_pin(x)
+#define PIN(x)    (pCONNECTOR->Get_pin(x) ? 0x01 : 0x00)
 bool Cpb1000::Set_Connector(void)
 {
     CHD61700* hd = (CHD61700*)pCPU;
-    BYTE x = pdi; //( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
+    BYTE x = pdi;//( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
 
 
-    if (!PIN(26)) {
+    if (prev_P2 && (P(2)==0)) {
     BYTE d = Get_8(0x0C04);
     pCONNECTOR->Set_pin(22	,I(0));
     pCONNECTOR->Set_pin(19	,I(1));
@@ -581,6 +595,7 @@ bool Cpb1000::Set_Connector(void)
     pCONNECTOR->Set_pin(27	,P(4));
 
 
+    prev_P2 = P(2);
     return(1);
 }
 
@@ -599,7 +614,7 @@ bool Cpb1000::Get_Connector(void)
 //    if (p==0x55) {
 //        AddLog(LOG_PRINTER,"PB-1000 receive 0x55");
 //    }
-    if (PIN(26)) {
+    if (PIN(25)) {
     Set_8(0x0C03,p);
 }
     PUT_BIT(pdi,0,PIN(25));

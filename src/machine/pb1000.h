@@ -49,6 +49,7 @@ public:
     QImage *back;
 
     BYTE pdi,OptionCode,FddWrData, FddRdData, OldPort;
+    bool prev_P2;
 
 
 //    void keyPressEvent(QKeyEvent *event);

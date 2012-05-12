@@ -160,10 +160,10 @@ bool Cmd100::Set_Connector(void) {
 }
 
     SET_PIN(25	,READ_BIT(port,0));
-    SET_PIN(11	,READ_BIT(port,1));
-    SET_PIN(26	,READ_BIT(port,2));
-    SET_PIN(12	,READ_BIT(port,3));
-    SET_PIN(27	,READ_BIT(port,4));
+//    SET_PIN(11	,READ_BIT(port,1));
+//    SET_PIN(26	,READ_BIT(port,2));
+//    SET_PIN(12	,READ_BIT(port,3));
+//    SET_PIN(27	,READ_BIT(port,4));
 
     return true;
 }
@@ -189,11 +189,6 @@ bool Cmd100::run(void)
     bool P2_GoUp   = ( ( P2 == UP ) && (prev_P2 == DOWN)) ? true:false;
 
 
-//    if ( (P4==UP) && (P2==UP)) {        // RESET
-//        data = 0x55;
-//        PUT_BIT(port,0,UP);
-//        AddLog(LOG_PRINTER,tr("[%1] MD-100 send 0x55").arg(port,0,16,QChar('0')));
-//    }
     // Port 27 (P4) from 1 to 0 = reset  : reply 0x55
     if (P4_GoDown){//&& (P2==UP)) {
         AddLog(LOG_PRINTER,tr("MD-100 send 0x55"));
@@ -212,7 +207,7 @@ bool Cmd100::run(void)
                 PUT_BIT(port,0,UP);
                 data = FddTransfer(data);
                 send = true;
-                AddLog(LOG_PRINTER,tr("[%1] MD-100 send %2").arg(port,2,16,QChar('0')).arg(sendData,2,16,QChar('0')));
+                AddLog(LOG_PRINTER,tr("[%1] MD-100 send %2").arg(port,2,16,QChar('0')).arg(data,2,16,QChar('0')));
                 if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
             }
             if ( P2_GoUp) {
