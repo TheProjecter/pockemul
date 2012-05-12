@@ -5,6 +5,7 @@
  */
 
 #include "casiodisk.h"
+#include "Log.h"
 
 
 
@@ -105,7 +106,8 @@ CcasioDOS::TDosStatusCode CcasioDOS::CheckFileHandle(int handle) {
 int CcasioDOS::DosSecRead (int x, char *data) {
   int ret = 0;
   if (MySecRead (x)) ret = SIZE_SECTOR;
-  memmove((char*)&secbuf[0], data, SIZE_SECTOR);
+//  memmove((char*)&secbuf[0], data, SIZE_SECTOR);
+  memmove(data,(char*)&secbuf[0], SIZE_SECTOR);
   return ret;
 }
 
@@ -113,7 +115,7 @@ int CcasioDOS::DosSecRead (int x, char *data) {
 // returns the number of written bytes }
 int CcasioDOS::DosSecWrite (int x, char *data) {
   int ret = 0;
-  memmove(data, (char*)&secbuf[0], SIZE_SECTOR);
+  memmove( (char*)&secbuf[0], data,SIZE_SECTOR);
   if (MySecWrite (x)) ret = SIZE_SECTOR;
   return ret;
 }
@@ -165,7 +167,7 @@ bool CcasioDOS::WriteDirEntry(char *ptr, int i) {
   int x = i * SIZE_DIR_ENTRY;
   int s = x / SIZE_SECTOR + START_DIR;          // sector containing the directory entry
   if (! MySecRead (s)) return false;
-  memmove((char*)ptr,(char*)&secbuf[x % SIZE_SECTOR], SIZE_DIR_ENTRY);
+  memmove((char*)&secbuf[x % SIZE_SECTOR], (char*)ptr,SIZE_DIR_ENTRY);
   if (! MySecWrite (s)) return false;
   return true;
 }
@@ -175,9 +177,9 @@ CcasioDOS::TStorageProperty CcasioDOS::ReadDirEntry (TDirEntry *dir,int i) {
 
   if ((i < 0) || (i >= MAX_DIR_ENTRY)) return spError;
   int x = i * SIZE_DIR_ENTRY;
-  int s = x % SIZE_SECTOR + START_DIR;
+  int s = x / SIZE_SECTOR + START_DIR;
   if (! MySecRead (s)) return spError;
-  memmove((char*)&secbuf[x%SIZE_SECTOR],(char*)dir,SIZE_DIR_ENTRY);
+  memmove((char*)dir,(char*)&secbuf[x%SIZE_SECTOR],SIZE_DIR_ENTRY);
 
   if ((dir->name[0]==0) && (dir->block[0]==0) && (dir->block[1]==0))
       return spFree;
@@ -194,7 +196,7 @@ int CcasioDOS::FindDirEntry (char *filename) {
     do {
         x = ReadDirEntry( &direntrybuf, result);
         if ((x == spOccupied) &&
-                memcmp( (char*)direntrybuf.name, filename, SIZE_FILE_NAME)) return result;
+                (memcmp( (char*)direntrybuf.name, filename, SIZE_FILE_NAME)==0)) return result;
         result++;
     } while ( x != spError);
     return -1;
@@ -373,7 +375,7 @@ int CcasioDOS::CreateDiskFile (qint32 handle, char * filename, BYTE filekind) {
     if (! WriteFatEntry (ensec, FB_IN_USE | FB_LAST | enblk)) return ret;
     // create the directory entry
     direntrybuf.kind = filekind;
-    memmove(filename, (char*) &direntrybuf.name, SIZE_FILE_NAME);
+    memmove( (char*) &direntrybuf.name,filename, SIZE_FILE_NAME);
     direntrybuf.block[0] = (enblk>>8)& 0xff;
     direntrybuf.block[1] = enblk & 0xff;
 
@@ -410,7 +412,10 @@ qint32 CcasioDOS::ReadDiskFile (qint32 handle, char* data) {
     qint32 fromrec, fromsec;
     qint32 ret = 0;
     DosStatus = CheckFileHandle (handle);
-    if (DosStatus != dsNoError) return ret;
+    if (DosStatus != dsNoError) {
+        AddLog(LOG_PRINTER,"ReadDiskFile ERROR");
+        return ret;
+    }
     //  with fileinfo[handle] do
     //  begin
     // scan the FAT chain for the record number 'nextrec'
@@ -431,7 +436,7 @@ qint32 CcasioDOS::ReadDiskFile (qint32 handle, char* data) {
     // transfer data
     DosStatus = dsIoError;
     if (!MySecRead (fromsec))return ret;
-    memmove ((char*)&secbuf[0], data, SIZE_SECTOR);
+    memmove (data,(char*)&secbuf[0],  SIZE_SECTOR);
     fileinfo[handle].lastrec = fromrec;
     fileinfo[handle].lastsec = fromsec;
 
@@ -464,7 +469,7 @@ qint32 CcasioDOS::WriteDiskFile (qint32 handle,char * data) {
         if (fromsec == 0) return ret;
     }
     // transfer data
-    memmove(data, (char*)&secbuf[0], SIZE_SECTOR);
+    memmove( (char*)&secbuf[0],data, SIZE_SECTOR);
     DosStatus = dsIoError;
     if (!MySecWrite (fromsec)) return ret;
     fileinfo[handle].lastrec = fromrec;
@@ -538,6 +543,6 @@ void CcasioDOS::RenameDiskFile(char* oldname, char *newname) {
     DosStatus = dsRenameFailed;
     if (y >= 0) return;
     DosStatus = dsNoError;
-    memmove (newname,(char*) &direntrybuf.name, SIZE_FILE_NAME);
+    memmove ((char*) &direntrybuf.name,newname, SIZE_FILE_NAME);
     if (! WriteDirEntry ((char*) &direntrybuf, x)) DosStatus = dsIoError;
 }

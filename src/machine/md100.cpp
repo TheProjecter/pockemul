@@ -274,15 +274,25 @@ void Cmd100::FddClose(void) {
 BYTE Cmd100::CnvStatus( CcasioDOS::TDosStatusCode x) {         //MD-100 operation status};
     switch(x) {
     case CcasioDOS::dsNoError:      return mdOK;
-    case CcasioDOS::dsRenameFailed:	return mdRenameFailed + mdFileFound;
-    case CcasioDOS::dsFileNotFound:	return mdInvalidCommand;
+    case CcasioDOS::dsRenameFailed:
+        AddLog(LOG_PRINTER,"ERROR : dsRenameFailed");
+        return mdRenameFailed + mdFileFound;
+    case CcasioDOS::dsFileNotFound:
+        AddLog(LOG_PRINTER,"ERROR : dsFileNotFound");
+        return mdInvalidCommand;
     case CcasioDOS::dsFileNotOpened:return mdFileNotOpened;
-    case CcasioDOS::dsHandleInUse:  return mdInvalidCommand;
+    case CcasioDOS::dsHandleInUse:
+        AddLog(LOG_PRINTER,"ERROR : dsHandleInUse");
+        return mdInvalidCommand;
     case CcasioDOS::dsNoRoom:       return mdNoRoom;
-    case CcasioDOS::dsHandleInvalid:return mdInvalidCommand; //should never happen}
+    case CcasioDOS::dsHandleInvalid:
+        AddLog(LOG_PRINTER,"ERROR : dsHandleInvalid");
+        return mdInvalidCommand; //should never happen}
     case CcasioDOS::dsNoData:       return mdNoData;
     case CcasioDOS::dsIoError:      return mdWriteProtected;
-    default:                        return mdInvalidCommand; break; //should never happen}
+    default:
+        AddLog(LOG_PRINTER,"ERROR : Default");
+        return mdInvalidCommand; break; //should never happen}
   }
 }
 
@@ -457,6 +467,7 @@ BYTE Cmd100::ExecOpenFile(BYTE x) {		// + return the number of data bytes, LSB }
         };
     };
     opstatus = CnvStatus (fdd.DosStatus);
+    AddLog(LOG_PRINTER,tr("ExecOpenFile  count=%1 opstatus=%2").arg(count,2,16,QChar('0')).arg(opstatus,2,16,QChar('0')));
     if (count > 1) opstatus = opstatus | mdFileFound;
     buffer[0] = opstatus;
     bufindex = 0;
@@ -488,7 +499,7 @@ BYTE Cmd100::ExecReadFile(BYTE x) {		// + return the number of data bytes, LSB }
     count++;
     buffer[0] = opstatus;
     bufindex = 0;
-    return  (count & 0x0f);
+    return  (count & 0xff);
 }
 
 
