@@ -12,7 +12,7 @@
 #include "hd61700.h"
 #include "cextension.h"
 #include "Connect.h"
-
+#include "dialoganalog.h"
 
 #define PD_RES 0x10;	// 1=reset, 0=normal_operation
 #define PD_PWR 0x08;	// power control: 1=power_off, 0=power_on
@@ -214,6 +214,14 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
 //    AddLog(LOG_TEMP,tr("Write %1").arg(*d));
     if ( (*d>=0x00C00) && (*d<=0x00C11) )	{
         AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
+        if (*d==0xC04) {AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));}
+        if (*d==0xC03) {
+            if (mem[*d] != data) {
+                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(21);
+                AddLog(LOG_PRINTER,tr("Write 0C03 : %1").arg(data,2,16,QChar('0')));
+            }
+        }
+
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"Write port [%05X] = %02X\n",*d,data);
         return(true);		// RAM area()
     }
@@ -232,6 +240,10 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 
     if ( (*d>=0x0C00) && (*d<=0x0C0F) )	{
 //        mem[*d] = 0xff;
+        if (*d==(0xC03)) {
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(20);
+            AddLog(LOG_PRINTER,tr("Read 0C03 : %1").arg(mem[*d],0,16,QChar('0')));}
+
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
         return(true);		// RAM area()
@@ -459,7 +471,7 @@ bool Cpb2000::Set_Connector(void)
     BYTE x = pdi; //( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
 
 
-    if (!PIN(26)) {
+    if (prev_P2 && (P(3)==0)) {
     BYTE d = Get_8(0x0C04);
     pCONNECTOR->Set_pin(22	,I(0));
     pCONNECTOR->Set_pin(19	,I(1));
@@ -473,10 +485,10 @@ bool Cpb2000::Set_Connector(void)
     pCONNECTOR->Set_pin(25	,P(2));
 //    pCONNECTOR->Set_pin(11	,P(1));
     pCONNECTOR->Set_pin(26	,P(3));
-    pCONNECTOR->Set_pin(12	,P(5));
-    pCONNECTOR->Set_pin(27	,P(3));
+    pCONNECTOR->Set_pin(12	,P(4));
+    pCONNECTOR->Set_pin(27	,P(5));
 
-
+    prev_P2 = P(3);
     return(1);
 }
 
@@ -495,14 +507,14 @@ bool Cpb2000::Get_Connector(void)
 //    if (p==0x55) {
 //        AddLog(LOG_PRINTER,"PB-1000 receive 0x55");
 //    }
-    if (PIN(26)) {
+    if (PIN(25)) {
     Set_8(0x0C03,p);
 }
     PUT_BIT(pdi,2,PIN(25));
 //    PUT_BIT(pdi,1,PIN(11));
     PUT_BIT(pdi,3,PIN(26));
-    PUT_BIT(pdi,5,PIN(12));
-    PUT_BIT(pdi,3,PIN(27));
+    PUT_BIT(pdi,4,PIN(12));
+    PUT_BIT(pdi,5,PIN(27));
 
     return(1);
 }
