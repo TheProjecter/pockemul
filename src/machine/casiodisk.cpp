@@ -12,6 +12,7 @@
 
   CcasioDisk::CcasioDisk(CPObject *parent) : CPObject(parent) {
     secbuf = (char *) malloc(SIZE_SECTOR*sizeof(char));
+    filename = "disk0.bin";
   }
 
   CcasioDisk::~CcasioDisk() {
@@ -20,7 +21,7 @@
 
   bool CcasioDisk::DiskOpen(void) {
       sectors = -1;
-      diskFile.setFileName("disk0.bin");
+      diskFile.setFileName(filename);
       diskFile.open(QIODevice::ReadWrite);
       sectors = diskFile.size() / SIZE_SECTOR;
 

@@ -520,16 +520,18 @@ bool CpcXXXX::run(void)
 	
 	old_state = pTIMER->state;
 
+    Get_Connector();
+    // Read the connectors
+    if (pCONNECTOR) {
+        pCONNECTOR_value = pCONNECTOR->Get_values();
+    }
 
 
-        Get_Connector();
-        // Read the connectors
-        if (pCONNECTOR) {
-            pCONNECTOR_value = pCONNECTOR->Get_values();
-        }
 
 	if(!pCPU->halt && !off)
 	{
+
+
         if (DasmStep)
         {
             DasmLastAdr = pCPU->get_PC();
@@ -596,7 +598,10 @@ bool CpcXXXX::run(void)
 	}
     else pTIMER->state+=1000;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
 
-
+    Set_Connector();		//Write the connectors
+    if (pCONNECTOR) {
+        pCONNECTOR_value = pCONNECTOR->Get_values();
+    }
 
 //	if (DasmStep)		// Stop after 1 step processed (DASM)
 //	{
@@ -605,10 +610,7 @@ bool CpcXXXX::run(void)
 //	}
 
 
-    Set_Connector();		//Write the connectors
-    if (pCONNECTOR) {
-        pCONNECTOR_value = pCONNECTOR->Get_values();
-    }
+
 	return(1);
 }
 
@@ -663,6 +665,7 @@ bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
         xmlOut->writeEndElement();  // memory
     xmlOut->writeEndElement();  // session
 //    SaveExtra(&xw);									// Save all other data  (virtual)
+    return true;
 }
 
 
@@ -753,7 +756,7 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 bool CpcXXXX::LoadConfig(QFile *file)
 {
 	QDataStream in(file);
-    qint8 ioA,ioB,ioC,ioF,romb,ramb,protect,ks;
+    qint8 ioA,ioB,ioC,ioF,romb,ramb,protect;
 		
     in >> ioA >> ioB >> ioC >> ioF >> romb >> ramb >> protect >> Japan;
 	IO_A = ioA;

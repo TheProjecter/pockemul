@@ -97,8 +97,8 @@ private:
 
     CcasioDOS fdd;
 
-    BYTE port,data,sendData;
-    bool send;
+    BYTE port,data;
+    bool sendData;
 
     bool prev_P0;
     bool prev_P1;

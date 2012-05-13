@@ -42,7 +42,7 @@ Cmd100::Cmd100(CPObject *parent):CPObject(parent)
     setDYmm(218);
     setDZmm(46);
 
-
+    port = 0x08;
 
 }
 
@@ -53,6 +53,16 @@ Cmd100::~Cmd100() {
 bool Cmd100::UpdateFinalImage(void) {
     CPObject::UpdateFinalImage();
 
+
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    // POWER LED
+    if (READ_BIT(port,3)==0) {
+//        painter.setPen( Qt::green);
+        painter.fillRect(698,550,18,9,QColor(Qt::green));
+    }
+    painter.end();
     return true;
 
 }
@@ -84,8 +94,7 @@ bool Cmd100::init(void)
     mdOK = 0x00;
 
     data = 0;
-    sendData = 0;
-    send = false;
+    sendData = false;
 
     FddOpen();
     return true;
@@ -99,18 +108,20 @@ void Cmd100::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addSeparator();
 
-    menu.addAction(tr("Define Directory"),this,SLOT(definePath()));
+    menu.addAction(tr("Load Disk"),this,SLOT(definePath()));
 
     menu.exec(event->globalPos () );
 }
 
 void Cmd100::definePath(void){
-    MSG_ERROR("test")
-    QString path = QFileDialog::getExistingDirectory (this, tr("Directory"));
-    if ( path.isNull() == false )
-    {
-        directory.setPath(path);
-    }
+   QString fn = QFileDialog::getSaveFileName(this, tr("Choose a Disk File"),"",
+                                             tr("Disk Images (*.pdk)"),0,QFileDialog::DontConfirmOverwrite);
+   if (!fn.isEmpty()) {
+       FddClose();
+       fdd.filename = fn;
+       QFile::resize(fn,320*1024);
+       FddOpen();
+   }
 }
 
 /*****************************************************/
@@ -126,6 +137,8 @@ bool Cmd100::exit(void)
 
 #define PIN(x)    (pCONNECTOR->Get_pin(x))
 bool Cmd100::Get_Connector(void) {
+
+    if (PIN(12) != READ_BIT(port,3)) update();      // refresh on power ON/OFF
 
     PUT_BIT(port,0,PIN(25));
     PUT_BIT(port,1,PIN(11));
@@ -148,7 +161,7 @@ bool Cmd100::Get_Connector(void) {
 #define PORT(x)  (port << (x))
 bool Cmd100::Set_Connector(void) {
 
-    if (send) {
+    if (sendData) {
     pCONNECTOR->Set_pin(22	,READ_BIT(data,0));
     pCONNECTOR->Set_pin(19	,READ_BIT(data,1));
     pCONNECTOR->Set_pin(9	,READ_BIT(data,2));
@@ -162,7 +175,7 @@ bool Cmd100::Set_Connector(void) {
     SET_PIN(25	,READ_BIT(port,0));
 //    SET_PIN(11	,READ_BIT(port,1));
 //    SET_PIN(26	,READ_BIT(port,2));
-//    SET_PIN(12	,READ_BIT(port,3));
+//    SET_PIN(12	,;
 //    SET_PIN(27	,READ_BIT(port,4));
 
     return true;
@@ -183,20 +196,19 @@ bool Cmd100::run(void)
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
 
-    bool P0_GoDown = ( ( P0 == DOWN ) && (prev_P0 == UP)) ? true:false;
     bool P4_GoDown = ( ( P4 == DOWN ) && (prev_P4 == UP)) ? true:false;
     bool P2_GoDown = ( ( P2 == DOWN ) && (prev_P2 == UP)) ? true:false;
     bool P2_GoUp   = ( ( P2 == UP ) && (prev_P2 == DOWN)) ? true:false;
 
 
     // Port 27 (P4) from 1 to 0 = reset  : reply 0x55
-    if (P4_GoDown){//&& (P2==UP)) {
+    if (P4_GoDown) {
         AddLog(LOG_PRINTER,tr("MD-100 send 0x55"));
         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
         data = 0x55;
         PUT_BIT(port,0,UP);
         FddOpen();
-        send = true;
+        sendData = true;
     }
     else {
 
@@ -206,15 +218,13 @@ bool Cmd100::run(void)
                 AddLog(LOG_PRINTER,tr("[%1] MD-100 receive %2").arg(port,2,16,QChar('0')).arg(data,2,16,QChar('0')));
                 PUT_BIT(port,0,UP);
                 data = FddTransfer(data);
-                send = true;
+                sendData = true;
                 AddLog(LOG_PRINTER,tr("[%1] MD-100 send %2").arg(port,2,16,QChar('0')).arg(data,2,16,QChar('0')));
                 if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
             }
             if ( P2_GoUp) {
-                // Send ACK and
-//                AddLog(LOG_PRINTER,tr("[%1] Send data to PB : %2").arg(port,0,16,QChar('0')).arg(sendData,0,16,QChar('0')));
-//                data = sendData;
-                send = false;
+                // Send ACK
+                sendData = false;
                 PUT_BIT(port,0,DOWN);
                 if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(3);
             }
@@ -222,20 +232,8 @@ bool Cmd100::run(void)
     }
 
 
-    PUT_BIT(port,3,DOWN); //P3 to 0
+//    PUT_BIT(port,3,DOWN); //P3 to 0
 
-
-//    // IF P2 is 1 , then store and compute data , then ACK
-//    if ( P2_GoUp & P4) {
-//        AddLog(LOG_PRINTER,tr("MD-100 receive %1").arg(data,0,16,QChar('0')));
-//        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
-//        port &= 0x01;
-//    }
-
-//    if (P2_GoDown & P4) {
-//        //send data to Pocket
-//        port |=0x01;
-//    }
 
     prev_P0 = P0;
     prev_P1 = P1;

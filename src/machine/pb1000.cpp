@@ -140,7 +140,9 @@ bool Cpb1000::init(void)				// initialize
 }
 
 bool Cpb1000::run() {
-
+    if (off) {
+        pCONNECTOR->Set_pin(12	,1);
+    }
     lcd_on_timer_rate = pHD44352->on_timer_rate;
 CpcXXXX::run();
     if (off && pKEYB->LastKey == K_POW_ON)
@@ -573,27 +575,25 @@ void Cpb1000::endAnimation()
 #define PIN(x)    (pCONNECTOR->Get_pin(x) ? 0x01 : 0x00)
 bool Cpb1000::Set_Connector(void)
 {
-    CHD61700* hd = (CHD61700*)pCPU;
-    BYTE x = pdi;//( hd->Get_PD() & hd->Get_PE()) | (pdi & ~(hd->Get_PE()));
-
+    BYTE x = pdi;
 
     if (prev_P2 && (P(2)==0)) {
-    BYTE d = Get_8(0x0C04);
-    pCONNECTOR->Set_pin(22	,I(0));
-    pCONNECTOR->Set_pin(19	,I(1));
-    pCONNECTOR->Set_pin(9	,I(2));
-    pCONNECTOR->Set_pin(24	,I(3));
-    pCONNECTOR->Set_pin(21	,I(4));
-    pCONNECTOR->Set_pin(8	,I(5));
-    pCONNECTOR->Set_pin(20	,I(6));
-    pCONNECTOR->Set_pin(23	,I(7));
-}
-    pCONNECTOR->Set_pin(25	,P(0));
-    pCONNECTOR->Set_pin(11	,P(1));
-    pCONNECTOR->Set_pin(26	,P(2));
-    pCONNECTOR->Set_pin(12	,P(3));
-    pCONNECTOR->Set_pin(27	,P(4));
+        BYTE d = Get_8(0x0C04);
+        pCONNECTOR->Set_pin(22	,I(0));
+        pCONNECTOR->Set_pin(19	,I(1));
+        pCONNECTOR->Set_pin(9	,I(2));
+        pCONNECTOR->Set_pin(24	,I(3));
+        pCONNECTOR->Set_pin(21	,I(4));
+        pCONNECTOR->Set_pin(8	,I(5));
+        pCONNECTOR->Set_pin(20	,I(6));
+        pCONNECTOR->Set_pin(23	,I(7));
+    }
 
+        pCONNECTOR->Set_pin(25	,P(0));
+        pCONNECTOR->Set_pin(11	,P(1));
+        pCONNECTOR->Set_pin(26	,P(2));
+        pCONNECTOR->Set_pin(12	,P(3));
+        pCONNECTOR->Set_pin(27	,P(4));
 
     prev_P2 = P(2);
     return(1);
@@ -611,12 +611,10 @@ bool Cpb1000::Get_Connector(void)
             (PIN(8) <<5) |
             (PIN(20)<<6) |
             (PIN(23)<<7);
-//    if (p==0x55) {
-//        AddLog(LOG_PRINTER,"PB-1000 receive 0x55");
-//    }
+
     if (PIN(25)) {
-    Set_8(0x0C03,p);
-}
+        Set_8(0x0C03,p);
+    }
     PUT_BIT(pdi,0,PIN(25));
     PUT_BIT(pdi,1,PIN(11));
     PUT_BIT(pdi,2,PIN(26));

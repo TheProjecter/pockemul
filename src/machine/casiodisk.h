@@ -33,7 +33,7 @@ public:
     CcasioDisk(CPObject *parent = 0);
     ~CcasioDisk();
 
-
+    QString filename;
 protected:
     bool SectorWrite(int number);
     bool SectorRead(int number);
