@@ -440,7 +440,8 @@ void MainWindowPockemul::opensession()
                             else
                             if (eltname == "session") {
 //                                AddLog(LOG_MASTER,"OK");
-                                ((CpcXXXX*)locPC)->LoadSession_File(&xml);
+//                                ((CpcXXXX*)locPC)->LoadSession_File(&xml);
+                                locPC->LoadSession_File(&xml);
                                 xml.skipCurrentElement();
                             }
                             else

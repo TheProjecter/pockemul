@@ -109,10 +109,11 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
         xml->writeAttribute("x", QString("%1").arg(PosX));
         xml->writeAttribute("y", QString("%1").arg(PosY));
         xml->writeEndElement(); // position
-            if (dynamic_cast<CpcXXXX *>(this) )
-            {
-                ((CpcXXXX *)this)->SaveSession_File(xml);//Initial_Session_Save();
-            }
+//            if (dynamic_cast<CpcXXXX *>(this) )
+//            {
+//                ((CpcXXXX *)this)->SaveSession_File(xml);
+//            }
+        this->SaveSession_File(xml);
     xml->writeEndElement(); // object
 
     // if power on and (CpcXXXX) class then save session
@@ -540,6 +541,16 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
         }
     }
 
+}
+
+bool CPObject::SaveSession_File(QXmlStreamWriter *xmlOut)
+{
+    return true;
+}
+
+bool CPObject::LoadSession_File(QXmlStreamReader *)
+{
+    return true;
 }
 
 void CPObject::mouseMoveEvent( QMouseEvent * event )

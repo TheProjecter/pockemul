@@ -78,7 +78,6 @@
     <KEY description="MEMO" height="18" left="296" scancode="0x203" top="163" width="29"/>
     <KEY description="OUT" height="19" left="375" scancode="0x204" top="163" width="31"/>
     <KEY description="IN" height="20" left="335" scancode="0x205" top="162" width="31"/>
-    <KEY description="MEMO IN" height="34" left="237" scancode="0x206" top="273" width="36"/>
     <KEY description="F1" height="10" left="81" scancode="0xf6" top="130" width="50"/>
     <KEY description="F2" height="10" left="176" scancode="0xf7" top="132" width="50"/>
     <KEY description="F3" height="10" left="272" scancode="0xf8" top="132" width="50"/>

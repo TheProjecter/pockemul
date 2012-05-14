@@ -59,9 +59,9 @@ bool Cmd100::UpdateFinalImage(void) {
 
     // POWER LED
     if (READ_BIT(port,3)==0) {
-//        painter.setPen( Qt::green);
         painter.fillRect(698,550,18,9,QColor(Qt::green));
     }
+
     painter.end();
     return true;
 
@@ -76,8 +76,6 @@ bool Cmd100::init(void)
     setfrequency( 0);
 
     WatchPoint.add(&pCONNECTOR_value,64,30,this,"Standard 30pins connector");
-//    WatchPoint.add(&pCONNECTOR_Ext_value,64,11,this,"Ext 11pins connector");
-
 
     AddLog(LOG_PRINTER,tr("MD-100 initializing..."));
 
@@ -119,7 +117,11 @@ void Cmd100::definePath(void){
    if (!fn.isEmpty()) {
        FddClose();
        fdd.filename = fn;
-       QFile::resize(fn,320*1024);
+       if (! QFile::resize(fn,320*1024)) {
+           MSG_ERROR("ERROR resize disk image");
+           return;
+       }
+
        FddOpen();
    }
 }
@@ -222,6 +224,7 @@ bool Cmd100::run(void)
                 AddLog(LOG_PRINTER,tr("[%1] MD-100 send %2").arg(port,2,16,QChar('0')).arg(data,2,16,QChar('0')));
                 if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
             }
+            else
             if ( P2_GoUp) {
                 // Send ACK
                 sendData = false;

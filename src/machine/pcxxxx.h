@@ -222,11 +222,11 @@ public:
 
 	void	SaveSession(void);
 	bool	SaveSession_File(QFile *);
-    bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
 
     void	LoadSession(void);
 	bool	LoadSession_File(QFile *);
-    bool	LoadSession_File(QXmlStreamReader *);
+    virtual bool	LoadSession_File(QXmlStreamReader *);
 
 	void	Mem_Load(QFile *file,BYTE s);
     void    Mem_Load(QXmlStreamReader *xmlIn,BYTE s);
