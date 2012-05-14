@@ -66,11 +66,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
                 (int) (89*pLCDC->contrast),
                 (int) (85*pLCDC->contrast));
 
-    //pCPU		= new CHD61700(this);
-    //pTIMER		= new Ctimer(this);
     pKEYB->fn_KeyMap = "pb2000.map";
-    //delete pKEYB;       pKEYB		= new Ckeyb(this,"pb2000.map");
-    //delete pHD44352;    pHD44352    = new CHD44352(":/pb2000/charset.bin",this);
 
     pCONNECTOR->setSnap(QPoint(668,77));
 

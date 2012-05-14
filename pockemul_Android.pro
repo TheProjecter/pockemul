@@ -260,7 +260,8 @@ HEADERS += src/core/Connect.h \
     src/core/launchbuttonwidget.h \
     src/core/tapandholdgesture.h \
     src/machine/pb2000.h \
-    src/machine/md100.h
+    src/machine/md100.h \
+    src/machine/casiodisk.h
 #    src/core/lcc/parser/parser.h
 INCLUDEPATH += . \
     src/core \
@@ -471,7 +472,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/launchbuttonwidget.cpp \
     src/core/tapandholdgesture.cpp \
     src/machine/pb2000.cpp \
-    src/machine/md100.cpp
+    src/machine/md100.cpp \
+    src/machine/casiodisk.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -612,6 +614,8 @@ OTHER_FILES += \
 
 
 #QMAKE_LFLAGS_DEBUG += -pg
+
+
 
 
 
