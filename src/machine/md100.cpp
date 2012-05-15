@@ -106,7 +106,7 @@ void Cmd100::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addSeparator();
 
-    menu.addAction(tr("Load Disk"),this,SLOT(definePath()));
+    menu.addAction(QString("Load Disk ("+fdd.filename+")"),this,SLOT(definePath()));
 
     menu.exec(event->globalPos () );
 }

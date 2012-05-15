@@ -136,6 +136,7 @@ bool Cpb1000::init(void)				// initialize
     WatchPoint.remove(this);
     WatchPoint.add(&pCONNECTOR_value,64,30,this,"30 pins connector",lbl);
 
+
     return true;
 }
 
@@ -152,14 +153,11 @@ CpcXXXX::run();
     }
 
     if (pKEYB->LastKey) {
-//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"NEW KEY\n");
-//        AddLog(LOG_KEYBOARD,tr("Execute Interrupt : %1").arg(pKEYB->LastKey));
-//        DasmStep = true;
         ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
     }
 
 
-
+    return true;
 }
 
 bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
@@ -255,6 +253,8 @@ void Cpb1000::Reset()
 
     CpcXXXX::Reset();
 
+    // Init I/O Port memory
+    memset((char*)&mem[0x1800],0xff,0x0F);
 //    pdi = 0xdc;
 
 }
@@ -322,7 +322,7 @@ void Cpb1000::paintEvent(QPaintEvent *event)
 UINT16 Cpb1000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
-
+//qWarning("getkey");
 //    AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-1000"));
 
     switch (m_kb_matrix & 0x0f) {

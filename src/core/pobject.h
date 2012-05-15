@@ -176,8 +176,8 @@ public:
     QList<Cconnector *> nearConnectors(Cconnector *refConnector,qint8 snaprange);
     void manageStackPos(QList<CPObject *> *);
 
-    bool    SaveSession_File(QXmlStreamWriter *xmlOut);
-    bool	LoadSession_File(QXmlStreamReader *);
+    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+    virtual bool	LoadSession_File(QXmlStreamReader *);
 		
 public:
 

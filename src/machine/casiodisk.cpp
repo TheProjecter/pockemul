@@ -12,7 +12,7 @@
 
   CcasioDisk::CcasioDisk(CPObject *parent) : CPObject(parent) {
     secbuf = (char *) malloc(SIZE_SECTOR*sizeof(char));
-    filename = "disk0.bin";
+    filename = "disk0.pdk";
   }
 
   CcasioDisk::~CcasioDisk() {

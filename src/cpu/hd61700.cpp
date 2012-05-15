@@ -1763,6 +1763,7 @@ void CHD61700::execute_run()
                         UINT8 arg = read_op();
                         UINT8 idx = GET_REG_IDX(op, arg);
                         UINT16 src;
+//                        qWarning("gre");
                         AddLog(LOG_CPU,"gre");
                         if (idx >= 5)
                         {

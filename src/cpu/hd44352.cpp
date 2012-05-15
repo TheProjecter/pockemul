@@ -77,6 +77,7 @@ void CHD44352::Reset()
     info.m_cursor_y = 0;
     info.m_cursor_lcd = 0;
     info.m_contrast = 0;
+    on_timer_rate = 8192;
 }
 
 

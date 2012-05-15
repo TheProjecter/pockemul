@@ -1,4 +1,5 @@
-QMAKE_CXXFLAGS += -fsigned-char -lstdc++
+QMAKE_CXXFLAGS += -fsigned-char
+# -lstdc++
 
 CONFIG += release \
     qt \

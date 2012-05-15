@@ -379,17 +379,17 @@ void MainWindowPockemul::opensession()
     QMap<int,CPObject*> map;
 
     QString fileName = QFileDialog::getOpenFileName(
-                                                                            mainwindow,
-                                                                            tr("Choose a file"),
-                                                                            ".",
-                                                                            tr("PockEmul sessions (*.pml)"));
+                mainwindow,
+                tr("Choose a file"),
+                ".",
+                tr("PockEmul sessions (*.pml)"));
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::warning(mainwindow,tr("PockEmul"),
-                                                            tr("Cannot read file %1:\n%2.")
-                                                            .arg(file.fileName())
-                                                            .arg(file.errorString()));
+        QMessageBox::warning(mainwindow,tr("PockEmul"),
+                             tr("Cannot read file %1:\n%2.")
+                             .arg(file.fileName())
+                             .arg(file.errorString()));
             return ;
     }
 
@@ -550,6 +550,8 @@ void MainWindowPockemul::saveassession()
     }
 
     saveAll = ASK;
+
+    delete xml;
 }
 
 
@@ -717,13 +719,13 @@ void MainWindowPockemul::updateFrameTimer()
 
                 }
 
-                bool disp_on = true;
+//                bool disp_on = true;
 #if 1
                 if (CurrentpPC->pLCDC)
                 {
                     if (dynamic_cast<CpcXXXX *>(CurrentpPC) )
                     {
-                        CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
+//                        CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
                         //if (tmpPC->getDisp_on())
                         {
                             CurrentpPC->pLCDC->disp();

@@ -155,6 +155,9 @@ void Cpb2000::Reset()
 
     CpcXXXX::Reset();
 
+    // Init I/O Port memory
+    memset((char*)&mem[0x0c00],0x00,0x0F);
+
     pdi = (pdi & 0x03) | 0xf8;
 
 }
@@ -171,9 +174,10 @@ CpcXXXX::run();
         TurnON();
         pKEYB->LastKey = 0;
     }
-
-
-
+//    if (pKEYB->LastKey) {
+//        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
+//    }
+    return true;
 }
 
 void Cpb2000::MemBank(DWORD *d) {
@@ -221,6 +225,14 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
             }
         }
 
+        if (*d==0xC05) {
+            qWarning("Write 0C05 : %02X",data);
+            AddLog(LOG_PRINTER,tr("Write 0C05 : %1").arg(data,0,16,QChar('0')));
+        }
+        if (*d==0xC06) {
+            qWarning("Write 0C06 : %02X",data);
+            AddLog(LOG_PRINTER,tr("Write 0C05 : %1").arg(data,0,16,QChar('0')));
+        }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"Write port [%05X] = %02X\n",*d,data);
         return(true);		// RAM area()
     }
@@ -258,7 +270,7 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 UINT16 Cpb2000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;
-
+//qWarning("getkey");
 //AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-2000C"));
     switch (m_kb_matrix & 0x0f) {
         case 0: return 0;
@@ -269,6 +281,7 @@ UINT16 Cpb2000::getKey(void) {
     }
     if ((pKEYB->LastKey) )
     {
+
         if (ko >= 0xfff) AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
 
 //AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
@@ -373,7 +386,7 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY('6'))			data|=0x02;
             if (KEY('+'))			data|=0x04;     // OK
             if (KEY('3'))			data|=0x08;
-            if (KEY(K_RET))			data|=0x10;
+            if (KEY(K_RET))			{data|=0x10;qWarning("RET");}
             if (KEY('.'))			data|=0x20;
 
             if (KEY('9'))			data|=0x80;
@@ -387,7 +400,7 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY(K_BS))			data|=0x08;
 
             if (KEY('*'))			data|=0x80;
-            if (KEY(K_MENU))		{data|=0x4000;AddLog(LOG_KEYBOARD,"MENU PRESSED");}
+            if (KEY(K_MENU))		data|=0x4000;
             if (KEY(K_DEL))			data|=0x8000;
         }
 

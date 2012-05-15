@@ -48,7 +48,7 @@ public:
     bool flipping;
     QImage *back;
 
-    BYTE pdi,OptionCode,FddWrData, FddRdData, OldPort;
+    BYTE pdi;
     bool prev_P2;
 
 
