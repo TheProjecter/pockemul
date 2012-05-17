@@ -127,6 +127,8 @@ void Cmd100::definePath(void){
    }
 }
 
+#define TIMER_ACK 9
+#define TIMER_BUSY 8
 void Cmd100::printerControlPort(BYTE value)
 {
 //    bit 0 - state of the STROBE output
@@ -135,6 +137,16 @@ void Cmd100::printerControlPort(BYTE value)
     AddLog(LOG_PRINTER,tr("PRINTER controlPort= %1").arg(value,2,16,QChar('0')));
     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
 
+    if (!(value & 0x01)) {  // Strobe to 0
+        printerBUSY = true;
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort BUSY ON"));
+        pTIMER->resetTimer(TIMER_BUSY);
+    }
+    if (value & 0x04) {
+        printerACK = false;
+//        pTIMER->resetTimer(9);
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort RESET ACK"));
+    }
 }
 
 BYTE Cmd100::printerStatusPort()
@@ -143,14 +155,39 @@ BYTE Cmd100::printerStatusPort()
 //    bit 1 - state of the FAULT input
 //    bit 2 - set by a pulse on the ACK input, reset by writing logical 1 to the bit 2 of register 110
 
+
     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(9);
-    return 4;
+    BYTE ret = 0;
+
+    if (printerBUSY && (pTIMER->usElapsedId(TIMER_BUSY) > 3000)) {
+
+        AddLog(LOG_PRINTER,tr("PRINTER printerStatusPort ACK ON"));
+        printerACK = true;
+        pTIMER->resetTimer(TIMER_ACK);
+        pTIMER->resetTimer(TIMER_BUSY);
+    }
+    if (printerACK && (pTIMER->nsElapsedId(TIMER_ACK) > 500)) {
+        AddLog(LOG_PRINTER,tr("PRINTER printerStatusPort ACK OFF, BUSY OFF"));
+        printerACK = false;
+        printerBUSY = false;
+    }
+
+    if (printerACK) ret |= 0x04;
+    if (printerBUSY) ret |= 0x01;
+    if (ret != prev_printerStatusPort) {
+        AddLog(LOG_PRINTER,tr("PRINTER return status PORT : %1").arg(ret,2,16,QChar('0')));
+        prev_printerStatusPort = ret;
+    }
+
+    return (ret & 0x07);
 }
 
 void Cmd100::printerDataPort(BYTE value)
 {
     AddLog(LOG_PRINTER,tr("PRINTER data : %1").arg(value,2,16,QChar('0')));
     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(7);
+//    printerACK = true;
+//    pTIMER->resetTimer(9);
 }
 
 /*****************************************************/
@@ -247,53 +284,6 @@ bool Cmd100::run(void)
     bool P2_GoUp   = ( ( P2 == UP ) && (prev_P2 == DOWN)) ? true:false;
 
 
-
-#if 0
-    // Port 27 (P4) from 1 to 0 = reset  : reply 0x55
-    if ((P4==UP)&&(P2==UP)) {
-//    if (P4==UP) {
-        AddLog(LOG_PRINTER,tr("MD-100 send 0x55"));
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
-        out_adrBus= 0x03;
-        data = 0x55;
-        PUT_BIT(port,0,UP);
-        FddOpen();
-        sendData = true;
-    }
-    else if (P4==DOWN) {
-//        data = 0;
-        switch (adrBus) {
-        case 0x04:
-            if (P2==UP) {        // Write Mode
-                AddLog(LOG_PRINTER,tr("[%1] MD-100 receive %2").arg(prev_adrBus,2,16,QChar('0')).arg(data,2,16,QChar('0')));
-                PUT_BIT(port,0,DOWN);
-
-                fddcmd = data;
-                //data = FddTransfer(data);
-                sendData = false;
-                AddLog(LOG_PRINTER,tr("[%1] MD-100 send %2").arg(prev_adrBus,2,16,QChar('0')).arg(data,2,16,QChar('0')));
-                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
-            }
-//            else if ((P2==UP)&(P0==DOWN)) {  // read printer status port
-//                data = 0x03;
-//                sendData = true;
-//                PUT_BIT(port,0,UP);
-//                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(4);
-//            }
-            break;
-        case 0x03:
-            if ( P2==DOWN) {                  // Read Mode // Send ACK
-                sendData = true;
-                data = FddTransfer(fddcmd);
-                PUT_BIT(port,0,UP);
-                AddLog(LOG_PRINTER,tr("[%1] MD-100 send ACK").arg(prev_adrBus,2,16,QChar('0')));
-                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(3);
-            }
-            break;
-        default: break;
-        }
-    }
-#else
     // Port 27 (P4) from 1 to 0 = reset  : reply 0x55
     if ((P4_GoDown)&&(P2==UP)) {
 //    if (P4==UP) {
@@ -340,53 +330,8 @@ bool Cmd100::run(void)
             data = printerStatusPort();
 
         }
-//        else if ((prev_adrBus==0x04) && (adrBus==0) && (P2==UP)) {
-//            out_adrBus = 0x04;
-//            data = 0x00;
-//            sendData = true;
-////            PUT_BIT(port,0,UP);
-//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(5);
-//        }
-    }
-#endif
-
-
-
-
-
-#if 0
-    // Port 27 (P4) from 1 to 0 = reset  : reply 0x55
-    if (P4_GoDown) {
-        AddLog(LOG_PRINTER,tr("MD-100 send 0x55"));
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
-        data = 0x55;
-        PUT_BIT(port,0,UP);
-        FddOpen();
-        sendData = true;
-    }
-    else {
-
-        if ( (P4==DOWN) ) {     // normal Operation
-            if ( P2_GoDown) {
-                // Send ACK and
-                AddLog(LOG_PRINTER,tr("[%1] MD-100 receive %2").arg(port,2,16,QChar('0')).arg(data,2,16,QChar('0')));
-                PUT_BIT(port,0,UP);
-                data = FddTransfer(data);
-                sendData = true;
-                AddLog(LOG_PRINTER,tr("[%1] MD-100 send %2").arg(port,2,16,QChar('0')).arg(data,2,16,QChar('0')));
-                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
-            }
-            else
-            if ( P2_GoUp) {
-                // Send ACK
-                sendData = false;
-                PUT_BIT(port,0,DOWN);
-                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(3);
-            }
-        }
     }
 
-#endif
 //    PUT_BIT(port,3,DOWN); //P3 to 0
 
 

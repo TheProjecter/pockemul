@@ -112,6 +112,10 @@ private:
     void printerControlPort(BYTE);
     BYTE printerStatusPort();
     void printerDataPort(BYTE);
+
+    bool printerACK,printerBUSY,printerSTROBE;
+
+    BYTE prev_printerStatusPort;
 };
 
 

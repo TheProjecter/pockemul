@@ -54,9 +54,11 @@ public:
 	void SetCPUspeed(float);
     int     msElapsed(qint64 stateRef);
     qint64  usElapsed(qint64 stateRef);
+    qint64  nsElapsed(qint64 stateRef);
     qint64  stElapsedId(int id);
     int     msElapsedId(int id);
     qint64  usElapsedId(int id);
+    qint64  nsElapsedId(int id);
 
     bool    resetTimer(int);
     qint64  currentState(void);

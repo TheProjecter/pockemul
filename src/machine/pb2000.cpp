@@ -242,7 +242,7 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
         }
         if (*d==0xC06) {
             qWarning("[%02X] Write 0C06 : %02X",pdi,data);
-            AddLog(LOG_PRINTER,tr("Write 0C05 : %1").arg(data,0,16,QChar('0')));
+            AddLog(LOG_PRINTER,tr("Write 0C06 : %1").arg(data,0,16,QChar('0')));
         }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"Write port [%05X] = %02X\n",*d,data);
         return(true);		// RAM area()
@@ -264,8 +264,13 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 //        mem[*d] = 0xff;
         if (*d==(0xC03)) {
             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(20);
-            AddLog(LOG_PRINTER,tr("Read 0C03 : %1").arg(mem[*d],0,16,QChar('0')));}
-
+            AddLog(LOG_PRINTER,tr("Read 0C03 : %1").arg(mem[*d],0,16,QChar('0')));
+        }
+        if (*d==(0xC04)) {
+            writeIO=true;
+            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(22);
+            AddLog(LOG_PRINTER,tr("Read 0C04 : %1").arg(mem[*d],0,16,QChar('0')));
+        }
         AddLog(LOG_TEMP,tr("Read Port:%1").arg(*d&7));
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE IO [%04X]\n",*d);
         return(true);		// RAM area()
@@ -502,7 +507,11 @@ bool Cpb2000::Set_Connector(void)
 //    if (writeIO)
     {
         writeIO = false;
-        BYTE d = Get_8(0x0C00|adrBus);
+        DWORD adr = (0xC00 | adrBus);
+        MemBank(&adr);
+        BYTE d=mem[adr];
+//        BYTE d = Get_8(0x0C00|adrBus);
+
         pCONNECTOR->Set_pin(22	,I(0));
         pCONNECTOR->Set_pin(19	,I(1));
         pCONNECTOR->Set_pin(9	,I(2));

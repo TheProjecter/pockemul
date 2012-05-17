@@ -79,7 +79,11 @@ qint64 Ctimer::usElapsedId(int id) {
     qint64 r = (state - timerSate[id]) * 1000000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
+qint64 Ctimer::nsElapsedId(int id) {
 
+    qint64 r = (state - timerSate[id]) * 1000000000L / (CPUSpeed *pPC->getfrequency());
+    return r;
+}
 int Ctimer::msElapsed(qint64 stateRef) {
 
     qint64 r = (state - stateRef) * 1000L / (CPUSpeed *pPC->getfrequency());
@@ -88,6 +92,11 @@ int Ctimer::msElapsed(qint64 stateRef) {
 qint64 Ctimer::usElapsed(qint64 stateRef) {
 
     qint64 r = (state - stateRef) * 1000000L / (CPUSpeed *pPC->getfrequency());
+    return r;
+}
+qint64 Ctimer::nsElapsed(qint64 stateRef) {
+
+    qint64 r = (state - stateRef) * 1000000000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
 // return TP index
