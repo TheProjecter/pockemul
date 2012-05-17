@@ -181,6 +181,11 @@ CpcXXXX::run();
 }
 
 void Cpb2000::MemBank(DWORD *d) {
+    if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
+        adrBus = *d;
+    }
+//    else adrBus = 0;
+
     if ((*d >= 0x00000)&& (*d<0x00C00)) {
         *d |= 0x20000;
         return;
@@ -216,6 +221,9 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
     MemBank(d);
 //    AddLog(LOG_TEMP,tr("Write %1").arg(*d));
     if ( (*d>=0x00C00) && (*d<=0x00C11) )	{
+        if ( (*d>=0x00C00) && (*d<=0x00C0F) ) {
+            if (*d != 0xC04) writeIO = true;
+        }
         AddLog(LOG_TEMP,tr("Write Port [%1] = %2").arg(*d&7).arg(data,2,16,QChar('0')));
         if (*d==0xC04) {AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));}
         if (*d==0xC03) {
@@ -224,13 +232,16 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
                 AddLog(LOG_PRINTER,tr("Write 0C03 : %1").arg(data,2,16,QChar('0')));
             }
         }
-
+        if ((*d==0xC04) && (mem[*d]!=data)){
+            qWarning("[%02X] Write 0C04 : %02X",pdi,data);
+            AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));
+        }
         if (*d==0xC05) {
-            qWarning("Write 0C05 : %02X",data);
+            qWarning("[%02X] Write 0C05 : %02X",pdi,data);
             AddLog(LOG_PRINTER,tr("Write 0C05 : %1").arg(data,0,16,QChar('0')));
         }
         if (*d==0xC06) {
-            qWarning("Write 0C06 : %02X",data);
+            qWarning("[%02X] Write 0C06 : %02X",pdi,data);
             AddLog(LOG_PRINTER,tr("Write 0C05 : %1").arg(data,0,16,QChar('0')));
         }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"Write port [%05X] = %02X\n",*d,data);
@@ -479,12 +490,19 @@ bool Cpb2000::SaveConfig(QXmlStreamWriter *xmlOut)
 #define PIN(x)    pCONNECTOR->Get_pin(x)
 bool Cpb2000::Set_Connector(void)
 {
+    pCONNECTOR->Set_pin(4	,READ_BIT(adrBus,0));
+    pCONNECTOR->Set_pin(18	,READ_BIT(adrBus,1));
+    pCONNECTOR->Set_pin(6	,READ_BIT(adrBus,2));
+    pCONNECTOR->Set_pin(3	,READ_BIT(adrBus,3));
 
     BYTE x = pdi;
 
 
-    if (prev_P2 && (P(3)==0)) {
-        BYTE d = Get_8(0x0C04);
+    if ((prev_P2 && (P(3)==0)) || writeIO)
+//    if (writeIO)
+    {
+        writeIO = false;
+        BYTE d = Get_8(0x0C00|adrBus);
         pCONNECTOR->Set_pin(22	,I(0));
         pCONNECTOR->Set_pin(19	,I(1));
         pCONNECTOR->Set_pin(9	,I(2));
@@ -518,8 +536,16 @@ bool Cpb2000::Get_Connector(void)
             (PIN(20)<<6) |
             (PIN(23)<<7);
 
-    if (PIN(25)) {
-        Set_8(0x0C03,p);
+    if (PIN(25))
+    {
+        BYTE recv_adrBus = PIN(4) |
+                (PIN(18)<<1) |
+                (PIN( 6)<<2) |
+                (PIN( 3)<<3);
+        DWORD adr = (0xC00 | recv_adrBus);
+        MemBank(&adr);
+        mem[adr] = p;
+//        Set_8(0x0C00 | recv_adrBus,p);
     }
     PUT_BIT(pdi,2,PIN(25));
 //    PUT_BIT(pdi,1,PIN(11));

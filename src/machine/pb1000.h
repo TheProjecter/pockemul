@@ -43,6 +43,7 @@ public:
     virtual UINT8 lcdDataRead();
     virtual void lcdDataWrite(UINT8 data);
     virtual void lcdControlWrite(UINT8 data);
+    virtual void MemBank(DWORD *d);
 
 
     bool flipping;
@@ -67,6 +68,8 @@ public:
     qreal m_zoom;
 
     qint64 lcd_on_timer_rate;
+    qint64 adrBus;
+    bool writeIO;
 
 public slots:
     void endAnimation(void);

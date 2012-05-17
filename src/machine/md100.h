@@ -105,6 +105,13 @@ private:
     bool prev_P2;
     bool prev_P3;
     bool prev_P4;
+
+    qint64 adrBus,prev_adrBus,out_adrBus;
+    int fddcmd;
+
+    void printerControlPort(BYTE);
+    BYTE printerStatusPort();
+    void printerDataPort(BYTE);
 };
 
 
