@@ -31,7 +31,8 @@ Cmd100::Cmd100(CPObject *parent):CPObject(parent)
 
 
     pCONNECTOR	   = new Cconnector(this,30,0,Cconnector::Casio_30,"Connector 30 pins",true,QPoint(666,540));	publish(pCONNECTOR);
-//    pCONNECTOR_Ext = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins Ext.",false,QPoint(6,295));	publish(pCONNECTOR_Ext);
+    pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Centronic 36 pins",false,QPoint(417,13)); publish(pCENTCONNECTOR);
+    pSIOCONNECTOR  = new Cconnector(this,9,2,Cconnector::DB25,"Serial 25 pins",false,QPoint(517,13)); publish(pSIOCONNECTOR);
 
     pTIMER		= new Ctimer(this);
 
@@ -49,6 +50,8 @@ Cmd100::Cmd100(CPObject *parent):CPObject(parent)
 
 Cmd100::~Cmd100() {
     delete pCONNECTOR;
+    delete pCENTCONNECTOR;
+    delete pSIOCONNECTOR;
 }
 
 bool Cmd100::UpdateFinalImage(void) {
@@ -76,7 +79,44 @@ bool Cmd100::init(void)
 
     setfrequency( 0);
 
-    WatchPoint.add(&pCONNECTOR_value,64,30,this,"Standard 30pins connector");
+    QHash<int,QString> lbl;
+    lbl[ 4]="A0";
+    lbl[18]="A1";
+    lbl[ 6]="A2";
+    lbl[ 3]="A3";
+
+    lbl[22]="I00";
+    lbl[19]="I01";
+    lbl[ 9]="I02";
+    lbl[24]="I03";
+    lbl[21]="I04";
+    lbl[ 8]="I05";
+    lbl[20]="I06";
+    lbl[23]="I07";
+
+    lbl[25]="P0";
+    lbl[11]="P1";
+    lbl[26]="P2";
+    lbl[12]="P3";
+    lbl[27]="P4";
+    WatchPoint.add(&pCONNECTOR_value,64,30,this,"Standard 30pins connector",lbl);
+
+    lbl.clear();
+    lbl[1] = "STROBE";
+    lbl[2] = "D1";
+    lbl[3] = "D2";
+    lbl[4] = "D3";
+    lbl[5] = "D4";
+    lbl[6] = "D5";
+    lbl[7] = "D6";
+    lbl[8] = "D7";
+    lbl[9] = "D8";
+    lbl[10] = "ACK";
+    lbl[11] = "BUSY";
+    lbl[16] = "INIT";
+    WatchPoint.add(&pCENTCONNECTOR_value,64,36,this,"Centronic 36pins connector",lbl);
+
+    WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,"Serial 25pins connector");
 
     AddLog(LOG_PRINTER,tr("MD-100 initializing..."));
 
@@ -227,8 +267,54 @@ bool Cmd100::exit(void)
     return true;
 }
 
-#define PIN(x)    (pCONNECTOR->Get_pin(x))
 bool Cmd100::Get_Connector(void) {
+    Get_MainConnector();
+    Get_CentConnector();
+    Get_SIOConnector();
+
+    return true;
+}
+bool Cmd100::Set_Connector(void) {
+    Set_SIOConnector();
+    Set_CentConnecor();
+    Set_MainConnector();
+
+    return true;
+}
+
+void Cmd100::Get_CentConnector(void) {
+
+    printerACK = pCENTCONNECTOR->Get_pin(10);
+    printerBUSY = pCENTCONNECTOR->Get_pin(11);
+}
+
+void Cmd100::Set_CentConnecor(void) {
+
+    pCENTCONNECTOR->Set_pin((1) ,printerSTROBE);
+
+    pCENTCONNECTOR->Set_pin(2	,READ_BIT(printerDATA,0));
+    pCENTCONNECTOR->Set_pin(3	,READ_BIT(printerDATA,1));
+    pCENTCONNECTOR->Set_pin(4	,READ_BIT(printerDATA,2));
+    pCENTCONNECTOR->Set_pin(5	,READ_BIT(printerDATA,3));
+    pCENTCONNECTOR->Set_pin(6	,READ_BIT(printerDATA,4));
+    pCENTCONNECTOR->Set_pin(7	,READ_BIT(printerDATA,5));
+    pCENTCONNECTOR->Set_pin(8	,READ_BIT(printerDATA,6));
+    pCENTCONNECTOR->Set_pin(9	,READ_BIT(printerDATA,7));
+
+    pCENTCONNECTOR->Set_pin(16	,printerINIT);
+
+}
+
+void Cmd100::Get_SIOConnector(void) {
+
+}
+
+void Cmd100::Set_SIOConnector(void) {
+
+}
+
+#define PIN(x)    (pCONNECTOR->Get_pin(x))
+bool Cmd100::Get_MainConnector(void) {
 
     // get adress bus
     prev_adrBus = adrBus;
@@ -259,10 +345,7 @@ bool Cmd100::Get_Connector(void) {
 }
 
 #define PORT(x)  (port << (x))
-bool Cmd100::Set_Connector(void) {
-
-
-
+bool Cmd100::Set_MainConnector(void) {
 
     if (sendData) {
         // Set adress bud
@@ -304,6 +387,8 @@ bool Cmd100::run(void)
     Get_Connector();
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
+    pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
     bool P4_GoDown = ( ( P4 == DOWN ) && (prev_P4 == UP)) ? true:false;
     bool P2_GoDown = ( ( P2 == DOWN ) && (prev_P2 == UP)) ? true:false;
@@ -370,6 +455,8 @@ bool Cmd100::run(void)
 
     Set_Connector();
     pCONNECTOR_value = pCONNECTOR->Get_values();
+    pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
     return true;
 }

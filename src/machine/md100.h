@@ -31,7 +31,8 @@ public:
 
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
-
+    Cconnector	*pCENTCONNECTOR;	qint64 pCENTCONNECTOR_value;
+    Cconnector	*pSIOCONNECTOR;     qint64 pSIOCONNECTOR_value;
 
 
 
@@ -66,11 +67,20 @@ public:
     BYTE CnvStatus(CcasioDOS::TDosStatusCode x);
 
     BYTE FddTransfer(BYTE DataIn);
+
+
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void definePath(void);
 
 private:
+    bool Get_MainConnector(void);
+    bool Set_MainConnector(void);
+    void Get_CentConnector(void);
+    void Set_CentConnecor(void);
+    void Get_SIOConnector(void);
+    void Set_SIOConnector(void);
+
     QDir    directory;
     typedef BYTE (Cmd100::* funcPtr)(BYTE);
     static const funcPtr cmdtab[55];
