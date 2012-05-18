@@ -137,16 +137,38 @@ void Cmd100::printerControlPort(BYTE value)
     AddLog(LOG_PRINTER,tr("PRINTER controlPort= %1").arg(value,2,16,QChar('0')));
     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
 
-    if (!(value & 0x01)) {  // Strobe to 0
+    printerSTROBE = (value & 0x01)?true:false;
+    printerINIT = (value & 0x02)?true:false;
+    if (printerSTROBE) {
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort STROBE = 1"));
+    }
+    else {
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort STROBE = 0"));
+    }
+    if (printerSTROBE & !prev_printerSTROBE) {  // Strobe from 0 to 1
         printerBUSY = true;
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort STROBE 0 to 1"));
         AddLog(LOG_PRINTER,tr("PRINTER controlPort BUSY ON"));
         pTIMER->resetTimer(TIMER_BUSY);
+        AddLog(LOG_SIMULATOR,tr("DATA [%1] = %2").arg(printerDATA,2,16,QChar('0')).arg(QChar(printerDATA)));
+    }
+
+
+    if (printerINIT) {
+
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort INIT = 1"));
+    }
+    else {
+        AddLog(LOG_PRINTER,tr("PRINTER controlPort INIT = 0"));
     }
     if (value & 0x04) {
         printerACK = false;
 //        pTIMER->resetTimer(9);
         AddLog(LOG_PRINTER,tr("PRINTER controlPort RESET ACK"));
     }
+
+    prev_printerSTROBE = printerSTROBE;
+    prev_printerINIT = printerINIT;
 }
 
 BYTE Cmd100::printerStatusPort()
@@ -162,6 +184,7 @@ BYTE Cmd100::printerStatusPort()
     if (printerBUSY && (pTIMER->usElapsedId(TIMER_BUSY) > 3000)) {
 
         AddLog(LOG_PRINTER,tr("PRINTER printerStatusPort ACK ON"));
+
         printerACK = true;
         pTIMER->resetTimer(TIMER_ACK);
         pTIMER->resetTimer(TIMER_BUSY);
@@ -172,8 +195,10 @@ BYTE Cmd100::printerStatusPort()
         printerBUSY = false;
     }
 
-    if (printerACK) ret |= 0x04;
     if (printerBUSY) ret |= 0x01;
+    ret |= 0x02;        // FAULT to 1
+    if (!printerACK) ret |= 0x04;
+
     if (ret != prev_printerStatusPort) {
         AddLog(LOG_PRINTER,tr("PRINTER return status PORT : %1").arg(ret,2,16,QChar('0')));
         prev_printerStatusPort = ret;
@@ -184,10 +209,11 @@ BYTE Cmd100::printerStatusPort()
 
 void Cmd100::printerDataPort(BYTE value)
 {
-    AddLog(LOG_PRINTER,tr("PRINTER data : %1").arg(value,2,16,QChar('0')));
-    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(7);
-//    printerACK = true;
-//    pTIMER->resetTimer(9);
+    if (value != 0xff) {
+        AddLog(LOG_PRINTER,tr("PRINTER data : %1").arg(value,2,16,QChar('0')));
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(7);
+        printerDATA = value;
+    }
 }
 
 /*****************************************************/
@@ -320,7 +346,8 @@ bool Cmd100::run(void)
         else if (adrBus==0x05) {
             printerDataPort(data);
         }
-        else if ((adrBus==0x06)&&(P2==UP)) {
+        else if ((adrBus==0x06))//&&(P2==UP))
+        {
             printerControlPort(data);
         }
         else if (adrBus==0x04) {
