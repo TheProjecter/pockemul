@@ -169,7 +169,7 @@ void Cpb1000::MemBank(DWORD *d) {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
         adrBus = *d;
     }
-    else adrBus = 0;
+//    else adrBus = 0;
 
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
         *d+=0xC00;
@@ -182,6 +182,9 @@ bool Cpb1000::Chk_Adr(DWORD *d, DWORD data)
     MemBank(d);
 
     if ( (*d>=0x00C00+0xc00) && (*d<=0x00C0F+0xc00) )	{
+
+        if (*d != 0xC04) writeIO = true;
+
         if (*d==(0xC04+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C04 : %1").arg(data,0,16,QChar('0')));}
         if (*d==(0xC00+0xc00)) {AddLog(LOG_PRINTER,tr("Write 0C00 : %1").arg(data,0,16,QChar('0')));}
         if (*d==(0xC03+0xc00)) {
@@ -600,9 +603,15 @@ bool Cpb1000::Set_Connector(void)
 
     BYTE x = pdi;
 
-    if (prev_P2 && (P(2)==0)) {
+    if ((prev_P2 && (P(2)==0)) || writeIO)
+//    if (writeIO)
+    {
+        writeIO = false;
+        DWORD adr = (0xC00 | adrBus);
+        MemBank(&adr);
+        BYTE d=mem[adr];
+//        BYTE d = Get_8(0x0C00|adrBus);
 
-        BYTE d = Get_8(0x0C04);
         pCONNECTOR->Set_pin(22	,I(0));
         pCONNECTOR->Set_pin(19	,I(1));
         pCONNECTOR->Set_pin(9	,I(2));
@@ -641,7 +650,10 @@ bool Cpb1000::Get_Connector(void)
                 (PIN(18)<<1) |
                 (PIN( 6)<<2) |
                 (PIN( 3)<<3);
-        Set_8(0x0C00|recv_adrBus,p);
+        DWORD adr = (0xC00 | recv_adrBus);
+        MemBank(&adr);
+        mem[adr] = p;
+//        Set_8(0x0C00 | recv_adrBus,p);
     }
     PUT_BIT(pdi,0,PIN(25));
     PUT_BIT(pdi,1,PIN(11));
