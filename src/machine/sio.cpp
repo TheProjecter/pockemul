@@ -68,6 +68,20 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,9,this,pSIOCONNECTOR->Desc);
                                 break;
+    case Cconnector::DB25  :    signalMap.clear();
+                                signalMap[S_SD] = 2;
+                                signalMap[S_RD] = 3;
+                                signalMap[S_RS] = 4;
+                                signalMap[S_CS] = 5;
+                                signalMap[S_CD] = 8;
+                                signalMap[S_RR] = 11;
+                                signalMap[S_ER] = 14;
+                                pSIOCONNECTOR->Desc = "DB25 Serial Connector";
+                                pSIOCONNECTOR->setNbpins(25);
+                                pSIOCONNECTOR->setType(Cconnector::DB25);
+                                WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
+                                WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,pSIOCONNECTOR->Desc);
+                                break;
     default: break;
     }
 }

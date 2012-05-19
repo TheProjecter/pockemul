@@ -39,7 +39,7 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
     BackGroundFname	= ":/EXT/ext/ce-150.jpg";
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce515p"));
-    Paper_X = 100;  Paper_DX = 320;
+    Paper_X = 100;  Paper_DX = 500;
     Paper_Y = 100;
     //PaperWidgetRect = QRect(80,46,167,170);
     setDX(960);//Pc_DX	= 960;
@@ -270,8 +270,8 @@ bool Cce515p::init(void)
     if(pTIMER)	pTIMER->init();
 
     // Create CE-150 Paper Image
-    ce515pbuf	= new QImage(QSize(500, 3000),QImage::Format_ARGB32);
-    ce515pdisplay= new QImage(QSize(500, 567),QImage::Format_ARGB32);
+    ce515pbuf	= new QImage(QSize(Paper_DX, 3000),QImage::Format_ARGB32);
+    ce515pdisplay= new QImage(QSize(Paper_DX, 567),QImage::Format_ARGB32);
     ce515ppen	= new QImage(":/EXT/ext/ce-150pen.png");
     // Fill it blank
     clearPaper();

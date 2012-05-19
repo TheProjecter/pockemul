@@ -39,9 +39,10 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     setDX(1229);//Pc_DX	= 895;
     setDY(467);//Pc_DY	= 615;
 
-    setPaperPos(QRect(155,46,400,300));
+    setPaperPos(QRect(155,46,800,300));
 
     printerACK = false;
+    Paper_DX = 1000;
 }
 
 Cfp100::~Cfp100() {

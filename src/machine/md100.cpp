@@ -117,7 +117,17 @@ bool Cmd100::init(void)
     lbl[32]= "ERROR";
     WatchPoint.add(&pCENTCONNECTOR_value,64,36,this,"Centronic 36pins connector",lbl);
 
-    WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,"Serial 25pins connector");
+    lbl.clear();
+    lbl[1] = "GND";
+    lbl[2] = "TXD";
+    lbl[3] = "RXD";
+    lbl[4] = "RTS";
+    lbl[5] = "CTS";
+    lbl[6] = "DSR";
+    lbl[7] = "GND";
+    lbl[8] = "DCD";
+    lbl[20]= "DTR";
+    WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,"Serial 25pins connector",lbl);
 
     AddLog(LOG_PRINTER,tr("MD-100 initializing..."));
 
@@ -446,7 +456,63 @@ bool Cmd100::run(void)
             sendData = true;
             out_adrBus = 0x04;
             data = printerStatusPort();
+        }
+        else if (adrBus == 0x00) {
 
+            // READ
+//            serial port status register
+//            bit 0 - set when TX buffer full, cleared after the byte has been transmitted
+//            bit 1 - set when RX buffer full, cleared after reading the RX data register 010
+//            bit 2 - state of the CTS input
+//            bit 3 - state of the DSR input
+//            bit 4 - state of the DCD input
+
+
+
+            // WRITE
+//            serial port control register
+//            bit 0 - MT/RS232C
+//            bit 1 - Odd/Even parity
+//            bit 2 - parity OFF/ON
+//            bit 3 - 7/8 data length
+//            bit 4 - 1/2 stop bit
+//            bits 5..7 - baud rate
+        }
+        else if (adrBus == 0x01) {
+            //READ
+//            serial port status register
+//            bit 0 - set when RX parity error
+//            bit 1 - cleared when RX framing or overrun error
+//            bit 3 - state of the SW0 input
+//            bit 4 - state of the SW1 input
+//            bit 5 - state of the SW2 input
+
+
+
+
+            //Write
+//            serial port control register
+//            bit 0 - transmitter enable
+//            bit 1 - receiver enable
+//            bit 2 - state of the RTS output
+//            bit 3 - state of the DTR output
+
+        }
+        else if ( (adrBus == 0x02) && (prev_adrBus != 0x02) ) {
+            // READ
+//            serial port receive data register
+            sendData = true;
+            out_adrBus = 0x02;
+            data = SIORecvData();
+            AddLog(LOG_SIMULATOR,tr("SIO Data received:[%1]=%2").arg(data,2,16,QChar('0')).arg(QChar(data)));
+
+            // WRITE
+//            serial port control register
+        }
+        else if ( (adrBus == 0x03) && (prev_adrBus != 0x03) ){
+            // WRITE
+//            serial port transmit data register
+            AddLog(LOG_SIMULATOR,tr("Data sent to 03:[%1]=%2").arg(data,2,16,QChar('0')).arg(QChar(data)));
         }
     }
 
@@ -465,6 +531,11 @@ bool Cmd100::run(void)
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
     return true;
+}
+
+BYTE Cmd100::SIORecvData(void) {
+
+    return 0x00;
 }
 
 BYTE Cmd100::FddTransfer (BYTE DataIn) {

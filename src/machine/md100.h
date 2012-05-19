@@ -69,6 +69,7 @@ public:
     BYTE FddTransfer(BYTE DataIn);
 
 
+
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void definePath(void);
@@ -122,6 +123,8 @@ private:
     void printerControlPort(BYTE);
     BYTE printerStatusPort();
     void printerDataPort(BYTE);
+
+    BYTE SIORecvData();
 
     bool printerACK,printerBUSY,printerSTROBE,printerINIT,printerERROR,prev_printerSTROBE,prev_printerINIT;
     BYTE printerDATA;
