@@ -123,7 +123,7 @@ private:
     BYTE printerStatusPort();
     void printerDataPort(BYTE);
 
-    bool printerACK,printerBUSY,printerSTROBE,printerINIT,prev_printerSTROBE,prev_printerINIT;
+    bool printerACK,printerBUSY,printerSTROBE,printerINIT,printerERROR,prev_printerSTROBE,prev_printerINIT;
     BYTE printerDATA;
     BYTE prev_printerStatusPort;
 };

@@ -62,6 +62,7 @@
 #include "pb1000.h"
 #include "pb2000.h"
 #include "md100.h"
+#include "fp100.h"
 
 
 extern QList<CPObject *> listpPObject;  
@@ -139,6 +140,7 @@ CPObject *pPC=0;
         case PB1000 : pPC = new Cpb1000;    pPC->setName("Casio PB-1000"); break;
         case PB2000 : pPC = new Cpb2000;    pPC->setName("Casio PB-2000C"); break;
         case MD100  : pPC = new Cmd100;    pPC->setName("Casio MD-100"); break;
+        case FP100  : pPC = new Cfp100;    pPC->setName("Casio FP-100"); break;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");

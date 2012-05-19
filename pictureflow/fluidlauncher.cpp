@@ -260,6 +260,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
      if (ItemText == "Casio PB-1000") result = PB1000;
      if (ItemText == "Casio PB-2000C") result = PB2000;
      if (ItemText == "Casio MD-100") result = MD100;
+     if (ItemText == "Casio FP-100") result = FP100;
 
      if (result != EMPTY)	{
          mainwindow->LoadPocket(result);

@@ -111,9 +111,10 @@ bool Cmd100::init(void)
     lbl[7] = "D6";
     lbl[8] = "D7";
     lbl[9] = "D8";
-    lbl[10] = "ACK";
-    lbl[11] = "BUSY";
-    lbl[16] = "INIT";
+    lbl[10]= "ACK";
+    lbl[11]= "BUSY";
+    lbl[31]= "INIT";
+    lbl[32]= "ERROR";
     WatchPoint.add(&pCENTCONNECTOR_value,64,36,this,"Centronic 36pins connector",lbl);
 
     WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,"Serial 25pins connector");
@@ -179,6 +180,7 @@ void Cmd100::printerControlPort(BYTE value)
 
     printerSTROBE = (value & 0x01)?true:false;
     printerINIT = (value & 0x02)?true:false;
+#if 0
     if (printerSTROBE) {
         AddLog(LOG_PRINTER,tr("PRINTER controlPort STROBE = 1"));
     }
@@ -201,6 +203,7 @@ void Cmd100::printerControlPort(BYTE value)
     else {
         AddLog(LOG_PRINTER,tr("PRINTER controlPort INIT = 0"));
     }
+#endif
     if (value & 0x04) {
         printerACK = false;
 //        pTIMER->resetTimer(9);
@@ -220,7 +223,7 @@ BYTE Cmd100::printerStatusPort()
 
     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(9);
     BYTE ret = 0;
-
+#if 0
     if (printerBUSY && (pTIMER->usElapsedId(TIMER_BUSY) > 3000)) {
 
         AddLog(LOG_PRINTER,tr("PRINTER printerStatusPort ACK ON"));
@@ -234,9 +237,11 @@ BYTE Cmd100::printerStatusPort()
         printerACK = false;
         printerBUSY = false;
     }
+#endif
 
     if (printerBUSY) ret |= 0x01;
-    ret |= 0x02;        // FAULT to 1
+//    if (printerERROR)
+        ret |= 0x02;        // FAULT to 1
     if (!printerACK) ret |= 0x04;
 
     if (ret != prev_printerStatusPort) {
@@ -286,6 +291,7 @@ void Cmd100::Get_CentConnector(void) {
 
     printerACK = pCENTCONNECTOR->Get_pin(10);
     printerBUSY = pCENTCONNECTOR->Get_pin(11);
+    printerERROR=pCENTCONNECTOR->Get_pin(32);
 }
 
 void Cmd100::Set_CentConnecor(void) {
@@ -301,7 +307,7 @@ void Cmd100::Set_CentConnecor(void) {
     pCENTCONNECTOR->Set_pin(8	,READ_BIT(printerDATA,6));
     pCENTCONNECTOR->Set_pin(9	,READ_BIT(printerDATA,7));
 
-    pCENTCONNECTOR->Set_pin(16	,printerINIT);
+    pCENTCONNECTOR->Set_pin(31	,printerINIT);
 
 }
 

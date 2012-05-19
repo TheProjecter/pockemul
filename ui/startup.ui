@@ -580,6 +580,15 @@
             <normaloff>:/EXT/ext/md-100.png</normaloff>:/EXT/ext/md-100.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Casio FP-100</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/ext.qrc">
+            <normaloff>:/EXT/ext/fp100.png</normaloff>:/EXT/ext/fp100.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>

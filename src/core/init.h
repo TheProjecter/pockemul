@@ -183,7 +183,8 @@ enum Models {
     E500,
     PB1000,
     PB2000,
-    MD100
+    MD100,
+    FP100
 };
 
 #endif
