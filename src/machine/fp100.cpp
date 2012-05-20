@@ -47,11 +47,15 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
 
     capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
     head = LoadImage(QSize(79,161),":/EXT/ext/fp100head.png");
+    cable = LoadImage(QSize(75,10),":/EXT/ext/fp100cable.png");
 }
 
 Cfp100::~Cfp100() {
     delete pCONNECTOR;
     delete pSavedCONNECTOR;
+    delete capot;
+    delete head;
+    delete cable;
 }
 
 bool Cfp100::init(void) {
@@ -175,6 +179,8 @@ bool Cfp100::UpdateFinalImage(void) {
 
     // Draw head
     painter.drawImage(152+lastX*ratio,178,*head);
+    // Draw cable
+    painter.drawImage(793 - lastX*ratio,214,*cable);
 
 //    // Draw switch by 180° rotation
 //    QPainter painter;
