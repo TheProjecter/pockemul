@@ -80,6 +80,8 @@ public:
     Cce515p(CPObject *parent = 0);
     virtual ~Cce515p();
 
+    int   lastX;
+
 protected:
     bool		Next_Color(void);
     int			Pen_X,Pen_Y,Pen_Z,prev_Pen_X,prev_Pen_Y,prev_Pen_Z;

@@ -46,6 +46,7 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     Paper_DX = 960;
 
     capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
+    head = LoadImage(QSize(79,161),":/EXT/ext/fp100head.png");
 }
 
 Cfp100::~Cfp100() {
@@ -164,12 +165,16 @@ bool Cfp100::UpdateFinalImage(void) {
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
     QRect source = QRect( QPoint(paperWidget->getOffset().x() , paperWidget->getOffset().y()  - paperWidget->height() / ratio ) , QPoint( paperWidget->bufferImage->width() , paperWidget->getOffset().y() ) );
-    painter.drawImage(PaperPos(),paperWidget->bufferImage->copy(source).scaled(PaperPos().size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
+    painter.drawImage(PaperPos(),paperWidget->bufferImage->copy(source).scaled(PaperPos().size(), Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation ));
+
 
 
     // 112,150
 
     painter.drawImage(112,145,*capot);
+
+    // Draw head
+    painter.drawImage(152+lastX*ratio,178,*head);
 
 //    // Draw switch by 180° rotation
 //    QPainter painter;

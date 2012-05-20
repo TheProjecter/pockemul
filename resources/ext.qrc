@@ -34,5 +34,6 @@
         <file>ext/md-100.png</file>
         <file>ext/fp100.png</file>
         <file>ext/fp100-capot.png</file>
+        <file>ext/fp100head.png</file>
     </qresource>
 </RCC>

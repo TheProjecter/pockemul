@@ -35,6 +35,7 @@ private:
 
     bool printerACK;
     QImage *capot;
+    QImage *head;
 
 };
 

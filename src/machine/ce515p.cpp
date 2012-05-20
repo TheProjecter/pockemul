@@ -215,6 +215,7 @@ void Cce515p::Draw(void) {
         if (printer_deltastate >= PRINTER_TICKS){
             printer_oldstate_draw	= pTIMER->state;
             if (moveBuffer.length()>0) {
+                lastX = moveBuffer.at(0).X;
                 Print(moveBuffer.at(0));
                 moveBuffer.removeFirst();
             }
