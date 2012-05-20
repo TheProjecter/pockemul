@@ -8,6 +8,7 @@
 #include "init.h"
 #include "Inter.h"
 #include "Log.h"
+#include "paperwidget.h"
 
 #define DOWN	0
 #define UP		1
@@ -32,17 +33,19 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
 
     delete pKEYB; pKEYB		= new Ckeyb(this,"x710.map");
 
-    setDXmm(200);//Pc_DX_mm = 256;
+    setDXmm(302);//Pc_DX_mm = 256;
     setDYmm(120);//Pc_DY_mm = 185;
     setDZmm(36);//Pc_DZ_mm = 42;
 
-    setDX(1200);//Pc_DX	= 895;
-    setDY(909);//Pc_DY	= 615;
+    setDX(1078);//Pc_DX	= 895;
+    setDY(817);//Pc_DY	= 615;
 
-    setPaperPos(QRect(172,46,812,300));
+    setPaperPos(QRect(154,26,731,300));
 
     printerACK = false;
     Paper_DX = 960;
+
+    capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
 }
 
 Cfp100::~Cfp100() {
@@ -70,6 +73,7 @@ bool Cfp100::init(void) {
     lbl[32]= "ERROR";
     WatchPoint.add(&pCONNECTOR_value,64,36,this,"// 36pins connector",lbl);
 
+    paperWidget->hide();
     return true;
 }
 
@@ -150,7 +154,22 @@ void Cfp100::ComputeKey(void)
 }
 
 bool Cfp100::UpdateFinalImage(void) {
+//    if (Refresh_Display) {
+    AddLog(LOG_PRINTER,"UPDATE DISPLAY");
     Cce515p::UpdateFinalImage();
+
+
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
+    QRect source = QRect( QPoint(paperWidget->getOffset().x() , paperWidget->getOffset().y()  - paperWidget->height() / ratio ) , QPoint( paperWidget->bufferImage->width() , paperWidget->getOffset().y() ) );
+    painter.drawImage(PaperPos(),paperWidget->bufferImage->copy(source).scaled(PaperPos().size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
+
+
+    // 112,150
+
+    painter.drawImage(112,145,*capot);
 
 //    // Draw switch by 180° rotation
 //    QPainter painter;
@@ -159,9 +178,10 @@ bool Cfp100::UpdateFinalImage(void) {
 //    painter.begin(FinalImage);
 //    painter.drawImage(800,430,FinalImage->copy(800,430,22,14).mirrored(!printerSwitch,false));
 
-//    painter.end();
+    painter.end();
 
-//    Refresh_Display = true;
+//    Refresh_Display = false;
+//    }
 }
 
 void Cfp100::paintEvent(QPaintEvent *event)

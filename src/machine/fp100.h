@@ -34,6 +34,7 @@ protected slots:
 private:
 
     bool printerACK;
+    QImage *capot;
 
 };
 

@@ -33,5 +33,6 @@
         <file>ext/simu.png</file>
         <file>ext/md-100.png</file>
         <file>ext/fp100.png</file>
+        <file>ext/fp100-capot.png</file>
     </qresource>
 </RCC>
