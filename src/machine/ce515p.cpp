@@ -83,6 +83,8 @@ Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
     t=c=0;
     waitbitstart=1;
     waitbitstop=0;
+
+    lastX = 0;
 }
 
 Cce515p::~Cce515p() {
@@ -294,6 +296,7 @@ bool Cce515p::init(void)
     return(1);
 
 }
+#define MARGIN 40
 
 void Cce515p::Print(CMove point)
 {
@@ -316,7 +319,7 @@ void Cce515p::Print(CMove point)
                 case 2 : painter.setPen( Qt::green); break;
                 case 3 : painter.setPen( Qt::red); break;
             }
-            painter.drawPoint( point.X, point.Y );
+            painter.drawPoint( point.X + MARGIN, point.Y );
             painter.end();
 
         }

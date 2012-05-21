@@ -1,3 +1,4 @@
+//TODO: Key management
 
 #include <QPainter>
 
@@ -139,10 +140,11 @@ void Cfp100::contextMenuEvent ( QContextMenuEvent * event )
 
     BuildContextMenu(&menu);
 
-//    menu.addSeparator();
-
-//    menu.addAction(tr("Show console"),pSIO,SLOT(ShowConsole()));
-//    menu.addAction(tr("Hide console"),pSIO,SLOT(HideConsole()));
+    QMenu * menuPaper = menu.addMenu(tr("Paper"));
+    menuPaper->addAction(tr("Copy"),paperWidget,SLOT(paperCopy()));
+    menuPaper->addAction(tr("Cut"),paperWidget,SLOT(paperCut()));
+    menuPaper->addAction(tr("Save Image ..."),paperWidget,SLOT(paperSaveImage()));
+    menuPaper->addAction(tr("Save Text ..."),paperWidget,SLOT(paperSaveText()));
 
     menu.exec(event->globalPos () );
 }
@@ -166,17 +168,23 @@ bool Cfp100::UpdateFinalImage(void) {
     painter.begin(FinalImage);
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
-    QRect source = QRect( QPoint(paperWidget->getOffset().x() , paperWidget->getOffset().y()  - paperWidget->height() / ratio ) , QPoint( paperWidget->bufferImage->width() , paperWidget->getOffset().y() ) );
-    painter.drawImage(PaperPos(),paperWidget->bufferImage->copy(source).scaled(PaperPos().size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
+    QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
+                                 paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
+                          QPoint(paperWidget->bufferImage->width() ,
+                                 paperWidget->getOffset().y() +10)
+                          );
+    painter.drawImage(PaperPos(),
+                      paperWidget->bufferImage->copy(source).scaled(PaperPos().size(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation )
+                      );
 
-    // 112,150
+    painter.setOpacity(0.5);
+    painter.fillRect(PaperPos(),Qt::black);
+    painter.setOpacity(1);
 
     painter.drawImage(112,145,*capot);
 
-    // Draw head
-    painter.drawImage(152+lastX*ratio,178,*head);
-    // Draw cable
-    painter.drawImage(793 - lastX*ratio,214,*cable);
+    painter.drawImage(152+lastX*ratio,178,*head);       // Draw head
+    painter.drawImage(793 - lastX*ratio,214,*cable);    // Draw cable
 
     painter.end();
 
