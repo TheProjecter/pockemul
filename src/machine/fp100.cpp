@@ -159,19 +159,15 @@ void Cfp100::ComputeKey(void)
 }
 
 bool Cfp100::UpdateFinalImage(void) {
-//    if (Refresh_Display) {
-    AddLog(LOG_PRINTER,"UPDATE DISPLAY");
-    Cce515p::UpdateFinalImage();
 
+    Cce515p::UpdateFinalImage();
 
     QPainter painter;
     painter.begin(FinalImage);
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
     QRect source = QRect( QPoint(paperWidget->getOffset().x() , paperWidget->getOffset().y()  - paperWidget->height() / ratio ) , QPoint( paperWidget->bufferImage->width() , paperWidget->getOffset().y() ) );
-    painter.drawImage(PaperPos(),paperWidget->bufferImage->copy(source).scaled(PaperPos().size(), Qt::IgnoreAspectRatio));//, Qt::SmoothTransformation ));
-
-
+    painter.drawImage(PaperPos(),paperWidget->bufferImage->copy(source).scaled(PaperPos().size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation ));
 
     // 112,150
 
@@ -182,17 +178,8 @@ bool Cfp100::UpdateFinalImage(void) {
     // Draw cable
     painter.drawImage(793 - lastX*ratio,214,*cable);
 
-//    // Draw switch by 180° rotation
-//    QPainter painter;
-
-//    // PRINTER SWITCH
-//    painter.begin(FinalImage);
-//    painter.drawImage(800,430,FinalImage->copy(800,430,22,14).mirrored(!printerSwitch,false));
-
     painter.end();
 
-//    Refresh_Display = false;
-//    }
 }
 
 void Cfp100::paintEvent(QPaintEvent *event)
