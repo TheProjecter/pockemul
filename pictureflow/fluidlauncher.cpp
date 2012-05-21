@@ -138,7 +138,7 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
 //     Launcher* exitItem = new Launcher("EXIT",QString(), QLatin1String("Exit"), ":/cover/exit.png", QStringList());
 //     demoList.append(exitItem);
 
-     qWarning("nb slide:%i   %i\n",pictureFlowWidget->slideCount(),demoList.count());
+//     qWarning("nb slide:%i   %i\n",pictureFlowWidget->slideCount(),demoList.count());
      return true;
  }
 

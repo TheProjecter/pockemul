@@ -798,7 +798,7 @@ void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
 
 void MainWindowPockemul::DestroySlot( CPObject *pObject)
 {
-qWarning()<< QApplication::topLevelWidgets();
+//qWarning()<< QApplication::topLevelWidgets();
     QList< QAction *> actionList = menuPockets->actions();
     for (int i=0; i< actionList.size();i++) {
         QAction* action = actionList.at(i);

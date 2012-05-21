@@ -402,7 +402,7 @@ UINT16 Cpb2000::getKey(void) {
             if (KEY('6'))			data|=0x02;
             if (KEY('+'))			data|=0x04;     // OK
             if (KEY('3'))			data|=0x08;
-            if (KEY(K_RET))			{data|=0x10;qWarning("RET");}
+            if (KEY(K_RET))			data|=0x10;
             if (KEY('.'))			data|=0x20;
 
             if (KEY('9'))			data|=0x80;

@@ -3166,6 +3166,7 @@ inline UINT16 CHD61700::make_bcd_add(UINT8 arg1, UINT8 arg2)
 bool CHD61700::exit()
 {
     CCPU::exit();
+    return true;
 }
 
 DWORD CHD61700::get_PC(void)

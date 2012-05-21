@@ -206,7 +206,7 @@ bool Ckeyb::init(void)
     QFile fileRes(":/KEYMAP/keymap/"+fn_KeyMap);
     QXmlInputSource sourceRes(&fileRes);
     result = reader.parse(sourceRes);
-    if (result) qWarning("success read key ressource\n");
+//    if (result) qWarning("success read key ressource\n");
     if (result) return true;
 
 	// else load the struct

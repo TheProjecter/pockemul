@@ -85,9 +85,9 @@ public:
     virtual	void	save_internal(QXmlStreamWriter *);
             void	save(void);
 
-    virtual	bool	Get_Xin(void){}
+    virtual	bool	Get_Xin(void){ return true;}
     virtual	void	Set_Xin(bool){}
-    virtual	bool	Get_Xout(void){}
+    virtual	bool	Get_Xout(void){ return true;}
     virtual	void	Set_Xout(bool){}
 
     virtual	DWORD	get_PC(void);					//get Program Counter

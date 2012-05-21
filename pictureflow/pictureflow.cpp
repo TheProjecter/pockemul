@@ -1263,7 +1263,7 @@ void PictureFlow::keyPressEvent(QKeyEvent* event)
       showSlide(currentSlide()-10);
     }
     else {
-        qWarning("KEY PRESS :%i",event->key());
+//        qWarning("KEY PRESS :%i",event->key());
       showPrevious();
     }
     event->accept();

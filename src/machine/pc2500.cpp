@@ -73,6 +73,7 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
 
     printMode = false;
     capslock = false;
+    pce515p->margin = 10;
 }
 
 Cpc2500::~Cpc2500()

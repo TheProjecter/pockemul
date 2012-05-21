@@ -405,7 +405,7 @@ DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
     UINT32 dasmflags = 0;
     UINT8 op, op1;
 
-    int pos =adr, type = 0;//(adr>0x0C00);
+    int pos =adr;//(adr>0x0C00);
     if (adr<0x0C00) pos<<=1;
 
     char *buffer = (char *)malloc(200);

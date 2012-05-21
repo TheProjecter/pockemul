@@ -49,6 +49,8 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
     head = LoadImage(QSize(79,161),":/EXT/ext/fp100head.png");
     cable = LoadImage(QSize(75,10),":/EXT/ext/fp100cable.png");
+
+    margin = 40;
 }
 
 Cfp100::~Cfp100() {

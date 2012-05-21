@@ -81,6 +81,7 @@ public:
     virtual ~Cce515p();
 
     int   lastX;
+    int margin;
 
 protected:
     bool		Next_Color(void);

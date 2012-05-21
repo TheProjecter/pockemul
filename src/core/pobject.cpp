@@ -260,10 +260,10 @@ int CPObject::initsound()
     m_audioOutput->setBufferSize(4000);
 
     m_output = m_audioOutput->start();
-    int p = m_audioOutput->periodSize();
+//    int p = m_audioOutput->periodSize();
 //    qWarning()<<p;
 #endif
-
+    return 1;
 }
 
 int CPObject::exitsound()
@@ -933,7 +933,7 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 
 QImage * CPObject::LoadImage(QSize size,QString fname)
 {
-    qWarning("LoadImage : %s",fname.toAscii().data());
+//    qWarning("LoadImage : %s",fname.toAscii().data());
 	QImage *tempImage;
     QImage loc = QImage(fname).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
 	tempImage = new QImage(loc);
@@ -958,7 +958,7 @@ void CPObject::slotExit(void)
 
 bool CPObject::InitDisplay(void)
 {
-    qWarning("INIT DISPLAY");
+//    qWarning("INIT DISPLAY");
     delete BackgroundImageBackup;
 	BackgroundImageBackup = LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
     delete BackgroundImage;
