@@ -114,4 +114,12 @@
     <model value="e500">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-e500_e.html"/>
     </model>
+    <model value="md100">
+        <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=671"/>
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/md-100_e.html"/>
+    </model>
+    <model value="fp100">
+        <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=1337"/>
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/fp-100_e.html"/>
+    </model>
 </weblinks>
