@@ -169,11 +169,13 @@ void Cmd100::definePath(void){
    if (!fn.isEmpty()) {
        FddClose();
        fdd.filename = fn;
-       if (! QFile::resize(fn,320*1024)) {
-           MSG_ERROR("ERROR resize disk image");
+       QFile qf(fn);
+       qf.open(QIODevice::ReadWrite);
+       if (! qf.resize(fn,320*1024)) {
+           MSG_ERROR(qf.errorString());
            return;
        }
-
+       qf.close();
        FddOpen();
    }
 }
