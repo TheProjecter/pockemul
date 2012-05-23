@@ -62,8 +62,8 @@ public:
 			}
 		}
     }
-	
-    void add( qint64 * watchpoint, qint8 ptrSize,qint8 nbbits,CPObject * object, QString name,QHash<int,QString> lblList = QHash<int,QString>())
+    typedef QHash<int,QString> lblType;
+    void add( qint64 * watchpoint, qint8 ptrSize,qint8 nbbits,CPObject * object, QString name,QHash<int,QString> lblList = lblType())
     {
         CWatchPointItem * item = new CWatchPointItem(watchpoint,ptrSize,nbbits,object,name,lblList);
         items.append(*item);
