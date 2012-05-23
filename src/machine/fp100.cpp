@@ -170,6 +170,7 @@ bool Cfp100::UpdateFinalImage(void) {
     painter.begin(FinalImage);
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
+
     QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
                                  paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
                           QPoint(paperWidget->bufferImage->width() ,
@@ -185,8 +186,9 @@ bool Cfp100::UpdateFinalImage(void) {
 
     painter.drawImage(112,145,*capot);
 
-    painter.drawImage(152+lastX*ratio,178,*head);       // Draw head
-    painter.drawImage(793 - lastX*ratio,214,*cable);    // Draw cable
+    int offset = (lastX ) * ratio /( mainwindow->zoom/100);
+    painter.drawImage(152+offset,178,*head);       // Draw head
+    painter.drawImage(793 - offset,214,*cable);    // Draw cable
 
     painter.end();
 

@@ -280,6 +280,14 @@ void CPObject::fillSoundBuffer(BYTE val)
 	 
 	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
 		
+    if (getfrequency()==0) {
+        mainwindow->audioMutex.lock();
+        audioBuff.append(val);
+        mainwindow->audioMutex.unlock();
+        return;
+    }
+
+//    qWarning("freq:%i",getfrequency());
 	new_state = pTIMER->state;
     delta_state = pTIMER->state - fillSoundBuffer_old_state;
     if (delta_state < 0) fillSoundBuffer_old_state=new_state;

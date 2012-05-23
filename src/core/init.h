@@ -50,12 +50,6 @@ class CWatchPoint
 {
 public:
     QList<CWatchPointItem> items;
-//	QList<qint64 *> Point;
-//	QList<qint8> PointSize;
-//	QList<qint8> nbBits;
-//	QList<CPObject *> PObject;
-//	QList<QString> WatchPointName;
-//    QList< QHash<int,QString> > Labels;
 	
 	void remove(CPObject * object)
 	{
@@ -64,12 +58,7 @@ public:
             if (items.at(i).PObject == object)
 			{
                 items.removeAt(i);
-//				Point.removeAt(i);
-//				PointSize.removeAt(i);
-//				nbBits.removeAt(i);
-//				PObject.removeAt(i);
-//				WatchPointName.removeAt(i);
-//                Labels.removeAt(i);
+
 			}
 		}
     }
@@ -79,12 +68,7 @@ public:
         CWatchPointItem * item = new CWatchPointItem(watchpoint,ptrSize,nbbits,object,name,lblList);
         items.append(*item);
         delete item;
-//		Point.append(watchpoint);
-//		PointSize.append(ptrSize);
-//		nbBits.append(nbbits);
-//		PObject.append(object);
-//		WatchPointName.append(name);
-//        Labels.append(lblList);
+
     }
 
     void remove( qint64 * watchpoint)
@@ -95,13 +79,7 @@ public:
                 return;
             }
         }
-//        int i = Point.indexOf(watchpoint);
-//        Point.removeAt(i);
-//        PointSize.removeAt(i);
-//        nbBits.removeAt(i);
-//        PObject.removeAt(i);
-//        WatchPointName.removeAt(i);
-//        Labels.remove.at(i);
+
     }
 };
 

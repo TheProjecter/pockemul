@@ -294,6 +294,7 @@ bool Cce515p::init(void)
     lineType = 0;
     mainRot = 0;
 
+    initsound();
     return(1);
 
 }
@@ -326,7 +327,20 @@ void Cce515p::Print(CMove point)
         // Check is pen up/down status change to play the CLAC
         if (point.penDown != old_penDown) {
 #ifndef NO_SOUND
-            clac->play();
+//            clac->play();
+            if (getfrequency()>0) {
+                fillSoundBuffer(0xFF);
+                fillSoundBuffer(0x00);
+            }
+            else {
+                int ps = m_audioOutput->periodSize();
+                mainwindow->audioMutex.lock();
+                QByteArray buff;
+                buff.append(0xFF);
+                buff.append((char)0);
+                m_output->write(buff.constData(),2);
+                mainwindow->audioMutex.unlock();
+            }
 #endif
             old_penDown = point.penDown;
         }
