@@ -63,6 +63,10 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     pHD61102_1  = new CHD61102(this);
     pHD61102_2  = new CHD61102(this);
 
+    start2khz = 0;
+    start4khz = 0;
+    Xin=Xout=false;
+
 }
 
 bool Ce500::init(void) {
@@ -98,6 +102,7 @@ bool Ce500::run(void) {
 
     // SOUND
     //
+    computeSound();
     /*
         switch(sc.get_imem(IMEM_SCR)&0x70){
             case 0x10:								// speaker ON
@@ -116,7 +121,8 @@ bool Ce500::run(void) {
 
 INLINE void Ce500::computeSound(void)
 {
-    /*
+    Csc62015 * sc = (Csc62015*)pCPU;
+
     qint64 delta;
     qint64 wait2khz = getfrequency()/1000/4;
     qint64 wait4khz = getfrequency()/1000/8;
@@ -161,9 +167,9 @@ INLINE void Ce500::computeSound(void)
                         if (fp_log) fprintf(fp_log,"XOUT 4Khz INIT\n");
                         Xout = true;
                     }
-                    delta = TIMER->state - start4khz;
+                    delta = pTIMER->state - start4khz;
                     //while
-                    if (( TIMER->state - start4khz) >= wait4khz)
+                    if (( pTIMER->state - start4khz) >= wait4khz)
                     {
                         Xout = !Xout;
                         start4khz += wait4khz;
@@ -193,7 +199,8 @@ INLINE void Ce500::computeSound(void)
                     start4khz = 0;
                     break;
     }
-*/
+
+    fillSoundBuffer((Xout?0xff:0x00));
 }
 
 

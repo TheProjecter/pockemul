@@ -49,6 +49,9 @@ public:
 protected:
 //	BYTE previous_key;
 
+private:
+    bool Xin,Xout,start2khz,start4khz;
+
 
 };
 
