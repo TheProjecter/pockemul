@@ -11,8 +11,8 @@ Cpc1251::Cpc1251(CPObject *parent)	: Cpc1250(this)
     Initial_Session_Fname ="pc1251.pkm";
 
     BackGroundFname	= ":/PC1251/pc1251/pc1251.png"; //":/PC1251/pc1251/pc1251hd.jpg"; //
-    LcdFname		= ":/PC1251/pc1251/1251lcd.jpg";
-    SymbFname		= ":/PC1251/pc1251/1251symb.jpg";
+    LcdFname		= ":/PC1251/pc1251/1251lcd.png";
+    SymbFname		= ":/PC1251/pc1251/1251symb.png";
 
 
     memsize			= 0x10000;

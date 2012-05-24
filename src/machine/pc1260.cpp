@@ -12,9 +12,9 @@ Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1260.pkm";
 
-    BackGroundFname	= ":/PC1260/pc1260/pc1260.jpg";
-    LcdFname		= ":/PC1260/pc1260/1260lcd.jpg";
-    SymbFname		= ":/PC1260/pc1260/1260symb.jpg";
+    BackGroundFname	= ":/PC1260/pc1260/pc1260.png";
+    LcdFname		= ":/PC1260/pc1260/1260lcd.png";
+    SymbFname		= ":/PC1260/pc1260/1260symb.png";
 
 
     memsize			= 0x10000;
