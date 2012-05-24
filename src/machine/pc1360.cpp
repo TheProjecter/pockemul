@@ -18,9 +18,9 @@ Cpc1360::Cpc1360(CPObject *parent)	: Cpc13XX(parent)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1360.pkm";
 
-    BackGroundFname	= ":/PC1360/pc1360/pc1360.jpg";
-    LcdFname		= ":/PC1360/pc1360/1360lcd.jpg";
-    SymbFname		= ":/PC1360/pc1360/1360symb.jpg";
+    BackGroundFname	= ":/PC1360/pc1360/pc1360.png";
+    LcdFname		= ":/PC1360/pc1360/1360lcd.png";
+    SymbFname		= ":/PC1360/pc1360/1360symb.png";
     memsize			= 0x40000;
 //		NbSlot		= 14;
 

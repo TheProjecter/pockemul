@@ -79,9 +79,9 @@ Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1261.pkm";
 
-    BackGroundFname	= ":/PC1261/pc1261/pc1261.jpg";
-    LcdFname		= ":/PC1261/pc1261/1261lcd.jpg";
-//		SymbFname		= "pc-1261\\1261symb.jpg";
+    BackGroundFname	= ":/PC1261/pc1261/pc1261.png";
+    LcdFname		= ":/PC1261/pc1261/1261lcd.png";
+//		SymbFname		= "pc-1261\\1261symb.png";
 
 
     memsize			= 0x10000;
@@ -109,9 +109,9 @@ Cpc1262::Cpc1262(CPObject *parent)	: Cpc1261(this)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1262.pkm";
 
-    BackGroundFname	= ":/PC1262/pc1262/pc1262.jpg";
-    LcdFname		= ":/PC1262/pc1262/1262lcd.jpg";
-//		SymbFname		= "pc-1262\\1262symb.jpg";
+    BackGroundFname	= ":/PC1262/pc1262/pc1262.png";
+    LcdFname		= ":/PC1262/pc1262/1262lcd.png";
+//		SymbFname		= "pc-1262\\1262symb.png";
 
 
     memsize			= 0x10000;

@@ -1,9 +1,9 @@
 <RCC>
-    <qresource prefix="/PC1401" >
-        <file>pc1401/1401lcd.jpg</file>
-        <file>pc1401/1401symb.jpg</file>
-        <file>pc1401/pc1401.jpg</file>
+    <qresource prefix="/PC1401">
         <file>pc1401/bas-1401.rom</file>
         <file>pc1401/cpu-1401.rom</file>
+        <file>pc1401/1401lcd.png</file>
+        <file>pc1401/1401symb.png</file>
+        <file>pc1401/pc1401.png</file>
     </qresource>
 </RCC>
