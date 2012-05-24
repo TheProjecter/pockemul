@@ -208,22 +208,13 @@ INLINE void Ce500::computeSound(void)
 
 bool Ce500::Set_Connector(void)
 {
-#if 0
-    pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
-    pCONNECTOR->Set_pin(PIN_VGG		,1);
-    pCONNECTOR->Set_pin(PIN_BUSY	,GET_IMEM_BIT(IMEM_EOL,5));		// F01
-    pCONNECTOR->Set_pin(PIN_D_OUT	,GET_IMEM_BIT(IMEM_EOL,4));		// F02
-    pCONNECTOR->Set_pin(PIN_MT_OUT1	,GET_IMEM_BIT(IMEM_EOL,5));//pCPU->Get_Xout());
-//	pCONNECTOR->Set_pin(PIN_SEL2	,GET_PORT_BIT(PORT_B,6));		// B06
-//	pCONNECTOR->Set_pin(PIN_SEL1	,GET_PORT_BIT(PORT_B,5));		// B05
-#else
     for (int i=1;i<=8;i++) {
         pCONNECTOR->Set_pin(i	,GET_IMEM_BIT(IMEM_EOL,i));
     }
     for (int i=1;i<=3;i++) {
         pCONNECTOR->Set_pin(8+i	,GET_IMEM_BIT(IMEM_EOH,i));
     }
-#endif
+
     return(1);
 }
 
@@ -511,20 +502,8 @@ E5KeyTbl	E5_KeyTbl[]={
 
 BYTE Ce500::getKey()
 {
-
-
     UINT8 data=0;
 
-//    if (pKEYB->LastKey)
-//    {
-//        BYTE ks1 = pLH5810->GetReg(LH5810_OPB);
-//        if (!( ks1 & 0x40)) {
-//            if (KEY(K_CTRL))		data|=0x01;
-//            if (KEY(K_KBII))		data|=0x02;
-//            if (KEY(K_BS))			data|=0x04;
-//        }
-//    }
-//    BYTE ks = pKEYB->Get_KS() ^ 0xff;
     DWORD ks = (pCPU->imem[IMEM_KOH]<<8)+pCPU->imem[IMEM_KOL];
 
     if ((pKEYB->LastKey) )
@@ -645,16 +624,15 @@ BYTE Ce500::getKey()
             if (KEY(K_BRK))		data|=0x02;
         }
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
-        //SetReg(LH5810_OPA,data^0xff);
+
     }
 
     if(data) {
-//            Set_ISR(INT_KEY);						//make keyint
-            ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
-
-        }
+        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
+    }
     pCPU->imem[IMEM_KI] = data;					//set data to ki
-    return data^0xff;
+    return data^0xff;start2khz = 0;
+    start4khz = 0;
 
 }
 

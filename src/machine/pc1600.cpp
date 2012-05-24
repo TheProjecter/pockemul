@@ -34,9 +34,9 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     SessionHeader	= "PC1600PKM";
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1600.pkm";
-    BackGroundFname	= ":/PC1600/pc1600/pc-1600.jpg";
-    LcdFname		= ":/PC1600/pc1600/pc1600lcd.jpg";
-    SymbFname		= ":/PC1600/pc1600/1600symb.jpg";
+    BackGroundFname	= ":/PC1600/pc1600/pc-1600.png";
+    LcdFname		= ":/PC1600/pc1600/pc1600lcd.png";
+    SymbFname		= ":/PC1600/pc1600/1600symb.png";
     memsize			= 0x0E0000;
     InitMemValue	= 0x00;
 

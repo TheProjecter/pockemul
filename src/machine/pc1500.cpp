@@ -30,9 +30,9 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	SessionHeader	= "PC1500PKM";
 	SessionHeaderLen= 9;
 	Initial_Session_Fname ="pc1500.pkm";
-	BackGroundFname	= ":/PC1500/pc1500/pc1500.jpg";
-	LcdFname		= ":/PC1500/pc1500/1500lcd.jpg";
-	SymbFname		= ":/PC1500/pc1500/1500symb.jpg";
+    BackGroundFname	= ":/PC1500/pc1500/pc1500.png";
+    LcdFname		= ":/PC1500/pc1500/1500lcd.png";
+    SymbFname		= ":/PC1500/pc1500/1500symb.png";
 	memsize			= 0x26000;
 	InitMemValue	= 0xFF;
 
@@ -99,9 +99,9 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     SessionHeader	= "PC1500APKM";
     SessionHeaderLen= 10;
     Initial_Session_Fname ="pc1500A.pkm";
-    BackGroundFname	= ":/PC1500A/pc1500A/pc1500A.jpg";
-    LcdFname		= ":/PC1500A/pc1500A/1500Alcd.jpg";
-    SymbFname		= ":/PC1500A/pc1500A/1500Asymb.jpg";
+    BackGroundFname	= ":/PC1500A/pc1500A/pc1500A.png";
+    LcdFname		= ":/PC1500A/pc1500A/1500Alcd.png";
+    SymbFname		= ":/PC1500A/pc1500A/1500Asymb.png";
     memsize			= 0x26000;
 
     SlotList.clear();
@@ -127,9 +127,9 @@ Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
     SessionHeader	= "TRSPC-2PKM";
     SessionHeaderLen= 10;
     Initial_Session_Fname ="trspc2.pkm";
-    BackGroundFname	= ":/TRSPC2/pc1500/trspc2.jpg";
-    LcdFname		= ":/TRSPC2/pc1500/pc2lcd.jpg";
-    SymbFname		= ":/TRSPC2/pc1500/pc2symb.jpg";
+    BackGroundFname	= ":/TRSPC2/pc1500/trspc2.png";
+    LcdFname		= ":/TRSPC2/pc1500/pc2lcd.png";
+    SymbFname		= ":/TRSPC2/pc1500/pc2symb.png";
 
     Lcd_X		= 181;//152 ;
     Lcd_Y		= 62;//52 ;
