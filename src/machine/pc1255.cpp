@@ -47,4 +47,11 @@ Cpc1251H::Cpc1251H(CPObject *parent)	: Cpc1255(this)
     Initial_Session_Fname ="pc1251H/system.pkm";
 
     BackGroundFname	= ":/PC1251/pc1251/pc1251h.png";
+    LcdFname		= ":/PC1251/pc1251/1251hlcd.png";
+    SymbFname		= ":/PC1251/pc1251/1251hsymb.png";
+
+    pLCDC->Color_Off.setRgb(
+                        (int) (74*pLCDC->contrast),
+                        (int) (91*pLCDC->contrast),
+                        (int) (74*pLCDC->contrast));
 }
