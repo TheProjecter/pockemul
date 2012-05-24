@@ -11,7 +11,6 @@
         <file>ext/ce-126p.png</file>
         <file>ext/ce-129p.jpg</file>
         <file>ext/ce-140p.jpg</file>
-        <file>ext/ce-150.jpg</file>
         <file>ext/ce-150pen.bmp</file>
         <file>ext/ce-150pen.png</file>
         <file>ext/ce-152.png</file>
@@ -36,5 +35,6 @@
         <file>ext/fp100head.png</file>
         <file>ext/fp100-capot.png</file>
         <file>ext/fp100cable.png</file>
+        <file>ext/ce-150.png</file>
     </qresource>
 </RCC>

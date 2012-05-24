@@ -149,7 +149,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1251.qrc">
-            <normaloff>:/PC1251/pc1251/pc1251.jpg</normaloff>:/PC1251/pc1251/pc1251.jpg</iconset>
+            <normaloff>:/PC1251/pc1251/pc1251.png</normaloff>:/PC1251/pc1251/pc1251.png</iconset>
           </property>
          </item>
          <item>
@@ -167,7 +167,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1255.qrc">
-            <normaloff>:/PC1255/pc1255/pc1255.jpg</normaloff>:/PC1255/pc1255/pc1255.jpg</iconset>
+            <normaloff>:/PC1255/pc1255/pc1255.png</normaloff>:/PC1255/pc1255/pc1255.png</iconset>
           </property>
          </item>
          <item>
@@ -176,7 +176,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1260.qrc">
-            <normaloff>:/PC1260/pc1260/pc1260.jpg</normaloff>:/PC1260/pc1260/pc1260.jpg</iconset>
+            <normaloff>:/PC1260/pc1260/pc1260.png</normaloff>:/PC1260/pc1260/pc1260.png</iconset>
           </property>
          </item>
          <item>
@@ -185,7 +185,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1261.qrc">
-            <normaloff>:/PC1261/pc1261/pc1261.jpg</normaloff>:/PC1261/pc1261/pc1261.jpg</iconset>
+            <normaloff>:/PC1261/pc1261/pc1261.png</normaloff>:/PC1261/pc1261/pc1261.png</iconset>
           </property>
          </item>
          <item>
@@ -194,7 +194,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1262.qrc">
-            <normaloff>:/PC1262/pc1262/pc1262.jpg</normaloff>:/PC1262/pc1262/pc1262.jpg</iconset>
+            <normaloff>:/PC1262/pc1262/pc1262.png</normaloff>:/PC1262/pc1262/pc1262.png</iconset>
           </property>
          </item>
          <item>
@@ -221,7 +221,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1360.qrc">
-            <normaloff>:/PC1360/pc1360/pc1360.jpg</normaloff>:/PC1360/pc1360/pc1360.jpg</iconset>
+            <normaloff>:/PC1360/pc1360/pc1360.png</normaloff>:/PC1360/pc1360/pc1360.png</iconset>
           </property>
          </item>
          <item>
@@ -230,7 +230,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1401.qrc">
-            <normaloff>:/PC1401/pc1401/pc1401.jpg</normaloff>:/PC1401/pc1401/pc1401.jpg</iconset>
+            <normaloff>:/PC1401/pc1401/pc1401.png</normaloff>:/PC1401/pc1401/pc1401.png</iconset>
           </property>
          </item>
          <item>
@@ -287,7 +287,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1450.qrc">
-            <normaloff>:/PC1450/pc1450/pc1450.jpg</normaloff>:/PC1450/pc1450/pc1450.jpg</iconset>
+            <normaloff>:/PC1450/pc1450/pc1450.png</normaloff>:/PC1450/pc1450/pc1450.png</iconset>
           </property>
          </item>
          <item>
@@ -317,7 +317,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1500.qrc">
-            <normaloff>:/PC1500/pc1500/pc1500.jpg</normaloff>:/PC1500/pc1500/pc1500.jpg</iconset>
+            <normaloff>:/PC1500/pc1500/pc1500.png</normaloff>:/PC1500/pc1500/pc1500.png</iconset>
           </property>
          </item>
          <item>
@@ -326,7 +326,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1500.qrc">
-            <normaloff>:/PC1500A/pc1500A/pc1500A.jpg</normaloff>:/PC1500A/pc1500A/pc1500A.jpg</iconset>
+            <normaloff>:/PC1500A/pc1500A/pc1500A.png</normaloff>:/PC1500A/pc1500A/pc1500A.png</iconset>
           </property>
          </item>
          <item>
@@ -335,7 +335,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1500.qrc">
-            <normaloff>:/TRSPC2/pc1500/trspc2.jpg</normaloff>:/TRSPC2/pc1500/trspc2.jpg</iconset>
+            <normaloff>:/TRSPC2/pc1500/trspc2.png</normaloff>:/TRSPC2/pc1500/trspc2.png</iconset>
           </property>
          </item>
          <item>
@@ -344,7 +344,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1600.qrc">
-            <normaloff>:/PC1600/pc1600/pc-1600.jpg</normaloff>:/PC1600/pc1600/pc-1600.jpg</iconset>
+            <normaloff>:/PC1600/pc1600/pc-1600.png</normaloff>:/PC1600/pc1600/pc-1600.png</iconset>
           </property>
          </item>
          <item>
@@ -353,7 +353,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc2500.qrc">
-            <normaloff>:/PC2500/pc2500/pc-2500.jpg</normaloff>:/PC2500/pc2500/pc-2500.jpg</iconset>
+            <normaloff>:/PC2500/pc2500/pc2500.png</normaloff>:/PC2500/pc2500/pc2500.png</iconset>
           </property>
          </item>
          <item>
@@ -541,7 +541,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/ext.qrc">
-            <normaloff>:/EXT/ext/ce-150.jpg</normaloff>:/EXT/ext/ce-150.jpg</iconset>
+            <normaloff>:/EXT/ext/ce-150.png</normaloff>:/EXT/ext/ce-150.png</iconset>
           </property>
          </item>
          <item>

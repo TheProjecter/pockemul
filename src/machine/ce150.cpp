@@ -58,7 +58,7 @@
 Cce150::Cce150(CPObject *parent):Cprinter(this)
 {
     //[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-150.jpg";
+    BackGroundFname	= ":/EXT/ext/ce-150.png";
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce150"));
     Paper_X = 120;  Paper_DX = 382;//320;
