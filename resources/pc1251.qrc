@@ -2,9 +2,9 @@
     <qresource prefix="/PC1251">
         <file>pc1251/bas-1251.rom</file>
         <file>pc1251/cpu-1251.rom</file>
-        <file>pc1251/pc1251H.jpg</file>
         <file>pc1251/pc1251.png</file>
         <file>pc1251/1251lcd.png</file>
         <file>pc1251/1251symb.png</file>
+        <file>pc1251/pc1251h.png</file>
     </qresource>
 </RCC>

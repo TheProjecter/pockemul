@@ -7,7 +7,7 @@
      <example idpocket="Tandy PC-3" filename="./" name="Tandy PC-3" image=":/PC1250/pc1250/pc31k.png"/>
      <example idpocket="PC 1251" filename="./" name="Sharp pc-1251" image=":/PC1251/pc1251/pc1251.png"/>
      <example idpocket="Tandy PC-3 (4Ko)" filename="./" name="Tandy PC-3 (4Ko)" image=":/PC1250/pc1250/pc31k.png"/>
-     <example idpocket="PC 1251H" filename="./" name="Sharp pc-1251H" image=":/PC1251/pc1251/pc1251H.jpg"/>
+     <example idpocket="PC 1251H" filename="./" name="Sharp pc-1251H" image=":/PC1251/pc1251/pc1251h.png"/>
      <example idpocket="PC 1255" filename="./" name="Sharp pc-1255" image=":/PC1255/pc1255/pc1255.png"/>
      <example idpocket="PC 1260" filename="./" name="Sharp pc-1260" image=":/PC1260/pc1260/pc1260.png"/>
      <example idpocket="PC 1261" filename="./" name="Sharp pc-1261" image=":/PC1261/pc1261/pc1261.png"/>

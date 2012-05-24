@@ -46,5 +46,5 @@ Cpc1251H::Cpc1251H(CPObject *parent)	: Cpc1255(this)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1251H/system.pkm";
 
-    BackGroundFname	= ":/PC1251/pc1251/pc1251H.jpg";
+    BackGroundFname	= ":/PC1251/pc1251/pc1251h.png";
 }

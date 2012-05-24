@@ -158,7 +158,7 @@
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1251.qrc">
-            <normaloff>:/PC1251/pc1251/pc1251H.jpg</normaloff>:/PC1251/pc1251/pc1251H.jpg</iconset>
+            <normaloff>:/PC1251/pc1251/pc1251h.png</normaloff>:/PC1251/pc1251/pc1251h.png</iconset>
           </property>
          </item>
          <item>
