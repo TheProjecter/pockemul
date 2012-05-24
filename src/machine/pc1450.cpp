@@ -22,9 +22,9 @@ Cpc1450::Cpc1450(CPObject *parent)	: Cpc1350(parent)
     SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1450.pkm";
 
-    BackGroundFname	= ":/PC1450/pc1450/pc1450.jpg";
-    LcdFname		= ":/PC1450/pc1450/1450lcd.jpg";
-    SymbFname		= ":/PC1450/pc1450/1450symb.jpg";
+    BackGroundFname	= ":/PC1450/pc1450/pc1450.png";
+    LcdFname		= ":/PC1450/pc1450/1450lcd.png";
+    SymbFname		= ":/PC1450/pc1450/1450symb.png";
     memsize			= 0x10000;
 
     SlotList.clear();
