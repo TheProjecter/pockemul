@@ -80,6 +80,7 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "Canon X-07") result = X07;
     if (ItemText == "Canon X-710") result = X710;
     if (ItemText == "PC-E500") result = E500;
+    if (ItemText == "PC-G850V") result = G850V;
     if (ItemText == "Casio PB-1000") result = PB1000;
     if (ItemText == "Casio PB-2000C") result = PB2000;
     if (ItemText == "Casio MD-100") result = MD100;

@@ -372,6 +372,7 @@ void MainWindowPockemul::opensession()
     objtable["Canon X-07"]=X07;
     objtable["Canon X-710"]=X710;
     objtable["PC-E500"]=E500;
+    objtable["PC-G850V"]=G850V;
     objtable["Casio PB-1000"]=PB1000;
     objtable["Casio PB-2000C"]=PB2000;
     objtable["Casio MD-100"]=MD100;

@@ -22,7 +22,7 @@ public:
     bool	InitDisplay(void);
     bool	CompleteDisplay(void);
 
-    bool	run(void);				// emulator main
+    virtual bool	run(void);				// emulator main
     void	Set_Port(PORTS Port,BYTE data);
     BYTE	Get_Port(PORTS Port);
 

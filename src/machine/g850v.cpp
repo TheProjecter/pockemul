@@ -2,6 +2,10 @@
 #include "g850v.h"
 #include "Connect.h"
 
+#include "z80.h"
+#include "Inter.h"
+#include "Keyb.h"
+
 Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 {								//[constructor]
 #ifndef QT_NO_DEBUG
@@ -68,38 +72,115 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 
     SlotList.clear();
 
-    SlotList.append(CSlot(16, 0x08000 ,	":/G850V/rom00.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x0C000 ,	":/G850V/rom01.bin"         , "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x08000 ,	":/G850V/rom00.bin"         , "" , ROM , "ROM BANK 00"));
+    SlotList.append(CSlot(16, 0x0C000 ,	":/G850V/rom01.bin"         , "" , ROM , "ROM BANK 01"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom02.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom03.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom04.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom05.bin"         , "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom02.bin"         , "" , ROM , "ROM BANK 02"));
+    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom03.bin"         , "" , ROM , "ROM BANK 03"));
+    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom04.bin"         , "" , ROM , "ROM BANK 04"));
+    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom05.bin"         , "" , ROM , "ROM BANK 05"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom06.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom07.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom08.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom09.bin"         , "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom06.bin"         , "" , ROM , "ROM BANK 06"));
+    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom07.bin"         , "" , ROM , "ROM BANK 07"));
+    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom08.bin"         , "" , ROM , "ROM BANK 08"));
+    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom09.bin"         , "" , ROM , "ROM BANK 09"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom0a.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom0b.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom0c.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom0d.bin"         , "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom0a.bin"         , "" , ROM , "ROM BANK 0a"));
+    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom0b.bin"         , "" , ROM , "ROM BANK 0b"));
+    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom0c.bin"         , "" , ROM , "ROM BANK 0c"));
+    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom0d.bin"         , "" , ROM , "ROM BANK 0d"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom0e.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom0f.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom10.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom11.bin"         , "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom0e.bin"         , "" , ROM , "ROM BANK 0e"));
+    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom0f.bin"         , "" , ROM , "ROM BANK 0f"));
+    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom10.bin"         , "" , ROM , "ROM BANK 10"));
+    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom11.bin"         , "" , ROM , "ROM BANK 11"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom12.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom13.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom14.bin"         , "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom12.bin"         , "" , ROM , "ROM BANK 12"));
+    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom13.bin"         , "" , ROM , "ROM BANK 13"));
+    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom14.bin"         , "" , ROM , "ROM BANK 14"));
+    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM BANK 15"));
 
 
 }
 
-Cg850v::~Cg85v0()
+Cg850v::~Cg850v()
 {
 
+}
+
+
+bool Cg850v::init()
+{
+}
+
+
+bool Cg850v::Set_Connector()
+{
+}
+
+bool Cg850v::Get_Connector()
+{
+}
+
+
+void Cg850v::TurnON()
+{
+}
+
+void Cg850v::Reset()
+{
+}
+
+bool Cg850v::Chk_Adr(DWORD *d, DWORD data)
+{
+}
+
+bool Cg850v::Chk_Adr_R(DWORD *d, DWORD data)
+{
+}
+
+UINT8 Cg850v::in(UINT8 address)
+{
+}
+
+UINT8 Cg850v::out(UINT8 address, UINT8 value)
+{
+}
+
+
+bool Cg850v::Mem_Mirror(DWORD *d)
+{
+}
+
+
+bool Cg850v::run()
+{
+}
+
+void Cg850v::Set_Port(PORTS Port, BYTE data)
+{
+}
+
+BYTE Cg850v::Get_Port(PORTS Port)
+{
+}
+
+
+bool Cg850v::LoadConfig(QXmlStreamReader *)
+{
+}
+
+bool Cg850v::SaveConfig(QXmlStreamWriter *)
+{
+}
+
+bool Cg850v::InitDisplay()
+{
+    CpcXXXX::InitDisplay();
+
+    return(1);
+}
+
+bool Cg850v::CompleteDisplay()
+{
 }
