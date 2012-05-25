@@ -24,5 +24,6 @@
         <file>G850V/rom13.bin</file>
         <file>G850V/rom14.bin</file>
         <file>G850V/rom15.bin</file>
+        <file>G850V/g850vlcd.png</file>
     </qresource>
 </RCC>

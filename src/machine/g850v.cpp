@@ -3,6 +3,7 @@
 #include "Connect.h"
 
 #include "z80.h"
+#include "sed1560.h"
 #include "Inter.h"
 #include "Keyb.h"
 
@@ -40,8 +41,8 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 
     Lcd_X		= 60;
     Lcd_Y		= 50;
-    Lcd_DX		= 156;
-    Lcd_DY		= 32;
+    Lcd_DX		= 144;
+    Lcd_DY		= 48;
     Lcd_ratio_X	= 2;
     Lcd_ratio_Y	= 2;
 
@@ -67,10 +68,13 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 
 
     pKEYB		= new Ckeyb(this,"g850.map");
+    pSED1560    = new CSED1560(this);
 
     Tape_Base_Freq=2500;
 
     SlotList.clear();
+    SlotList.append(CSlot(1, 0x00000 ,	":/G850V/base.bin"          , "" , ROM , "ROM BASE"));
+    SlotList.append(CSlot(32, 0x00000 ,	""                          , "" , RAM , "RAM"));
 
     SlotList.append(CSlot(16, 0x08000 ,	":/G850V/rom00.bin"         , "" , ROM , "ROM BANK 00"));
     SlotList.append(CSlot(16, 0x0C000 ,	":/G850V/rom01.bin"         , "" , ROM , "ROM BANK 01"));
@@ -111,6 +115,14 @@ Cg850v::~Cg850v()
 
 bool Cg850v::init()
 {
+    // if DEBUG then log CPU
+#ifndef QT_NO_DEBUG
+    pZ80->logsw = true;
+#endif
+    CpcXXXX::init();
+    pCPU->init();
+    romBank = exBank = 0;
+    return true;
 }
 
 
@@ -125,36 +137,127 @@ bool Cg850v::Get_Connector()
 
 void Cg850v::TurnON()
 {
+    CpcXXXX::TurnON();
 }
 
 void Cg850v::Reset()
 {
+    pCPU->Reset();
 }
 
 bool Cg850v::Chk_Adr(DWORD *d, DWORD data)
 {
+    return true;
 }
 
 bool Cg850v::Chk_Adr_R(DWORD *d, DWORD data)
 {
+
+    return true;
 }
 
 UINT8 Cg850v::in(UINT8 address)
 {
+    switch(address) {
+    case 0x10:
+        return 0;
+    case 0x11:
+        return 0;
+    case 0x12:
+        return 0;
+    case 0x13:
+        return 0;
+    case 0x14:
+        return 0;
+    case 0x15:
+        return 0;
+    case 0x16:
+        return 0;
+    case 0x17:
+        return 0;
+    case 0x18:
+        return 0;
+    case 0x19:
+        pCPU->imem[address] = ((exBank & 0x07) << 4) | (romBank & 0x0f);
+        return 0;
+    case 0x1a:
+        return 0;
+    case 0x1b:
+        return 0;
+    case 0x1c:
+        return 0;
+    case 0x1d:
+        return 0;
+    case 0x1e:
+        return 0;
+    case 0x1f:
+        return 0;
+    case 0x40: pCPU->imem[address] = pSED1560->instruction(0x100);
+        return 0;
+    }
 }
 
 UINT8 Cg850v::out(UINT8 address, UINT8 value)
 {
+    switch(address) {
+    case 0x11:
+        return 0;
+    case 0x12:
+        return 0;
+    case 0x13:
+        return 0;
+    case 0x14:
+        return 0;
+    case 0x15:
+        return 0;
+    case 0x16:
+        return 0;
+    case 0x17:
+        return 0;
+    case 0x18:
+        return 0;
+    case 0x19:
+        romBank = (value & 0x0f);
+        exBank = ((value & 0x70) >> 4);
+        return 0;
+    case 0x1a:
+        return 0;
+    case 0x1b:
+        return 0;
+    case 0x1c:
+        return 0;
+    case 0x1e:
+        return 0;
+    case 0x1f:
+        return 0;
+    case 0x40: pSED1560->instruction(0x200 | value);
+        return 0;
+    }
 }
 
 
 bool Cg850v::Mem_Mirror(DWORD *d)
 {
+    if ( (*d>=0x8000) && (*d<=0xbfff) ) {
+        if (exBank != 0) {
+            mem[*d] = 0x2d;
+        }
+    }
+    if ( (*d>=0xc000) && (*d<=0xffff) ) {
+        if (romBank < 23) {
+            *d += (romBank * 0x4000);
+        }
+        else {
+            mem[*d] = 0xff;
+        }
+    }
+    return true;
 }
 
 
 bool Cg850v::run()
 {
+    CpcXXXX::run();
 }
 
 void Cg850v::Set_Port(PORTS Port, BYTE data)

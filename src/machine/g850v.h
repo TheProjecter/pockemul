@@ -8,6 +8,7 @@
 
 
 class CZ80;
+class CSED1560;
 
 
 class Cg850v:public CpcXXXX{
@@ -33,8 +34,8 @@ public:
 
     virtual bool Chk_Adr(DWORD *d,DWORD data);
     virtual bool Chk_Adr_R(DWORD *d,DWORD data);
-    UINT8		in(UINT8 address);
-    UINT8       out(UINT8 address,UINT8 value);
+    virtual UINT8 in(UINT8 address);
+    virtual UINT8 out(UINT8 address,UINT8 value);
     virtual bool Set_Connector(void);
     virtual bool Get_Connector(void);
     BYTE        getKey(void);
@@ -43,6 +44,10 @@ public:
 
     Cg850v(CPObject *parent = 0);
     virtual ~Cg850v();
+
+    CSED1560 *pSED1560;
+private:
+    int exBank,romBank;
 
 };
 
