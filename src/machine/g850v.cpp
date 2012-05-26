@@ -6,6 +6,7 @@
 #include "sed1560.h"
 #include "Inter.h"
 #include "Keyb.h"
+#include "Lcdc_g850.h"
 
 Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 {								//[constructor]
@@ -53,7 +54,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 
     SoundOn			= false;
 
-//    pLCDC		= new Clcdc_pc1600(this);
+    pLCDC		= new Clcdc_g850(this);
 //    pLCDC->Color_Off.setRgb(
 //                        (int) (95*pLCDC->contrast),
 //                        (int) (119*pLCDC->contrast),
@@ -138,6 +139,7 @@ bool Cg850v::Get_Connector()
 void Cg850v::TurnON()
 {
     CpcXXXX::TurnON();
+    pSED1560->updated = true;
 }
 
 void Cg850v::Reset()
@@ -194,6 +196,8 @@ UINT8 Cg850v::in(UINT8 address)
         return 0;
     case 0x40: pCPU->imem[address] = pSED1560->instruction(0x100);
         return 0;
+    case 0x41: pCPU->imem[address] = pSED1560->instruction(0x500);
+        return 0;
     }
 }
 
@@ -231,6 +235,8 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
     case 0x1f:
         return 0;
     case 0x40: pSED1560->instruction(0x200 | value);
+        return 0;
+    case 0x41: pSED1560->instruction(0x600 | value);
         return 0;
     }
 }

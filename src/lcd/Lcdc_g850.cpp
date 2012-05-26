@@ -6,6 +6,7 @@
 #include "sed1560.h"
 #include "Lcdc_g850.h"
 #include "Lcdc_symb.h"
+#include "Log.h"
 
 Clcdc_g850::Clcdc_g850(CPObject *parent )	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
@@ -92,10 +93,11 @@ void Clcdc_g850::disp(void)
 
     Refresh = false;
 
+
     if (!ready) return;
     if (!g850->pSED1560) return;
     if (!g850->pSED1560->updated) return;
-
+AddLog(LOG_DISPLAY,"DISP");
     g850->pSED1560->updated = false;
 
     Refresh = true;
@@ -113,10 +115,14 @@ void Clcdc_g850::disp(void)
                 for (b=0; b<8;b++)
                 {
                     //if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",i,j*8+b);
+
                     painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
 
                     int y = computeSL(j*8+b);
-                    if ((y>=0)&&(y < 48)) painter.drawPoint( i, y );
+                    if ((y>=0)&&(y < 48)) {
+                        if ((data>>b)&0x01) AddLog(LOG_DISPLAY,tr("pset[%1,%2]").arg(i).arg(y));
+                        painter.drawPoint( i, y );
+                    }
                 }
             }
         }
