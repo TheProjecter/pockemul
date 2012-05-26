@@ -69,7 +69,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
 
 
-    pKEYB		= new Ckeyb(this,"g850.map");
+    pKEYB		= new Ckeyb(this,"g850v.map");
     pSED1560    = new CSED1560(this);
 
     Tape_Base_Freq=2500;
@@ -400,7 +400,7 @@ BYTE Cg850v::getKey()
 //            if (KEY(K_BS))			data|=0x04;
 //        }
 //    }
-    BYTE ks = ks1 | (ks2 << 8);
+    WORD ks = ks1 | (ks2 << 8);
     if ((pKEYB->LastKey) && ks )
     {
         if (ks&1) {
@@ -434,10 +434,10 @@ BYTE Cg850v::getKey()
             if (KEY(','))			data|=0x80;
         }
         if (ks&8) {
-            if (KEY(K_BASIC))			data|=0x01;
+            if (KEY(K_BASIC))		data|=0x01;
             if (KEY(K_TXT))			data|=0x02;
             if (KEY(K_SML))			data|=0x04;
-            if (KEY(K_EXTMENU))			data|=0x08;
+            if (KEY(K_EXTMENU))		data|=0x08;
             if (KEY(K_TAB))			data|=0x10;
             if (KEY(' '))			data|=0x20;
             if (KEY(K_DA))			data|=0x40;
@@ -461,7 +461,7 @@ BYTE Cg850v::getKey()
             if (KEY('2'))			data|=0x10;
             if (KEY('3'))			data|=0x20;
             if (KEY('-'))			data|=0x40;
-            if (KEY(K_MPLUS))			data|=0x80;
+            if (KEY(K_MPLUS))		data|=0x80;
         }
         if (ks&0x40) {
             if (KEY('I'))			data|=0x01;			// R ARROW
@@ -471,7 +471,7 @@ BYTE Cg850v::getKey()
             if (KEY('5'))			data|=0x10;
             if (KEY('6'))			data|=0x20;
             if (KEY('*'))			data|=0x40;
-            if (KEY(K_CCE))			data|=0x80;
+            if (KEY(K_RM))			data|=0x80;
         }
         if (ks&0x80) {
             if (KEY('P'))			data|=0x01;
@@ -483,7 +483,27 @@ BYTE Cg850v::getKey()
             if (KEY('/'))			data|=0x40;
             if (KEY(')'))			data|=0x80;			// DOWN ARROW
         }
+        if (ks&0x100) {
+            if (KEY(K_NPR))     	data|=0x01;
+            if (KEY(K_DEG))			data|=0x02;
+            if (KEY(K_ROOT))		data|=0x04;
+            if (KEY(K_SQR))			data|=0x08;
+            if (KEY(K_POT))			data|=0x10;
+            if (KEY('('))			data|=0x20;
+            if (KEY(K_1X))			data|=0x40;
+            if (KEY(K_MDF))			data|=0x80;
+        }
 
+        if (ks&0x200) {
+            if (KEY(K_SHT2))		data|=0x01;
+            if (KEY(K_SIN))			data|=0x02;
+            if (KEY(K_COS))			data|=0x04;
+            if (KEY(K_LN))			data|=0x08;
+            if (KEY(K_LOG))			data|=0x10;
+            if (KEY(K_TAN))			data|=0x20;
+            if (KEY(K_FSE))			data|=0x40;
+            if (KEY(K_CLR))			data|=0x80;
+        }
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
         //SetReg(LH5810_OPA,data^0xff);
     }
