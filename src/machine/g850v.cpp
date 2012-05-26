@@ -26,7 +26,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     LcdFname		= ":/G850V/g850vlcd.png";
     SymbFname		= ":/G850V/g850vsymb.png";
     memsize			= 0x060000;
-    InitMemValue	= 0x00;
+    InitMemValue	= 0xff;
 
     SlotList.clear();
 
@@ -124,7 +124,7 @@ bool Cg850v::init()
 #endif
     CpcXXXX::init();
     pCPU->init();
-    romBank = exBank = ramBank = 0;
+    ks1=ks2=romBank = exBank = ramBank = 0;
     return true;
 }
 
@@ -146,6 +146,12 @@ void Cg850v::TurnON()
 {
     CpcXXXX::TurnON();
     pSED1560->updated = true;
+}
+
+void Cg850v::TurnOFF(void) {
+    mainwindow->saveAll = YES;
+    CpcXXXX::TurnOFF();
+    mainwindow->saveAll = ASK;
 }
 
 void Cg850v::Reset()
@@ -447,7 +453,7 @@ BYTE Cg850v::getKey()
             if (KEY(K_LA))			data|=0x01;			// +
             if (KEY(K_RA))			data|=0x02;			// *
             if (KEY(K_BRK))			data|=0x04;			// /
-            if (KEY('O'))			data|=0x08;
+            if (KEY('0'))			data|=0x08;
             if (KEY('.'))			data|=0x10;			// Key F2
             if (KEY('='))			data|=0x20;
             if (KEY('+'))			data|=0x40;
@@ -502,11 +508,11 @@ BYTE Cg850v::getKey()
             if (KEY(K_LOG))			data|=0x10;
             if (KEY(K_TAN))			data|=0x20;
             if (KEY(K_FSE))			data|=0x40;
-            if (KEY(K_CLR))			data|=0x80;
+            if (KEY(K_CCE))			data|=0x80;
         }
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
         //SetReg(LH5810_OPA,data^0xff);
     }
-    return data;//^0xff;
+    return data;
 
 }

@@ -27,8 +27,9 @@ public:
     void	Set_Port(PORTS Port,BYTE data);
     BYTE	Get_Port(PORTS Port);
 
-    virtual bool	Mem_Mirror(DWORD *d);
-    void	TurnON(void);
+    virtual bool Mem_Mirror(DWORD *d);
+    virtual void TurnON(void);
+    virtual void TurnOFF();
     void    Reset(void);
 
 
@@ -46,6 +47,7 @@ public:
     virtual ~Cg850v();
 
     CSED1560 *pSED1560;
+
 private:
     int exBank,romBank,ramBank;
     BYTE ks1,ks2;
