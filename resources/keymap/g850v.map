@@ -13,7 +13,6 @@
     <KEY description="OFF" height="16" left="576" scancode="0xc8" top="45" width="25"/>
     <KEY description="On/Brk" height="16" left="611" scancode="0x3" top="44" width="25"/>
     <KEY description="CLS" height="16" left="611" scancode="0xef" top="80" width="25"/>
-    <KEY description="DEL" height="27" left="663" scancode="0xa" top="195" width="31"/>
     <KEY description="Down Arrow" height="16" left="350" scancode="0x4" top="287" width="25"/>
     <KEY description="ENTER" height="56" left="396" scancode="0xd" top="222" width="34"/>
     <KEY description="Equal" height="22" left="520" scancode="0x3d" top="281" width="32"/>
@@ -23,8 +22,7 @@
     <KEY description="Rigth Arrow" height="16" left="384" scancode="0x7" top="286" width="25"/>
     <KEY description="2ndF" height="16" left="436" scancode="0x11" top="79" width="23"/>
     <KEY description="SML" height="16" left="18" scancode="0x14" top="226" width="32"/>
-    <KEY description="CTRL" height="16" left="88" scancode="0xd5" top="319" width="30"/>
-    <KEY description="ANS" height="16" left="166" scancode="0xdc" top="321" width="25"/>
+    <KEY description="ANS" height="16" left="541" scancode="0xdc" top="44" width="25"/>
     <KEY description="Space" height="17" left="111" scancode="0x20" top="286" width="163"/>
     <KEY description="Up Arrow" height="16" left="351" scancode="0x5" top="257" width="25"/>
     <KEY description="0" height="22" left="435" scancode="0x30" top="282" width="32"/>
@@ -63,30 +61,22 @@
     <KEY description="X" height="16" left="111" scancode="0x78" top="256" width="25"/>
     <KEY description="Y" height="16" left="224" scancode="0x79" top="191" width="25"/>
     <KEY description="Z" height="16" left="77" scancode="0x7a" top="254" width="25"/>
-    <KEY description="MENU" height="16" left="19" scancode="0xda" top="224" width="25"/>
-    <KEY description="EXTMENU" height="16" left="20" scancode="0xdb" top="192" width="25"/>
+    <KEY description="MENU" height="20" left="0" scancode="0xda" top="0" width="20"/>
+    <KEY description="EXTMENU" height="16" left="72" scancode="0xdb" top="287" width="25"/>
     <KEY description="BASIC" height="16" left="436" scancode="0xe2" top="45" width="25"/>
     <KEY description="TXT" height="16" left="469" scancode="0x20a" top="44" width="25"/>
-    <KEY description="+/-" height="22" left="524" scancode="0xe0" top="314" width="32"/>
-    <KEY description="STO" height="16" left="428" scancode="0xdd" top="223" width="25"/>
-    <KEY description="RCL" height="16" left="420" scancode="0xde" top="255" width="33"/>
     <KEY description="x^2" height="16" left="506" scancode="0xe3" top="141" width="25"/>
     <KEY description="SQRT(x)" height="16" left="471" scancode="0xe4" top="144" width="25"/>
     <KEY description="x^y" height="16" left="539" scancode="0xe5" top="144" width="25"/>
-    <KEY description="Exp" height="20" left="0" scancode="0xe6" top="0" width="20"/>
-    <KEY description="X:M" height="20" left="0" scancode="0xe7" top="0" width="20"/>
-    <KEY description="Stat" height="20" left="0" scancode="0xe8" top="0" width="20"/>
     <KEY description="1/x" height="16" left="578" scancode="0xe9" top="111" width="25"/>
     <KEY description="Log" height="16" left="542" scancode="0xea" top="112" width="25"/>
     <KEY description="Ln" height="16" left="507" scancode="0xeb" top="111" width="25"/>
     <KEY description="Deg" height="16" left="471" scancode="0xec" top="111" width="25"/>
-    <KEY description="Hex" height="20" left="0" scancode="0xed" top="0" width="20"/>
     <KEY description="M+" height="22" left="604" scancode="0xee" top="209" width="32"/>
-    <KEY description="FSE" height="20" left="0" scancode="0xf0" top="0" width="20"/>
+    <KEY description="FSE" height="17" left="577" scancode="0xf0" top="78" width="25"/>
     <KEY description="Tan" height="16" left="542" scancode="0xf1" top="80" width="25"/>
     <KEY description="Cos" height="16" left="507" scancode="0xf2" top="80" width="25"/>
     <KEY description="Sin" height="16" left="471" scancode="0xf3" top="80" width="25"/>
-    <KEY description="Hyp" height="20" left="0" scancode="0xf4" top="0" width="20"/>
     <KEY description="RM" height="22" left="604" scancode="0xf5" top="173" width="32"/>
 </Keyboard>
 </KEYBMAP>
