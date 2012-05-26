@@ -47,7 +47,8 @@ public:
 
     CSED1560 *pSED1560;
 private:
-    int exBank,romBank;
+    int exBank,romBank,ramBank;
+    BYTE ks1,ks2;
 
 };
 

@@ -117,12 +117,13 @@ Cg850v::~Cg850v()
 bool Cg850v::init()
 {
     // if DEBUG then log CPU
+    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pZ80->logsw = true;
+    pCPU->logsw = true;
 #endif
     CpcXXXX::init();
     pCPU->init();
-    romBank = exBank = 0;
+    romBank = exBank = ramBank = 0;
     return true;
 }
 
@@ -147,21 +148,41 @@ void Cg850v::Reset()
     pCPU->Reset();
 }
 
+bool Cg850v::Mem_Mirror(DWORD *d)
+{
+    if ( (*d>=0x8000) && (*d<=0xbfff) ) {
+        if (exBank != 0) {
+//            mem[*d] = 0x2d;
+        }
+    }
+    if ( (*d>=0xc000) && (*d<=0xffff) ) {
+        if (romBank < 23) {
+            *d += ((romBank-1) * 0x4000);
+        }
+        else {
+//            mem[*d] = 0xff;
+        }
+    }
+    return true;
+}
+
 bool Cg850v::Chk_Adr(DWORD *d, DWORD data)
 {
-    return true;
+    Mem_Mirror(d);
+    if (*d<=0x7fff) return true;
+    return false;
 }
 
 bool Cg850v::Chk_Adr_R(DWORD *d, DWORD data)
 {
-
+    Mem_Mirror(d);
     return true;
 }
 
 UINT8 Cg850v::in(UINT8 address)
 {
     switch(address) {
-    case 0x10:
+    case 0x10: pCPU->imem[address] = getKey();
         return 0;
     case 0x11:
         return 0;
@@ -185,6 +206,7 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x1a:
         return 0;
     case 0x1b:
+        pCPU->imem[address] = ramBank;
         return 0;
     case 0x1c:
         return 0;
@@ -194,9 +216,39 @@ UINT8 Cg850v::in(UINT8 address)
         return 0;
     case 0x1f:
         return 0;
-    case 0x40: pCPU->imem[address] = pSED1560->instruction(0x100);
+    case 0x40:
+    case 0x42:
+    case 0x44:
+    case 0x46:
+    case 0x48:
+    case 0x4a:
+    case 0x4c:
+    case 0x4e:
+    case 0x50:
+    case 0x52:
+    case 0x54:
+    case 0x56:
+    case 0x58:
+    case 0x5a:
+    case 0x5c:
+    case 0x5e: pCPU->imem[address] = pSED1560->instruction(0x100);
         return 0;
-    case 0x41: pCPU->imem[address] = pSED1560->instruction(0x500);
+    case 0x41:
+    case 0x43:
+    case 0x45:
+    case 0x47:
+    case 0x49:
+    case 0x4b:
+    case 0x4d:
+    case 0x4f:
+    case 0x51:
+    case 0x53:
+    case 0x55:
+    case 0x57:
+    case 0x59:
+    case 0x5b:
+    case 0x5d:
+    case 0x5f: pCPU->imem[address] = pSED1560->instruction(0x500);
         return 0;
     }
 }
@@ -204,9 +256,9 @@ UINT8 Cg850v::in(UINT8 address)
 UINT8 Cg850v::out(UINT8 address, UINT8 value)
 {
     switch(address) {
-    case 0x11:
+    case 0x11: ks1 = value;
         return 0;
-    case 0x12:
+    case 0x12: ks2 = value & 0x03;
         return 0;
     case 0x13:
         return 0;
@@ -223,10 +275,13 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
     case 0x19:
         romBank = (value & 0x0f);
         exBank = ((value & 0x70) >> 4);
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"BANK SWITCH: %i - %i\n",romBank,exBank);
         return 0;
     case 0x1a:
         return 0;
     case 0x1b:
+        ramBank = value & 0x04;
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"RAM BANK SWITCH: %i\n",ramBank);
         return 0;
     case 0x1c:
         return 0;
@@ -242,23 +297,6 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
 }
 
 
-bool Cg850v::Mem_Mirror(DWORD *d)
-{
-    if ( (*d>=0x8000) && (*d<=0xbfff) ) {
-        if (exBank != 0) {
-            mem[*d] = 0x2d;
-        }
-    }
-    if ( (*d>=0xc000) && (*d<=0xffff) ) {
-        if (romBank < 23) {
-            *d += (romBank * 0x4000);
-        }
-        else {
-            mem[*d] = 0xff;
-        }
-    }
-    return true;
-}
 
 
 bool Cg850v::run()
@@ -292,4 +330,110 @@ bool Cg850v::InitDisplay()
 
 bool Cg850v::CompleteDisplay()
 {
+}
+
+#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+BYTE Cg850v::getKey()
+{
+
+    UINT8 data=0;
+
+//    if (pKEYB->LastKey)
+//    {
+//        BYTE ks1 = pLH5810->GetReg(LH5810_OPB);
+//        if (!( ks1 & 0x40)) {
+//            if (KEY(K_CTRL))		data|=0x01;
+//            if (KEY(K_KBII))		data|=0x02;
+//            if (KEY(K_BS))			data|=0x04;
+//        }
+//    }
+    BYTE ks = ks1 | (ks2 << 8);
+    if ((pKEYB->LastKey) && ks )
+    {
+        if (ks&1) {
+            if (KEY('2'))			data|=0x01;
+            if (KEY('5'))			data|=0x02;
+            if (KEY('8'))			data|=0x04;
+            if (KEY('H'))			data|=0x08;
+            if (KEY(K_SHT))			data|=0x10;
+            if (KEY('Y'))			data|=0x20;
+            if (KEY('N'))			data|=0x40;
+            if (KEY(K_UA))			data|=0x80;			// UP ARROW
+        }
+        if (ks&2) {
+            if (KEY('.'))			data|=0x01;
+            if (KEY('-'))			data|=0x02;
+            if (KEY(K_OF))			data|=0x04;			// OFF
+            if (KEY('S'))			data|=0x08;
+            if (KEY(K_F1))			data|=0x10;
+            if (KEY('W'))			data|=0x20;
+            if (KEY('X'))			data|=0x40;
+            if (KEY(K_RSV))			data|=0x80;
+        }
+        if (ks&4) {
+            if (KEY('1'))			data|=0x01;
+            if (KEY('4'))			data|=0x02;
+            if (KEY('7'))			data|=0x04;
+            if (KEY('J'))			data|=0x08;
+            if (KEY(K_F5))			data|=0x10;
+            if (KEY('U'))			data|=0x20;
+            if (KEY('M'))			data|=0x40;
+            if (KEY('0'))			data|=0x80;
+        }
+        if (ks&8) {
+            if (KEY(')'))			data|=0x01;
+            if (KEY('L'))			data|=0x02;
+            if (KEY('O'))			data|=0x04;
+            if (KEY('K'))			data|=0x08;
+            if (KEY(K_F6))			data|=0x10;
+            if (KEY('I'))			data|=0x20;
+            if (KEY('('))			data|=0x40;
+            if (KEY(K_RET))			data|=0x80;
+        }
+        if (ks&0x10) {
+            if (KEY('+'))			data|=0x01;			// +
+            if (KEY('*'))			data|=0x02;			// *
+            if (KEY('/'))			data|=0x04;			// /
+            if (KEY('D'))			data|=0x08;
+            if (KEY(K_F2))			data|=0x10;			// Key F2
+            if (KEY('E'))			data|=0x20;
+            if (KEY('C'))			data|=0x40;
+            if (KEY(K_RCL))			data|=0x80;
+        }
+        if (ks&0x20) {
+            if (KEY('='))			data|=0x01;			// =
+            if (KEY(K_LA))			data|=0x02;			// LEFT ARROW
+            if (KEY('P'))			data|=0x04;
+            if (KEY('F'))			data|=0x08;
+            if (KEY(K_F3))			data|=0x10;
+            if (KEY('R'))			data|=0x20;
+            if (KEY('V'))			data|=0x40;
+            if (KEY(' '))			data|=0x80;
+        }
+        if (ks&0x40) {
+            if (KEY(K_RA))			data|=0x01;			// R ARROW
+            if (KEY(K_MOD))			data|=0x02;			// MODE
+            if (KEY(K_CLR))			data|=0x04;			// CLS
+            if (KEY('A'))			data|=0x08;
+            if (KEY(K_DEF))			data|=0x10;
+            if (KEY('Q'))			data|=0x20;
+            if (KEY('Z'))			data|=0x40;
+            if (KEY(K_SML))			data|=0x80;
+        }
+        if (ks&0x80) {
+            if (KEY('3'))			data|=0x01;
+            if (KEY('6'))			data|=0x02;
+            if (KEY('9'))			data|=0x04;
+            if (KEY('G'))			data|=0x08;
+            if (KEY(K_F4))			data|=0x10;			// Key F4
+            if (KEY('T'))			data|=0x20;
+            if (KEY('B'))			data|=0x40;
+            if (KEY(K_DA))			data|=0x80;			// DOWN ARROW
+        }
+
+//        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
+        //SetReg(LH5810_OPA,data^0xff);
+    }
+    return data^0xff;
+
 }
