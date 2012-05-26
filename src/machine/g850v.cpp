@@ -1,3 +1,4 @@
+#include "common.h"
 
 #include "g850v.h"
 #include "Connect.h"
@@ -8,6 +9,7 @@
 #include "Keyb.h"
 #include "Lcdc_g850.h"
 #include "Log.h"
+
 
 Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 {								//[constructor]
@@ -66,7 +68,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     pTIMER		= new Ctimer(this);
 
     pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,60));	publish(pCONNECTOR);
-    pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
+    //pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
 
 
     pKEYB		= new Ckeyb(this,"g850v.map");
@@ -106,7 +108,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     SlotList.append(CSlot(16, 0x58000 ,	":/G850V/rom14.bin"         , "" , ROM , "ROM BANK 14"));
     SlotList.append(CSlot(16, 0x5C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM BANK 15"));
 
-
+    pin11If = 0;
 }
 
 Cg850v::~Cg850v()
@@ -157,6 +159,7 @@ void Cg850v::TurnOFF(void) {
 void Cg850v::Reset()
 {
     pCPU->Reset();
+#if 1
     out( 0x11, 0);
     out( 0x12, 0);
     out( 0x14, 0);
@@ -192,15 +195,13 @@ void Cg850v::Reset()
     out( 0x6c, 0);
     out( 0x6d, 0);
     out( 0x6e, 4);
-
+#endif
 }
 
 bool Cg850v::Mem_Mirror(DWORD *d)
 {
     if ( (*d>=0x8000) && (*d<=0xbfff) ) {
         if (exBank != 0) {
-//            mem[*d] = 0x2d;
-            AddLog(LOG_DISPLAY,"PB");
             *d = 0x8000 + 0x1840;   // Tricks to return 0x2d value :-(
         }
     }
@@ -208,10 +209,7 @@ bool Cg850v::Mem_Mirror(DWORD *d)
         if (romBank < 23) {
             *d += ((romBank-1) * 0x4000);
         }
-        else {
-//            mem[*d] = 0xff;
-            AddLog(LOG_DISPLAY,"PB2");
-        }
+
     }
     return true;
 }
@@ -238,7 +236,7 @@ UINT8 Cg850v::in(UINT8 address)
         return 0;
     case 0x12:
         return 0;
-    case 0x13:
+    case 0x13: pCPU->imem[address] = (pKEYB->isShift?1:0);
         return 0;
     case 0x14:
         return 0;
@@ -249,6 +247,10 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x17:
         return 0;
     case 0x18:
+        pCPU->imem[address] =
+                (pCONNECTOR->Get_pin(PIN_MT_OUT1)?0x80:0x00) |
+                (pCONNECTOR->Get_pin(PIN_D_OUT)?0x02:0x00) |
+                (pCONNECTOR->Get_pin(PIN_BUSY)?0x01:0x00) ;
         return 0;
     case 0x19:
         pCPU->imem[address] = ((exBank & 0x07) << 4) | (romBank & 0x0f);
@@ -261,10 +263,17 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x1c:
         return 0;
     case 0x1d:
+        pCPU->imem[address] = 0x08;
         return 0;
     case 0x1e:
+        pCPU->imem[address] = 0x00;
         return 0;
     case 0x1f:
+        pCPU->imem[address] = (pKEYB->Kon?0x80:0x00) |
+                (pCONNECTOR->Get_pin(PIN_MT_IN)?0x04:0x00) |
+                (pCONNECTOR->Get_pin(PIN_ACK)?0x02:0x00) |
+                (pCONNECTOR->Get_pin(PIN_D_IN)?0x01:0x00) ;
+
         return 0;
     case 0x40:
     case 0x42:
@@ -300,6 +309,10 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x5d:
     case 0x5f: pCPU->imem[address] = pSED1560->instruction(0x500);
         return 0;
+    case 0x60: pCPU->imem[address] = pin11If;
+        return 0;
+    case 0x62: pCPU->imem[address] = (pCONNECTOR->Get_values()>>3) & ~pio8Io;
+        return 0;
     case 0x6d: pCPU->imem[address] = 0x00;
         return 0;
     case 0x6f: pCPU->imem[address] = 0xff;
@@ -327,6 +340,9 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
     case 0x17:
         return 0;
     case 0x18:
+        pCONNECTOR->Set_pin(PIN_MT_OUT1,value&0x80?true:false);
+        pCONNECTOR->Set_pin(PIN_D_OUT,value&0x02?true:false);
+        pCONNECTOR->Set_pin(PIN_BUSY,value&0x01?true:false);
         return 0;
     case 0x19:
         romBank = (value & 0x0f);
@@ -348,6 +364,10 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
     case 0x40: pSED1560->instruction(0x200 | value);
         return 0;
     case 0x41: pSED1560->instruction(0x600 | value);
+        return 0;
+    case 0x60: pin11If = value & 0x03;
+        return 0;
+    case 0x61: pio8Io = value;
         return 0;
     case 0x69: romBank = value;
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"ROM BANK SWITCH: %i\n",romBank);
@@ -397,32 +417,23 @@ BYTE Cg850v::getKey()
 
     UINT8 data=0;
 
-//    if (pKEYB->LastKey)
-//    {
-//        BYTE ks1 = pLH5810->GetReg(LH5810_OPB);
-//        if (!( ks1 & 0x40)) {
-//            if (KEY(K_CTRL))		data|=0x01;
-//            if (KEY(K_KBII))		data|=0x02;
-//            if (KEY(K_BS))			data|=0x04;
-//        }
-//    }
     WORD ks = ks1 | (ks2 << 8);
     if ((pKEYB->LastKey) && ks )
     {
         if (ks&1) {
-            if (KEY(K_OF))			data|=0x01; //ok
+            if (KEY(K_OF))			data|=0x01;
             if (KEY('Q'))			data|=0x02;
             if (KEY('W'))			data|=0x04;
-            if (KEY('E'))			data|=0x08; // ok
-            if (KEY('R'))			data|=0x10; // ok
-            if (KEY('T'))			data|=0x20; // ok
-            if (KEY('Y'))			data|=0x40; // ok
-            if (KEY('U'))			data|=0x80; // ok
+            if (KEY('E'))			data|=0x08;
+            if (KEY('R'))			data|=0x10;
+            if (KEY('T'))			data|=0x20;
+            if (KEY('Y'))			data|=0x40;
+            if (KEY('U'))			data|=0x80;
         }
         if (ks&2) {
             if (KEY('A'))			data|=0x01;
             if (KEY('S'))			data|=0x02;
-            if (KEY('D'))			data|=0x04;			// OFF
+            if (KEY('D'))			data|=0x04;
             if (KEY('F'))			data|=0x08;
             if (KEY('G'))			data|=0x10;
             if (KEY('H'))			data|=0x20;
@@ -450,18 +461,18 @@ BYTE Cg850v::getKey()
             if (KEY(K_UA))			data|=0x80;
         }
         if (ks&0x10) {
-            if (KEY(K_LA))			data|=0x01;			// +
-            if (KEY(K_RA))			data|=0x02;			// *
-            if (KEY(K_BRK))			data|=0x04;			// /
+            if (KEY(K_LA))			data|=0x01;
+            if (KEY(K_RA))			data|=0x02;
+            if (KEY(K_ANS))			data|=0x04;
             if (KEY('0'))			data|=0x08;
-            if (KEY('.'))			data|=0x10;			// Key F2
+            if (KEY('.'))			data|=0x10;
             if (KEY('='))			data|=0x20;
             if (KEY('+'))			data|=0x40;
             if (KEY(K_RET))			data|=0x80;
         }
         if (ks&0x20) {
-            if (KEY('L'))			data|=0x01;			// =
-            if (KEY(';'))			data|=0x02;			// LEFT ARROW
+            if (KEY('L'))			data|=0x01;
+            if (KEY(';'))			data|=0x02;
             if (KEY(K_CON))			data|=0x04;
             if (KEY('1'))			data|=0x08;
             if (KEY('2'))			data|=0x10;
@@ -470,9 +481,9 @@ BYTE Cg850v::getKey()
             if (KEY(K_MPLUS))		data|=0x80;
         }
         if (ks&0x40) {
-            if (KEY('I'))			data|=0x01;			// R ARROW
-            if (KEY('O'))			data|=0x02;			// MODE
-            if (KEY(K_INS))			data|=0x04;			// CLS
+            if (KEY('I'))			data|=0x01;
+            if (KEY('O'))			data|=0x02;
+            if (KEY(K_INS))			data|=0x04;
             if (KEY('4'))			data|=0x08;
             if (KEY('5'))			data|=0x10;
             if (KEY('6'))			data|=0x20;
@@ -484,10 +495,10 @@ BYTE Cg850v::getKey()
             if (KEY(K_BS))			data|=0x02;
             if (KEY(K_PI))			data|=0x04;
             if (KEY('7'))			data|=0x08;
-            if (KEY('8'))			data|=0x10;			// Key F4
+            if (KEY('8'))			data|=0x10;
             if (KEY('9'))			data|=0x20;
             if (KEY('/'))			data|=0x40;
-            if (KEY(')'))			data|=0x80;			// DOWN ARROW
+            if (KEY(')'))			data|=0x80;
         }
         if (ks&0x100) {
             if (KEY(K_NPR))     	data|=0x01;
@@ -511,7 +522,7 @@ BYTE Cg850v::getKey()
             if (KEY(K_CCE))			data|=0x80;
         }
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
-        //SetReg(LH5810_OPA,data^0xff);
+
     }
     return data;
 

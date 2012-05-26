@@ -15,6 +15,7 @@
     <KEY description="CLS" height="16" left="611" scancode="0xef" top="80" width="25"/>
     <KEY description="Down Arrow" height="16" left="350" scancode="0x4" top="287" width="25"/>
     <KEY description="ENTER" height="56" left="396" scancode="0xd" top="222" width="34"/>
+    <KEY description="ENTER numpad" height="56" left="604" scancode="0xd" top="247" width="34"/>
     <KEY description="Equal" height="22" left="520" scancode="0x3d" top="281" width="32"/>
     <KEY description="INS" height="25" left="279" scancode="0x9" top="285" width="32"/>
     <KEY description="Left Arrow" height="16" left="317" scancode="0x6" top="288" width="25"/>
@@ -22,7 +23,8 @@
     <KEY description="Rigth Arrow" height="16" left="384" scancode="0x7" top="286" width="25"/>
     <KEY description="2ndF" height="16" left="436" scancode="0x11" top="79" width="23"/>
     <KEY description="SML" height="16" left="18" scancode="0x14" top="226" width="32"/>
-    <KEY description="ANS" height="16" left="541" scancode="0xdc" top="44" width="25"/>
+    <KEY description="ANS" height="16" left="541" scancode="0x207" top="44" width="25"/>
+    <KEY description="BS" height="16" left="396" scancode="0xd6" top="192" width="25"/>
     <KEY description="Space" height="17" left="111" scancode="0x20" top="286" width="163"/>
     <KEY description="Up Arrow" height="16" left="351" scancode="0x5" top="257" width="25"/>
     <KEY description="0" height="22" left="435" scancode="0x30" top="282" width="32"/>
