@@ -7,6 +7,7 @@
 #include "Inter.h"
 #include "Keyb.h"
 #include "Lcdc_g850.h"
+#include "Log.h"
 
 Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 {								//[constructor]
@@ -24,7 +25,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     BackGroundFname	= ":/G850V/g850v.png";
     LcdFname		= ":/G850V/g850vlcd.png";
     SymbFname		= ":/G850V/g850vsymb.png";
-    memsize			= 0x020000;
+    memsize			= 0x060000;
     InitMemValue	= 0x00;
 
     SlotList.clear();
@@ -40,17 +41,17 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     setDX(683);//Pc_DX		= 679; //572;
     setDY(330);//Pc_DY		= 299;//254;
 
-    Lcd_X		= 60;
-    Lcd_Y		= 50;
+    Lcd_X		= 62;
+    Lcd_Y		= 60;
     Lcd_DX		= 144;
     Lcd_DY		= 48;
     Lcd_ratio_X	= 2;
     Lcd_ratio_Y	= 2;
 
-    Lcd_Symb_X	= 60;
-    Lcd_Symb_Y	= 40;
-    Lcd_Symb_DX	= 317;
-    Lcd_Symb_DY	= 5;
+    Lcd_Symb_X	= 64+288;
+    Lcd_Symb_Y	= 60;
+    Lcd_Symb_DX	= 20;
+    Lcd_Symb_DY	= 96;
 
     SoundOn			= false;
 
@@ -85,25 +86,25 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom04.bin"         , "" , ROM , "ROM BANK 04"));
     SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom05.bin"         , "" , ROM , "ROM BANK 05"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom06.bin"         , "" , ROM , "ROM BANK 06"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom07.bin"         , "" , ROM , "ROM BANK 07"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom08.bin"         , "" , ROM , "ROM BANK 08"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom09.bin"         , "" , ROM , "ROM BANK 09"));
+    SlotList.append(CSlot(16, 0x20000 ,	":/G850V/rom06.bin"         , "" , ROM , "ROM BANK 06"));
+    SlotList.append(CSlot(16, 0x24000 ,	":/G850V/rom07.bin"         , "" , ROM , "ROM BANK 07"));
+    SlotList.append(CSlot(16, 0x28000 ,	":/G850V/rom08.bin"         , "" , ROM , "ROM BANK 08"));
+    SlotList.append(CSlot(16, 0x2C000 ,	":/G850V/rom09.bin"         , "" , ROM , "ROM BANK 09"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom0a.bin"         , "" , ROM , "ROM BANK 0a"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom0b.bin"         , "" , ROM , "ROM BANK 0b"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom0c.bin"         , "" , ROM , "ROM BANK 0c"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom0d.bin"         , "" , ROM , "ROM BANK 0d"));
+    SlotList.append(CSlot(16, 0x30000 ,	":/G850V/rom0a.bin"         , "" , ROM , "ROM BANK 0a"));
+    SlotList.append(CSlot(16, 0x34000 ,	":/G850V/rom0b.bin"         , "" , ROM , "ROM BANK 0b"));
+    SlotList.append(CSlot(16, 0x38000 ,	":/G850V/rom0c.bin"         , "" , ROM , "ROM BANK 0c"));
+    SlotList.append(CSlot(16, 0x3C000 ,	":/G850V/rom0d.bin"         , "" , ROM , "ROM BANK 0d"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom0e.bin"         , "" , ROM , "ROM BANK 0e"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom0f.bin"         , "" , ROM , "ROM BANK 0f"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom10.bin"         , "" , ROM , "ROM BANK 10"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom11.bin"         , "" , ROM , "ROM BANK 11"));
+    SlotList.append(CSlot(16, 0x40000 ,	":/G850V/rom0e.bin"         , "" , ROM , "ROM BANK 0e"));
+    SlotList.append(CSlot(16, 0x44000 ,	":/G850V/rom0f.bin"         , "" , ROM , "ROM BANK 0f"));
+    SlotList.append(CSlot(16, 0x48000 ,	":/G850V/rom10.bin"         , "" , ROM , "ROM BANK 10"));
+    SlotList.append(CSlot(16, 0x4C000 ,	":/G850V/rom11.bin"         , "" , ROM , "ROM BANK 11"));
 
-    SlotList.append(CSlot(16, 0x10000 ,	":/G850V/rom12.bin"         , "" , ROM , "ROM BANK 12"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/G850V/rom13.bin"         , "" , ROM , "ROM BANK 13"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/G850V/rom14.bin"         , "" , ROM , "ROM BANK 14"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM BANK 15"));
+    SlotList.append(CSlot(16, 0x50000 ,	":/G850V/rom12.bin"         , "" , ROM , "ROM BANK 12"));
+    SlotList.append(CSlot(16, 0x54000 ,	":/G850V/rom13.bin"         , "" , ROM , "ROM BANK 13"));
+    SlotList.append(CSlot(16, 0x58000 ,	":/G850V/rom14.bin"         , "" , ROM , "ROM BANK 14"));
+    SlotList.append(CSlot(16, 0x5C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM BANK 15"));
 
 
 }
@@ -117,7 +118,7 @@ Cg850v::~Cg850v()
 bool Cg850v::init()
 {
     // if DEBUG then log CPU
-    pCPU->logsw = true;
+//    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -130,10 +131,14 @@ bool Cg850v::init()
 
 bool Cg850v::Set_Connector()
 {
+
+    return true;
 }
 
 bool Cg850v::Get_Connector()
 {
+
+    return true;
 }
 
 
@@ -146,6 +151,42 @@ void Cg850v::TurnON()
 void Cg850v::Reset()
 {
     pCPU->Reset();
+    out( 0x11, 0);
+    out( 0x12, 0);
+    out( 0x14, 0);
+    out( 0x15, 1);
+    out( 0x16, 0xff);
+    out( 0x17, 0x0f);
+    out( 0x18, 0);
+    out( 0x19, 0);
+    out( 0x1b, 0);
+    out( 0x1c, 1);
+//    z80.r.im = 1;
+    mem[0x790d] = 0;
+
+    mem[0x779c] = (mem[0x779c] >= 0x07 && mem[0x779c] <= 0x1f ? mem[0x779c]: 0x0f);
+    out( 0x40, 0x24);
+    out( 0x40, mem[0x790d] + 0x40);
+    out( 0x40, mem[0x779c] + 0x80);
+    out( 0x40, 0xa0);
+    out( 0x40, 0xa4);
+    out( 0x40, 0xa6);
+    out( 0x40, 0xa9);
+    out( 0x40, 0xaf);
+    out( 0x40, 0xc0);
+    out( 0x40, 0x25);
+    out( 0x60, 0);
+    out( 0x61, 0xff);
+    out( 0x62, 0);
+    out( 0x64, 0);
+    out( 0x65, 1);
+    out( 0x66, 1);
+    out( 0x67, 0);
+    out( 0x6b, 4);
+    out( 0x6c, 0);
+    out( 0x6d, 0);
+    out( 0x6e, 4);
+
 }
 
 bool Cg850v::Mem_Mirror(DWORD *d)
@@ -153,6 +194,8 @@ bool Cg850v::Mem_Mirror(DWORD *d)
     if ( (*d>=0x8000) && (*d<=0xbfff) ) {
         if (exBank != 0) {
 //            mem[*d] = 0x2d;
+            AddLog(LOG_DISPLAY,"PB");
+            *d = 0x8000 + 0x1840;   // Tricks to return 0x2d value :-(
         }
     }
     if ( (*d>=0xc000) && (*d<=0xffff) ) {
@@ -161,6 +204,7 @@ bool Cg850v::Mem_Mirror(DWORD *d)
         }
         else {
 //            mem[*d] = 0xff;
+            AddLog(LOG_DISPLAY,"PB2");
         }
     }
     return true;
@@ -250,7 +294,13 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x5d:
     case 0x5f: pCPU->imem[address] = pSED1560->instruction(0x500);
         return 0;
+    case 0x6d: pCPU->imem[address] = 0x00;
+        return 0;
+    case 0x6f: pCPU->imem[address] = 0xff;
+        return 0;
     }
+
+    return 0;
 }
 
 UINT8 Cg850v::out(UINT8 address, UINT8 value)
@@ -292,6 +342,9 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
     case 0x40: pSED1560->instruction(0x200 | value);
         return 0;
     case 0x41: pSED1560->instruction(0x600 | value);
+        return 0;
+    case 0x69: romBank = value;
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"ROM BANK SWITCH: %i\n",romBank);
         return 0;
     }
 }
@@ -351,89 +404,89 @@ BYTE Cg850v::getKey()
     if ((pKEYB->LastKey) && ks )
     {
         if (ks&1) {
-            if (KEY('2'))			data|=0x01;
-            if (KEY('5'))			data|=0x02;
-            if (KEY('8'))			data|=0x04;
-            if (KEY('H'))			data|=0x08;
-            if (KEY(K_SHT))			data|=0x10;
-            if (KEY('Y'))			data|=0x20;
-            if (KEY('N'))			data|=0x40;
-            if (KEY(K_UA))			data|=0x80;			// UP ARROW
+            if (KEY(K_OF))			data|=0x01; //ok
+            if (KEY('Q'))			data|=0x02;
+            if (KEY('W'))			data|=0x04;
+            if (KEY('E'))			data|=0x08; // ok
+            if (KEY('R'))			data|=0x10; // ok
+            if (KEY('T'))			data|=0x20; // ok
+            if (KEY('Y'))			data|=0x40; // ok
+            if (KEY('U'))			data|=0x80; // ok
         }
         if (ks&2) {
-            if (KEY('.'))			data|=0x01;
-            if (KEY('-'))			data|=0x02;
-            if (KEY(K_OF))			data|=0x04;			// OFF
-            if (KEY('S'))			data|=0x08;
-            if (KEY(K_F1))			data|=0x10;
-            if (KEY('W'))			data|=0x20;
-            if (KEY('X'))			data|=0x40;
-            if (KEY(K_RSV))			data|=0x80;
+            if (KEY('A'))			data|=0x01;
+            if (KEY('S'))			data|=0x02;
+            if (KEY('D'))			data|=0x04;			// OFF
+            if (KEY('F'))			data|=0x08;
+            if (KEY('G'))			data|=0x10;
+            if (KEY('H'))			data|=0x20;
+            if (KEY('J'))			data|=0x40;
+            if (KEY('K'))			data|=0x80;
         }
         if (ks&4) {
-            if (KEY('1'))			data|=0x01;
-            if (KEY('4'))			data|=0x02;
-            if (KEY('7'))			data|=0x04;
-            if (KEY('J'))			data|=0x08;
-            if (KEY(K_F5))			data|=0x10;
-            if (KEY('U'))			data|=0x20;
+            if (KEY('Z'))			data|=0x01;
+            if (KEY('X'))			data|=0x02;
+            if (KEY('C'))			data|=0x04;
+            if (KEY('V'))			data|=0x08;
+            if (KEY('B'))			data|=0x10;
+            if (KEY('N'))			data|=0x20;
             if (KEY('M'))			data|=0x40;
-            if (KEY('0'))			data|=0x80;
+            if (KEY(','))			data|=0x80;
         }
         if (ks&8) {
-            if (KEY(')'))			data|=0x01;
-            if (KEY('L'))			data|=0x02;
-            if (KEY('O'))			data|=0x04;
-            if (KEY('K'))			data|=0x08;
-            if (KEY(K_F6))			data|=0x10;
-            if (KEY('I'))			data|=0x20;
-            if (KEY('('))			data|=0x40;
-            if (KEY(K_RET))			data|=0x80;
+            if (KEY(K_BASIC))			data|=0x01;
+            if (KEY(K_TXT))			data|=0x02;
+            if (KEY(K_SML))			data|=0x04;
+            if (KEY(K_EXTMENU))			data|=0x08;
+            if (KEY(K_TAB))			data|=0x10;
+            if (KEY(' '))			data|=0x20;
+            if (KEY(K_DA))			data|=0x40;
+            if (KEY(K_UA))			data|=0x80;
         }
         if (ks&0x10) {
-            if (KEY('+'))			data|=0x01;			// +
-            if (KEY('*'))			data|=0x02;			// *
-            if (KEY('/'))			data|=0x04;			// /
-            if (KEY('D'))			data|=0x08;
-            if (KEY(K_F2))			data|=0x10;			// Key F2
-            if (KEY('E'))			data|=0x20;
-            if (KEY('C'))			data|=0x40;
-            if (KEY(K_RCL))			data|=0x80;
+            if (KEY(K_LA))			data|=0x01;			// +
+            if (KEY(K_RA))			data|=0x02;			// *
+            if (KEY(K_BRK))			data|=0x04;			// /
+            if (KEY('O'))			data|=0x08;
+            if (KEY('.'))			data|=0x10;			// Key F2
+            if (KEY('='))			data|=0x20;
+            if (KEY('+'))			data|=0x40;
+            if (KEY(K_RET))			data|=0x80;
         }
         if (ks&0x20) {
-            if (KEY('='))			data|=0x01;			// =
-            if (KEY(K_LA))			data|=0x02;			// LEFT ARROW
-            if (KEY('P'))			data|=0x04;
-            if (KEY('F'))			data|=0x08;
-            if (KEY(K_F3))			data|=0x10;
-            if (KEY('R'))			data|=0x20;
-            if (KEY('V'))			data|=0x40;
-            if (KEY(' '))			data|=0x80;
+            if (KEY('L'))			data|=0x01;			// =
+            if (KEY(';'))			data|=0x02;			// LEFT ARROW
+            if (KEY(K_CON))			data|=0x04;
+            if (KEY('1'))			data|=0x08;
+            if (KEY('2'))			data|=0x10;
+            if (KEY('3'))			data|=0x20;
+            if (KEY('-'))			data|=0x40;
+            if (KEY(K_MPLUS))			data|=0x80;
         }
         if (ks&0x40) {
-            if (KEY(K_RA))			data|=0x01;			// R ARROW
-            if (KEY(K_MOD))			data|=0x02;			// MODE
-            if (KEY(K_CLR))			data|=0x04;			// CLS
-            if (KEY('A'))			data|=0x08;
-            if (KEY(K_DEF))			data|=0x10;
-            if (KEY('Q'))			data|=0x20;
-            if (KEY('Z'))			data|=0x40;
-            if (KEY(K_SML))			data|=0x80;
+            if (KEY('I'))			data|=0x01;			// R ARROW
+            if (KEY('O'))			data|=0x02;			// MODE
+            if (KEY(K_INS))			data|=0x04;			// CLS
+            if (KEY('4'))			data|=0x08;
+            if (KEY('5'))			data|=0x10;
+            if (KEY('6'))			data|=0x20;
+            if (KEY('*'))			data|=0x40;
+            if (KEY(K_CCE))			data|=0x80;
         }
         if (ks&0x80) {
-            if (KEY('3'))			data|=0x01;
-            if (KEY('6'))			data|=0x02;
-            if (KEY('9'))			data|=0x04;
-            if (KEY('G'))			data|=0x08;
-            if (KEY(K_F4))			data|=0x10;			// Key F4
-            if (KEY('T'))			data|=0x20;
-            if (KEY('B'))			data|=0x40;
-            if (KEY(K_DA))			data|=0x80;			// DOWN ARROW
+            if (KEY('P'))			data|=0x01;
+            if (KEY(K_BS))			data|=0x02;
+            if (KEY(K_PI))			data|=0x04;
+            if (KEY('7'))			data|=0x08;
+            if (KEY('8'))			data|=0x10;			// Key F4
+            if (KEY('9'))			data|=0x20;
+            if (KEY('/'))			data|=0x40;
+            if (KEY(')'))			data|=0x80;			// DOWN ARROW
         }
 
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
         //SetReg(LH5810_OPA,data^0xff);
     }
-    return data^0xff;
+    return data;//^0xff;
 
 }

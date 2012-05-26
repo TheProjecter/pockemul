@@ -106,7 +106,8 @@ AddLog(LOG_DISPLAY,"DISP");
 
     QPainter painter(pPC->LcdImage);
 
-    if (g850->pSED1560->info.on_off) {
+//    if (g850->pSED1560->info.on_off)
+    {
         for (int i = 0 ; i < 166; i++)
         {
             for (int j = 0 ; j < 8 ; j++)

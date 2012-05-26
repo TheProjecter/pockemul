@@ -25,5 +25,6 @@
         <file>keymap/pb1000.map</file>
         <file>keymap/x710.map</file>
         <file>keymap/pb2000.map</file>
+        <file>keymap/g850v.map</file>
     </qresource>
 </RCC>

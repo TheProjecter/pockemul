@@ -207,6 +207,9 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_IN        0x205
 #define K_MEMO_IN   0x206
 #define K_ANS       0x207
+#define K_PI        0x208
+#define K_CON       0x209
+#define K_TXT       0x20a
 
 class CPObject;
 class CpcXXXX;
