@@ -10,6 +10,7 @@ typedef struct {
     bool    ADC;
     bool    reset;
     bool    on_off;
+    bool    ReadModifyWrite;
     BYTE    ColAdrReg;
     BYTE    PgAdrReg;
     BYTE    displaySL;
@@ -67,7 +68,7 @@ private:
     void cmd_DutyPlus(qint16 cmd);
     void cmd_DutySel(qint16 cmd);
 
-    bool ReadModifyWrite;
+
 
 
 };

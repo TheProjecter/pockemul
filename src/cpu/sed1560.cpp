@@ -20,7 +20,8 @@ CSED1560::CSED1560(CpcXXXX *parent)
     info.ColAdrReg = 0;
     info.PgAdrReg = 0;
     info.busy = info.ADC = info.reset = false;
-    updated = false;
+    updated = true;
+    info.ReadModifyWrite = true;
 }
 
 CSED1560::~CSED1560() {
@@ -40,7 +41,7 @@ BYTE CSED1560::get8(qint16 adr)
 }
 
 void CSED1560::set8(qint16 adr,BYTE val)
-{
+{AddLog(LOG_DISPLAY,tr("SET[%1]=%2").arg(adr).arg(val));
     if (adr >= IMEMSIZE)
     {
         // ERROR
@@ -76,19 +77,20 @@ void CSED1560::set8(qint16 adr,BYTE val)
 
 BYTE CSED1560::instruction(qint16 cmd)
 {
+//    updated = true;
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"SED1560 CMD: %04x\n",cmd);
 
-//    AddLog(LOG_DISPLAY,tr("SED1560 CMD:%1").arg(cmd,4,16,QChar('0')));
+    AddLog(LOG_DISPLAY,tr("SED1560 CMD:%1").arg(cmd,4,16,QChar('0')));
 
     if ((cmd & MASK_write) == MASK_write ) { cmd_write(cmd); }
     else
     if ((cmd & MASK_read) == MASK_read ) { return cmd_read(cmd); }
     else
-    if ((cmd & MASK_End) == MASK_End ) { ReadModifyWrite = false; }
+    if ((cmd & MASK_End) == MASK_End ) { info.ReadModifyWrite = false; }
     else
     if ((cmd & MASK_Reset) == MASK_Reset ) { cmd_Reset(cmd); }
     else
-    if ((cmd & MASK_ReadModWrt) == MASK_ReadModWrt ) { ReadModifyWrite = true;  }
+    if ((cmd & MASK_ReadModWrt) == MASK_ReadModWrt ) { info.ReadModifyWrite = true;  }
     else
     if ((cmd & MASK_OutStatusRegSet) == MASK_OutStatusRegSet ) { cmd_OutStatusRegSet(cmd); }
     else
@@ -232,7 +234,7 @@ void CSED1560::cmd_write(qint16 cmd)
 //    if ((pPC->fp_log) && (cmd & 0xff)) fprintf(pPC->fp_log,"LCD Write:x=%02x y=%02x val=%02x\n",Xadr,Yadr,cmd & 0xff);
     set8( info.ColAdrReg  + info.PgAdrReg * 0xa6 , (cmd & 0xff));
 
-    if (ReadModifyWrite) {
+    if (info.ReadModifyWrite) {
         info.ColAdrReg++;
     }
 
@@ -249,7 +251,7 @@ BYTE CSED1560::cmd_read(qint16 cmd)
 
     BYTE value = get8( info.ColAdrReg  + info.PgAdrReg * 0xa6 );
 //    AddLog(LOG_TEMP,tr("HD61102 READ CMD : x=%1   Y=%2  v=%3").arg(info.Xadr).arg(info.Yadr).arg(value,2,16,QChar('0')));
-    if (!ReadModifyWrite) {
+    if (!info.ReadModifyWrite) {
         info.ColAdrReg++;
     }
 

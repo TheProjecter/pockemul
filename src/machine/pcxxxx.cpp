@@ -194,6 +194,7 @@ void CpcXXXX::TurnON(void)
          (Power && pKEYB->LastKey == K_OF) ||
          (!Power && pKEYB->LastKey == K_BRK))
     {
+        AddLog(LOG_MASTER,"Power ON");
         Initial_Session_Load();
         off = 0;
         Power = true;

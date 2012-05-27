@@ -77,7 +77,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     Tape_Base_Freq=2500;
 
     SlotList.clear();
-    SlotList.append(CSlot(1, 0x00000 ,	":/G850V/base.bin"          , "" , ROM , "ROM BASE"));
+    SlotList.append(CSlot(1, 0x00000 ,	":/G850V/base.bin"          , "" , RAM , "ROM BASE"));
     SlotList.append(CSlot(32, 0x00000 ,	""                          , "" , RAM , "RAM"));
 
     SlotList.append(CSlot(16, 0x08000 ,	":/G850V/rom00.bin"         , "" , ROM , "ROM BANK 00"));
@@ -108,7 +108,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     SlotList.append(CSlot(16, 0x58000 ,	":/G850V/rom14.bin"         , "" , ROM , "ROM BANK 14"));
     SlotList.append(CSlot(16, 0x5C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM BANK 15"));
 
-    pin11If = 0;
+    keyBreak = pin11If = 0;
 }
 
 Cg850v::~Cg850v()
@@ -146,8 +146,17 @@ bool Cg850v::Get_Connector()
 
 void Cg850v::TurnON()
 {
-    CpcXXXX::TurnON();
-    pSED1560->updated = true;
+    if (!Power && pKEYB->LastKey == K_BRK) {
+        AddLog(LOG_MASTER,"TURN ON");
+        Initial_Session_Load();
+        off = 0;
+        Power = true;
+        PowerSwitch = PS_RUN;
+        if (pLCDC) pLCDC->TurnON();
+        this->Reset();
+    }
+
+//    pSED1560->updated = true;
 }
 
 void Cg850v::TurnOFF(void) {
@@ -170,7 +179,7 @@ void Cg850v::Reset()
     out( 0x19, 0);
     out( 0x1b, 0);
     out( 0x1c, 1);
-//    z80.r.im = 1;
+    ((CZ80*)pCPU)->z80.r.im = 1;
     mem[0x790d] = 0;
 
     mem[0x779c] = (mem[0x779c] >= 0x07 && mem[0x779c] <= 0x1f ? mem[0x779c]: 0x0f);
@@ -196,6 +205,7 @@ void Cg850v::Reset()
     out( 0x6d, 0);
     out( 0x6e, 4);
 #endif
+    Mem_Load(0);
 }
 
 bool Cg850v::Mem_Mirror(DWORD *d)
@@ -232,19 +242,19 @@ UINT8 Cg850v::in(UINT8 address)
     switch(address) {
     case 0x10: pCPU->imem[address] = getKey();
         return 0;
-    case 0x11:
+    case 0x11: pCPU->imem[address] = 0x00;
         return 0;
     case 0x12:
         return 0;
-    case 0x13: pCPU->imem[address] = (pKEYB->isShift?1:0);
+    case 0x13: pCPU->imem[address] = (ks1 & 0x08) ? (pKEYB->isShift?1:0):0;
         return 0;
     case 0x14:
         return 0;
     case 0x15:
         return 0;
-    case 0x16:
+    case 0x16: pCPU->imem[address] = interruptType;
         return 0;
-    case 0x17:
+    case 0x17: pCPU->imem[address] = interruptMask;
         return 0;
     case 0x18:
         pCPU->imem[address] =
@@ -255,12 +265,12 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x19:
         pCPU->imem[address] = ((exBank & 0x07) << 4) | (romBank & 0x0f);
         return 0;
-    case 0x1a:
+    case 0x1a: pCPU->imem[address] = 0x00;
         return 0;
     case 0x1b:
         pCPU->imem[address] = ramBank;
         return 0;
-    case 0x1c:
+    case 0x1c: pCPU->imem[address] = 0x00;
         return 0;
     case 0x1d:
         pCPU->imem[address] = 0x08;
@@ -269,7 +279,7 @@ UINT8 Cg850v::in(UINT8 address)
         pCPU->imem[address] = 0x00;
         return 0;
     case 0x1f:
-        pCPU->imem[address] = (pKEYB->Kon?0x80:0x00) |
+        pCPU->imem[address] = (keyBreak) |
                 (pCONNECTOR->Get_pin(PIN_MT_IN)?0x04:0x00) |
                 (pCONNECTOR->Get_pin(PIN_ACK)?0x02:0x00) |
                 (pCONNECTOR->Get_pin(PIN_D_IN)?0x01:0x00) ;
@@ -326,6 +336,7 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
 {
     switch(address) {
     case 0x11: ks1 = value;
+        if(value & 0x10) interruptType |= 0x01;
         return 0;
     case 0x12: ks2 = value & 0x03;
         return 0;
@@ -335,9 +346,9 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
         return 0;
     case 0x15:
         return 0;
-    case 0x16:
+    case 0x16: interruptType &= ~value & 0x0f;
         return 0;
-    case 0x17:
+    case 0x17: interruptMask = value;
         return 0;
     case 0x18:
         pCONNECTOR->Set_pin(PIN_MT_OUT1,value&0x80?true:false);
@@ -381,6 +392,26 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
 bool Cg850v::run()
 {
     CpcXXXX::run();
+
+#if 1
+    if ( (pKEYB->LastKey == K_BRK) && (interruptMask & 0x02) )  {
+        AddLog(LOG_MASTER,"BREAK");
+        keyBreak |= 0x80;
+//        pKEYB->LastKey = 0;
+        interruptType |= 0x02;
+        ((CZ80*)pCPU)->z80int1(&((CZ80*)pCPU)->z80);
+    }
+    else if ( (pKEYB->LastKey != 0) && (interruptMask & 0x01) )  {
+        AddLog(LOG_MASTER,"Key intr");
+//        pKEYB->LastKey = 0;
+        interruptType |= 0x01;
+        ((CZ80*)pCPU)->z80int1(&((CZ80*)pCPU)->z80);
+    }
+    else if (pKEYB->LastKey==0) {
+        keyBreak &= ~0x80;
+    }
+#endif
+
 }
 
 void Cg850v::Set_Port(PORTS Port, BYTE data)
