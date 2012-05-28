@@ -142,8 +142,7 @@ public:
 
 
 
-	QString	SessionHeader;
-	int		SessionHeaderLen;
+
 
 	int		Pc_Offset_X,Pc_Offset_Y;
 	int		Pc_X,Pc_Y;				

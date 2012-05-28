@@ -21,9 +21,10 @@
     <KEY description="Left Arrow" height="16" left="317" scancode="0x6" top="288" width="25"/>
     <KEY description="MODE" height="16" left="1" scancode="0x8" top="0" width="25"/>
     <KEY description="Rigth Arrow" height="16" left="384" scancode="0x7" top="286" width="25"/>
-    <KEY description="2ndF" height="16" left="436" scancode="0x11" top="79" width="23"/>
+    <KEY description="2ndF" height="16" left="436" scancode="0x12" top="79" width="23"/>
     <KEY description="SML" height="16" left="18" scancode="0x14" top="226" width="32"/>
     <KEY description="ANS" height="16" left="541" scancode="0x207" top="44" width="25"/>
+    <KEY description="CONST" height="16" left="505" scancode="0x209" top="44" width="25"/>
     <KEY description="BS" height="16" left="396" scancode="0xd6" top="192" width="25"/>
     <KEY description="Space" height="17" left="111" scancode="0x20" top="286" width="163"/>
     <KEY description="Up Arrow" height="16" left="351" scancode="0x5" top="257" width="25"/>

@@ -93,10 +93,17 @@ public:
 
     bool initSignalMap(Cconnector::ConnectorType type);
     qint8 getPinId(SIGNAME signal);
+
+    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+    virtual bool	LoadSession_File(QXmlStreamReader *);
+
+    void initConnectorType(QString type);
+
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowConsole(void);
     void HideConsole(void);
+    void slotConnType(QAction *);
 signals:
     void valueChanged(int v);
     void newByteRecv(qint8);

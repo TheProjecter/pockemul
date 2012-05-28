@@ -22,6 +22,7 @@ CSED1560::CSED1560(CpcXXXX *parent)
     info.busy = info.ADC = info.reset = false;
     updated = true;
     info.ReadModifyWrite = true;
+    info.ElectCtrl = 0x0f;
 }
 
 CSED1560::~CSED1560() {
@@ -62,6 +63,7 @@ void CSED1560::set8(qint16 adr,BYTE val)
 #define MASK_BuildInPow 0x224
 #define MASK_RevLineSet 0x230
 #define MASK_displaySL  0x240
+#define MASK_ElecCtrlReg 0x280
 #define MASK_ADCSel     0x2a0
 #define MASK_AllIndic   0x2a4
 #define MASK_NormRevDsp 0x2a6
@@ -107,6 +109,8 @@ BYTE CSED1560::instruction(qint16 cmd)
     else
     if ((cmd & MASK_AllIndic) == MASK_AllIndic ) { cmd_AllIndic(cmd); }
     else
+    if ((cmd & MASK_ElecCtrlReg) == MASK_ElecCtrlReg ) { cmd_ElecCtrlReg(cmd); }
+    else
     if ((cmd & MASK_ADCSel) == MASK_ADCSel ) { cmd_ADCSel(cmd); }
     else
     if ((cmd & MASK_displaySL) == MASK_displaySL ) { cmd_displaySL(cmd); }
@@ -124,6 +128,9 @@ BYTE CSED1560::instruction(qint16 cmd)
     if ((cmd & MASK_status) == MASK_status ) { return cmd_status(cmd); }
 
     return 0;
+}
+void CSED1560::cmd_ElecCtrlReg(qint16 cmd) {
+    info.ElectCtrl = cmd & 0x1f;
 }
 
 void CSED1560::cmd_OutStatusRegSet(qint16 cmd) {

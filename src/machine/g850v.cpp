@@ -58,19 +58,9 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     SoundOn			= false;
 
     pLCDC		= new Clcdc_g850(this);
-//    pLCDC->Color_Off.setRgb(
-//                        (int) (95*pLCDC->contrast),
-//                        (int) (119*pLCDC->contrast),
-//                        (int) (103*pLCDC->contrast));
-
-
     pCPU        = new CZ80(this);
     pTIMER		= new Ctimer(this);
-
-    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,60));	publish(pCONNECTOR);
-    //pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
-
-
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"g850v.map");
     pSED1560    = new CSED1560(this);
 
@@ -133,12 +123,14 @@ bool Cg850v::init()
 
 bool Cg850v::Set_Connector()
 {
+//    pCONNECTOR->Set_values(pin11If << 3);
 
     return true;
 }
 
 bool Cg850v::Get_Connector()
 {
+//    pin11If = pCONNECTOR->Get_values() >> 3;
 
     return true;
 }
@@ -320,6 +312,7 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x5f: pCPU->imem[address] = pSED1560->instruction(0x500);
         return 0;
     case 0x60: pCPU->imem[address] = pin11If;
+        AddLog(LOG_MASTER,tr("in 60 = %1").arg(pin11If));
         return 0;
     case 0x62: pCPU->imem[address] = (pCONNECTOR->Get_values()>>3) & ~pio8Io;
         return 0;
@@ -376,7 +369,9 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
         return 0;
     case 0x41: pSED1560->instruction(0x600 | value);
         return 0;
-    case 0x60: pin11If = value & 0x03;
+    case 0x60:
+        AddLog(LOG_MASTER,tr("out 60 = %1").arg(value));
+        pin11If = value & 0x03;
         return 0;
     case 0x61: pio8Io = value;
         return 0;

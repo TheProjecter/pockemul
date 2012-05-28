@@ -8,6 +8,7 @@
 #include "Inter.h"
 #include "Connect.h"
 #include "dialogconsole.h"
+#include "dialoganalog.h"
 #include "init.h"
 
 #define SIO_GET_PIN(n)		pSIOCONNECTOR->Get_pin(getPinId(n))
@@ -38,8 +39,49 @@ qint8 Csio::getPinId(SIGNAME signal) {
     return signalMap[signal];
 }
 
+bool Csio::SaveSession_File(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("session");
+        xmlOut->writeAttribute("version", "2.0");
+        xmlOut->writeAttribute("model", SessionHeader );
+        xmlOut->writeAttribute("type",pSIOCONNECTOR->Desc);
+    xmlOut->writeEndElement();  // session
+
+    return true;
+}
+
+bool Csio::LoadSession_File(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->name()=="session") {
+            QString type = xmlIn->attributes().value("type").toString();
+            initConnectorType(type);
+    }
+
+    return true;
+}
+
 bool Csio::initSignalMap(Cconnector::ConnectorType type) {
     switch (type) {
+    case Cconnector::Sharp_11 : signalMap.clear();
+                                signalMap[S_SD] = 7;
+                                signalMap[S_RD] = 6;
+                                signalMap[S_RS] = 5;
+                                signalMap[S_CS] = 9;
+                                signalMap[S_CD] = 8;
+                                signalMap[S_RR] = 8;
+                                signalMap[S_ER] = 5;
+                                pSIOCONNECTOR->Desc = "Sharp 11 pins";
+                                pSIOCONNECTOR->setNbpins(11);
+                                pSIOCONNECTOR->setType(Cconnector::Sharp_11);
+                                WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
+                                WatchPoint.add(&pSIOCONNECTOR_value,64,11,this,pSIOCONNECTOR->Desc);
+                                BackGroundFname	= ":/EXT/ext/simu.png";
+                                pSIOCONNECTOR->setSnap(QPoint(130,7));
+                                setDX(160);
+                                setDY(160);
+                                resize(getDX(),getDY());
+                                InitDisplay();
+                                break;
     case Cconnector::Sharp_15 : signalMap.clear();
                                 signalMap[S_SD] = 2;
                                 signalMap[S_RD] = 3;
@@ -48,11 +90,17 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 signalMap[S_CD] = 8;
                                 signalMap[S_RR] = 11;
                                 signalMap[S_ER] = 14;
-                                pSIOCONNECTOR->Desc = "Connector 15 pins";
+                                pSIOCONNECTOR->Desc = "Sharp 15 pins";
                                 pSIOCONNECTOR->setNbpins(15);
                                 pSIOCONNECTOR->setType(Cconnector::Sharp_15);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,pSIOCONNECTOR->Desc);
+                                BackGroundFname	= ":/EXT/ext/serial.png";
+                                pSIOCONNECTOR->setSnap(QPoint(23,28));
+                                setDX(195);
+                                setDY(145);
+                                resize(getDX(),getDY());
+                                InitDisplay();
                                 break;
     case Cconnector::Canon_9  : signalMap.clear();
                                 signalMap[S_SD] = 2;
@@ -62,7 +110,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 signalMap[S_CD] = 8;
                                 signalMap[S_RR] = 11;
                                 signalMap[S_ER] = 14;
-                                pSIOCONNECTOR->Desc = "Serial Connector";
+                                pSIOCONNECTOR->Desc = "Canon 9 pins";
                                 pSIOCONNECTOR->setNbpins(9);
                                 pSIOCONNECTOR->setType(Cconnector::Canon_9);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
@@ -113,7 +161,7 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     Sii_Bit_Nb			= 0;
     Sii_LfWait			= 500;
 
-    pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Connector 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Sharp 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/serial.png";
 
@@ -156,10 +204,38 @@ void Csio::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addSeparator();
 
+    QMenu * menuConnectorType = menu.addMenu(tr("Connector Type"));
+        menuConnectorType->addAction(tr("Sharp 11 pins"));
+        menuConnectorType->addAction(tr("Sharp 15 pins"));
+        menuConnectorType->addAction(tr("Canon 9 pins"));
+        menuConnectorType->addAction(tr("DB25 Serial Connector"));
+
+        connect(menuConnectorType, SIGNAL(triggered(QAction*)), this, SLOT(slotConnType(QAction*)));
+
     menu.addAction(tr("Show console"),this,SLOT(ShowConsole()));
     menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
 
     menu.exec(event->globalPos () );
+}
+
+void Csio::initConnectorType(QString type) {
+    if (type == QString("Sharp 11 pins")) {
+        initSignalMap(Cconnector::Sharp_11);
+    }
+    else if (type == QString("Sharp 15 pins")) {
+        initSignalMap(Cconnector::Sharp_15);
+    }
+    else if (type == QString("Canon 9 pins")) {
+        initSignalMap(Cconnector::Canon_9);
+    }
+    else if (type == QString("DB25 Serial Connector")) {
+        initSignalMap(Cconnector::DB25);
+    }
+
+}
+
+void Csio::slotConnType(QAction* action) {
+    initConnectorType(action->text());
 }
 
 void Csio::ShowConsole(void) {
@@ -182,10 +258,18 @@ bool Csio::run(void)
 	
 	
 	Sii_bit = 0;
-	if (ER && CD && RR)	{ Sii_bit = inReadBit();	}
+    if (ER && CD && RR)	{
+        Sii_bit = inReadBit();
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
+
+    }
 	Set_RD( Sii_bit );	
 	
-	if (RS) { Set_CS(1); Set_CD(1); }			
+    if (RS) {
+        Set_CS(1);
+        Set_CD(1);
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
+    }
     bitToByte();
 
     SIO_SET_PIN(S_RD, Get_RD());
@@ -369,7 +453,7 @@ void Csio::bitToByte(void)
     oldstate_out	= pTIMER->state;
 //	oldstate	+= Sii_wait;		
 		
-
+AddLog(LOG_SIO,tr("STOP BIT"));
 	if (waitbitstop && (SD==0))
 	{
 		waitbitstop = 0;waitbitstart=1;

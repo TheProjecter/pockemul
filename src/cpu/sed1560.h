@@ -14,6 +14,7 @@ typedef struct {
     BYTE    ColAdrReg;
     BYTE    PgAdrReg;
     BYTE    displaySL;
+    BYTE    ElectCtrl;
     BYTE    imem[IMEMSIZE];
 } SED1560info;
 
@@ -53,6 +54,7 @@ public:
 
 
 
+
 private:
     void cmd_ColAdrLo(qint16 cmd);
     void cmd_ColAdrHi(qint16 cmd);
@@ -67,7 +69,7 @@ private:
     void cmd_OutStatusRegSet(qint16 cmd);
     void cmd_DutyPlus(qint16 cmd);
     void cmd_DutySel(qint16 cmd);
-
+    void cmd_ElecCtrlReg(qint16 cmd);
 
 
 

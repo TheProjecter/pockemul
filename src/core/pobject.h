@@ -179,6 +179,9 @@ public:
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *);
 		
+    QString	SessionHeader;
+    int		SessionHeaderLen;
+
 public:
 
     void paintEvent(QPaintEvent *);
