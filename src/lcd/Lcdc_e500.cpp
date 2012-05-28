@@ -47,21 +47,21 @@ static const struct {
 
 void Clcdc_e500::disp_symb(void)
 {
-    disp_one_symb( BUSY,		COLOR(SYMB1_e500&1),	e500_pos[0].x,	e500_pos[0].y);
-    disp_one_symb( RUN,         COLOR(SYMB1_e500&2),	e500_pos[1].x,	e500_pos[1].y);
-    disp_one_symb( PRO,			COLOR(SYMB1_e500&4),	e500_pos[2].x,	e500_pos[2].y);
-    disp_one_symb( DBL,         COLOR(SYMB1_e500&8),	e500_pos[3].x,	e500_pos[3].y);
-    disp_one_symb( SMALL,		COLOR(SYMB2_e500&0x01),	e500_pos[4].x,	e500_pos[4].y);
-    disp_one_symb( JAP, 		COLOR(SYMB2_e500&0x02),	e500_pos[5].x,	e500_pos[5].y);
-    disp_one_symb( HYP,			COLOR(SYMB2_e500&0x04),	e500_pos[6].x,	e500_pos[6].y);
-    disp_one_symb( CAPS,		COLOR(SYMB2_e500&0x08),	e500_pos[7].x,	e500_pos[7].y);
-    disp_one_symb( SECF,		COLOR(SYMB2_e500&0x10),	e500_pos[8].x,	e500_pos[8].y);
-    disp_one_symb( PRINTL,		COLOR(SYMB3_e500&0x01),	e500_pos[9].x,	e500_pos[9].y);
-    disp_one_symb( E,			COLOR(SYMB3_e500&0x02),	e500_pos[10].x,	e500_pos[10].y);
-    disp_one_symb( RAD,         COLOR(SYMB3_e500&0x04),	e500_pos[11].x,	e500_pos[11].y);
-    disp_one_symb( G,       	COLOR(SYMB3_e500&0x08),	e500_pos[12].x,	e500_pos[12].y);
-    disp_one_symb( DEG,         COLOR(SYMB3_e500&0x10),	e500_pos[13].x,	e500_pos[13].y);
-    disp_one_symb( REV_BATT,    COLOR(SYMB3_e500&0x80),	e500_pos[14].x,	e500_pos[14].y);
+    disp_one_symb( S_BUSY,		COLOR(SYMB1_e500&1),	e500_pos[0].x,	e500_pos[0].y);
+    disp_one_symb( S_RUN,         COLOR(SYMB1_e500&2),	e500_pos[1].x,	e500_pos[1].y);
+    disp_one_symb( S_PRO,			COLOR(SYMB1_e500&4),	e500_pos[2].x,	e500_pos[2].y);
+    disp_one_symb( S_DBL,         COLOR(SYMB1_e500&8),	e500_pos[3].x,	e500_pos[3].y);
+    disp_one_symb( S_SMALL,		COLOR(SYMB2_e500&0x01),	e500_pos[4].x,	e500_pos[4].y);
+    disp_one_symb( S_JAP, 		COLOR(SYMB2_e500&0x02),	e500_pos[5].x,	e500_pos[5].y);
+    disp_one_symb( S_HYP,			COLOR(SYMB2_e500&0x04),	e500_pos[6].x,	e500_pos[6].y);
+    disp_one_symb( S_CAPS,		COLOR(SYMB2_e500&0x08),	e500_pos[7].x,	e500_pos[7].y);
+    disp_one_symb( S_SECF,		COLOR(SYMB2_e500&0x10),	e500_pos[8].x,	e500_pos[8].y);
+    disp_one_symb( S_PRINTL,		COLOR(SYMB3_e500&0x01),	e500_pos[9].x,	e500_pos[9].y);
+    disp_one_symb( S_E,			COLOR(SYMB3_e500&0x02),	e500_pos[10].x,	e500_pos[10].y);
+    disp_one_symb( S_RAD,         COLOR(SYMB3_e500&0x04),	e500_pos[11].x,	e500_pos[11].y);
+    disp_one_symb( S_G,       	COLOR(SYMB3_e500&0x08),	e500_pos[12].x,	e500_pos[12].y);
+    disp_one_symb( S_DEG,         COLOR(SYMB3_e500&0x10),	e500_pos[13].x,	e500_pos[13].y);
+    disp_one_symb( S_REV_BATT,    COLOR(SYMB3_e500&0x80),	e500_pos[14].x,	e500_pos[14].y);
 
     Clcdc::disp_symb();
 }

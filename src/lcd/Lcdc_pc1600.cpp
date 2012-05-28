@@ -40,22 +40,22 @@ static const struct {
 
 void Clcdc_pc1600::disp_symb(void)
 {
-    disp_one_symb( BUSY,		COLOR(SYMB3_1600&1),	pc1600_pos[0].x,	pc1600_pos[0].y);
-    disp_one_symb( SHIFT,		COLOR(SYMB3_1600&2),	pc1600_pos[1].x,	pc1600_pos[1].y);
-    disp_one_symb( JAP,			COLOR(SYMB3_1600&4),	pc1600_pos[2].x,	pc1600_pos[2].y);
-    disp_one_symb( SMALL,		COLOR(SYMB3_1600&8),	pc1600_pos[3].x,	pc1600_pos[3].y);
-    disp_one_symb( DE,			COLOR(SYMB2_1600&0x01),	pc1600_pos[4].x,	pc1600_pos[4].y);
-    disp_one_symb( G,			COLOR(SYMB2_1600&0x02),	pc1600_pos[5].x,	pc1600_pos[5].y);
-    disp_one_symb( RAD,			COLOR(SYMB2_1600&0x04),	pc1600_pos[6].x,	pc1600_pos[6].y);
-    disp_one_symb( RUN,			COLOR(SYMB2_1600&0x40),	pc1600_pos[7].x,	pc1600_pos[7].y);
-    disp_one_symb( PRO,			COLOR(SYMB2_1600&0x20),	pc1600_pos[8].x,	pc1600_pos[8].y);
-    disp_one_symb( RESERVE,		COLOR(SYMB2_1600&0x10),	pc1600_pos[9].x,	pc1600_pos[9].y);
-    disp_one_symb( DEF,			COLOR(SYMB3_1600&0x80),	pc1600_pos[10].x,	pc1600_pos[10].y);
-    disp_one_symb( ROMEAN_I,	COLOR(SYMB3_1600&0x40),	pc1600_pos[11].x,	pc1600_pos[11].y);
-    disp_one_symb( ROMEAN_II,	COLOR(SYMB3_1600&0x20),	pc1600_pos[12].x,	pc1600_pos[12].y);
-    disp_one_symb( ROMEAN_III,	COLOR(SYMB3_1600&0x10),	pc1600_pos[13].x,	pc1600_pos[13].y);
-    disp_one_symb( CTRL,        COLOR(SYMB1_1600&0x02),	pc1600_pos[14].x,	pc1600_pos[14].y);
-    disp_one_symb( REV_BATT,    COLOR(0),               pc1600_pos[15].x,	pc1600_pos[15].y);
+    disp_one_symb( S_BUSY,		COLOR(SYMB3_1600&1),	pc1600_pos[0].x,	pc1600_pos[0].y);
+    disp_one_symb( S_SHIFT,		COLOR(SYMB3_1600&2),	pc1600_pos[1].x,	pc1600_pos[1].y);
+    disp_one_symb( S_JAP,			COLOR(SYMB3_1600&4),	pc1600_pos[2].x,	pc1600_pos[2].y);
+    disp_one_symb( S_SMALL,		COLOR(SYMB3_1600&8),	pc1600_pos[3].x,	pc1600_pos[3].y);
+    disp_one_symb( S_DE,			COLOR(SYMB2_1600&0x01),	pc1600_pos[4].x,	pc1600_pos[4].y);
+    disp_one_symb( S_G,			COLOR(SYMB2_1600&0x02),	pc1600_pos[5].x,	pc1600_pos[5].y);
+    disp_one_symb( S_RAD,			COLOR(SYMB2_1600&0x04),	pc1600_pos[6].x,	pc1600_pos[6].y);
+    disp_one_symb( S_RUN,			COLOR(SYMB2_1600&0x40),	pc1600_pos[7].x,	pc1600_pos[7].y);
+    disp_one_symb( S_PRO,			COLOR(SYMB2_1600&0x20),	pc1600_pos[8].x,	pc1600_pos[8].y);
+    disp_one_symb( S_RESERVE,		COLOR(SYMB2_1600&0x10),	pc1600_pos[9].x,	pc1600_pos[9].y);
+    disp_one_symb( S_DEF,			COLOR(SYMB3_1600&0x80),	pc1600_pos[10].x,	pc1600_pos[10].y);
+    disp_one_symb( S_ROMEAN_I,	COLOR(SYMB3_1600&0x40),	pc1600_pos[11].x,	pc1600_pos[11].y);
+    disp_one_symb( S_ROMEAN_II,	COLOR(SYMB3_1600&0x20),	pc1600_pos[12].x,	pc1600_pos[12].y);
+    disp_one_symb( S_ROMEAN_III,	COLOR(SYMB3_1600&0x10),	pc1600_pos[13].x,	pc1600_pos[13].y);
+    disp_one_symb( S_CTRL,        COLOR(SYMB1_1600&0x02),	pc1600_pos[14].x,	pc1600_pos[14].y);
+    disp_one_symb( S_REV_BATT,    COLOR(0),               pc1600_pos[15].x,	pc1600_pos[15].y);
 
 
 

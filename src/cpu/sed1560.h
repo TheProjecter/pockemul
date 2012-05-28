@@ -3,7 +3,7 @@
 
 #include "pobject.h"
 
-#define IMEMSIZE    0x530
+#define IMEMSIZE    0x5D6
 
 typedef struct {
     bool    busy;

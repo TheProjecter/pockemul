@@ -122,13 +122,13 @@ static const struct {
     DWORD	addr;
     int	bit;
 } pc1350_pos[7]={
-    {1, 3,  PRINT	,SYMB1_ADR_1350	,0x04},
-    {8, 3,  RUN		,SYMB1_ADR_1350	,0x10},
-    {4, 11, PRO		,SYMB1_ADR_1350	,0x20},
-    {6, 21, JAP		,SYMB1_ADR_1350	,0x40},
-    {4, 29, SML		,SYMB1_ADR_1350	,0x80},
-    {1, 39, SHIFT	,SYMB1_ADR_1350	,0x01},
-    {4, 47, DEF		,SYMB1_ADR_1350	,0x02}
+    {1, 3,  S_PRINT	,SYMB1_ADR_1350	,0x04},
+    {8, 3,  S_RUN		,SYMB1_ADR_1350	,0x10},
+    {4, 11, S_PRO		,SYMB1_ADR_1350	,0x20},
+    {6, 21, S_JAP		,SYMB1_ADR_1350	,0x40},
+    {4, 29, S_SML		,SYMB1_ADR_1350	,0x80},
+    {1, 39, S_SHIFT	,SYMB1_ADR_1350	,0x01},
+    {4, 47, S_DEF		,SYMB1_ADR_1350	,0x02}
 };
 
 void Clcdc_pc1350::disp_symb(void)
@@ -208,12 +208,12 @@ static const struct {
 	DWORD	addr;
 	int	bit;
 } pc2500_pos[6]={
-    {0, 0,  BUSY	,SYMB2_ADR_2500	,0x80},
-    {223, 0,  RUN	,SYMB1_ADR_2500	,0x10},
-    {260, 0, PRO	,SYMB1_ADR_2500	,0x20},
-    {120, 0, JAP	,SYMB1_ADR_2500	,0x40},
-    {60, 0, CAPS	,SYMB1_ADR_2500	,0x80},
-    {185, 0, DEF	,SYMB1_ADR_2500	,0x02}
+    {0, 0,  S_BUSY	,SYMB2_ADR_2500	,0x80},
+    {223, 0,  S_RUN	,SYMB1_ADR_2500	,0x10},
+    {260, 0, S_PRO	,SYMB1_ADR_2500	,0x20},
+    {120, 0, S_JAP	,SYMB1_ADR_2500	,0x40},
+    {60, 0, S_CAPS	,SYMB1_ADR_2500	,0x80},
+    {185, 0, S_DEF	,SYMB1_ADR_2500	,0x02}
 };
 
 void Clcdc_pc2500::disp_symb(void)
@@ -307,13 +307,13 @@ void Clcdc_pc1360::disp_symb(void)
 	if (DirtyBuf[SYMB1_ADR_1360-0x2800] )
 	{
 
-	disp_one_symb(RUN,		COLOR(SYMB1_1360&0x10),	pc1360_pos[0].x,	pc1360_pos[0].y);
-	disp_one_symb(PRO,		COLOR(SYMB1_1360&0x20),	pc1360_pos[1].x,	pc1360_pos[1].y);
-	disp_one_symb(JAP,		COLOR(SYMB1_1360&0x40),	pc1360_pos[2].x,	pc1360_pos[2].y);
-	disp_one_symb(SML,		COLOR(SYMB1_1360&0x80),	pc1360_pos[3].x,	pc1360_pos[3].y);
-	disp_one_symb(SHIFT,	COLOR(SYMB1_1360&0x01),	pc1360_pos[4].x,	pc1360_pos[4].y);
-	disp_one_symb(DEF,		COLOR(SYMB1_1360&0x02),	pc1360_pos[5].x,	pc1360_pos[5].y);
-    disp_one_symb(PRINT,	COLOR(SYMB1_1360&0x04),	pc1360_pos[6].x,	pc1360_pos[6].y);
+    disp_one_symb(S_RUN,		COLOR(SYMB1_1360&0x10),	pc1360_pos[0].x,	pc1360_pos[0].y);
+    disp_one_symb(S_PRO,		COLOR(SYMB1_1360&0x20),	pc1360_pos[1].x,	pc1360_pos[1].y);
+    disp_one_symb(S_JAP,		COLOR(SYMB1_1360&0x40),	pc1360_pos[2].x,	pc1360_pos[2].y);
+    disp_one_symb(S_SML,		COLOR(SYMB1_1360&0x80),	pc1360_pos[3].x,	pc1360_pos[3].y);
+    disp_one_symb(S_SHIFT,	COLOR(SYMB1_1360&0x01),	pc1360_pos[4].x,	pc1360_pos[4].y);
+    disp_one_symb(S_DEF,		COLOR(SYMB1_1360&0x02),	pc1360_pos[5].x,	pc1360_pos[5].y);
+    disp_one_symb(S_PRINT,	COLOR(SYMB1_1360&0x04),	pc1360_pos[6].x,	pc1360_pos[6].y);
 	
 	DirtyBuf[SYMB1_ADR_1360-0x2800] = FALSE;				
 
@@ -411,17 +411,17 @@ void Clcdc_pc1250::disp_symb(void)
 		)
     {
 
-        disp_one_symb(SHIFT,	COLOR(SYMB2_1250&0x02),	pc1250_pos[0].x,	pc1250_pos[0].y);
-        disp_one_symb(DEF,		COLOR(SYMB1_1250&0x01),	pc1250_pos[1].x,	pc1250_pos[1].y);
-        disp_one_symb(PRO,		COLOR(SYMB3_1250&0x01),	pc1250_pos[2].x,	pc1250_pos[2].y);
-        disp_one_symb(RUN,		COLOR(SYMB3_1250&0x02),	pc1250_pos[3].x,	pc1250_pos[3].y);
-        disp_one_symb(RESERVE,	COLOR(SYMB3_1250&0x04),	pc1250_pos[4].x,	pc1250_pos[4].y);
-        disp_one_symb(DE,		COLOR(SYMB1_1250&0x08),	pc1250_pos[5].x,	pc1250_pos[5].y);
-        disp_one_symb(G,		COLOR(SYMB1_1250&0x04),	pc1250_pos[6].x,	pc1250_pos[6].y);
-        disp_one_symb(RAD,		COLOR(SYMB2_1250&0x04),	pc1250_pos[7].x,	pc1250_pos[7].y);
-        disp_one_symb(E,		COLOR(SYMB2_1250&0x08),	pc1250_pos[8].x,	pc1250_pos[8].y);
-        disp_one_symb(PRINT,	COLOR(SYMB1_1250&0x02),	pc1250_pos[9].x,	pc1250_pos[9].y);
-        disp_one_symb(BUSY,	COLOR(SYMB2_1250&0x01),	pc1250_pos[10].x,	pc1250_pos[10].y);
+        disp_one_symb(S_SHIFT,	COLOR(SYMB2_1250&0x02),	pc1250_pos[0].x,	pc1250_pos[0].y);
+        disp_one_symb(S_DEF,		COLOR(SYMB1_1250&0x01),	pc1250_pos[1].x,	pc1250_pos[1].y);
+        disp_one_symb(S_PRO,		COLOR(SYMB3_1250&0x01),	pc1250_pos[2].x,	pc1250_pos[2].y);
+        disp_one_symb(S_RUN,		COLOR(SYMB3_1250&0x02),	pc1250_pos[3].x,	pc1250_pos[3].y);
+        disp_one_symb(S_RESERVE,	COLOR(SYMB3_1250&0x04),	pc1250_pos[4].x,	pc1250_pos[4].y);
+        disp_one_symb(S_DE,		COLOR(SYMB1_1250&0x08),	pc1250_pos[5].x,	pc1250_pos[5].y);
+        disp_one_symb(S_G,		COLOR(SYMB1_1250&0x04),	pc1250_pos[6].x,	pc1250_pos[6].y);
+        disp_one_symb(S_RAD,		COLOR(SYMB2_1250&0x04),	pc1250_pos[7].x,	pc1250_pos[7].y);
+        disp_one_symb(S_E,		COLOR(SYMB2_1250&0x08),	pc1250_pos[8].x,	pc1250_pos[8].y);
+        disp_one_symb(S_PRINT,	COLOR(SYMB1_1250&0x02),	pc1250_pos[9].x,	pc1250_pos[9].y);
+        disp_one_symb(S_BUSY,	COLOR(SYMB2_1250&0x01),	pc1250_pos[10].x,	pc1250_pos[10].y);
 
         DirtyBuf[SYMB1_ADR_1250-0xF800] = FALSE;
         DirtyBuf[SYMB2_ADR_1250-0xF800] = FALSE;
@@ -529,15 +529,15 @@ void Clcdc_pc1245::disp_symb(void)
 		)
 	{
 
-	disp_one_symb(SHIFT,	COLOR(SYMB2_1245&0x02),	pc1245_pos[0].x,	pc1245_pos[0].y);
-	disp_one_symb(DEF,		COLOR(SYMB1_1245&0x01),	pc1245_pos[1].x,	pc1245_pos[1].y);
-	disp_one_symb(PRO,		COLOR(SYMB3_1245&0x01),	pc1245_pos[2].x,	pc1245_pos[2].y);
-	disp_one_symb(RUN,		COLOR(SYMB3_1245&0x02),	pc1245_pos[3].x,	pc1245_pos[3].y);
-//	disp_one_symb(RESERVE,	COLOR(SYMB3_1245&0x04),	pc1245_pos[4].x,	pc1245_pos[4].y);
-	disp_one_symb(DE,		COLOR(SYMB1_1245&0x08),	pc1245_pos[5].x,	pc1245_pos[5].y);
-	disp_one_symb(G,		COLOR(SYMB1_1245&0x04),	pc1245_pos[6].x,	pc1245_pos[6].y);
-	disp_one_symb(RAD,		COLOR(SYMB2_1245&0x04),	pc1245_pos[7].x,	pc1245_pos[7].y);
-	disp_one_symb(PRINT,	COLOR(SYMB1_1245&0x02),	125,	0);
+    disp_one_symb(S_SHIFT,	COLOR(SYMB2_1245&0x02),	pc1245_pos[0].x,	pc1245_pos[0].y);
+    disp_one_symb(S_DEF,		COLOR(SYMB1_1245&0x01),	pc1245_pos[1].x,	pc1245_pos[1].y);
+    disp_one_symb(S_PRO,		COLOR(SYMB3_1245&0x01),	pc1245_pos[2].x,	pc1245_pos[2].y);
+    disp_one_symb(S_RUN,		COLOR(SYMB3_1245&0x02),	pc1245_pos[3].x,	pc1245_pos[3].y);
+//	disp_one_symb(S_RESERVE,	COLOR(SYMB3_1245&0x04),	pc1245_pos[4].x,	pc1245_pos[4].y);
+    disp_one_symb(S_DE,		COLOR(SYMB1_1245&0x08),	pc1245_pos[5].x,	pc1245_pos[5].y);
+    disp_one_symb(S_G,		COLOR(SYMB1_1245&0x04),	pc1245_pos[6].x,	pc1245_pos[6].y);
+    disp_one_symb(S_RAD,		COLOR(SYMB2_1245&0x04),	pc1245_pos[7].x,	pc1245_pos[7].y);
+    disp_one_symb(S_PRINT,	COLOR(SYMB1_1245&0x02),	125,	0);
 	
 	DirtyBuf[SYMB1_ADR_1245-0xF800] = FALSE;				
 	DirtyBuf[SYMB2_ADR_1245-0xF800] = FALSE;				
@@ -641,16 +641,16 @@ void Clcdc_pc1260::disp_symb(void)
 		)
 	{
 
-	disp_one_symb(BAR25,	COLOR(SYMB2_1260&0x01),	pc1260_pos[0].x,	pc1260_pos[0].y);
-	disp_one_symb(BAR25,	COLOR(SYMB2_1260&0x02),	pc1260_pos[1].x,	pc1260_pos[1].y);
-	disp_one_symb(BAR25,	COLOR(SYMB1_1260&0x01),	pc1260_pos[2].x,	pc1260_pos[2].y);
-	disp_one_symb(BAR25,	COLOR(SYMB1_1260&0x02),	pc1260_pos[3].x,	pc1260_pos[3].y);
-	disp_one_symb(BAR25,	COLOR(SYMB1_1260&0x04),	pc1260_pos[4].x,	pc1260_pos[4].y);
-	disp_one_symb(BAR25,	COLOR(SYMB1_1260&0x20),	pc1260_pos[5].x,	pc1260_pos[5].y);
-	disp_one_symb(JAP,		COLOR(SYMB2_1260&0x08),	pc1260_pos[6].x,	pc1260_pos[6].y);
-	disp_one_symb(SMALL,	COLOR(SYMB2_1260&0x10),	pc1260_pos[7].x,	pc1260_pos[7].y);
-	disp_one_symb(SHIFT,	COLOR(SYMB2_1260&0x20),	pc1260_pos[8].x,	pc1260_pos[8].y);
-	disp_one_symb(DEF,		COLOR(SYMB2_1260&0x40),	pc1260_pos[9].x,	pc1260_pos[9].y);
+    disp_one_symb(S_BAR25,	COLOR(SYMB2_1260&0x01),	pc1260_pos[0].x,	pc1260_pos[0].y);
+    disp_one_symb(S_BAR25,	COLOR(SYMB2_1260&0x02),	pc1260_pos[1].x,	pc1260_pos[1].y);
+    disp_one_symb(S_BAR25,	COLOR(SYMB1_1260&0x01),	pc1260_pos[2].x,	pc1260_pos[2].y);
+    disp_one_symb(S_BAR25,	COLOR(SYMB1_1260&0x02),	pc1260_pos[3].x,	pc1260_pos[3].y);
+    disp_one_symb(S_BAR25,	COLOR(SYMB1_1260&0x04),	pc1260_pos[4].x,	pc1260_pos[4].y);
+    disp_one_symb(S_BAR25,	COLOR(SYMB1_1260&0x20),	pc1260_pos[5].x,	pc1260_pos[5].y);
+    disp_one_symb(S_JAP,		COLOR(SYMB2_1260&0x08),	pc1260_pos[6].x,	pc1260_pos[6].y);
+    disp_one_symb(S_SMALL,	COLOR(SYMB2_1260&0x10),	pc1260_pos[7].x,	pc1260_pos[7].y);
+    disp_one_symb(S_SHIFT,	COLOR(SYMB2_1260&0x20),	pc1260_pos[8].x,	pc1260_pos[8].y);
+    disp_one_symb(S_DEF,		COLOR(SYMB2_1260&0x40),	pc1260_pos[9].x,	pc1260_pos[9].y);
 	
 	DirtyBuf[SYMB1_ADR_1260-0x2000] = FALSE;				
 	DirtyBuf[SYMB2_ADR_1260-0x2000] = FALSE;				
@@ -826,28 +826,28 @@ void Clcdc_pc1401::disp_symb(void)
 	if (DirtyBuf[SYMB1_ADR_1401-0x6000] || DirtyBuf[SYMB2_ADR_1401-0x6000] || DirtyBuf[SYMB3_ADR_1401-0x6000])
 	{
 
-	disp_one_symb( BUSY,	COLOR(SYMB2_1401&0x01),	pc1401_pos[0].x,	pc1401_pos[0].y);
-	disp_one_symb( DEF,		COLOR(SYMB2_1401&0x02),	pc1401_pos[1].x,	pc1401_pos[1].y);
-	disp_one_symb( SHIFT,	COLOR(SYMB2_1401&0x04),	pc1401_pos[2].x,	pc1401_pos[2].y);
-	disp_one_symb( HYP,		COLOR(SYMB2_1401&0x08),	pc1401_pos[3].x,	pc1401_pos[3].y);
-	disp_one_symb( DE,		COLOR(SYMB3_1401&0x20),	pc1401_pos[5].x,	pc1401_pos[5].y);
-	disp_one_symb( G,		COLOR(SYMB3_1401&0x10),	pc1401_pos[6].x,	pc1401_pos[6].y);
-	disp_one_symb( RAD,		COLOR(SYMB3_1401&0x08),	pc1401_pos[7].x,	pc1401_pos[7].y);
-	disp_one_symb( O_BRA,	COLOR(SYMB3_1401&0x04),	pc1401_pos[8].x,	pc1401_pos[8].y);
-	disp_one_symb( C_BRA,	COLOR(SYMB3_1401&0x04),	pc1401_pos[9].x,	pc1401_pos[9].y);
-	disp_one_symb( REV_M,	COLOR(SYMB3_1401&0x02),	pc1401_pos[10].x,	pc1401_pos[10].y);
-	disp_one_symb( E,		COLOR(SYMB3_1401&0x01),	pc1401_pos[11].x,	pc1401_pos[11].y);
+    disp_one_symb( S_BUSY,	COLOR(SYMB2_1401&0x01),	pc1401_pos[0].x,	pc1401_pos[0].y);
+    disp_one_symb( S_DEF,		COLOR(SYMB2_1401&0x02),	pc1401_pos[1].x,	pc1401_pos[1].y);
+    disp_one_symb( S_SHIFT,	COLOR(SYMB2_1401&0x04),	pc1401_pos[2].x,	pc1401_pos[2].y);
+    disp_one_symb( S_HYP,		COLOR(SYMB2_1401&0x08),	pc1401_pos[3].x,	pc1401_pos[3].y);
+    disp_one_symb( S_DE,		COLOR(SYMB3_1401&0x20),	pc1401_pos[5].x,	pc1401_pos[5].y);
+    disp_one_symb( S_G,		COLOR(SYMB3_1401&0x10),	pc1401_pos[6].x,	pc1401_pos[6].y);
+    disp_one_symb( S_RAD,		COLOR(SYMB3_1401&0x08),	pc1401_pos[7].x,	pc1401_pos[7].y);
+    disp_one_symb( S_O_BRA,	COLOR(SYMB3_1401&0x04),	pc1401_pos[8].x,	pc1401_pos[8].y);
+    disp_one_symb( S_C_BRA,	COLOR(SYMB3_1401&0x04),	pc1401_pos[9].x,	pc1401_pos[9].y);
+    disp_one_symb( S_REV_M,	COLOR(SYMB3_1401&0x02),	pc1401_pos[10].x,	pc1401_pos[10].y);
+    disp_one_symb( S_E,		COLOR(SYMB3_1401&0x01),	pc1401_pos[11].x,	pc1401_pos[11].y);
 
 // CAL
-	disp_one_symb( BAR35,	COLOR(SYMB2_1401&0x40),	pc1401_pos[12].x,	pc1401_pos[12].y);
+    disp_one_symb( S_BAR35,	COLOR(SYMB2_1401&0x40),	pc1401_pos[12].x,	pc1401_pos[12].y);
 // RUN
-	disp_one_symb( BAR35,	COLOR(SYMB2_1401&0x20),	pc1401_pos[13].x,	pc1401_pos[13].y);
+    disp_one_symb( S_BAR35,	COLOR(SYMB2_1401&0x20),	pc1401_pos[13].x,	pc1401_pos[13].y);
 // PRO
-	disp_one_symb( BAR35,	COLOR(SYMB2_1401&0x10),	pc1401_pos[14].x,	pc1401_pos[14].y);
+    disp_one_symb( S_BAR35,	COLOR(SYMB2_1401&0x10),	pc1401_pos[14].x,	pc1401_pos[14].y);
 // STAT
-	disp_one_symb( BAR35,	COLOR(SYMB1_1401&0x08),	pc1401_pos[15].x,	pc1401_pos[15].y);
+    disp_one_symb( S_BAR35,	COLOR(SYMB1_1401&0x08),	pc1401_pos[15].x,	pc1401_pos[15].y);
 // PRINT
-	disp_one_symb( BAR35,	COLOR(SYMB3_1401&0x40),	pc1401_pos[16].x,	pc1401_pos[16].y);
+    disp_one_symb( S_BAR35,	COLOR(SYMB3_1401&0x40),	pc1401_pos[16].x,	pc1401_pos[16].y);
 	
 	DirtyBuf[SYMB1_ADR_1401-0x6000] = 0;				
 	DirtyBuf[SYMB2_ADR_1401-0x6000] = 0;				
@@ -969,28 +969,28 @@ void Clcdc_pc1403::disp_symb(void)
 	if (DirtyBuf[SYMB1_ADR_1403-0x3000] || DirtyBuf[SYMB2_ADR_1403-0x3000] || DirtyBuf[SYMB3_ADR_1403-0x3000])
 	{
 
-	disp_one_symb(BUSY,	COLOR(SYMB2_1403&0x01),	pc1403_pos[0].x,	pc1403_pos[0].y);
-	disp_one_symb(DEF,		COLOR(SYMB2_1403&0x02),	pc1403_pos[1].x,	pc1403_pos[1].y);
-	disp_one_symb(SHIFT,	COLOR(SYMB2_1403&0x04),	pc1403_pos[2].x,	pc1403_pos[2].y);
-	disp_one_symb(HYP,		COLOR(SYMB2_1403&0x08),	pc1403_pos[3].x,	pc1403_pos[3].y);
-	disp_one_symb(DE,		COLOR(SYMB3_1403&0x20),	pc1403_pos[5].x,	pc1403_pos[5].y);
-	disp_one_symb(G,		COLOR(SYMB3_1403&0x10),	pc1403_pos[6].x,	pc1403_pos[6].y);
-	disp_one_symb(RAD,		COLOR(SYMB3_1403&0x08),	pc1403_pos[7].x,	pc1403_pos[7].y);
-	disp_one_symb(O_BRA,	COLOR(SYMB3_1403&0x04),	pc1403_pos[8].x,	pc1403_pos[8].y);
-	disp_one_symb(C_BRA,	COLOR(SYMB3_1403&0x04),	pc1403_pos[9].x,	pc1403_pos[9].y);
-	disp_one_symb(REV_M,	COLOR(SYMB3_1403&0x02),	pc1403_pos[10].x,	pc1403_pos[10].y);
-	disp_one_symb(E,		COLOR(SYMB3_1403&0x01),	pc1403_pos[11].x,	pc1403_pos[11].y);
+    disp_one_symb(S_BUSY,	COLOR(SYMB2_1403&0x01),	pc1403_pos[0].x,	pc1403_pos[0].y);
+    disp_one_symb(S_DEF,		COLOR(SYMB2_1403&0x02),	pc1403_pos[1].x,	pc1403_pos[1].y);
+    disp_one_symb(S_SHIFT,	COLOR(SYMB2_1403&0x04),	pc1403_pos[2].x,	pc1403_pos[2].y);
+    disp_one_symb(S_HYP,		COLOR(SYMB2_1403&0x08),	pc1403_pos[3].x,	pc1403_pos[3].y);
+    disp_one_symb(S_DE,		COLOR(SYMB3_1403&0x20),	pc1403_pos[5].x,	pc1403_pos[5].y);
+    disp_one_symb(S_G,		COLOR(SYMB3_1403&0x10),	pc1403_pos[6].x,	pc1403_pos[6].y);
+    disp_one_symb(S_RAD,		COLOR(SYMB3_1403&0x08),	pc1403_pos[7].x,	pc1403_pos[7].y);
+    disp_one_symb(S_O_BRA,	COLOR(SYMB3_1403&0x04),	pc1403_pos[8].x,	pc1403_pos[8].y);
+    disp_one_symb(S_C_BRA,	COLOR(SYMB3_1403&0x04),	pc1403_pos[9].x,	pc1403_pos[9].y);
+    disp_one_symb(S_REV_M,	COLOR(SYMB3_1403&0x02),	pc1403_pos[10].x,	pc1403_pos[10].y);
+    disp_one_symb(S_E,		COLOR(SYMB3_1403&0x01),	pc1403_pos[11].x,	pc1403_pos[11].y);
 
 // CAL
-	disp_one_symb(BAR35,	COLOR(SYMB2_1403&0x40),	pc1403_pos[12].x,	pc1403_pos[12].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB2_1403&0x40),	pc1403_pos[12].x,	pc1403_pos[12].y);
 // RUN
-	disp_one_symb(BAR35,	COLOR(SYMB2_1403&0x20),	pc1403_pos[13].x,	pc1403_pos[13].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB2_1403&0x20),	pc1403_pos[13].x,	pc1403_pos[13].y);
 // PRO
-	disp_one_symb(BAR35,	COLOR(SYMB2_1403&0x10),	pc1403_pos[14].x,	pc1403_pos[14].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB2_1403&0x10),	pc1403_pos[14].x,	pc1403_pos[14].y);
 // STAT
-	disp_one_symb(BAR35,	COLOR(SYMB1_1403&0x08),	pc1403_pos[15].x,	pc1403_pos[15].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB1_1403&0x08),	pc1403_pos[15].x,	pc1403_pos[15].y);
 // PRINT
-	disp_one_symb(BAR35,	COLOR(SYMB3_1403&0x40),	pc1403_pos[16].x,	pc1403_pos[16].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB3_1403&0x40),	pc1403_pos[16].x,	pc1403_pos[16].y);
 	
     DirtyBuf[SYMB1_ADR_1403-0x3000] = 0;
     DirtyBuf[SYMB2_ADR_1403-0x3000] = 0;
@@ -1201,29 +1201,29 @@ void Clcdc_pc1450::disp_symb(void)
 	if (DirtyBuf[SYMB1_ADR_1450-0x7000] || DirtyBuf[SYMB2_ADR_1450-0x7000] || DirtyBuf[SYMB3_ADR_1450-0x7000])
 	{
 
-	disp_one_symb(BUSY,		COLOR(SYMB2_1450&0x01),	pc1450_pos[0].x,	pc1450_pos[0].y);
-	disp_one_symb(DEF,		COLOR(SYMB2_1450&0x02),	pc1450_pos[1].x,	pc1450_pos[1].y);
-	disp_one_symb(SHIFT,	COLOR(SYMB2_1450&0x04),	pc1450_pos[2].x,	pc1450_pos[2].y);
-	disp_one_symb(HYP,		COLOR(SYMB2_1450&0x08),	pc1450_pos[3].x,	pc1450_pos[3].y);
-    disp_one_symb(SML,		COLOR(SYMB1_1450&0x04),	pc1450_pos[4].x,	pc1450_pos[4].y);
-	disp_one_symb(DE,		COLOR(SYMB3_1450&0x20),	pc1450_pos[5].x,	pc1450_pos[5].y);
-	disp_one_symb(G,		COLOR(SYMB3_1450&0x10),	pc1450_pos[6].x,	pc1450_pos[6].y);
-	disp_one_symb(RAD,		COLOR(SYMB3_1450&0x08),	pc1450_pos[7].x,	pc1450_pos[7].y);
-	disp_one_symb(O_BRA,	COLOR(SYMB3_1450&0x04),	pc1450_pos[8].x,	pc1450_pos[8].y);
-	disp_one_symb(C_BRA,	COLOR(SYMB3_1450&0x04),	pc1450_pos[9].x,	pc1450_pos[9].y);
-	disp_one_symb(REV_M,	COLOR(SYMB3_1450&0x02),	pc1450_pos[10].x,	pc1450_pos[10].y);
-	disp_one_symb(E,		COLOR(SYMB3_1450&0x01),	pc1450_pos[11].x,	pc1450_pos[11].y);
+    disp_one_symb(S_BUSY,		COLOR(SYMB2_1450&0x01),	pc1450_pos[0].x,	pc1450_pos[0].y);
+    disp_one_symb(S_DEF,		COLOR(SYMB2_1450&0x02),	pc1450_pos[1].x,	pc1450_pos[1].y);
+    disp_one_symb(S_SHIFT,	COLOR(SYMB2_1450&0x04),	pc1450_pos[2].x,	pc1450_pos[2].y);
+    disp_one_symb(S_HYP,		COLOR(SYMB2_1450&0x08),	pc1450_pos[3].x,	pc1450_pos[3].y);
+    disp_one_symb(S_SML,		COLOR(SYMB1_1450&0x04),	pc1450_pos[4].x,	pc1450_pos[4].y);
+    disp_one_symb(S_DE,		COLOR(SYMB3_1450&0x20),	pc1450_pos[5].x,	pc1450_pos[5].y);
+    disp_one_symb(S_G,		COLOR(SYMB3_1450&0x10),	pc1450_pos[6].x,	pc1450_pos[6].y);
+    disp_one_symb(S_RAD,		COLOR(SYMB3_1450&0x08),	pc1450_pos[7].x,	pc1450_pos[7].y);
+    disp_one_symb(S_O_BRA,	COLOR(SYMB3_1450&0x04),	pc1450_pos[8].x,	pc1450_pos[8].y);
+    disp_one_symb(S_C_BRA,	COLOR(SYMB3_1450&0x04),	pc1450_pos[9].x,	pc1450_pos[9].y);
+    disp_one_symb(S_REV_M,	COLOR(SYMB3_1450&0x02),	pc1450_pos[10].x,	pc1450_pos[10].y);
+    disp_one_symb(S_E,		COLOR(SYMB3_1450&0x01),	pc1450_pos[11].x,	pc1450_pos[11].y);
 
 // CAL
-	disp_one_symb(BAR35,	COLOR(SYMB2_1450&0x40),	pc1450_pos[12].x,	pc1450_pos[12].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB2_1450&0x40),	pc1450_pos[12].x,	pc1450_pos[12].y);
 // RUN
-	disp_one_symb(BAR35,	COLOR(SYMB2_1450&0x20),	pc1450_pos[13].x,	pc1450_pos[13].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB2_1450&0x20),	pc1450_pos[13].x,	pc1450_pos[13].y);
 // PRO
-	disp_one_symb(BAR35,	COLOR(SYMB2_1450&0x10),	pc1450_pos[14].x,	pc1450_pos[14].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB2_1450&0x10),	pc1450_pos[14].x,	pc1450_pos[14].y);
 // STAT
-	disp_one_symb(BAR35,	COLOR(SYMB1_1450&0x08),	pc1450_pos[15].x,	pc1450_pos[15].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB1_1450&0x08),	pc1450_pos[15].x,	pc1450_pos[15].y);
 // PRINT
-	disp_one_symb(BAR35,	COLOR(SYMB3_1450&0x40),	pc1450_pos[16].x,	pc1450_pos[16].y);
+    disp_one_symb(S_BAR35,	COLOR(SYMB3_1450&0x40),	pc1450_pos[16].x,	pc1450_pos[16].y);
 	
 	DirtyBuf[SYMB1_ADR_1450-0x7000] = 0;				
 	DirtyBuf[SYMB2_ADR_1450-0x7000] = 0;				
@@ -1349,32 +1349,32 @@ void Clcdc_pc1475::disp_symb(void)
 		DirtyBuf[SYMB4_ADR_1475-0x2800])
 	{
 
-	disp_one_symb( REV_BATT,COLOR(SYMB1_1475&0x01),	pc1475_pos[0].x,	pc1475_pos[0].y);
-	disp_one_symb( O_BRA,	COLOR(SYMB1_1475&0x02),	pc1475_pos[1].x,	pc1475_pos[1].y);
-	disp_one_symb( C_BRA,	COLOR(SYMB1_1475&0x02),	pc1475_pos[2].x,	pc1475_pos[2].y);
-	disp_one_symb( HYP,		COLOR(SYMB1_1475&0x04),	pc1475_pos[3].x,	pc1475_pos[3].y);
-	disp_one_symb( BAR25,	COLOR(SYMB1_1475&0x08),	pc1475_pos[4].x,	pc1475_pos[4].y);	// RSV
-	disp_one_symb( BAR25,	COLOR(SYMB1_1475&0x10),	pc1475_pos[5].x,	pc1475_pos[5].y);	// PRO
-	disp_one_symb( BAR25,	COLOR(SYMB1_1475&0x20),	pc1475_pos[6].x,	pc1475_pos[6].y);	// RUN
-	disp_one_symb( BAR25,	COLOR(SYMB1_1475&0x40),	pc1475_pos[7].x,	pc1475_pos[7].y);	// CAL
+    disp_one_symb( S_REV_BATT,COLOR(SYMB1_1475&0x01),	pc1475_pos[0].x,	pc1475_pos[0].y);
+    disp_one_symb( S_O_BRA,	COLOR(SYMB1_1475&0x02),	pc1475_pos[1].x,	pc1475_pos[1].y);
+    disp_one_symb( S_C_BRA,	COLOR(SYMB1_1475&0x02),	pc1475_pos[2].x,	pc1475_pos[2].y);
+    disp_one_symb( S_HYP,		COLOR(SYMB1_1475&0x04),	pc1475_pos[3].x,	pc1475_pos[3].y);
+    disp_one_symb( S_BAR25,	COLOR(SYMB1_1475&0x08),	pc1475_pos[4].x,	pc1475_pos[4].y);	// RSV
+    disp_one_symb( S_BAR25,	COLOR(SYMB1_1475&0x10),	pc1475_pos[5].x,	pc1475_pos[5].y);	// PRO
+    disp_one_symb( S_BAR25,	COLOR(SYMB1_1475&0x20),	pc1475_pos[6].x,	pc1475_pos[6].y);	// RUN
+    disp_one_symb( S_BAR25,	COLOR(SYMB1_1475&0x40),	pc1475_pos[7].x,	pc1475_pos[7].y);	// CAL
 
-	disp_one_symb( BUSY,	COLOR(SYMB2_1475&0x01),	pc1475_pos[8].x,	pc1475_pos[8].y);
-	disp_one_symb( DEF,		COLOR(SYMB2_1475&0x02),	pc1475_pos[9].x,	pc1475_pos[9].y);
-	disp_one_symb( SHIFT,	COLOR(SYMB2_1475&0x04),	pc1475_pos[10].x,	pc1475_pos[10].y);
-	disp_one_symb( DBL,		COLOR(SYMB2_1475&0x08),	pc1475_pos[11].x,	pc1475_pos[11].y);
+    disp_one_symb( S_BUSY,	COLOR(SYMB2_1475&0x01),	pc1475_pos[8].x,	pc1475_pos[8].y);
+    disp_one_symb( S_DEF,		COLOR(SYMB2_1475&0x02),	pc1475_pos[9].x,	pc1475_pos[9].y);
+    disp_one_symb( S_SHIFT,	COLOR(SYMB2_1475&0x04),	pc1475_pos[10].x,	pc1475_pos[10].y);
+    disp_one_symb( S_DBL,		COLOR(SYMB2_1475&0x08),	pc1475_pos[11].x,	pc1475_pos[11].y);
 	
-	disp_one_symb( E,		COLOR(SYMB3_1475&0x01),	pc1475_pos[12].x,	pc1475_pos[12].y);
-	disp_one_symb( REV_M,	COLOR(SYMB3_1475&0x02),	pc1475_pos[13].x,	pc1475_pos[13].y);
-	disp_one_symb( RAD,		COLOR(SYMB3_1475&0x04),	pc1475_pos[14].x,	pc1475_pos[14].y);
-	disp_one_symb( G,		COLOR(SYMB3_1475&0x08),	pc1475_pos[15].x,	pc1475_pos[15].y);
-	disp_one_symb( BAR25,	COLOR(SYMB3_1475&0x10),	pc1475_pos[16].x,	pc1475_pos[16].y);	// MATRIX
-	disp_one_symb( BAR25,	COLOR(SYMB3_1475&0x20),	pc1475_pos[17].x,	pc1475_pos[17].y);	// STAT
-	disp_one_symb( BAR25,	COLOR(SYMB3_1475&0x40),	pc1475_pos[18].x,	pc1475_pos[18].y);	// PRINT
+    disp_one_symb( S_E,		COLOR(SYMB3_1475&0x01),	pc1475_pos[12].x,	pc1475_pos[12].y);
+    disp_one_symb( S_REV_M,	COLOR(SYMB3_1475&0x02),	pc1475_pos[13].x,	pc1475_pos[13].y);
+    disp_one_symb( S_RAD,		COLOR(SYMB3_1475&0x04),	pc1475_pos[14].x,	pc1475_pos[14].y);
+    disp_one_symb( S_G,		COLOR(SYMB3_1475&0x08),	pc1475_pos[15].x,	pc1475_pos[15].y);
+    disp_one_symb( S_BAR25,	COLOR(SYMB3_1475&0x10),	pc1475_pos[16].x,	pc1475_pos[16].y);	// MATRIX
+    disp_one_symb( S_BAR25,	COLOR(SYMB3_1475&0x20),	pc1475_pos[17].x,	pc1475_pos[17].y);	// STAT
+    disp_one_symb( S_BAR25,	COLOR(SYMB3_1475&0x40),	pc1475_pos[18].x,	pc1475_pos[18].y);	// PRINT
 
-	disp_one_symb( JAP,		COLOR(SYMB4_1475&0x01),	pc1475_pos[19].x,	pc1475_pos[19].y);
-	disp_one_symb( JAP2,	COLOR(SYMB4_1475&0x02),	pc1475_pos[20].x,	pc1475_pos[20].y);
-	disp_one_symb( SML,		COLOR(SYMB4_1475&0x04),	pc1475_pos[21].x,	pc1475_pos[21].y);
-	disp_one_symb( DE,		COLOR(SYMB4_1475&0x08),	pc1475_pos[22].x,	pc1475_pos[22].y);
+    disp_one_symb( S_JAP,		COLOR(SYMB4_1475&0x01),	pc1475_pos[19].x,	pc1475_pos[19].y);
+    disp_one_symb( S_JAP2,	COLOR(SYMB4_1475&0x02),	pc1475_pos[20].x,	pc1475_pos[20].y);
+    disp_one_symb( S_SML,		COLOR(SYMB4_1475&0x04),	pc1475_pos[21].x,	pc1475_pos[21].y);
+    disp_one_symb( S_DE,		COLOR(SYMB4_1475&0x08),	pc1475_pos[22].x,	pc1475_pos[22].y);
 
 	DirtyBuf[SYMB1_ADR_1475-0x2800] = 0;				
 	DirtyBuf[SYMB2_ADR_1475-0x2800] = 0;				
@@ -1571,21 +1571,21 @@ void Clcdc_pc1500::disp_symb(void)
 
 	if (DirtyBuf[SYMB1_ADR_1500-0x7600] || DirtyBuf[SYMB2_ADR_1500-0x7600])
 	{
-		disp_one_symb( BUSY,		COLOR(SYMB1_1500&1),	pc1500_pos[0].x,	pc1500_pos[0].y);
-		disp_one_symb( SHIFT,		COLOR(SYMB1_1500&2),	pc1500_pos[1].x,	pc1500_pos[1].y);
-		disp_one_symb( JAP,			COLOR(SYMB1_1500&4),	pc1500_pos[2].x,	pc1500_pos[2].y);
-		disp_one_symb( SMALL,		COLOR(SYMB1_1500&8),	pc1500_pos[3].x,	pc1500_pos[3].y);
-		disp_one_symb( DE,			COLOR(SYMB2_1500&0x01),	pc1500_pos[4].x,	pc1500_pos[4].y);
-		disp_one_symb( G,			COLOR(SYMB2_1500&0x02),	pc1500_pos[5].x,	pc1500_pos[5].y);
-		disp_one_symb( RAD,			COLOR(SYMB2_1500&0x04),	pc1500_pos[6].x,	pc1500_pos[6].y);
-		disp_one_symb( RUN,			COLOR(SYMB2_1500&0x40),	pc1500_pos[7].x,	pc1500_pos[7].y);
-		disp_one_symb( PRO,			COLOR(SYMB2_1500&0x20),	pc1500_pos[8].x,	pc1500_pos[8].y);
-		disp_one_symb( RESERVE,		COLOR(SYMB2_1500&0x10),	pc1500_pos[9].x,	pc1500_pos[9].y);
-		disp_one_symb( DEF,			COLOR(SYMB1_1500&0x80),	pc1500_pos[10].x,	pc1500_pos[10].y);
-		disp_one_symb( ROMEAN_I,	COLOR(SYMB1_1500&0x40),	pc1500_pos[11].x,	pc1500_pos[11].y);
-		disp_one_symb( ROMEAN_II,	COLOR(SYMB1_1500&0x20),	pc1500_pos[12].x,	pc1500_pos[12].y);
-		disp_one_symb( ROMEAN_III,	COLOR(SYMB1_1500&0x10),	pc1500_pos[13].x,	pc1500_pos[13].y);
-		disp_one_symb( BATTERY,		COLOR(1),				pc1500_pos[14].x,	pc1500_pos[14].y);
+        disp_one_symb( S_BUSY,		COLOR(SYMB1_1500&1),	pc1500_pos[0].x,	pc1500_pos[0].y);
+        disp_one_symb( S_SHIFT,		COLOR(SYMB1_1500&2),	pc1500_pos[1].x,	pc1500_pos[1].y);
+        disp_one_symb( S_JAP,			COLOR(SYMB1_1500&4),	pc1500_pos[2].x,	pc1500_pos[2].y);
+        disp_one_symb( S_SMALL,		COLOR(SYMB1_1500&8),	pc1500_pos[3].x,	pc1500_pos[3].y);
+        disp_one_symb( S_DE,			COLOR(SYMB2_1500&0x01),	pc1500_pos[4].x,	pc1500_pos[4].y);
+        disp_one_symb( S_G,			COLOR(SYMB2_1500&0x02),	pc1500_pos[5].x,	pc1500_pos[5].y);
+        disp_one_symb( S_RAD,			COLOR(SYMB2_1500&0x04),	pc1500_pos[6].x,	pc1500_pos[6].y);
+        disp_one_symb( S_RUN,			COLOR(SYMB2_1500&0x40),	pc1500_pos[7].x,	pc1500_pos[7].y);
+        disp_one_symb( S_PRO,			COLOR(SYMB2_1500&0x20),	pc1500_pos[8].x,	pc1500_pos[8].y);
+        disp_one_symb( S_RESERVE,		COLOR(SYMB2_1500&0x10),	pc1500_pos[9].x,	pc1500_pos[9].y);
+        disp_one_symb( S_DEF,			COLOR(SYMB1_1500&0x80),	pc1500_pos[10].x,	pc1500_pos[10].y);
+        disp_one_symb( S_ROMEAN_I,	COLOR(SYMB1_1500&0x40),	pc1500_pos[11].x,	pc1500_pos[11].y);
+        disp_one_symb( S_ROMEAN_II,	COLOR(SYMB1_1500&0x20),	pc1500_pos[12].x,	pc1500_pos[12].y);
+        disp_one_symb( S_ROMEAN_III,	COLOR(SYMB1_1500&0x10),	pc1500_pos[13].x,	pc1500_pos[13].y);
+        disp_one_symb( S_BATTERY,		COLOR(1),				pc1500_pos[14].x,	pc1500_pos[14].y);
 		
 		DirtyBuf[SYMB1_ADR_1500-0x7600] = 0;				
 		DirtyBuf[SYMB2_ADR_1500-0x7600] = 0;				

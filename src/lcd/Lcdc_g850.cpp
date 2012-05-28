@@ -15,57 +15,39 @@ Clcdc_g850::Clcdc_g850(CPObject *parent )	: Clcdc(parent){						//[constructor]
                         (int) (103*contrast));
 }
 
+
 static const struct {
     int x,y;
-} g850_pos[15]={
-    {7, 10},     // BUSY
-    {60, 10},    // RUN
-    {79, 10},    // PRO
-    {35, 10},    // DBL
-    {257 ,10},    // SMALL
-    {238 ,10},    // KANA
-    {202 ,0},    // HYP
-    {200,10},    // CAPS
-    {173,10},    // 2ndF
-    {241,0},    // PRINT
-    {300,10},    // E
-    {181,0},    // RAD
-    {176,0},    // G
-    {168,0},    // DEG
-    {314,9}    // BATT
+    const char *symb;
+    int	Pg;
+    int	bit;
+} g850_pos[17]={
+    {0, 80,   S_BUSY,	  5, 0x40},
+    {0, 89,   S_REV_BATT, 5, 0x80},
+    {306, 0,  S_RUN,      0, 0x02},
+    {322, 0,  S_PRO,	  0, 0x08},
+    {306 ,10, S_TEXT,	  0, 0x40},
+    {306 ,20, S_CASL,     1, 0x08},
+    {306 ,30, S_STAT,     2, 0x01},
+    {306,40,  S_SECF,	  2, 0x20},
+    {326,40,  S_REV_M,	  2, 0x80},
+    {306,50,  S_CAPS,	  3, 0x04},
+    {306,60,  S_JAP,      3, 0x80},
+    {322,60,  S_JAP2,     4, 0x02},
+    {306,70,  S_DE,		  4, 0x10},
+    {314,70,  S_G,        4, 0x40},
+    {319,70,  S_RAD,      5, 0x01},
+    {306,80,  S_CONST,    5, 0x04},
+    {306,89,  S_PRINTL,	  5, 0x10}
 };
-/* busy  shift   small   de g rad   run  pro  reserve  def  i ii iii battery */
-/* japanese? */
-
-
-//      b7      b6      b5      b4      b3      b2      b1      b0
-// S1   KBII                            S       x       CTRL    BATT    F3C7
-// S2           RUN     PRO     RESERVE         RAD     G       DE      F64F
-// S3   DEF     I       II      III     SML     x       SHIFT   BUSY    F64E
-
-#define SYMB1_g850		(((Cg850v *)pPC)->pSED1560->info.imem[symbSL(0)])
-#define SYMB2_g850		(((Cg850v *)pPC)->pHD61102_1->info.imem[symbSL(4)])
-#define SYMB3_g850		(((Cg850v *)pPC)->pHD61102_1->info.imem[symbSL(5)])
+#define SYMB_g850(x)		(((Cg850v *)pPC)->pSED1560->get8(x*0xA6 + 0x90))
 
 void Clcdc_g850::disp_symb(void)
 {
-    /*
-    disp_one_symb( BUSY,		COLOR(SYMB1_g850&1),	g850_pos[0].x,	g850_pos[0].y);
-    disp_one_symb( RUN,         COLOR(SYMB1_g850&2),	g850_pos[1].x,	g850_pos[1].y);
-    disp_one_symb( PRO,			COLOR(SYMB1_g850&4),	g850_pos[2].x,	g850_pos[2].y);
-    disp_one_symb( DBL,         COLOR(SYMB1_g850&8),	g850_pos[3].x,	g850_pos[3].y);
-    disp_one_symb( SMALL,		COLOR(SYMB2_g850&0x01),	g850_pos[4].x,	g850_pos[4].y);
-    disp_one_symb( JAP, 		COLOR(SYMB2_g850&0x02),	g850_pos[5].x,	g850_pos[5].y);
-    disp_one_symb( HYP,			COLOR(SYMB2_g850&0x04),	g850_pos[6].x,	g850_pos[6].y);
-    disp_one_symb( CAPS,		COLOR(SYMB2_g850&0x08),	g850_pos[7].x,	g850_pos[7].y);
-    disp_one_symb( SECF,		COLOR(SYMB2_g850&0x10),	g850_pos[8].x,	g850_pos[8].y);
-    disp_one_symb( PRINTL,		COLOR(SYMB3_g850&0x01),	g850_pos[9].x,	g850_pos[9].y);
-    disp_one_symb( E,			COLOR(SYMB3_g850&0x02),	g850_pos[10].x,	g850_pos[10].y);
-    disp_one_symb( RAD,         COLOR(SYMB3_g850&0x04),	g850_pos[11].x,	g850_pos[11].y);
-    disp_one_symb( G,       	COLOR(SYMB3_g850&0x08),	g850_pos[12].x,	g850_pos[12].y);
-    disp_one_symb( DEG,         COLOR(SYMB3_g850&0x10),	g850_pos[13].x,	g850_pos[13].y);
-    disp_one_symb( REV_BATT,    COLOR(SYMB3_g850&0x80),	g850_pos[14].x,	g850_pos[14].y);
-*/
+    for (int i=0;i<17;i++) {
+        disp_one_symb( g850_pos[i].symb, COLOR(SYMB_g850(g850_pos[i].Pg)&g850_pos[i].bit),	g850_pos[i].x,	g850_pos[i].y);
+    }
+
     Clcdc::disp_symb();
 }
 INLINE int Clcdc_g850::symbSL(int x)
@@ -97,12 +79,12 @@ void Clcdc_g850::disp(void)
     if (!ready) return;
     if (!g850->pSED1560) return;
     if (!g850->pSED1560->updated) return;
-AddLog(LOG_DISPLAY,"DISP");
+//AddLog(LOG_DISPLAY,"DISP");
     g850->pSED1560->updated = false;
 
     Refresh = true;
 
-//    disp_symb();
+    disp_symb();
 
     QPainter painter(pPC->LcdImage);
 

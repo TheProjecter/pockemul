@@ -50,6 +50,7 @@ void CSED1560::set8(qint16 adr,BYTE val)
         return;
     }
     info.imem[adr] = val;
+    if (info.PgAdrReg > 7) { AddLog(LOG_DISPLAY,tr("status set [%1]=%2").arg(adr).arg(val));}
 }
 
 
@@ -80,7 +81,7 @@ BYTE CSED1560::instruction(qint16 cmd)
 //    updated = true;
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"SED1560 CMD: %04x\n",cmd);
 
-    AddLog(LOG_DISPLAY,tr("SED1560 CMD:%1").arg(cmd,4,16,QChar('0')));
+//    AddLog(LOG_DISPLAY,tr("SED1560 CMD:%1").arg(cmd,4,16,QChar('0')));
 
     if ((cmd & MASK_write) == MASK_write ) { cmd_write(cmd); }
     else
@@ -196,7 +197,7 @@ void CSED1560::cmd_setPgAdr(qint16 cmd)
     if (newPgAdr != info.PgAdrReg) {
         info.PgAdrReg = newPgAdr;
         updated = true;
-        AddLog(LOG_DISPLAY,tr("UPDATED pgAdr"));
+        if (newPgAdr>7) { AddLog(LOG_DISPLAY,tr("UPDATED pgAdr : %1").arg(newPgAdr));}
     }
 }
 

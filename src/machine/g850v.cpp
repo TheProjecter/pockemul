@@ -43,16 +43,16 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     setDX(683);//Pc_DX		= 679; //572;
     setDY(330);//Pc_DY		= 299;//254;
 
-    Lcd_X		= 62;
+    Lcd_X		= 67;
     Lcd_Y		= 60;
     Lcd_DX		= 144;
     Lcd_DY		= 48;
     Lcd_ratio_X	= 2;
     Lcd_ratio_Y	= 2;
 
-    Lcd_Symb_X	= 64+288;
+    Lcd_Symb_X	= 50;//64+288;
     Lcd_Symb_Y	= 60;
-    Lcd_Symb_DX	= 20;
+    Lcd_Symb_DX	= 17+288+30;
     Lcd_Symb_DY	= 96;
 
     SoundOn			= false;
@@ -77,7 +77,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     Tape_Base_Freq=2500;
 
     SlotList.clear();
-    SlotList.append(CSlot(1, 0x00000 ,	":/G850V/base.bin"          , "" , RAM , "ROM BASE"));
+    SlotList.append(CSlot(1, 0x00000 ,	":/G850V/base.bin"          , "" , RAM , "RAM BASE"));
     SlotList.append(CSlot(32, 0x00000 ,	""                          , "" , RAM , "RAM"));
 
     SlotList.append(CSlot(16, 0x08000 ,	":/G850V/rom00.bin"         , "" , ROM , "ROM BANK 00"));
