@@ -90,7 +90,7 @@ void Clcdc_g850::disp(void)
 
 //    if (g850->pSED1560->info.on_off)
     {
-        for (int i = 0 ; i < 0xa6; i++)
+        for (int i = 0 ; i < 0x90; i++)
         {
             for (int j = 0 ; j < 8 ; j++)
             {
