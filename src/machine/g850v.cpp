@@ -100,7 +100,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 
     keyBreak = pin11If = 0;
 
-//    ioFreq=0;
+    ioFreq=0;
 }
 
 Cg850v::~Cg850v()

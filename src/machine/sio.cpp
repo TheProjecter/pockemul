@@ -174,6 +174,7 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     inBitNb = 0;
     Sii_ndx				= 0;
     Sii_wait			= 0;
+    Sii_wait_recv       = 0;
     Sii_startbitsent	= FALSE;
     Sii_stopbitsent		= TRUE;
     Sii_TransferStarted = FALSE;
@@ -182,7 +183,7 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     Sii_LfWait			= 500;
 
     pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Sharp 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
-    setfrequency( 0);
+    setfrequency( 0 );
     BackGroundFname	= ":/EXT/ext/serial.png";
 
     pTIMER		= new Ctimer(this);
@@ -283,7 +284,7 @@ bool Csio::run(void)
 	Sii_bit = 0;
     if (ER && CD && RR)	{
         Sii_bit = inReadBit();
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
+//        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
 
     }
 	Set_RD( Sii_bit );	
@@ -291,7 +292,7 @@ bool Csio::run(void)
     if (RS) {
         Set_CS(1);
         Set_CD(1);
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
+//        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
     }
     bitToByte();
 
@@ -300,6 +301,7 @@ bool Csio::run(void)
     SIO_SET_PIN(S_CD, Get_CD());
     //SIO_SET_PIN(SIO_PAK, 0);
 
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 	return true;
 }
 
@@ -465,46 +467,57 @@ void Csio::bitToByte(void)
 //	1	STOP BIT
 
     deltastate = pTIMER->state - oldstate_out;
-	if (deltastate < Sii_wait) return;
+    if (deltastate < Sii_wait_recv) {
+        return;
+    }
 		
 	if (!(ER && RS)) 
 	{
         oldstate_out	= pTIMER->state;
-		Sii_wait	= 0;
+        Sii_wait_recv	= 0;
+        waitbitstart = 1;
 		return;
 	}	
 //    Sii_wait	= TICKS_BDS;
     oldstate_out	= pTIMER->state;
-//	oldstate	+= Sii_wait;		
+//    oldstate_out	+= Sii_wait;
 		
     AddLog(LOG_SIO,tr("STOP BIT"));
     if (waitbitstop && (SD==0))
     {
-        waitbitstop = 0;waitbitstart=1;
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
+        waitbitstop = 0;
+        waitbitstart = 1;
         //		Bit STOP
         AddLog(LOG_SIO,tr("STOP BIT"));
-        Sii_wait = 0;
+        Sii_wait_recv = 0;
     }
     else if (waitbitstart && SD)
     {
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
         waitbitstart = 0;
         //		Bit START
         AddLog(LOG_SIO,tr("START BIT"));
-        Sii_wait	= TICKS_BDS;
+        Sii_wait_recv	= TICKS_BDS;
+        c=0;
     }
     else if (!waitbitstart)
     {
 		t>>=1;
 		if(SD==0) t|=0x80;
 		AddLog(LOG_SIO,tr("Bit = %1").arg(SD));
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(c+2);
 		if((c=(++c)&7)==0)
 		{
 			AddLog(LOG_SIO,tr("Byte = %1").arg(t,2,16,QChar('0')));
             byteRecv(t);
 			t=0;
 			waitbitstop = 1;
+//            Set_CS(0);
+//            Sii_wait_recv = 0;
 		}
 	}
+    else if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(0);
 }
 
 
@@ -519,6 +532,7 @@ bool Csio::init(void)
 	CD = CS = ER = RD = RR = RS = SD = 0;
 
     setDX(195);//Pc_DX	= 195;
+    oldstate_out = 0;
     setDY(145);//Pc_DY	= 145;
 
 	CPObject::init();

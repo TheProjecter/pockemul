@@ -112,7 +112,7 @@ signals:
 private:
 	int		inBitNb;
 	int		Sii_ndx;
-	int		Sii_wait;
+    int		Sii_wait,Sii_wait_recv;
 	bool	Sii_startbitsent;
 	bool	Sii_stopbitsent;
 	bool	Sii_TransferStarted;
