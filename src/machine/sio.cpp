@@ -351,6 +351,7 @@ bool Csio::inReadBit(void)
 				}
 				
                 baInput.remove(0,1);										// Next Char
+                Sii_ndx++;
 
                 return(currentBit);
 		}

@@ -40,8 +40,8 @@ static const struct {
     {306,80,  S_CONST,    5, 0x04},
     {306,89,  S_PRINTL,	  5, 0x10}
 };
-#define SYMB_g850(x)		(((Cg850v *)pPC)->pSED1560->get8(x*0xA6 + 0x90))
-
+//#define SYMB_g850(x)		(((Cg850v *)pPC)->pSED1560->get8(x*0xA6 + 0x90))
+#define SYMB_g850(x)		(((Cg850v *)pPC)->pSED1560->get8(symbSL(x)))
 void Clcdc_g850::disp_symb(void)
 {
     for (int i=0;i<17;i++) {
@@ -55,7 +55,7 @@ INLINE int Clcdc_g850::symbSL(int x)
 
     int l=(x+((Cg850v *)pPC)->pSED1560->info.displaySL/8);
     l = (l>=8) ? l-8 : l;
-    return l*0x40+63;
+    return l*0xA6+0x90;
 }
 
 INLINE int Clcdc_g850::computeSL(int ord)
