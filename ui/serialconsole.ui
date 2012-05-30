@@ -59,7 +59,7 @@
          </rect>
         </property>
         <attribute name="label">
-         <string>Output</string>
+         <string>Recieved Data</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
@@ -159,7 +159,7 @@
          </rect>
         </property>
         <attribute name="label">
-         <string>Input</string>
+         <string>Send Data</string>
         </attribute>
         <widget class="QWidget" name="verticalLayoutWidget">
          <property name="geometry">
@@ -316,7 +316,7 @@
          </rect>
         </property>
         <attribute name="label">
-         <string>Config</string>
+         <string>Configure</string>
         </attribute>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">

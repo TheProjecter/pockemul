@@ -62,7 +62,6 @@ bool Csio::LoadSession_File(QXmlStreamReader *xmlIn)
 
 void Csio::updateMapConsole(void) {
     AddLog(LOG_MASTER,"update serial map");
-    MSG_ERROR(QString("%1").arg(signalMap[S_SD]))
     dialogconsole->lEdit_SD->setText(QString("%1").arg(signalMap[S_SD]));
     dialogconsole->lEdit_RD->setText(QString("%1").arg(signalMap[S_RD]));
     dialogconsole->lEdit_RS->setText(QString("%1").arg(signalMap[S_RS]));
@@ -369,11 +368,11 @@ bool Csio::inReadBit(void)
         case 2:	currentBit = 0;
                 Sii_wait = TICKS_BDS;
 
-				if (data == 0x0D)
-				{
-					Sii_wait=Sii_LfWait*pTIMER->pPC->getfrequency()/1000;
-					AddLog(LOG_SIO,tr("LF found, wait %1 ms").arg(Sii_LfWait));
-				}
+                if (data == 0x0D)
+                {
+                    Sii_wait+=Sii_LfWait*pTIMER->pPC->getfrequency()/1000;
+                    AddLog(LOG_SIO,tr("LF found, wait %1 ms").arg(Sii_LfWait));
+                }
 				
                 baInput.remove(0,1);										// Next Char
                 Sii_ndx++;
@@ -508,7 +507,7 @@ void Csio::bitToByte(void)
 		AddLog(LOG_SIO,tr("Bit = %1").arg(SD));
         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(c+2);
 		if((c=(++c)&7)==0)
-		{
+        {
 			AddLog(LOG_SIO,tr("Byte = %1").arg(t,2,16,QChar('0')));
             byteRecv(t);
 			t=0;

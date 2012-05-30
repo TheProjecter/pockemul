@@ -15,6 +15,7 @@ public:
 
 private slots:
 	void	sendData( void);
+    void    openFile(void);
     void	stopStream( void);
     void    changeBaudrate(QString);
     void    updateMapCD(QString);

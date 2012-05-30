@@ -1,5 +1,6 @@
 #include <QTextCursor>
 #include <QCloseEvent>
+#include <QFileDialog>
 
 #include "dialogconsole.h"
 #include "common.h"
@@ -14,6 +15,7 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
 	setFocusPolicy(Qt::StrongFocus);
 
     connect(pbSend, SIGNAL(clicked()), this, SLOT(sendData())); 
+    connect(pbOpen,SIGNAL(clicked()),this,SLOT(openFile()));
     connect(baudCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(changeBaudrate(QString)));
     connect(pbStop,SIGNAL(clicked()),this,SLOT(stopStream()));
 
@@ -110,6 +112,25 @@ void DialogConsole::sendData( void)
 	pSIO->baInput.append(textEdit_in->toPlainText () );
 	pSIO->baInput.append(0x1A);
     pSIO->startTransfer();
+}
+
+void DialogConsole::openFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Choose a file"),
+                ".",
+                tr("All Files (*.*)"));
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(this,tr("PockEmul"),
+                             tr("Cannot read file %1:\n%2.")
+                             .arg(file.fileName())
+                             .arg(file.errorString()));
+            return ;
+    }
+    textEdit_in->setPlainText(QString(file.readAll()));
 }
 
 void DialogConsole::stopStream()
