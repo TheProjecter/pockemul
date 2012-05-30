@@ -99,6 +99,7 @@ public:
 
     void initConnectorType(QString type);
 
+    void updateMapConsole();
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowConsole(void);

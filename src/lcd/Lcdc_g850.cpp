@@ -103,11 +103,8 @@ void Clcdc_g850::disp(void)
 
                     int y = computeSL(j*8+b);
                     if ((y>=0)&&(y < 48)) {
-                        if ((data>>b)&0x01) {AddLog(LOG_DISPLAY,tr("pset[%1,%2]").arg(i).arg(y));}
+//                        if ((data>>b)&0x01) {AddLog(LOG_DISPLAY,tr("pset[%1,%2]").arg(i).arg(y));}
                         painter.drawPoint( i, y );
-                    }
-                    else {
-//                        AddLog(LOG_DISPLAY,tr("OUT y=%1 SL=%2 data=%3").arg(y).arg(((Cg850v*)pPC)->pSED1560->info.displaySL).arg(data));
                     }
                 }
             }

@@ -15,6 +15,15 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
 
     connect(pbSend, SIGNAL(clicked()), this, SLOT(sendData())); 
     connect(baudCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(changeBaudrate(QString)));
+    connect(pbStop,SIGNAL(clicked()),this,SLOT(stopStream()));
+
+    connect(lEdit_CD,SIGNAL(textChanged(QString)),this,SLOT(updateMapCD(QString)));
+    connect(lEdit_CS,SIGNAL(textChanged(QString)),this,SLOT(updateMapCS(QString)));
+    connect(lEdit_ER,SIGNAL(textChanged(QString)),this,SLOT(updateMapER(QString)));
+    connect(lEdit_RD,SIGNAL(textChanged(QString)),this,SLOT(updateMapRD(QString)));
+    connect(lEdit_RR,SIGNAL(textChanged(QString)),this,SLOT(updateMapRR(QString)));
+    connect(lEdit_RS,SIGNAL(textChanged(QString)),this,SLOT(updateMapRS(QString)));
+    connect(lEdit_SD,SIGNAL(textChanged(QString)),this,SLOT(updateMapSD(QString)));
 
     pSIO = (Csio *) parent;
     currentIndex=0;
@@ -57,6 +66,41 @@ void DialogConsole::changeBaudrate(QString baud) {
     pSIO->Set_BaudRate(baud.toInt(&ok));
 }
 
+void DialogConsole::updateMapCD(QString val)
+{
+    pSIO->signalMap[Csio::S_CD] = val.toInt();
+}
+
+void DialogConsole::updateMapCS(QString val)
+{
+    pSIO->signalMap[Csio::S_CS] = val.toInt();
+}
+
+void DialogConsole::updateMapER(QString val)
+{
+    pSIO->signalMap[Csio::S_ER] = val.toInt();
+}
+
+void DialogConsole::updateMapRD(QString val)
+{
+    pSIO->signalMap[Csio::S_RD] = val.toInt();
+}
+
+void DialogConsole::updateMapRR(QString val)
+{
+    pSIO->signalMap[Csio::S_RR] = val.toInt();
+}
+
+void DialogConsole::updateMapRS(QString val)
+{
+    pSIO->signalMap[Csio::S_RS] = val.toInt();
+}
+
+void DialogConsole::updateMapSD(QString val)
+{
+    pSIO->signalMap[Csio::S_SD] = val.toInt();
+}
+
 void DialogConsole::sendData( void)
 {
 	
@@ -65,7 +109,14 @@ void DialogConsole::sendData( void)
 	pSIO->clearInput();
 	pSIO->baInput.append(textEdit_in->toPlainText () );
 	pSIO->baInput.append(0x1A);
-	pSIO->startTransfer();
+    pSIO->startTransfer();
+}
+
+void DialogConsole::stopStream()
+{
+    if (!pSIO) return;
+    pSIO->clearInput();
+    pSIO->init();
 }
 
 void DialogConsole::closeEvent(QCloseEvent *event)

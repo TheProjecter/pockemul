@@ -15,7 +15,16 @@ public:
 
 private slots:
 	void	sendData( void);
+    void	stopStream( void);
     void    changeBaudrate(QString);
+    void    updateMapCD(QString);
+    void    updateMapCS(QString);
+    void    updateMapER(QString);
+    void    updateMapRD(QString);
+    void    updateMapRR(QString);
+    void    updateMapRS(QString);
+    void    updateMapSD(QString);
+
 
 protected:
 	void closeEvent(QCloseEvent *event);

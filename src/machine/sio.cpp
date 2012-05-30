@@ -60,16 +60,30 @@ bool Csio::LoadSession_File(QXmlStreamReader *xmlIn)
     return true;
 }
 
+void Csio::updateMapConsole(void) {
+    AddLog(LOG_MASTER,"update serial map");
+    MSG_ERROR(QString("%1").arg(signalMap[S_SD]))
+    dialogconsole->lEdit_SD->setText(QString("%1").arg(signalMap[S_SD]));
+    dialogconsole->lEdit_RD->setText(QString("%1").arg(signalMap[S_RD]));
+    dialogconsole->lEdit_RS->setText(QString("%1").arg(signalMap[S_RS]));
+    dialogconsole->lEdit_CS->setText(QString("%1").arg(signalMap[S_CS]));
+    dialogconsole->lEdit_CD->setText(QString("%1").arg(signalMap[S_CD]));
+    dialogconsole->lEdit_RR->setText(QString("%1").arg(signalMap[S_RR]));
+    dialogconsole->lEdit_ER->setText(QString("%1").arg(signalMap[S_ER]));
+    dialogconsole->update();
+}
+
 bool Csio::initSignalMap(Cconnector::ConnectorType type) {
     switch (type) {
     case Cconnector::Sharp_11 : signalMap.clear();
-                                signalMap[S_SD] = 7;
-                                signalMap[S_RD] = 6;
+                                signalMap[S_SD] = 7;    // ok
+                                signalMap[S_RD] = 6;    // ok
                                 signalMap[S_RS] = 5;
-                                signalMap[S_CS] = 9;
+                                signalMap[S_CS] = 9;    // ok
                                 signalMap[S_CD] = 8;
                                 signalMap[S_RR] = 8;
                                 signalMap[S_ER] = 5;
+                                updateMapConsole();
                                 pSIOCONNECTOR->Desc = "Sharp 11 pins";
                                 pSIOCONNECTOR->setNbpins(11);
                                 pSIOCONNECTOR->setType(Cconnector::Sharp_11);
@@ -90,6 +104,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 signalMap[S_CD] = 8;
                                 signalMap[S_RR] = 11;
                                 signalMap[S_ER] = 14;
+                                updateMapConsole();
                                 pSIOCONNECTOR->Desc = "Sharp 15 pins";
                                 pSIOCONNECTOR->setNbpins(15);
                                 pSIOCONNECTOR->setType(Cconnector::Sharp_15);
@@ -110,6 +125,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 signalMap[S_CD] = 8;
                                 signalMap[S_RR] = 11;
                                 signalMap[S_ER] = 14;
+                                updateMapConsole();
                                 pSIOCONNECTOR->Desc = "Canon 9 pins";
                                 pSIOCONNECTOR->setNbpins(9);
                                 pSIOCONNECTOR->setType(Cconnector::Canon_9);
@@ -124,14 +140,18 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 signalMap[S_CD] = 8;
                                 signalMap[S_RR] = 11;
                                 signalMap[S_ER] = 14;
+                                updateMapConsole();
                                 pSIOCONNECTOR->Desc = "DB25 Serial Connector";
                                 pSIOCONNECTOR->setNbpins(25);
                                 pSIOCONNECTOR->setType(Cconnector::DB25);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,pSIOCONNECTOR->Desc);
                                 break;
-    default: break;
+    default: return false;
+        break;
     }
+
+    return true;
 }
 
 Csio::Csio(CPObject *parent)	: CPObject(this)
@@ -166,8 +186,11 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     BackGroundFname	= ":/EXT/ext/serial.png";
 
     pTIMER		= new Ctimer(this);
-    setDX(195);//Pc_DX	= 195;
-    setDY(145);//Pc_DY	= 145;
+    setDX(195);
+    setDY(145);
+
+    dialogconsole = new DialogConsole(this);
+    initSignalMap(Cconnector::Sharp_15);
 }
 
 void Csio::Set_Sii_bit(qint8 bit)	{ Sii_bit = bit;				}
@@ -450,28 +473,27 @@ void Csio::bitToByte(void)
 		Sii_wait	= 0;
 		return;
 	}	
-//	Sii_wait	= TICKS_BDS;
+//    Sii_wait	= TICKS_BDS;
     oldstate_out	= pTIMER->state;
 //	oldstate	+= Sii_wait;		
 		
-AddLog(LOG_SIO,tr("STOP BIT"));
-	if (waitbitstop && (SD==0))
-	{
-		waitbitstop = 0;waitbitstart=1;
-//		Bit STOP
-		AddLog(LOG_SIO,tr("STOP BIT"));
-		Sii_wait = 0;
-	}
-	else if (waitbitstart && SD) 
-	{
-		waitbitstart = 0;
-//		Bit START
-		AddLog(LOG_SIO,tr("START BIT"));
+    AddLog(LOG_SIO,tr("STOP BIT"));
+    if (waitbitstop && (SD==0))
+    {
+        waitbitstop = 0;waitbitstart=1;
+        //		Bit STOP
+        AddLog(LOG_SIO,tr("STOP BIT"));
+        Sii_wait = 0;
+    }
+    else if (waitbitstart && SD)
+    {
+        waitbitstart = 0;
+        //		Bit START
+        AddLog(LOG_SIO,tr("START BIT"));
         Sii_wait	= TICKS_BDS;
-		
-	}
-	else if (!waitbitstart)
-	{
+    }
+    else if (!waitbitstart)
+    {
 		t>>=1;
 		if(SD==0) t|=0x80;
 		AddLog(LOG_SIO,tr("Bit = %1").arg(SD));
@@ -501,13 +523,10 @@ bool Csio::init(void)
 
 	CPObject::init();
 
-    dialogconsole = new DialogConsole(this);
-    dialogconsole->show();
 
+    dialogconsole->show();
     connect(this,SIGNAL(valueChanged(int)),dialogconsole->inputProgressBar,SLOT(setValue(int)));
 
-	AddLog(LOG_MASTER,"done.\n");
-    initSignalMap(Cconnector::Sharp_15);
 
 
 

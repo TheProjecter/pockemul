@@ -99,6 +99,8 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     SlotList.append(CSlot(16, 0x5C000 ,	":/G850V/rom15.bin"         , "" , ROM , "ROM BANK 15"));
 
     keyBreak = pin11If = 0;
+
+//    ioFreq=0;
 }
 
 Cg850v::~Cg850v()
@@ -390,7 +392,7 @@ bool Cg850v::run()
 
 #if 1
     if ( (pKEYB->LastKey == K_BRK) && (interruptMask & 0x02) )  {
-        AddLog(LOG_MASTER,"BREAK");
+//        AddLog(LOG_MASTER,"BREAK");
         keyBreak |= 0x80;
 //        pKEYB->LastKey = 0;
         interruptType |= 0x02;

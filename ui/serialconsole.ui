@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>538</width>
-    <height>378</height>
+    <height>415</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,7 +55,7 @@
           <x>0</x>
           <y>0</y>
           <width>510</width>
-          <height>219</height>
+          <height>256</height>
          </rect>
         </property>
         <attribute name="label">
@@ -155,7 +155,7 @@
           <x>0</x>
           <y>0</y>
           <width>510</width>
-          <height>219</height>
+          <height>256</height>
          </rect>
         </property>
         <attribute name="label">
@@ -312,7 +312,7 @@
           <x>0</x>
           <y>0</y>
           <width>510</width>
-          <height>219</height>
+          <height>256</height>
          </rect>
         </property>
         <attribute name="label">
@@ -324,7 +324,7 @@
            <x>0</x>
            <y>0</y>
            <width>504</width>
-           <height>74</height>
+           <height>248</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -346,11 +346,16 @@
             <item>
              <widget class="QComboBox" name="baudCombo">
               <property name="currentIndex">
-               <number>1</number>
+               <number>2</number>
               </property>
               <item>
                <property name="text">
                 <string>300</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>600</string>
                </property>
               </item>
               <item>
@@ -465,6 +470,84 @@
                <string>2</string>
               </property>
              </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>SD:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_SD"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>RD:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_RD"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>RS:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_RS"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>CS:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_CS"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>CD:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_CD"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>RR:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_RR"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>ER:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lEdit_ER"/>
             </item>
            </layout>
           </item>
