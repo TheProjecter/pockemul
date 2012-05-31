@@ -399,7 +399,7 @@ bool Cg850v::run()
         ((CZ80*)pCPU)->z80int1(&((CZ80*)pCPU)->z80);
     }
     else if ( (pKEYB->LastKey != 0) && (interruptMask & 0x01) )  {
-        AddLog(LOG_MASTER,"Key intr");
+//        AddLog(LOG_MASTER,"Key intr");
 //        pKEYB->LastKey = 0;
         interruptType |= 0x01;
         ((CZ80*)pCPU)->z80int1(&((CZ80*)pCPU)->z80);

@@ -80,7 +80,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 signalMap[S_RS] = 5;
                                 signalMap[S_CS] = 9;    // ok
                                 signalMap[S_CD] = 8;
-                                signalMap[S_RR] = 8;
+                                signalMap[S_RR] = 4;
                                 signalMap[S_ER] = 5;
                                 updateMapConsole();
                                 pSIOCONNECTOR->Desc = "Sharp 11 pins";
@@ -279,20 +279,22 @@ bool Csio::run(void)
     Set_ER( SIO_GET_PIN(S_ER) );
 //	Set_PRQ( SIO_GET_PIN(S_PRQ) );
 	
-	
-	Sii_bit = 0;
-    if (ER && CD && RR)	{
-        Sii_bit = inReadBit();
-//        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
-
-    }
-	Set_RD( Sii_bit );	
-	
     if (RS) {
         Set_CS(1);
         Set_CD(1);
 //        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
     }
+
+	Sii_bit = 0;
+    if (ER && CD && RR)	{
+//        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
+        Sii_bit = inReadBit();
+
+
+    }
+	Set_RD( Sii_bit );	
+	
+
     bitToByte();
 
     SIO_SET_PIN(S_RD, Get_RD());
@@ -343,6 +345,7 @@ bool Csio::inReadBit(void)
 
         if (deltastate < Sii_wait) return(currentBit);
 
+
         oldstate_in	= pTIMER->state;
 //		oldstate_in	+= deltastate;
 
@@ -359,10 +362,12 @@ bool Csio::inReadBit(void)
 		{
         case 3:	currentBit = 1;
                 Sii_wait = TICKS_BDS;
+                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
                 return(currentBit);		// START BIT
 		case 0:
         case 1:	AddLog(LOG_SIO,tr("Envoie bit = %1").arg(currentBit));
                 Sii_wait = TICKS_BDS;
+                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
                 return(currentBit);		// DATA BIT
 
         case 2:	currentBit = 0;
@@ -376,7 +381,7 @@ bool Csio::inReadBit(void)
 				
                 baInput.remove(0,1);										// Next Char
                 Sii_ndx++;
-
+                if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(4);
                 return(currentBit);
 		}
 	}
@@ -413,6 +418,7 @@ qint8 Csio::byteToBit(qint8 data)
 		{
 			Start_Bit_Sent = TRUE;
 
+//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
 			AddLog(LOG_SIO,tr("START BIT : %1").arg(data,2,16,QChar('0')));
 
 			return(3);  // Startbit = 1
@@ -422,6 +428,7 @@ qint8 Csio::byteToBit(qint8 data)
 		{
 			bit = ( ((data >> inBitNb) & 0x01) ? 0 : 1 );
 			inBitNb++;
+//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(inBitNb+2);
 			return(bit);
 		}
 		else
@@ -429,6 +436,7 @@ qint8 Csio::byteToBit(qint8 data)
 		{
 			inBitNb = 0;
 			AddLog(LOG_SIO,tr("STOP BIT"));
+//            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
 			Start_Bit_Sent	= FALSE;
 			return(2);	// STOPBIT : To be converted to 0
 		}
@@ -516,7 +524,7 @@ void Csio::bitToByte(void)
 //            Sii_wait_recv = 0;
 		}
 	}
-    else if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(0);
+//    else if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(0);
 }
 
 
