@@ -272,7 +272,7 @@ public:
 	bool	access;							//KO access flag(0:none,1:access)
 	QString fn_KeyMap;
     bool	Kon;
-    int	LastKey;
+    int	    LastKey,lastMousePressedKey;
 
     QList<int> keyPressedList;
 

@@ -50,7 +50,7 @@ Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan) //: CPObject(parent)						
     fn_KeyMap	= map;
     modified = false;
     handler = new KEYBMAPParser(this);
-    LastKey = 0;
+    LastKey = lastMousePressedKey = 0;
 }
 
 Ckeyb::~Ckeyb() {

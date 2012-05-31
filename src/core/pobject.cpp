@@ -467,6 +467,8 @@ void CPObject::mousePressEvent(QMouseEvent *event)
     if (pKEYB)
     {
         pKEYB->LastKey = pKEYB->KeyClick(pts);
+        pKEYB->lastMousePressedKey = pKEYB->LastKey;
+        if (pKEYB->LastKey) pKEYB->keyPressedList.append(pKEYB->LastKey);
 
         switch (pKEYB->LastKey) {
         case K_OF : slotPower();return; break;
@@ -682,7 +684,11 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
     startKeyDrag = false;
     startPosDrag = false;
 	setCursor(Qt::ArrowCursor);
-	if (pKEYB) pKEYB->LastKey = 0;
+    if (pKEYB) {
+        pKEYB->keyPressedList.removeAll(pKEYB->lastMousePressedKey);
+        pKEYB->lastMousePressedKey = 0;
+        pKEYB->LastKey = 0;
+    }
 
     if ( (parentWidget() != mainwindow->centralwidget)
         && (parentWidget() != 0))

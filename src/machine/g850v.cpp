@@ -439,7 +439,9 @@ bool Cg850v::CompleteDisplay()
 {
 }
 
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+//#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+
 BYTE Cg850v::getKey()
 {
 
