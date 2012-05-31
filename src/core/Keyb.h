@@ -274,6 +274,8 @@ public:
     bool	Kon;
     int	LastKey;
 
+    QList<int> keyPressedList;
+
 	QList<CKey>	Keys;
 	bool	modified;
 	int		baseWidth;

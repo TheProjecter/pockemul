@@ -203,6 +203,7 @@ public:
 
     virtual void TurnCLOSE(void);
 
+    int mapKey(QKeyEvent *event);
 signals:
     void msgError(QString);
 

@@ -732,7 +732,56 @@ void CPObject::keyReleaseEvent(QKeyEvent * event )
 	if (!pKEYB) return;	// if no Keyboard then return;
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
     pKEYB->isCtrl = (QApplication::keyboardModifiers() == Qt::ControlModifier);
+
+    pKEYB->keyPressedList.removeAll(mapKey(event));
 	pKEYB->LastKey = 0;
+}
+
+int CPObject::mapKey(QKeyEvent * event) {
+    int key = 0;
+    switch (event->key()) {
+        case Qt::Key_Shift:		key = K_SHT;		event->accept();	break;
+        case Qt::Key_Control:	key = K_CTRL;	event->accept();	break;
+        case Qt::Key_Return:	key = K_RET;		event->accept();	break;
+        case Qt::Key_Delete:	key = K_DEL;		event->accept();	break;
+        case Qt::Key_Insert:	key = K_INS;		event->accept();	break;
+        case Qt::Key_QuoteLeft: key = K_QUOTE;   event->accept();    break;
+        case Qt::Key_Tab:       key = K_TAB;     event->accept();    break;
+        case Qt::Key_Space:		key = ' ';		event->accept();	break;
+        case Qt::Key_Period:	key = '.';		event->accept();	break;
+        case Qt::Key_Plus:		key = '+';		event->accept();	break;
+        case Qt::Key_Minus:		key = '-';		event->accept();	break;
+        case Qt::Key_Asterisk:	key = '*';		event->accept();	break;
+        case Qt::Key_Slash:		key = '/';		event->accept();	break;
+        case Qt::Key_Equal:		key = '=';		event->accept();	break;
+        case Qt::Key_QuoteDbl:	key = '"';		event->accept();	break;
+        case Qt::Key_Semicolon:	key = ';';		event->accept();	break;
+        case Qt::Key_Comma:		key = ',';		event->accept();	break;
+        case Qt::Key_ParenLeft: key = '(';       event->accept();    break;
+        case Qt::Key_ParenRight:key = ')';       event->accept();    break;
+        case Qt::Key_Backspace:	key = K_BS;		event->accept();	break;
+        case Qt::Key_Dollar:	key = '$';		event->accept();	break;
+        case Qt::Key_Ampersand:	key = '&';		event->accept();	break;
+        case Qt::Key_CapsLock:	key = K_SML;		event->accept();	break;
+        case Qt::Key_Left:		key = K_LA;		event->accept();	break;
+        case Qt::Key_Right:		key = K_RA;		event->accept();	break;
+        case Qt::Key_Up:		key = K_UA;		event->accept();	break;
+        case Qt::Key_Down:		key = K_DA;		event->accept();	break;
+        case Qt::Key_F1:		key = K_F1;		event->accept();	break;
+        case Qt::Key_F2:		key = K_F2;		event->accept();	break;
+        case Qt::Key_F3:		key = K_F3;		event->accept();	break;
+        case Qt::Key_F4:		key = K_F4;		event->accept();	break;
+        case Qt::Key_F5:		key = K_F5;		event->accept();	break;
+        case Qt::Key_F6:		key = K_F6;		event->accept();	break;
+        case Qt::Key_F7:		key = K_F7;		event->accept();	break;
+        case Qt::Key_F8:		key = K_CLR;		event->accept();	break;
+        case Qt::Key_F9:		key = K_DEF;		event->accept();	break;
+        case Qt::Key_F11:		key = K_BRK;		event->accept();	break;
+        }
+    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
+    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}
+
+    return key;
 }
 
 void CPObject::keyPressEvent (QKeyEvent * event )
@@ -742,49 +791,14 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
     pKEYB->isCtrl = (QApplication::keyboardModifiers() == Qt::ControlModifier);
-   	switch (event->key()) {
-        case Qt::Key_Shift:		pKEYB->LastKey = K_SHT;		event->accept();	break;
-        case Qt::Key_Control:	pKEYB->LastKey = K_CTRL;	event->accept();	break;
-   		case Qt::Key_Return:	pKEYB->LastKey = K_RET;		event->accept();	break;
-        case Qt::Key_Delete:	pKEYB->LastKey = K_DEL;		event->accept();	break;
-        case Qt::Key_Insert:	pKEYB->LastKey = K_INS;		event->accept();	break;
-        case Qt::Key_QuoteLeft: pKEYB->LastKey = K_QUOTE;   event->accept();    break;
-        case Qt::Key_Tab:       pKEYB->LastKey = K_TAB;     event->accept();    break;
-        case Qt::Key_Space:		pKEYB->LastKey = ' ';		event->accept();	break;
-		case Qt::Key_Period:	pKEYB->LastKey = '.';		event->accept();	break;
-		case Qt::Key_Plus:		pKEYB->LastKey = '+';		event->accept();	break;
-		case Qt::Key_Minus:		pKEYB->LastKey = '-';		event->accept();	break;
-		case Qt::Key_Asterisk:	pKEYB->LastKey = '*';		event->accept();	break;
-		case Qt::Key_Slash:		pKEYB->LastKey = '/';		event->accept();	break;
-        case Qt::Key_Equal:		pKEYB->LastKey = '=';		event->accept();	break;
-        case Qt::Key_QuoteDbl:	pKEYB->LastKey = '"';		event->accept();	break;
-        case Qt::Key_Semicolon:	pKEYB->LastKey = ';';		event->accept();	break;
-        case Qt::Key_Comma:		pKEYB->LastKey = ',';		event->accept();	break;
-        case Qt::Key_ParenLeft: pKEYB->LastKey = '(';       event->accept();    break;
-        case Qt::Key_ParenRight:pKEYB->LastKey = ')';       event->accept();    break;
-        case Qt::Key_Backspace:	pKEYB->LastKey = K_BS;		event->accept();	break;
-        case Qt::Key_Dollar:	pKEYB->LastKey = '$';		event->accept();	break;
-        case Qt::Key_Ampersand:	pKEYB->LastKey = '&';		event->accept();	break;
-		case Qt::Key_CapsLock:	pKEYB->LastKey = K_SML;		event->accept();	break;
-		case Qt::Key_Left:		pKEYB->LastKey = K_LA;		event->accept();	break;
-		case Qt::Key_Right:		pKEYB->LastKey = K_RA;		event->accept();	break;
-		case Qt::Key_Up:		pKEYB->LastKey = K_UA;		event->accept();	break;
-		case Qt::Key_Down:		pKEYB->LastKey = K_DA;		event->accept();	break;
-		case Qt::Key_F1:		pKEYB->LastKey = K_F1;		event->accept();	break;
-		case Qt::Key_F2:		pKEYB->LastKey = K_F2;		event->accept();	break;
-		case Qt::Key_F3:		pKEYB->LastKey = K_F3;		event->accept();	break;
-		case Qt::Key_F4:		pKEYB->LastKey = K_F4;		event->accept();	break;
-		case Qt::Key_F5:		pKEYB->LastKey = K_F5;		event->accept();	break;
-		case Qt::Key_F6:		pKEYB->LastKey = K_F6;		event->accept();	break;
-        case Qt::Key_F7:		pKEYB->LastKey = K_F7;		event->accept();	break;
-		case Qt::Key_F8:		pKEYB->LastKey = K_CLR;		event->accept();	break;
-		case Qt::Key_F9:		pKEYB->LastKey = K_DEF;		event->accept();	break;
-		case Qt::Key_F11:		pKEYB->LastKey = K_BRK;		event->accept();	break;
-		}
-	if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { pKEYB->LastKey = event->key(); event->accept();	}
-	if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { pKEYB->LastKey = event->key(); event->accept();	}
-		
-	event->ignore();
+
+    pKEYB->LastKey = mapKey(event);
+
+    if (pKEYB->LastKey) {
+        // Add th key to Key pressed buffer
+        pKEYB->keyPressedList.append(pKEYB->LastKey);
+    }
+    else event->ignore();
 }
 
 void CPObject::focusInEvent ( QFocusEvent * event )
