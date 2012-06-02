@@ -262,8 +262,11 @@ HEADERS += src/core/Connect.h \
     src/core/tapandholdgesture.h \
     src/machine/pb2000.h \
     src/machine/md100.h \
-    src/machine/casiodisk.h
-#    src/core/lcc/parser/parser.h
+    src/machine/casiodisk.h \
+    src/machine/fp100.h \
+    src/machine/g850v.h \
+    src/cpu/sed1560.h \
+    src/lcd/Lcdc_g850.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -310,7 +313,8 @@ RESOURCES += resources/ext.qrc \
     resources/x07.qrc \
     resources/pb1000.qrc \
     resources/e500.qrc \
-    resources/pb2000.qrc
+    resources/pb2000.qrc \
+    resources/g850v.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -474,7 +478,11 @@ SOURCES += src/core/Connect.cpp \
     src/core/tapandholdgesture.cpp \
     src/machine/pb2000.cpp \
     src/machine/md100.cpp \
-    src/machine/casiodisk.cpp
+    src/machine/casiodisk.cpp \
+    src/machine/fp100.cpp \
+    src/machine/g850v.cpp \
+    src/cpu/sed1560.cpp \
+    src/lcd/Lcdc_g850.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -611,8 +619,8 @@ OTHER_FILES += \
     android/src/eu/licentia/necessitas/mobile/QtFeedback.java \
     android/src/eu/licentia/necessitas/mobile/QtCamera.java \
     android/src/eu/licentia/necessitas/mobile/QtAndroidContacts.java \
-    resources/keymap/pb2000.map
-
+    resources/keymap/pb2000.map \
+    resources/keymap/g850v.map
 
 #QMAKE_LFLAGS_DEBUG += -pg
 

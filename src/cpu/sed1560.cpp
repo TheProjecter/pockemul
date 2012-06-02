@@ -42,7 +42,8 @@ BYTE CSED1560::get8(qint16 adr)
 }
 
 void CSED1560::set8(qint16 adr,BYTE val)
-{AddLog(LOG_DISPLAY,tr("SET[%1]=%2").arg(adr).arg(val));
+{
+//    AddLog(LOG_DISPLAY,tr("SET[%1]=%2").arg(adr).arg(val));
     if (adr >= IMEMSIZE)
     {
         // ERROR
@@ -51,7 +52,7 @@ void CSED1560::set8(qint16 adr,BYTE val)
         return;
     }
     info.imem[adr] = val;
-    if (info.PgAdrReg > 7) { AddLog(LOG_DISPLAY,tr("status set [%1]=%2").arg(adr).arg(val));}
+//    if (info.PgAdrReg > 7) { AddLog(LOG_DISPLAY,tr("status set [%1]=%2").arg(adr).arg(val));}
 }
 
 
@@ -135,43 +136,45 @@ void CSED1560::cmd_ElecCtrlReg(qint16 cmd) {
 
 void CSED1560::cmd_OutStatusRegSet(qint16 cmd) {
 
+    AddLog(LOG_DISPLAY,tr("cmd_OutStatusRegSet : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_DutyPlus(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_DutyPlus : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_DutySel(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_DutySel : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_NormRevDsp(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_NormRevDsp : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_AllIndic(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_AllIndic : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_ADCSel(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_ADCSel : %1").arg(cmd,2,16,QChar('0')));
 }
 
 
 void CSED1560::cmd_BuildInPow(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_OutStatusRegSet : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_RevLineRst(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_RevLineRst : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_RevLineSet(qint16 cmd) {
-
+    AddLog(LOG_DISPLAY,tr("cmd_RevLineSet : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_Reset(qint16 cmd) {
-
+    info.displaySL = info.ColAdrReg = info.PgAdrReg = 0;
+    AddLog(LOG_DISPLAY,tr("cmd_Reset : %1").arg(cmd,2,16,QChar('0')));
 }
 
 void CSED1560::cmd_on_off(qint16 cmd)
@@ -192,9 +195,9 @@ void CSED1560::cmd_displaySL(qint16 cmd)
     BYTE newSL = cmd & 0x3f;
     if (newSL != info.displaySL) {
         info.displaySL = newSL;
-        AddLog(LOG_DISPLAY,tr("SED1560 SL:%1").arg(cmd&0x3f,4,16,QChar('0')));
+//        AddLog(LOG_DISPLAY,tr("SED1560 SL:%1").arg(cmd&0x3f,4,16,QChar('0')));
         updated = true;
-        AddLog(LOG_DISPLAY,tr("UPDATED displaySL"));
+//        AddLog(LOG_DISPLAY,tr("UPDATED displaySL"));
     }
 }
 
@@ -204,7 +207,7 @@ void CSED1560::cmd_setPgAdr(qint16 cmd)
     if (newPgAdr != info.PgAdrReg) {
         info.PgAdrReg = newPgAdr;
         updated = true;
-        if (newPgAdr>7) { AddLog(LOG_DISPLAY,tr("UPDATED pgAdr : %1").arg(newPgAdr));}
+//        if (newPgAdr>7) { AddLog(LOG_DISPLAY,tr("UPDATED pgAdr : %1").arg(newPgAdr));}
     }
 }
 
@@ -213,7 +216,7 @@ void CSED1560::cmd_ColAdrHi(qint16 cmd) {
     if (newColAdrHi != (info.ColAdrReg >> 4)) {
         info.ColAdrReg = (newColAdrHi<<4) | (info.ColAdrReg & 0x0f);
         updated = true;
-        AddLog(LOG_DISPLAY,tr("UPDATED ColAdrHi"));
+//        AddLog(LOG_DISPLAY,tr("UPDATED ColAdrHi"));
     }
 }
 
@@ -222,7 +225,7 @@ void CSED1560::cmd_ColAdrLo(qint16 cmd) {
     if (newColAdrLo != (info.ColAdrReg & 0x0f)) {
         info.ColAdrReg = (info.ColAdrReg & 0xf0) | newColAdrLo ;
         updated = true;
-        AddLog(LOG_DISPLAY,tr("UPDATED ColAdrLo"));
+//        AddLog(LOG_DISPLAY,tr("UPDATED ColAdrLo"));
     }
 }
 

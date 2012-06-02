@@ -1,3 +1,6 @@
+//TODO: PIO output
+
+
 #include "common.h"
 
 #include "g850v.h"
@@ -10,6 +13,9 @@
 #include "Lcdc_g850.h"
 #include "Log.h"
 
+#define PIN11IF_3IO     0	/* 3in 3out I/F */
+#define PIN11IF_8PIO	1	/* 8bits PIO    */
+#define PIN11IF_UART	2	// UART
 
 Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 {								//[constructor]
@@ -125,7 +131,17 @@ bool Cg850v::init()
 
 bool Cg850v::Set_Connector()
 {
-//    pCONNECTOR->Set_values(pin11If << 3);
+#if 0
+    switch(pin11If) {
+    case PIN11IF_3IO:
+//        return (io3Out & 0x03) | ((io3Out >> 4) & 0x08);
+    case PIN11IF_8PIO:
+//        return ~pio8Io & pio8Out;
+    case PIN11IF_UART:
+//		return 0;
+    }
+#endif
+
 
     return true;
 }
@@ -377,10 +393,13 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
         return 0;
     case 0x61: pio8Io = value;
         return 0;
+    case 0x62: 	pio8Out = value;
     case 0x69: romBank = value;
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"ROM BANK SWITCH: %i\n",romBank);
         return 0;
     }
+
+    return 0;
 }
 
 
@@ -409,6 +428,7 @@ bool Cg850v::run()
     }
 #endif
 
+    return true;
 }
 
 void Cg850v::Set_Port(PORTS Port, BYTE data)
