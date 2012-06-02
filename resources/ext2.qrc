@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/EXT">
+        <file>ext/fp100.png</file>
+        <file>ext/fp100cable.png</file>
+        <file>ext/fp100-capot.png</file>
+        <file>ext/fp100head.png</file>
+        <file>ext/md-100.png</file>
+    </qresource>
+</RCC>
