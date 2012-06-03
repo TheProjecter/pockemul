@@ -5,6 +5,7 @@
 #include "Inter.h"
 #include "Keyb.h"
 #include "Log.h"
+#include "Lcdc_x07.h"
 
 
 
@@ -61,7 +62,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 
     PowerSwitch = 0;
 
-//    pLCDC		= new Clcdc_x07(this);
+    pLCDC		= new Clcdc_x07(this);
 //    pCPU		= new CZ80(this);
     pTIMER		= new Ctimer(this);
 
@@ -93,7 +94,7 @@ bool Cz1::init(void)				// initialize
 bool Cz1::run() {
 
 
-    CpcXXXX::run();
+//    CpcXXXX::run();
 
     return true;
 }
