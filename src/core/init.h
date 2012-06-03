@@ -163,7 +163,9 @@ enum Models {
     PB1000,
     PB2000,
     MD100,
-    FP100
+    FP100,
+    Z1,
+    Z1GR
 };
 
 #endif

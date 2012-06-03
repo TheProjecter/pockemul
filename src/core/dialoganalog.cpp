@@ -32,6 +32,7 @@ dialogAnalog::dialogAnalog( int nbbits,QWidget * parent, Qt::WFlags f) : QDialog
     connect(pbMarker, SIGNAL(clicked()), this, SLOT(slotMarker())); 
     connect(twWatchPoint, SIGNAL(currentItemChanged ( QTreeWidgetItem * , QTreeWidgetItem * )), this, SLOT(slotChangeWatchPoint( QTreeWidgetItem * , QTreeWidgetItem * ))); 
 
+    connect(mainwindow,SIGNAL(DestroySignal(CPObject*)),this,SLOT(DestroySlot(CPObject*)));
 
 	Capture = false; 
     NbBits = nbbits;
@@ -54,6 +55,12 @@ void dialogAnalog::slotChangeWatchPoint( QTreeWidgetItem * current , QTreeWidget
         pPC = WatchPoint.items.at( pos ).PObject;
         currentlabels = WatchPoint.items.at( pos ).Labels;
     }
+}
+
+void dialogAnalog::DestroySlot(CPObject *pObject)
+{
+    fill_twWatchPoint();
+    update();
 }
 
 void dialogAnalog::fill_twWatchPoint(void)

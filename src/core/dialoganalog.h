@@ -64,6 +64,7 @@ private slots:
 	void	slotLoad();
 	void	slotMarker();
 	void	slotChangeWatchPoint( QTreeWidgetItem * , QTreeWidgetItem * );
+    void    DestroySlot(CPObject *pObject);
 
 protected:
 	void paintEvent(QPaintEvent *event);

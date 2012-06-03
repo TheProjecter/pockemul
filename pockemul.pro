@@ -266,7 +266,8 @@ HEADERS += src/core/Connect.h \
     src/machine/g850v.h \
     src/cpu/sed1560.h \
     src/lcd/Lcdc_g850.h \
-    src/cpu/i80x86.h
+    src/cpu/i80x86.h \
+    src/machine/z1.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -315,7 +316,8 @@ RESOURCES += resources/ext.qrc \
     resources/e500.qrc \
     resources/pb2000.qrc \
     resources/g850v.qrc \
-    resources/ext2.qrc
+    resources/ext2.qrc \
+    resources/z1.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -484,7 +486,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/g850v.cpp \
     src/cpu/sed1560.cpp \
     src/lcd/Lcdc_g850.cpp \
-    src/cpu/i80x86.cpp
+    src/cpu/i80x86.cpp \
+    src/machine/z1.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

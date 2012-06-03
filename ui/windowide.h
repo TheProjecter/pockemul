@@ -65,6 +65,7 @@ private slots:
     void closeOutputTab(int index);
     void targetChange(QString);
     void installTo(CpcXXXX *pc, qint32 adr, QByteArray data);
+    void DestroySlot(CPObject *pObject);
 
 signals:
     void newEmulatedPocket(CPObject *);

@@ -65,6 +65,8 @@
 #include "md100.h"
 #include "fp100.h"
 
+#include "z1.h"
+
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -141,8 +143,10 @@ CPObject *pPC=0;
         case G850V  : pPC = new Cg850v;     pPC->setName("PC-G850V"); break;
         case PB1000 : pPC = new Cpb1000;    pPC->setName("Casio PB-1000"); break;
         case PB2000 : pPC = new Cpb2000;    pPC->setName("Casio PB-2000C"); break;
-        case MD100  : pPC = new Cmd100;    pPC->setName("Casio MD-100"); break;
-        case FP100  : pPC = new Cfp100;    pPC->setName("Casio FP-100"); break;
+        case MD100  : pPC = new Cmd100;     pPC->setName("Casio MD-100"); break;
+        case FP100  : pPC = new Cfp100;     pPC->setName("Casio FP-100"); break;
+        case Z1     : pPC = new Cz1;        pPC->setName("Casio Z-1"); break;
+        case Z1GR   : pPC = new Cz1GR;      pPC->setName("Casio Z-1GR"); break;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");

@@ -95,6 +95,7 @@ protected:
 
 signals:
     void AddLogItem(QString);
+    void DestroySignal(CPObject *pObject);
 
 private:
     QList<CKey>::iterator keyIterator;

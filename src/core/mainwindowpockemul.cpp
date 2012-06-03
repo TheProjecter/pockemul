@@ -811,16 +811,8 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
         }
     }
 
+    emit DestroySignal(pObject);
     WatchPoint.remove(pObject);
-    if (dialoganalogic) {
-        dialoganalogic->fill_twWatchPoint();
-        dialoganalogic->update();
-    }
-    if (windowide) {
-        windowide->removetargetCB(pObject);
-    }
-
-
 
     pObject->exit();
     pObject->close();

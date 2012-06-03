@@ -63,6 +63,7 @@ WindowIDE::WindowIDE(QWidget *parent) :
     connect(ui->outputtabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeOutputTab(int)));
     connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(newFile()));
 
+    connect(mainwindow,SIGNAL(DestroySignal(CPObject*)),this,SLOT(DestroySlot(CPObject*)));
 }
 
 /*!
@@ -362,6 +363,11 @@ qint32 targetAdr = adr;
     if (pc->Mem_Load(targetAdr,data)) {
         QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(targetAdr));
     }
+}
+
+void WindowIDE::DestroySlot(CPObject *pObject)
+{
+    removetargetCB(pObject);
 }
 
 /*!
