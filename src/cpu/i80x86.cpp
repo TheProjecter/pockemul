@@ -2,15 +2,9 @@
     Intel 80186/80188 emulator main
 */
 
-#if 0
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
 #include "i80x86.h"
+#include "pcxxxx.h"
 
-#define FALSE	0
-#define TRUE	1
 
 #define MASK_CF	0x0001
 #define MASK_PF	0x0004
@@ -1544,7 +1538,7 @@
     _INT(0x01); \
     _states += 42;
 
-static int op_length[] = {
+const int Ci80x86::op_length[] = {
     2, 2, 2, 2, 2, 3, 1, 1,	/* 0x00~0x07 */
     2, 2, 2, 2, 2, 3, 1, 1,	/* 0x08~0x0f */
     2, 2, 2, 2, 2, 3, 1, 1,	/* 0x10~0x17 */
@@ -1578,7 +1572,7 @@ static int op_length[] = {
     1, 1, 1, 1, 1, 1, 2, 2,	/* 0xf0~0xf7 */
     1, 1, 1, 1, 1, 1, 2, 2	/* 0xf8~0xff */
 };
-static int regrm_length[] = {
+const int Ci80x86::regrm_length[] = {
     0, 0, 0, 0, 0, 0, 2, 0,
     0, 0, 0, 0, 0, 0, 2, 0,
     0, 0, 0, 0, 0, 0, 2, 0,
@@ -1613,7 +1607,7 @@ static int regrm_length[] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-const static int op_states[] = {
+const int Ci80x86::op_states[] = {
     3, 3, 3, 3, 3, 4, 13, 12,	/* 0x00~0x07 */
     3, 3, 3, 3, 3, 4, 13, 45,	/* 0x08~0x0f */
     3, 3, 3, 3, 3, 4, 13, 12,	/* 0x10~0x17 */
@@ -1647,7 +1641,7 @@ const static int op_states[] = {
     2, 45, 0, 0, 2, 2, 0, 0,	/* 0xf0~0xf7 */
     2, 2, 2, 2, 2, 2, 0, 0	/* 0xf8~0xff */
 };
-const static int op_mem_states[] = {
+const int Ci80x86::op_mem_states[] = {
     7, 11, 7, 11, 0, 0, 0, 0,	/* 0x00~0x07 */
     7, 11, 7, 11, 0, 0, 0, 0,	/* 0x08~0x0f */
     7, 11, 7, 11, 0, 0, 0, 0,	/* 0x10~0x17 */
@@ -1681,175 +1675,57 @@ const static int op_mem_states[] = {
     0, 0, 0, 0, 0, 0, 0, 0,	/* 0xf0~0xf7 */
     0, 0, 0, 0, 0, 0, 0, 0	/* 0xf8~0xff */
 };
-const static int math_states[] = {
+const int Ci80x86::math_states[] = {
     3, 3, 3, 3, 3, 3, 3, 3
 };
-const static int math_mem_states[] = {
+const int Ci80x86::math_mem_states[] = {
     10, 10, 10, 10, 10, 10, 10, 10
 };
-const static int shift_states[] = {
+const int Ci80x86::shift_states[] = {
     5, 5, 5, 5, 5, 5, 45, 5
 };
-const static int shift_mem_states[] = {
+const int Ci80x86::shift_mem_states[] = {
     17, 17, 17, 17, 17, 17, 45, 17
 };
-const static int shift1_states[] = {
+const int Ci80x86::shift1_states[] = {
     2 - 1, 2 - 1, 2 - 1, 2 - 1, 2 - 1, 2 - 1, 45, 2 - 1
 };
-const static int shift1_mem_states[] = {
+const int Ci80x86::shift1_mem_states[] = {
     15 - 1, 15 - 1, 15 - 1, 15 - 1, 15 - 1, 15 - 1, 45, 15 - 1
 };
-const static int math16s_states[] = {
+const int Ci80x86::math16s_states[] = {
     4, 45, 4, 4, 45, 4, 45, 4
 };
-const static int math16s_mem_states[] = {
+const int Ci80x86::math16s_mem_states[] = {
     16, 45, 16, 16, 45, 16, 45, 16
 };
-const static int grp1_8_states[] = {
+const int Ci80x86::grp1_8_states[] = {
     4, 45, 3, 3, 27, 26, 29, 29
 };
-const static int grp1_8_mem_states[] = {
+const int Ci80x86::grp1_8_mem_states[] = {
     10, 45, 3, 3, 33, 32, 35, 35
 };
-const static int grp1_16_mem_states[] = {
+const int Ci80x86::grp1_16_mem_states[] = {
     10, 45, 3, 3, 42, 41, 44, 44
 };
-const static int grp1_16_states[] = {
+const int Ci80x86::grp1_16_states[] = {
     4, 45, 3, 3, 35, 35, 38, 38
 };
-const static int grp2_8_mem_states[] = {
+const int Ci80x86::grp2_8_mem_states[] = {
     15, 15, 45, 45, 45, 45, 45, 45
 };
-const static int grp2_8_states[] = {
+const int Ci80x86::grp2_8_states[] = {
     3, 3, 45, 45, 45, 45, 45, 45
 };
-const static int grp2_16_states[] = {
+const int Ci80x86::grp2_16_states[] = {
     3, 3, 13, 38, 26, 11, 16, 45
 };
-const static int grp2_16_mem_states[] = {
+const int Ci80x86::grp2_16_mem_states[] = {
     15, 15, 19, 38, 26, 17, 16, 45
 };
 
-#if 0
-const static int op_states[] = {
-    3, 3, 3, 3, 3, 4, 9, 9,	/* 0x00~0x07 */
-    3, 3, 3, 3, 3, 4, 9, 45,	/* 0x08~0x0f */
-    3, 3, 3, 3, 3, 4, 9, 9,	/* 0x10~0x17 */
-    3, 3, 3, 3, 3, 4, 9, 9,	/* 0x18~0x1f */
-    3, 3, 3, 3, 3, 4, 2, 4,	/* 0x20~0x27 */
-    3, 3, 3, 3, 3, 4, 2, 4,	/* 0x28~0x2f */
-    3, 3, 3, 3, 3, 4, 2, 7,	/* 0x30~0x37 */
-    3, 3, 3, 3, 3, 4, 2, 7,	/* 0x38~0x3f */
-    3, 3, 3, 3, 3, 3, 3, 3,	/* 0x40~0x47 */
-    3, 3, 3, 3, 3, 3, 3, 3,	/* 0x48~0x4f */
-    10, 10, 10, 10, 10, 10, 10, 10,	/* 0x50~0x57 */
-    10, 10, 10, 10, 10, 10, 10, 10,	/* 0x58~0x5f */
-    36, 51, 34, 45, 45, 45, 45, 45,	/* 0x60~0x67 */
-    10, 23, 10, 23, 14, 14, 14, 14,	/* 0x68~0x6f */
-    4, 4, 4, 4, 4, 4, 4, 4,	/* 0x70~0x77 */
-    4, 4, 4, 4, 4, 4, 4, 4,	/* 0x78~0x7f */
-    0, 0, 0, 0, 3, 3, 4, 4,	/* 0x80~0x87 */
-    2, 2, 2, 2, 2, 6, 2, 20,	/* 0x88~0x8f */
-    3, 3, 3, 3, 3, 3, 3, 3,	/* 0x90~0x97 */
-    2, 4, 23, 6, 9, 8, 3, 2,	/* 0x98~0x9f */
-    8, 8, 9, 9, 14, 14, 22, 22,	/* 0xa0~0xa7 */
-    3, 4, 10, 10, 12, 12, 15, 15,	/* 0xa8~0xaf */
-    3, 3, 3, 3, 3, 3, 3, 3,	/* 0xb0~0xb7 */
-    4, 4, 4, 4, 4, 4, 4, 4,	/* 0xb8~0xbf */
-    0, 0, 18, 16, 18, 18, 12, 13,	/* 0xc0~0xc7 */
-    0, 8, 25, 22, 45, 47, 4, 28,	/* 0xc8~0xcf */
-    0, 0, 0, 0, 19, 15, 45, 11,	/* 0xd0~0xd7 */
-    6, 6, 6, 6, 6, 6, 6, 6,	/* 0xd8~0xdf */
-    5, 5, 6, 6, 10, 10, 9, 9,	/* 0xe0~0xe7 */
-    15, 45, 14, 14, 8, 8, 7, 7,	/* 0xe8~0xef */
-    2, 45, 0, 0, 2, 2, 0, 0,	/* 0xf0~0xf7 */
-    2, 2, 2, 2, 2, 2, 0, 0	/* 0xf8~0xff */
-};
-const static int op_mem_states[] = {
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x00~0x07 */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x08~0x0f */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x10~0x17 */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x18~0x1f */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x20~0x27 */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x28~0x2f */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x30~0x37 */
-    10, 10, 10, 10, 0, 0, 0, 0,	/* 0x38~0x3f */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x40~0x47 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x48~0x4f */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x50~0x57 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x58~0x5f */
-    0, 0, 34, 0, 0, 0, 0, 0,	/* 0x60~0x67 */
-    0, 30, 0, 30, 0, 0, 0, 0,	/* 0x68~0x6f */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x70~0x77 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x78~0x7f */
-    16, 16, 16, 16, 10, 10, 17, 17,	/* 0x80~0x87 */
-    12, 12, 9, 9, 11, 0, 9, 20,	/* 0x88~0x8f */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x90~0x97 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0x98~0x9f */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xa0~0xa7 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xa8~0xaf */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xb0~0xb7 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xb8~0xbf */
-    17, 17, 0, 0, 18, 18, 13, 13,	/* 0xc0~0xc7 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xc8~0xcf */
-    15, 15, 17, 17, 0, 0, 0, 0,	/* 0xd0~0xd7 */
-    6, 6, 6, 6, 6, 6, 6, 6,	/* 0xd8~0xdf */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xe0~0xe7 */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xe8~0xef */
-    0, 0, 0, 0, 0, 0, 0, 0,	/* 0xf0~0xf7 */
-    0, 0, 0, 0, 0, 0, 0, 0	/* 0xf8~0xff */
-};
-const static int math_states[] = {
-    3, 3, 3, 3, 3, 3, 3, 3
-};
-const static int math_mem_states[] = {
-    10, 10, 10, 10, 10, 10, 10, 10
-};
-const static int shift_states[] = {
-    5, 5, 5, 5, 5, 5, 45, 5
-};
-const static int shift_mem_states[] = {
-    17, 17, 17, 17, 17, 17, 45, 17
-};
-const static int shift1_states[] = {
-    2 - 1, 2 - 1, 2 - 1, 2 - 1, 2 - 1, 2 - 1, 45, 2 - 1
-};
-const static int shift1_mem_states[] = {
-    15 - 1, 15 - 1, 15 - 1, 15 - 1, 15 - 1, 15 - 1, 45, 15 - 1
-};
-const static int math16s_states[] = {
-    4, 45, 4, 4, 45, 4, 45, 4
-};
-const static int math16s_mem_states[] = {
-    16, 45, 16, 16, 45, 16, 45, 16
-};
-const static int grp1_8_states[] = {
-    4, 45, 3, 3, 27, 26, 29, 29
-};
-const static int grp1_8_mem_states[] = {
-    10, 45, 3, 3, 33, 32, 35, 35
-};
-const static int grp1_16_mem_states[] = {
-    10, 45, 3, 3, 42, 41, 44, 44
-};
-const static int grp1_16_states[] = {
-    4, 45, 3, 3, 35, 35, 38, 38
-};
-const static int grp2_8_mem_states[] = {
-    15, 15, 45, 45, 45, 45, 45, 45
-};
-const static int grp2_8_states[] = {
-    3, 3, 45, 45, 45, 45, 45, 45
-};
-const static int grp2_16_states[] = {
-    3, 3, 13, 38, 26, 11, 16, 45
-};
-const static int grp2_16_mem_states[] = {
-    15, 15, 19, 38, 26, 17, 16, 45
-};
-#endif
 
-const static uint16 parity[256] = {
+const uint16 Ci80x86::parity[256] = {
     MASK_PF, 0, 0, MASK_PF, 0, MASK_PF, MASK_PF, 0,
     0, MASK_PF, MASK_PF, 0, MASK_PF, 0, 0, MASK_PF,
     0, MASK_PF, MASK_PF, 0, MASK_PF, 0, 0, MASK_PF,
@@ -1884,7 +1760,7 @@ const static uint16 parity[256] = {
     0, MASK_PF, MASK_PF, 0, MASK_PF, 0, 0, MASK_PF
 };
 
-static uint8 Ci80x86::getreg8(const I86stat *i86, uint8 reg)
+uint8 Ci80x86::getreg8(const I86stat *i86, uint8 reg)
 {
     switch(reg & 0x38) {
     case 0x00: return AL;
@@ -1899,7 +1775,7 @@ static uint8 Ci80x86::getreg8(const I86stat *i86, uint8 reg)
     return 0;
 }
 
-static void Ci80x86::setreg8(I86stat *i86, uint8 reg, uint8 x)
+void Ci80x86::setreg8(I86stat *i86, uint8 reg, uint8 x)
 {
     switch(reg & 0x38) {
     case 0x00: AL = x; break;
@@ -1913,7 +1789,7 @@ static void Ci80x86::setreg8(I86stat *i86, uint8 reg, uint8 x)
     }
 }
 
-static uint16 Ci80x86::getreg16(const I86stat *i86, uint8 reg)
+uint16 Ci80x86::getreg16(const I86stat *i86, uint8 reg)
 {
     switch(reg & 0x38) {
     case 0x00: return AX;
@@ -1928,7 +1804,7 @@ static uint16 Ci80x86::getreg16(const I86stat *i86, uint8 reg)
     return 0;
 }
 
-static void Ci80x86::setreg16(I86stat *i86, uint8 reg, uint16 x)
+void Ci80x86::setreg16(I86stat *i86, uint8 reg, uint16 x)
 {
     switch(reg & 0x38) {
     case 0x00: AX = x; break;
@@ -1942,7 +1818,7 @@ static void Ci80x86::setreg16(I86stat *i86, uint8 reg, uint16 x)
     }
 }
 
-static uint16 Ci80x86::getsreg(const I86stat *i86, uint8 reg)
+uint16 Ci80x86::getsreg(const I86stat *i86, uint8 reg)
 {
     switch(reg & 0x18) {
     case 0x00: return ES;
@@ -1953,7 +1829,7 @@ static uint16 Ci80x86::getsreg(const I86stat *i86, uint8 reg)
     return 0;
 }
 
-static void Ci80x86::setsreg(I86stat *i86, uint8 reg, uint16 x)
+void Ci80x86::setsreg(I86stat *i86, uint8 reg, uint16 x)
 {
     switch(reg & 0x18) {
     case 0x00: ES = x; break;
@@ -1963,7 +1839,7 @@ static void Ci80x86::setsreg(I86stat *i86, uint8 reg, uint16 x)
     }
 }
 
-static void Ci80x86::getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16 *off)
+void Ci80x86::getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16 *off)
 {
     uint16 _ds = (i86->r16.prefix == NULL ? DS: *i86->r16.prefix);
     uint16 _ss = (i86->r16.prefix == NULL ? SS: *i86->r16.prefix);
@@ -1999,7 +1875,7 @@ static void Ci80x86::getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16
     }
 }
 
-static uint8 Ci80x86::getrm8(const I86stat *i86, uint8 rm)
+uint8 Ci80x86::getrm8(const I86stat *i86, uint8 rm)
 {
     uint16 seg, off;
 
@@ -2017,7 +1893,7 @@ static uint8 Ci80x86::getrm8(const I86stat *i86, uint8 rm)
     return 0;
 }
 
-static void Ci80x86::setrm8(I86stat *i86, uint8 rm, uint8 x)
+void Ci80x86::setrm8(I86stat *i86, uint8 rm, uint8 x)
 {
     uint16 seg, off;
 
@@ -2034,7 +1910,7 @@ static void Ci80x86::setrm8(I86stat *i86, uint8 rm, uint8 x)
     }
 }
 
-static uint16 Ci80x86::getrm16(const I86stat *i86, uint8 rm)
+uint16 Ci80x86::getrm16(const I86stat *i86, uint8 rm)
 {
     uint16 seg, off;
 
@@ -2052,7 +1928,7 @@ static uint16 Ci80x86::getrm16(const I86stat *i86, uint8 rm)
     return 0;
 }
 
-static void Ci80x86::setrm16(I86stat *i86, uint8 rm, uint16 x)
+void Ci80x86::setrm16(I86stat *i86, uint8 rm, uint16 x)
 {
     uint16 seg, off;
 
@@ -2087,8 +1963,10 @@ void Ci80x86::i86reset(I86stat *i86)
     i86->r16.di =
     i86->r16.ds =
     i86->r16.es =
-    i86->r16.ss = 0;
+            i86->r16.ss = 0;
 }
+
+
 
 int Ci80x86::i86nmi(I86stat *i86)
 {
@@ -2578,6 +2456,59 @@ int Ci80x86::i86exec(I86stat *i86)
     return I86_RUN;
 }
 
+uint8 Ci80x86::i86read8(const I86stat *cpu, uint16 seg, uint16 off)
+{
+    int p = (((int )seg << 4) + off) & 0xfffff;
+
+    return pPC->Get_8(p);
+
+}
+
+void Ci80x86::i86write8(I86stat *cpu, uint16 seg, uint16 off, uint8 v)
+{
+    int p = (((int )seg << 4) + off) & 0xfffff;
+
+    pPC->Set_8(p,v);
+
+}
+
+uint16 Ci80x86::i86read16(const I86stat *cpu, uint16 seg, uint16 off)
+{
+    return ((uint16 )i86read8(cpu, seg, off + 1) << 8) + (uint16 )i86read8(cpu, seg, off);
+}
+
+void Ci80x86::i86write16(I86stat *cpu, uint16 seg, uint16 off, uint16 v)
+{
+    i86write8(cpu, seg, off + 0, v & 0xff);
+    i86write8(cpu, seg, off + 1, v >> 8);
+}
+
+uint16 Ci80x86::i86inp16(const I86stat *i86, uint16 port)
+{
+    return ((uint16 )i86inp8(i86, port + 1) << 8) | i86inp8(i86, port);
+}
+
+void Ci80x86::i86out16(I86stat *i86, uint16 port, uint16 x)
+{
+    i86out8(i86, port + 1, x >> 8);
+    i86out8(i86, port, x & 0xff);
+}
+
+uint8 Ci80x86::i86inp8(const I86stat *i86, uint16 port)
+{
+    return pPC->in(port);
+//    return imem[address];
+}
+
+void Ci80x86::i86out8(I86stat *i86, uint16 port, uint8 x)
+{
+    pPC->out(port,x);
+}
+
+void Ci80x86::i86trace(const I86stat *)
+{
+}
+
 /*
     Copyright 2009 maruhiro
     All rights reserved.
@@ -2607,4 +2538,56 @@ int Ci80x86::i86exec(I86stat *i86)
 
 /* eof */
 
-#endif
+
+
+Ci80x86::Ci80x86(CPObject * parent): CCPU(parent)
+{
+}
+
+Ci80x86::~Ci80x86()
+{
+}
+
+bool Ci80x86::init()
+{
+}
+
+bool Ci80x86::exit()
+{
+}
+
+
+DWORD Ci80x86::get_PC()
+{
+    return i86.r16.ip;
+}
+
+void	Ci80x86::step(void)
+{
+    int ret = i86exec(&i86);
+
+//    if (ret == Z80_UNDERFLOW) {
+//        if (fp_log) fprintf(fp_log,"\nUNDERFLOW\n\n");
+//    }
+
+    //if (fp_log) fprintf(fp_log,"IFF=%i\n",z80.r.iff);
+//    if ( (z80.r.iff==3) && (imem[0x32] & imem[0x35]) )
+//    {
+//        z80int2(&z80,imem[0x39]);
+    //    }
+}
+
+void Ci80x86::Reset()
+{
+    i86reset(&i86);
+}
+
+
+void Ci80x86::save_internal(QXmlStreamWriter *)
+{
+}
+
+
+void Ci80x86::Load_Internal(QXmlStreamReader *)
+{
+}

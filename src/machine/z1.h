@@ -28,7 +28,8 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
-protected slots:
+private:
+    UINT16 ks;
 
 };
 

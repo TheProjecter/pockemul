@@ -1,31 +1,39 @@
 #ifndef I80X86_H
 #define I80X86_H
 
-#if 0
+#if 1
 /*
     Intel 80186/80188 emulator header
 */
 
+#include "cpu.h"
 
-#include <stdio.h>
-#if defined(I86_USE_SDL)
-#	include "SDL_byteorder.h"
-#	if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#		define I86_LITTLEENDIAN	1
-#	else
+#ifdef POCKEMUL_BIG_ENDIAN
 #		define I86_BIGENDIAN	1
-#	endif
+#else
+#		define I86_LITTLEENDIAN	1
 #endif
+
 
 #define I86_RUN	0
 #define I86_HALT	1
 
+#if 0
 typedef unsigned char	uint8;
-typedef char	int8;
+typedef signed char	int8;
 typedef unsigned short	uint16;
-typedef short	int16;
+typedef signed short	int16;
 typedef unsigned long	uint32;
-typedef long	int32;
+typedef signed long	int32;
+#else
+typedef quint8	uint8;
+typedef qint8	int8;
+typedef quint16	uint16;
+typedef qint16	int16;
+typedef quint32	uint32;
+typedef qint32	int32;
+
+#endif
 
 typedef struct {
     uint8 *m;
@@ -80,7 +88,7 @@ typedef union {
 class Ci80x86 : public CCPU
 {
 public:
-    Ci80x86(CPObject *);
+    Ci80x86(CPObject *parent);
     virtual ~Ci80x86();
 
     virtual	bool	init(void);						//initialize
@@ -88,10 +96,15 @@ public:
     virtual void	step(void);						//step SC61860
     virtual void	Reset(void);
 
-    virtual	void	Load_Internal(QFile *);
     virtual	void	Load_Internal(QXmlStreamReader *);
-    virtual	void	save_internal(QFile *);
     virtual	void	save_internal(QXmlStreamWriter *);
+
+    virtual bool Get_Xin(){}
+    virtual void Set_Xin(bool){}
+    virtual bool Get_Xout(){}
+    virtual void Set_Xout(bool){}
+    virtual DWORD get_PC();
+    virtual void Regs_Info(UINT8){}
 
     uint8 i86read8(const I86stat *, uint16, uint16);
     void i86write8(I86stat *, uint16, uint16, uint8);
@@ -110,7 +123,46 @@ public:
     int i86nmi(I86stat *);
     int i86int(I86stat *, int);
     int i86exec(I86stat *);
-}
+
+    static const int op_length[];
+    static const int regrm_length[];
+    static const int op_states[];
+    static const int op_mem_states[];
+    static const int math_states[];
+    static const int math_mem_states[];
+    static const int shift_states[];
+    static const int shift_mem_states[];
+    static const int shift1_states[];
+    static const int shift1_mem_states[];
+    static const int math16s_states[];
+    static const int math16s_mem_states[];
+    static const int grp1_8_states[];
+    static const int grp1_8_mem_states[];
+    static const int grp1_16_mem_states[];
+    static const int grp1_16_states[];
+    static const int grp2_8_mem_states[];
+    static const int grp2_8_states[];
+    static const int grp2_16_states[];
+    static const int grp2_16_mem_states[];
+    static const uint16 parity[];
+
+    uint8 getreg8(const I86stat *i86, uint8 reg);
+    void setreg8(I86stat *i86, uint8 reg, uint8 x);
+    uint16 getreg16(const I86stat *i86, uint8 reg);
+    void setreg16(I86stat *i86, uint8 reg, uint16 x);
+    uint16 getsreg(const I86stat *i86, uint8 reg);
+    void setsreg(I86stat *i86, uint8 reg, uint16 x);
+    void getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16 *off);
+    uint8 getrm8(const I86stat *i86, uint8 rm);
+    void setrm8(I86stat *i86, uint8 rm, uint8 x);
+    uint16 getrm16(const I86stat *i86, uint8 rm);
+    void setrm16(I86stat *i86, uint8 rm, uint16 x);
+
+
+    I86stat i86;
+};
+
+
 
 #endif
 
