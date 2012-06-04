@@ -34,9 +34,9 @@ public:
 	virtual	bool	exit(void);						//end
 	virtual void	step(void) =0;						//step SC61860
 
-    virtual	void	Load_Internal(QFile *) =0;
+    virtual	void	Load_Internal(QFile *){}
     virtual	void	Load_Internal(QXmlStreamReader *) =0;
-    virtual	void	save_internal(QFile *) =0;
+    virtual	void	save_internal(QFile *){}
     virtual	void	save_internal(QXmlStreamWriter *) =0;
 			void	save(void);
 

@@ -3,6 +3,10 @@
 
 #include <QFile>
 
+#define VRAM_HEIGHT	65
+#define VRAM_WIDTH	32
+#define LCD_HEIGHT	32
+#define LCD_WIDTH	192
 
 // Display Driver
 #include "pobject.h"
@@ -28,18 +32,7 @@ public:
     bool	exit(void);						//end
     void	Reset(void);
     bool	step(void);
-    BYTE    instruction(qint16 cmd);
 
-    void    cmd_on_off(qint16 cmd);
-    void    cmd_displaySL(qint16 cmd);
-    void    cmd_setX(qint16 cmd);
-    void    cmd_setY(qint16 cmd);
-    BYTE    cmd_status(qint16 cmd);
-    void    cmd_write(qint16 cmd);
-    BYTE    cmd_read(qint16 cmd);
-
-    BYTE    get8(qint16 adr);
-    void    set8(qint16 adr,BYTE val);
 
     HD66108info info;
     bool    updated;
@@ -52,7 +45,12 @@ public:
 
     void	addretrace (void);
 
-
+    UINT8 readVram(int p);
+    void writeVram(int p, UINT8 v);
+    void pset(UINT8 *vram, int x, int y, int pix);
+//private:
+    UINT8   reg,fcr,xar,yar;
+    UINT8 vram[(LCD_WIDTH / 8) * LCD_HEIGHT];
 };
 
-#endif // HD66108_H
+#endif

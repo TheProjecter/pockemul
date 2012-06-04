@@ -6,7 +6,8 @@
 #include "Inter.h"
 #include "Keyb.h"
 #include "Log.h"
-#include "Lcdc_x07.h"
+#include "Lcdc_z1.h"
+#include "hd66108.h"
 
 #ifdef POCKEMUL_BIG_ENDIAN
 #	define LOW(x)	((uint8 *)&(x) + 1)
@@ -70,10 +71,10 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 
     PowerSwitch = 0;
 
-    pLCDC		= new Clcdc_x07(this);
+    pLCDC		= new Clcdc_z1(this);
     pCPU		= new Ci80x86(this);
     pTIMER		= new Ctimer(this);
-
+    pHD66108    = new CHD66108(this);
     pKEYB		= new Ckeyb(this,"x07.map");
 
 
@@ -102,7 +103,7 @@ bool Cz1::init(void)				// initialize
 bool Cz1::run() {
 
 
-//    CpcXXXX::run();
+    CpcXXXX::run();
 
     return true;
 }
@@ -116,8 +117,8 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
 
     if(*d < 0x40000) return true; /* RAM */
     if(*d < 0xa0000) return false;
-    if(*d < 0xb0000){ return true;
-//        writeVram(cpu, p, v);
+    if(*d < 0xb0000){
+        pHD66108->writeVram( *d, data);
     }
 
     return false;
@@ -134,7 +135,11 @@ bool Cz1::Chk_Adr_R(DWORD *d, DWORD data)
 //        return cpu->m[p]; /* RAM */
 //    else if(p < 0xa0000)
 //        return p & 0xff;
-//    else if(p < 0xb0000)
+//    else
+    if( (*d >=0xa0000) && (*d < 0xb0000)) {
+        pHD66108->readVram(*d);
+        return true;
+    }
 //        return 0;//readVram(cpu, p);
 //    else if(p < 0xe0000)
 //        return p & 0xff;

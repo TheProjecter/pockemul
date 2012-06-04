@@ -2,6 +2,8 @@
 #define Z1_H
 
 class CPObject;
+class CHD66108;
+
 #include "pcxxxx.h"
 
 class Cz1 : public CpcXXXX
@@ -18,6 +20,7 @@ public:
     UINT8 out(UINT8 address,UINT8 value);
     bool init();
 
+    CHD66108 *pHD66108;
 
     virtual bool run();
 
