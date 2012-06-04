@@ -267,7 +267,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/sed1560.h \
     src/lcd/Lcdc_g850.h \
     src/cpu/i80x86.h \
-    src/machine/z1.h
+    src/machine/z1.h \
+    src/cpu/hd66108.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -487,7 +488,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/sed1560.cpp \
     src/lcd/Lcdc_g850.cpp \
     src/cpu/i80x86.cpp \
-    src/machine/z1.cpp
+    src/machine/z1.cpp \
+    src/cpu/hd66108.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
