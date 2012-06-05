@@ -491,7 +491,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i80x86.cpp \
     src/machine/z1.cpp \
     src/cpu/hd66108.cpp \
-    src/lcd/Lcdc_z1.cpp
+    src/lcd/Lcdc_z1.cpp \
+    src/cpu/i80x86_dasm.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

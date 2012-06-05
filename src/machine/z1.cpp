@@ -20,7 +20,7 @@
 
 Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3840000*3/8);
+    setfrequency( (int) 3840000);
     setcfgfname(QString("z1"));
 
     SessionHeader	= "Z1PKM";
@@ -32,7 +32,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0xFFFFF;
-    InitMemValue	= 0xff;
+    InitMemValue	= 0x00;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                  , ""	, RAM , "RAM"));
@@ -58,10 +58,10 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 
     Lcd_X		= 67;
     Lcd_Y		= 63;
-    Lcd_DX		= 120;//168;//144 ;
+    Lcd_DX		= 192;//168;//144 ;
     Lcd_DY		= 32;
-    Lcd_ratio_X	= 2.4;// * 1.18;
-    Lcd_ratio_Y	= 2.8;// * 1.18;
+    Lcd_ratio_X	= 1;// * 1.18;
+    Lcd_ratio_Y	= 1;// * 1.18;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
@@ -93,7 +93,8 @@ bool Cz1::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
-
+    for(int i = 0; i < 0x2000; i++)
+        mem[i] = i & 0xff;
 
     return true;
 }

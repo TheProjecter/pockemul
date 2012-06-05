@@ -4,6 +4,7 @@
 
 #include "i80x86.h"
 #include "pcxxxx.h"
+#include "Inter.h"
 
 
 #define MASK_CF	0x0001
@@ -1963,7 +1964,7 @@ void Ci80x86::i86reset(I86stat *i86)
     i86->r16.di =
     i86->r16.ds =
     i86->r16.es =
-            i86->r16.ss = 0;
+    i86->r16.ss = 0;
 }
 
 
@@ -2449,6 +2450,7 @@ int Ci80x86::i86exec(I86stat *i86)
 
         i86->r16.prefix = NULL;
         i86->i.states -= _states;
+        pPC->pTIMER->state += _states;
         _states = 0;
     } while(i86->i.states > 0);
 
@@ -2566,6 +2568,19 @@ void	Ci80x86::step(void)
 {
     int ret = i86exec(&i86);
 
+    if(ret == I86_HALT) {
+//                if(z1.io_b8 == 1 && !(z1.cpu.r16.f & 0x0200))
+//                    break;
+//                if(test != 0) {
+//                    test = 0;
+//                    z1.cpu.r16.cs = 0;
+//                    if(argc > 2)
+//                        z1.cpu.r16.ip = atoix(argv[2]);
+//                    else
+                        i86.r16.ip = 0x2000;
+                    i86.r16.hlt = 0;
+//                }
+            }
 //    if (ret == Z80_UNDERFLOW) {
 //        if (fp_log) fprintf(fp_log,"\nUNDERFLOW\n\n");
 //    }

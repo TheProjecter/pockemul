@@ -93,6 +93,19 @@ public:
         }
 
 };
+#if 0
+class Cdebug_i80x86:public Cdebug{
+    Q_OBJECT
+public:
+    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+
+        Cdebug_i80x86(CPObject *parent)	: Cdebug(parent)
+        {
+            AsmTbl = AsmTbl_sc61860;
+        }
+
+};
+#endif
 
 typedef quint32 UINT32;
 typedef struct
