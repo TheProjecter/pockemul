@@ -5,6 +5,8 @@
 #include "i80x86.h"
 #include "pcxxxx.h"
 #include "Inter.h"
+#include "Debug.h"
+#include "ui/cregsz80widget.h"
 
 
 #define MASK_CF	0x0001
@@ -2544,6 +2546,11 @@ void Ci80x86::i86trace(const I86stat *)
 
 Ci80x86::Ci80x86(CPObject * parent): CCPU(parent)
 {
+    pDEBUG = new Cdebug_i80x86(parent);
+
+    fn_log="i80x86.log";
+
+    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
 Ci80x86::~Ci80x86()

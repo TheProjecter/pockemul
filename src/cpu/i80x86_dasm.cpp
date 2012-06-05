@@ -1,7 +1,7 @@
 /*
     Intel 80186/80188 emulator disassembler
 */
-#if 0
+#if 1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -387,7 +387,7 @@ const char *op_grp2[] = {
     "inc", "dec", "call", "call", "jmp", "jmp", "push", "???"
 };
 
-static char *s8(int8 val)
+char *Cdebug_i80x86::s8(int8 val)
 {
     static char buf[8];
 
@@ -398,7 +398,7 @@ static char *s8(int8 val)
     return buf;
 }
 
-static char *s16(int16 val)
+char *Cdebug_i80x86::s16(int16 val)
 {
     static char buf[8];
 
@@ -409,7 +409,7 @@ static char *s16(int16 val)
     return buf;
 }
 
-static void getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16 *off)
+void Cdebug_i80x86::getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16 *off)
 {
     uint16 _ds = (i86->r16.prefix == NULL ? i86->r16.ds: *i86->r16.prefix);
     uint16 _ss = (i86->r16.prefix == NULL ? i86->r16.ss: *i86->r16.prefix);
@@ -421,31 +421,31 @@ static void getsegoff(const I86stat *i86, uint8 rm, uint16 *seg, uint16 *off)
     case 0x03: *seg = _ss; *off = i86->r16.bp + i86->r16.di; break;
     case 0x04: *seg = _ds; *off = i86->r16.si; break;
     case 0x05: *seg = _ds; *off = i86->r16.di; break;
-    case 0x06: *seg = _ds; *off = i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x06: *seg = _ds; *off = i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
     case 0x07: *seg = _ds; *off = i86->r16.bx; break;
 
-    case 0x08: *seg = _ds; *off = i86->r16.bx + i86->r16.si + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x09: *seg = _ds; *off = i86->r16.bx + i86->r16.di + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x0a: *seg = _ss; *off = i86->r16.bp + i86->r16.si + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x0b: *seg = _ss; *off = i86->r16.bp + i86->r16.di + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x0c: *seg = _ds; *off = i86->r16.si + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x0d: *seg = _ds; *off = i86->r16.di + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x0e: *seg = _ss; *off = i86->r16.bp + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x0f: *seg = _ds; *off = i86->r16.bx + (int8 )i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x08: *seg = _ds; *off = i86->r16.bx + i86->r16.si + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x09: *seg = _ds; *off = i86->r16.bx + i86->r16.di + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x0a: *seg = _ss; *off = i86->r16.bp + i86->r16.si + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x0b: *seg = _ss; *off = i86->r16.bp + i86->r16.di + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x0c: *seg = _ds; *off = i86->r16.si + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x0d: *seg = _ds; *off = i86->r16.di + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x0e: *seg = _ss; *off = i86->r16.bp + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x0f: *seg = _ds; *off = i86->r16.bx + (int8 )i80x86->i86read8(i86, i86->r16.cs, i86->r16.ip + 2); break;
 
-    case 0x10: *seg = _ds; *off = i86->r16.bx + i86->r16.si + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x11: *seg = _ds; *off = i86->r16.bx + i86->r16.di + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x12: *seg = _ss; *off = i86->r16.bp + i86->r16.si + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x13: *seg = _ss; *off = i86->r16.bp + i86->r16.di + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x14: *seg = _ds; *off = i86->r16.si + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x15: *seg = _ds; *off = i86->r16.di + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x16: *seg = _ss; *off = i86->r16.bp + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
-    case 0x17: *seg = _ds; *off = i86->r16.bx + (int16 )i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x10: *seg = _ds; *off = i86->r16.bx + i86->r16.si + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x11: *seg = _ds; *off = i86->r16.bx + i86->r16.di + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x12: *seg = _ss; *off = i86->r16.bp + i86->r16.si + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x13: *seg = _ss; *off = i86->r16.bp + i86->r16.di + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x14: *seg = _ds; *off = i86->r16.si + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x15: *seg = _ds; *off = i86->r16.di + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x16: *seg = _ss; *off = i86->r16.bp + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
+    case 0x17: *seg = _ds; *off = i86->r16.bx + (int16 )i80x86->i86read16(i86, i86->r16.cs, i86->r16.ip + 2); break;
     default: *seg = 0; *off = 0; break;
     }
 }
 
-static char *rm8val(const I86stat *i86, uint8 rm)
+char *Cdebug_i80x86::rm8val(const I86stat *i86, uint8 rm)
 {
     static char buf[32];
     uint16 seg, off;
@@ -454,12 +454,12 @@ static char *rm8val(const I86stat *i86, uint8 rm)
         strcpy(buf, "");
     else {
         getsegoff(i86, rm, &seg, &off);
-        sprintf(buf, "\t\t\t%s=%02x", rm8[rm], i86read8(i86, seg, off));
+        sprintf(buf, "\t\t\t%s=%02x", rm8[rm], i80x86->i86read8(i86, seg, off));
     }
     return buf;
 }
 
-static char *rm16val(const I86stat *i86, uint8 rm)
+char *Cdebug_i80x86::rm16val(const I86stat *i86, uint8 rm)
 {
     static char buf[32];
     uint16 seg, off;
@@ -468,23 +468,46 @@ static char *rm16val(const I86stat *i86, uint8 rm)
         strcpy(buf, "");
     else {
         getsegoff(i86, rm, &seg, &off);
-        sprintf(buf, "\t\t\t%s=%04x", rm16[rm], i86read16(i86, seg, off));
+        sprintf(buf, "\t\t\t%s=%04x", rm16[rm], i80x86->i86read16(i86, seg, off));
     }
     return buf;
 }
 
-int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16 seg, uint16 off)
+DWORD Cdebug_i80x86::DisAsm_1(DWORD oldpc)
+//void *z80disasm(char *str, uint8 *mem)
 {
+
+
+    //return (oldpc);
+    Buffer[0] = '\0';
+    char *str = Buffer;
+
+    i86disasm(str, &(i80x86->i86), i80x86->i86.r16.cs,i80x86->i86.r16.ip);
+    char LocBuffer[60];
+    oldpc &= 0xffff;
+    DasmAdr = oldpc;
+
+
+
+
+    NextDasmAdr = oldpc;
+    debugged = true;
+    return oldpc;
+}
+
+int Cdebug_i80x86::i86disasm(char *buf, const I86stat *i86, uint16 seg, uint16 off)
+{
+
     const struct Nim *n;
     int rm, reg, len, len_rm;
     char format[32];
     uint8 b0, b1;
 
     Buffer[0] = '\0';
-    char *buf = Buffer;
-    DasmAdr = oldpc;
-    DWORD pc=oldpc;
-    b0 = pPC->Get_8(pc);//i86read8(i86, seg, off + 0);
+
+
+
+    b0 = i80x86->i86read8(i86, seg, off + 0);
     n = &nim[b0];
 
     switch(n->operand) {
@@ -492,43 +515,43 @@ int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16
         strcpy(buf, n->oper);
         return 1;
     case IMM8:
-        sprintf(buf, "%s%02x", n->oper, pPC->Get_8(pc + 1));
+        sprintf(buf, "%s%02x", n->oper, i80x86->i86read8(i86, seg, off + 1));
         return 2;
     case IMM16:
-        sprintf(buf, "%s%04x", n->oper, i86read16(i86, seg, off + 1));
+        sprintf(buf, "%s%04x", n->oper, i80x86->i86read16(i86, seg, off + 1));
         return 3;
     case IMM16_IMM8:
-        sprintf(buf, "%s%04x,%02x", n->oper, i86read16(i86, seg, off + 1), pPC->Get_8(pc + 3));
+        sprintf(buf, "%s%04x,%02x", n->oper, i80x86->i86read16(i86, seg, off + 1), i80x86->i86read8(i86, seg, off + 3));
         return 4;
     case SHORT_LABEL:
-        sprintf(buf, "%s%04x", n->oper, (off + (int8 )pPC->Get_8(pc + 1) + 2) & 0xffff);
+        sprintf(buf, "%s%04x", n->oper, (off + (int8 )i80x86->i86read8(i86, seg, off + 1) + 2) & 0xffff);
         return 2;
     case NEAR_LABEL:
-        sprintf(buf, "%s%04x", n->oper, (off + (int16 )pPC->Get_16(pc + 1) + 3) & 0xffff);
+        sprintf(buf, "%s%04x", n->oper, (off + (int16 )i80x86->i86read16(i86, seg, off + 1) + 3) & 0xffff);
         return 3;
     case FAR_LABEL:
-        sprintf(buf, "%s%04x:%04x", n->oper, pPC->Get_16(pc + 3), pPC->Get_16(pc + 1));
+        sprintf(buf, "%s%04x:%04x", n->oper, i80x86->i86read16(i86, seg, off + 3), i80x86->i86read16(i86, seg, off + 1));
         return 5;
     case AL_MEM:
-        sprintf(buf, "%sAL,[%04x]\t\t\t[%04x]=%02x", n->oper, pPC->Get_16(pc + 1), pPC->Get_16(pc + 1), i86read8(i86, i86->r16.ds, i86read16(i86, seg, off + 1)));
+        sprintf(buf, "%sAL,[%04x]\t\t\t[%04x]=%02x", n->oper, i80x86->i86read16(i86, seg, off + 1), i80x86->i86read16(i86, seg, off + 1), i80x86->i86read8(i86, i86->r16.ds, i80x86->i86read16(i86, seg, off + 1)));
         return 3;
     case AX_MEM:
-        sprintf(buf, "%sAX,[%04x]\t\t\t[%04x]=%04x", n->oper, pPC->Get_16(pc + 1), pPC->Get_16(pc + 1), i86read16(i86, i86->r16.ds, i86read16(i86, seg, off + 1)));
+        sprintf(buf, "%sAX,[%04x]\t\t\t[%04x]=%04x", n->oper, i80x86->i86read16(i86, seg, off + 1), i80x86->i86read16(i86, seg, off + 1), i80x86->i86read16(i86, i86->r16.ds, i80x86->i86read16(i86, seg, off + 1)));
         return 3;
     case MEM_AL:
-        sprintf(buf, "%s[%04x],AL\t\t\t[%04x]=%02x", n->oper, pPC->Get_16(pc + 1), pPC->Get_16(pc + 1), i86read8(i86, i86->r16.ds, i86read16(i86, seg, off + 1)));
+        sprintf(buf, "%s[%04x],AL\t\t\t[%04x]=%02x", n->oper, i80x86->i86read16(i86, seg, off + 1), i80x86->i86read16(i86, seg, off + 1), i80x86->i86read8(i86, i86->r16.ds, i80x86->i86read16(i86, seg, off + 1)));
         return 3;
     case MEM_AX:
-        sprintf(buf, "%s[%04x],AX\t\t\t[%04x]=%04x", n->oper, pPC->Get_16(pc + 1), i86read16(i86, seg, off + 1), i86read16(i86, i86->r16.ds, i86read16(i86, seg, off + 1)));
+        sprintf(buf, "%s[%04x],AX\t\t\t[%04x]=%04x", n->oper, i80x86->i86read16(i86, seg, off + 1), i80x86->i86read16(i86, seg, off + 1), i80x86->i86read16(i86, i86->r16.ds, i80x86->i86read16(i86, seg, off + 1)));
         return 3;
     case IMM8_AL:
-        sprintf(buf, "%s%02x,AL", n->oper, i86read8(i86, seg, off + 1));
+        sprintf(buf, "%s%02x,AL", n->oper, i80x86->i86read8(i86, seg, off + 1));
         return 2;
     case IMM8_AX:
-        sprintf(buf, "%s%02x,AX", n->oper, i86read8(i86, seg, off + 1));
+        sprintf(buf, "%s%02x,AX", n->oper, i80x86->i86read8(i86, seg, off + 1));
         return 2;
     case REP:
-        switch(i86read8(i86, seg, off + 1)) {
+        switch(i80x86->i86read8(i86, seg, off + 1)) {
         case 0x6c:
         case 0x6d:
         case 0x6e:
@@ -555,7 +578,7 @@ int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16
         return 1;
     }
 
-    b1 = i86read8(i86, seg, off + 1);
+    b1 = i80x86->i86read8(i86, seg, off + 1);
     rm  = ((b1 & 0xc0) >> 3) | (b1 & 0x07);
     reg = (b1 >> 3) & 0x07;
 
@@ -596,31 +619,31 @@ int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16
         len = 2;
         break;
     case RM_IMM8:
-        sprintf(format, "%s%s,%02x%s", n->oper, rm8[rm], i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
+        sprintf(format, "%s%s,%02x%s", n->oper, rm8[rm], i80x86->i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
         len = 3;
         break;
     case RM_IMM16:
-        sprintf(format, "%s%s,%04x%s", n->oper, rm16[rm], i86read16(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
+        sprintf(format, "%s%s,%04x%s", n->oper, rm16[rm], i80x86->i86read16(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
         len = 4;
         break;
     case MATH_RM_IMM_U8:
-        sprintf(format, "%s %s,%02x%s", op_math[reg], rm8[rm], i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
+        sprintf(format, "%s %s,%02x%s", op_math[reg], rm8[rm], i80x86->i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
         len = 3;
         break;
     case MATH_RM_IMM_U16:
-        sprintf(format, "%s %s,%04x%s", op_math[reg], rm16[rm], i86read16(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
+        sprintf(format, "%s %s,%04x%s", op_math[reg], rm16[rm], i80x86->i86read16(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
         len = 4;
         break;
     case MATH_RM_IMM_S16:
-        sprintf(format, "%s %s,%s%s", op_math[reg], rm16[rm], s8(i86read8(i86, seg, off + 2 + len_rm)), rm16val(i86, rm));
+        sprintf(format, "%s %s,%s%s", op_math[reg], rm16[rm], s8(i80x86->i86read8(i86, seg, off + 2 + len_rm)), rm16val(i86, rm));
         len = 3;
         break;
     case SHIFT_RM_IMM8:
-        sprintf(format, "%s %s,%02x%s", op_shift[reg], rm8[rm], i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
+        sprintf(format, "%s %s,%02x%s", op_shift[reg], rm8[rm], i80x86->i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
         len = 3;
         break;
     case SHIFT_RM_IMM16:
-        sprintf(format, "%s %s,%04x%s", op_shift[reg], rm16[rm], i86read8(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
+        sprintf(format, "%s %s,%04x%s", op_shift[reg], rm16[rm], i80x86->i86read8(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
         len = 3;
         break;
     case SHIFT_RM8:
@@ -641,7 +664,7 @@ int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16
         break;
     case GRP1_RM8:
         if(reg == 0) {
-            sprintf(format, "%s %s,%02x%s", op_grp1[reg], rm8[rm], i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
+            sprintf(format, "%s %s,%02x%s", op_grp1[reg], rm8[rm], i80x86->i86read8(i86, seg, off + 2 + len_rm), rm8val(i86, rm));
             len = 3;
         } else {
             sprintf(format, "%s %s%s", op_grp1[reg], rm8[rm], rm8val(i86, rm));
@@ -650,7 +673,7 @@ int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16
         break;
     case GRP1_RM16:
         if(reg == 0) {
-            sprintf(format, "%s %s,%04x%s", op_grp1[reg], rm16[rm], i86read16(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
+            sprintf(format, "%s %s,%04x%s", op_grp1[reg], rm16[rm], i80x86->i86read16(i86, seg, off + 2 + len_rm), rm16val(i86, rm));
             len = 4;
         } else {
             sprintf(format, "%s %s%s", op_grp1[reg], rm16[rm], rm16val(i86, rm));
@@ -666,34 +689,34 @@ int Cdebug_i80x86::i86disasm(DWORD oldpc)//char *buf, const I86stat *i86, uint16
         len = 2;
         break;
     case R_RM16_IMM16:
-        sprintf(format, "%s%s,%s,%s%s", n->oper, reg16[reg], rm16[rm], s16(i86read16(i86, seg, off + 2 + len_rm)), rm16val(i86, rm));
+        sprintf(format, "%s%s,%s,%s%s", n->oper, reg16[reg], rm16[rm], s16(i80x86->i86read16(i86, seg, off + 2 + len_rm)), rm16val(i86, rm));
         len = 4;
         break;
     case R_RM16_IMM8:
-        sprintf(format, "%s%s,%s,%s%s", n->oper, reg16[reg], rm16[rm], s8(i86read8(i86, seg, off + 2 + len_rm)), rm16val(i86, rm));
+        sprintf(format, "%s%s,%s,%s%s", n->oper, reg16[reg], rm16[rm], s8(i80x86->i86read8(i86, seg, off + 2 + len_rm)), rm16val(i86, rm));
         len = 3;
         break;
     }
 
     if(rm == 0x06)
-        sprintf(buf, format, i86read16(i86, seg, off + 2), i86read16(i86, seg, off + 2));
+        sprintf(buf, format, i80x86->i86read16(i86, seg, off + 2), i80x86->i86read16(i86, seg, off + 2));
     else if(len_rm == 2)
-        sprintf(buf, format, s16(i86read16(i86, seg, off + 2)), s16(i86read16(i86, seg, off + 2)));
+        sprintf(buf, format, s16(i80x86->i86read16(i86, seg, off + 2)), s16(i80x86->i86read16(i86, seg, off + 2)));
     else if(len_rm == 1)
-        sprintf(buf, format, s8(i86read8(i86, seg, off + 2)), s8(i86read8(i86, seg, off + 2)));
+        sprintf(buf, format, s8(i80x86->i86read8(i86, seg, off + 2)), s8(i80x86->i86read8(i86, seg, off + 2)));
     else
         strcpy(buf, format);
     return len + len_rm;
 }
 
-char *i86regs(char *buf, const I86stat *i86)
+char *Cdebug_i80x86::i86regs(char *buf, const I86stat *i86)
 {
     int len, a = i86->r16.ip;
     char disasm[64], dump[16], *p;
 
     len = i86disasm(disasm, i86, i86->r16.cs, i86->r16.ip);
     for(p = dump, a = i86->r16.ip; p < dump + len * 2; p += 2, a++)
-        sprintf(p, "%02x", i86read8(i86, i86->r16.cs, a));
+        sprintf(p, "%02x", i80x86->i86read8(i86, i86->r16.cs, a));
     for(; p < dump + 6 * 2; p += 2)
         strcpy(p, "  ");
 

@@ -18,7 +18,7 @@
 #define I86_RUN	0
 #define I86_HALT	1
 
-#if 0
+#if 1
 typedef unsigned char	uint8;
 typedef signed char	int8;
 typedef unsigned short	uint16;
