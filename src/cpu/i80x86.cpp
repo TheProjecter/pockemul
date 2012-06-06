@@ -400,6 +400,7 @@
 #define CALL_NEAR(x) \
     SP -= 2; \
     SET_STACK16(SP, IP + _length); \
+    CallSubLevel++; \
     IP = x;
 #define CALL_FAR(x, y) \
     { \
@@ -410,6 +411,7 @@
         SET_STACK16(SP, IP + _length); \
         IP = _x; \
         CS = _y; \
+        CallSubLevel++; \
     }
 #define CALL_NEAR_RM() \
     { \
@@ -417,6 +419,7 @@
         SP -= 2; \
         SET_STACK16(SP, IP + _length); \
         IP = _x; \
+        CallSubLevel++; \
     }
 #define CALL_FAR_RM() \
     { \
@@ -430,6 +433,7 @@
         SET_STACK16(SP, IP + _length); \
         IP = _x; \
         CS = _y; \
+        CallSubLevel++; \
     }
 
 #define CBW() \
@@ -631,6 +635,7 @@
 
 #define HLT() \
     i86->r16.hlt = 1; \
+    halt = true; \
     IP += _length;
 
 #define IDIV8_RM() \
@@ -753,7 +758,9 @@
     CS = MEM16(0, (x) * 4 + 2); \
     SP -= 2; \
     SET_STACK16(SP, IP); \
-    IP = MEM16(0, (x) * 4);
+    IP = MEM16(0, (x) * 4); \
+    CallSubLevel++;
+
 #define INT(x) \
     { \
         int _x = x; \
@@ -774,7 +781,8 @@
     CS = STACK16(SP); \
     SP += 2; \
     F = STACK16(SP); \
-    SP += 2;
+    SP += 2; \
+    CallSubLevel--;
 
 #define JCXZ(x) \
     if(!CX) { \
@@ -1119,6 +1127,7 @@
         uint16 _x = x; \
         IP = STACK16(SP); \
         SP += 2 + _x; \
+        CallSubLevel--; \
     }
 #define RETF(x) \
     { \
@@ -1127,6 +1136,7 @@
         SP += 2; \
         CS = STACK16(SP); \
         SP += 2 + _x; \
+        CallSubLevel--; \
     }
 
 #define _RCL8(x) \
@@ -1950,7 +1960,7 @@ void Ci80x86::setrm16(I86stat *i86, uint8 rm, uint16 x)
 
 void Ci80x86::i86reset(I86stat *i86)
 {
-    i86->r16.hlt = 0;
+    i86->r16.hlt = 0; halt = false;
     i86->r16.prefix = NULL;
     i86->r16.f = 0xf000;
     i86->r16.cs = 0xffff;
@@ -1975,7 +1985,7 @@ int Ci80x86::i86nmi(I86stat *i86)
 {
     _INT(0x02);
     i86->i.states -= 42;
-    i86->r16.hlt = 0;
+    i86->r16.hlt = 0; halt = false;
     return TRUE;
 }
 
@@ -1986,7 +1996,7 @@ int Ci80x86::i86int(I86stat *i86, int n)
 
     _INT(n);
     i86->i.states -= 42;
-    i86->r16.hlt = 0;
+    i86->r16.hlt = 0; halt = false;
     return TRUE;
 }
 
@@ -2500,13 +2510,13 @@ void Ci80x86::i86out16(I86stat *i86, uint16 port, uint16 x)
 
 uint8 Ci80x86::i86inp8(const I86stat *i86, uint16 port)
 {
-    return pPC->in(port);
+    return pPC->in16(port);
 //    return imem[address];
 }
 
 void Ci80x86::i86out8(I86stat *i86, uint16 port, uint8 x)
 {
-    pPC->out(port,x);
+    pPC->out16(port,x);
 }
 
 void Ci80x86::i86trace(const I86stat *)
@@ -2546,7 +2556,7 @@ void Ci80x86::i86trace(const I86stat *)
 
 Ci80x86::Ci80x86(CPObject * parent): CCPU(parent)
 {
-    pDEBUG = new Cdebug_i80x86(parent);
+
 
     fn_log="i80x86.log";
 
@@ -2559,6 +2569,10 @@ Ci80x86::~Ci80x86()
 
 bool Ci80x86::init()
 {
+    Check_Log();
+    pDEBUG = new Cdebug_i80x86(pPC);
+    Reset();
+    return true;
 }
 
 bool Ci80x86::exit()
@@ -2568,35 +2582,50 @@ bool Ci80x86::exit()
 
 DWORD Ci80x86::get_PC()
 {
-    return i86.r16.ip;
+    return (i86.r16.cs<<16) | (i86.r16.ip);
+    //    return (((int )i86.r16.cs << 4) + i86.r16.ip) & 0xfffff;
+}
+
+void Ci80x86::Regs_Info(UINT8)
+{
+    char buf[32];
+
+        sprintf(
+        Regs_String,
+        "AX=%04x BX=%04x CX=%04x DX=%04x SP=%04x BP=%04x SI=%04x DI=%04x"
+        " DS=%04x ES=%04x SS=%04x CS=%04x IP=%04x %s %s %s %s %s %s %s %s "
+        "%04x:%04x",
+        i86.r16.ax,
+        i86.r16.bx,
+        i86.r16.cx,
+        i86.r16.dx,
+        i86.r16.sp,
+        i86.r16.bp,
+        i86.r16.si,
+        i86.r16.di,
+        i86.r16.ds,
+        i86.r16.es,
+        i86.r16.ss,
+        i86.r16.cs,
+        i86.r16.ip,
+        i86.r16.f & 0x0800 ? "OV": "NV",
+        i86.r16.f & 0x0400 ? "DN": "UP",
+        i86.r16.f & 0x0200 ? "EI": "DI",
+        i86.r16.f & 0x0080 ? "NG": "PL",
+        i86.r16.f & 0x0040 ? "ZR": "NZ",
+        i86.r16.f & 0x0010 ? "AC": "NA",
+        i86.r16.f & 0x0004 ? "PE": "PO",
+        i86.r16.f & 0x0001 ? "CY": "NC",
+        i86.r16.cs, i86.r16.ip
+        );
+
+
 }
 
 void	Ci80x86::step(void)
 {
     int ret = i86exec(&i86);
 
-    if(ret == I86_HALT) {
-//                if(z1.io_b8 == 1 && !(z1.cpu.r16.f & 0x0200))
-//                    break;
-//                if(test != 0) {
-//                    test = 0;
-//                    z1.cpu.r16.cs = 0;
-//                    if(argc > 2)
-//                        z1.cpu.r16.ip = atoix(argv[2]);
-//                    else
-                        i86.r16.ip = 0x2000;
-                    i86.r16.hlt = 0;
-//                }
-            }
-//    if (ret == Z80_UNDERFLOW) {
-//        if (fp_log) fprintf(fp_log,"\nUNDERFLOW\n\n");
-//    }
-
-    //if (fp_log) fprintf(fp_log,"IFF=%i\n",z80.r.iff);
-//    if ( (z80.r.iff==3) && (imem[0x32] & imem[0x35]) )
-//    {
-//        z80int2(&z80,imem[0x39]);
-    //    }
 }
 
 void Ci80x86::Reset()

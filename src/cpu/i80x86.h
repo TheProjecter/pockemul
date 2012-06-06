@@ -104,7 +104,7 @@ public:
     virtual bool Get_Xout(){}
     virtual void Set_Xout(bool){}
     virtual DWORD get_PC();
-    virtual void Regs_Info(UINT8){}
+    virtual void Regs_Info(UINT8);
 
     uint8 i86read8(const I86stat *, uint16, uint16);
     void i86write8(I86stat *, uint16, uint16, uint8);
@@ -160,6 +160,7 @@ public:
 
 
     I86stat i86;
+
 };
 
 

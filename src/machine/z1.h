@@ -16,8 +16,10 @@ public:
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
-    UINT8 in(UINT8 address);
-    UINT8 out(UINT8 address,UINT8 value);
+    virtual UINT8 in(UINT8 address);
+    virtual UINT8 out(UINT8 address,UINT8 value);
+    virtual UINT8 in16(UINT16 address);
+    virtual UINT8 out16(UINT16 address,UINT8 value);
     bool init();
 
     CHD66108 *pHD66108;
@@ -31,8 +33,15 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
+    UINT16 getKey();
 private:
     UINT16 ks;
+    UINT16 eoi;
+    UINT8 io_b8;
+    UINT16 timer0Control;
+    UINT16 timer1Control;
+    UINT16 timer2Control;
+
 
 };
 

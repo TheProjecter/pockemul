@@ -131,6 +131,9 @@ void CHD66108::writeVram( int p, UINT8 v)
         }
     } else
         reg = v;
+
+    updated=true;
+
 }
 
 
@@ -155,3 +158,9 @@ void CHD66108::save_internal(QXmlStreamWriter *xmlOut)
     xmlOut->writeEndElement();
 }
 
+
+
+bool CHD66108::init()
+{
+    memset(&vram[0],0x00,sizeof(vram));
+}
