@@ -159,7 +159,7 @@ public:
     void setrm16(I86stat *i86, uint8 rm, uint16 x);
 
 
-    I86stat i86;
+    I86stat i86stat;
 
 };
 

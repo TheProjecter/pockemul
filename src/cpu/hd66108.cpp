@@ -17,7 +17,7 @@ CHD66108::CHD66108(CpcXXXX *parent)
     info.Xadr = 0;
     info.Yadr = 0;
     info.status = 0;
-    updated = false;
+    updated = true;
 }
 
 CHD66108::~CHD66108() {
@@ -27,6 +27,7 @@ CHD66108::~CHD66108() {
 UINT8 CHD66108::readVram( int p)
 {
 
+    updated=true;
     if(p & 1)
         return 0;
     else
@@ -46,6 +47,7 @@ void CHD66108::writeVram( int p, UINT8 v)
 
     int x, y;
 
+    updated=true;
     if(p & 1) {
         switch(reg & 7) {
         case 0:
@@ -132,7 +134,7 @@ void CHD66108::writeVram( int p, UINT8 v)
     } else
         reg = v;
 
-    updated=true;
+
 
 }
 

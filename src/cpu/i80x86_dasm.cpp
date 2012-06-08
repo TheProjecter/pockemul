@@ -488,11 +488,11 @@ DWORD Cdebug_i80x86::DisAsm_1(DWORD oldpc)
     int seg = (oldpc>>16) &0xffff;//(oldpc >> 4) & 0xffff;
     int offset = oldpc & 0xffff;// & 0xf;
     int adr = (((int )seg << 4) + offset) & 0xfffff;
-    int len = i86disasm(&LocBuffer[0], &(i80x86->i86), seg,offset);
-    sprintf(Buffer,"%05X:",(uint)adr);
+    int len = i86disasm(&LocBuffer[0], &i80x86->i86stat, seg,offset);
+    sprintf(Buffer,"%04x:%04x ",i80x86->i86stat.r16.cs, i80x86->i86stat.r16.ip);
     for(int i=0;i<len;i++)
-        sprintf(Buffer,"%s%02X",Buffer,(uint)pPC->Get_8(adr+i));
-    sprintf(Buffer,"%s%*s%s ",Buffer,16-(len<<1)," ",LocBuffer);
+        sprintf(Buffer,"%s%02x",Buffer,(uint)pPC->Get_8(adr+i));
+    sprintf(Buffer,"%s%*s%s",Buffer,13-(len<<1)," ",LocBuffer);
 
 //    int len = i86disasm(str, &(i80x86->i86), i80x86->i86.r16.cs,i80x86->i86.r16.ip);
 

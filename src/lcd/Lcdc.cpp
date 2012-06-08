@@ -13,6 +13,7 @@
 #include "Lcdc_symb.h"
 
 #include "Inter.h"
+#include "Log.h"
 
 Clcdc::Clcdc(CPObject *parent)
 {						//[constructor]
@@ -92,6 +93,7 @@ bool	Clcdc::init(void)
     ready = true;
     redraw = true;
 	
+    AddLog(LOG_MASTER,"Lcd INIT");
 	return(true);
 }
 

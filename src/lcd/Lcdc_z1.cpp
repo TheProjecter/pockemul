@@ -34,6 +34,8 @@ void Clcdc_z1::disp(void)
     if (!z1->pHD66108->updated) return;
     z1->pHD66108->updated = false;
 
+    AddLog(LOG_DISPLAY,"-----------REFRESH DISP");
+    if(z1->pCPU->fp_log) fprintf(z1->pCPU->fp_log,"REFRESH DISP\n");
     Refresh = true;
 
     QPainter painter(pPC->LcdImage);

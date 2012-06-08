@@ -42,6 +42,10 @@ private:
     UINT16 timer1Control;
     UINT16 timer2Control;
 
+    int intPulseId;
+    bool lastIntPulse;
+    int lastKeyBufSize;
+    bool newKey;
 
 };
 

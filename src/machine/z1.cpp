@@ -20,7 +20,7 @@
 
 Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3840000);
+    setfrequency( (int) 4000000);
     setcfgfname(QString("z1"));
 
     SessionHeader	= "Z1PKM";
@@ -35,13 +35,10 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0x00;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(256 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
     SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
-//    SlotList.append(CSlot(8 , 0x4000 ,	""					, ""	, ROM , "Prise ROM 8kb"));
-//    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, ROM , "ROM Carte 8kb"));
-//    SlotList.append(CSlot(6 , 0x8000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
-//    SlotList.append(CSlot(4 , 0xA000 ,	""                  , ""	, ROM , "ROM TV"));
-//    SlotList.append(CSlot(20, 0xB000 ,	":/x07/rom_xo7.bin" , "x07/rom_xo7.bin" 	, ROM , "BASIC ROM"));
+
 
     KeyMap		= KeyMap1250;
     KeyMapLenght= KeyMap1250Lenght;
@@ -77,7 +74,8 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     pHD66108    = new CHD66108(this);
     pKEYB		= new Ckeyb(this,"g850v.map");
 
-
+    lastKeyBufSize = 0;
+    newKey = false;
 
 }
 
@@ -94,13 +92,16 @@ bool Cz1::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
-    for(int i = 0; i < 0x20000; i++)
+    for(int i = 0; i < 0x40000; i++)
         mem[i] = i & 0xff;
 
     pHD66108->init();
 
     eoi = 0x8000;
     io_b8 = timer0Control = timer2Control = timer2Control = 0;
+
+    intPulseId = pTIMER->initTP(240);
+    lastIntPulse = false;
     return true;
 }
 
@@ -110,27 +111,48 @@ bool Cz1::run() {
 
     Ci80x86 *i86cpu = (Ci80x86*)pCPU;
 
+
     CpcXXXX::run();
 
-    if(pCPU->halt) {
-        if(io_b8 == 1 && !(i86cpu->i86.r16.f & 0x0200)) return true;
+    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
 
-    }
+    bool pulse = pTIMER->GetTP(intPulseId);
+    if (pulse != lastIntPulse) {
 
-    if (pKEYB->LastKey == K_POW_OFF) {
-        i86cpu->i86nmi(&i86cpu->i86);
-    }
-    else if (pKEYB->LastKey != 0) {
-        if(eoi & 0x8000) {
-            if(i86cpu->i86int(&i86cpu->i86, 0x0c)) {
-                eoi = 0;
+        lastIntPulse = pulse;
+
+        // Check if keybuffer size change
+        if (lastKeyBufSize != pKEYB->keyPressedList.size()) {
+            newKey = true;
+            lastKeyBufSize = pKEYB->keyPressedList.size();
+        }
+
+        if (pKEYB->LastKey == K_POW_OFF) {
+            newKey = false;
+            AddLog(LOG_MASTER,"INT NMI");
+            i86cpu->i86nmi(&i86cpu->i86stat);
+        }
+        if (newKey) {
+            if(eoi & 0x8000) {
+                if(i86cpu->i86int(&(i86cpu->i86stat), 0x0c)) {
+                    newKey = false;
+//                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x0C\n");
+                    AddLog(LOG_MASTER,"INT 0x0C");
+                    eoi = 0;
+                }
             }
         }
-    }
-    else if((timer2Control & 0xe001) == 0xe001) {
-                if(eoi & 0x8000)
-                    if(i86cpu->i86int(&i86cpu->i86, 0x13))
-                        eoi = 0;
+        if((timer2Control & 0xe001) == 0xe001) {
+            if(eoi & 0x8000) {
+                if(i86cpu->i86int(&(i86cpu->i86stat), 0x13)) {
+//                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x13\n");
+                    AddLog(LOG_MASTER,"INT 0x13");
+                    eoi = 0;
+                }
+            }
+        }
+
+
     }
 
     return true;
@@ -147,7 +169,9 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
     if(*d < 0xa0000) return false;
     if(*d < 0xb0000){
         AddLog(LOG_DISPLAY,tr("WriteVram[%1]=%2").arg(*d,5,QChar('0')).arg(data));
+        if(pCPU->fp_log) fprintf(pCPU->fp_log,"Write VRAM");
         pHD66108->writeVram( *d, data);
+        return false;
     }
 
     return false;
@@ -163,7 +187,7 @@ bool Cz1::Chk_Adr_R(DWORD *d, DWORD data)
     else if (*d < 0xa0000) { mem[*d] = *d & 0xff; return true; }
     else if (*d < 0xb0000) {
         AddLog(LOG_DISPLAY,tr("ReadVram[%1]").arg(*d,5,QChar('0')));
-        pHD66108->readVram(*d);
+        mem[*d] = pHD66108->readVram(*d);
         return true;
     }
     else if (*d < 0xe0000) { mem[*d] = *d & 0xff; return true; }
@@ -201,55 +225,12 @@ UINT8 Cz1::in16(UINT16 Port)
     */
     case 0x0202:
     case 0x0203:
-        /*
-        printf(
-        "KEY %04x:"
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x "
-        "%04x\n",
-        z1->key.strobe,
-        z1->key.matrix[0],
-        z1->key.matrix[1],
-        z1->key.matrix[2],
-        z1->key.matrix[3],
-        z1->key.matrix[4],
-        z1->key.matrix[5],
-        z1->key.matrix[6],
-        z1->key.matrix[7],
-        z1->key.matrix[8],
-        z1->key.matrix[9],
-        z1->key.matrix[10]
-        );
-        */
-//        v =
-//        (z1->key.strobe & 0x0001 ? z1->key.matrix[0]: 0) |
-//        (z1->key.strobe & 0x0002 ? z1->key.matrix[1]: 0) |
-//        (z1->key.strobe & 0x0004 ? z1->key.matrix[2]: 0) |
-//        (z1->key.strobe & 0x0008 ? z1->key.matrix[3]: 0) |
-//        (z1->key.strobe & 0x0010 ? z1->key.matrix[4]: 0) |
-//        (z1->key.strobe & 0x0020 ? z1->key.matrix[5]: 0) |
-//        (z1->key.strobe & 0x0040 ? z1->key.matrix[6]: 0) |
-//        (z1->key.strobe & 0x0080 ? z1->key.matrix[7]: 0) |
-//        (z1->key.strobe & 0x0100 ? z1->key.matrix[8]: 0) |
-//        (z1->key.strobe & 0x0200 ? z1->key.matrix[9]: 0) |
-//        (z1->key.strobe & 0x0400 ? z1->key.matrix[10]: 0);
-//        if(!v)
-//            v = 0x8000;
         v = getKey();
-        if (v) { AddLog(LOG_KEYBOARD,tr("Read Keyboard = %1").arg(v,4,16,QChar('0'))); }
-        return (Port == 0x0202 ? v & 0xff: v >> 8);
+        if(!v) v = 0x8000;
+        v = (Port == 0x0202 ? v & 0xff: v >> 8);
+        if (v) { AddLog(LOG_KEYBOARD,tr("Read Keyboard[%1] = %2").arg(Port,4,16,QChar('0')).arg(v&0xff,2,16,QChar('0'))); }
+        return v;
     default:
-        /*
-        printf("IO IN %04x\n", port);
-        */
         return 0;
     }
      return (0);
@@ -264,9 +245,11 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
     switch(Port) {
     case 0x0002:
         *LOW(eoi) = x;
+//        AddLog(LOG_MASTER,tr("Set eoi Low[%1]=%2").arg(x,2,16,QChar('0')).arg(eoi,4,16,QChar('0')));
         break;
     case 0x0003:
         *HIGH(eoi) = x;
+//        AddLog(LOG_MASTER,tr("Set eoi High[%1]=%2").arg(x,2,16,QChar('0')).arg(eoi,4,16,QChar('0')));
         break;
     case 0x0036:
         *LOW(timer0Control) = x;
@@ -282,84 +265,27 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
         break;
     case 0x0046:
         *LOW(timer2Control) = x;
+        AddLog(LOG_MASTER,tr("Set T2Control Low[%1]=%2").arg(x,2,16,QChar('0')).arg(timer2Control,4,16,QChar('0')));
         break;
     case 0x0047:
         *HIGH(timer2Control) = x;
+        AddLog(LOG_MASTER,tr("Set T2Control High[%1]=%2").arg(x,2,16,QChar('0')).arg(timer2Control,4,16,QChar('0')));
         break;
     case 0x00b8:
         io_b8 = x;
         break;
     case 0x0200:
 //        ks = ks & 0xff00 | x;
-        AddLog(LOG_KEYBOARD,tr("Set KSL[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
+//        AddLog(LOG_KEYBOARD,tr("Set KSL[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
         *LOW(ks) = x;
         break;
     case 0x0201:
 //        ks = (x <<8) | (ks & 0xff);
-        AddLog(LOG_KEYBOARD,tr("Set KSH[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
+//        AddLog(LOG_KEYBOARD,tr("Set KSH[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
         *HIGH(ks) = x;
         break;
-    case 0x0220: /* ?? */
-        /*
-        printf("OUT 220H %02x\n", x);
-        printf("X=");
-        for(i = 0x400; i <= 0x40f; i++)
-            printf("%02x ", i86->m[i]);
-        printf("\n");
-        printf("Y=");
-        for(i = 0x410; i <= 0x41f; i++)
-            printf("%02x ", i86->m[i]);
-        printf("\n");
-        printf("W=");
-        for(i = 0x420; i <= 0x42e; i++)
-            printf("%02x ", i86->m[i]);
-        printf("\n");
-        fflush(stdout);
 
-        if(x == 0x99)
-            i86->m[0x406] = 1;
-        if(i86read8(i86, 0, 0x400) != 0)
-            i86->m[0x400] = 0;
-        if(i86read8(i86, 0, 0x405) != 0)
-            i86->m[0x405] = 0;
-        */
-
-        /*
-        for(i = 0x400; i < 0x420; i++)
-            i86write8(i86, 0, i, 0);
-        i86write8(i86, 0, 0x406, rand() % 10);
-        */
-        break;
-    case 0x0221:
-        /*
-        printf("OUT 221H %02x\n", x);
-        printf("X=");
-        for(i = 0x400; i <= 0x40f; i++)
-            printf("%02x ", i86->m[i]);
-        printf("\n");
-        printf("Y=");
-        for(i = 0x410; i <= 0x41f; i++)
-            printf("%02x ", i86->m[i]);
-        printf("\n");
-        printf("W=");
-        for(i = 0x420; i <= 0x42e; i++)
-            printf("%02x ", i86->m[i]);
-        printf("\n");
-        fflush(stdout);
-        */
-        /*
-        if(x == 0x10) {
-            for(i = 0x400; i <= 0x40f; i++)
-                i86write8(i86, 0, i, 0);
-            for(i = 0x410; i <= 0x41f; i++)
-                i86write8(i86, 0, i, 0);
-        }
-        */
-        break;
     default:
-        /*
-        printf("IO OUT %04x,%02x\n", port, x);
-        */
         break;
     }
 
@@ -407,14 +333,14 @@ bool Cz1::SaveConfig(QXmlStreamWriter *xmlOut)
     KO0     KO1     KO2     KO3     KO4     KO5     KO6     KO7     KO8     KO9     KO10	KOS
 Ki0	BRK
 KI1         TAB     W       R       Y       I       P       MENU	CAL     DEGR	SQR
-KI2         Q       E       T       U       O       S       log     ln      sin     X2
+KI2         Q       E       T       U       O       2nd     log     ln      sin     X2
 KI3         RESET   S       F       H       K       ;       MR      M +     (       ENG
 KI4         A       D       G       J       L       :       7       8       )       CLS
 KI5         CAPS	X       V       N       ,       ?       4       5       9       cos
 KI6         Z       C       B       M       INS     DEL     1       2       6       ^
-KI7                 SRCH	OUT     SPACE	?       ?       .       3       *       ANS
-KI8                 IN      CALC	=       ?       0       E       +       /
-KI9                                                 ?       -       BS      tan
+KI7                 SRCH	OUT     SPACE	LA      RA      .       3       *       ANS
+KI8                 IN      CALC	=       DA      0       E       +       /
+KI9                                                 ENTER   -       BS      tan
 KIS                                                                                         SHFT
 
 */
@@ -424,69 +350,61 @@ KIS                                                                             
 UINT16 Cz1::getKey()
 {
 
-    UINT8 data=0;
+    UINT16 data=0;
 
     if ((pKEYB->LastKey) && ks )
     {
         if (ks&1) {
-            if (KEY(K_OF))			data|=0x01;
-            if (KEY('Q'))			data|=0x02;
-            if (KEY('W'))			data|=0x04;
-            if (KEY('E'))			data|=0x08;
-            if (KEY('R'))			data|=0x10;
-            if (KEY('T'))			data|=0x20;
-            if (KEY('Y'))			data|=0x40;
-            if (KEY('U'))			data|=0x80;
+            if (KEY(K_BRK))			data|=0x01;
         }
         if (ks&2) {
-            if (KEY('A'))			data|=0x01;
-            if (KEY('S'))			data|=0x02;
-            if (KEY('D'))			data|=0x04;
-            if (KEY('F'))			data|=0x08;
-            if (KEY('G'))			data|=0x10;
-            if (KEY('H'))			data|=0x20;
-            if (KEY('J'))			data|=0x40;
-            if (KEY('K'))			data|=0x80;
+
+            if (KEY(K_TAB))			data|=0x02;
+            if (KEY('Q'))			data|=0x04;
+            if (KEY(K_RESET))			data|=0x08;
+            if (KEY('A'))			data|=0x10;
+            if (KEY(K_SML))			data|=0x20;
+            if (KEY('Z'))			data|=0x40;
         }
         if (ks&4) {
-            if (KEY('Z'))			data|=0x01;
-            if (KEY('X'))			data|=0x02;
-            if (KEY('C'))			data|=0x04;
-            if (KEY('V'))			data|=0x08;
-            if (KEY('B'))			data|=0x10;
-            if (KEY('N'))			data|=0x20;
-            if (KEY('M'))			data|=0x40;
-            if (KEY(','))			data|=0x80;
+            if (KEY('W'))			data|=0x02;
+            if (KEY('E'))			data|=0x04;
+            if (KEY('S'))			data|=0x08;
+            if (KEY('D'))			data|=0x10;
+            if (KEY('X'))			data|=0x20;
+            if (KEY('C'))			data|=0x40;
+//            if (KEY(K_SEARCH))			data|=0x80;
+            if (KEY(K_IN))			data|=0x100;
         }
         if (ks&8) {
-            if (KEY(K_BASIC))		data|=0x01;
-            if (KEY(K_TXT))			data|=0x02;
-            if (KEY(K_SML))			data|=0x04;
-            if (KEY(K_EXTMENU))		data|=0x08;
-            if (KEY(K_TAB))			data|=0x10;
-            if (KEY(' '))			data|=0x20;
-            if (KEY(K_DA))			data|=0x40;
-            if (KEY(K_UA))			data|=0x80;
+            if (KEY('R'))			data|=0x02;
+            if (KEY('T'))			data|=0x04;
+            if (KEY('F'))           data|=0x08;
+            if (KEY('G'))			data|=0x10;
+            if (KEY('V'))			data|=0x20;
+            if (KEY('B'))			data|=0x40;
+            if (KEY(K_OUT))			data|=0x80;
+            if (KEY(K_CALC))		data|=0x100;
         }
         if (ks&0x10) {
-            if (KEY(K_LA))			data|=0x01;
-            if (KEY(K_RA))			data|=0x02;
-            if (KEY(K_ANS))			data|=0x04;
-            if (KEY('0'))			data|=0x08;
-            if (KEY('.'))			data|=0x10;
-            if (KEY('='))			data|=0x20;
-            if (KEY('+'))			data|=0x40;
-            if (KEY(K_RET))			data|=0x80;
+            if (KEY('Y'))			data|=0x02;
+            if (KEY('U'))			data|=0x04;
+            if (KEY('H'))			data|=0x08;
+            if (KEY('J'))			data|=0x10;
+            if (KEY('N'))			data|=0x20;
+            if (KEY('M'))			data|=0x40;
+            if (KEY(' '))			data|=0x80;
+            if (KEY('='))			data|=0x100;
         }
         if (ks&0x20) {
-            if (KEY('L'))			data|=0x01;
-            if (KEY(';'))			data|=0x02;
-            if (KEY(K_CON))			data|=0x04;
-            if (KEY('1'))			data|=0x08;
-            if (KEY('2'))			data|=0x10;
-            if (KEY('3'))			data|=0x20;
-            if (KEY('-'))			data|=0x40;
-            if (KEY(K_MPLUS))		data|=0x80;
+            if (KEY('I'))			data|=0x02;
+            if (KEY('O'))			data|=0x04;
+            if (KEY('K'))			data|=0x08;
+            if (KEY('L'))			data|=0x10;
+            if (KEY(','))			data|=0x20;
+            if (KEY(K_INS))			data|=0x40;
+            if (KEY(K_LA))   		data|=0x80;
+            if (KEY(K_DA))			data|=0x100;
         }
         if (ks&0x40) {
             if (KEY('I'))			data|=0x01;
@@ -499,14 +417,17 @@ UINT16 Cz1::getKey()
             if (KEY(K_RM))			data|=0x80;
         }
         if (ks&0x80) {
-            if (KEY('P'))			data|=0x01;
-            if (KEY(K_F1))			data|=0x02;
-            if (KEY(K_PI))			data|=0x04;
-            if (KEY('7'))			data|=0x08;
-            if (KEY('8'))			data|=0x10;
-            if (KEY('9'))			data|=0x20;
-            if (KEY('/'))			data|=0x40;
-            if (KEY(')'))			data|=0x80;
+            if (KEY(K_F1))			data|=0x01;
+            if (KEY(K_F2))			data|=0x02;
+            if (KEY(K_F3))			data|=0x04;
+            if (KEY(K_F4))			data|=0x08;
+            if (KEY(K_F5))			data|=0x10;
+            if (KEY(K_F6))			data|=0x20;
+            if (KEY(K_F7))			data|=0x40;
+            if (KEY(K_F8))			data|=0x80;
+            if (KEY(K_F9))			data|=0x100;
+//            if (KEY(K_F10))			data|=0x200;
+//            if (KEY(K_F11))			data|=0x400;
         }
         if (ks&0x100) {
             if (KEY(K_NPR))     	data|=0x01;

@@ -7,7 +7,10 @@
 #include "Inter.h"
 #include "Debug.h"
 #include "ui/cregsz80widget.h"
+#include "Log.h"
 
+#define FALSE	0
+#define TRUE	1
 
 #define MASK_CF	0x0001
 #define MASK_PF	0x0004
@@ -1991,12 +1994,16 @@ int Ci80x86::i86nmi(I86stat *i86)
 
 int Ci80x86::i86int(I86stat *i86, int n)
 {
-    if(!IF)
+    if (fp_log) fprintf(fp_log,"INT %02x\n",n);
+
+    if(!IF) {
         return FALSE;
+    }
 
     _INT(n);
     i86->i.states -= 42;
     i86->r16.hlt = 0; halt = false;
+    AddLog(LOG_MASTER,"INT TRUE");
     return TRUE;
 }
 
@@ -2472,7 +2479,7 @@ int Ci80x86::i86exec(I86stat *i86)
 
 uint8 Ci80x86::i86read8(const I86stat *cpu, uint16 seg, uint16 off)
 {
-    int p = (((int )seg << 4) + off) & 0xfffff;
+    DWORD p = (((int )seg << 4) + off) & 0xfffff;
 
     return pPC->Get_8(p);
 
@@ -2480,7 +2487,7 @@ uint8 Ci80x86::i86read8(const I86stat *cpu, uint16 seg, uint16 off)
 
 void Ci80x86::i86write8(I86stat *cpu, uint16 seg, uint16 off, uint8 v)
 {
-    int p = (((int )seg << 4) + off) & 0xfffff;
+    DWORD p = (((int )seg << 4) + off) & 0xfffff;
 
     pPC->Set_8(p,v);
 
@@ -2561,6 +2568,7 @@ Ci80x86::Ci80x86(CPObject * parent): CCPU(parent)
     fn_log="i80x86.log";
 
     regwidget = (CregCPU*) new Cregsz80Widget(0,this);
+
 }
 
 Ci80x86::~Ci80x86()
@@ -2582,8 +2590,8 @@ bool Ci80x86::exit()
 
 DWORD Ci80x86::get_PC()
 {
-    return (i86.r16.cs<<16) | (i86.r16.ip);
-    //    return (((int )i86.r16.cs << 4) + i86.r16.ip) & 0xfffff;
+    return (i86stat.r16.cs<<16) | (i86stat.r16.ip);
+    //    return (((int )i86->r16.cs << 4) + i86->r16.ip) & 0xfffff;
 }
 
 void Ci80x86::Regs_Info(UINT8)
@@ -2592,31 +2600,29 @@ void Ci80x86::Regs_Info(UINT8)
 
         sprintf(
         Regs_String,
-        "AX=%04x BX=%04x CX=%04x DX=%04x SP=%04x BP=%04x SI=%04x DI=%04x"
-        " DS=%04x ES=%04x SS=%04x CS=%04x IP=%04x %s %s %s %s %s %s %s %s "
-        "%04x:%04x",
-        i86.r16.ax,
-        i86.r16.bx,
-        i86.r16.cx,
-        i86.r16.dx,
-        i86.r16.sp,
-        i86.r16.bp,
-        i86.r16.si,
-        i86.r16.di,
-        i86.r16.ds,
-        i86.r16.es,
-        i86.r16.ss,
-        i86.r16.cs,
-        i86.r16.ip,
-        i86.r16.f & 0x0800 ? "OV": "NV",
-        i86.r16.f & 0x0400 ? "DN": "UP",
-        i86.r16.f & 0x0200 ? "EI": "DI",
-        i86.r16.f & 0x0080 ? "NG": "PL",
-        i86.r16.f & 0x0040 ? "ZR": "NZ",
-        i86.r16.f & 0x0010 ? "AC": "NA",
-        i86.r16.f & 0x0004 ? "PE": "PO",
-        i86.r16.f & 0x0001 ? "CY": "NC",
-        i86.r16.cs, i86.r16.ip
+        "AX=%04x  BX=%04x  CX=%04x  DX=%04x  SP=%04x  BP=%04x  SI=%04x  DI=%04x\n"
+        "DS=%04x  ES=%04x  SS=%04x  CS=%04x  IP=%04x  %s %s %s %s %s %s %s %s",
+        i86stat.r16.ax,
+        i86stat.r16.bx,
+        i86stat.r16.cx,
+        i86stat.r16.dx,
+        i86stat.r16.sp,
+        i86stat.r16.bp,
+        i86stat.r16.si,
+        i86stat.r16.di,
+        i86stat.r16.ds,
+        i86stat.r16.es,
+        i86stat.r16.ss,
+        i86stat.r16.cs,
+        i86stat.r16.ip,
+        i86stat.r16.f & 0x0800 ? "OV": "NV",
+        i86stat.r16.f & 0x0400 ? "DN": "UP",
+        i86stat.r16.f & 0x0200 ? "EI": "DI",
+        i86stat.r16.f & 0x0080 ? "NG": "PL",
+        i86stat.r16.f & 0x0040 ? "ZR": "NZ",
+        i86stat.r16.f & 0x0010 ? "AC": "NA",
+        i86stat.r16.f & 0x0004 ? "PE": "PO",
+        i86stat.r16.f & 0x0001 ? "CY": "NC"
         );
 
 
@@ -2624,13 +2630,13 @@ void Ci80x86::Regs_Info(UINT8)
 
 void	Ci80x86::step(void)
 {
-    int ret = i86exec(&i86);
+    int ret = i86exec(&i86stat);
 
 }
 
 void Ci80x86::Reset()
 {
-    i86reset(&i86);
+    i86reset(&i86stat);
 }
 
 
