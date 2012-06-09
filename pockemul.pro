@@ -590,7 +590,8 @@ OTHER_FILES += \
     resources/pockemul/config.xml \
     resources/pockemul/configExt.xml \
     resources/keymap/pb2000.map \
-    resources/keymap/g850v.map
+    resources/keymap/g850v.map \
+    resources/keymap/z1.map
 
 
 

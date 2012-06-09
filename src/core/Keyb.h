@@ -212,6 +212,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_TXT       0x20a
 #define K_MDF       0x20b
 #define K_NPR       0x20c
+#define K_RESET       0x20d
 
 class CPObject;
 class CpcXXXX;

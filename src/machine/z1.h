@@ -3,6 +3,7 @@
 
 class CPObject;
 class CHD66108;
+class Ci80x86;
 
 #include "pcxxxx.h"
 
@@ -34,6 +35,8 @@ public:
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
     UINT16 getKey();
+
+    Ci80x86 *i86cpu;
 private:
     UINT16 ks;
     UINT16 eoi;
