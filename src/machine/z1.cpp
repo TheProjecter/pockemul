@@ -230,8 +230,14 @@ UINT8 Cz1::in16(UINT16 Port)
         v = (Port == 0x0202 ? v & 0xff: v >> 8);
         if (v) { AddLog(LOG_KEYBOARD,tr("Read Keyboard[%1] = %2").arg(Port,4,16,QChar('0')).arg(v&0xff,2,16,QChar('0'))); }
         return v;
+    case 0x220:
+    case 0x221:
+    case 0x222: {AddLog(LOG_TEMP,tr("IN [%1]").arg(Port,4,16,QChar('0')));
+        return 0x04;
+        break;}
     default:
         if (fp_log) fprintf(fp_log,"IN[%04x]\n",Port);
+        AddLog(LOG_TEMP,tr("IN[%1]").arg(Port,4,16,QChar('0')));
         return 0;
     }
      return (0);
@@ -287,6 +293,7 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
         break;
     case 0x0220: /* ?? */
 
+        AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,4,16,QChar('0')));
         fprintf(fp_log,"OUT 220H %02x\n", x);
         fprintf(fp_log,"X=");
         for(int i = 0x400; i <= 0x40f; i++)
@@ -301,22 +308,28 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
             fprintf(fp_log,"%02x ", mem[i]);
         fprintf(fp_log,"\n");
 
-        if(x == 0x99)
-            mem[0x406] = 1;
-        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
-            mem[0x400] = 0;
-        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
-            mem[0x405] = 0;
+//        if(x == 0x99)
+//            mem[0x406] = 1;
+//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
+//            mem[0x400] = 0;
+//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
+//            mem[0x405] = 0;
 
 
 
-        for(int i = 0x400; i < 0x420; i++)
-            i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x406, rand() % 10);
+//        for(int i = 0x400; i < 0x420; i++)
+//            i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x404, 0x12);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x405, 0x34);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x406, 5);//rand() % 0x10);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x407, 0x12);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x408, 0x34);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x409, 0x56);
+//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x40a, 0x78);
 
         break;
     case 0x0221:
-
+        AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,4,16,QChar('0')));
         fprintf(fp_log,"OUT 221H %02x\n", x);
         fprintf(fp_log,"X=");
         for(int i = 0x400; i <= 0x40f; i++)
@@ -332,14 +345,14 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
         fprintf(fp_log,"\n");
 
 
-
+#if 0
         if(x == 0x10) {
             for(int i = 0x400; i <= 0x40f; i++)
                 i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
             for(int i = 0x410; i <= 0x41f; i++)
                 i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
         }
-
+#endif
         break;
     default:
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\n",Port,x);
