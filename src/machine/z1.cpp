@@ -308,24 +308,24 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
             fprintf(fp_log,"%02x ", mem[i]);
         fprintf(fp_log,"\n");
 
-//        if(x == 0x99)
-//            mem[0x406] = 1;
-//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
-//            mem[0x400] = 0;
-//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
-//            mem[0x405] = 0;
+        if(x == 0x99)
+            mem[0x406] = 1;
+        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
+            mem[0x400] = 0;
+        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
+            mem[0x405] = 0;
 
 
 
-//        for(int i = 0x400; i < 0x420; i++)
-//            i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x404, 0x12);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x405, 0x34);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x406, 5);//rand() % 0x10);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x407, 0x12);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x408, 0x34);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x409, 0x56);
-//        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x40a, 0x78);
+        for(int i = 0x400; i < 0x420; i++)
+            i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x404, 0x12);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x405, 0x34);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x406, 5);//rand() % 0x10);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x407, 0x12);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x408, 0x34);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x409, 0x56);
+        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x40a, 0x78);
 
         break;
     case 0x0221:
