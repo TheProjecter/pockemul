@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QString>
 
 #include "common.h"
 #include "z1.h"
@@ -20,7 +21,7 @@
 
 Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 4000000);
+    setfrequency( (int) 3865000);
     setcfgfname(QString("z1"));
 
     SessionHeader	= "Z1PKM";
@@ -200,7 +201,7 @@ UINT8 Cz1::in(UINT8 Port)
     return 0;
 }
 
-UINT8 Cz1::in16(UINT16 Port)
+UINT8 Cz1::in8(UINT16 Port)
 {
     UINT16 v=0;
 
@@ -233,7 +234,8 @@ UINT8 Cz1::in16(UINT16 Port)
     case 0x220:
     case 0x221:
     case 0x222: {AddLog(LOG_TEMP,tr("IN [%1]").arg(Port,4,16,QChar('0')));
-        return 0x04;
+        if (fp_log) fprintf(fp_log,"IN[%04x]\n",Port);
+        return 0x00;
         break;}
     default:
         if (fp_log) fprintf(fp_log,"IN[%04x]\n",Port);
@@ -247,7 +249,7 @@ UINT8 Cz1::out(UINT8 Port, UINT8 x)
 {
     return 0;
 }
-UINT8 Cz1::out16(UINT16 Port, UINT8 x)
+UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 {
     switch(Port) {
     case 0x0002:
@@ -294,6 +296,7 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
     case 0x0220: /* ?? */
 
         AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,4,16,QChar('0')));
+        dumpXYW();
         fprintf(fp_log,"OUT 220H %02x\n", x);
         fprintf(fp_log,"X=");
         for(int i = 0x400; i <= 0x40f; i++)
@@ -307,7 +310,7 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
         for(int i = 0x420; i <= 0x42e; i++)
             fprintf(fp_log,"%02x ", mem[i]);
         fprintf(fp_log,"\n");
-
+#if 0
         if(x == 0x99)
             mem[0x406] = 1;
         if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
@@ -315,8 +318,8 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
         if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
             mem[0x405] = 0;
 
-
-
+#endif
+#if 0
         for(int i = 0x400; i < 0x420; i++)
             i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
         i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x404, 0x12);
@@ -326,10 +329,12 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
         i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x408, 0x34);
         i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x409, 0x56);
         i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x40a, 0x78);
-
+#endif
         break;
     case 0x0221:
         AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,4,16,QChar('0')));
+        dumpXYW();
+
         fprintf(fp_log,"OUT 221H %02x\n", x);
         fprintf(fp_log,"X=");
         for(int i = 0x400; i <= 0x40f; i++)
@@ -344,25 +349,50 @@ UINT8 Cz1::out16(UINT16 Port, UINT8 x)
             fprintf(fp_log,"%02x ", mem[i]);
         fprintf(fp_log,"\n");
 
-
-#if 0
+#if 1
         if(x == 0x10) {
             for(int i = 0x400; i <= 0x40f; i++)
                 i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
             for(int i = 0x410; i <= 0x41f; i++)
                 i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
+            for(int i = 0x420; i < 0x42f; i++)
+                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
         }
 #endif
+
+
         break;
     default:
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\n",Port,x);
         break;
     }
 
- return 0;
+    return 0;
 }
 
+UINT16 Cz1::in16(UINT16 address)
+{
+}
 
+UINT16 Cz1::out16(UINT16 address, UINT16 value)
+{
+}
+
+void Cz1::dumpXYW(void) {
+    QString _tmp="";
+    for(int i = 0x400; i <= 0x40f; i++)
+        _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
+    AddLog(LOG_TEMP,"X="+_tmp);
+    _tmp="";
+    for(int i = 0x410; i <= 0x41f; i++)
+        _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
+    AddLog(LOG_TEMP,"Y="+_tmp);
+    _tmp="";
+    for(int i = 0x420; i < 0x42f; i++)
+        _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
+    AddLog(LOG_TEMP,"W="+_tmp);
+
+}
 
 void Cz1::TurnOFF(void) {
     mainwindow->saveAll = YES;
@@ -489,7 +519,7 @@ UINT16 Cz1::getKey()
         if (ks&0x80) {
             if (KEY(K_MENU))		data|=0x02;
             if (KEY(K_LOG))			data|=0x04;
-            if (KEY(K_M))			data|=0x08;
+//            if (KEY(K_M))			data|=0x08;
             if (KEY('7'))			data|=0x10;
             if (KEY('4'))			data|=0x20;
             if (KEY('1'))			data|=0x40;

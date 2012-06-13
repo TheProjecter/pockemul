@@ -83,7 +83,7 @@ CPObject * InitApp(int idPC )
 CPObject *pPC=0;
 
 	switch (idPC) 
-	{
+    {
 
         case EMPTY	: return 0;
         case PC1245	: pPC = new Cpc1245;	pPC->setName("PC-1245");break;

@@ -634,6 +634,7 @@
     IP += _length;
 
 #define ESC(x) \
+    AddLog(LOG_CPU,"ESC"); \
     IP += _length;
 
 #define HLT() \
@@ -2517,13 +2518,13 @@ void Ci80x86::i86out16(I86stat *i86, uint16 port, uint16 x)
 
 uint8 Ci80x86::i86inp8(const I86stat *i86, uint16 port)
 {
-    return pPC->in16(port);
+    return pPC->in8(port);
 //    return imem[address];
 }
 
 void Ci80x86::i86out8(I86stat *i86, uint16 port, uint8 x)
 {
-    pPC->out16(port,x);
+    pPC->out8(port,x);
 }
 
 void Ci80x86::i86trace(const I86stat *)

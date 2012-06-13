@@ -19,8 +19,10 @@ public:
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
-    virtual UINT8 in16(UINT16 address);
-    virtual UINT8 out16(UINT16 address,UINT8 value);
+    virtual UINT8 in8(UINT16 address);
+    virtual UINT8 out8(UINT16 address,UINT8 value);
+    virtual UINT16 in16(UINT16 address);
+    virtual UINT16 out16(UINT16 address,UINT16 value);
     bool init();
 
     CHD66108 *pHD66108;
@@ -37,6 +39,7 @@ public:
     UINT16 getKey();
 
     Ci80x86 *i86cpu;
+    void dumpXYW();
 private:
     UINT16 ks;
     UINT16 eoi;

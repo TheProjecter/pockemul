@@ -77,6 +77,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_OF		0x3e
 #define K_DBLQUOTE  0x22
 
+#if 0
 #define K_0         0xa0
 #define K_1         0xa1
 #define K_2         0xa2
@@ -87,6 +88,8 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_7         0xa7
 #define K_8         0xa8
 #define K_9         0xa9
+#endif
+
 #define K_MIN       0xaa
 #define K_PT        0xab
 #define K_SLH       0xac
@@ -153,7 +156,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_F8		0xfd
 #define K_F9		0xfe
 
-
+#if 0
 #define K_A			0x41
 #define K_B			0x42
 #define K_C			0x43
@@ -180,7 +183,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_X			0x64
 #define K_Y			0x65
 #define K_Z			0x66
-
+#endif
 
 #define K_TS_00     0x100
 #define K_TS_01     0x101
@@ -212,7 +215,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_TXT       0x20a
 #define K_MDF       0x20b
 #define K_NPR       0x20c
-#define K_RESET       0x20d
+#define K_RESET     0x20d
 
 class CPObject;
 class CpcXXXX;
