@@ -1,4 +1,5 @@
 this.emit=false;
+
 this.c=0;
 this.t=0;
 this.myByteArray= new Array();
