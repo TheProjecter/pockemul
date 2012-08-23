@@ -8,6 +8,8 @@
 #include "Log.h"
 #include "init.h"
 
+//TODO: Connector output for ce-126p and ce-140f
+//TODO: Real Time Clock
 
 Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -103,18 +105,6 @@ bool Ce500::run(void) {
     // SOUND
     //
     computeSound();
-    /*
-        switch(sc.get_imem(IMEM_SCR)&0x70){
-            case 0x10:								// speaker ON
-                status=1; break;
-            case 0x20:								// 2000Hz
-                status=2; break;
-            case 0x30:								// 4000Hz
-                status=3; break;
-            default: status=0; break;				// speaker OFF
-            }
-            break;
-    */
 
     return true;
 }

@@ -283,6 +283,8 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
     case 0x00b8:
         io_b8 = x;
         break;
+    case 0x00b9:
+        break;
     case 0x0200:
 //        ks = ks & 0xff00 | x;
 //        AddLog(LOG_KEYBOARD,tr("Set KSL[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
@@ -295,7 +297,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         break;
     case 0x0220: /* ?? */
 
-        AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,4,16,QChar('0')));
+        AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,2,16,QChar('0')));
         dumpXYW();
         fprintf(fp_log,"OUT 220H %02x\n", x);
         fprintf(fp_log,"X=");
@@ -332,7 +334,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 #endif
         break;
     case 0x0221:
-        AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,4,16,QChar('0')));
+        AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,2,16,QChar('0')));
         dumpXYW();
 
         fprintf(fp_log,"OUT 221H %02x\n", x);
@@ -363,6 +365,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 
         break;
     default:
+        AddLog(LOG_TEMP,tr("OUT %1 = %2").arg(Port,4,16,QChar('0')).arg(x,2,16,QChar('0')));
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\n",Port,x);
         break;
     }
