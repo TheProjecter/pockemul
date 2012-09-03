@@ -28,7 +28,6 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     setcfgfname(QString("g850"));
 
     SessionHeader	= "G850PKM";
-    SessionHeaderLen= 7;
     Initial_Session_Fname ="g850.pkm";
     BackGroundFname	= ":/G850V/g850v.png";
     LcdFname		= ":/G850V/g850vlcd.png";

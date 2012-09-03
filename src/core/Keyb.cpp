@@ -127,9 +127,9 @@ void Ckeyb::keyscan(void)
 
 			if ( (LastKey == ch) || (toupper(LastKey) == toupper(ch)) )
 			{
-                if (ch=='k') {
-                    LastKey=0;
-                }
+//                if (ch=='k') {
+//                    LastKey=0;
+//                }
 				keym[i] = (1 << j);
 				LastKey = 0;
 				break;

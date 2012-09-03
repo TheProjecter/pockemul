@@ -17,7 +17,6 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     setcfgfname(QString("e500"));
 
     SessionHeader	= "E500PKM";
-    SessionHeaderLen= 7;
     Initial_Session_Fname ="e500.pkm";
 
     BackGroundFname	= ":/e500/pc-e500.png";

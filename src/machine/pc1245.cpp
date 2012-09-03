@@ -10,8 +10,7 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 {								//[constructor]
 	setcfgfname("pc1245");
 
-	SessionHeader	= "PC1245PKM";
-	SessionHeaderLen= 9;
+    SessionHeader	= "PC1245PKM";
 	Initial_Session_Fname ="pc1245.pkm";
 	
 	BackGroundFname	= ":/PC1245/pc1245/pc1245.png";
@@ -116,7 +115,6 @@ Cmc2200::Cmc2200(CPObject *parent)	: Cpc1245(parent)
     setcfgfname("mc2200");
 
     SessionHeader	= "MC2200PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="mc2200.pkm";
 
     BackGroundFname	= ":/PC1245/pc1245/mc2200.png";

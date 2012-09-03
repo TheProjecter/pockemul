@@ -7,7 +7,6 @@ Cpc1251::Cpc1251(CPObject *parent)	: Cpc1250(this)
     setcfgfname("pc1251");
 
     SessionHeader	= "PC1251PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1251.pkm";
 
     BackGroundFname	= ":/PC1251/pc1251/pc1251.png"; //":/PC1251/pc1251/pc1251hd.jpg"; //

@@ -19,7 +19,6 @@ Cpc1450::Cpc1450(CPObject *parent)	: Cpc1350(parent)
     setcfgfname("pc1450");
 
     SessionHeader	= "PC1450PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1450.pkm";
 
     BackGroundFname	= ":/PC1450/pc1450/pc1450.png";

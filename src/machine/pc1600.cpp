@@ -32,7 +32,6 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     setcfgfname(QString("pc1600"));
 
     SessionHeader	= "PC1600PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1600.pkm";
     BackGroundFname	= ":/PC1600/pc1600/pc-1600.png";
     LcdFname		= ":/PC1600/pc1600/pc1600lcd.png";

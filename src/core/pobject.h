@@ -180,7 +180,6 @@ public:
     virtual bool	LoadSession_File(QXmlStreamReader *);
 		
     QString	SessionHeader;
-    int		SessionHeaderLen;
 
 public:
 

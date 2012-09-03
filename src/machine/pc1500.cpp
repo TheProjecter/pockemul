@@ -27,8 +27,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     ioFreq = 500000;
 	setcfgfname(QString("pc1500"));
 
-	SessionHeader	= "PC1500PKM";
-	SessionHeaderLen= 9;
+    SessionHeader	= "PC1500PKM";
 	Initial_Session_Fname ="pc1500.pkm";
     BackGroundFname	= ":/PC1500/pc1500/pc1500.png";
     LcdFname		= ":/PC1500/pc1500/1500lcd.png";
@@ -97,7 +96,6 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     setcfgfname("pc1500a");
 
     SessionHeader	= "PC1500APKM";
-    SessionHeaderLen= 10;
     Initial_Session_Fname ="pc1500A.pkm";
     BackGroundFname	= ":/PC1500A/pc1500A/pc1500A.png";
     LcdFname		= ":/PC1500A/pc1500A/1500Alcd.png";
@@ -125,7 +123,6 @@ Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
     setcfgfname("trspc2");
 
     SessionHeader	= "TRSPC-2PKM";
-    SessionHeaderLen= 10;
     Initial_Session_Fname ="trspc2.pkm";
     BackGroundFname	= ":/TRSPC2/pc1500/trspc2.png";
     LcdFname		= ":/TRSPC2/pc1500/pc2lcd.png";

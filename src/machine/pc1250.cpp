@@ -1,4 +1,4 @@
-  
+
 #include	<stdlib.h>
 #include <QPainter>
 
@@ -18,8 +18,7 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
     setfrequency( (int) 576000/3);
     setcfgfname(QString("pc1250"));
 
-	SessionHeader	= "PC1250PKM";
-	SessionHeaderLen= 9;
+    SessionHeader	= "PC1250PKM";
 	Initial_Session_Fname ="pc1250.pkm";
 
 	BackGroundFname	= ":/PC1250/pc1250/pc1250.png";
@@ -80,7 +79,6 @@ Ctrspc3::Ctrspc3(CPObject *parent)	: Cpc1250(this)
     setcfgfname("trspc3");
 
     SessionHeader	= "TRSPC3PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="trspc3.pkm";
 
     BackGroundFname	= ":/PC1250/pc1250/pc31k.png";

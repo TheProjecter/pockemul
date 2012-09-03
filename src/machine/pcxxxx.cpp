@@ -38,7 +38,6 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     DialogExtensionID = 0;
     setcfgfname(QString("pcXXXX"));
     SessionHeader	= "PCXXXXPKM";
-    SessionHeaderLen= 9;
 
     memsize			= 0;
     InitMemValue	= 0x00;
@@ -667,7 +666,7 @@ bool CpcXXXX::SaveSession_File(QFile *file)
 {
 	QDataStream out(file);	
 
-	out.writeRawData( (char*)(SessionHeader.toLocal8Bit().data() ),SessionHeaderLen);	// Write Header
+    out.writeRawData( (char*)(SessionHeader.toLocal8Bit().data() ),SessionHeader.length());	// Write Header
 	SaveConfig(file);									// Write PC configuration
 	pCPU->save_internal(file);							// Save cpu status
 	for (int s=0; s<SlotList.size(); s++)				// Save Memory
@@ -717,8 +716,8 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 	char t[20];
 
 	// Read Header
-	file->read( t, SessionHeaderLen );
-	t[SessionHeaderLen] = '\0';
+    file->read( t, SessionHeader.length() );
+    t[SessionHeader.length()] = '\0';
 	//MSG_ERROR(QString(t))
 	if(QString(t) != SessionHeader)
 	{		//bad image

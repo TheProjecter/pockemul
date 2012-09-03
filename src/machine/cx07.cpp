@@ -69,7 +69,6 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     setcfgfname(QString("x07"));
 
     SessionHeader	= "X07PKM";
-    SessionHeaderLen= 6;
     Initial_Session_Fname ="x07.pkm";
 
     BackGroundFname	= ":/x07/x07.png";

@@ -20,7 +20,6 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     setcfgfname("pc2500");
 
     SessionHeader	= "PC2500PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc2500.pkm";
 
     BackGroundFname	= ":/PC2500/pc2500/pc2500.png";

@@ -25,7 +25,6 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     setcfgfname(QString("pb2000"));
 
     SessionHeader	= "pb2000PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pb2000.pkm";
 
     BackGroundFname	= ":/pb2000/pb-2000.png";

@@ -54,7 +54,6 @@ Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
     setcfgfname("pc1403");
 
     SessionHeader	= "PC1403PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1403.pkm";
 
     BackGroundFname	= ":/PC1403/pc1403/pc1403.png";
@@ -181,7 +180,6 @@ Cpc1403H::Cpc1403H(CPObject *parent) : Cpc1403(parent)
     setcfgfname("pc1403H");
 
     SessionHeader	= "PC1403HPKM";
-    SessionHeaderLen= 10;
     Initial_Session_Fname ="pc1403H.pkm";
 
     BackGroundFname	= ":/PC1403/pc1403/pc1403h.png";

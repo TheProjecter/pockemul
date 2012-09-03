@@ -19,7 +19,6 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     setcfgfname("pc1280");
 
     SessionHeader	= "PC1280PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1280.pkm";
 
     BackGroundFname	= ":/PC1280/pc1280/pc-1280.png";

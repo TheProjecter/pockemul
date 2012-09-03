@@ -9,7 +9,6 @@ Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
     setcfgfname("pc1260");
 
     SessionHeader	= "PC1260PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1260.pkm";
 
     BackGroundFname	= ":/PC1260/pc1260/pc1260.png";
@@ -76,7 +75,6 @@ Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
     setcfgfname("pc1261");
 
     SessionHeader	= "PC1261PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1261.pkm";
 
     BackGroundFname	= ":/PC1261/pc1261/pc1261.png";
@@ -106,7 +104,6 @@ Cpc1262::Cpc1262(CPObject *parent)	: Cpc1261(this)
     setcfgfname("pc1262");
 
     SessionHeader	= "PC1262PKM";
-    SessionHeaderLen= 9;
     Initial_Session_Fname ="pc1262.pkm";
 
     BackGroundFname	= ":/PC1262/pc1262/pc1262.png";
