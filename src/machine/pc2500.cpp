@@ -116,12 +116,12 @@ BYTE	Cpc2500::Get_PortA(void)
 {
     //BYTE data = Cpc13XX::Get_PortA();
     BYTE data = pKEYB->Read(IO_A);
-    BYTE ks = pKEYB->Get_KS();
     IO_A = data;
+    BYTE ks = pKEYB->Get_KS();
     if ((ks & 0x10) && printMode)       data |= 0x80;
     if ((ks & 0x20) && pKEYB->isShift)  data |= 0x80;
     if (ks & 0x40)                      data |= 0x80;         // JAPAN ?
-//    if (ks & 0x80)                      data |= 0x80;         // Power OFF
+//  if (ks & 0x80)                      data |= 0x80;         // Power OFF
 
     return (data);
 }
@@ -186,7 +186,7 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
     }
     if ( (*d>=0x7B00) && (*d<=0x7BFF) )
     {
-        pKEYB->Set_KS( (pKEYB->Get_KS() & 0x0f) | (((BYTE) data & 0x0F )<<4));
+        pKEYB->Set_KS( (pKEYB->Get_KS() & 0x0F) | (((BYTE) data & 0x0F )<<4));
         return(1);
     }
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",(uint)*d,(BYTE)data,(int)data);

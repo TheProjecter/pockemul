@@ -1,8 +1,6 @@
 #ifndef KEYB2500_H
 #define KEYB2500_H
 
-#include "common.h"
-
 BYTE scandef_pc2500[] = {
 //+0		+1			+2			+3			+4			+5			+6			+7
 K_SML,		K_6,		' ',		'z',		'a',		'q',		'1',		NUL,

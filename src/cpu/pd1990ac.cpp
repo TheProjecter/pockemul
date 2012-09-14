@@ -43,7 +43,7 @@ bool	CPD1990AC::init(void)
 	return(1);
 };
 				//initialize
-void	CPD1990AC::Reset(void){};
+void	CPD1990AC::Reset(void){}
 
 void CPD1990AC::addretrace (void)
 {
@@ -258,18 +258,18 @@ qint64 delta_state;
 }
 
 
-void	CPD1990AC::Set_c0(bool bit)			{ c0			= bit;	};
-void	CPD1990AC::Set_c1(bool bit)			{ c1			= bit;	};
-void	CPD1990AC::Set_c2(bool bit)			{ c2			= bit;	};
-void	CPD1990AC::Set_stb(bool bit)		{ stb			= bit;	};
-void	CPD1990AC::Set_cs(bool bit)			{ cs			= bit;	};
-void	CPD1990AC::Set_data(bool bit)		{ data_in		= bit;	};
-void	CPD1990AC::Set_gnd(bool bit)		{ gnd			= bit;	};
-void	CPD1990AC::Set_clk(bool bit)		{ clk			= bit;	};
-void	CPD1990AC::Set_out_enable(bool bit)	{ out_enable	= bit;	};
-void	CPD1990AC::Set_n_xtal(bool bit)		{ n_xtal		= bit;	};
-void	CPD1990AC::Set_xtal(bool bit)		{ xtal			= bit;	};
-void	CPD1990AC::Set_vdd(bool bit)		{ vdd			= bit;	};
+void	CPD1990AC::Set_c0(bool bit)			{ c0			= bit;	}
+void	CPD1990AC::Set_c1(bool bit)			{ c1			= bit;	}
+void	CPD1990AC::Set_c2(bool bit)			{ c2			= bit;	}
+void	CPD1990AC::Set_stb(bool bit)		{ stb			= bit;	}
+void	CPD1990AC::Set_cs(bool bit)			{ cs			= bit;	}
+void	CPD1990AC::Set_data(bool bit)		{ data_in		= bit;	}
+void	CPD1990AC::Set_gnd(bool bit)		{ gnd			= bit;	}
+void	CPD1990AC::Set_clk(bool bit)		{ clk			= bit;	}
+void	CPD1990AC::Set_out_enable(bool bit)	{ out_enable	= bit;	}
+void	CPD1990AC::Set_n_xtal(bool bit)		{ n_xtal		= bit;	}
+void	CPD1990AC::Set_xtal(bool bit)		{ xtal			= bit;	}
+void	CPD1990AC::Set_vdd(bool bit)		{ vdd			= bit;	}
 
 CPD1990AC::CPD1990AC(CPObject *parent)
 {
@@ -279,7 +279,7 @@ CPD1990AC::CPD1990AC(CPObject *parent)
 		init();
 }
 
-CPD1990AC::~CPD1990AC(){};
+CPD1990AC::~CPD1990AC(){}
 
 void CPD1990AC::Regs_Info(UINT8 Type)
 {
