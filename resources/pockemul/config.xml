@@ -28,6 +28,7 @@
      <example idpocket="PC 1500A" filename="./" name="Sharp pc-1500A" image=":/PC1500A/pc1500A/pc1500A.png"/>
      <example idpocket="PC 1600" filename="./" name="Sharp pc-1600" image=":/PC1600/pc1600/pc-1600.png"/>
      <example idpocket="PC 2500" filename="./" name="Sharp pc-2500" image=":/PC2500/pc2500/pc2500.png"/>
+     <example idpocket="Casio FP-200" filename="./" name="Casio FP-200" image=":/fp200/fp200.png"/>
      <example idpocket="Canon X-07" filename="./" name="Canon X-07" image=":/x07/x07.png"/>
      <example idpocket="PC-E500" filename="./" name="Sharp pc-E500" image=":/e500/pc-e500.png"/>
      <example idpocket="PC-G850V" filename="./" name="Sharp PC-G850V" image=":/G850V/g850v.png"/>

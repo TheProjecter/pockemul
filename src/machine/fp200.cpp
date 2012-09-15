@@ -3,7 +3,11 @@
 
 #include "common.h"
 #include "fp200.h"
-#include "i8085.h"
+//#include "i8085.h"
+#include "Inter.h"
+
+
+#if 1
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -29,8 +33,8 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 
 
 
-    KeyMap		= KeyMapfp200;
-    KeyMapLenght= KeyMapfp200Lenght;
+//    KeyMap		= KeyMapfp200;
+//    KeyMapLenght= KeyMapfp200Lenght;
 
 
     Pc_Offset_X = Pc_Offset_Y = 0;
@@ -58,13 +62,13 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch = 0;
 
 //    pLCDC		= new Clcdc_z1(this);
-    pCPU		= new Ci8085(this);
+   // pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
 //    pHD66108    = new CHD66108(this);
 //    pKEYB		= new Ckeyb(this,"z1.map");
 
-    lastKeyBufSize = 0;
-    newKey = false;
+//    lastKeyBufSize = 0;
+//    newKey = false;
 
     i85cpu = (Ci8085*)pCPU;
 }
@@ -73,3 +77,4 @@ Cfp200::~Cfp200() {
 
 }
 
+#endif
