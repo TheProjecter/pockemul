@@ -33,7 +33,7 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
-    UINT16 getKey();
+//    UINT16 getKey();
 
     Ci8085 *i85cpu;
 

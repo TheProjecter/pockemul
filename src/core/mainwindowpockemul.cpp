@@ -377,6 +377,9 @@ void MainWindowPockemul::opensession()
     objtable["Casio PB-2000C"]=PB2000;
     objtable["Casio MD-100"]=MD100;
     objtable["Casio FP-100"]=FP100;
+    objtable["Casio FP-200"]=FP200;
+    objtable["Casio Z-1"]=Z1;
+    objtable["Casio Z-1GR"]=Z1GR;
 
     QMap<int,CPObject*> map;
 

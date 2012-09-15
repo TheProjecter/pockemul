@@ -85,6 +85,7 @@ void DialogStartup::create(QString ItemText)
     if (ItemText == "Casio PB-2000C") result = PB2000;
     if (ItemText == "Casio MD-100") result = MD100;
     if (ItemText == "Casio FP-100") result = FP100;
+    if (ItemText == "Casio FP-200") result = FP200;
 
     if (result != EMPTY)	{
 		this->done(result);

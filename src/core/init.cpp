@@ -64,6 +64,7 @@
 #include "pb2000.h"
 #include "md100.h"
 #include "fp100.h"
+#include "fp200.h"
 
 #include "z1.h"
 
@@ -143,6 +144,7 @@ CPObject *pPC=0;
         case G850V  : pPC = new Cg850v;     pPC->setName("PC-G850V"); break;
         case PB1000 : pPC = new Cpb1000;    pPC->setName("Casio PB-1000"); break;
         case PB2000 : pPC = new Cpb2000;    pPC->setName("Casio PB-2000C"); break;
+        case FP200  : pPC = new Cfp200;     pPC->setName("Casio FP-200"); break;
         case MD100  : pPC = new Cmd100;     pPC->setName("Casio MD-100"); break;
         case FP100  : pPC = new Cfp100;     pPC->setName("Casio FP-100"); break;
         case Z1     : pPC = new Cz1;        pPC->setName("Casio Z-1"); break;

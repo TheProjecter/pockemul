@@ -4,6 +4,7 @@
 #include "common.h"
 #include "fp200.h"
 //#include "i8085.h"
+#include "z80.h"
 #include "Inter.h"
 
 
@@ -21,7 +22,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= ":/fp200/fp200lcd.png";
     SymbFname		= "";
 
-    memsize		= 0xFFFF;
+    memsize		= 0x10000;
     InitMemValue	= 0x00;
 
     SlotList.clear();
@@ -39,12 +40,12 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 
-    setDXmm(206);//Pc_DX_mm =200 ;
-    setDYmm(83);//Pc_DY_mm =130;
-    setDZmm(30);//Pc_DZ_mm = 10;
+    setDXmm(320);
+    setDYmm(220);
+    setDZmm(55);
 
-    setDX(736);//Pc_DX		= 483;//409;
-    setDY(297);//Pc_DY		= 252;//213;
+    setDX(1034);
+    setDY(705);
 
     Lcd_X		= 77;
     Lcd_Y		= 44;
@@ -62,7 +63,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch = 0;
 
 //    pLCDC		= new Clcdc_z1(this);
-   // pCPU		= new Ci8085(this);
+    pCPU		= new CZ80(this);
     pTIMER		= new Ctimer(this);
 //    pHD66108    = new CHD66108(this);
 //    pKEYB		= new Ckeyb(this,"z1.map");
@@ -77,4 +78,66 @@ Cfp200::~Cfp200() {
 
 }
 
+bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
+{
+}
+
+bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
+{
+}
+
+UINT8 Cfp200::in(UINT8 address)
+{
+}
+
+UINT8 Cfp200::out(UINT8 address, UINT8 value)
+{
+}
+
+UINT8 Cfp200::in8(UINT16 Port)
+{
+}
+
+
+
+UINT8 Cfp200::out8(UINT16 Port, UINT8 x)
+{
+}
+
+UINT16 Cfp200::in16(UINT16 Port)
+{
+}
+
+UINT16 Cfp200::out16(UINT16 Port, UINT16 x)
+{
+}
+
+bool Cfp200::init()
+{
+    return CpcXXXX::init();
+}
+
+bool Cfp200::run()
+{
+}
+
+void Cfp200::Reset()
+{
+}
+
+void Cfp200::TurnON()
+{
+}
+
+void Cfp200::TurnOFF()
+{
+}
+
+bool Cfp200::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+}
+
+bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
+{
+}
 #endif
