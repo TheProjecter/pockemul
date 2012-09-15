@@ -47,20 +47,12 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     setDX(1034);
     setDY(705);
 
-    Lcd_X		= 77;
-    Lcd_Y		= 44;
-    Lcd_DX		= 192;//168;//144 ;
-    Lcd_DY		= 32;
+    Lcd_X		= 158;
+    Lcd_Y		= 57;
+    Lcd_DX		= 160;//168;//144 ;
+    Lcd_DY		= 64;
     Lcd_ratio_X	= 2;// * 1.18;
     Lcd_ratio_Y	= 2;// * 1.18;
-
-    Lcd_Symb_X	= 55;//(int) (45 * 1.18);
-    Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
-    Lcd_Symb_DX	= 339;
-    Lcd_Symb_DY	= 5;
-    Lcd_Symb_ratio_X	= 1;//1.18;
-
-    PowerSwitch = 0;
 
 //    pLCDC		= new Clcdc_z1(this);
     pCPU		= new CZ80(this);

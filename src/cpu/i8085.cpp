@@ -41,13 +41,15 @@
  *
  *****************************************************************************/
 
-#if 0
+#if 1
 
 #define VERBOSE 0
 
 #include "i8085.h"
 #include "i8085cpu.h"
 #include "i8085daa.h"
+#include "pcxxxx.h"
+#include "Inter.h"
 
 #if VERBOSE
 #include <stdio.h>
@@ -58,48 +60,111 @@
 #endif
 
 
+#define I i85stat.regs
 
 
-int i8085_ICount = 0;
 
-static i8085_Regs I;
-static UINT8 ZS[256];
-static UINT8 ZSP[256];
 
-static UINT8 Ci8085::CROP(void)
+
+Ci8085::Ci8085(CPObject * parent): CCPU(parent)
 {
-        return cpu_readop(i85stat.regs.PC.w.l++);
+
+
+    fn_log="i8085.log";
+
+//    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
+
 }
 
-static UINT8 Ci8085::ARG(void)
+Ci8085::~Ci8085()
 {
-        return cpu_readop_arg(i85stat.regs.PC.w.l++);
 }
 
-static UINT16 Ci8085::ARG16(void)
+void Ci8085::change_pc16(quint16 val) {
+
+}
+
+
+inline quint8 Ci8085::read8( quint16 address)
 {
-        UINT16 w;
-        w  = cpu_readop_arg(i85stat.regs.PC.d);
+    return (((CpcXXXX *)pPC)->Get_8(address));
+}
+inline void Ci8085::write8(quint16 address, quint8 value)
+{
+    ((CpcXXXX *)pPC)->Set_8(address,value);
+}
+
+/*
+    16bits READ/WRITE
+*/
+quint16 Ci8085::read16( quint16 address)
+{
+    return ((CpcXXXX *)pPC)->Get_16(address);
+
+}
+void Ci8085::write16( quint16 address, quint16 value)
+{
+    ((CpcXXXX *)pPC)->Set_16(address,value);
+}
+
+int Ci8085::inport(quint8 *x, quint8 address)
+{
+    //fprintf(fp_log,"IN:%04X\n",address);
+    pPC->in(address);
+    *x = imem[address];
+
+    return 0;
+}
+
+int Ci8085::outport( quint8 address, quint8 x)
+{
+    //fprintf(fp_log,"OUT:%04Xh = %02Xh\n",address,x);
+    imem[address] = x;
+    pPC->out(address,x);
+    return 0;
+}
+quint8 Ci8085::cpu_readport(quint8 address) {
+    return pPC->in(address);
+}
+
+void Ci8085::cpu_writeport(quint8 address, quint8 x) {
+    outport(address,x);
+}
+
+quint8 Ci8085::ROP(void)
+{
+        return read8(i85stat.regs.PC.w.l++);
+}
+
+quint8 Ci8085::ARG(void)
+{
+        return read8(i85stat.regs.PC.w.l++);
+}
+
+quint16 Ci8085::ARG16(void)
+{
+        quint16 w;
+        w  = read8(i85stat.regs.PC.d);
         i85stat.regs.PC.w.l++;
-        w += cpu_readop_arg(i85stat.regs.PC.d) << 8;
+        w += read8(i85stat.regs.PC.d) << 8;
         i85stat.regs.PC.w.l++;
         return w;
 }
 
-static UINT8 Ci8085::RM(UINT32 a)
+quint8 Ci8085::RM(quint32 a)
 {
-        return cpu_readmem16(a);
+        return read16(a);
 }
 
-static void Ci8085::WM(UINT32 a, UINT8 v)
+void Ci8085::WM(quint32 a, quint8 v)
 {
-        cpu_writemem16(a, v);
+        write16(a, v);
 }
 
-static  void Ci8085::illegal(void)
+ void Ci8085::illegal(void)
 {
 #if VERBOSE
-        UINT16 pc = i85stat.regs.PC.w.l - 1;
+        quint16 pc = i85stat.regs.PC.w.l - 1;
         LOG(("i8085 illegal instruction %04X $%02X\n", pc, cpu_readop(pc)));
 #endif
 }
@@ -1125,7 +1190,7 @@ int Ci8085::i8085_execute(int cycles)
  ****************************************************************************/
 static void Ci8085::init_tables (void)
 {
-        UINT8 zs;
+        quint8 zs;
         int i, p;
         for (i = 0; i < 256; i++)
         {
@@ -1152,7 +1217,7 @@ static void Ci8085::init_tables (void)
 void Ci8085::i8085_reset(void *param)
 {
         init_tables();
-        memset(&I, 0, sizeof(i8085_Regs));
+        memset(&I, 0, sizeof(I));
         i85stat.regs.cputype = 1;
         change_pc16(i85stat.regs.PC.d);
 }
@@ -1165,27 +1230,7 @@ void Ci8085::i8085_exit(void)
         /* nothing to do */
 }
 
-/****************************************************************************
- * Get the current 8085 context
- ****************************************************************************/
-unsigned i8085_get_context(void *dst)
-{
-        if( dst )
-                *(i8085_Regs*)dst = I;
-        return sizeof(i8085_Regs);
-}
 
-/****************************************************************************
- * Set the current 8085 context
- ****************************************************************************/
-void i8085_set_context(void *src)
-{
-        if( src )
-        {
-                I = *(i8085_Regs*)src;
-                change_pc(i85stat.regs.PC.d);
-        }
-}
 
 /****************************************************************************
  * Get the current 8085 PC
@@ -1201,7 +1246,7 @@ unsigned Ci8085::i8085_get_pc(void)
 void Ci8085::i8085_set_pc(unsigned val)
 {
         i85stat.regs.PC.w.l = val;
-        change_pc(i85stat.regs.PC.d);
+        //change_pc(i85stat.regs.PC.d);
 }
 
 /****************************************************************************
@@ -1463,19 +1508,19 @@ void Ci8085::i8085_set_irq_callback(int (*callback)(int))
 void Ci8085::i8085_state_save(void *file)
 {
         int cpu = cpu_getactivecpu();
-        state_save_UINT16(file, "i8085", cpu, "AF", &i85stat.regs.AF.w.l, 1);
-        state_save_UINT16(file, "i8085", cpu, "BC", &i85stat.regs.BC.w.l, 1);
-        state_save_UINT16(file, "i8085", cpu, "DE", &i85stat.regs.DE.w.l, 1);
-        state_save_UINT16(file, "i8085", cpu, "HL", &i85stat.regs.HL.w.l, 1);
-        state_save_UINT16(file, "i8085", cpu, "SP", &i85stat.regs.SP.w.l, 1);
-        state_save_UINT16(file, "i8085", cpu, "PC", &i85stat.regs.PC.w.l, 1);
-        state_save_UINT8(file, "i8085", cpu, "HALT", &i85stat.regs.HALT, 1);
-        state_save_UINT8(file, "i8085", cpu, "IM", &i85stat.regs.IM, 1);
-        state_save_UINT8(file, "i8085", cpu, "IREQ", &i85stat.regs.IREQ, 1);
-        state_save_UINT8(file, "i8085", cpu, "ISRV", &i85stat.regs.ISRV, 1);
-        state_save_UINT32(file, "i8085", cpu, "INTR", &i85stat.regs.INTR, 1);
-        state_save_UINT32(file, "i8085", cpu, "IRQ2", &i85stat.regs.IRQ2, 1);
-        state_save_UINT32(file, "i8085", cpu, "IRQ1", &i85stat.regs.IRQ1, 1);
+        state_save_quint16(file, "i8085", cpu, "AF", &i85stat.regs.AF.w.l, 1);
+        state_save_quint16(file, "i8085", cpu, "BC", &i85stat.regs.BC.w.l, 1);
+        state_save_quint16(file, "i8085", cpu, "DE", &i85stat.regs.DE.w.l, 1);
+        state_save_quint16(file, "i8085", cpu, "HL", &i85stat.regs.HL.w.l, 1);
+        state_save_quint16(file, "i8085", cpu, "SP", &i85stat.regs.SP.w.l, 1);
+        state_save_quint16(file, "i8085", cpu, "PC", &i85stat.regs.PC.w.l, 1);
+        state_save_quint8(file, "i8085", cpu, "HALT", &i85stat.regs.HALT, 1);
+        state_save_quint8(file, "i8085", cpu, "IM", &i85stat.regs.IM, 1);
+        state_save_quint8(file, "i8085", cpu, "IREQ", &i85stat.regs.IREQ, 1);
+        state_save_quint8(file, "i8085", cpu, "ISRV", &i85stat.regs.ISRV, 1);
+        state_save_quint32(file, "i8085", cpu, "INTR", &i85stat.regs.INTR, 1);
+        state_save_quint32(file, "i8085", cpu, "IRQ2", &i85stat.regs.IRQ2, 1);
+        state_save_quint32(file, "i8085", cpu, "IRQ1", &i85stat.regs.IRQ1, 1);
         state_save_INT8(file, "i8085", cpu, "NMI_STATE", &i85stat.regs.nmi_state, 1);
         state_save_INT8(file, "i8085", cpu, "IRQ_STATE", i85stat.regs.irq_state, 4);
 }
@@ -1483,19 +1528,19 @@ void Ci8085::i8085_state_save(void *file)
 void Ci8085::i8085_state_load(void *file)
 {
         int cpu = cpu_getactivecpu();
-        state_load_UINT16(file, "i8085", cpu, "AF", &i85stat.regs.AF.w.l, 1);
-        state_load_UINT16(file, "i8085", cpu, "BC", &i85stat.regs.BC.w.l, 1);
-        state_load_UINT16(file, "i8085", cpu, "DE", &i85stat.regs.DE.w.l, 1);
-        state_load_UINT16(file, "i8085", cpu, "HL", &i85stat.regs.HL.w.l, 1);
-        state_load_UINT16(file, "i8085", cpu, "SP", &i85stat.regs.SP.w.l, 1);
-        state_load_UINT16(file, "i8085", cpu, "PC", &i85stat.regs.PC.w.l, 1);
-        state_load_UINT8(file, "i8085", cpu, "HALT", &i85stat.regs.HALT, 1);
-        state_load_UINT8(file, "i8085", cpu, "IM", &i85stat.regs.IM, 1);
-        state_load_UINT8(file, "i8085", cpu, "IREQ", &i85stat.regs.IREQ, 1);
-        state_load_UINT8(file, "i8085", cpu, "ISRV", &i85stat.regs.ISRV, 1);
-        state_load_UINT32(file, "i8085", cpu, "INTR", &i85stat.regs.INTR, 1);
-        state_load_UINT32(file, "i8085", cpu, "IRQ2", &i85stat.regs.IRQ2, 1);
-        state_load_UINT32(file, "i8085", cpu, "IRQ1", &i85stat.regs.IRQ1, 1);
+        state_load_quint16(file, "i8085", cpu, "AF", &i85stat.regs.AF.w.l, 1);
+        state_load_quint16(file, "i8085", cpu, "BC", &i85stat.regs.BC.w.l, 1);
+        state_load_quint16(file, "i8085", cpu, "DE", &i85stat.regs.DE.w.l, 1);
+        state_load_quint16(file, "i8085", cpu, "HL", &i85stat.regs.HL.w.l, 1);
+        state_load_quint16(file, "i8085", cpu, "SP", &i85stat.regs.SP.w.l, 1);
+        state_load_quint16(file, "i8085", cpu, "PC", &i85stat.regs.PC.w.l, 1);
+        state_load_quint8(file, "i8085", cpu, "HALT", &i85stat.regs.HALT, 1);
+        state_load_quint8(file, "i8085", cpu, "IM", &i85stat.regs.IM, 1);
+        state_load_quint8(file, "i8085", cpu, "IREQ", &i85stat.regs.IREQ, 1);
+        state_load_quint8(file, "i8085", cpu, "ISRV", &i85stat.regs.ISRV, 1);
+        state_load_quint32(file, "i8085", cpu, "INTR", &i85stat.regs.INTR, 1);
+        state_load_quint32(file, "i8085", cpu, "IRQ2", &i85stat.regs.IRQ2, 1);
+        state_load_quint32(file, "i8085", cpu, "IRQ1", &i85stat.regs.IRQ1, 1);
         state_load_INT8(file, "i8085", cpu, "NMI_STATE", &i85stat.regs.nmi_state, 1);
         state_load_INT8(file, "i8085", cpu, "IRQ_STATE", i85stat.regs.irq_state, 4);
 }
@@ -1525,4 +1570,11 @@ unsigned Ci8085::i8085_dasm(char *buffer, unsigned pc)
 
 
 
+
+
+
+void Ci8085::step()
+{
+    pPC->pTIMER->state += i8085_execute(0);
+}
 #endif

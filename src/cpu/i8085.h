@@ -8,6 +8,7 @@ enum {
         I8085_HALT, I8085_IM, I8085_IREQ, I8085_ISRV, I8085_VECTOR,
         I8085_TRAP_STATE, I8085_INTR_STATE,
         I8085_RST55_STATE, I8085_RST65_STATE, I8085_RST75_STATE};
+#define CLEAR_LINE		0		/* clear (a fired, held or pulsed) line */
 
 #define I8085_INTR_LINE     0
 #define I8085_RST55_LINE        1
@@ -130,11 +131,11 @@ public:
 
     I85stat i85stat;
 
-    UINT8 CROP();
-    UINT8 ARG();
+    quint8 ROP();
+    quint8 ARG();
     UINT16 ARG16();
-    UINT8 RM(UINT32 a);
-    void WM(UINT32 a, UINT8 v);
+    quint8 RM(quint32 a);
+    void WM(quint32 a, quint8 v);
     void illegal();
     void execute_one(int opcode);
     void Interrupt();
@@ -154,6 +155,21 @@ public:
     void i8085_set_RST65(int state);
     void i8085_set_RST55(int state);
     void i8085_set_INTR(int state);
+
+    quint8 read8(quint16 address);
+    void write8(quint16 address, quint8 value);
+    quint16 read16(quint16 address);
+    void write16(quint16 address, quint16 value);
+    void change_pc16(quint16 val);
+    int inport(quint8 *x, quint8 address);
+    int outport(quint8 address, quint8 x);
+    void cpu_writeport(quint8 address, quint8 x);
+    quint8 cpu_readport(quint8 address);
+private:
+    int i8085_ICount;
+
+    quint8 ZS[256];
+    quint8 ZSP[256];
 };
 
 
