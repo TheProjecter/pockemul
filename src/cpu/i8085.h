@@ -76,16 +76,16 @@ public:
     virtual DWORD get_PC();
     virtual void Regs_Info(quint8);
 
-    quint8  i85read8(const I85stat *, quint16, quint16);
-    void    i85write8(I85stat *, quint16, quint16, quint8);
-    quint16 i85read16(const I85stat *, quint16, quint16);
-    void    i85write16(I85stat *, quint16, quint16, quint16);
-    quint8  i85inp8(const I85stat *, quint16);
-    quint16 i85inp16(const I85stat *, quint16);
-    void    i85out8(I85stat *, quint16, quint8);
-    void    i85out16(I85stat *, quint16, quint16);
-    void    i85reset(I85stat *);
-    void    i85trace(const I85stat *);
+//    quint8  i85read8(const I85stat *, quint16, quint16);
+//    void    i85write8(I85stat *, quint16, quint16, quint8);
+//    quint16 i85read16(const I85stat *, quint16, quint16);
+//    void    i85write16(I85stat *, quint16, quint16, quint16);
+//    quint8  i85inp8(const I85stat *, quint16);
+//    quint16 i85inp16(const I85stat *, quint16);
+//    void    i85out8(I85stat *, quint16, quint8);
+//    void    i85out16(I85stat *, quint16, quint16);
+//    void    i85reset(I85stat *);
+//    void    i85trace(const I85stat *);
 
 //    int i85disasm(char *, const I85stat *, quint16, quint16);
 //    char *i85regs(char *, const I85stat *);
@@ -116,17 +116,17 @@ public:
     static const int grp2_16_mem_states[];
     static const quint16 parity[];
 
-    quint8 getreg8(const I85stat *i85, quint8 reg);
-    void setreg8(I85stat *i85, quint8 reg, quint8 x);
-    quint16 getreg16(const I85stat *i85, quint8 reg);
-    void setreg16(I85stat *i85, quint8 reg, quint16 x);
-    quint16 getsreg(const I85stat *i85, quint8 reg);
-    void setsreg(I85stat *i85, quint8 reg, quint16 x);
-    void getsegoff(const I85stat *i85, quint8 rm, quint16 *seg, quint16 *off);
-    quint8 getrm8(const I85stat *i85, quint8 rm);
-    void setrm8(I85stat *i85, quint8 rm, quint8 x);
-    quint16 getrm16(const I85stat *i85, quint8 rm);
-    void setrm16(I85stat *i85, quint8 rm, quint16 x);
+//    quint8  getreg8(const I85stat *i85, quint8 reg);
+//    void    setreg8(I85stat *i85, quint8 reg, quint8 x);
+//    quint16 getreg16(const I85stat *i85, quint8 reg);
+//    void    setreg16(I85stat *i85, quint8 reg, quint16 x);
+//    quint16 getsreg(const I85stat *i85, quint8 reg);
+//    void    setsreg(I85stat *i85, quint8 reg, quint16 x);
+//    void    getsegoff(const I85stat *i85, quint8 rm, quint16 *seg, quint16 *off);
+//    quint8  getrm8(const I85stat *i85, quint8 rm);
+//    void    setrm8(I85stat *i85, quint8 rm, quint8 x);
+//    quint16 getrm16(const I85stat *i85, quint8 rm);
+//    void    setrm16(I85stat *i85, quint8 rm, quint16 x);
 
 
     I85stat i85stat;

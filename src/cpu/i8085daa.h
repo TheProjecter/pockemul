@@ -1,7 +1,7 @@
 #ifndef I8085DAA_H
 #define I8085DAA_H
 
-static UINT16 DAA[2048] = {
+static quint16 DAA[2048] = {
   (0x00<<8)   +ZF         +VF      ,
   (0x01<<8)                        ,
   (0x02<<8)                        ,

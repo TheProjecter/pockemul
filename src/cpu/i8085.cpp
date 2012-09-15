@@ -40,8 +40,9 @@
  *       - This entire notice must remain in the source code.
  *
  *****************************************************************************/
+#include <QtCore>
 
-
+#define I i85stat.regs
 
 #define VERBOSE 0
 
@@ -51,25 +52,10 @@
 #include "pcxxxx.h"
 #include "Inter.h"
 
-#if VERBOSE
-#include <stdio.h>
-#include "driver.h"
-#define LOG(x) logerror x
-#else
 #define LOG(x)
-#endif
-
-
-#define I i85stat.regs
-
-
-
-
 
 Ci8085::Ci8085(CPObject * parent): CCPU(parent)
 {
-
-
     fn_log="i8085.log";
 
 //    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
@@ -77,6 +63,14 @@ Ci8085::Ci8085(CPObject * parent): CCPU(parent)
 }
 
 Ci8085::~Ci8085()
+{
+}
+
+bool Ci8085::init()
+{
+}
+
+bool Ci8085::exit()
 {
 }
 
@@ -1514,3 +1508,24 @@ void Ci8085::step()
     pPC->pTIMER->state += i8085_execute(0);
 }
 
+void Ci8085::Reset()
+{
+}
+
+
+
+void Ci8085::Load_Internal(QXmlStreamReader *)
+{
+}
+
+void Ci8085::save_internal(QXmlStreamWriter *)
+{
+}
+
+DWORD Ci8085::get_PC()
+{
+}
+
+void Ci8085::Regs_Info(quint8)
+{
+}

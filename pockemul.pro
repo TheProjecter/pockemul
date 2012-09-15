@@ -274,9 +274,6 @@ HEADERS += src/core/Connect.h \
     src/cpu/i8085.h \
     src/cpu/i8085cpu.h \
     src/cpu/i8085daa.h \
-    src/cpu/i8085.h \
-    src/cpu/i8085cpu.h \
-    src/cpu/i8085daa.h \
     src/machine/fp200.h
 INCLUDEPATH += . \
     src/core \
@@ -503,7 +500,6 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_z1.cpp \
     src/cpu/i80x86_dasm.cpp \
     src/cpu/cf79107pj.cpp \
-    src/cpu/i8085.cpp \
     src/cpu/i8085.cpp \
     src/machine/fp200.cpp
 
