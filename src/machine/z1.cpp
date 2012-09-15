@@ -25,6 +25,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     setcfgfname(QString("z1"));
 
     SessionHeader	= "Z1PKM";
+    SessionHeaderLen= 5;
     Initial_Session_Fname ="z1.pkm";
 
     BackGroundFname	= ":/z1/z1gr.png";
@@ -37,7 +38,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
-    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
+    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
 
 
     KeyMap		= KeyMap1250;
@@ -237,8 +238,8 @@ UINT8 Cz1::in8(UINT16 Port)
         return 0x00;
         break;}
     default:
-        if (fp_log) fprintf(fp_log,"IN[%04x]\n",Port);
-        AddLog(LOG_TEMP,tr("IN[%1]").arg(Port,4,16,QChar('0')));
+        if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        AddLog(LOG_TEMP,tr("IN[%1]\t%2").arg(Port,4,16,QChar('0')).arg(pCPU->get_PC(),8,16,QChar('0')));
         return 0;
     }
      return (0);
@@ -282,8 +283,6 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
     case 0x00b8:
         io_b8 = x;
         break;
-    case 0x00b9:
-        break;
     case 0x0200:
 //        ks = ks & 0xff00 | x;
 //        AddLog(LOG_KEYBOARD,tr("Set KSL[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
@@ -296,7 +295,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         break;
     case 0x0220: /* ?? */
 
-        AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,2,16,QChar('0')));
+        AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,4,16,QChar('0')));
         dumpXYW();
         fprintf(fp_log,"OUT 220H %02x\n", x);
         fprintf(fp_log,"X=");
@@ -333,7 +332,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 #endif
         break;
     case 0x0221:
-        AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,2,16,QChar('0')));
+        AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,4,16,QChar('0')));
         dumpXYW();
 
         fprintf(fp_log,"OUT 221H %02x\n", x);
@@ -364,8 +363,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 
         break;
     default:
-        AddLog(LOG_TEMP,tr("OUT %1 = %2").arg(Port,4,16,QChar('0')).arg(x,2,16,QChar('0')));
-        if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\n",Port,x);
+        if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
         break;
     }
 
@@ -376,8 +374,16 @@ UINT16 Cz1::in16(UINT16 address)
 {
 }
 
-UINT16 Cz1::out16(UINT16 address, UINT16 value)
+UINT16 Cz1::out16(UINT16 Port, UINT16 x)
 {
+    if ((Port >=0x220)&&(Port < 0x240)) {
+        fprintf(fp_log,"OUT[%04X]=%04x  pc=%08x\n", Port,x,pCPU->get_PC());
+        AddLog(LOG_TEMP,tr("OUT[%1]=%2\t%3").arg(Port,4,16,QChar('0')).arg(x,4,16,QChar('0')).arg(pCPU->get_PC(),8,16,QChar('0')));
+        dumpXYW();
+
+    }
+    out8(Port + 1, x >> 8);
+    out8(Port, x & 0xff);
 }
 
 void Cz1::dumpXYW(void) {

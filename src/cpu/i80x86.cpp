@@ -2512,8 +2512,12 @@ uint16 Ci80x86::i86inp16(const I86stat *i86, uint16 port)
 
 void Ci80x86::i86out16(I86stat *i86, uint16 port, uint16 x)
 {
+#if 0
     i86out8(i86, port + 1, x >> 8);
     i86out8(i86, port, x & 0xff);
+#else
+    pPC->out16(port,x);
+#endif
 }
 
 uint8 Ci80x86::i86inp8(const I86stat *i86, uint16 port)
