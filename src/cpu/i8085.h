@@ -76,19 +76,19 @@ public:
     virtual DWORD get_PC();
     virtual void Regs_Info(quint8);
 
-    quint8 i85read8(const I85stat *, quint16, quint16);
-    void i85write8(I85stat *, quint16, quint16, quint8);
+    quint8  i85read8(const I85stat *, quint16, quint16);
+    void    i85write8(I85stat *, quint16, quint16, quint8);
     quint16 i85read16(const I85stat *, quint16, quint16);
-    void i85write16(I85stat *, quint16, quint16, quint16);
-    quint8 i85inp8(const I85stat *, quint16);
+    void    i85write16(I85stat *, quint16, quint16, quint16);
+    quint8  i85inp8(const I85stat *, quint16);
     quint16 i85inp16(const I85stat *, quint16);
-    void i85out8(I85stat *, quint16, quint8);
-    void i85out16(I85stat *, quint16, quint16);
-    void i85reset(I85stat *);
-    void i85trace(const I85stat *);
+    void    i85out8(I85stat *, quint16, quint8);
+    void    i85out16(I85stat *, quint16, quint16);
+    void    i85reset(I85stat *);
+    void    i85trace(const I85stat *);
 
-    int i85disasm(char *, const I85stat *, quint16, quint16);
-    char *i85regs(char *, const I85stat *);
+//    int i85disasm(char *, const I85stat *, quint16, quint16);
+//    char *i85regs(char *, const I85stat *);
 
     int i85nmi(I85stat *);
     int i85int(I85stat *, int);
@@ -165,6 +165,8 @@ public:
     int outport(quint8 address, quint8 x);
     void cpu_writeport(quint8 address, quint8 x);
     quint8 cpu_readport(quint8 address);
+    void i8085_set_nmi_line(int state);
+    void i8085_set_irq_line(int irqline, int state);
 private:
     int i8085_ICount;
 
@@ -173,28 +175,7 @@ private:
 };
 
 
-extern int i8085_ICount;
 
-extern void i8085_set_SID(int state);
-extern void i8085_set_SOD_callback(void (*callback)(int state));
-extern void i8085_reset(void *param);
-extern void i8085_exit(void);
-extern int i8085_execute(int cycles);
-extern unsigned i8085_get_context(void *dst);
-extern void i8085_set_context(void *src);
-extern unsigned i8085_get_pc(void);
-extern void i8085_set_pc(unsigned val);
-extern unsigned i8085_get_sp(void);
-extern void i8085_set_sp(unsigned val);
-extern unsigned i8085_get_reg(int regnum);
-extern void i8085_set_reg(int regnum, unsigned val);
-extern void i8085_set_nmi_line(int state);
-extern void i8085_set_irq_line(int irqline, int state);
-extern void i8085_set_irq_callback(int (*callback)(int irqline));
-extern void i8085_state_save(void *file);
-extern void i8085_state_load(void *file);
-extern const char *i8085_info(void *context, int regnum);
-extern unsigned i8085_dasm(char *buffer, unsigned pc);
 
 
 

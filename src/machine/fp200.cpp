@@ -3,12 +3,11 @@
 
 #include "common.h"
 #include "fp200.h"
-//#include "i8085.h"
-#include "z80.h"
+#include "i8085.h"
+
 #include "Inter.h"
 
 
-#if 1
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -55,7 +54,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     Lcd_ratio_Y	= 2;// * 1.18;
 
 //    pLCDC		= new Clcdc_z1(this);
-    pCPU		= new CZ80(this);
+    pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
 //    pHD66108    = new CHD66108(this);
 //    pKEYB		= new Ckeyb(this,"z1.map");
@@ -111,6 +110,7 @@ bool Cfp200::init()
 
 bool Cfp200::run()
 {
+
 }
 
 void Cfp200::Reset()
@@ -132,4 +132,4 @@ bool Cfp200::SaveConfig(QXmlStreamWriter *xmlOut)
 bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 {
 }
-#endif
+

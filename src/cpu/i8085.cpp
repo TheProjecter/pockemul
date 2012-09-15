@@ -41,7 +41,7 @@
  *
  *****************************************************************************/
 
-#if 1
+
 
 #define VERBOSE 0
 
@@ -1092,7 +1092,7 @@ INLINE void Ci8085::execute_one(int opcode)
         }
 }
 
-static void Ci8085::Interrupt(void)
+void Ci8085::Interrupt(void)
 {
 
         if( i85stat.regs.HALT )            /* if the CPU was halted */
@@ -1188,7 +1188,7 @@ int Ci8085::i8085_execute(int cycles)
 /****************************************************************************
  * Initialise the various lookup tables used by the emulation code
  ****************************************************************************/
-static void Ci8085::init_tables (void)
+void Ci8085::init_tables (void)
 {
         quint8 zs;
         int i, p;
@@ -1268,6 +1268,7 @@ void Ci8085::i8085_set_sp(unsigned val)
 /****************************************************************************
  * Get a specific register
  ****************************************************************************/
+#define REG_SP_CONTENTS -2
 unsigned Ci8085::i8085_get_reg(int regnum)
 {
         switch( regnum )
@@ -1288,7 +1289,7 @@ unsigned Ci8085::i8085_get_reg(int regnum)
                 case I8085_RST55_STATE: return i85stat.regs.irq_state[I8085_RST55_LINE];
                 case I8085_RST65_STATE: return i85stat.regs.irq_state[I8085_RST65_LINE];
                 case I8085_RST75_STATE: return i85stat.regs.irq_state[I8085_RST75_LINE];
-                case REG_PREVIOUSPC: return 0; /* previous pc not supported */
+                case -1: return 0; /* previous pc not supported */
                 default:
                         if( regnum <= REG_SP_CONTENTS )
                         {
@@ -1351,10 +1352,10 @@ void Ci8085::i8085_set_SID(int state)
 /****************************************************************************/
 /* Set a callback to be called at SOD output change                                             */
 /****************************************************************************/
-void i8085_set_sod_callback(void (*callback)(int state))
-{
-        i85stat.regs.sod_callback = callback;
-}
+//void i8085_set_sod_callback(void (*callback)(int state))
+//{
+//        i85stat.regs.sod_callback = callback;
+//}
 
 /****************************************************************************/
 /* Set TRAP signal state                                                                                                        */
@@ -1500,75 +1501,10 @@ void Ci8085::i8085_set_irq_line(int irqline, int state)
         }
 }
 
-void Ci8085::i8085_set_irq_callback(int (*callback)(int))
-{
-        i85stat.regs.irq_callback = callback;
-}
-
-void Ci8085::i8085_state_save(void *file)
-{
-        int cpu = cpu_getactivecpu();
-        state_save_quint16(file, "i8085", cpu, "AF", &i85stat.regs.AF.w.l, 1);
-        state_save_quint16(file, "i8085", cpu, "BC", &i85stat.regs.BC.w.l, 1);
-        state_save_quint16(file, "i8085", cpu, "DE", &i85stat.regs.DE.w.l, 1);
-        state_save_quint16(file, "i8085", cpu, "HL", &i85stat.regs.HL.w.l, 1);
-        state_save_quint16(file, "i8085", cpu, "SP", &i85stat.regs.SP.w.l, 1);
-        state_save_quint16(file, "i8085", cpu, "PC", &i85stat.regs.PC.w.l, 1);
-        state_save_quint8(file, "i8085", cpu, "HALT", &i85stat.regs.HALT, 1);
-        state_save_quint8(file, "i8085", cpu, "IM", &i85stat.regs.IM, 1);
-        state_save_quint8(file, "i8085", cpu, "IREQ", &i85stat.regs.IREQ, 1);
-        state_save_quint8(file, "i8085", cpu, "ISRV", &i85stat.regs.ISRV, 1);
-        state_save_quint32(file, "i8085", cpu, "INTR", &i85stat.regs.INTR, 1);
-        state_save_quint32(file, "i8085", cpu, "IRQ2", &i85stat.regs.IRQ2, 1);
-        state_save_quint32(file, "i8085", cpu, "IRQ1", &i85stat.regs.IRQ1, 1);
-        state_save_INT8(file, "i8085", cpu, "NMI_STATE", &i85stat.regs.nmi_state, 1);
-        state_save_INT8(file, "i8085", cpu, "IRQ_STATE", i85stat.regs.irq_state, 4);
-}
-
-void Ci8085::i8085_state_load(void *file)
-{
-        int cpu = cpu_getactivecpu();
-        state_load_quint16(file, "i8085", cpu, "AF", &i85stat.regs.AF.w.l, 1);
-        state_load_quint16(file, "i8085", cpu, "BC", &i85stat.regs.BC.w.l, 1);
-        state_load_quint16(file, "i8085", cpu, "DE", &i85stat.regs.DE.w.l, 1);
-        state_load_quint16(file, "i8085", cpu, "HL", &i85stat.regs.HL.w.l, 1);
-        state_load_quint16(file, "i8085", cpu, "SP", &i85stat.regs.SP.w.l, 1);
-        state_load_quint16(file, "i8085", cpu, "PC", &i85stat.regs.PC.w.l, 1);
-        state_load_quint8(file, "i8085", cpu, "HALT", &i85stat.regs.HALT, 1);
-        state_load_quint8(file, "i8085", cpu, "IM", &i85stat.regs.IM, 1);
-        state_load_quint8(file, "i8085", cpu, "IREQ", &i85stat.regs.IREQ, 1);
-        state_load_quint8(file, "i8085", cpu, "ISRV", &i85stat.regs.ISRV, 1);
-        state_load_quint32(file, "i8085", cpu, "INTR", &i85stat.regs.INTR, 1);
-        state_load_quint32(file, "i8085", cpu, "IRQ2", &i85stat.regs.IRQ2, 1);
-        state_load_quint32(file, "i8085", cpu, "IRQ1", &i85stat.regs.IRQ1, 1);
-        state_load_INT8(file, "i8085", cpu, "NMI_STATE", &i85stat.regs.nmi_state, 1);
-        state_load_INT8(file, "i8085", cpu, "IRQ_STATE", i85stat.regs.irq_state, 4);
-}
-
-/****************************************************************************
- * Return a formatted string for a register
- ****************************************************************************/
-const char *i8085_info(void *context, int regnum)
-{
-        switch( regnum )
-        {
-                case CPU_INFO_NAME: return "8085A";
-                case CPU_INFO_FAMILY: return "Intel 8080";
-                case CPU_INFO_VERSION: return "1.1";
-                case CPU_INFO_FILE: return __FILE__;
-                case CPU_INFO_CREDITS: return "Copyright (c) 1999 Juergen Buchmueller, all rights reserved.";
-        }
-        return "";
-}
-
-unsigned Ci8085::i8085_dasm(char *buffer, unsigned pc)
-{
-        sprintf( buffer, "$%02X", cpu_readop(pc) );
-        return 1;
-}
-
-
-
+//void Ci8085::i8085_set_irq_callback(int (*callback)(int))
+//{
+//        i85stat.regs.irq_callback = callback;
+//}
 
 
 
@@ -1577,4 +1513,4 @@ void Ci8085::step()
 {
     pPC->pTIMER->state += i8085_execute(0);
 }
-#endif
+
