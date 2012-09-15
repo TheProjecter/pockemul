@@ -25,7 +25,6 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     setcfgfname(QString("z1"));
 
     SessionHeader	= "Z1PKM";
-    SessionHeaderLen= 5;
     Initial_Session_Fname ="z1.pkm";
 
     BackGroundFname	= ":/z1/z1gr.png";

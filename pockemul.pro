@@ -276,7 +276,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/i8085daa.h \
     src/cpu/i8085.h \
     src/cpu/i8085cpu.h \
-    src/cpu/i8085daa.h
+    src/cpu/i8085daa.h \
+    src/machine/fp200.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -326,7 +327,8 @@ RESOURCES += resources/ext.qrc \
     resources/pb2000.qrc \
     resources/g850v.qrc \
     resources/ext2.qrc \
-    resources/z1.qrc
+    resources/z1.qrc \
+    resources/fp200.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -502,7 +504,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i80x86_dasm.cpp \
     src/cpu/cf79107pj.cpp \
     src/cpu/i8085.cpp \
-    src/cpu/i8085.cpp
+    src/cpu/i8085.cpp \
+    src/machine/fp200.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

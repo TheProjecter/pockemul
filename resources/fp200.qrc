@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fp200/fp200rom.bin</file>
+    </qresource>
+</RCC>
