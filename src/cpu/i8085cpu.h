@@ -227,6 +227,7 @@ int q = I.AF.b.h+R;                                                             
                 i8085_ICount -= 6;                                                                              \
                 M_POP(PC);                                                                                              \
                 change_pc16(I.PC.d);                                                                    \
+                CallSubLevel--;                                         \
         }                                                                                                                       \
 }
 
@@ -246,13 +247,15 @@ int q = I.AF.b.h+R;                                                             
                 M_PUSH(PC);                                                                                     \
                 I.PC.d = a;                                                                                     \
                 change_pc16(I.PC.d);                                                                    \
+                CallSubLevel++ ;                                                                        \
         } else I.PC.w.l += 2;                                                                           \
 }
 
 #define M_RST(nn) {                                                                                     \
         M_PUSH(PC);                                                                                             \
         I.PC.d = 8 * nn;                                                                                        \
-        change_pc16(I.PC.d);                                                                            \
+        change_pc16(I.PC.d);                                    \
+        CallSubLevel++ ;                                                                        \
 }
 
 

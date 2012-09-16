@@ -159,8 +159,6 @@ public:
     quint16 read16(quint16 address);
     void write16(quint16 address, quint16 value);
     void change_pc16(quint16 val);
-    int inport(quint8 *x, quint8 address);
-    int outport(quint8 address, quint8 x);
     void cpu_writeport(quint8 address, quint8 x);
     quint8 cpu_readport(quint8 address);
     void i8085_set_nmi_line(int state);

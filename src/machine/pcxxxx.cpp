@@ -546,16 +546,18 @@ bool CpcXXXX::run(void)
 
         if ( (pCPU->logsw) && (pCPU->fp_log) )
         {
-            Regs_Info(1);
-#if 0
+
+#if 1
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
+pCPU->step();
+Regs_Info(1);
 
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
             for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
 #endif
-            fprintf(pCPU->fp_log,"%s\n%s\n",pCPU->Regs_String,pCPU->pDEBUG->Buffer);
-//            fprintf(pCPU->fp_log,"%-40s   %s  \n",pCPU->pDEBUG->Buffer,pCPU->Regs_String);
-#if 0
+//            fprintf(pCPU->fp_log,"%s\n%s\n",pCPU->Regs_String,pCPU->pDEBUG->Buffer);
+            fprintf(pCPU->fp_log,"%-40s   %s  \n",pCPU->pDEBUG->Buffer,pCPU->Regs_String);
+#if 1
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
                 for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
                 fprintf(pCPU->fp_log,"{\n");
@@ -570,7 +572,7 @@ bool CpcXXXX::run(void)
             fflush(pCPU->fp_log);
         }
 
-		pCPU->step();
+//		pCPU->step();
 
 
 

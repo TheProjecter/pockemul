@@ -108,28 +108,14 @@ void Ci8085::write16( quint16 address, quint16 value)
     ((CpcXXXX *)pPC)->Set_16(address,value);
 }
 
-int Ci8085::inport(quint8 *x, quint8 address)
-{
-    //fprintf(fp_log,"IN:%04X\n",address);
-    pPC->in(address);
-    *x = imem[address];
 
-    return 0;
-}
-
-int Ci8085::outport( quint8 address, quint8 x)
-{
-    //fprintf(fp_log,"OUT:%04Xh = %02Xh\n",address,x);
-    imem[address] = x;
-    pPC->out(address,x);
-    return 0;
-}
 quint8 Ci8085::cpu_readport(quint8 address) {
     return pPC->in(address);
 }
 
 void Ci8085::cpu_writeport(quint8 address, quint8 x) {
-    outport(address,x);
+    imem[address] = x;
+    pPC->out(address,x);
 }
 
 quint8 Ci8085::ROP(void)
@@ -154,12 +140,12 @@ quint16 Ci8085::ARG16(void)
 
 quint8 Ci8085::RM(quint32 a)
 {
-        return read16(a);
+        return read8(a);
 }
 
 void Ci8085::WM(quint32 a, quint8 v)
 {
-        write16(a, v);
+        write8(a, v);
 }
 
  void Ci8085::illegal(void)
@@ -1513,4 +1499,18 @@ DWORD Ci8085::get_PC()
 
 void Ci8085::Regs_Info(quint8)
 {
+    sprintf(Regs_String,"EMPTY");
+    char buf[32];
+
+    sprintf(
+    Regs_String,
+    "PC=%04X SP=%04X AF=%04X BC=%04X DE=%04X HL=%04X XX=%04X ",
+     i85stat.regs.PC.d,
+                i85stat.regs.SP.d,
+                i85stat.regs.AF.d,
+                i85stat.regs.BC.d,
+                i85stat.regs.DE.d,
+                i85stat.regs.HL.d,
+                i85stat.regs.XX.d
+    );
 }

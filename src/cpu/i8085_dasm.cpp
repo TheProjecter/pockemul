@@ -125,17 +125,22 @@ DWORD Cdebug_i8085::DisAsm_1(DWORD oldpc)
     LocBuffer[0] = '\0';
     int len =1;
 
-         sprintf(Buffer, "%s", Op_Code[ op ] );
+    sprintf(Buffer," %06X:%02X",pc,op);
+    sprintf(LocBuffer, "%s", Op_Code[ op ] );
 
    /*  Two byte opcode are followed by a byte parameter.
    */
-
+    if ( Op_Code_Size[ op ]  ==  1 )
+       {
+        sprintf(Buffer,"%s      ",Buffer);
+    }
            if ( Op_Code_Size[ op ]  ==  2 )
               {
                quint8 i = pPC->Get_8(pc+1);
+               sprintf(Buffer,"%s %02X   ",Buffer,i);
                if( i < 0xA0 )
-                   sprintf( Buffer, "%s%02Xh", Buffer,i );
-               else    sprintf( Buffer, "%s0%02Xh", Buffer,i );
+                   sprintf( LocBuffer, "%s%02Xh", LocBuffer,i );
+               else    sprintf( LocBuffer, "%s0%02Xh", LocBuffer,i );
                len++;
               }
 
@@ -145,14 +150,15 @@ DWORD Cdebug_i8085::DisAsm_1(DWORD oldpc)
               {
                quint8 i = pPC->Get_8(pc+1);
                quint8 j = pPC->Get_8(pc+2);
-               sprintf( Buffer, "%s\t%02X%02X",Buffer, j,i );
+               sprintf(Buffer,"%s %02X %02X",Buffer,i,j);
+               sprintf( LocBuffer, "%s%02X%02X",LocBuffer, j,i );
                len++;
                len++;
               }
 
 
 
-
+sprintf(Buffer,"%s\t%s",Buffer,LocBuffer);
     DasmAdr = oldpc;
     NextDasmAdr = oldpc+len;
     debugged = true;
@@ -163,6 +169,7 @@ DWORD Cdebug_i8085::DisAsm_1(DWORD oldpc)
 
 char *Cdebug_i8085::i85regs(char *buf, const I85stat *i86)
 {
+
 #if 0
     int len, a = i86->r16.ip;
     char disasm[64], dump[16], *p;

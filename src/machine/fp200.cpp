@@ -6,6 +6,9 @@
 #include "i8085.h"
 
 #include "Inter.h"
+#include "Keyb.h"
+
+#include "Log.h"
 
 
 
@@ -57,7 +60,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
 //    pHD66108    = new CHD66108(this);
-//    pKEYB		= new Ckeyb(this,"z1.map");
+    pKEYB		= new Ckeyb(this,"z1.map");
 
 //    lastKeyBufSize = 0;
 //    newKey = false;
@@ -69,22 +72,168 @@ Cfp200::~Cfp200() {
 
 }
 
+
+
 bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
 {
+    if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
+    if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ return(true);	}
 }
 
 bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
 {
+    return true;
 }
 
-UINT8 Cfp200::in(UINT8 address)
+
+UINT8 Cfp200::in(UINT8 Port)
 {
+    UINT8 Value=0;
+
+     switch (Port)
+      {
+       case 0xF0 : /* Controle des interruptions */
+//                   Value = Port_FX.R.F0;
+                   break;
+
+      }
+
+//     AddLog(LOG_SIO,tr("(%1) In %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+
+     pCPU->imem[Port] = Value;
+     return (Value);
 }
 
-UINT8 Cfp200::out(UINT8 address, UINT8 value)
+UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 {
+#if 0
+ if ((Port!=0xf0) && (Value!=0x44)) {
+     AddLog(LOG_SIO,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 }
 
+ switch (Port)
+  {
+   case 0xBB : /* Validation des interuptions du NSC800 */
+               Int_nsc800_BB = Value;
+               break;
+
+   case 0xF0 : /* Controle des interruptions */
+               Port_FX.W.F0 = Value;
+               break;
+   case 0xF1 : /* XBTR : Stockage des Informations pour CCU */
+               Port_FX.W.F1 = Value;
+               break;
+   case 0xF2 : /* Controle de BAUDS (poids faible) */
+               Port_FX.W.F2 = Value;
+               break;
+   case 0xF3 : /* Controle de BAUDS (poids fort) */
+               Port_FX.W.F3 = Value;
+               break;
+   case 0xF4 : /* Modes */
+               Port_FX.W.F4 = Value;
+               Port_FX.R.F4 = Value;
+
+               if (Value & 0x80) {
+                   AddLog(LOG_SIO,tr("Reglage Bauds : %1 - %2  = %3").arg(Port_FX.W.F2,2,16,QChar('0')).arg(Port_FX.W.F3,2,16,QChar('0')).arg(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2),2,16,QChar('0')));
+                   int divisor = ((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2) + 1;
+                   if (divisor) pUART->Set_BaudRate(24000/divisor);
+               }
+
+               if (Value & 0x40) {
+                   AddLog(LOG_SIO,tr("Bauds Counter START"));
+               }
+               else {
+                   AddLog(LOG_SIO,tr("Bauds Counter STOP"));
+               }
+               Mode_K7 = ((Value & 0x0C) == 0x08) ? 1 : 0;
+               Mode_BUZ= ((Value & 0x0E) == 0x0E) ? 1 : 0;
+               Mode_SERIE=((Value & 0x0C)== 0x04) ? 1 : 0;
+
+               if (Mode_SERIE) {
+                   AddLog(LOG_CANON,"MODE SERIE");
+               }
+
+               if (Port_FX.W.F5 & 0x04) {
+                   if (Mode_K7) {
+//                       Receive_from_K7 (&Port_FX);
+                   }
+                   if (Mode_SERIE ) {//&& !(Port_FX.W.F6 & 0x20)) {
+                       ReceiveFromSerial(&Port_FX);
+                   }
+               }
+
+               break;
+   case 0xF5 : /* Interruptions (RESET) */
+               Port_FX.W.F5 = Value;
+               /* Reception d'un octet venant du T6834 *
+                *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x01)
+                ReceiveFromT6834 (LEC_T6834_ACK,&Port_FX);
+
+               /* Envoie d'un octet a destination du T6834 *
+                *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x02)
+                SendToT6834 (&Port_FX);
+
+               /* Reception d'un octet EN PROVENANCE du lecteur de K7 *
+                *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x04) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x04 = %1").arg(Value,2,16,QChar('0')));
+                   if (Mode_K7) {
+//                   Receive_from_K7 (&Port_FX);
+                   }
+                   if (Mode_SERIE ){//&& !(Port_FX.W.F6 & 0x20)) {
+                       ReceiveFromSerial(&Port_FX);
+                   }
+               }
+
+               /* Envoie d'un octet a destination du lecteur de K7 *
+                *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x08) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x08 = %1").arg(Value,2,16,QChar('0')));
+                   if (Mode_K7) {
+//                   Send_to_K7 (&Port_FX);
+                   }
+                   if (Mode_SERIE ){//&& (Port_FX.W.F6 & 0x20)) {
+                       SendToSerial(&Port_FX);
+                   }
+               }
+
+               /* R?????????  SERIAL ??????? *
+               *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x10) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x10 = %1").arg(Value,2,16,QChar('0')));
+               }
+
+               /* Envoie d'un bit sur le port imprimante  *
+                *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x20) {
+                   AddLog(LOG_CANON,"PRINTER");
+                   Print (PRT_DATA,&Port_FX);
+               }
+
+               /* R?????????  SERIAL ??????? *
+               *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x40) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x40 = %1").arg(Value,2,16,QChar('0')));
+               }
+               /* R?????????  ALARM ??????? *
+               *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+               if (Value & 0x80) {
+                   AddLog(LOG_CANON,tr("Interruption F5 & 0x80 = %1").arg(Value,2,16,QChar('0')));
+               }
+               break;
+   case 0xF6 : /* Configuration de L'UART */
+               Port_FX.W.F6 = Value;
+//               Port_FX.R.F6 = Value;
+               break;
+   case 0xF7 : /* Données émises par l'UART */
+               Port_FX.W.F7 = Value;
+               break;
+  }
+#endif
+ return 0;
+}
 UINT8 Cfp200::in8(UINT16 Port)
 {
 }
@@ -110,7 +259,10 @@ bool Cfp200::init()
     pCPU->logsw = true;
 
 #endif
-    return CpcXXXX::init();
+    CpcXXXX::init();
+    off = 0;
+    Reset();
+    return true;
 }
 
 bool Cfp200::run()
