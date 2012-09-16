@@ -111,18 +111,17 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
     switch (Port)
      {
       case 0x01 : /* Write 8bits data to LCD left-half */
-                pLcd->mem_video[pLcd->Y][pLcd->X] = Value;
+                pLcd->Write(1,Value);
                 break;
       case 0x02 : /* Write 8bits data to LCD right-half */
-                pLcd->mem_video[pLcd->Y+80][pLcd->X] = Value;
+                pLcd->Write(2,Value);
                 break;
       case 0x08 : /* write 6 bits data : */
-                quint8 tmp = (Value & 0x02) << 4;
-                pLcd->Y = (pLcd->Y & 0x0f) | tmp;
+                pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x02) << 4);
                   break;
-      case 0x09 : /* D0-D3 for X, D4-D7 for part of Y */
-                    pLcd.X = Value & 0x0f;
-                    pLcd->Y = (pLcd->Y & 0xf0) | (value >> 4);
+      case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
+                    pLcd->X = Value & 0x0f;
+                    pLcd->Y = (pLcd->Y & 0xf0) | (Value >> 4);
                     break;
 
     }

@@ -11,9 +11,14 @@ Clcdc_fp200::Clcdc_fp200(CPObject *parent )	: Clcdc(parent){						//[constructor
                         (int) (120*contrast),
                         (int) (103*contrast));
     updated = true;
+    X = Y = 0;
 }
 
-
+void Clcdc_fp200::Write(quint8 side, quint8 val) {
+    quint8 offset = (side == 1 ? 0 : 80);
+    mem_video[Y + offset][X] = val;
+    updated = true;
+}
 
 void Clcdc_fp200::disp_symb(void)
 {
@@ -41,7 +46,7 @@ void Clcdc_fp200::disp(void)
         {
             for (int j = 0 ; j < 8 ; j++)
             {
-            BYTE data = mem_video[i ,j ];
+            quint8 data = mem_video[i][j ];
                 for (b=0; b<8;b++)
                 {
                     //if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",i,j*8+b);

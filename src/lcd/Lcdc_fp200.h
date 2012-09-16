@@ -15,6 +15,7 @@ public:
     {						//[constructor]
     }
 
+    void Write(quint8 side,quint8 val);
     quint8 mem_video[160][8];
     quint8 X,Y;
     bool updated;
