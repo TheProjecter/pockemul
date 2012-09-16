@@ -42,6 +42,7 @@ public:
 
     CDirectLink		*pdirectLink;
     void SendSignal_AddLogItem(QString str);
+    void SendSignal_AddLogConsole(QString str);
 
     void slotUnlink(CPObject *);
 
@@ -95,6 +96,7 @@ protected:
 
 signals:
     void AddLogItem(QString);
+    void AddLogConsole(QString);
     void DestroySignal(CPObject *pObject);
 
 private:

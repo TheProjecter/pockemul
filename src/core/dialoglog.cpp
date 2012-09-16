@@ -8,7 +8,8 @@ DialogLog::DialogLog( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
 {
 	setupUi(this);
 	connect(mainwindow,SIGNAL(AddLogItem(QString)),this,SLOT(additem(QString)));
-	connect(listWidget_2,SIGNAL(itemChanged( QListWidgetItem *  )),this,SLOT(computeLogLevel(QListWidgetItem * )));
+    connect(mainwindow,SIGNAL(AddLogConsole(QString)),this,SLOT(addconsole(QString)));
+    connect(listWidget_2,SIGNAL(itemChanged( QListWidgetItem *  )),this,SLOT(computeLogLevel(QListWidgetItem * )));
 
 	addCkeckableItem("CPU",			LOG_CPU);
 	addCkeckableItem("Keyboard",	LOG_KEYBOARD);
@@ -44,7 +45,11 @@ void DialogLog::additem( QString  str)
 	listWidget->addItem(str);
 	// Add here the update()
 }
-
+void DialogLog::addconsole( QString  str)
+{
+    consoleTextEdit->textCursor().insertText(str);
+    // Add here the update()
+}
 int DialogLog::computeLogLevel( QListWidgetItem * item )
 {
 	QVariant var = item->data(Qt::UserRole);
@@ -53,7 +58,7 @@ int DialogLog::computeLogLevel( QListWidgetItem * item )
 	LogLevel = LogLevel & ~(a);
 	LogLevel |= ( item->checkState() ? (a) : 0 );
 
-	return(LogLevel);
+    return(LogLevel);
 
 }
 

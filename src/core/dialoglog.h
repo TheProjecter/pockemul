@@ -15,6 +15,7 @@ public:
 	
 private slots:
 	void additem( QString );
+    void addconsole( QString );
 	int  computeLogLevel( QListWidgetItem * item );
 
 private:

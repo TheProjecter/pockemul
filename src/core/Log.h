@@ -1,6 +1,7 @@
 #ifndef _LOG_H
 #define _LOG_H
 
+#define LOG_CONSOLE		0x00
 #define LOG_CPU			0x01
 #define LOG_KEYBOARD	0x02
 #define LOG_MASTER		0x04
@@ -28,6 +29,8 @@ extern MainWindowPockemul *mainwindow;
         if ( mainwindow->dialoglog) \
             if ((Level) & mainwindow->dialoglog->LogLevel) \
                 mainwindow->SendSignal_AddLogItem(msg); \
+        if (Level == 0) \
+                mainwindow->SendSignal_AddLogConsole(msg); \
     }
 
 

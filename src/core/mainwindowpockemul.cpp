@@ -121,6 +121,9 @@ void MainWindowPockemul::SendSignal_AddLogItem(QString str) {
     emit AddLogItem(str);
 }
 
+void MainWindowPockemul::SendSignal_AddLogConsole(QString str) {
+    emit AddLogConsole(str);
+}
 
 void MainWindowPockemul::slotUnLink(Cconnector * conn) {
     int i;
