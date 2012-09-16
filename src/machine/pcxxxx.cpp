@@ -543,14 +543,14 @@ bool CpcXXXX::run(void)
         if (pCPU->logsw) {
 			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
         }
-
+        pCPU->step();
+        Regs_Info(1);
         if ( (pCPU->logsw) && (pCPU->fp_log) )
         {
 
 #if 1
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
-pCPU->step();
-Regs_Info(1);
+
 
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
             for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
@@ -572,7 +572,7 @@ Regs_Info(1);
             fflush(pCPU->fp_log);
         }
 
-//		pCPU->step();
+//        pCPU->step();
 
 
 

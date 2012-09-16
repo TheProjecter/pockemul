@@ -131,7 +131,7 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
       case 0x08 : /* write 6 bits data : */
                 pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
                 pLcd->Status = (Value >>4) & 0x0f;
-                AddLog(LOG_DISPLAY,tr("OUT[08]=[%1]").arg(Value,2,16,QChar('0')));
+                AddLog(LOG_DISPLAY,tr("OUT[08]=[%1] Status=%2").arg(Value,2,16,QChar('0')).arg(pLcd->Status,2,16,QChar('0')));
                   break;
       case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
                     pLcd->X = Value & 0x0f;
