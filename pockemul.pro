@@ -501,7 +501,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i80x86_dasm.cpp \
     src/cpu/cf79107pj.cpp \
     src/cpu/i8085.cpp \
-    src/machine/fp200.cpp
+    src/machine/fp200.cpp \
+    src/cpu/i8085_dasm.cpp
 
 TARGET = Pockemul
 TEMPLATE = app

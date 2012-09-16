@@ -51,6 +51,7 @@
 #include "i8085daa.h"
 #include "pcxxxx.h"
 #include "Inter.h"
+#include "Debug.h"
 
 #define LOG(x)
 
@@ -68,10 +69,16 @@ Ci8085::~Ci8085()
 
 bool Ci8085::init()
 {
+    init_tables();
+    Check_Log();
+    pDEBUG = new Cdebug_i8085(pPC);
+    return true;
 }
 
 bool Ci8085::exit()
 {
+    /* nothing to do */
+    return true;
 }
 
 void Ci8085::change_pc16(quint16 val) {
@@ -1205,34 +1212,7 @@ void Ci8085::init_tables (void)
         }
 }
 
-/****************************************************************************
- * Reset the 8085 emulation
- ****************************************************************************/
-void Ci8085::i8085_reset(void *param)
-{
-        init_tables();
-        memset(&I, 0, sizeof(I));
-        i85stat.regs.cputype = 1;
-        change_pc16(i85stat.regs.PC.d);
-}
 
-/****************************************************************************
- * Shut down the CPU emulation
- ****************************************************************************/
-void Ci8085::i8085_exit(void)
-{
-        /* nothing to do */
-}
-
-
-
-/****************************************************************************
- * Get the current 8085 PC
- ****************************************************************************/
-unsigned Ci8085::i8085_get_pc(void)
-{
-        return i85stat.regs.PC.d;
-}
 
 /****************************************************************************
  * Set the current 8085 PC
@@ -1510,6 +1490,10 @@ void Ci8085::step()
 
 void Ci8085::Reset()
 {
+    init_tables();
+    memset(&I, 0, sizeof(I));
+    i85stat.regs.cputype = 1;
+    change_pc16(i85stat.regs.PC.d);
 }
 
 
@@ -1524,6 +1508,7 @@ void Ci8085::save_internal(QXmlStreamWriter *)
 
 DWORD Ci8085::get_PC()
 {
+    return i85stat.regs.PC.d;
 }
 
 void Ci8085::Regs_Info(quint8)

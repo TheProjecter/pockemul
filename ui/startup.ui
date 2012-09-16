@@ -401,6 +401,24 @@
             <normaloff>:/pb2000/pb-2000.png</normaloff>:/pb2000/pb-2000.png</iconset>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Casio Z-1GR</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/z1.qrc">
+            <normaloff>:/z1/z1gr.png</normaloff>:/z1/z1gr.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Casio FP-200</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/fp200.qrc">
+            <normaloff>:/fp200/fp200.png</normaloff>:/fp200/fp200.png</iconset>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -585,7 +603,7 @@
            <string>Casio MD-100</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/ext.qrc">
+           <iconset resource="../resources/ext2.qrc">
             <normaloff>:/EXT/ext/md-100.png</normaloff>:/EXT/ext/md-100.png</iconset>
           </property>
          </item>
@@ -594,7 +612,7 @@
            <string>Casio FP-100</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/ext.qrc">
+           <iconset resource="../resources/ext2.qrc">
             <normaloff>:/EXT/ext/fp100.png</normaloff>:/EXT/ext/fp100.png</iconset>
           </property>
          </item>
@@ -708,6 +726,8 @@
  <resources>
   <include location="../resources/e500.qrc"/>
   <include location="../resources/ext.qrc"/>
+  <include location="../resources/ext2.qrc"/>
+  <include location="../resources/fp200.qrc"/>
   <include location="../resources/g850v.qrc"/>
   <include location="../resources/pb1000.qrc"/>
   <include location="../resources/pb2000.qrc"/>
@@ -733,6 +753,7 @@
   <include location="../resources/pc1600.qrc"/>
   <include location="../resources/pc2500.qrc"/>
   <include location="../resources/x07.qrc"/>
+  <include location="../resources/z1.qrc"/>
  </resources>
  <connections/>
 </ui>

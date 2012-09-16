@@ -105,16 +105,23 @@ UINT16 Cfp200::out16(UINT16 Port, UINT16 x)
 
 bool Cfp200::init()
 {
+    pCPU->logsw = true;
+#ifndef QT_NO_DEBUG
+    pCPU->logsw = true;
+
+#endif
     return CpcXXXX::init();
 }
 
 bool Cfp200::run()
 {
-
+    CpcXXXX::run();
 }
 
 void Cfp200::Reset()
 {
+    CpcXXXX::Reset();
+    ((Ci8085 *) pCPU)->i8085_set_pc(0x0000);
 }
 
 void Cfp200::TurnON()

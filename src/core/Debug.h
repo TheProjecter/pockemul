@@ -4,6 +4,7 @@
 #include "pobject.h"
 #include "pcxxxx.h"
 #include "i80x86.h"
+#include "i8085.h"
 
 typedef	struct{
 	char	len;
@@ -117,6 +118,24 @@ public:
         char *i86regs(char *buf, const I86stat *i86);
 };
 #endif
+
+class Cdebug_i8085:public Cdebug{
+    Q_OBJECT
+public:
+    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+
+        Cdebug_i8085(CPObject *parent)	: Cdebug(parent)
+        {
+            AsmTbl = AsmTbl_sc61860;
+            i8085 = (Ci8085*)(pPC->pCPU);
+        }
+        Ci8085 *i8085;
+
+        char *i85regs(char *buf, const I85stat *i85);
+
+        static const char   *Op_Code[256];
+        static char         Op_Code_Size[256];
+};
 
 typedef quint32 UINT32;
 typedef struct

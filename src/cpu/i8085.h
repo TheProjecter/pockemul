@@ -32,11 +32,11 @@ typedef union {
     struct { quint16 l,h; } w;
 #endif
     quint32 d;
-}	PAIR;
+}	DPAIR;
 
 typedef struct {
         int     cputype;        /* 0 8080, 1 8085A */
-        PAIR    PC,SP,AF,BC,DE,HL,XX;
+        DPAIR    PC,SP,AF,BC,DE,HL,XX;
         quint8   HALT;
         quint8   IM;             /* interrupt mask */
         quint8   IREQ;           /* requested interrupts */
@@ -141,9 +141,7 @@ public:
     void Interrupt();
     int i8085_execute(int cycles);
     void init_tables();
-    void i8085_reset(void *param);
-    void i8085_exit();
-    unsigned i8085_get_pc();
+
     void i8085_set_pc(unsigned val);
     unsigned i8085_get_sp();
     void i8085_set_sp(unsigned val);
