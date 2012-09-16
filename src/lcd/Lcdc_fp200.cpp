@@ -12,12 +12,23 @@ Clcdc_fp200::Clcdc_fp200(CPObject *parent )	: Clcdc(parent){						//[constructor
                         (int) (103*contrast));
     updated = true;
     X = Y = 0;
+    Status = 0;
+    memset((char*)mem_video,0,sizeof(mem_video));
 }
 
 void Clcdc_fp200::Write(quint8 side, quint8 val) {
     quint8 offset = (side == 1 ? 0 : 80);
     mem_video[Y + offset][X] = val;
+    Y++;
     updated = true;
+}
+
+quint8 Clcdc_fp200::Read(quint8 side)
+{
+    quint8 offset = (side == 1 ? 0 : 80);
+    quint8 val = mem_video[Y + offset][X];
+    Y++;
+    return val;
 }
 
 void Clcdc_fp200::disp_symb(void)
@@ -44,14 +55,14 @@ void Clcdc_fp200::disp(void)
 //    if (((Ce500 *)pPC)->pHD61102_2->info.on_off) {
         for (int i = 0 ; i < 160; i++)
         {
-            for (int j = 0 ; j < 8 ; j++)
+            for (int li = 0 ; li < 8 ; li++)
             {
-            quint8 data = mem_video[i][j ];
+            quint8 data = mem_video[i][ li ];
                 for (b=0; b<8;b++)
                 {
                     //if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",i,j*8+b);
                     painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
-                    painter.drawPoint( i, j*8+b );
+                    painter.drawPoint( i, li*8+b );
                 }
             }
         }

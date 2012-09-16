@@ -15,7 +15,7 @@
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3865000);
+    setfrequency( (int) 6144000);
     setcfgfname(QString("fp200"));
 
     SessionHeader	= "FP200PKM";
@@ -89,14 +89,24 @@ bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Cfp200::in(UINT8 Port)
 {
     UINT8 Value=0;
+    Clcdc_fp200 *pLcd = (Clcdc_fp200*)pLCDC;
 
-     switch (Port)
-      {
-       case 0xF0 : /* Controle des interruptions */
-//                   Value = Port_FX.R.F0;
-                   break;
+    switch (Port)
+     {
+      case 0x01 : /* Read 8bits data to LCD left-half */
+                Value = pLcd->Read(1);
+                break;
+      case 0x02 : /* Read 8bits data to LCD right-half */
+                Value = pLcd->Read(2);
+                break;
+      case 0x08 : /* Read 6 bits data : */
+                Value = (pLcd->Status << 4) | ((pLcd->Y >> 4) & 0x03);
+                  break;
+      case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
+                Value = (pLcd->X & 0x0f) | ((pLcd->Y & 0x0f) <<4);
+                break;
 
-      }
+    }
 
 //     AddLog(LOG_SIO,tr("(%1) In %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 
@@ -117,11 +127,12 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
                 pLcd->Write(2,Value);
                 break;
       case 0x08 : /* write 6 bits data : */
-                pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x02) << 4);
+                pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
+                pLcd->Status = (Value >>4) & 0x0f;
                   break;
       case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
                     pLcd->X = Value & 0x0f;
-                    pLcd->Y = (pLcd->Y & 0xf0) | (Value >> 4);
+                    pLcd->Y = (pLcd->Y & 0x30) | (Value >> 4);
                     break;
 
     }

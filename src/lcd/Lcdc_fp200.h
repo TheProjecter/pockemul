@@ -16,9 +16,11 @@ public:
     }
 
     void Write(quint8 side,quint8 val);
+    quint8 Read(quint8 side);
     quint8 mem_video[160][8];
     quint8 X,Y;
     bool updated;
+    quint8 Status;
 };
 
 #endif // LCDC_FP200_H
