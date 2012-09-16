@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "fp200.h"
+#include "Lcdc_fp200.h"
 #include "i8085.h"
 
 #include "Inter.h"
@@ -56,10 +57,9 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     Lcd_ratio_X	= 2;// * 1.18;
     Lcd_ratio_Y	= 2;// * 1.18;
 
-//    pLCDC		= new Clcdc_z1(this);
+    pLCDC		= new Clcdc_fp200(this);
     pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
-//    pHD66108    = new CHD66108(this);
     pKEYB		= new Ckeyb(this,"z1.map");
 
 //    lastKeyBufSize = 0;
@@ -106,6 +106,27 @@ UINT8 Cfp200::in(UINT8 Port)
 
 UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 {
+    Clcdc_fp200 *pLcd = (Clcdc_fp200*)pLCDC;
+
+    switch (Port)
+     {
+      case 0x01 : /* Write 8bits data to LCD left-half */
+                pLcd->mem_video[pLcd->Y][pLcd->X] = Value;
+                break;
+      case 0x02 : /* Write 8bits data to LCD right-half */
+                pLcd->mem_video[pLcd->Y+80][pLcd->X] = Value;
+                break;
+      case 0x08 : /* write 6 bits data : */
+                quint8 tmp = (Value & 0x02) << 4;
+                pLcd->Y = (pLcd->Y & 0x0f) | tmp;
+                  break;
+      case 0x09 : /* D0-D3 for X, D4-D7 for part of Y */
+                    pLcd.X = Value & 0x0f;
+                    pLcd->Y = (pLcd->Y & 0xf0) | (value >> 4);
+                    break;
+
+    }
+
 #if 0
  if ((Port!=0xf0) && (Value!=0x44)) {
      AddLog(LOG_SIO,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
