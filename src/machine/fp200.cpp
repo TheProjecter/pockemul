@@ -122,17 +122,21 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
      {
       case 0x01 : /* Write 8bits data to LCD left-half */
                 pLcd->Write(1,Value);
+                AddLog(LOG_DISPLAY,tr("OUT[01]=[%1]=%2").arg(Value,2,16,QChar('0')).arg(QChar(Value)));
                 break;
       case 0x02 : /* Write 8bits data to LCD right-half */
                 pLcd->Write(2,Value);
+                AddLog(LOG_DISPLAY,tr("OUT[02]=[%1]=%2").arg(Value,2,16,QChar('0')).arg(QChar(Value)));
                 break;
       case 0x08 : /* write 6 bits data : */
                 pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
                 pLcd->Status = (Value >>4) & 0x0f;
+                AddLog(LOG_DISPLAY,tr("OUT[08]=[%1]").arg(Value,2,16,QChar('0')));
                   break;
       case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
                     pLcd->X = Value & 0x0f;
                     pLcd->Y = (pLcd->Y & 0x30) | (Value >> 4);
+                    AddLog(LOG_DISPLAY,tr("OUT[09]=[%1]").arg(Value,2,16,QChar('0')));
                     break;
 
     }
