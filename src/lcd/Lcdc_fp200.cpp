@@ -19,7 +19,7 @@ Clcdc_fp200::Clcdc_fp200(CPObject *parent )	: Clcdc(parent){						//[constructor
 void Clcdc_fp200::Write(quint8 side, quint8 val) {
     quint8 offset = (side == 1 ? 0 : 80);
     mem_video[Y + offset][X] = val;
-    Y++;
+    //Y++;
     updated = true;
 }
 
@@ -27,7 +27,7 @@ quint8 Clcdc_fp200::Read(quint8 side)
 {
     quint8 offset = (side == 1 ? 0 : 80);
     quint8 val = mem_video[Y + offset][X];
-    Y++;
+    //Y++;
     return val;
 }
 

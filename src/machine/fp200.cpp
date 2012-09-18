@@ -95,15 +95,19 @@ UINT8 Cfp200::in(UINT8 Port)
      {
       case 0x01 : /* Read 8bits data to LCD left-half */
                 Value = pLcd->Read(1);
+                AddLog(LOG_CONSOLE,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
                 break;
       case 0x02 : /* Read 8bits data to LCD right-half */
                 Value = pLcd->Read(2);
-                break;
+                AddLog(LOG_CONSOLE,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+        break;
       case 0x08 : /* Read 6 bits data : */
                 Value = (pLcd->Status << 4) | ((pLcd->Y >> 4) & 0x03);
+                AddLog(LOG_CONSOLE,tr("IN [08]=[%1]\n").arg(Value,2,16,QChar('0')));
                   break;
       case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
                 Value = (pLcd->X & 0x0f) | ((pLcd->Y & 0x0f) <<4);
+                AddLog(LOG_CONSOLE,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
                 break;
 
     }
@@ -131,13 +135,18 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
       case 0x08 : /* write 6 bits data : */
                 pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
                 pLcd->Status = (Value >>4) & 0x0f;
-                AddLog(LOG_CONSOLE,tr("OUT[08]=[%1] Status=%2\n").arg(Value,2,16,QChar('0')).arg(pLcd->Status,2,16,QChar('0')));
+                AddLog(LOG_CONSOLE,tr("OUT[08]=[%1] Status=%2 Y=%3\n").
+                       arg(Value,2,16,QChar('0')).
+                       arg(pLcd->Status,2,16,QChar('0')).
+                       arg(pLcd->Y,2,16,QChar('0')));
 
                 break;
       case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
                     pLcd->X = Value & 0x0f;
                     pLcd->Y = (pLcd->Y & 0x30) | (Value >> 4);
-                    AddLog(LOG_CONSOLE,tr("OUT[09]=[%1]\n").arg(Value,2,16,QChar('0')));
+                    AddLog(LOG_CONSOLE,tr("OUT[09]=[%1] X=%2 Y=%3\n").arg(Value,2,16,QChar('0')).
+                           arg(pLcd->X,2,16,QChar('0')).
+                           arg(pLcd->Y,2,16,QChar('0')));
                     break;
 
     }
