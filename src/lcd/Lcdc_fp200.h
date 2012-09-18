@@ -6,6 +6,7 @@
 
 class Clcdc_fp200:public Clcdc{
 public:
+    bool init(void);
     void disp(void);				//display LCDC data to screen
     void disp_symb(void);
     const char*	GetClassName(){ return("Clcdc_fp200");}
@@ -22,6 +23,8 @@ public:
     bool updated;
     quint8 Status;
     void AffCar(UINT8 x, UINT8 y, UINT8 Car);
+
+    UINT8 charset[0x800];
 };
 
 #endif // LCDC_FP200_H

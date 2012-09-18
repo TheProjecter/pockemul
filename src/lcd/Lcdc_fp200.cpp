@@ -44,6 +44,17 @@ void Clcdc_fp200::disp_symb(void)
     Clcdc::disp_symb();
 }
 
+bool Clcdc_fp200::init()
+{
+    Clcdc::init();
+
+    QFile file;
+    file.setFileName(":/fp200/chr.bin");
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in.readRawData ((char *) &charset,0x800 );
+}
+
 void Clcdc_fp200::disp(void)
 {
 
@@ -350,7 +361,8 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 
     for (int P_y=0;P_y<8;P_y++)
     {
-        mem_video[x*8+P_y][y] = FP200_CarDef[Car][P_y] ;
+        mem_video[x*8+P_y][y] = charset[Car*8+P_y] ;
+        //mem_video[x*8+P_y][y] = FP200_CarDef[Car][P_y] ;
     }
 
 
