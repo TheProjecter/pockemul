@@ -361,7 +361,9 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 
     for (int P_y=0;P_y<8;P_y++)
     {
-        mem_video[x*8+P_y][y] = charset[Car*8+P_y] ;
+        UINT8 c = (Car>>4)| (Car<<4);quint8 b = charset[c*8+P_y] ;
+        b = (b * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+        mem_video[x*8+P_y][y] = b;
         //mem_video[x*8+P_y][y] = FP200_CarDef[Car][P_y] ;
     }
 
