@@ -1471,7 +1471,7 @@ void Ci8085::i8085_set_irq_line(int irqline, int state)
 
 void Ci8085::step()
 {
-    pPC->pTIMER->state += i8085_execute(0);
+    pPC->pTIMER->state += i8085_execute(100);
 }
 
 void Ci8085::Reset()
