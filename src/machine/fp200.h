@@ -37,7 +37,8 @@ public:
 
     Ci8085 *i85cpu;
 
-
+    quint8 ks;
+    BYTE getKey();
 };
 
 

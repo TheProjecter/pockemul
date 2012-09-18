@@ -357,7 +357,7 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
     /*-------------------------------------*/
 
 
-    if (Car>0) AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
+//    if (Car>0) AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
 
     for (int P_y=0;P_y<8;P_y++)
     {
