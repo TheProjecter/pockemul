@@ -133,8 +133,9 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
                 AddLog(LOG_CONSOLE,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
                 break;
       case 0x08 : /* write 6 bits data : */
-                pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
+
                 pLcd->Status = (Value >>4) & 0x0f;
+                if (pLcd->Status==0x0b) pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
                 AddLog(LOG_CONSOLE,tr("OUT[08]=[%1] Status=%2 Y=%3\n").
                        arg(Value,2,16,QChar('0')).
                        arg(pLcd->Status,2,16,QChar('0')).

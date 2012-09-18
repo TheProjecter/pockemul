@@ -21,6 +21,7 @@ public:
     quint8 X,Y;
     bool updated;
     quint8 Status;
+    void AffCar(UINT8 x, UINT8 y, UINT8 Car);
 };
 
 #endif // LCDC_FP200_H
