@@ -59,6 +59,7 @@ Ci8085::Ci8085(CPObject * parent): CCPU(parent)
 {
     fn_log="i8085.log";
 
+
 //    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 
 }
@@ -1101,19 +1102,19 @@ void Ci8085::Interrupt(void)
                 if( i85stat.regs.ISRV == IM_RST55 )
                 {
                         LOG(("Interrupt get RST5.5 vector\n"));
-                        i85stat.regs.IRQ1 = (i85stat.regs.irq_callback)(1);
+                        i85stat.regs.IRQ1 = I8085_RST55;//(i85stat.regs.irq_callback)(1);
                 }
 
                 if( i85stat.regs.ISRV == IM_RST65  )
                 {
                         LOG(("Interrupt get RST6.5 vector\n"));
-                        i85stat.regs.IRQ1 = (i85stat.regs.irq_callback)(2);
+                        i85stat.regs.IRQ1 = I8085_RST65;//(i85stat.regs.irq_callback)(2);
                 }
 
                 if( i85stat.regs.ISRV == IM_RST75 )
                 {
                         LOG(("Interrupt get RST7.5 vector\n"));
-                        i85stat.regs.IRQ1 = (i85stat.regs.irq_callback)(3);
+                        i85stat.regs.IRQ1 = I8085_RST75;//(i85stat.regs.irq_callback)(3);
                 }
         }
 
@@ -1140,6 +1141,7 @@ void Ci8085::Interrupt(void)
                                         else
                                                 i85stat.regs.PC.d = 0x3c;
                                         change_pc16(i85stat.regs.PC.d);
+                                        if (fp_log) fprintf(fp_log,"INTERRUPT\n");
                                         break;
                                 default:
                                         LOG(("i8085 take int $%02x\n", i85stat.regs.IRQ1));
@@ -1154,6 +1156,9 @@ int Ci8085::i8085_execute(int cycles)
         i8085_ICount = cycles;
         do
         {
+            /* here we go... */
+            execute_one(ROP());
+
                 /* interrupts enabled or TRAP pending ? */
                 if ( (i85stat.regs.IM & IM_IEN) || (i85stat.regs.IREQ & IM_TRAP) )
                 {
@@ -1165,8 +1170,7 @@ int Ci8085::i8085_execute(int cycles)
                         if (i85stat.regs.IRQ1) Interrupt();
                 }
 
-                /* here we go... */
-                execute_one(ROP());
+
 
         } while (i8085_ICount > 0);
 
@@ -1342,7 +1346,7 @@ void Ci8085::i8085_set_TRAP(int state)
 /****************************************************************************/
 void Ci8085::i8085_set_RST75(int state)
 {
-        LOG(("i8085: RST7.5 %d\n", state));
+//        LOG(("i8085: RST7.5 %d\n", state));
         if( state )
         {
 
@@ -1472,7 +1476,9 @@ void Ci8085::i8085_set_irq_line(int irqline, int state)
 
 void Ci8085::step()
 {
-    pPC->pTIMER->state += i8085_execute(100);
+
+    pPC->pTIMER->state += i8085_execute(logsw?0:100);
+
 }
 
 void Ci8085::Reset()

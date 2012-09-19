@@ -540,24 +540,17 @@ bool CpcXXXX::run(void)
             pCPU->halt = true;
         }
 
-        if (pCPU->logsw) {
-			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
-        }
-        pCPU->step();
-        Regs_Info(1);
         if ( (pCPU->logsw) && (pCPU->fp_log) )
         {
-
-#if 1
+            pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
-
-
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
             for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
-#endif
-//            fprintf(pCPU->fp_log,"%s\n%s\n",pCPU->Regs_String,pCPU->pDEBUG->Buffer);
+
+        pCPU->step();
+        Regs_Info(1);
+
             fprintf(pCPU->fp_log,"%-40s   %s  \n",pCPU->pDEBUG->Buffer,pCPU->Regs_String);
-#if 1
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
                 for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
                 fprintf(pCPU->fp_log,"{\n");
@@ -568,11 +561,11 @@ bool CpcXXXX::run(void)
             }
             if (pCPU->CallSubLevel <0) pCPU->CallSubLevel=0;
             pCPU->prevCallSubLevel = pCPU->CallSubLevel;
-#endif
+
             fflush(pCPU->fp_log);
         }
-
-//        pCPU->step();
+        else
+            pCPU->step();
 
 
 
