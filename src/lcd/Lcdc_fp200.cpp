@@ -53,6 +53,8 @@ bool Clcdc_fp200::init()
     file.open(QIODevice::ReadOnly);
     QDataStream in(&file);
     in.readRawData ((char *) &charset,0x800 );
+
+    return true;
 }
 
 void Clcdc_fp200::disp(void)
@@ -357,7 +359,7 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
     /*-------------------------------------*/
 
 
-//    if (Car>0) AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
+    if (Car>0) AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
 
     for (int P_y=0;P_y<8;P_y++)
     {

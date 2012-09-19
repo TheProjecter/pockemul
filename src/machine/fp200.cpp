@@ -221,7 +221,7 @@ bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 
 BYTE Cfp200::getKey()
 {
-
+return 0;
     UINT8 data=0;
 
     if ((pKEYB->LastKey) && ks )
