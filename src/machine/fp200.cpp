@@ -115,7 +115,11 @@ UINT8 Cfp200::in(UINT8 Port)
         if (Value!=0x00) {
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"RST7.5");
             i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
-            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));}
+            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
+        }
+        else
+            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+
         break;
     }
 
