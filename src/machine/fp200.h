@@ -39,6 +39,9 @@ public:
 
     quint8 ks;
     BYTE getKey();
+
+    int lastKeyBufSize;
+    bool newKey;
 };
 
 

@@ -46,7 +46,7 @@ K_SIN,
 K_HYP,
 K_RM,
 K_CTRL,K_BS,K_KBII,
-K_F1,K_F2,K_F3,K_F4,K_F5,K_F6,K_F7,
+K_F0,K_F1,K_F2,K_F3,K_F4,K_F5,K_F6,K_F7,
 K_A,K_B,K_C,K_D,K_E,K_F,K_G,K_H,K_I,K_J,K_K,K_L,K_M,K_N,K_O,K_P,K_Q,K_R,K_S,K_T,K_U,K_V,K_W,K_X,K_Y,K_Z,
 K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 };
@@ -155,6 +155,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_F7		0xfc
 #define K_F8		0xfd
 #define K_F9		0xfe
+#define K_F0		0xff
 
 #if 0
 #define K_A			0x41

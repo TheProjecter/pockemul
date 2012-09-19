@@ -15,7 +15,7 @@
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 6144000);
+    setfrequency( (int) 6144000/8);
     setcfgfname(QString("fp200"));
 
     SessionHeader	= "FP200PKM";
@@ -113,12 +113,13 @@ UINT8 Cfp200::in(UINT8 Port)
 
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"KS=%02x Val=%02X\n",ks,Value);
         if (Value!=0x00) {
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"RST7.5");
-            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
-            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
+//            if (pCPU->fp_log) fprintf(pCPU->fp_log,"RST7.5");
+//            pKEYB->LastKey=0;
+//            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+//            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
         }
-        else
-            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+//        else
+//            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
 
         break;
     }
@@ -208,6 +209,19 @@ bool Cfp200::run()
     if (ks==5) {  // CETL BASIC SWITCH
         i85cpu->i8085_set_SID(1);
     }
+
+//    // Check if keybuffer size change
+//    if (lastKeyBufSize != pKEYB->keyPressedList.size()) {
+//        newKey = true;
+//        lastKeyBufSize = pKEYB->keyPressedList.size();
+//    }
+
+    if (pKEYB->LastKey) {
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
+    }
+    else
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+
     CpcXXXX::run();
 }
 
@@ -234,8 +248,8 @@ bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 {
 }
 
-//#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+//#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 BYTE Cfp200::getKey()
 {
 
@@ -268,31 +282,40 @@ BYTE Cfp200::getKey()
             if (KEY('+'))			data|=0x80;
         }
         if (ks==4) {
+            if (KEY(K_CLR))			data|=0x04;
+            if (KEY(K_F0))			data|=0x08;
             if (KEY('1'))			data|=0x10;
             if (KEY('Q'))			data|=0x20;
             if (KEY('A'))			data|=0x40;
             if (KEY('Z'))			data|=0x80;
         }
         if (ks==5) {
+            if (KEY(K_RA))			data|=0x04;
+            if (KEY(K_F1))			data|=0x08;
             if (KEY('2'))			data|=0x10;
             if (KEY('W'))			data|=0x20;
             if (KEY('S'))			data|=0x40;
             if (KEY('X'))			data|=0x80;
         }
         if (ks==6) {
+            if (KEY(K_LA))			data|=0x04;
+            if (KEY(K_F2))			data|=0x08;
             if (KEY('3'))			data|=0x10;
             if (KEY('E'))			data|=0x20;
             if (KEY('D'))			data|=0x40;
             if (KEY('C'))			data|=0x80;
         }
         if (ks==7) {
+            if (KEY(K_DA))			data|=0x04;
+            if (KEY(K_F3))			data|=0x08;
             if (KEY('4'))			data|=0x10;
             if (KEY('R'))			data|=0x20;
             if (KEY('F'))			data|=0x40;
             if (KEY('V'))			data|=0x80;
         }
-        if (ks==8)
-        {
+        if (ks==8)  {
+            if (KEY(K_UA))			data|=0x04;
+            if (KEY(K_F4))			data|=0x08;
             if (KEY('5'))			data|=0x10;
             if (KEY('T'))           data|=0x20;
             if (KEY('G'))			data|=0x40;
@@ -300,6 +323,8 @@ BYTE Cfp200::getKey()
         }
         if (ks==9) {
             if (KEY(K_RET))			data|=0x01;
+            if (KEY(K_SML))			data|=0x04;
+            if (KEY('_'))			data|=0x08;
             if (KEY('6'))			data|=0x10;
             if (KEY('Y'))           data|=0x20;
             if (KEY('H'))			data|=0x40;
