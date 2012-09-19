@@ -110,7 +110,7 @@ UINT8 Cfp200::in(UINT8 Port)
 //                AddLog(LOG_CONSOLE,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
                 break;
     case 0x20: Value = getKey();
-        if (Value>0) AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
+        if (Value>0) { AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));}
         break;
     }
 
@@ -159,6 +159,7 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 
  return 0;
 }
+
 UINT8 Cfp200::in8(UINT16 Port)
 {
 }
@@ -192,13 +193,20 @@ bool Cfp200::init()
 
 bool Cfp200::run()
 {
+    if (ks==4) {  // K SWITCH
+        i85cpu->i8085_set_SID(1);
+    }
+    if (ks==5) {  // CETL BASIC SWITCH
+        i85cpu->i8085_set_SID(1);
+    }
     CpcXXXX::run();
 }
 
 void Cfp200::Reset()
 {
     CpcXXXX::Reset();
-    ((Ci8085 *) pCPU)->i8085_set_pc(0x0000);
+
+//    ((Ci8085 *) pCPU)->i8085_set_pc(0x0000);
 }
 
 void Cfp200::TurnON()
@@ -221,115 +229,119 @@ bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 
 BYTE Cfp200::getKey()
 {
-return 0;
+
     UINT8 data=0;
 
     if ((pKEYB->LastKey) && ks )
     {
-        if (ks==1) {
-            if (KEY(K_OF))			data|=0x01;
-            if (KEY('Q'))			data|=0x02;
-            if (KEY('W'))			data|=0x04;
-            if (KEY('E'))			data|=0x08;
-            if (KEY('R'))			data|=0x10;
-            if (KEY('T'))			data|=0x20;
-            if (KEY('Y'))			data|=0x40;
-            if (KEY('U'))			data|=0x80;
-        }
-        if (ks==2) {
-            if (KEY('A'))			data|=0x01;
-            if (KEY('S'))			data|=0x02;
-            if (KEY('D'))			data|=0x04;
-            if (KEY('F'))			data|=0x08;
-            if (KEY('G'))			data|=0x10;
-            if (KEY('H'))			data|=0x20;
-            if (KEY('J'))			data|=0x40;
-            if (KEY('K'))			data|=0x80;
-        }
-        if (ks==3) {
-            if (KEY('Z'))			data|=0x01;
-            if (KEY('X'))			data|=0x02;
-            if (KEY('C'))			data|=0x04;
-            if (KEY('V'))			data|=0x08;
-            if (KEY('B'))			data|=0x10;
-            if (KEY('N'))			data|=0x20;
-            if (KEY('M'))			data|=0x40;
-            if (KEY(','))			data|=0x80;
-        }
-        if (ks==4) {
-            if (KEY(K_BASIC))		data|=0x01;
-            if (KEY(K_TXT))			data|=0x02;
-            if (KEY(K_SML))			data|=0x04;
-            if (KEY(K_EXTMENU))		data|=0x08;
-            if (KEY(K_TAB))			data|=0x10;
-            if (KEY(' '))			data|=0x20;
-            if (KEY(K_DA))			data|=0x40;
-            if (KEY(K_UA))			data|=0x80;
-        }
-        if (ks==5) {
-            if (KEY(K_LA))			data|=0x01;
-            if (KEY(K_RA))			data|=0x02;
-            if (KEY(K_ANS))			data|=0x04;
-            if (KEY('0'))			data|=0x08;
-            if (KEY('.'))			data|=0x10;
-            if (KEY('='))			data|=0x20;
-            if (KEY('+'))			data|=0x40;
-            if (KEY(K_RET))			data|=0x80;
-        }
-        if (ks==6) {
-            if (KEY('L'))			data|=0x01;
-            if (KEY(';'))			data|=0x02;
-            if (KEY(K_CON))			data|=0x04;
-            if (KEY('1'))			data|=0x08;
-            if (KEY('2'))			data|=0x10;
-            if (KEY('3'))			data|=0x20;
-            if (KEY('-'))			data|=0x40;
-            if (KEY(K_MPLUS))		data|=0x80;
-        }
+//        if (ks==1) {
+//            if (KEY(K_OF))			data|=0x01;
+//            if (KEY('Q'))			data|=0x02;
+//            if (KEY('W'))			data|=0x04;
+//            if (KEY('E'))			data|=0x08;
+//            if (KEY('R'))			data|=0x10;
+//            if (KEY('T'))			data|=0x20;
+//            if (KEY('Y'))			data|=0x40;
+//            if (KEY('U'))			data|=0x80;
+//        }
+//        if (ks==2) {
+//            if (KEY('A'))			data|=0x01;
+//            if (KEY('S'))			data|=0x02;
+//            if (KEY('D'))			data|=0x04;
+//            if (KEY('F'))			data|=0x08;
+//            if (KEY('G'))			data|=0x10;
+//            if (KEY('H'))			data|=0x20;
+//            if (KEY('J'))			data|=0x40;
+//            if (KEY('K'))			data|=0x80;
+//        }
+//        if (ks==3) {
+//            if (KEY('Z'))			data|=0x01;
+//            if (KEY('X'))			data|=0x02;
+//            if (KEY('C'))			data|=0x04;
+//            if (KEY('V'))			data|=0x08;
+//            if (KEY('B'))			data|=0x10;
+//            if (KEY('N'))			data|=0x20;
+//            if (KEY('M'))			data|=0x40;
+//            if (KEY(','))			data|=0x80;
+//        }
+//        if (ks==4) {
+//            if (KEY(K_BASIC))		data|=0x01;
+//            if (KEY(K_TXT))			data|=0x02;
+//            if (KEY(K_SML))			data|=0x04;
+//            if (KEY(K_EXTMENU))		data|=0x08;
+//            if (KEY(K_TAB))			data|=0x10;
+//            if (KEY(' '))			data|=0x20;
+//            if (KEY(K_DA))			data|=0x40;
+//            if (KEY(K_UA))			data|=0x80;
+//        }
+//        if (ks==5) {
+//            if (KEY(K_LA))			data|=0x01;
+//            if (KEY(K_RA))			data|=0x02;
+//            if (KEY(K_ANS))			data|=0x04;
+//            if (KEY('0'))			data|=0x08;
+//            if (KEY('.'))			data|=0x10;
+//            if (KEY('='))			data|=0x20;
+//            if (KEY('+'))			data|=0x40;
+//            if (KEY(K_RET))			data|=0x80;
+//        }
+//        if (ks==6) {
+//            if (KEY('L'))			data|=0x01;
+//            if (KEY(';'))			data|=0x02;
+//            if (KEY(K_CON))			data|=0x04;
+//            if (KEY('1'))			data|=0x08;
+//            if (KEY('2'))			data|=0x10;
+//            if (KEY('3'))			data|=0x20;
+//            if (KEY('-'))			data|=0x40;
+//            if (KEY(K_MPLUS))		data|=0x80;
+//        }
         if (ks==7) {
-            if (KEY('I'))			data|=0x01;
-            if (KEY('O'))			data|=0x02;
-            if (KEY(K_INS))			data|=0x04;
-            if (KEY('4'))			data|=0x08;
-            if (KEY('5'))			data|=0x10;
-            if (KEY('6'))			data|=0x20;
-            if (KEY('*'))			data|=0x40;
-            if (KEY(K_RM))			data|=0x80;
-        }
-        if (ks==8) {
-            if (KEY('P'))			data|=0x01;
-            if (KEY(K_BS))			data|=0x02;
-            if (KEY(K_PI))			data|=0x04;
-            if (KEY('7'))			data|=0x08;
-            if (KEY('8'))			data|=0x10;
-            if (KEY('9'))			data|=0x20;
-            if (KEY('/'))			data|=0x40;
-            if (KEY(')'))			data|=0x80;
-        }
-        if (ks==9) {
-            if (KEY(K_NPR))     	data|=0x01;
-            if (KEY(K_DEG))			data|=0x02;
-            if (KEY(K_ROOT))		data|=0x04;
-            if (KEY(K_SQR))			data|=0x08;
-            if (KEY(K_POT))			data|=0x10;
-            if (KEY('('))			data|=0x20;
-            if (KEY(K_1X))			data|=0x40;
-            if (KEY(K_MDF))			data|=0x80;
-        }
+//            if (KEY('I'))			data|=0x01;
+//            if (KEY('O'))			data|=0x02;
+//            if (KEY(K_INS))			data|=0x04;
+//            if (KEY(''))			data|=0x08;
+            if (KEY('4'))			data|=0x10;
+            if (KEY('R'))			data|=0x20;
+            if (KEY('F'))			data|=0x40;
+            if (KEY('V'))			data|=0x80;
 
-        if (ks==10) {
-            if (KEY(K_SHT2))		data|=0x01;
-            if (KEY(K_SIN))			data|=0x02;
-            if (KEY(K_COS))			data|=0x04;
-            if (KEY(K_LN))			data|=0x08;
-            if (KEY(K_LOG))			data|=0x10;
-            if (KEY(K_TAN))			data|=0x20;
-            if (KEY(K_FSE))			data|=0x40;
-            if (KEY(K_CCE))			data|=0x80;
         }
+//        if (ks==8)
+        {
+//            if (KEY('P'))			data|=0x01;
+//            if (KEY(K_BS))			data|=0x02;
+//            if (KEY(K_PI))			data|=0x04;
+//            if (KEY('8'))			data|=0x08;
+//            if (KEY('4'))			data|=0x10;
+//            if (KEY('R'))
+//                data|=0x20;
+//            if (KEY('F'))			data|=0x40;
+//            if (KEY('V'))			data|=0x80;
+        }
+//        if (ks==9) {
+//            if (KEY(K_NPR))     	data|=0x01;
+//            if (KEY(K_DEG))			data|=0x02;
+//            if (KEY(K_ROOT))		data|=0x04;
+//            if (KEY(K_SQR))			data|=0x08;
+//            if (KEY(K_POT))			data|=0x10;
+//            if (KEY('('))			data|=0x20;
+//            if (KEY(K_1X))			data|=0x40;
+//            if (KEY(K_MDF))			data|=0x80;
+//        }
+
+//        if (ks==10) {
+//            if (KEY(K_SHT2))		data|=0x01;
+//            if (KEY(K_SIN))			data|=0x02;
+//            if (KEY(K_COS))			data|=0x04;
+//            if (KEY(K_LN))			data|=0x08;
+//            if (KEY(K_LOG))			data|=0x10;
+//            if (KEY(K_TAN))			data|=0x20;
+//            if (KEY(K_FSE))			data|=0x40;
+//            if (KEY(K_CCE))			data|=0x80;
+//        }
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
 
     }
-    return data;
+                data|=0x20;
+    return data;//^0xff;
 
 }
