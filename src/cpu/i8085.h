@@ -34,6 +34,8 @@ typedef union {
     quint32 d;
 }	DPAIR;
 
+
+
 typedef struct {
         int     cputype;        /* 0 8080, 1 8085A */
         DPAIR    PC,SP,AF,BC,DE,HL,XX;

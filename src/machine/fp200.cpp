@@ -15,7 +15,7 @@
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 6144000/8);
+    setfrequency( (int) 6144000/6);
     setcfgfname(QString("fp200"));
 
     SessionHeader	= "FP200PKM";
@@ -86,45 +86,48 @@ bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
     return true;
 }
 
+#define SOD (i85cpu->i85stat.regs.IM & 0x40)
 
 UINT8 Cfp200::in(UINT8 Port)
 {
     UINT8 Value=0;
     Clcdc_fp200 *pLcd = (Clcdc_fp200*)pLCDC;
 
-    switch (Port)
-     {
-      case 0x01 : /* Read 8bits data to LCD left-half */
-                Value = pLcd->Read(1);
-                AddLog(LOG_CONSOLE,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
-                break;
-      case 0x02 : /* Read 8bits data to LCD right-half */
-                Value = pLcd->Read(2);
-                AddLog(LOG_CONSOLE,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
-        break;
-      case 0x08 : /* Read 6 bits data : */
-                Value = (pLcd->Status << 4) | ((pLcd->Y >> 4) & 0x03);
-                AddLog(LOG_CONSOLE,tr("IN [08]=[%1]\n").arg(Value,2,16,QChar('0')));
-                  break;
-      case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
-                Value = (pLcd->X & 0x0f) | ((pLcd->Y & 0x0f) <<4);
-                AddLog(LOG_CONSOLE,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
-                break;
-    case 0x20: Value = getKey();
+    if (SOD)
+    {      // SOD = 1
+        switch (Port)
+        {
+        case 0x01 : /* Read 8bits data to LCD left-half */
+            Value = pLcd->Read(1);
+            AddLog(LOG_CONSOLE,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            break;
+        case 0x02 : /* Read 8bits data to LCD right-half */
+            Value = pLcd->Read(2);
+            AddLog(LOG_CONSOLE,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            break;
+        case 0x08 : /* Read 6 bits data : */
+            Value = (pLcd->Status << 4) | ((pLcd->Y >> 4) & 0x03);
+            AddLog(LOG_CONSOLE,tr("IN [08]=[%1]\n").arg(Value,2,16,QChar('0')));
+            break;
+        case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
+            Value = (pLcd->X & 0x0f) | ((pLcd->Y & 0x0f) <<4);
+            AddLog(LOG_CONSOLE,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
+            break;
+        case 0x20: Value = getKey();
 
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"KS=%02x Val=%02X\n",ks,Value);
-        if (Value!=0x00) {
-//            if (pCPU->fp_log) fprintf(pCPU->fp_log,"RST7.5");
-//            pKEYB->LastKey=0;
-//            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
-//            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"KS=%02x Val=%02X\n",ks,Value);
+            if (Value!=0x00) {
+                //            if (pCPU->fp_log) fprintf(pCPU->fp_log,"RST7.5");
+                //            pKEYB->LastKey=0;
+                //            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
+                //            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
+            }
+            else {
+                //            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+            }
+            break;
         }
-        else {
-//            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
-        }
-        break;
     }
-
 //     AddLog(LOG_SIO,tr("(%1) In %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 
      pCPU->imem[Port] = Value;
@@ -135,41 +138,43 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 {
     Clcdc_fp200 *pLcd = (Clcdc_fp200*)pLCDC;
 
-    switch (Port)
-     {
-      case 0x01 : /* Write 8bits data to LCD left-half */
-                pLcd->Write(1,Value);
-                AddLog(LOG_CONSOLE,tr("OUT[01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
-                break;
-      case 0x02 : /* Write 8bits data to LCD right-half */
-                pLcd->Write(2,Value);
-                AddLog(LOG_CONSOLE,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
-                break;
-      case 0x08 : /* write 6 bits data : */
+    if (SOD)
+    {      // SOD = 1
+        switch (Port)
+        {
+        case 0x01 : /* Write 8bits data to LCD left-half */
+            pLcd->Write(1,Value);
+            AddLog(LOG_CONSOLE,tr("OUT[01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            break;
+        case 0x02 : /* Write 8bits data to LCD right-half */
+            pLcd->Write(2,Value);
+            AddLog(LOG_CONSOLE,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            break;
+        case 0x08 : /* write 6 bits data : */
 
-                pLcd->Status = (Value >>4) & 0x0f;
-                if (pLcd->Status==0x0b) pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
-                AddLog(LOG_CONSOLE,tr("OUT[08]=[%1] Status=%2 Y=%3\n").
-                       arg(Value,2,16,QChar('0')).
-                       arg(pLcd->Status,2,16,QChar('0')).
-                       arg(pLcd->Y,2,16,QChar('0')));
+            pLcd->Status = (Value >>4) & 0x0f;
+            if (pLcd->Status==0x0b) pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
+            AddLog(LOG_CONSOLE,tr("OUT[08]=[%1] Status=%2 Y=%3\n").
+                   arg(Value,2,16,QChar('0')).
+                   arg(pLcd->Status,2,16,QChar('0')).
+                   arg(pLcd->Y,2,16,QChar('0')));
 
-                break;
-      case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
-                    pLcd->X = Value & 0x0f;
-                    pLcd->Y = (pLcd->Y & 0x30) | (Value >> 4);
-                    AddLog(LOG_CONSOLE,tr("OUT[09]=[%1] X=%2 Y=%3\n").arg(Value,2,16,QChar('0')).
-                           arg(pLcd->X,2,16,QChar('0')).
-                           arg(pLcd->Y,2,16,QChar('0')));
-                    break;
-//    case 0x20: i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
-//        break;
-     case 0x21: ks = Value & 0x0f;
-//        AddLog(LOG_CONSOLE,tr("KS=[%1]\n").arg(Value,2,16,QChar('0')));
-        break;
+            break;
+        case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
+            pLcd->X = Value & 0x0f;
+            pLcd->Y = (pLcd->Y & 0x30) | (Value >> 4);
+            AddLog(LOG_CONSOLE,tr("OUT[09]=[%1] X=%2 Y=%3\n").arg(Value,2,16,QChar('0')).
+                   arg(pLcd->X,2,16,QChar('0')).
+                   arg(pLcd->Y,2,16,QChar('0')));
+            break;
+            //    case 0x20: i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+            //        break;
+        case 0x21: ks = Value & 0x0f;
+            //        AddLog(LOG_CONSOLE,tr("KS=[%1]\n").arg(Value,2,16,QChar('0')));
+            break;
+        }
     }
-
- return 0;
+    return 0;
 }
 
 UINT8 Cfp200::in8(UINT16 Port)
@@ -200,6 +205,9 @@ bool Cfp200::init()
     CpcXXXX::init();
     off = 0;
     Reset();
+
+
+
     return true;
 }
 
@@ -372,3 +380,4 @@ void Cfp200::keyPressEvent(QKeyEvent *event)
 
 
 }
+
