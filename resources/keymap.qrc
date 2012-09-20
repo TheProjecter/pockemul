@@ -27,5 +27,6 @@
         <file>keymap/pb2000.map</file>
         <file>keymap/g850v.map</file>
         <file>keymap/z1.map</file>
+        <file>keymap/fp200.map</file>
     </qresource>
 </RCC>

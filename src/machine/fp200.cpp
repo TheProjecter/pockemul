@@ -60,7 +60,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pLCDC		= new Clcdc_fp200(this);
     pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
-    pKEYB		= new Ckeyb(this,"z1.map");
+    pKEYB		= new Ckeyb(this,"fp200.map");
 
 //    lastKeyBufSize = 0;
 //    newKey = false;
@@ -225,15 +225,18 @@ bool Cfp200::run()
 //        newKey = true;
 //        lastKeyBufSize = pKEYB->keyPressedList.size();
 //    }
-
+#if 1
     if (pKEYB->LastKey>0) {
-        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
+//        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
 //        AddLog(LOG_KEYBOARD,"KEY PRESSED");
-//        i85cpu->i8085_set_RST75(1);
+        i85cpu->i8085_set_RST75(1);
     }
     else {
-        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+//        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+//        i85cpu->i8085_set_RST75(0);
     }
+#endif
+
     CpcXXXX::run();
 }
 
@@ -260,14 +263,15 @@ bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 {
 }
 
-#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
-//#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+//#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+
+#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 BYTE Cfp200::getKey()
 {
 
     UINT8 data=0;
 
-    if ((pKEYB->LastKey))// && ks )
+    if ((pKEYB->LastKey>0))// && ks )
     {
         if (ks==0) {
             if (KEY('7'))			data|=0x10;
@@ -364,20 +368,16 @@ BYTE Cfp200::getKey()
 
 }
 
-void Cfp200::keyReleaseEvent(QKeyEvent *event)
-{
-    CPObject::keyReleaseEvent(event);
-    if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY RELEASED");
-}
+//void Cfp200::keyReleaseEvent(QKeyEvent *event)
+//{
+//    CPObject::keyReleaseEvent(event);
+//    if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY RELEASED");
+//}
 
 
-void Cfp200::keyPressEvent(QKeyEvent *event)
-{
-    CPObject::keyPressEvent(event);
-    if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY PRESSED\n");
-
-
-
-
-}
+//void Cfp200::keyPressEvent(QKeyEvent *event)
+//{
+//    CPObject::keyPressEvent(event);
+//    if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY PRESSED\n");
+//}
 

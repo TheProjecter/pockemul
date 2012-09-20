@@ -805,7 +805,10 @@ void CPObject::keyPressEvent (QKeyEvent * event )
         // Add th key to Key pressed buffer
         if (!pKEYB->keyPressedList.contains(pKEYB->LastKey)) pKEYB->keyPressedList.append(pKEYB->LastKey);
     }
-    else event->ignore();
+    else {
+        event->ignore();
+        QWidget::keyPressEvent(event);
+    }
 }
 
 void CPObject::focusInEvent ( QFocusEvent * event )
