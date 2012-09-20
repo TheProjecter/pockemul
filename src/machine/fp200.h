@@ -42,6 +42,8 @@ public:
 
     int lastKeyBufSize;
     bool newKey;
+    void keyReleaseEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 };
 
 

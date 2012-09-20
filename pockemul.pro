@@ -1,7 +1,6 @@
 QMAKE_CXXFLAGS += -fsigned-char
 
-CONFIG += debug_and_release \
-    qt \
+CONFIG += qt \
     resources \
     thread \
     warn_on
@@ -16,6 +15,24 @@ QT += core \
     xml \
     multimedia \
     script
+
+TARGET = Pockemul
+TEMPLATE = app
+TRANSLATIONS += pockemul_fr.ts
+UI_DIR += build/ui
+mac {
+    debug:OBJECTS_DIR += build/o/wd
+    release:OBJECTS_DIR += build/o/wr
+}
+unix {
+    debug:OBJECTS_DIR += build/o/wd
+    release:OBJECTS_DIR += build/o/wr
+}
+win32 {
+    Release:OBJECTS_DIR += build/o/wr
+    Debug:OBJECTS_DIR += build/o/wd
+}
+
 FORMS += ui/about.ui \
     ui/dialoganalog.ui \
     ui/dialogconnectorlink.ui \
@@ -506,22 +523,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i8085_dasm.cpp \
     src/lcd/Lcdc_fp200.cpp
 
-TARGET = Pockemul
-TEMPLATE = app
-TRANSLATIONS += pockemul_fr.ts
-UI_DIR += build/ui
-mac {
-    debug:OBJECTS_DIR += build/o/wd
-    release:OBJECTS_DIR += build/o/wr
-}
-unix {
-    debug:OBJECTS_DIR += build/o/wd
-    release:OBJECTS_DIR += build/o/wr
-}
-win32 { 
-    debug:OBJECTS_DIR += build/o/wd
-    release:OBJECTS_DIR += build/o/wr
-}
+
+
 
 OTHER_FILES += \
     resources/keymap/trspc2.map \

@@ -1156,8 +1156,7 @@ int Ci8085::i8085_execute(int cycles)
         i8085_ICount = cycles;
         do
         {
-            /* here we go... */
-            execute_one(ROP());
+
 
                 /* interrupts enabled or TRAP pending ? */
                 if ( (i85stat.regs.IM & IM_IEN) || (i85stat.regs.IREQ & IM_TRAP) )
@@ -1170,7 +1169,8 @@ int Ci8085::i8085_execute(int cycles)
                         if (i85stat.regs.IRQ1) Interrupt();
                 }
 
-
+                /* here we go... */
+                execute_one(ROP());
 
         } while (i8085_ICount > 0);
 
@@ -1477,7 +1477,7 @@ void Ci8085::i8085_set_irq_line(int irqline, int state)
 void Ci8085::step()
 {
 
-    pPC->pTIMER->state += i8085_execute(logsw?0:100);
+    pPC->pTIMER->state += i8085_execute(0);
 
 }
 
