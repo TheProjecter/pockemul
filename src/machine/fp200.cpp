@@ -62,8 +62,8 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"fp200.map");
 
-//    lastKeyBufSize = 0;
-//    newKey = false;
+    lastKeyBufSize = 0;
+    newKey = false;
 
 //    ioFreq = 0;
     i85cpu = (Ci8085*)pCPU;
@@ -86,7 +86,7 @@ bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
     return true;
 }
 
-#define SOD (i85cpu->i85stat.regs.IM & 0x40)
+#define SOD (i85cpu->i85stat.regs.sod_state)
 
 UINT8 Cfp200::in(UINT8 Port)
 {
@@ -114,21 +114,9 @@ UINT8 Cfp200::in(UINT8 Port)
             AddLog(LOG_CONSOLE,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
             break;
         case 0x20: Value = getKey();
-
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"KS=%02x Val=%02X\n",ks,Value);
-            if (Value!=0x00) {
-                //            if (pCPU->fp_log) fprintf(pCPU->fp_log,"RST7.5");
-                //            pKEYB->LastKey=0;
-                //            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
-                //            AddLog(LOG_CONSOLE,tr("Read Kbd=[%1]   KS=%2\n").arg(Value,2,16,QChar('0')).arg(ks,2,16,QChar('0')));
-            }
-            else {
-                //            i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
-            }
             break;
         }
     }
-//     AddLog(LOG_SIO,tr("(%1) In %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 
      pCPU->imem[Port] = Value;
      return (Value);
@@ -170,7 +158,6 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
             //    case 0x20: i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
             //        break;
         case 0x21: ks = Value & 0x0f;
-            //        AddLog(LOG_CONSOLE,tr("KS=[%1]\n").arg(Value,2,16,QChar('0')));
             break;
         }
     }
@@ -213,29 +200,56 @@ bool Cfp200::init()
 
 bool Cfp200::run()
 {
-    if (ks==4) {  // K SWITCH
+    getKey();
+#if 0
+    // Check if keybuffer size change
+    if ((pKEYB->LastKey>0)&&(lastKeyBufSize != pKEYB->LastKey)) {
+        newKey = true;
+        lastKeyBufSize = pKEYB->LastKey;
+    }
+
+    if (newKey) {
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
+        AddLog(LOG_CONSOLE,"INTERRUPT\n");
+        newKey = false;
+    }
+    else
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+#endif
+#if 1
+    if (pKEYB->LastKey>0) {
+//    if (getKey() >0) {
+//                // Send RST7.5
+//        matrixResult = getKey();
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
+    }
+    else
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+#endif
+
+#if 0
+    if (pKEYB->LastKey>0) {
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
+        AddLog(LOG_KEYBOARD,"KEY PRESSED");
+//        i85cpu->i8085_set_RST75(1);
+    }
+    else {
+        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
+//        i85cpu->i8085_set_RST75(0);
+    }
+#endif
+//    if (ks==4) {  // K SWITCH
 //        i85cpu->i8085_set_SID(1);
-    }
-    if (ks==5) {  // CETL BASIC SWITCH
-        i85cpu->i8085_set_SID(1);
-    }
+//    }
+//    if (ks==5) {  // CETL BASIC SWITCH
+//        i85cpu->i8085_set_SID(1);
+//    }
 
 //    // Check if keybuffer size change
 //    if (lastKeyBufSize != pKEYB->keyPressedList.size()) {
 //        newKey = true;
 //        lastKeyBufSize = pKEYB->keyPressedList.size();
 //    }
-#if 1
-    if (pKEYB->LastKey>0) {
-//        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,1);
-//        AddLog(LOG_KEYBOARD,"KEY PRESSED");
-        i85cpu->i8085_set_RST75(1);
-    }
-    else {
-//        i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
-//        i85cpu->i8085_set_RST75(0);
-    }
-#endif
 
     CpcXXXX::run();
 }
@@ -263,57 +277,63 @@ bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 {
 }
 
-//#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
 
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+//#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 BYTE Cfp200::getKey()
 {
 
     UINT8 data=0;
+    UINT16 strobe = (0x01 << (ks));
+    if (ks == 0x0B) strobe = 0xffff;
 
-    if ((pKEYB->LastKey>0))// && ks )
+//    if ((pKEYB->LastKey>0))// && ks )
     {
-        if (ks==0) {
+        if (strobe & 0x01) {
             if (KEY('7'))			data|=0x10;
             if (KEY('U'))			data|=0x20;
             if (KEY('J'))			data|=0x40;
             if (KEY('M'))			data|=0x80;
         }
-        if (ks==1) {
+        if (strobe & 0x02) {
             if (KEY('8'))			data|=0x10;
             if (KEY('I'))			data|=0x20;
             if (KEY('K'))			data|=0x40;
             if (KEY('?'))			data|=0x80;
         }
-        if (ks==2) {
+        if (strobe & 0x04) {
             if (KEY('9'))			data|=0x10;
             if (KEY('O'))			data|=0x20;
             if (KEY('L'))			data|=0x40;
             if (KEY('>'))			data|=0x80;
         }
-        if (ks==3) {
+        if (strobe & 0x08) {
             if (KEY('0'))			data|=0x10;
             if (KEY('P'))			data|=0x20;
             if (KEY('<'))			data|=0x40;
             if (KEY('+'))			data|=0x80;
         }
-        if (ks==4) {
+        if (strobe & 0x10) {
             if (KEY(K_CLR))			data|=0x04;
             if (KEY(K_F0))			data|=0x08;
             if (KEY('1'))			data|=0x10;
             if (KEY('Q'))			data|=0x20;
             if (KEY('A'))			data|=0x40;
             if (KEY('Z'))			data|=0x80;
+            // K SWITCH
+                    i85cpu->i8085_set_SID(1);
         }
-        if (ks==5) {
+        if (strobe & 0x20) {
             if (KEY(K_RA))			data|=0x04;
             if (KEY(K_F1))			data|=0x08;
             if (KEY('2'))			data|=0x10;
             if (KEY('W'))			data|=0x20;
             if (KEY('S'))			data|=0x40;
             if (KEY('X'))			data|=0x80;
+            // CETL BASIC SWITCH
+                    i85cpu->i8085_set_SID(1);
         }
-        if (ks==6) {
+        if (strobe & 0x40) {
             if (KEY(K_LA))			data|=0x04;
             if (KEY(K_F2))			data|=0x08;
             if (KEY('3'))			data|=0x10;
@@ -321,7 +341,7 @@ BYTE Cfp200::getKey()
             if (KEY('D'))			data|=0x40;
             if (KEY('C'))			data|=0x80;
         }
-        if (ks==7) {
+        if (strobe & 0x80) {
             if (KEY(K_DA))			data|=0x04;
             if (KEY(K_F3))			data|=0x08;
             if (KEY('4'))			data|=0x10;
@@ -329,7 +349,7 @@ BYTE Cfp200::getKey()
             if (KEY('F'))			data|=0x40;
             if (KEY('V'))			data|=0x80;
         }
-        if (ks==8)  {
+        if (strobe & 0x100)  {
             if (KEY(K_UA))			data|=0x04;
             if (KEY(K_F4))			data|=0x08;
             if (KEY('5'))			data|=0x10;
@@ -337,7 +357,7 @@ BYTE Cfp200::getKey()
             if (KEY('G'))			data|=0x40;
             if (KEY('B'))			data|=0x80;
         }
-        if (ks==9) {
+        if (strobe & 0x200) {
             if (KEY(K_RET))			data|=0x01;
             if (KEY(K_SML))			data|=0x04;
             if (KEY('_'))			data|=0x08;
@@ -347,37 +367,33 @@ BYTE Cfp200::getKey()
             if (KEY('N'))			data|=0x80;
         }
 
-//        if (ks==10) {
-//            if (KEY(K_SHT2))		data|=0x01;
-//            if (KEY(K_SIN))			data|=0x02;
-//            if (KEY(K_COS))			data|=0x04;
-//            if (KEY(K_LN))			data|=0x08;
-//            if (KEY(K_LOG))			data|=0x10;
-//            if (KEY(K_TAN))			data|=0x20;
-//            if (KEY(K_FSE))			data|=0x40;
-//            if (KEY(K_CCE))			data|=0x80;
-//        }
+
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
 
     }
 //                data|=0x20;
     if (data>0) {
+//        i85cpu->i8085_set_RST75(1);
         AddLog(LOG_KEYBOARD,tr("KEY PRESSED=%1").arg(data,2,16,QChar('0')));
     }
     return data;//^0xff;
 
 }
 
-//void Cfp200::keyReleaseEvent(QKeyEvent *event)
-//{
-//    CPObject::keyReleaseEvent(event);
-//    if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY RELEASED");
-//}
+void Cfp200::keyReleaseEvent(QKeyEvent *event)
+{
+if (event->isAutoRepeat()) return;
+
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nKEY RELEASED= %c\n",event->key());
+    CpcXXXX::keyReleaseEvent(event);
+}
 
 
-//void Cfp200::keyPressEvent(QKeyEvent *event)
-//{
-//    CPObject::keyPressEvent(event);
-//    if (pCPU->fp_log) fprintf(pCPU->fp_log,"KEY PRESSED\n");
-//}
+void Cfp200::keyPressEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat()) return;
+
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nKEY PRESSED= %c\n",event->key());
+    CpcXXXX::keyPressEvent(event);
+}
 

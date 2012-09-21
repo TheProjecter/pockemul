@@ -38,7 +38,7 @@ typedef union {
 
 typedef struct {
         int     cputype;        /* 0 8080, 1 8085A */
-        DPAIR    PC,SP,AF,BC,DE,HL,XX;
+        DPAIR    PC,SP,AF,BC,DE,HL,WZ;
         quint8   HALT;
         quint8   IM;             /* interrupt mask */
         quint8   IREQ;           /* requested interrupts */
@@ -46,9 +46,17 @@ typedef struct {
         quint32  INTR;           /* vector for INTR */
         quint32  IRQ2;           /* scheduled interrupt address */
         quint32  IRQ1;           /* executed interrupt address */
-        qint8    nmi_state;
-        qint8    irq_state[4];
-        qint8    filler; /* align on dword boundary */
+
+        quint8				after_ei;		/* post-EI processing; starts at 2, check for ints at 0 */
+        quint8				nmi_state;		/* raw NMI line state */
+        quint8				irq_state[4];	/* raw IRQ line states */
+        quint8				trap_pending;	/* TRAP interrupt latched? */
+        quint8				trap_im_copy;	/* copy of IM register when TRAP was taken */
+        quint8				sod_state;		/* state of the SOD line */
+        quint8				sid_state;		/* state of the SOD line */
+
+        quint8  STATUS;
+        quint8				ietemp;			/* import/export temp space */
         int     (*irq_callback)(int);
         void    (*sod_callback)(int state);
 }       I85regs;
@@ -142,7 +150,7 @@ public:
     void execute_one(int opcode);
     void Interrupt();
     int i8085_execute(int cycles);
-    void init_tables();
+    void init_tables(int type);
 
     void i8085_set_pc(unsigned val);
     unsigned i8085_get_sp();
@@ -150,7 +158,7 @@ public:
     unsigned i8085_get_reg(int regnum);
     void i8085_set_reg(int regnum, unsigned val);
     void i8085_set_SID(int state);
-    void i8085_set_TRAP(int state);
+
     void i8085_set_RST75(int state);
     void i8085_set_RST65(int state);
     void i8085_set_RST55(int state);
@@ -165,11 +173,21 @@ public:
     quint8 cpu_readport(quint8 address);
     void i8085_set_nmi_line(int state);
     void i8085_set_irq_line(int irqline, int state);
+    void set_inte(int state);
+    void check_for_interrupts();
+    void break_halt_for_interrupt();
+    void set_status(UINT8 status);
+    void set_sod(int state);
+    UINT8 get_rim_value();
 private:
     int i8085_ICount;
 
     quint8 ZS[256];
     quint8 ZSP[256];
+
+    UINT8 lut_cycles[256];
+    const static UINT8 lut_cycles_8080[256];
+    const static UINT8 lut_cycles_8085[256];
 };
 
 

@@ -734,6 +734,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 
 void CPObject::keyReleaseEvent(QKeyEvent * event )
 {
+    if (event->isAutoRepeat()) return;
 
 	if (!pKEYB) return;	// if no Keyboard then return;
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
@@ -741,7 +742,7 @@ void CPObject::keyReleaseEvent(QKeyEvent * event )
 
     pKEYB->keyPressedList.removeAll(mapKey(event));
 	pKEYB->LastKey = 0;
-    event->accept();
+
 }
 
 int CPObject::mapKey(QKeyEvent * event) {
@@ -794,6 +795,7 @@ int CPObject::mapKey(QKeyEvent * event) {
 void CPObject::keyPressEvent (QKeyEvent * event )
 {
 
+    if (event->isAutoRepeat()) return;
 	if (!pKEYB) return;	// if no Keyboard then return;
 
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);

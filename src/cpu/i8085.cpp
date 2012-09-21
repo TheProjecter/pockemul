@@ -48,18 +48,23 @@
 
 #include "i8085.h"
 #include "i8085cpu.h"
-#include "i8085daa.h"
 #include "pcxxxx.h"
 #include "Inter.h"
 #include "Debug.h"
 
+#define CPUTYPE_8080	0
+#define CPUTYPE_8085	1
+
 #define LOG(x)
+#define IS_8080(c)			(i85stat.regs.cputype == CPUTYPE_8080)
+#define IS_8085(c)			(i85stat.regs.cputype == CPUTYPE_8085)
 
 Ci8085::Ci8085(CPObject * parent): CCPU(parent)
 {
     fn_log="i8085.log";
 
-
+    i85stat.regs.irq_callback = 0;
+    i85stat.regs.sod_callback = 0;
 //    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 
 }
@@ -70,7 +75,7 @@ Ci8085::~Ci8085()
 
 bool Ci8085::init()
 {
-    init_tables();
+    init_tables(1);
     Check_Log();
     pDEBUG = new Cdebug_i8085(pPC);
     Reset();
@@ -87,6 +92,21 @@ void Ci8085::change_pc16(quint16 val) {
 
 }
 
+INLINE UINT8 Ci8085::get_rim_value(void)
+{
+    UINT8 result = i85stat.regs.IM;
+    int sid = i85stat.regs.sid_state;
+
+    /* copy live RST5.5 and RST6.5 states */
+    result &= ~(IM_I65 | IM_I55);
+    if (i85stat.regs.irq_state[I8085_RST65_LINE]) result |= IM_I65;
+    if (i85stat.regs.irq_state[I8085_RST55_LINE]) result |= IM_I55;
+
+    /* fetch the SID bit if we have a callback */
+    result = (result & 0x7f) | (sid ? 0x80 : 0);
+
+    return result;
+}
 
 inline quint8 Ci8085::read8( quint16 address)
 {
@@ -160,1017 +180,588 @@ void Ci8085::WM(quint32 a, quint8 v)
 
 INLINE void Ci8085::execute_one(int opcode)
 {
-        switch (opcode)
-        {
-                case 0x00: i8085_ICount -= 4;   /* NOP  */
-                        /* no op */
-                        break;
-                case 0x01: i8085_ICount -= 10;  /* LXI  B,nnnn */
-                        i85stat.regs.BC.w.l = ARG16();
-                        break;
-                case 0x02: i8085_ICount -= 7;   /* STAX B */
-                        WM(i85stat.regs.BC.d, i85stat.regs.AF.b.h);
-                        break;
-                case 0x03: i8085_ICount -= 5;   /* INX  B */
-                        i85stat.regs.BC.w.l++;
-                        break;
-                case 0x04: i8085_ICount -= 5;   /* INR  B */
-                        M_INR(i85stat.regs.BC.b.h);
-                        break;
-                case 0x05: i8085_ICount -= 5;   /* DCR  B */
-                        M_DCR(i85stat.regs.BC.b.h);
-                        break;
-                case 0x06: i8085_ICount -= 7;   /* MVI  B,nn */
-                        M_MVI(i85stat.regs.BC.b.h);
-                        break;
-                case 0x07: i8085_ICount -= 4;   /* RLC  */
-                        M_RLC;
-                        break;
+    i8085_ICount -= lut_cycles[opcode];
+    switch (opcode)
+    {
+        case 0x00:														break;	/* NOP  */
+        case 0x01:	i85stat.regs.BC.w.l = ARG16();					break;	/* LXI  B,nnnn */
+        case 0x02:	WM( i85stat.regs.BC.d, i85stat.regs.AF.b.h);		break;	/* STAX B */
+        case 0x03:	i85stat.regs.BC.w.l++;											/* INX  B */
+                    if (IS_8085()) { if (i85stat.regs.BC.w.l == 0x0000) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x04:	M_INR(i85stat.regs.BC.b.h);							break;	/* INR  B */
+        case 0x05:	M_DCR(i85stat.regs.BC.b.h);							break;	/* DCR  B */
+        case 0x06:	M_MVI(i85stat.regs.BC.b.h);							break;	/* MVI  B,nn */
+        case 0x07:	M_RLC;												break;	/* RLC  */
 
-                case 0x08: i8085_ICount -= 4;   /* ???? */
-                        illegal();
-                        break;
-                case 0x09: i8085_ICount -= 10;  /* DAD  B */
-                        M_DAD(BC);
-                        break;
-                case 0x0a: i8085_ICount -= 7;   /* LDAX B */
-                        i85stat.regs.AF.b.h = RM(i85stat.regs.BC.d);
-                        break;
-                case 0x0b: i8085_ICount -= 5;   /* DCX  B */
-                        i85stat.regs.BC.w.l--;
-                        break;
-                case 0x0c: i8085_ICount -= 5;   /* INR  C */
-                        M_INR(i85stat.regs.BC.b.l);
-                        break;
-                case 0x0d: i8085_ICount -= 5;   /* DCR  C */
-                        M_DCR(i85stat.regs.BC.b.l);
-                        break;
-                case 0x0e: i8085_ICount -= 7;   /* MVI  C,nn */
-                        M_MVI(i85stat.regs.BC.b.l);
-                        break;
-                case 0x0f: i8085_ICount -= 4;   /* RRC  */
-                        M_RRC;
-                        break;
+        case 0x08:	if (IS_8085()) { M_DSUB(); }				/* DSUB */
+                    /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x09:	M_DAD(BC);											break;	/* DAD  B */
+        case 0x0a:	i85stat.regs.AF.b.h = RM( i85stat.regs.BC.d);	break;	/* LDAX B */
+        case 0x0b:	i85stat.regs.BC.w.l--;											/* DCX  B */
+                    if (IS_8085()) { if (i85stat.regs.BC.w.l == 0xffff) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x0c:	M_INR(i85stat.regs.BC.b.l);							break;	/* INR  C */
+        case 0x0d:	M_DCR(i85stat.regs.BC.b.l);							break;	/* DCR  C */
+        case 0x0e:	M_MVI(i85stat.regs.BC.b.l);							break;	/* MVI  C,nn */
+        case 0x0f:	M_RRC;												break;	/* RRC  */
 
-                case 0x10: i8085_ICount -= 8;   /* ????  */
-                        illegal();
-                        break;
-                case 0x11: i8085_ICount -= 10;  /* LXI  D,nnnn */
-                        i85stat.regs.DE.w.l = ARG16();
-                        break;
-                case 0x12: i8085_ICount -= 7;   /* STAX D */
-                        WM(i85stat.regs.DE.d, i85stat.regs.AF.b.h);
-                        break;
-                case 0x13: i8085_ICount -= 5;   /* INX  D */
-                        i85stat.regs.DE.w.l++;
-                        break;
-                case 0x14: i8085_ICount -= 5;   /* INR  D */
-                        M_INR(i85stat.regs.DE.b.h);
-                        break;
-                case 0x15: i8085_ICount -= 5;   /* DCR  D */
-                        M_DCR(i85stat.regs.DE.b.h);
-                        break;
-                case 0x16: i8085_ICount -= 7;   /* MVI  D,nn */
-                        M_MVI(i85stat.regs.DE.b.h);
-                        break;
-                case 0x17: i8085_ICount -= 4;   /* RAL  */
-                        M_RAL;
-                        break;
+        case 0x10:	if (IS_8085()) {									/* ASRH */
+                        i85stat.regs.AF.b.l = (i85stat.regs.AF.b.l & ~CF) | (i85stat.regs.HL.b.l & CF);
+                        i85stat.regs.HL.w.l = (i85stat.regs.HL.w.l >> 1);
+                    } /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x11:	i85stat.regs.DE.w.l = ARG16();					break;	/* LXI  D,nnnn */
+        case 0x12:	WM( i85stat.regs.DE.d, i85stat.regs.AF.b.h);		break;	/* STAX D */
+        case 0x13:	i85stat.regs.DE.w.l++;											/* INX  D */
+                    if (IS_8085()) { if (i85stat.regs.DE.w.l == 0x0000) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x14:	M_INR(i85stat.regs.DE.b.h);							break;	/* INR  D */
+        case 0x15:	M_DCR(i85stat.regs.DE.b.h);							break;	/* DCR  D */
+        case 0x16:	M_MVI(i85stat.regs.DE.b.h);							break;	/* MVI  D,nn */
+        case 0x17:	M_RAL;												break;	/* RAL  */
 
-                case 0x18: i8085_ICount -= 7;   /* ????? */
-                        illegal();
-                        break;
-                case 0x19: i8085_ICount -= 10;  /* DAD  D */
-                        M_DAD(DE);
-                        break;
-                case 0x1a: i8085_ICount -= 7;   /* LDAX D */
-                        i85stat.regs.AF.b.h = RM(i85stat.regs.DE.d);
-                        break;
-                case 0x1b: i8085_ICount -= 5;   /* DCX  D */
-                        i85stat.regs.DE.w.l--;
-                        break;
-                case 0x1c: i8085_ICount -= 5;   /* INR  E */
-                        M_INR(i85stat.regs.DE.b.l);
-                        break;
-                case 0x1d: i8085_ICount -= 5;   /* DCR  E */
-                        M_DCR(i85stat.regs.DE.b.l);
-                        break;
-                case 0x1e: i8085_ICount -= 7;   /* MVI  E,nn */
-                        M_MVI(i85stat.regs.DE.b.l);
-                        break;
-                case 0x1f: i8085_ICount -= 4;   /* RAR  */
-                        M_RAR;
-                        break;
+        case 0x18:	if (IS_8085()) {									/* RLDE */
+                        i85stat.regs.AF.b.l = (i85stat.regs.AF.b.l & ~(CF | VF)) | (i85stat.regs.DE.b.h >> 7);
+                        i85stat.regs.DE.w.l = (i85stat.regs.DE.w.l << 1) | (i85stat.regs.DE.w.l >> 15);
+                        if (0 != (((i85stat.regs.DE.w.l >> 15) ^ i85stat.regs.AF.b.l) & CF)) i85stat.regs.AF.b.l |= VF;
+                    } /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x19:	M_DAD(DE);											break;	/* DAD  D */
+        case 0x1a:	i85stat.regs.AF.b.h = RM( i85stat.regs.DE.d);	break;	/* LDAX D */
+        case 0x1b:	i85stat.regs.DE.w.l--;											/* DCX  D */
+                    if (IS_8085()) { if (i85stat.regs.DE.w.l == 0xffff) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x1c:	M_INR(i85stat.regs.DE.b.l);							break;	/* INR  E */
+        case 0x1d:	M_DCR(i85stat.regs.DE.b.l);							break;	/* DCR  E */
+        case 0x1e:	M_MVI(i85stat.regs.DE.b.l);							break;	/* MVI  E,nn */
+        case 0x1f:	M_RAR;												break;	/* RAR  */
 
-                case 0x20:
-                        if( i85stat.regs.cputype )
-                        {
-                                i8085_ICount -= 7;              /* RIM  */
-                                i85stat.regs.AF.b.h = i85stat.regs.IM;
+        case 0x20:	if (IS_8085()) {									/* RIM  */
+                        i85stat.regs.AF.b.h = get_rim_value();
+
+                        /* if we have remembered state from taking a TRAP, fix up the IE flag here */
+                        if (i85stat.regs.trap_im_copy & 0x80) i85stat.regs.AF.b.h = (i85stat.regs.AF.b.h & ~IM_IE) | (i85stat.regs.trap_im_copy & IM_IE);
+                        i85stat.regs.trap_im_copy = 0;
+                    } /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x21:	i85stat.regs.HL.w.l = ARG16();					break;	/* LXI  H,nnnn */
+        case 0x22:	i85stat.regs.WZ.w.l = ARG16();							/* SHLD nnnn */
+                    WM( i85stat.regs.WZ.d, i85stat.regs.HL.b.l); i85stat.regs.WZ.w.l++;
+                    WM( i85stat.regs.WZ.d, i85stat.regs.HL.b.h);
+                    break;
+        case 0x23:	i85stat.regs.HL.w.l++;											/* INX  H */
+                    if (IS_8085()) { if (i85stat.regs.HL.w.l == 0x0000) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x24:	M_INR(i85stat.regs.HL.b.h);							break;	/* INR  H */
+        case 0x25:	M_DCR(i85stat.regs.HL.b.h);							break;	/* DCR  H */
+        case 0x26:	M_MVI(i85stat.regs.HL.b.h);							break;	/* MVI  H,nn */
+        case 0x27:	i85stat.regs.WZ.b.h = i85stat.regs.AF.b.h;						/* DAA  */
+                    if (i85stat.regs.AF.b.l&VF) {
+                        if ((i85stat.regs.AF.b.l&HF) | ((i85stat.regs.AF.b.h&0xf)>9)) i85stat.regs.WZ.b.h-=6;
+                        if ((i85stat.regs.AF.b.l&CF) | (i85stat.regs.AF.b.h>0x99)) i85stat.regs.WZ.b.h-=0x60;
+                    }
+                    else {
+                        if ((i85stat.regs.AF.b.l&HF) | ((i85stat.regs.AF.b.h&0xf)>9)) i85stat.regs.WZ.b.h+=6;
+                        if ((i85stat.regs.AF.b.l&CF) | (i85stat.regs.AF.b.h>0x99)) i85stat.regs.WZ.b.h+=0x60;
+                    }
+
+                    i85stat.regs.AF.b.l=(i85stat.regs.AF.b.l&3) | (i85stat.regs.AF.b.h&0x28) | (i85stat.regs.AF.b.h>0x99) | ((i85stat.regs.AF.b.h^i85stat.regs.WZ.b.h)&0x10) | ZSP[i85stat.regs.WZ.b.h];
+                    i85stat.regs.AF.b.h=i85stat.regs.WZ.b.h;
+
+                    if (IS_8080()) i85stat.regs.AF.b.l &= 0xd5; // Ignore not used flags
+                    break;
+
+        case 0x28:	if (IS_8085()) {									/* LDEH nn */
+                        i85stat.regs.WZ.d = ARG();
+                        i85stat.regs.DE.d = (i85stat.regs.HL.d + i85stat.regs.WZ.d) & 0xffff;
+                    } /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x29:	M_DAD(HL);											break;	/* DAD  H */
+        case 0x2a:	i85stat.regs.WZ.d = ARG16();							/* LHLD nnnn */
+                    i85stat.regs.HL.b.l = RM( i85stat.regs.WZ.d); i85stat.regs.WZ.w.l++;
+                    i85stat.regs.HL.b.h = RM( i85stat.regs.WZ.d);
+                    break;
+        case 0x2b:	i85stat.regs.HL.w.l--;											/* DCX  H */
+                    if (IS_8085()) { if (i85stat.regs.HL.w.l == 0xffff) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x2c:	M_INR(i85stat.regs.HL.b.l);							break;	/* INR  L */
+        case 0x2d:	M_DCR(i85stat.regs.HL.b.l);							break;	/* DCR  L */
+        case 0x2e:	M_MVI(i85stat.regs.HL.b.l);							break;	/* MVI  L,nn */
+        case 0x2f:	i85stat.regs.AF.b.h ^= 0xff;									/* CMA  */
+                    if (IS_8085()) i85stat.regs.AF.b.l |= HF | VF;
+                    break;
+
+        case 0x30:	if (IS_8085()) {									/* SIM  */
+                        /* if bit 3 is set, bits 0-2 become the new masks */
+                        if (i85stat.regs.AF.b.h & 0x08) {
+                            i85stat.regs.IM &= ~(IM_M55 | IM_M65 | IM_M75 | IM_I55 | IM_I65);
+                            i85stat.regs.IM |= i85stat.regs.AF.b.h & (IM_M55 | IM_M65 | IM_M75);
+
+                            /* update live state based on the new masks */
+                            if ((i85stat.regs.IM & IM_M55) == 0 && i85stat.regs.irq_state[I8085_RST55_LINE]) i85stat.regs.IM |= IM_I55;
+                            if ((i85stat.regs.IM & IM_M65) == 0 && i85stat.regs.irq_state[I8085_RST65_LINE]) i85stat.regs.IM |= IM_I65;
                         }
-                        else
-                        {
-                                i8085_ICount -= 7;              /* ???  */
-                        }
-                        break;
-                case 0x21: i8085_ICount -= 10;  /* LXI  H,nnnn */
-                        i85stat.regs.HL.w.l = ARG16();
-                        break;
-                case 0x22: i8085_ICount -= 16;  /* SHLD nnnn */
-                        i85stat.regs.XX.w.l = ARG16();
-                        WM(i85stat.regs.XX.d, i85stat.regs.HL.b.l);
-                        i85stat.regs.XX.w.l++;
-                        WM(i85stat.regs.XX.d, i85stat.regs.HL.b.h);
-                        break;
-                case 0x23: i8085_ICount -= 5;   /* INX  H */
-                        i85stat.regs.HL.w.l++;
-                        break;
-                case 0x24: i8085_ICount -= 5;   /* INR  H */
-                        M_INR(i85stat.regs.HL.b.h);
-                        break;
-                case 0x25: i8085_ICount -= 5;   /* DCR  H */
-                        M_DCR(i85stat.regs.HL.b.h);
-                        break;
-                case 0x26: i8085_ICount -= 7;   /* MVI  H,nn */
-                        M_MVI(i85stat.regs.HL.b.h);
-                        break;
-                case 0x27: i8085_ICount -= 4;   /* DAA  */
-                        i85stat.regs.XX.d = i85stat.regs.AF.b.h;
-                        if (i85stat.regs.AF.b.l & CF) i85stat.regs.XX.d |= 0x100;
-                        if (i85stat.regs.AF.b.l & HF) i85stat.regs.XX.d |= 0x200;
-                        if (i85stat.regs.AF.b.l & NF) i85stat.regs.XX.d |= 0x400;
-                        i85stat.regs.AF.w.l = DAA[i85stat.regs.XX.d];
-                        break;
 
-                case 0x28: i8085_ICount -= 7;   /* ???? */
-                        illegal();
-                        break;
-                case 0x29: i8085_ICount -= 10;  /* DAD  H */
-                        M_DAD(HL);
-                        break;
-                case 0x2a: i8085_ICount -= 16;  /* LHLD nnnn */
-                        i85stat.regs.XX.d = ARG16();
-                        i85stat.regs.HL.b.l = RM(i85stat.regs.XX.d);
-                        i85stat.regs.XX.w.l++;
-                        i85stat.regs.HL.b.h = RM(i85stat.regs.XX.d);
-                        break;
-                case 0x2b: i8085_ICount -= 5;   /* DCX  H */
-                        i85stat.regs.HL.w.l--;
-                        break;
-                case 0x2c: i8085_ICount -= 5;   /* INR  L */
-                        M_INR(i85stat.regs.HL.b.l);
-                        break;
-                case 0x2d: i8085_ICount -= 5;   /* DCR  L */
-                        M_DCR(i85stat.regs.HL.b.l);
-                        break;
-                case 0x2e: i8085_ICount -= 7;   /* MVI  L,nn */
-                        M_MVI(i85stat.regs.HL.b.l);
-                        break;
-                case 0x2f: i8085_ICount -= 4;   /* CMA  */
-                        i85stat.regs.AF.b.h ^= 0xff;
-                        i85stat.regs.AF.b.l |= HF + NF;
-                        break;
+                        /* bit if 4 is set, the 7.5 flip-flop is cleared */
+                        if (i85stat.regs.AF.b.h & 0x10) i85stat.regs.IM &= ~IM_I75;
 
-                case 0x30:
-                        if( i85stat.regs.cputype )
-                        {
-                                i8085_ICount -= 7;              /* SIM  */
-                                if ((i85stat.regs.IM ^ i85stat.regs.AF.b.h) & 0x80)
-                                        if (i85stat.regs.sod_callback) (*i85stat.regs.sod_callback)(i85stat.regs.AF.b.h >> 7);
-                                i85stat.regs.IM &= (IM_SID + IM_IEN + IM_TRAP);
-                                i85stat.regs.IM |= (i85stat.regs.AF.b.h & ~(IM_SID + IM_SOD + IM_IEN + IM_TRAP));
-                                if (i85stat.regs.AF.b.h & 0x80) i85stat.regs.IM |= IM_SOD;
-                        }
-                        else
-                        {
-                                i8085_ICount -= 4;              /* ???  */
-                        }
-                        break;
-                case 0x31: i8085_ICount -= 10;  /* LXI SP,nnnn */
-                        i85stat.regs.SP.w.l = ARG16();
-                        break;
-                case 0x32: i8085_ICount -= 13;  /* STAX nnnn */
-                        i85stat.regs.XX.d = ARG16();
-                        WM(i85stat.regs.XX.d, i85stat.regs.AF.b.h);
-                        break;
-                case 0x33: i8085_ICount -= 5;   /* INX  SP */
-                        i85stat.regs.SP.w.l++;
-                        break;
-                case 0x34: i8085_ICount -= 10;  /* INR  M */
-                        i85stat.regs.XX.b.l = RM(i85stat.regs.HL.d);
-                        M_INR(i85stat.regs.XX.b.l);
-                        WM(i85stat.regs.HL.d, i85stat.regs.XX.b.l);
-                        break;
-                case 0x35: i8085_ICount -= 10;  /* DCR  M */
-                        i85stat.regs.XX.b.l = RM(i85stat.regs.HL.d);
-                        M_DCR(i85stat.regs.XX.b.l);
-                        WM(i85stat.regs.HL.d, i85stat.regs.XX.b.l);
-                        break;
-                case 0x36: i8085_ICount -= 10;  /* MVI  M,nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        WM(i85stat.regs.HL.d, i85stat.regs.XX.b.l);
-                        break;
-                case 0x37: i8085_ICount -= 4;   /* STC  */
-                        i85stat.regs.AF.b.l = (i85stat.regs.AF.b.l & ~(HF + NF)) | CF;
-                        break;
+                        /* if bit 6 is set, then bit 7 is the new SOD state */
+                        if (i85stat.regs.AF.b.h & 0x40) set_sod( i85stat.regs.AF.b.h >> 7);
 
-                case 0x38: i8085_ICount -= 7;   /* ???? */
-                        illegal();
-                        break;
-                case 0x39: i8085_ICount -= 10;  /* DAD SP */
-                        M_DAD(SP);
-                        break;
-                case 0x3a: i8085_ICount -= 13;  /* LDAX nnnn */
-                        i85stat.regs.XX.d = ARG16();
-                        i85stat.regs.AF.b.h = RM(i85stat.regs.XX.d);
-                        break;
-                case 0x3b: i8085_ICount -= 5;   /* DCX  SP */
-                        i85stat.regs.SP.w.l--;
-                        break;
-                case 0x3c: i8085_ICount -= 5;   /* INR  A */
-                        M_INR(i85stat.regs.AF.b.h);
-                        break;
-                case 0x3d: i8085_ICount -= 5;   /* DCR  A */
-                        M_DCR(i85stat.regs.AF.b.h);
-                        break;
-                case 0x3e: i8085_ICount -= 7;   /* MVI  A,nn */
-                        M_MVI(i85stat.regs.AF.b.h);
-                        break;
-                case 0x3f: i8085_ICount -= 4;   /* CMF  */
-                        i85stat.regs.AF.b.l = ((i85stat.regs.AF.b.l & ~(HF + NF)) |
-                                           ((i85stat.regs.AF.b.l & CF) << 4)) ^ CF;
-                        break;
+                        /* check for revealed interrupts */
+                        check_for_interrupts();
+                    } /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x31:	i85stat.regs.SP.w.l = ARG16();					break;	/* LXI  SP,nnnn */
+        case 0x32:	i85stat.regs.WZ.d = ARG16();							/* STAX nnnn */
+                    WM( i85stat.regs.WZ.d, i85stat.regs.AF.b.h);
+                    break;
+        case 0x33:	i85stat.regs.SP.w.l++;											/* INX  SP */
+                    if (IS_8085()) { if (i85stat.regs.SP.w.l == 0x0000) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x34:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d);			/* INR  M */
+                    M_INR(i85stat.regs.WZ.b.l);
+                    WM( i85stat.regs.HL.d, i85stat.regs.WZ.b.l);
+                    break;
+        case 0x35:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d);			/* DCR  M */
+                    M_DCR(i85stat.regs.WZ.b.l);
+                    WM( i85stat.regs.HL.d, i85stat.regs.WZ.b.l);
+                    break;
+        case 0x36:	i85stat.regs.WZ.b.l = ARG();							/* MVI  M,nn */
+                    WM( i85stat.regs.HL.d, i85stat.regs.WZ.b.l);
+                    break;
+        case 0x37:	i85stat.regs.AF.b.l = (i85stat.regs.AF.b.l & 0xfe) | CF;	break;	/* STC  */
 
-                case 0x40: i8085_ICount -= 5;   /* MOV  B,B */
-                        /* no op */
-                        break;
-                case 0x41: i8085_ICount -= 5;   /* MOV  B,C */
-                        i85stat.regs.BC.b.h = i85stat.regs.BC.b.l;
-                        break;
-                case 0x42: i8085_ICount -= 5;   /* MOV  B,D */
-                        i85stat.regs.BC.b.h = i85stat.regs.DE.b.h;
-                        break;
-                case 0x43: i8085_ICount -= 5;   /* MOV  B,E */
-                        i85stat.regs.BC.b.h = i85stat.regs.DE.b.l;
-                        break;
-                case 0x44: i8085_ICount -= 5;   /* MOV  B,H */
-                        i85stat.regs.BC.b.h = i85stat.regs.HL.b.h;
-                        break;
-                case 0x45: i8085_ICount -= 5;   /* MOV  B,L */
-                        i85stat.regs.BC.b.h = i85stat.regs.HL.b.l;
-                        break;
-                case 0x46: i8085_ICount -= 7;   /* MOV  B,M */
-                        i85stat.regs.BC.b.h = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x47: i8085_ICount -= 5;   /* MOV  B,A */
-                        i85stat.regs.BC.b.h = i85stat.regs.AF.b.h;
-                        break;
+        case 0x38:	if (IS_8085()) {									/* LDES nn */
+                        i85stat.regs.WZ.d = ARG();
+                        i85stat.regs.DE.d = (i85stat.regs.SP.d + i85stat.regs.WZ.d) & 0xffff;
+                    } /* else { ; } */											/* NOP  undocumented */
+                    break;
+        case 0x39:	M_DAD(SP);											break;	/* DAD  SP */
+        case 0x3a:	i85stat.regs.WZ.d = ARG16();							/* LDAX nnnn */
+                    i85stat.regs.AF.b.h = RM( i85stat.regs.WZ.d);
+                    break;
+        case 0x3b:	i85stat.regs.SP.w.l--;											/* DCX  SP */
+                    if (IS_8085()) { if (i85stat.regs.SP.w.l == 0xffff) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    break;
+        case 0x3c:	M_INR(i85stat.regs.AF.b.h);							break;	/* INR  A */
+        case 0x3d:	M_DCR(i85stat.regs.AF.b.h);							break;	/* DCR  A */
+        case 0x3e:	M_MVI(i85stat.regs.AF.b.h);							break;	/* MVI  A,nn */
+        case 0x3f:	i85stat.regs.AF.b.l = (i85stat.regs.AF.b.l & 0xfe) | (~i85stat.regs.AF.b.l & CF); break; /* CMC  */
 
-                case 0x48: i8085_ICount -= 5;   /* MOV  C,B */
-                        i85stat.regs.BC.b.l = i85stat.regs.BC.b.h;
-                        break;
-                case 0x49: i8085_ICount -= 5;   /* MOV  C,C */
-                        /* no op */
-                        break;
-                case 0x4a: i8085_ICount -= 5;   /* MOV  C,D */
-                        i85stat.regs.BC.b.l = i85stat.regs.DE.b.h;
-                        break;
-                case 0x4b: i8085_ICount -= 5;   /* MOV  C,E */
-                        i85stat.regs.BC.b.l = i85stat.regs.DE.b.l;
-                        break;
-                case 0x4c: i8085_ICount -= 5;   /* MOV  C,H */
-                        i85stat.regs.BC.b.l = i85stat.regs.HL.b.h;
-                        break;
-                case 0x4d: i8085_ICount -= 5;   /* MOV  C,L */
-                        i85stat.regs.BC.b.l = i85stat.regs.HL.b.l;
-                        break;
-                case 0x4e: i8085_ICount -= 7;   /* MOV  C,M */
-                        i85stat.regs.BC.b.l = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x4f: i8085_ICount -= 5;   /* MOV  C,A */
-                        i85stat.regs.BC.b.l = i85stat.regs.AF.b.h;
-                        break;
+        case 0x40:														break;	/* MOV  B,B */
+        case 0x41:	i85stat.regs.BC.b.h = i85stat.regs.BC.b.l;				break;	/* MOV  B,C */
+        case 0x42:	i85stat.regs.BC.b.h = i85stat.regs.DE.b.h;				break;	/* MOV  B,D */
+        case 0x43:	i85stat.regs.BC.b.h = i85stat.regs.DE.b.l;				break;	/* MOV  B,E */
+        case 0x44:	i85stat.regs.BC.b.h = i85stat.regs.HL.b.h;				break;	/* MOV  B,H */
+        case 0x45:	i85stat.regs.BC.b.h = i85stat.regs.HL.b.l;				break;	/* MOV  B,L */
+        case 0x46:	i85stat.regs.BC.b.h = RM( i85stat.regs.HL.d);	break;	/* MOV  B,M */
+        case 0x47:	i85stat.regs.BC.b.h = i85stat.regs.AF.b.h;				break;	/* MOV  B,A */
 
-                case 0x50: i8085_ICount -= 5;   /* MOV  D,B */
-                        i85stat.regs.DE.b.h = i85stat.regs.BC.b.h;
-                        break;
-                case 0x51: i8085_ICount -= 5;   /* MOV  D,C */
-                        i85stat.regs.DE.b.h = i85stat.regs.BC.b.l;
-                        break;
-                case 0x52: i8085_ICount -= 5;   /* MOV  D,D */
-                        /* no op */
-                        break;
-                case 0x53: i8085_ICount -= 5;   /* MOV  D,E */
-                        i85stat.regs.DE.b.h = i85stat.regs.DE.b.l;
-                        break;
-                case 0x54: i8085_ICount -= 5;   /* MOV  D,H */
-                        i85stat.regs.DE.b.h = i85stat.regs.HL.b.h;
-                        break;
-                case 0x55: i8085_ICount -= 5;   /* MOV  D,L */
-                        i85stat.regs.DE.b.h = i85stat.regs.HL.b.l;
-                        break;
-                case 0x56: i8085_ICount -= 7;   /* MOV  D,M */
-                        i85stat.regs.DE.b.h = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x57: i8085_ICount -= 5;   /* MOV  D,A */
-                        i85stat.regs.DE.b.h = i85stat.regs.AF.b.h;
-                        break;
+        case 0x48:	i85stat.regs.BC.b.l = i85stat.regs.BC.b.h;				break;	/* MOV  C,B */
+        case 0x49:														break;	/* MOV  C,C */
+        case 0x4a:	i85stat.regs.BC.b.l = i85stat.regs.DE.b.h;				break;	/* MOV  C,D */
+        case 0x4b:	i85stat.regs.BC.b.l = i85stat.regs.DE.b.l;				break;	/* MOV  C,E */
+        case 0x4c:	i85stat.regs.BC.b.l = i85stat.regs.HL.b.h;				break;	/* MOV  C,H */
+        case 0x4d:	i85stat.regs.BC.b.l = i85stat.regs.HL.b.l;				break;	/* MOV  C,L */
+        case 0x4e:	i85stat.regs.BC.b.l = RM( i85stat.regs.HL.d);	break;	/* MOV  C,M */
+        case 0x4f:	i85stat.regs.BC.b.l = i85stat.regs.AF.b.h;				break;	/* MOV  C,A */
 
-                case 0x58: i8085_ICount -= 5;   /* MOV  E,B */
-                        i85stat.regs.DE.b.l = i85stat.regs.BC.b.h;
-                        break;
-                case 0x59: i8085_ICount -= 5;   /* MOV  E,C */
-                        i85stat.regs.DE.b.l = i85stat.regs.BC.b.l;
-                        break;
-                case 0x5a: i8085_ICount -= 5;   /* MOV  E,D */
-                        i85stat.regs.DE.b.l = i85stat.regs.DE.b.h;
-                        break;
-                case 0x5b: i8085_ICount -= 5;   /* MOV  E,E */
-                        /* no op */
-                        break;
-                case 0x5c: i8085_ICount -= 5;   /* MOV  E,H */
-                        i85stat.regs.DE.b.l = i85stat.regs.HL.b.h;
-                        break;
-                case 0x5d: i8085_ICount -= 5;   /* MOV  E,L */
-                        i85stat.regs.DE.b.l = i85stat.regs.HL.b.l;
-                        break;
-                case 0x5e: i8085_ICount -= 7;   /* MOV  E,M */
-                        i85stat.regs.DE.b.l = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x5f: i8085_ICount -= 5;   /* MOV  E,A */
-                        i85stat.regs.DE.b.l = i85stat.regs.AF.b.h;
-                        break;
+        case 0x50:	i85stat.regs.DE.b.h = i85stat.regs.BC.b.h;				break;	/* MOV  D,B */
+        case 0x51:	i85stat.regs.DE.b.h = i85stat.regs.BC.b.l;				break;	/* MOV  D,C */
+        case 0x52:														break;	/* MOV  D,D */
+        case 0x53:	i85stat.regs.DE.b.h = i85stat.regs.DE.b.l;				break;	/* MOV  D,E */
+        case 0x54:	i85stat.regs.DE.b.h = i85stat.regs.HL.b.h;				break;	/* MOV  D,H */
+        case 0x55:	i85stat.regs.DE.b.h = i85stat.regs.HL.b.l;				break;	/* MOV  D,L */
+        case 0x56:	i85stat.regs.DE.b.h = RM( i85stat.regs.HL.d);	break;	/* MOV  D,M */
+        case 0x57:	i85stat.regs.DE.b.h = i85stat.regs.AF.b.h;				break;	/* MOV  D,A */
 
-                case 0x60: i8085_ICount -= 5;   /* MOV  H,B */
-                        i85stat.regs.HL.b.h = i85stat.regs.BC.b.h;
-                        break;
-                case 0x61: i8085_ICount -= 5;   /* MOV  H,C */
-                        i85stat.regs.HL.b.h = i85stat.regs.BC.b.l;
-                        break;
-                case 0x62: i8085_ICount -= 5;   /* MOV  H,D */
-                        i85stat.regs.HL.b.h = i85stat.regs.DE.b.h;
-                        break;
-                case 0x63: i8085_ICount -= 5;   /* MOV  H,E */
-                        i85stat.regs.HL.b.h = i85stat.regs.DE.b.l;
-                        break;
-                case 0x64: i8085_ICount -= 5;   /* MOV  H,H */
-                        /* no op */
-                        break;
-                case 0x65: i8085_ICount -= 5;   /* MOV  H,L */
-                        i85stat.regs.HL.b.h = i85stat.regs.HL.b.l;
-                        break;
-                case 0x66: i8085_ICount -= 7;   /* MOV  H,M */
-                        i85stat.regs.HL.b.h = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x67: i8085_ICount -= 5;   /* MOV  H,A */
-                        i85stat.regs.HL.b.h = i85stat.regs.AF.b.h;
-                        break;
+        case 0x58:	i85stat.regs.DE.b.l = i85stat.regs.BC.b.h;				break;	/* MOV  E,B */
+        case 0x59:	i85stat.regs.DE.b.l = i85stat.regs.BC.b.l;				break;	/* MOV  E,C */
+        case 0x5a:	i85stat.regs.DE.b.l = i85stat.regs.DE.b.h;				break;	/* MOV  E,D */
+        case 0x5b:														break;	/* MOV  E,E */
+        case 0x5c:	i85stat.regs.DE.b.l = i85stat.regs.HL.b.h;				break;	/* MOV  E,H */
+        case 0x5d:	i85stat.regs.DE.b.l = i85stat.regs.HL.b.l;				break;	/* MOV  E,L */
+        case 0x5e:	i85stat.regs.DE.b.l = RM( i85stat.regs.HL.d);	break;	/* MOV  E,M */
+        case 0x5f:	i85stat.regs.DE.b.l = i85stat.regs.AF.b.h;				break;	/* MOV  E,A */
 
-                case 0x68: i8085_ICount -= 5;   /* MOV  L,B */
-                        i85stat.regs.HL.b.l = i85stat.regs.BC.b.h;
-                        break;
-                case 0x69: i8085_ICount -= 5;   /* MOV  L,C */
-                        i85stat.regs.HL.b.l = i85stat.regs.BC.b.l;
-                        break;
-                case 0x6a: i8085_ICount -= 5;   /* MOV  L,D */
-                        i85stat.regs.HL.b.l = i85stat.regs.DE.b.h;
-                        break;
-                case 0x6b: i8085_ICount -= 5;   /* MOV  L,E */
-                        i85stat.regs.HL.b.l = i85stat.regs.DE.b.l;
-                        break;
-                case 0x6c: i8085_ICount -= 5;   /* MOV  L,H */
-                        i85stat.regs.HL.b.l = i85stat.regs.HL.b.h;
-                        break;
-                case 0x6d: i8085_ICount -= 5;   /* MOV  L,L */
-                        /* no op */
-                        break;
-                case 0x6e: i8085_ICount -= 7;   /* MOV  L,M */
-                        i85stat.regs.HL.b.l = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x6f: i8085_ICount -= 5;   /* MOV  L,A */
-                        i85stat.regs.HL.b.l = i85stat.regs.AF.b.h;
-                        break;
+        case 0x60:	i85stat.regs.HL.b.h = i85stat.regs.BC.b.h;				break;	/* MOV  H,B */
+        case 0x61:	i85stat.regs.HL.b.h = i85stat.regs.BC.b.l;				break;	/* MOV  H,C */
+        case 0x62:	i85stat.regs.HL.b.h = i85stat.regs.DE.b.h;				break;	/* MOV  H,D */
+        case 0x63:	i85stat.regs.HL.b.h = i85stat.regs.DE.b.l;				break;	/* MOV  H,E */
+        case 0x64:														break;	/* MOV  H,H */
+        case 0x65:	i85stat.regs.HL.b.h = i85stat.regs.HL.b.l;				break;	/* MOV  H,L */
+        case 0x66:	i85stat.regs.HL.b.h = RM( i85stat.regs.HL.d);	break;	/* MOV  H,M */
+        case 0x67:	i85stat.regs.HL.b.h = i85stat.regs.AF.b.h;				break;	/* MOV  H,A */
 
-                case 0x70: i8085_ICount -= 7;   /* MOV  M,B */
-                        WM(i85stat.regs.HL.d, i85stat.regs.BC.b.h);
-                        break;
-                case 0x71: i8085_ICount -= 7;   /* MOV  M,C */
-                        WM(i85stat.regs.HL.d, i85stat.regs.BC.b.l);
-                        break;
-                case 0x72: i8085_ICount -= 7;   /* MOV  M,D */
-                        WM(i85stat.regs.HL.d, i85stat.regs.DE.b.h);
-                        break;
-                case 0x73: i8085_ICount -= 7;   /* MOV  M,E */
-                        WM(i85stat.regs.HL.d, i85stat.regs.DE.b.l);
-                        break;
-                case 0x74: i8085_ICount -= 7;   /* MOV  M,H */
-                        WM(i85stat.regs.HL.d, i85stat.regs.HL.b.h);
-                        break;
-                case 0x75: i8085_ICount -= 7;   /* MOV  M,L */
-                        WM(i85stat.regs.HL.d, i85stat.regs.HL.b.l);
-                        break;
-                case 0x76: i8085_ICount -= 4;   /* HALT */
-                        i85stat.regs.PC.w.l--;
-                        i85stat.regs.HALT = 1;
-                        if (i8085_ICount > 0) i8085_ICount = 0;
-                        break;
-                case 0x77: i8085_ICount -= 7;   /* MOV  M,A */
-                        WM(i85stat.regs.HL.d, i85stat.regs.AF.b.h);
-                        break;
+        case 0x68:	i85stat.regs.HL.b.l = i85stat.regs.BC.b.h;				break;	/* MOV  L,B */
+        case 0x69:	i85stat.regs.HL.b.l = i85stat.regs.BC.b.l;				break;	/* MOV  L,C */
+        case 0x6a:	i85stat.regs.HL.b.l = i85stat.regs.DE.b.h;				break;	/* MOV  L,D */
+        case 0x6b:	i85stat.regs.HL.b.l = i85stat.regs.DE.b.l;				break;	/* MOV  L,E */
+        case 0x6c:	i85stat.regs.HL.b.l = i85stat.regs.HL.b.h;				break;	/* MOV  L,H */
+        case 0x6d:														break;	/* MOV  L,L */
+        case 0x6e:	i85stat.regs.HL.b.l = RM( i85stat.regs.HL.d);	break;	/* MOV  L,M */
+        case 0x6f:	i85stat.regs.HL.b.l = i85stat.regs.AF.b.h;				break;	/* MOV  L,A */
 
-                case 0x78: i8085_ICount -= 5;   /* MOV  A,B */
-                        i85stat.regs.AF.b.h = i85stat.regs.BC.b.h;
-                        break;
-                case 0x79: i8085_ICount -= 5;   /* MOV  A,C */
-                        i85stat.regs.AF.b.h = i85stat.regs.BC.b.l;
-                        break;
-                case 0x7a: i8085_ICount -= 5;   /* MOV  A,D */
-                        i85stat.regs.AF.b.h = i85stat.regs.DE.b.h;
-                        break;
-                case 0x7b: i8085_ICount -= 5;   /* MOV  A,E */
-                        i85stat.regs.AF.b.h = i85stat.regs.DE.b.l;
-                        break;
-                case 0x7c: i8085_ICount -= 5;   /* MOV  A,H */
-                        i85stat.regs.AF.b.h = i85stat.regs.HL.b.h;
-                        break;
-                case 0x7d: i8085_ICount -= 5;   /* MOV  A,L */
-                        i85stat.regs.AF.b.h = i85stat.regs.HL.b.l;
-                        break;
-                case 0x7e: i8085_ICount -= 7;   /* MOV  A,M */
-                        i85stat.regs.AF.b.h = RM(i85stat.regs.HL.d);
-                        break;
-                case 0x7f: i8085_ICount -= 5;   /* MOV  A,A */
-                        /* no op */
-                        break;
+        case 0x70:	WM( i85stat.regs.HL.d, i85stat.regs.BC.b.h);		break;	/* MOV  M,B */
+        case 0x71:	WM( i85stat.regs.HL.d, i85stat.regs.BC.b.l);		break;	/* MOV  M,C */
+        case 0x72:	WM( i85stat.regs.HL.d, i85stat.regs.DE.b.h);		break;	/* MOV  M,D */
+        case 0x73:	WM( i85stat.regs.HL.d, i85stat.regs.DE.b.l);		break;	/* MOV  M,E */
+        case 0x74:	WM( i85stat.regs.HL.d, i85stat.regs.HL.b.h);		break;	/* MOV  M,H */
+        case 0x75:	WM( i85stat.regs.HL.d, i85stat.regs.HL.b.l);		break;	/* MOV  M,L */
+        case 0x76:	i85stat.regs.PC.w.l--; i85stat.regs.HALT = 1;						/* HLT */
+                    set_status( 0x8a); // halt acknowledge
+                    break;
+        case 0x77:	WM( i85stat.regs.HL.d, i85stat.regs.AF.b.h);		break;	/* MOV  M,A */
 
-                case 0x80: i8085_ICount -= 4;   /* ADD  B */
-                        M_ADD(i85stat.regs.BC.b.h);
-                        break;
-                case 0x81: i8085_ICount -= 4;   /* ADD  C */
-                        M_ADD(i85stat.regs.BC.b.l);
-                        break;
-                case 0x82: i8085_ICount -= 4;   /* ADD  D */
-                        M_ADD(i85stat.regs.DE.b.h);
-                        break;
-                case 0x83: i8085_ICount -= 4;   /* ADD  E */
-                        M_ADD(i85stat.regs.DE.b.l);
-                        break;
-                case 0x84: i8085_ICount -= 4;   /* ADD  H */
-                        M_ADD(i85stat.regs.HL.b.h);
-                        break;
-                case 0x85: i8085_ICount -= 4;   /* ADD  L */
-                        M_ADD(i85stat.regs.HL.b.l);
-                        break;
-                case 0x86: i8085_ICount -= 7;   /* ADD  M */
-                        M_ADD(RM(i85stat.regs.HL.d));
-                        break;
-                case 0x87: i8085_ICount -= 4;   /* ADD  A */
-                        M_ADD(i85stat.regs.AF.b.h);
-                        break;
+        case 0x78:	i85stat.regs.AF.b.h = i85stat.regs.BC.b.h;				break;	/* MOV  A,B */
+        case 0x79:	i85stat.regs.AF.b.h = i85stat.regs.BC.b.l;				break;	/* MOV  A,C */
+        case 0x7a:	i85stat.regs.AF.b.h = i85stat.regs.DE.b.h;				break;	/* MOV  A,D */
+        case 0x7b:	i85stat.regs.AF.b.h = i85stat.regs.DE.b.l;				break;	/* MOV  A,E */
+        case 0x7c:	i85stat.regs.AF.b.h = i85stat.regs.HL.b.h;				break;	/* MOV  A,H */
+        case 0x7d:	i85stat.regs.AF.b.h = i85stat.regs.HL.b.l;				break;	/* MOV  A,L */
+        case 0x7e:	i85stat.regs.AF.b.h = RM( i85stat.regs.HL.d);	break;	/* MOV  A,M */
+        case 0x7f:														break;	/* MOV  A,A */
 
-                case 0x88: i8085_ICount -= 4;   /* ADC  B */
-                        M_ADC(i85stat.regs.BC.b.h);
-                        break;
-                case 0x89: i8085_ICount -= 4;   /* ADC  C */
-                        M_ADC(i85stat.regs.BC.b.l);
-                        break;
-                case 0x8a: i8085_ICount -= 4;   /* ADC  D */
-                        M_ADC(i85stat.regs.DE.b.h);
-                        break;
-                case 0x8b: i8085_ICount -= 4;   /* ADC  E */
-                        M_ADC(i85stat.regs.DE.b.l);
-                        break;
-                case 0x8c: i8085_ICount -= 4;   /* ADC  H */
-                        M_ADC(i85stat.regs.HL.b.h);
-                        break;
-                case 0x8d: i8085_ICount -= 4;   /* ADC  L */
-                        M_ADC(i85stat.regs.HL.b.l);
-                        break;
-                case 0x8e: i8085_ICount -= 7;   /* ADC  M */
-                        M_ADC(RM(i85stat.regs.HL.d));
-                        break;
-                case 0x8f: i8085_ICount -= 4;   /* ADC  A */
-                        M_ADC(i85stat.regs.AF.b.h);
-                        break;
+        case 0x80:	M_ADD(i85stat.regs.BC.b.h);							break;	/* ADD  B */
+        case 0x81:	M_ADD(i85stat.regs.BC.b.l);							break;	/* ADD  C */
+        case 0x82:	M_ADD(i85stat.regs.DE.b.h);							break;	/* ADD  D */
+        case 0x83:	M_ADD(i85stat.regs.DE.b.l);							break;	/* ADD  E */
+        case 0x84:	M_ADD(i85stat.regs.HL.b.h);							break;	/* ADD  H */
+        case 0x85:	M_ADD(i85stat.regs.HL.b.l);							break;	/* ADD  L */
+        case 0x86:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_ADD(i85stat.regs.WZ.b.l); break; /* ADD  M */
+        case 0x87:	M_ADD(i85stat.regs.AF.b.h);							break;	/* ADD  A */
 
-                case 0x90: i8085_ICount -= 4;   /* SUB  B */
-                        M_SUB(i85stat.regs.BC.b.h);
-                        break;
-                case 0x91: i8085_ICount -= 4;   /* SUB  C */
-                        M_SUB(i85stat.regs.BC.b.l);
-                        break;
-                case 0x92: i8085_ICount -= 4;   /* SUB  D */
-                        M_SUB(i85stat.regs.DE.b.h);
-                        break;
-                case 0x93: i8085_ICount -= 4;   /* SUB  E */
-                        M_SUB(i85stat.regs.DE.b.l);
-                        break;
-                case 0x94: i8085_ICount -= 4;   /* SUB  H */
-                        M_SUB(i85stat.regs.HL.b.h);
-                        break;
-                case 0x95: i8085_ICount -= 4;   /* SUB  L */
-                        M_SUB(i85stat.regs.HL.b.l);
-                        break;
-                case 0x96: i8085_ICount -= 7;   /* SUB  M */
-                        M_SUB(RM(i85stat.regs.HL.d));
-                        break;
-                case 0x97: i8085_ICount -= 4;   /* SUB  A */
-                        M_SUB(i85stat.regs.AF.b.h);
-                        break;
+        case 0x88:	M_ADC(i85stat.regs.BC.b.h);							break;	/* ADC  B */
+        case 0x89:	M_ADC(i85stat.regs.BC.b.l);							break;	/* ADC  C */
+        case 0x8a:	M_ADC(i85stat.regs.DE.b.h);							break;	/* ADC  D */
+        case 0x8b:	M_ADC(i85stat.regs.DE.b.l);							break;	/* ADC  E */
+        case 0x8c:	M_ADC(i85stat.regs.HL.b.h);							break;	/* ADC  H */
+        case 0x8d:	M_ADC(i85stat.regs.HL.b.l);							break;	/* ADC  L */
+        case 0x8e:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_ADC(i85stat.regs.WZ.b.l); break; /* ADC  M */
+        case 0x8f:	M_ADC(i85stat.regs.AF.b.h);							break;	/* ADC  A */
 
-                case 0x98: i8085_ICount -= 4;   /* SBB  B */
-                        M_SBB(i85stat.regs.BC.b.h);
-                        break;
-                case 0x99: i8085_ICount -= 4;   /* SBB  C */
-                        M_SBB(i85stat.regs.BC.b.l);
-                        break;
-                case 0x9a: i8085_ICount -= 4;   /* SBB  D */
-                        M_SBB(i85stat.regs.DE.b.h);
-                        break;
-                case 0x9b: i8085_ICount -= 4;   /* SBB  E */
-                        M_SBB(i85stat.regs.DE.b.l);
-                        break;
-                case 0x9c: i8085_ICount -= 4;   /* SBB  H */
-                        M_SBB(i85stat.regs.HL.b.h);
-                        break;
-                case 0x9d: i8085_ICount -= 4;   /* SBB  L */
-                        M_SBB(i85stat.regs.HL.b.l);
-                        break;
-                case 0x9e: i8085_ICount -= 7;   /* SBB  M */
-                        M_SBB(RM(i85stat.regs.HL.d));
-                        break;
-                case 0x9f: i8085_ICount -= 4;   /* SBB  A */
-                        M_SBB(i85stat.regs.AF.b.h);
-                        break;
+        case 0x90:	M_SUB(i85stat.regs.BC.b.h);							break;	/* SUB  B */
+        case 0x91:	M_SUB(i85stat.regs.BC.b.l);							break;	/* SUB  C */
+        case 0x92:	M_SUB(i85stat.regs.DE.b.h);							break;	/* SUB  D */
+        case 0x93:	M_SUB(i85stat.regs.DE.b.l);							break;	/* SUB  E */
+        case 0x94:	M_SUB(i85stat.regs.HL.b.h);							break;	/* SUB  H */
+        case 0x95:	M_SUB(i85stat.regs.HL.b.l);							break;	/* SUB  L */
+        case 0x96:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_SUB(i85stat.regs.WZ.b.l); break; /* SUB  M */
+        case 0x97:	M_SUB(i85stat.regs.AF.b.h);							break;	/* SUB  A */
 
-                case 0xa0: i8085_ICount -= 4;   /* ANA  B */
-                        M_ANA(i85stat.regs.BC.b.h);
-                        break;
-                case 0xa1: i8085_ICount -= 4;   /* ANA  C */
-                        M_ANA(i85stat.regs.BC.b.l);
-                        break;
-                case 0xa2: i8085_ICount -= 4;   /* ANA  D */
-                        M_ANA(i85stat.regs.DE.b.h);
-                        break;
-                case 0xa3: i8085_ICount -= 4;   /* ANA  E */
-                        M_ANA(i85stat.regs.DE.b.l);
-                        break;
-                case 0xa4: i8085_ICount -= 4;   /* ANA  H */
-                        M_ANA(i85stat.regs.HL.b.h);
-                        break;
-                case 0xa5: i8085_ICount -= 4;   /* ANA  L */
-                        M_ANA(i85stat.regs.HL.b.l);
-                        break;
-                case 0xa6: i8085_ICount -= 7;   /* ANA  M */
-                        M_ANA(RM(i85stat.regs.HL.d));
-                        break;
-                case 0xa7: i8085_ICount -= 4;   /* ANA  A */
-                        M_ANA(i85stat.regs.AF.b.h);
-                        break;
+        case 0x98:	M_SBB(i85stat.regs.BC.b.h);							break;	/* SBB  B */
+        case 0x99:	M_SBB(i85stat.regs.BC.b.l);							break;	/* SBB  C */
+        case 0x9a:	M_SBB(i85stat.regs.DE.b.h);							break;	/* SBB  D */
+        case 0x9b:	M_SBB(i85stat.regs.DE.b.l);							break;	/* SBB  E */
+        case 0x9c:	M_SBB(i85stat.regs.HL.b.h);							break;	/* SBB  H */
+        case 0x9d:	M_SBB(i85stat.regs.HL.b.l);							break;	/* SBB  L */
+        case 0x9e:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_SBB(i85stat.regs.WZ.b.l); break; /* SBB  M */
+        case 0x9f:	M_SBB(i85stat.regs.AF.b.h);							break;	/* SBB  A */
 
-                case 0xa8: i8085_ICount -= 4;   /* XRA  B */
-                        M_XRA(i85stat.regs.BC.b.h);
-                        break;
-                case 0xa9: i8085_ICount -= 4;   /* XRA  C */
-                        M_XRA(i85stat.regs.BC.b.l);
-                        break;
-                case 0xaa: i8085_ICount -= 4;   /* XRA  D */
-                        M_XRA(i85stat.regs.DE.b.h);
-                        break;
-                case 0xab: i8085_ICount -= 4;   /* XRA  E */
-                        M_XRA(i85stat.regs.DE.b.l);
-                        break;
-                case 0xac: i8085_ICount -= 4;   /* XRA  H */
-                        M_XRA(i85stat.regs.HL.b.h);
-                        break;
-                case 0xad: i8085_ICount -= 4;   /* XRA  L */
-                        M_XRA(i85stat.regs.HL.b.l);
-                        break;
-                case 0xae: i8085_ICount -= 7;   /* XRA  M */
-                        M_XRA(RM(i85stat.regs.HL.d));
-                        break;
-                case 0xaf: i8085_ICount -= 4;   /* XRA  A */
-                        M_XRA(i85stat.regs.AF.b.h);
-                        break;
+        case 0xa0:	M_ANA(i85stat.regs.BC.b.h);							break;	/* ANA  B */
+        case 0xa1:	M_ANA(i85stat.regs.BC.b.l);							break;	/* ANA  C */
+        case 0xa2:	M_ANA(i85stat.regs.DE.b.h);							break;	/* ANA  D */
+        case 0xa3:	M_ANA(i85stat.regs.DE.b.l);							break;	/* ANA  E */
+        case 0xa4:	M_ANA(i85stat.regs.HL.b.h);							break;	/* ANA  H */
+        case 0xa5:	M_ANA(i85stat.regs.HL.b.l);							break;	/* ANA  L */
+        case 0xa6:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_ANA(i85stat.regs.WZ.b.l); break; /* ANA  M */
+        case 0xa7:	M_ANA(i85stat.regs.AF.b.h);							break;	/* ANA  A */
 
-                case 0xb0: i8085_ICount -= 4;   /* ORA  B */
-                        M_ORA(i85stat.regs.BC.b.h);
-                        break;
-                case 0xb1: i8085_ICount -= 4;   /* ORA  C */
-                        M_ORA(i85stat.regs.BC.b.l);
-                        break;
-                case 0xb2: i8085_ICount -= 4;   /* ORA  D */
-                        M_ORA(i85stat.regs.DE.b.h);
-                        break;
-                case 0xb3: i8085_ICount -= 4;   /* ORA  E */
-                        M_ORA(i85stat.regs.DE.b.l);
-                        break;
-                case 0xb4: i8085_ICount -= 4;   /* ORA  H */
-                        M_ORA(i85stat.regs.HL.b.h);
-                        break;
-                case 0xb5: i8085_ICount -= 4;   /* ORA  L */
-                        M_ORA(i85stat.regs.HL.b.l);
-                        break;
-                case 0xb6: i8085_ICount -= 7;   /* ORA  M */
-                        M_ORA(RM(i85stat.regs.HL.d));
-                        break;
-                case 0xb7: i8085_ICount -= 4;   /* ORA  A */
-                        M_ORA(i85stat.regs.AF.b.h);
-                        break;
+        case 0xa8:	M_XRA(i85stat.regs.BC.b.h);							break;	/* XRA  B */
+        case 0xa9:	M_XRA(i85stat.regs.BC.b.l);							break;	/* XRA  C */
+        case 0xaa:	M_XRA(i85stat.regs.DE.b.h);							break;	/* XRA  D */
+        case 0xab:	M_XRA(i85stat.regs.DE.b.l);							break;	/* XRA  E */
+        case 0xac:	M_XRA(i85stat.regs.HL.b.h);							break;	/* XRA  H */
+        case 0xad:	M_XRA(i85stat.regs.HL.b.l);							break;	/* XRA  L */
+        case 0xae:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_XRA(i85stat.regs.WZ.b.l); break; /* XRA  M */
+        case 0xaf:	M_XRA(i85stat.regs.AF.b.h);							break;	/* XRA  A */
 
-                case 0xb8: i8085_ICount -= 4;   /* CMP  B */
-                        M_CMP(i85stat.regs.BC.b.h);
-                        break;
-                case 0xb9: i8085_ICount -= 4;   /* CMP  C */
-                        M_CMP(i85stat.regs.BC.b.l);
-                        break;
-                case 0xba: i8085_ICount -= 4;   /* CMP  D */
-                        M_CMP(i85stat.regs.DE.b.h);
-                        break;
-                case 0xbb: i8085_ICount -= 4;   /* CMP  E */
-                        M_CMP(i85stat.regs.DE.b.l);
-                        break;
-                case 0xbc: i8085_ICount -= 4;   /* CMP  H */
-                        M_CMP(i85stat.regs.HL.b.h);
-                        break;
-                case 0xbd: i8085_ICount -= 4;   /* CMP  L */
-                        M_CMP(i85stat.regs.HL.b.l);
-                        break;
-                case 0xbe: i8085_ICount -= 7;   /* CMP  M */
-                        M_CMP(RM(i85stat.regs.HL.d));
-                        break;
-                case 0xbf: i8085_ICount -= 4;   /* CMP  A */
-                        M_CMP(i85stat.regs.AF.b.h);
-                        break;
+        case 0xb0:	M_ORA(i85stat.regs.BC.b.h);							break;	/* ORA  B */
+        case 0xb1:	M_ORA(i85stat.regs.BC.b.l);							break;	/* ORA  C */
+        case 0xb2:	M_ORA(i85stat.regs.DE.b.h);							break;	/* ORA  D */
+        case 0xb3:	M_ORA(i85stat.regs.DE.b.l);							break;	/* ORA  E */
+        case 0xb4:	M_ORA(i85stat.regs.HL.b.h);							break;	/* ORA  H */
+        case 0xb5:	M_ORA(i85stat.regs.HL.b.l);							break;	/* ORA  L */
+        case 0xb6:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_ORA(i85stat.regs.WZ.b.l); break; /* ORA  M */
+        case 0xb7:	M_ORA(i85stat.regs.AF.b.h);							break;	/* ORA  A */
 
-                case 0xc0: i8085_ICount -= 5;   /* RNZ  */
-                        M_RET( !(i85stat.regs.AF.b.l & ZF) );
-                        break;
-                case 0xc1: i8085_ICount -= 10;  /* POP  B */
-                        M_POP(BC);
-                        break;
-                case 0xc2: i8085_ICount -= 10;  /* JNZ  nnnn */
-                        M_JMP( !(i85stat.regs.AF.b.l & ZF) );
-                        break;
-                case 0xc3: i8085_ICount -= 10;  /* JMP  nnnn */
-                        M_JMP(1);
-                        break;
-                case 0xc4: i8085_ICount -= 11;  /* CNZ  nnnn */
-                        M_CALL( !(i85stat.regs.AF.b.l & ZF) );
-                        break;
-                case 0xc5: i8085_ICount -= 11;  /* PUSH B */
-                        M_PUSH(BC);
-                        break;
-                case 0xc6: i8085_ICount -= 7;   /* ADI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_ADD(i85stat.regs.XX.b.l);
-                                break;
-                case 0xc7: i8085_ICount -= 11;  /* RST  0 */
-                        M_RST(0);
-                        break;
+        case 0xb8:	M_CMP(i85stat.regs.BC.b.h);							break;	/* CMP  B */
+        case 0xb9:	M_CMP(i85stat.regs.BC.b.l);							break;	/* CMP  C */
+        case 0xba:	M_CMP(i85stat.regs.DE.b.h);							break;	/* CMP  D */
+        case 0xbb:	M_CMP(i85stat.regs.DE.b.l);							break;	/* CMP  E */
+        case 0xbc:	M_CMP(i85stat.regs.HL.b.h);							break;	/* CMP  H */
+        case 0xbd:	M_CMP(i85stat.regs.HL.b.l);							break;	/* CMP  L */
+        case 0xbe:	i85stat.regs.WZ.b.l = RM( i85stat.regs.HL.d); M_CMP(i85stat.regs.WZ.b.l); break; /* CMP  M */
+        case 0xbf:	M_CMP(i85stat.regs.AF.b.h);							break;	/* CMP  A */
 
-                case 0xc8: i8085_ICount -= 5;   /* RZ   */
-                        M_RET( i85stat.regs.AF.b.l & ZF );
-                        break;
-                case 0xc9: i8085_ICount -= 4;   /* RET  */
-                        M_RET(1);
-                        break;
-                case 0xca: i8085_ICount -= 10;  /* JZ   nnnn */
-                        M_JMP( i85stat.regs.AF.b.l & ZF );
-                        break;
-                case 0xcb: i8085_ICount -= 4;   /* ???? */
-                        illegal();
-                        break;
-                case 0xcc: i8085_ICount -= 11;  /* CZ   nnnn */
-                        M_CALL( i85stat.regs.AF.b.l & ZF );
-                        break;
-                case 0xcd: i8085_ICount -= 11;  /* CALL nnnn */
-                        M_CALL(1);
-                        break;
-                case 0xce: i8085_ICount -= 7;   /* ACI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_ADC(i85stat.regs.XX.b.l);
-                        break;
-                case 0xcf: i8085_ICount -= 11;  /* RST  1 */
-                        M_RST(1);
-                        break;
+        case 0xc0:	M_RET( !(i85stat.regs.AF.b.l & ZF) );					break;	/* RNZ  */
+        case 0xc1:	M_POP(BC);											break;	/* POP  B */
+        case 0xc2:	M_JMP( !(i85stat.regs.AF.b.l & ZF) );					break;	/* JNZ  nnnn */
+        case 0xc3:	M_JMP(1);											break;	/* JMP  nnnn */
+        case 0xc4:	M_CALL( !(i85stat.regs.AF.b.l & ZF) );					break;	/* CNZ  nnnn */
+        case 0xc5:	M_PUSH(BC);											break;	/* PUSH B */
+        case 0xc6:	i85stat.regs.WZ.b.l = ARG(); M_ADD(i85stat.regs.WZ.b.l); break; /* ADI  nn */
+        case 0xc7:	M_RST(0);											break;	/* RST  0 */
 
-                case 0xd0: i8085_ICount -= 5;   /* RNC  */
-                        M_RET( !(i85stat.regs.AF.b.l & CF) );
-                        break;
-                case 0xd1: i8085_ICount -= 10;  /* POP  D */
-                        M_POP(DE);
-                        break;
-                case 0xd2: i8085_ICount -= 10;  /* JNC  nnnn */
-                        M_JMP( !(i85stat.regs.AF.b.l & CF) );
-                        break;
-                case 0xd3: i8085_ICount -= 10;  /* OUT  nn */
-                        M_OUT;
-                        break;
-                case 0xd4: i8085_ICount -= 11;  /* CNC  nnnn */
-                        M_CALL( !(i85stat.regs.AF.b.l & CF) );
-                        break;
-                case 0xd5: i8085_ICount -= 11;  /* PUSH D */
-                        M_PUSH(DE);
-                        break;
-                case 0xd6: i8085_ICount -= 7;   /* SUI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_SUB(i85stat.regs.XX.b.l);
-                        break;
-                case 0xd7: i8085_ICount -= 11;  /* RST  2 */
-                        M_RST(2);
-                        break;
+        case 0xc8:	M_RET( i85stat.regs.AF.b.l & ZF );						break;	/* RZ   */
+        case 0xc9:	M_POP(PC);											break;	/* RET  */
+        case 0xca:	M_JMP( i85stat.regs.AF.b.l & ZF );						break;	/* JZ   nnnn */
+        case 0xcb:	if (IS_8085()) {									/* RST  V */
+                        if (i85stat.regs.AF.b.l & VF) { M_RST(8); }
+                        else i8085_ICount += 6; // RST not taken
+                    } else { M_JMP(1); }										/* JMP  nnnn undocumented */
+                    break;
+        case 0xcc:	M_CALL( i85stat.regs.AF.b.l & ZF );					break;	/* CZ   nnnn */
+        case 0xcd:	M_CALL(1);											break;	/* CALL nnnn */
+        case 0xce:	i85stat.regs.WZ.b.l = ARG(); M_ADC(i85stat.regs.WZ.b.l); break; /* ACI  nn */
+        case 0xcf:	M_RST(1);											break;	/* RST  1 */
 
-                case 0xd8: i8085_ICount -= 5;   /* RC   */
-                        M_RET( i85stat.regs.AF.b.l & CF );
-                        break;
-                case 0xd9: i8085_ICount -= 4;   /* ???? */
-                        illegal();
-                        break;
-                case 0xda: i8085_ICount -= 10;  /* JC   nnnn */
-                        M_JMP( i85stat.regs.AF.b.l & CF );
-                        break;
-                case 0xdb: i8085_ICount -= 10;  /* IN   nn */
-                        M_IN;
-                        break;
-                case 0xdc: i8085_ICount -= 11;  /* CC   nnnn */
-                        M_CALL( i85stat.regs.AF.b.l & CF );
-                        break;
-                case 0xdd: i8085_ICount -= 4;   /* ???? */
-                        illegal();
-                        break;
-                case 0xde: i8085_ICount -= 7;   /* SBI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_SBB(i85stat.regs.XX.b.l);
-                        break;
-                case 0xdf: i8085_ICount -= 11;  /* RST  3 */
-                        M_RST(3);
-                        break;
+        case 0xd0:	M_RET( !(i85stat.regs.AF.b.l & CF) );					break;	/* RNC  */
+        case 0xd1:	M_POP(DE);											break;	/* POP  D */
+        case 0xd2:	M_JMP( !(i85stat.regs.AF.b.l & CF) );					break;	/* JNC  nnnn */
+        case 0xd3:	M_OUT;												break;	/* OUT  nn */
+        case 0xd4:	M_CALL( !(i85stat.regs.AF.b.l & CF) );					break;	/* CNC  nnnn */
+        case 0xd5:	M_PUSH(DE);											break;	/* PUSH D */
+        case 0xd6:	i85stat.regs.WZ.b.l = ARG(); M_SUB(i85stat.regs.WZ.b.l); break; /* SUI  nn */
+        case 0xd7:	M_RST(2);											break;	/* RST  2 */
 
-                case 0xe0: i8085_ICount -= 5;   /* RPE    */
-                        M_RET( !(i85stat.regs.AF.b.l & VF) );
-                        break;
-                case 0xe1: i8085_ICount -= 10;  /* POP  H */
-                        M_POP(HL);
-                        break;
-                case 0xe2: i8085_ICount -= 10;  /* JPE  nnnn */
-                        M_JMP( !(i85stat.regs.AF.b.l & VF) );
-                        break;
-                case 0xe3: i8085_ICount -= 18;  /* XTHL */
-                        M_POP(XX);
-                        M_PUSH(HL);
-                        i85stat.regs.HL.d = i85stat.regs.XX.d;
-                        break;
-                case 0xe4: i8085_ICount -= 11;  /* CPE  nnnn */
-                        M_CALL( !(i85stat.regs.AF.b.l & VF) );
-                        break;
-                case 0xe5: i8085_ICount -= 11;  /* PUSH H */
-                        M_PUSH(HL);
-                        break;
-                case 0xe6: i8085_ICount -= 7;   /* ANI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_ANA(i85stat.regs.XX.b.l);
-                        break;
-                case 0xe7: i8085_ICount -= 11;  /* RST  4 */
-                        M_RST(4);
-                        break;
+        case 0xd8:	M_RET( i85stat.regs.AF.b.l & CF );						break;	/* RC   */
+        case 0xd9:	if (IS_8085()) {									/* SHLX */
+                        i85stat.regs.WZ.w.l = i85stat.regs.DE.w.l;
+                        WM( i85stat.regs.WZ.d, i85stat.regs.HL.b.l); i85stat.regs.WZ.w.l++;
+                        WM( i85stat.regs.WZ.d, i85stat.regs.HL.b.h);
+                    } else { M_POP(PC); }										/* RET  undocumented */
+                    break;
+        case 0xda:	M_JMP( i85stat.regs.AF.b.l & CF );						break;	/* JC   nnnn */
+        case 0xdb:	M_IN;												break;	/* IN   nn */
+        case 0xdc:	M_CALL( i85stat.regs.AF.b.l & CF );					break;	/* CC   nnnn */
+        case 0xdd:	if (IS_8085()) { M_JMP( !(i85stat.regs.AF.b.l & X5F) ); } /* JNX  nnnn */
+                    else { M_CALL(1); }											/* CALL nnnn undocumented */
+                    break;
+        case 0xde:	i85stat.regs.WZ.b.l = ARG(); M_SBB(i85stat.regs.WZ.b.l); break; /* SBI  nn */
+        case 0xdf:	M_RST(3);											break;	/* RST  3 */
 
-                case 0xe8: i8085_ICount -= 5;   /* RPO  */
-                        M_RET( i85stat.regs.AF.b.l & VF );
-                        break;
-                case 0xe9: i8085_ICount -= 5;   /* PCHL */
-                        i85stat.regs.PC.d = i85stat.regs.HL.w.l;
-                        change_pc16(i85stat.regs.PC.d);
-                        break;
-                case 0xea: i8085_ICount -= 10;  /* JPO  nnnn */
-                        M_JMP( i85stat.regs.AF.b.l & VF );
-                        break;
-                case 0xeb: i8085_ICount -= 4;   /* XCHG */
-                        i85stat.regs.XX.d = i85stat.regs.DE.d;
-                        i85stat.regs.DE.d = i85stat.regs.HL.d;
-                        i85stat.regs.HL.d = i85stat.regs.XX.d;
-                        break;
-                case 0xec: i8085_ICount -= 11;  /* CPO  nnnn */
-                        M_CALL( i85stat.regs.AF.b.l & VF );
-                        break;
-                case 0xed: i8085_ICount -= 4;   /* ???? */
-                        illegal();
-                        break;
-                case 0xee: i8085_ICount -= 7;   /* XRI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_XRA(i85stat.regs.XX.b.l);
-                        break;
-                case 0xef: i8085_ICount -= 11;  /* RST  5 */
-                        M_RST(5);
-                        break;
+        case 0xe0:	M_RET( !(i85stat.regs.AF.b.l & PF) );					break;	/* RPO    */
+        case 0xe1:	M_POP(HL);											break;	/* POP  H */
+        case 0xe2:	M_JMP( !(i85stat.regs.AF.b.l & PF) );					break;	/* JPO  nnnn */
+        case 0xe3:	M_POP(WZ); M_PUSH(HL);										/* XTHL */
+                    i85stat.regs.HL.d = i85stat.regs.WZ.d;
+                    break;
+        case 0xe4:	M_CALL( !(i85stat.regs.AF.b.l & PF) );					break;	/* CPO  nnnn */
+        case 0xe5:	M_PUSH(HL);											break;	/* PUSH H */
+        case 0xe6:	i85stat.regs.WZ.b.l = ARG(); M_ANA(i85stat.regs.WZ.b.l); break; /* ANI  nn */
+        case 0xe7:	M_RST(4);											break;	/* RST  4 */
 
-                case 0xf0: i8085_ICount -= 5;   /* RP   */
-                        M_RET( !(i85stat.regs.AF.b.l&SF) );
-                        break;
-                case 0xf1: i8085_ICount -= 10;  /* POP  A */
-                        M_POP(AF);
-                        break;
-                case 0xf2: i8085_ICount -= 10;  /* JP   nnnn */
-                        M_JMP( !(i85stat.regs.AF.b.l & SF) );
-                        break;
-                case 0xf3: i8085_ICount -= 4;   /* DI   */
-                        /* remove interrupt enable */
-                        i85stat.regs.IM &= ~IM_IEN;
-                        break;
-                case 0xf4: i8085_ICount -= 11;  /* CP   nnnn */
-                        M_CALL( !(i85stat.regs.AF.b.l & SF) );
-                        break;
-                case 0xf5: i8085_ICount -= 11;  /* PUSH A */
-                        M_PUSH(AF);
-                        break;
-                case 0xf6: i8085_ICount -= 7;   /* ORI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_ORA(i85stat.regs.XX.b.l);
-                        break;
-                case 0xf7: i8085_ICount -= 11;  /* RST  6 */
-                        M_RST(6);
-                        break;
+        case 0xe8:	M_RET( i85stat.regs.AF.b.l & PF );						break;	/* RPE  */
+        case 0xe9:	i85stat.regs.PC.d = i85stat.regs.HL.w.l;					break;	/* PCHL */
+        case 0xea:	M_JMP( i85stat.regs.AF.b.l & PF );						break;	/* JPE  nnnn */
+        case 0xeb:	i85stat.regs.WZ.d = i85stat.regs.DE.d;							/* XCHG */
+                    i85stat.regs.DE.d = i85stat.regs.HL.d;
+                    i85stat.regs.HL.d = i85stat.regs.WZ.d;
+                    break;
+        case 0xec:	M_CALL( i85stat.regs.AF.b.l & PF );					break;	/* CPE  nnnn */
+        case 0xed:	if (IS_8085()) {									/* LHLX */
+                        i85stat.regs.WZ.w.l = i85stat.regs.DE.w.l;
+                        i85stat.regs.HL.b.l = RM( i85stat.regs.WZ.d); i85stat.regs.WZ.w.l++;
+                        i85stat.regs.HL.b.h = RM( i85stat.regs.WZ.d);
+                    } else { M_CALL(1); }										/* CALL nnnn undocumented */
+                    break;
+        case 0xee:	i85stat.regs.WZ.b.l = ARG(); M_XRA(i85stat.regs.WZ.b.l); break; /* XRI  nn */
+        case 0xef:	M_RST(5);											break;	/* RST  5 */
 
-                case 0xf8: i8085_ICount -= 5;   /* RM   */
-                        M_RET( i85stat.regs.AF.b.l & SF );
-                        break;
-                case 0xf9: i8085_ICount -= 5;   /* SPHL */
-                        i85stat.regs.SP.d = i85stat.regs.HL.d;
-                        break;
-                case 0xfa: i8085_ICount -= 10;  /* JM   nnnn */
-                        M_JMP( i85stat.regs.AF.b.l & SF );
-                        break;
-                case 0xfb: i8085_ICount -= 4;   /* EI */
-                        /* set interrupt enable */
-                        i85stat.regs.IM |= IM_IEN;
-                        /* remove serviced IRQ flag */
-                        i85stat.regs.IREQ &= ~i85stat.regs.ISRV;
-                        /* reset serviced IRQ */
-                        i85stat.regs.ISRV = 0;
-                        if( i85stat.regs.irq_state[0] != CLEAR_LINE )
-                        {
-                                LOG(("i8085 EI sets INTR\n"));
-                                i85stat.regs.IREQ |= IM_INTR;
-                                i85stat.regs.INTR = I8085_INTR;
-                        }
-                        if( i85stat.regs.cputype )
-                        {
-                                if( i85stat.regs.irq_state[1] != CLEAR_LINE )
-                                {
-                                        LOG(("i8085 EI sets RST5.5\n"));
-                                        i85stat.regs.IREQ |= IM_RST55;
-                                }
-                                if( i85stat.regs.irq_state[2] != CLEAR_LINE )
-                                {
-                                        LOG(("i8085 EI sets RST6.5\n"));
-                                        i85stat.regs.IREQ |= IM_RST65;
-                                }
-                                if( i85stat.regs.irq_state[3] != CLEAR_LINE )
-                                {
-                                        LOG(("i8085 EI sets RST7.5\n"));
-                                        i85stat.regs.IREQ |= IM_RST75;
-                                }
-                                /* find highest priority IREQ flag with
-                                   IM enabled and schedule for execution */
-                                if( !(i85stat.regs.IM & IM_RST75) && (i85stat.regs.IREQ & IM_RST75) )
-                                {
-                                        i85stat.regs.ISRV = IM_RST75;
-                                        i85stat.regs.IRQ2 = ADDR_RST75;
-                                }
-                                else
-                                if( !(i85stat.regs.IM & IM_RST65) && (i85stat.regs.IREQ & IM_RST65) )
-                                {
-                                        i85stat.regs.ISRV = IM_RST65;
-                                        i85stat.regs.IRQ2 = ADDR_RST65;
-                                }
-                                else
-                                if( !(i85stat.regs.IM & IM_RST55) && (i85stat.regs.IREQ & IM_RST55) )
-                                {
-                                        i85stat.regs.ISRV = IM_RST55;
-                                        i85stat.regs.IRQ2 = ADDR_RST55;
-                                }
-                                else
-                                if( !(i85stat.regs.IM & IM_INTR) && (i85stat.regs.IREQ & IM_INTR) )
-                                {
-                                        i85stat.regs.ISRV = IM_INTR;
-                                        i85stat.regs.IRQ2 = i85stat.regs.INTR;
-                                }
-                        }
-                        else
-                        {
-                                if( !(i85stat.regs.IM & IM_INTR) && (i85stat.regs.IREQ & IM_INTR) )
-                                {
-                                        i85stat.regs.ISRV = IM_INTR;
-                                        i85stat.regs.IRQ2 = i85stat.regs.INTR;
-                                }
-                        }
-                        break;
-                case 0xfc: i8085_ICount -= 11;  /* CM   nnnn */
-                        M_CALL( i85stat.regs.AF.b.l & SF );
-                        break;
-                case 0xfd: i8085_ICount -= 4;   /* ???? */
-                        illegal();
-                        break;
-                case 0xfe: i8085_ICount -= 7;   /* CPI  nn */
-                        i85stat.regs.XX.b.l = ARG();
-                        M_CMP(i85stat.regs.XX.b.l);
-                        break;
-                case 0xff: i8085_ICount -= 11;  /* RST  7 */
-                        M_RST(7);
-                        break;
-        }
+        case 0xf0:	M_RET( !(i85stat.regs.AF.b.l&SF) );					break;	/* RP   */
+        case 0xf1:	M_POP(AF);											break;	/* POP  A */
+        case 0xf2:	M_JMP( !(i85stat.regs.AF.b.l & SF) );					break;	/* JP   nnnn */
+        case 0xf3:	set_inte( 0);								break;	/* DI   */
+        case 0xf4:	M_CALL( !(i85stat.regs.AF.b.l & SF) );					break;	/* CP   nnnn */
+        case 0xf5:	M_PUSH(AF);											break;	/* PUSH A */
+        case 0xf6:	i85stat.regs.WZ.b.l = ARG(); M_ORA(i85stat.regs.WZ.b.l); break; /* ORI  nn */
+        case 0xf7:	M_RST(6);											break;	/* RST  6 */
+
+        case 0xf8:	M_RET( i85stat.regs.AF.b.l & SF );						break;	/* RM   */
+        case 0xf9:	i85stat.regs.SP.d = i85stat.regs.HL.d;					break;	/* SPHL */
+        case 0xfa:	M_JMP( i85stat.regs.AF.b.l & SF );						break;	/* JM   nnnn */
+        case 0xfb:	set_inte( 1); i85stat.regs.after_ei = 2;		break;	/* EI */
+        case 0xfc:	M_CALL( i85stat.regs.AF.b.l & SF );					break;	/* CM   nnnn */
+        case 0xfd:	if (IS_8085()) { M_JMP( i85stat.regs.AF.b.l & X5F ); }	/* JX   nnnn */
+                    else { M_CALL(1); }											/* CALL nnnn undocumented */
+                    break;
+        case 0xfe:	i85stat.regs.WZ.b.l = ARG(); M_CMP(i85stat.regs.WZ.b.l); break; /* CPI  nn */
+        case 0xff:	M_RST(7);											break;	/* RST  7 */
+    }
 }
 
-void Ci8085::Interrupt(void)
+INLINE void Ci8085::break_halt_for_interrupt(void)
 {
+    /* de-halt if necessary */
+    if (i85stat.regs.HALT)
+    {
+        i85stat.regs.PC.w.l++;
+        i85stat.regs.HALT = 0;
+        set_status( 0x26);	/* int ack while halt */
+    }
+    else
+        set_status( 0x23);	/* int ack */
+}
 
-        if( i85stat.regs.HALT )            /* if the CPU was halted */
+INLINE void Ci8085::set_status(UINT8 status)
+{
+//	if (status != i85stat.regs.STATUS)
+//		i85stat.regs.out_status_func(0, status);
+
+    i85stat.regs.STATUS = status;
+}
+INLINE void Ci8085::set_inte(int state)
+{
+    if (state != 0 && (i85stat.regs.IM & IM_IE) == 0)
+    {
+        i85stat.regs.IM |= IM_IE;
+//        i85stat.regs.out_inte_func(1);
+    }
+    else if (state == 0 && (i85stat.regs.IM & IM_IE) != 0)
+    {
+        i85stat.regs.IM &= ~IM_IE;
+//        i85stat.regs.out_inte_func(0);
+    }
+}
+INLINE void Ci8085::set_sod(int state)
+{
+    if (state != 0 && i85stat.regs.sod_state == 0)
+    {
+        i85stat.regs.sod_state = 1;
+//		i85stat.regs.out_sod_func(i85stat.regs.sod_state);
+    }
+    else if (state == 0 && i85stat.regs.sod_state != 0)
+    {
+        i85stat.regs.sod_state = 0;
+//		i85stat.regs.out_sod_func(i85stat.regs.sod_state);
+    }
+}
+void Ci8085::check_for_interrupts(void)
+{
+    /* TRAP is the highest priority */
+    if (i85stat.regs.trap_pending)
+    {
+        /* the first RIM after a TRAP reflects the original IE state; remember it here,
+           setting the high bit to indicate it is valid */
+        i85stat.regs.trap_im_copy = i85stat.regs.IM | 0x80;
+
+        /* reset the pending state */
+        i85stat.regs.trap_pending = false;
+
+        /* break out of HALT state and call the IRQ ack callback */
+        break_halt_for_interrupt();
+//        if (i85stat.regs.irq_callback != NULL)
+//            (*i85stat.regs.irq_callback)(i85stat.regs.device, INPUT_LINE_NMI);
+
+        /* push the PC and jump to $0024 */
+        M_PUSH(PC);
+        set_inte(0);
+        i85stat.regs.PC.w.l = ADDR_TRAP;
+        i8085_ICount -= 11;
+    }
+
+    /* followed by RST7.5 */
+    else if ((i85stat.regs.IM & IM_I75) && !(i85stat.regs.IM & IM_M75) && (i85stat.regs.IM & IM_IE))
+    {
+        /* reset the pending state (which is CPU-visible via the RIM instruction) */
+        i85stat.regs.IM &= ~IM_I75;
+
+        /* break out of HALT state and call the IRQ ack callback */
+        break_halt_for_interrupt();
+//        if (i85stat.regs.irq_callback != NULL)
+//            (*i85stat.regs.irq_callback)(i85stat.regs.device, I8085_RST75_LINE);
+
+        /* push the PC and jump to $003C */
+        M_PUSH(PC);
+        set_inte( 0);
+        i85stat.regs.PC.w.l = ADDR_RST75;
+        i8085_ICount -= 11;
+    }
+
+    /* followed by RST6.5 */
+    else if (i85stat.regs.irq_state[I8085_RST65_LINE] && !(i85stat.regs.IM & IM_M65) && (i85stat.regs.IM & IM_IE))
+    {
+        /* break out of HALT state and call the IRQ ack callback */
+        break_halt_for_interrupt();
+//        if (i85stat.regs.irq_callback != NULL)
+//            (*i85stat.regs.irq_callback)(i85stat.regs.device, I8085_RST65_LINE);
+
+        /* push the PC and jump to $0034 */
+        M_PUSH(PC);
+        set_inte( 0);
+        i85stat.regs.PC.w.l = ADDR_RST65;
+        i8085_ICount -= 11;
+    }
+
+    /* followed by RST5.5 */
+    else if (i85stat.regs.irq_state[I8085_RST55_LINE] && !(i85stat.regs.IM & IM_M55) && (i85stat.regs.IM & IM_IE))
+    {
+        /* break out of HALT state and call the IRQ ack callback */
+        break_halt_for_interrupt();
+//        if (i85stat.regs.irq_callback != NULL)
+//            (*i85stat.regs.irq_callback)(i85stat.regs.device, I8085_RST55_LINE);
+
+        /* push the PC and jump to $002C */
+        M_PUSH(PC);
+        set_inte( 0);
+        i85stat.regs.PC.w.l = ADDR_RST55;
+        i8085_ICount -= 11;
+    }
+
+    /* followed by classic INTR */
+    else if (i85stat.regs.irq_state[I8085_INTR_LINE] && (i85stat.regs.IM & IM_IE))
+    {
+        UINT32 vector = 0;
+
+        /* break out of HALT state and call the IRQ ack callback */
+        break_halt_for_interrupt();
+//        if (i85stat.regs.irq_callback != NULL)
+//            vector = (*i85stat.regs.irq_callback)(i85stat.regs.device, I8085_INTR_LINE);
+
+        /* use the resulting vector as an opcode to execute */
+        set_inte( 0);
+        switch (vector & 0xff0000)
         {
-                i85stat.regs.PC.w.l++;     /* skip HALT instr */
-                i85stat.regs.HALT = 0;
+            case 0xcd0000:	/* CALL nnnn */
+                i8085_ICount -= 7;
+                M_PUSH(PC);
+            case 0xc30000:	/* JMP  nnnn */
+                i8085_ICount -= 10;
+                i85stat.regs.PC.d = vector & 0xffff;
+                break;
+
+            default:
+                LOG(("i8085 take int $%02x\n", vector));
+                execute_one( vector & 0xff);
+                break;
         }
-        i85stat.regs.IM &= ~IM_IEN;                /* remove general interrupt enable bit */
-
-        if( i85stat.regs.ISRV == IM_INTR )
-        {
-                LOG(("Interrupt get INTR vector\n"));
-                i85stat.regs.IRQ1 = (i85stat.regs.irq_callback)(0);
-        }
-
-        if( i85stat.regs.cputype )
-        {
-                if( i85stat.regs.ISRV == IM_RST55 )
-                {
-                        LOG(("Interrupt get RST5.5 vector\n"));
-                        i85stat.regs.IRQ1 = I8085_RST55;//(i85stat.regs.irq_callback)(1);
-                }
-
-                if( i85stat.regs.ISRV == IM_RST65  )
-                {
-                        LOG(("Interrupt get RST6.5 vector\n"));
-                        i85stat.regs.IRQ1 = I8085_RST65;//(i85stat.regs.irq_callback)(2);
-                }
-
-                if( i85stat.regs.ISRV == IM_RST75 )
-                {
-                        LOG(("Interrupt get RST7.5 vector\n"));
-                        i85stat.regs.IRQ1 = I8085_RST75;//(i85stat.regs.irq_callback)(3);
-                }
-        }
-
-        switch( i85stat.regs.IRQ1 & 0xff0000 )
-        {
-                case 0xcd0000:  /* CALL nnnn */
-                        i8085_ICount -= 7;
-                        M_PUSH(PC);
-                case 0xc30000:  /* JMP  nnnn */
-                        i8085_ICount -= 10;
-                        i85stat.regs.PC.d = i85stat.regs.IRQ1 & 0xffff;
-                        change_pc16(i85stat.regs.PC.d);
-                        break;
-                default:
-                        switch( i85stat.regs.IRQ1 )
-                        {
-                                case I8085_TRAP:
-                                case I8085_RST75:
-                                case I8085_RST65:
-                                case I8085_RST55:
-                                        M_PUSH(PC);
-                                        if (i85stat.regs.IRQ1 != I8085_RST75)
-                                                i85stat.regs.PC.d = i85stat.regs.IRQ1;
-                                        else
-                                                i85stat.regs.PC.d = 0x3c;
-                                        change_pc16(i85stat.regs.PC.d);
-                                        if (fp_log) fprintf(fp_log,"INTERRUPT\n");
-                                        break;
-                                default:
-                                        LOG(("i8085 take int $%02x\n", i85stat.regs.IRQ1));
-                                        execute_one(i85stat.regs.IRQ1 & 0xff);
-                        }
-        }
+    }
 }
 
 int Ci8085::i8085_execute(int cycles)
 {
 
-        i8085_ICount = cycles;
-        do
-        {
+    i8085_ICount = cycles;
 
+    /* check for TRAPs before diving in (can't do others because of after_ei) */
+    if (i85stat.regs.trap_pending || i85stat.regs.after_ei == 0)
+        check_for_interrupts();
 
-                /* interrupts enabled or TRAP pending ? */
-                if ( (i85stat.regs.IM & IM_IEN) || (i85stat.regs.IREQ & IM_TRAP) )
-                {
-                        /* copy scheduled to executed interrupt request */
-                        i85stat.regs.IRQ1 = i85stat.regs.IRQ2;
-                        /* reset scheduled interrupt request */
-                        i85stat.regs.IRQ2 = 0;
-                        /* interrupt now ? */
-                        if (i85stat.regs.IRQ1) Interrupt();
-                }
+    do
+    {
+//        debugger_instruction_hook(device, i85stat.regs.PC.d);
 
-                /* here we go... */
-                execute_one(ROP());
+        /* the instruction after an EI does not take an interrupt, so
+           we cannot check immediately; handle post-EI behavior here */
+        if (i85stat.regs.after_ei != 0 && --i85stat.regs.after_ei == 0)
+            check_for_interrupts();
+
+        /* here we go... */
+        execute_one( ROP());
 
         } while (i8085_ICount > 0);
 
@@ -1180,12 +771,15 @@ int Ci8085::i8085_execute(int cycles)
 /****************************************************************************
  * Initialise the various lookup tables used by the emulation code
  ****************************************************************************/
-void Ci8085::init_tables (void)
+void Ci8085::init_tables (int type)
 {
         quint8 zs;
         int i, p;
         for (i = 0; i < 256; i++)
         {
+            /* cycles */
+                    lut_cycles[i] = type?lut_cycles_8085[i]:lut_cycles_8080[i];
+
                 zs = 0;
                 if (i==0) zs |= ZF;
                 if (i&128) zs |= SF;
@@ -1306,12 +900,8 @@ void Ci8085::i8085_set_reg(int regnum, unsigned val)
 /* Set the 8085 SID input signal state                                                                          */
 /****************************************************************************/
 void Ci8085::i8085_set_SID(int state)
-{
-        LOG(("i8085: SID %d\n", state));
-        if (state)
-                i85stat.regs.IM |= IM_SID;
-        else
-                i85stat.regs.IM &= ~IM_SID;
+{        
+    i85stat.regs.sid_state = state;
 }
 
 /****************************************************************************/
@@ -1322,148 +912,35 @@ void Ci8085::i8085_set_SID(int state)
 //        i85stat.regs.sod_callback = callback;
 //}
 
-/****************************************************************************/
-/* Set TRAP signal state                                                                                                        */
-/****************************************************************************/
-void Ci8085::i8085_set_TRAP(int state)
-{
-        LOG(("i8085: TRAP %d\n", state));
-        if (state)
-        {
-                i85stat.regs.IREQ |= IM_TRAP;
-                if( i85stat.regs.ISRV & IM_TRAP ) return;  /* already servicing TRAP ? */
-                i85stat.regs.ISRV = IM_TRAP;                               /* service TRAP */
-                i85stat.regs.IRQ2 = ADDR_TRAP;
-        }
-        else
-        {
-                i85stat.regs.IREQ &= ~IM_TRAP;                     /* remove request for TRAP */
-        }
-}
 
-/****************************************************************************/
-/* Set RST7.5 signal state                                                                                                      */
-/****************************************************************************/
-void Ci8085::i8085_set_RST75(int state)
-{
-//        LOG(("i8085: RST7.5 %d\n", state));
-        if( state )
-        {
 
-                i85stat.regs.IREQ |= IM_RST75;                     /* request RST7.5 */
-                if( i85stat.regs.IM & IM_RST75 ) return;   /* if masked, ignore it for now */
-                if( !i85stat.regs.ISRV )                                   /* if no higher priority IREQ is serviced */
-                {
-                        i85stat.regs.ISRV = IM_RST75;                      /* service RST7.5 */
-                        i85stat.regs.IRQ2 = ADDR_RST75;
-                }
-        }
-        /* RST7.5 is reset only by SIM or end of service routine ! */
-}
 
-/****************************************************************************/
-/* Set RST6.5 signal state                                                                                                      */
-/****************************************************************************/
-void Ci8085::i8085_set_RST65(int state)
-{
-        LOG(("i8085: RST6.5 %d\n", state));
-        if( state )
-        {
-                i85stat.regs.IREQ |= IM_RST65;                     /* request RST6.5 */
-                if( i85stat.regs.IM & IM_RST65 ) return;   /* if masked, ignore it for now */
-                if( !i85stat.regs.ISRV )                                   /* if no higher priority IREQ is serviced */
-                {
-                        i85stat.regs.ISRV = IM_RST65;                      /* service RST6.5 */
-                        i85stat.regs.IRQ2 = ADDR_RST65;
-                }
-        }
-        else
-        {
-                i85stat.regs.IREQ &= ~IM_RST65;                    /* remove request for RST6.5 */
-        }
-}
 
-/****************************************************************************/
-/* Set RST5.5 signal state                                                                                                      */
-/****************************************************************************/
-void Ci8085::i8085_set_RST55(int state)
-{
-        LOG(("i8085: RST5.5 %d\n", state));
-        if( state )
-        {
-                i85stat.regs.IREQ |= IM_RST55;                     /* request RST5.5 */
-                if( i85stat.regs.IM & IM_RST55 ) return;   /* if masked, ignore it for now */
-                if( !i85stat.regs.ISRV )                                   /* if no higher priority IREQ is serviced */
-                {
-                        i85stat.regs.ISRV = IM_RST55;                      /* service RST5.5 */
-                        i85stat.regs.IRQ2 = ADDR_RST55;
-                }
-        }
-        else
-        {
-                i85stat.regs.IREQ &= ~IM_RST55;                    /* remove request for RST5.5 */
-        }
-}
-
-/****************************************************************************/
-/* Set INTR signal                                                                                                                      */
-/****************************************************************************/
-void Ci8085::i8085_set_INTR(int state)
-{
-        LOG(("i8085: INTR %d\n", state));
-        if( state )
-        {
-                i85stat.regs.IREQ |= IM_INTR;                              /* request INTR */
-                i85stat.regs.INTR = state;
-                if( i85stat.regs.IM & IM_INTR ) return;    /* if masked, ignore it for now */
-                if( !i85stat.regs.ISRV )                                   /* if no higher priority IREQ is serviced */
-                {
-                        i85stat.regs.ISRV = IM_INTR;                       /* service INTR */
-                        i85stat.regs.IRQ2 = i85stat.regs.INTR;
-                }
-        }
-        else
-        {
-                i85stat.regs.IREQ &= ~IM_INTR;                     /* remove request for INTR */
-        }
-}
-
-void Ci8085::i8085_set_nmi_line(int state)
-{
-        i85stat.regs.nmi_state = state;
-        if( state != CLEAR_LINE )
-                i8085_set_TRAP(1);
-}
 
 void Ci8085::i8085_set_irq_line(int irqline, int state)
 {
+    int newstate = (state != CLEAR_LINE);
+
+    /* NMI is edge-triggered */
+//    if (irqline == INPUT_LINE_NMI)
+//    {
+//        if (!i85stat.regs.nmi_state && newstate)
+//            i85stat.regs.trap_pending = TRUE;
+//        i85stat.regs.nmi_state = newstate;
+//    }
+
+    /* RST7.5 is edge-triggered */
+//    else
+    if (irqline == I8085_RST75_LINE)
+    {
+        if (!i85stat.regs.irq_state[I8085_RST75_LINE] && newstate)
+            i85stat.regs.IM |= IM_I75;
+        i85stat.regs.irq_state[I8085_RST75_LINE] = newstate;
+    }
+
+    /* remaining sources are level triggered */
+    else if (irqline < sizeof(i85stat.regs.irq_state))
         i85stat.regs.irq_state[irqline] = state;
-        if (state == CLEAR_LINE)
-        {
-                if( !(i85stat.regs.IM & IM_IEN) )
-                {
-                        switch (irqline)
-                        {
-                                case I8085_INTR_LINE: i8085_set_INTR(0); break;
-                                case I8085_RST55_LINE: i8085_set_RST55(0); break;
-                                case I8085_RST65_LINE: i8085_set_RST65(0); break;
-                                case I8085_RST75_LINE: i8085_set_RST75(0); break;
-                        }
-                }
-        }
-        else
-        {
-                if( i85stat.regs.IM & IM_IEN )
-                {
-                        switch( irqline )
-                        {
-                                case I8085_INTR_LINE: i8085_set_INTR(1); break;
-                                case I8085_RST55_LINE: i8085_set_RST55(1); break;
-                                case I8085_RST65_LINE: i8085_set_RST65(1); break;
-                                case I8085_RST75_LINE: i8085_set_RST75(1); break;
-                        }
-                }
-        }
 }
 
 //void Ci8085::i8085_set_irq_callback(int (*callback)(int))
@@ -1483,10 +960,20 @@ void Ci8085::step()
 
 void Ci8085::Reset()
 {
-    init_tables();
+    init_tables(CPUTYPE_8085);
     memset(&I, 0, sizeof(I));
     i85stat.regs.cputype = 1;
     change_pc16(i85stat.regs.PC.d);
+
+    i85stat.regs.PC.d = 0;
+    i85stat.regs.HALT = 0;
+    i85stat.regs.IM &= ~IM_I75;
+    i85stat.regs.IM |= IM_M55 | IM_M65 | IM_M75;
+    i85stat.regs.after_ei = false;
+    i85stat.regs.trap_pending = false;
+    i85stat.regs.trap_im_copy = 0;
+    set_inte( 0);
+    set_sod( 0);
 }
 
 
@@ -1511,13 +998,66 @@ void Ci8085::Regs_Info(quint8)
 
     sprintf(
     Regs_String,
-    "PC=%04X SP=%04X AF=%04X BC=%04X DE=%04X HL=%04X XX=%04X ",
+    "IM=%02X IREQ=%02X ISRV=%02X IRQ2=%08X PC=%04X SP=%04X AF=%04X BC=%04X DE=%04X HL=%04X WZ=%04X ",
+                i85stat.regs.IM,
+                i85stat.regs.IREQ,
+                i85stat.regs.ISRV,
+                i85stat.regs.IRQ2,
      i85stat.regs.PC.d,
                 i85stat.regs.SP.d,
                 i85stat.regs.AF.d,
                 i85stat.regs.BC.d,
                 i85stat.regs.DE.d,
                 i85stat.regs.HL.d,
-                i85stat.regs.XX.d
+                i85stat.regs.WZ.d
     );
 }
+
+/* cycles lookup */
+const UINT8 Ci8085::lut_cycles_8080[256]={
+/*      0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  */
+/* 0 */ 4, 10,7, 5, 5, 5, 7, 4, 4, 10,7, 5, 5, 5, 7, 4,
+/* 1 */ 4, 10,7, 5, 5, 5, 7, 4, 4, 10,7, 5, 5, 5, 7, 4,
+/* 2 */ 4, 10,16,5, 5, 5, 7, 4, 4, 10,16,5, 5, 5, 7, 4,
+/* 3 */ 4, 10,13,5, 10,10,10,4, 4, 10,13,5, 5, 5, 7, 4,
+/* 4 */ 5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+/* 5 */ 5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+/* 6 */ 5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+/* 7 */ 7, 7, 7, 7, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 7, 5,
+/* 8 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* 9 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* A */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* B */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* C */ 5, 10,10,10,11,11,7, 11,5, 10,10,10,11,11,7, 11,
+/* D */ 5, 10,10,10,11,11,7, 11,5, 10,10,10,11,11,7, 11,
+/* E */ 5, 10,10,18,11,11,7, 11,5, 5, 10,5, 11,11,7, 11,
+/* F */ 5, 10,10,4, 11,11,7, 11,5, 5, 10,4, 11,11,7, 11 };
+const UINT8 Ci8085::lut_cycles_8085[256]={
+/*      0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  */
+/* 0 */ 4, 10,7, 6, 4, 4, 7, 4, 10,10,7, 6, 4, 4, 7, 4,
+/* 1 */ 7, 10,7, 6, 4, 4, 7, 4, 10,10,7, 6, 4, 4, 7, 4,
+/* 2 */ 7, 10,16,6, 4, 4, 7, 4, 10,10,16,6, 4, 4, 7, 4,
+/* 3 */ 7, 10,13,6, 10,10,10,4, 10,10,13,6, 4, 4, 7, 4,
+/* 4 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* 5 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* 6 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* 7 */ 7, 7, 7, 7, 7, 7, 5, 7, 4, 4, 4, 4, 4, 4, 7, 4,
+/* 8 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* 9 */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* A */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* B */ 4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+/* C */ 6, 10,10,10,11,12,7, 12,6, 10,10,12,11,11,7, 12,
+/* D */ 6, 10,10,10,11,12,7, 12,6, 10,10,10,11,10,7, 12,
+/* E */ 6, 10,10,16,11,12,7, 12,6, 6, 10,5, 11,10,7, 12,
+/* F */ 6, 10,10,4, 11,12,7, 12,6, 6, 10,4, 11,10,7, 12 };
+
+/* special cases (partially taken care of elsewhere):
+               base c    taken?   not taken?
+M_RET  8080    5         +6(11)   -0            (conditional)
+M_RET  8085    6         +6(12)   -0            (conditional)
+M_JMP  8080    10        +0       -0
+M_JMP  8085    10        +0       -3(7)
+M_CALL 8080    11        +6(17)   -0
+M_CALL 8085    11        +7(18)   -2(9)
+
+*/

@@ -29,7 +29,7 @@
     <KEY description="?" height="58" left="746" scancode="0x3f" top="517" width="58"/>
     <KEY description="RETURN" height="122" left="907" scancode="0xd" top="396" width="76"/>
     <KEY description="GRPH" height="58" left="696" scancode="0x14" top="583" width="58"/>
-    <KEY description="NUM" height="58" left="188" scancode="0x15" top="396" width="58"/>
+    <KEY description="NUM" height="20" left="0" scancode="0x15" top="0" width="20"/>
     <KEY description="Space" height="58" left="245" scancode="0x20" top="584" width="446"/>
     <KEY description="0" height="58" left="665" scancode="0x30" top="335" width="58"/>
     <KEY description="1" height="58" left="87" scancode="0x31" top="330" width="58"/>
