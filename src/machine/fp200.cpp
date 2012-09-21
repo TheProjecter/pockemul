@@ -302,19 +302,19 @@ BYTE Cfp200::getKey()
             if (KEY('8'))			data|=0x10;
             if (KEY('I'))			data|=0x20;
             if (KEY('K'))			data|=0x40;
-            if (KEY('?'))			data|=0x80;
+            if (KEY('/'))			data|=0x80;
         }
         if (strobe & 0x04) {
             if (KEY('9'))			data|=0x10;
             if (KEY('O'))			data|=0x20;
             if (KEY('L'))			data|=0x40;
-            if (KEY('>'))			data|=0x80;
+            if (KEY('.'))			data|=0x80;
         }
         if (strobe & 0x08) {
             if (KEY('0'))			data|=0x10;
             if (KEY('P'))			data|=0x20;
-            if (KEY('<'))			data|=0x40;
-            if (KEY('+'))			data|=0x80;
+            if (KEY(','))			data|=0x40;
+            if (KEY(';'))			data|=0x80;
         }
         if (strobe & 0x10) {
             if (KEY(K_CLR))			data|=0x04;
@@ -350,6 +350,8 @@ BYTE Cfp200::getKey()
             if (KEY('C'))			data|=0x80;
         }
         if (strobe & 0x80) {
+            if (KEY('@'))			data|=0x01;
+            if (KEY('_'))			data|=0x02;
             if (KEY(K_DA))			data|=0x04;
             if (KEY(K_F3))			data|=0x08;
             if (KEY('4'))			data|=0x10;
@@ -358,6 +360,8 @@ BYTE Cfp200::getKey()
             if (KEY('V'))			data|=0x80;
         }
         if (strobe & 0x100)  {
+            if (KEY('['))			data|=0x01;
+            if (KEY(':'))			data|=0x02;
             if (KEY(K_UA))			data|=0x04;
             if (KEY(K_F4))			data|=0x08;
             if (KEY('5'))			data|=0x10;
