@@ -38,13 +38,14 @@ public:
     Ci8085 *i85cpu;
 
     quint8 ks;
-    BYTE getKey();
+    quint16 getKey();
     bool Cetl;
+    quint8 sid;
 
     int lastKeyBufSize;
     bool newKey;
-    void keyReleaseEvent(QKeyEvent *event);
-    void keyPressEvent(QKeyEvent *event);
+//    void keyReleaseEvent(QKeyEvent *event);
+//    void keyPressEvent(QKeyEvent *event);
     UINT8 matrixResult;
 };
 

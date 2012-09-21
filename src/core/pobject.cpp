@@ -734,7 +734,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 
 void CPObject::keyReleaseEvent(QKeyEvent * event )
 {
-    if (event->isAutoRepeat()) return;
+//    if (event->isAutoRepeat()) return;
 
 	if (!pKEYB) return;	// if no Keyboard then return;
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
@@ -795,7 +795,7 @@ int CPObject::mapKey(QKeyEvent * event) {
 void CPObject::keyPressEvent (QKeyEvent * event )
 {
 
-    if (event->isAutoRepeat()) return;
+//    if (event->isAutoRepeat()) return;
 	if (!pKEYB) return;	// if no Keyboard then return;
 
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
