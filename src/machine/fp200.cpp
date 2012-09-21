@@ -184,17 +184,12 @@ UINT16 Cfp200::out16(UINT16 Port, UINT16 x)
 
 bool Cfp200::init()
 {
-
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
-
 #endif
     CpcXXXX::init();
-    off = 0;
     Reset();
-
     Cetl = false;
-
 
     return true;
 }
@@ -266,18 +261,26 @@ void Cfp200::Reset()
 
 void Cfp200::TurnON()
 {
+    CpcXXXX::TurnON();
 }
 
 void Cfp200::TurnOFF()
 {
+    mainwindow->saveAll = YES;
+    CpcXXXX::TurnOFF();
+    mainwindow->saveAll = ASK;
 }
 
 bool Cfp200::SaveConfig(QXmlStreamWriter *xmlOut)
 {
+
+    return true;
 }
 
 bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 {
+
+    return true;
 }
 
 #define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
