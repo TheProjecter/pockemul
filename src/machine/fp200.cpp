@@ -193,6 +193,7 @@ bool Cfp200::init()
     off = 0;
     Reset();
 
+    Cetl = false;
 
 
     return true;
@@ -200,7 +201,8 @@ bool Cfp200::init()
 
 bool Cfp200::run()
 {
-    getKey();
+    i85cpu->i8085_set_SID(Cetl?0:1);
+
 #if 0
     // Check if keybuffer size change
     if ((pKEYB->LastKey>0)&&(lastKeyBufSize != pKEYB->LastKey)) {
@@ -257,6 +259,7 @@ bool Cfp200::run()
 void Cfp200::Reset()
 {
     CpcXXXX::Reset();
+
 
 //    ((Ci8085 *) pCPU)->i8085_set_pc(0x0000);
 }
@@ -331,7 +334,12 @@ BYTE Cfp200::getKey()
             if (KEY('S'))			data|=0x40;
             if (KEY('X'))			data|=0x80;
             // CETL BASIC SWITCH
-                    i85cpu->i8085_set_SID(1);
+            if (KEY(K_BASIC))       {
+                Cetl = false;
+            }
+            if (KEY(K_CETL))       {
+                Cetl = true;
+            }
         }
         if (strobe & 0x40) {
             if (KEY(K_LA))			data|=0x04;

@@ -1,6 +1,8 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>fp200</model>
 <Keyboard>
+    <KEY description="BASIC" height="40" left="878" scancode="0xe2" top="219" width="60"/>
+    <KEY description="CETL" height="40" left="944" scancode="0x20e" top="219" width="60"/>
     <KEY description="F1" height="58" left="57" scancode="0x1000030" top="268" width="58"/>
     <KEY description="F2" height="58" left="122" scancode="0x1000031" top="269" width="58"/>
     <KEY description="F3" height="58" left="184" scancode="0x1000032" top="270" width="58"/>

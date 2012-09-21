@@ -39,6 +39,7 @@ public:
 
     quint8 ks;
     BYTE getKey();
+    bool Cetl;
 
     int lastKeyBufSize;
     bool newKey;
