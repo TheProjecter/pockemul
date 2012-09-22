@@ -14,7 +14,7 @@ QT += core \
     gui \
     network \
 #    opengl \
-feedback \
+    feedback \
     xml \
 #    multimedia \
     script

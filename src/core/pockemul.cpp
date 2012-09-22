@@ -16,6 +16,7 @@
 MainWindowPockemul* mainwindow;
 
 
+
 int main(int argc, char *argv[])
 {
 
@@ -29,8 +30,9 @@ int main(int argc, char *argv[])
     qWarning()<<QApplication::libraryPaths();
 #endif
 
-//    QFeedbackHapticsEffect rumble;
 #if 0
+
+    QFeedbackHapticsEffect rumble;
     rumble.setAttackIntensity(0.0);
     rumble.setAttackTime(250);
     rumble.setIntensity(1.0);
