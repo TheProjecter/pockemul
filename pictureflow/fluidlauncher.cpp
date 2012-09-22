@@ -209,6 +209,10 @@ FluidLauncher::FluidLauncher(QWidget * parent,QString config):QStackedWidget(par
      int result = EMPTY;
      QString ItemText = demoList[index]->getIdPocket();
 
+     //TODO: try to implement sub level
+     // if ItemText start with a specic tag, load the corresponding xml and display the new pictureflow.
+     // Esc should exit
+
      if (ItemText == "PC 1245")	result = PC1245;
      if (ItemText == "MC 2200")	result = MC2200;
      if (ItemText == "PC 1250")	result = PC1250;

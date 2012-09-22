@@ -138,6 +138,7 @@ HEADERS += src/core/Connect.h \
 #    resources/lcc/model/PC-1350/stdio.h \
 #    src/core/lcc/cstdlib.h \
 #    resources/lcc/model/PC-1350/graph.h \
+#   src/core/lcc/parser/parser.h \
     src/machine/ce140f.h \
     src/machine/cesimu.h \
     src/core/dialogsimulator.h \
@@ -266,7 +267,17 @@ HEADERS += src/core/Connect.h \
     src/machine/fp100.h \
     src/machine/g850v.h \
     src/cpu/sed1560.h \
-    src/lcd/Lcdc_g850.h
+    src/lcd/Lcdc_g850.h \
+    src/cpu/i80x86.h \
+    src/machine/z1.h \
+    src/cpu/hd66108.h \
+    src/lcd/Lcdc_z1.h \
+    src/cpu/cf79107pj.h \
+    src/cpu/i8085.h \
+    src/cpu/i8085cpu.h \
+    src/cpu/i8085daa.h \
+    src/machine/fp200.h \
+    src/lcd/Lcdc_fp200.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -314,7 +325,10 @@ RESOURCES += resources/ext.qrc \
     resources/pb1000.qrc \
     resources/e500.qrc \
     resources/pb2000.qrc \
-    resources/g850v.qrc
+    resources/g850v.qrc \
+    resources/ext2.qrc \
+    resources/z1.qrc \
+    resources/fp200.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -482,7 +496,17 @@ SOURCES += src/core/Connect.cpp \
     src/machine/fp100.cpp \
     src/machine/g850v.cpp \
     src/cpu/sed1560.cpp \
-    src/lcd/Lcdc_g850.cpp
+    src/lcd/Lcdc_g850.cpp \
+    src/cpu/i80x86.cpp \
+    src/machine/z1.cpp \
+    src/cpu/hd66108.cpp \
+    src/lcd/Lcdc_z1.cpp \
+    src/cpu/i80x86_dasm.cpp \
+    src/cpu/cf79107pj.cpp \
+    src/cpu/i8085.cpp \
+    src/machine/fp200.cpp \
+    src/cpu/i8085_dasm.cpp \
+    src/lcd/Lcdc_fp200.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -491,8 +515,8 @@ UI_DIR += build/ui
 mac:OBJECTS_DIR += build/o/mac
 unix:OBJECTS_DIR += build/o/unix
 win32 { 
-    debug:OBJECTS_DIR += build/o/wd
-    release:OBJECTS_DIR += build/o/wr
+    debug:OBJECTS_DIR += build/o/d
+    release:OBJECTS_DIR += build/o/r
 }
 
 OTHER_FILES += \
@@ -620,9 +644,9 @@ OTHER_FILES += \
     android/src/eu/licentia/necessitas/mobile/QtCamera.java \
     android/src/eu/licentia/necessitas/mobile/QtAndroidContacts.java \
     resources/keymap/pb2000.map \
-    resources/keymap/g850v.map
-
-#QMAKE_LFLAGS_DEBUG += -pg
+    resources/keymap/g850v.map \
+    resources/keymap/z1.map \
+    resources/keymap/fp200.map
 
 
 
