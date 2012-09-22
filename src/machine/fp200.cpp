@@ -79,6 +79,8 @@ bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
     if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ return(true);	}
+
+    return true;
 }
 
 bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
@@ -172,20 +174,24 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 
 UINT8 Cfp200::in8(UINT16 Port)
 {
+    return 0;
 }
 
 
 
 UINT8 Cfp200::out8(UINT16 Port, UINT8 x)
 {
+    return 0;
 }
 
 UINT16 Cfp200::in16(UINT16 Port)
 {
+    return 0;
 }
 
 UINT16 Cfp200::out16(UINT16 Port, UINT16 x)
 {
+    return 0;
 }
 
 bool Cfp200::init()
@@ -262,7 +268,7 @@ quint16 Cfp200::getKey()
     UINT16 strobe = (0x01 << (ks));
 
 //    i85cpu->i8085_set_SID(0);
-//    if (ks == 0x0B) strobe = 0xffff;
+    if (ks == 0x0B) strobe = 0xffff;
 
 //    if ((pKEYB->LastKey>0))// && ks )
     {
@@ -291,6 +297,9 @@ quint16 Cfp200::getKey()
             if (KEY(';'))			data|=0x80;
         }
         if (strobe & 0x10) {
+
+            if (KEY(K_SML))			data|=0x01;
+            if (KEY(K_INS))			data|=0x04;
             if (KEY(K_CLR))			data|=0x04;
             if (KEY(K_F0))			data|=0x08;
             if (KEY('1'))			data|=0x10;
@@ -319,6 +328,8 @@ quint16 Cfp200::getKey()
 
         }
         if (strobe & 0x40) {
+            if (KEY(' '))			data|=0x01;
+            if (KEY('^'))			data|=0x02;
             if (KEY(K_LA))			data|=0x04;
             if (KEY(K_F2))			data|=0x08;
             if (KEY('3'))			data|=0x10;
@@ -351,7 +362,7 @@ quint16 Cfp200::getKey()
         }
         if (strobe & 0x200) {
             if (KEY(K_RET))			data|=0x01;
-            if (KEY(K_SML))			data|=0x04;
+//            if (KEY(K_SML))			data|=0x04;
             if (KEY('_'))			data|=0x08;
             if (KEY('6'))			data|=0x10;
             if (KEY('Y'))           data|=0x20;

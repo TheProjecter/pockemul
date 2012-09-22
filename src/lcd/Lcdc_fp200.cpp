@@ -24,7 +24,7 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
     quint8 offset = (side == 1 ? 0 : 10);
     if (Status == 1) {
 
-        AffCar(X+offset,Y/8,val);
+        AffCar(X+offset,Y,val);
     }
 //    mem_video[Y + offset][X] = val;
     //Y++;
@@ -34,7 +34,7 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
 quint8 Clcdc_fp200::Read(quint8 side)
 {
     quint8 offset = (side == 1 ? 0 : 80);
-    quint8 val = mem_video[Y + offset][X];
+    quint8 val = mem_video[X + offset][Y];
     //Y++;
     return val;
 }
@@ -74,16 +74,16 @@ void Clcdc_fp200::disp(void)
     QPainter painter(pPC->LcdImage);
 
 //    if (((Ce500 *)pPC)->pHD61102_2->info.on_off) {
-        for (int i = 0 ; i < 160; i++)
+        for (int i = 0 ; i < 64; i++)
         {
-            for (int li = 0 ; li < 8 ; li++)
+            for (int li = 0 ; li < 20 ; li++)
             {
-            quint8 data = mem_video[i][ li ];
+            quint8 data = mem_video[li][ i ];
                 for (b=0; b<8;b++)
                 {
                     //if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",i,j*8+b);
                     painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
-                    painter.drawPoint( i, li*8+b );
+                    painter.drawPoint( li*8+b,i );
                 }
             }
         }
@@ -104,10 +104,12 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 
     for (int P_y=0;P_y<8;P_y++)
     {
-        UINT8 c = (Car>>4)| (Car<<4);quint8 b = charset[c*8+P_y] ;
-        b = (b * 0x0202020202ULL & 0x010884422010ULL) % 1023;
-        mem_video[x*8+P_y][y] = b;
-        //mem_video[x*8+P_y][y] = FP200_CarDef[Car][P_y] ;
+        UINT8 c = (Car>>4)| (Car<<4);
+        quint8 b = FP200_CarDef[Car][P_y] ;
+//        quint8 b = charset[c*8+P_y] ;
+        b = (b * 0x0202020202ULL & 0x010884422010ULL) % 1023;       // reverse bits order
+
+        mem_video[x][y+P_y] = b ;
     }
 
     updated = true;
