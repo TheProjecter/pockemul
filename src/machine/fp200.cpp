@@ -123,6 +123,8 @@ UINT8 Cfp200::in(UINT8 Port)
                 AddLog(LOG_CONSOLE,tr("SID=[%1]\n").arg(tmp>>8,2,16,QChar('0')));
             }
             break;
+        default: AddLog(LOG_CONSOLE,tr("IN [%1]\n").arg(Port,2,16,QChar('0')));
+            break;
         }
     }
 
@@ -165,7 +167,10 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
             break;
             //    case 0x20: i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
             //        break;
+        case 0x20:break;
         case 0x21: ks = Value & 0x0f;
+            break;
+        default: AddLog(LOG_CONSOLE,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
             break;
         }
     }

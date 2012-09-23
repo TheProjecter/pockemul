@@ -27,6 +27,9 @@ public:
     void AffCar(UINT8 x, UINT8 y, UINT8 Car);
 
     UINT8 charset[0x800];
+    bool text;
+    int displaySL[2];
+    int computeSL(int side, int ord);
 };
 
 #endif // LCDC_FP200_H

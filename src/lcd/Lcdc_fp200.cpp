@@ -275,22 +275,56 @@ Clcdc_fp200::Clcdc_fp200(CPObject *parent )	: Clcdc(parent){						//[constructor
     X = Y = 0;
     Status = 0;
     memset((char*)mem_video,0,sizeof(mem_video));
+    text = true;
+
 }
 
 void Clcdc_fp200::Write(quint8 side, quint8 val) {
     quint8 offset = (side == 1 ? 0 : 10);
     if (Status == 1) {
 
-        AffCar(X+offset,Y,val);
+        if (text) {
+            AffCar(X+offset,Y,val);
+            updated = true;
+        }
+        else {
+            AddLog(LOG_CONSOLE,tr("W Video[%1,%2]=[%3]\n").arg(X+offset,2,16,QChar('0')).arg(Y,2,16,QChar('0')).arg(val,2,16,QChar('0')));
+            mem_video[X+offset][Y] = val;
+            updated = true;
+        }
     }
-//    mem_video[Y + offset][X] = val;
-    //Y++;
-    updated = true;
+    else if (Status== 0x0b) {
+        switch (val) {
+        case 0x40: // Graphic Mode ???
+            text = false; break;
+        case 0x50: // Scroll 1 line ???
+            displaySL[side - 1] += 8;
+            AddLog(LOG_CONSOLE,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
+
+            if (displaySL[side - 1] > 63) displaySL[side - 1] = 0;
+            AddLog(LOG_CONSOLE,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
+            updated = true;
+            break;
+        default: text = true;
+            break;
+        }
+
+
+    }
+
+}
+
+INLINE int Clcdc_fp200::computeSL(int side,int ord)
+{
+    int y = ord;
+    y -= displaySL[side - 1];
+    if (y <0) y += 64;
+    return y;
 }
 
 quint8 Clcdc_fp200::Read(quint8 side)
 {
-    quint8 offset = (side == 1 ? 0 : 80);
+    quint8 offset = (side == 1 ? 0 : 10);
     quint8 val = mem_video[X + offset][Y];
     //Y++;
     return val;
@@ -310,6 +344,9 @@ bool Clcdc_fp200::init()
     file.open(QIODevice::ReadOnly);
     QDataStream in(&file);
     in.readRawData ((char *) &charset,0x800 );
+
+    displaySL[0] = -16;
+    displaySL[1] = -16;
 
     return true;
 }
@@ -335,12 +372,14 @@ void Clcdc_fp200::disp(void)
         {
             for (int li = 0 ; li < 20 ; li++)
             {
-            quint8 data = mem_video[li][ i ];
+
+                quint8 data = mem_video[li][ i ];
                 for (b=0; b<8;b++)
                 {
                     //if (((data>>b)&0x01) && (pPC->pCPU->fp_log)) fprintf(pPC->pCPU->fp_log,"PSET [%i,%i]\n",i,j*8+b);
                     painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
-                    painter.drawPoint( li*8+b,i );
+                    quint8 y = computeSL((li<10)?1:2,i);
+                    painter.drawPoint( li*8+b,y );
                 }
             }
         }
