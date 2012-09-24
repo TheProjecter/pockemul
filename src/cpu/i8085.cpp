@@ -47,10 +47,11 @@
 #define VERBOSE 0
 
 #include "i8085.h"
-#include "i8085cpu.h"
+
 #include "pcxxxx.h"
 #include "Inter.h"
 #include "Debug.h"
+#include "i8085cpu.h"
 
 #define CPUTYPE_8080	0
 #define CPUTYPE_8085	1
@@ -108,11 +109,11 @@ INLINE UINT8 Ci8085::get_rim_value(void)
     return result;
 }
 
-inline quint8 Ci8085::read8( quint16 address)
+INLINE  quint8 Ci8085::read8( quint16 address)
 {
     return (((CpcXXXX *)pPC)->Get_8(address));
 }
-inline void Ci8085::write8(quint16 address, quint8 value)
+INLINE  void Ci8085::write8(quint16 address, quint8 value)
 {
     ((CpcXXXX *)pPC)->Set_8(address,value);
 }
@@ -120,37 +121,37 @@ inline void Ci8085::write8(quint16 address, quint8 value)
 /*
     16bits READ/WRITE
 */
-quint16 Ci8085::read16( quint16 address)
+INLINE quint16 Ci8085::read16( quint16 address)
 {
     return ((CpcXXXX *)pPC)->Get_16(address);
 
 }
-void Ci8085::write16( quint16 address, quint16 value)
+INLINE void Ci8085::write16( quint16 address, quint16 value)
 {
     ((CpcXXXX *)pPC)->Set_16(address,value);
 }
 
 
-quint8 Ci8085::cpu_readport(quint8 address) {
+INLINE quint8 Ci8085::cpu_readport(quint8 address) {
     return pPC->in(address);
 }
 
-void Ci8085::cpu_writeport(quint8 address, quint8 x) {
+INLINE void Ci8085::cpu_writeport(quint8 address, quint8 x) {
     imem[address] = x;
     pPC->out(address,x);
 }
 
-quint8 Ci8085::ROP(void)
+INLINE quint8 Ci8085::ROP(void)
 {
         return read8(i85stat.regs.PC.w.l++);
 }
 
-quint8 Ci8085::ARG(void)
+INLINE quint8 Ci8085::ARG(void)
 {
         return read8(i85stat.regs.PC.w.l++);
 }
 
-quint16 Ci8085::ARG16(void)
+INLINE quint16 Ci8085::ARG16(void)
 {
         quint16 w;
         w  = read8(i85stat.regs.PC.d);
@@ -160,14 +161,25 @@ quint16 Ci8085::ARG16(void)
         return w;
 }
 
-quint8 Ci8085::RM(quint32 a)
+INLINE quint8 Ci8085::RM(quint32 a)
 {
         return read8(a);
 }
 
-void Ci8085::WM(quint32 a, quint8 v)
+INLINE void Ci8085::WM(quint32 a, quint8 v)
 {
         write8(a, v);
+}
+
+// conditional RET only
+INLINE void Ci8085::M_RET(int cc)
+{
+    if (cc)
+    {
+        CallSubLevel--;
+        i8085_ICount -= 6;
+        M_POP(PC);
+    }
 }
 
  void Ci8085::illegal(void)
@@ -180,6 +192,7 @@ void Ci8085::WM(quint32 a, quint8 v)
 
 INLINE void Ci8085::execute_one(int opcode)
 {
+
     i8085_ICount -= lut_cycles[opcode];
     switch (opcode)
     {
@@ -507,7 +520,7 @@ INLINE void Ci8085::execute_one(int opcode)
         case 0xc7:	M_RST(0);											break;	/* RST  0 */
 
         case 0xc8:	M_RET( i85stat.regs.AF.b.l & ZF );						break;	/* RZ   */
-        case 0xc9:	M_POP(PC);											break;	/* RET  */
+        case 0xc9:	M_RET( 1 );                             break;	/* RET  */
         case 0xca:	M_JMP( i85stat.regs.AF.b.l & ZF );						break;	/* JZ   nnnn */
         case 0xcb:	if (IS_8085()) {									/* RST  V */
                         if (i85stat.regs.AF.b.l & VF) { M_RST(8); }
@@ -533,7 +546,7 @@ INLINE void Ci8085::execute_one(int opcode)
                         i85stat.regs.WZ.w.l = i85stat.regs.DE.w.l;
                         WM( i85stat.regs.WZ.d, i85stat.regs.HL.b.l); i85stat.regs.WZ.w.l++;
                         WM( i85stat.regs.WZ.d, i85stat.regs.HL.b.h);
-                    } else { M_POP(PC); }										/* RET  undocumented */
+                    } else { M_POP(PC); CallSubLevel--;}										/* RET  undocumented */
                     break;
         case 0xda:	M_JMP( i85stat.regs.AF.b.l & CF );						break;	/* JC   nnnn */
         case 0xdb:	M_IN;												break;	/* IN   nn */
@@ -659,6 +672,7 @@ void Ci8085::check_for_interrupts(void)
 
         /* push the PC and jump to $0024 */
         M_PUSH(PC);
+        CallSubLevel++;
         set_inte(0);
         i85stat.regs.PC.w.l = ADDR_TRAP;
         i8085_ICount -= 11;
@@ -677,6 +691,7 @@ void Ci8085::check_for_interrupts(void)
 
         /* push the PC and jump to $003C */
         M_PUSH(PC);
+        CallSubLevel++;
         set_inte( 0);
         i85stat.regs.PC.w.l = ADDR_RST75;
         i8085_ICount -= 11;
@@ -692,6 +707,7 @@ void Ci8085::check_for_interrupts(void)
 
         /* push the PC and jump to $0034 */
         M_PUSH(PC);
+        CallSubLevel++;
         set_inte( 0);
         i85stat.regs.PC.w.l = ADDR_RST65;
         i8085_ICount -= 11;
@@ -707,6 +723,7 @@ void Ci8085::check_for_interrupts(void)
 
         /* push the PC and jump to $002C */
         M_PUSH(PC);
+        CallSubLevel++;
         set_inte( 0);
         i85stat.regs.PC.w.l = ADDR_RST55;
         i8085_ICount -= 11;
@@ -729,6 +746,7 @@ void Ci8085::check_for_interrupts(void)
             case 0xcd0000:	/* CALL nnnn */
                 i8085_ICount -= 7;
                 M_PUSH(PC);
+                CallSubLevel++;
             case 0xc30000:	/* JMP  nnnn */
                 i8085_ICount -= 10;
                 i85stat.regs.PC.d = vector & 0xffff;

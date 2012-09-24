@@ -5,6 +5,7 @@
 #include "Lcdc_fp200.h"
 #include "Lcdc_symb.h"
 #include "Log.h"
+#include "cpu.h"
 
 UINT8 FP200_CarDef[256][8]={
 {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},     // 0x00
@@ -396,8 +397,10 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 {
 
 
-    if (Car>0) AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
-
+    if (Car>0) {
+        AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
+        if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"\nDraw char (%c) at %i,%i\n",Car,x,y);
+    }
     for (int P_y=0;P_y<8;P_y++)
     {
         UINT8 c = (Car>>4)| (Car<<4);
@@ -405,7 +408,7 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 //        quint8 b = charset[c*8+P_y] ;
         b = (b * 0x0202020202ULL & 0x010884422010ULL) % 1023;       // reverse bits order
 
-        mem_video[x][y+P_y] = b ;
+        mem_video[x][y+P_y] = b<<1 ;
     }
 
     updated = true;

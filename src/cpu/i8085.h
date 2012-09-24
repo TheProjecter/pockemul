@@ -179,6 +179,7 @@ public:
     void set_status(UINT8 status);
     void set_sod(int state);
     UINT8 get_rim_value();
+    void M_RET(int cc);
 private:
     int i8085_ICount;
 

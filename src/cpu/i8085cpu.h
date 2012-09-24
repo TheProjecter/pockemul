@@ -165,23 +165,17 @@
         i8085_ICount -= (IS_8085()) ? 7 : 6 ;							\
         M_PUSH(PC); 																\
         i85stat.regs.PC.d = a; 														\
+        CallSubLevel++; \
     } else {																		\
         i85stat.regs.PC.w.l += 2;														\
         i8085_ICount += (IS_8085()) ? 2 : 0;							\
     }																				\
 }
 
-// conditional RET only
-#define M_RET(cc)																	\
-{																					\
-    if (cc) 																		\
-    {																				\
-        i8085_ICount -= 6;														\
-        M_POP(PC);																	\
-    }																				\
-}
+
 
 #define M_RST(nn) { 																\
     M_PUSH(PC); 																	\
+    CallSubLevel++; \
     i85stat.regs.PC.d = 8 * nn;														\
 }
