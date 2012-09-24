@@ -11,7 +11,7 @@
 
 #include "Log.h"
 
-
+// TODO: MultiTouch Events
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -237,8 +237,6 @@ void Cfp200::Reset()
 {
     CpcXXXX::Reset();
 
-
-//    ((Ci8085 *) pCPU)->i8085_set_pc(0x0000);
 }
 
 void Cfp200::TurnON()

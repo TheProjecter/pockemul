@@ -596,6 +596,7 @@ void MainWindowPockemul::doZoom(QPoint point,float delta) {
         CPObject * locpc = listpPObject.at(i);
 
         // calculate the new origine
+
         float newposx = locpc->posx() + (locpc->posx()-point.x())*(delta)/100.0;
         float newposy = locpc->posy() + (locpc->posy()-point.y())*(delta)/100.0;
 
@@ -665,7 +666,7 @@ bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 //     }
      if (changeFlags & QPinchGesture::ScaleFactorChanged) {
          qreal value = gesture->property("scaleFactor").toReal();
-         doZoom(gesture->startCenterPoint().toPoint(),(value*100.0)-100);
+         doZoom(gesture->centerPoint().toPoint(),(value*100.0)-100);
      }
      if (gesture->state() == Qt::GestureFinished) {
 //         scaleFactor *= currentStepScaleFactor;
