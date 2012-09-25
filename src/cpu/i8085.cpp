@@ -52,6 +52,7 @@
 #include "Inter.h"
 #include "Debug.h"
 #include "i8085cpu.h"
+#include "ui/cregsz80widget.h"
 
 #define CPUTYPE_8080	0
 #define CPUTYPE_8085	1
@@ -66,7 +67,7 @@ Ci8085::Ci8085(CPObject * parent): CCPU(parent)
 
     i85stat.regs.irq_callback = 0;
     i85stat.regs.sod_callback = 0;
-//    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
+    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 
 }
 
@@ -297,7 +298,11 @@ INLINE void Ci8085::execute_one(int opcode)
                     i85stat.regs.HL.b.h = RM( i85stat.regs.WZ.d);
                     break;
         case 0x2b:	i85stat.regs.HL.w.l--;											/* DCX  H */
-                    if (IS_8085()) { if (i85stat.regs.HL.w.l == 0xffff) i85stat.regs.AF.b.l |= X5F; else i85stat.regs.AF.b.l &= ~X5F; }
+                    if (IS_8085()) {
+                        if (i85stat.regs.HL.w.l == 0xffff)
+                            i85stat.regs.AF.b.l |= X5F;
+                        else i85stat.regs.AF.b.l &= ~X5F;
+                    }
                     break;
         case 0x2c:	M_INR(i85stat.regs.HL.b.l);							break;	/* INR  L */
         case 0x2d:	M_DCR(i85stat.regs.HL.b.l);							break;	/* DCR  L */

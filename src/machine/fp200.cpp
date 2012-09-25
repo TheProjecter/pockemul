@@ -78,7 +78,10 @@ Cfp200::~Cfp200() {
 bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
-    if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ return(true);	}
+    if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ return(true);	}
+    if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(false);	}
+    if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(false);	}
+    if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(false);	}
 
     return true;
 }
