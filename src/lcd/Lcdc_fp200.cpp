@@ -296,6 +296,7 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
     }
     else if (Status== 0x0b) {
         switch (val) {
+
         case 0x40: // Graphic Mode ???
             text = false; break;
         case 0x50: // Scroll 1 line ???
@@ -305,6 +306,9 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
             if (displaySL[side - 1] > 63) displaySL[side - 1] = 0;
             AddLog(LOG_CONSOLE,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
             updated = true;
+            break;
+        case 0x60: // ???????? text mode ?
+            text = true;
             break;
         default: text = true;
             break;
