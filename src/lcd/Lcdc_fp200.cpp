@@ -300,9 +300,7 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
         case 0x40: // Graphic Mode ???
             text = false; break;
         case 0x50: // Scroll 1 line ???
-            displaySL[side - 1] += 8;
-            AddLog(LOG_CONSOLE,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
-
+            displaySL[side - 1] = Y;
             if (displaySL[side - 1] > 63) displaySL[side - 1] = 0;
             AddLog(LOG_CONSOLE,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
             updated = true;
@@ -350,8 +348,8 @@ bool Clcdc_fp200::init()
     QDataStream in(&file);
     in.readRawData ((char *) &charset,0x800 );
 
-    displaySL[0] = -16;
-    displaySL[1] = -16;
+    displaySL[0] = 0;//-16;
+    displaySL[1] = 0;//-16;
 
     return true;
 }
