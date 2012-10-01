@@ -24,7 +24,7 @@ extern bool	UpdateDisplayRunning;
 Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
 	setfrequency( (int) 2600000/2);
-    ioFreq = 500000;
+    ioFreq = 0;//500000;
 	setcfgfname(QString("pc1500"));
 
     SessionHeader	= "PC1500PKM";
@@ -557,8 +557,8 @@ bool Cpc1500A::Chk_Adr_R(DWORD *d,DWORD data)
 	return(1); 
 }
 
-void Cpc15XX::Set_Port(PORTS Port,BYTE data){};
-BYTE Cpc15XX::Get_Port(PORTS Port){return(0);};
+void Cpc15XX::Set_Port(PORTS Port,BYTE data){}
+BYTE Cpc15XX::Get_Port(PORTS Port){return(0);}
 
 #define KS		( pKEYB->Get_KS()) 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
@@ -681,7 +681,7 @@ bool	CLH5810_PC1500::init(void)
 	SetRegBit(LH5810_OPB,4,FALSE);	// PB4 to GND
 
 	return(1);
-};						//initialize
+}						//initialize
 
 
 

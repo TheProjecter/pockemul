@@ -285,6 +285,10 @@ bool Cce150::run(void)
 			has_moved=TRUE;
 			Pen_Status = PEN_UP;
 //			AddLog(LOG_PRINTER,"PEN UP");
+
+//            fillSoundBuffer(0xFF);
+//            fillSoundBuffer(0x00);
+
 		}
 	}
 	if (PB1)

@@ -1018,7 +1018,7 @@ void Ci8085::Regs_Info(quint8)
 {
     sprintf(Regs_String,"EMPTY");
     char buf[32];
-
+#if 0
     sprintf(
     Regs_String,
     "IM=%02X IREQ=%02X ISRV=%02X IRQ2=%08X PC=%04X SP=%04X AF=%04X BC=%04X DE=%04X HL=%04X WZ=%04X ",
@@ -1034,6 +1034,32 @@ void Ci8085::Regs_Info(quint8)
                 i85stat.regs.HL.d,
                 i85stat.regs.WZ.d
     );
+#else
+    // Format flags string
+        char flags[20];
+        sprintf(flags, "%c%c%c%c%c%c%c%c",
+                (i85stat.regs.AF.b.l&0x80)?'S':' ',
+                (i85stat.regs.AF.b.l&0x40)?'Z':' ',
+                (i85stat.regs.AF.b.l&0x08)?'T':' ',
+                (i85stat.regs.AF.b.l&0x10)?'A':' ',
+                (i85stat.regs.AF.b.l&0x04)?'P':' ',
+                (i85stat.regs.AF.b.l&0x02)?'O':' ',
+                (i85stat.regs.AF.b.l&0x20)?'X':' ',
+                (i85stat.regs.AF.b.l&0x01)?'C':' ');
+
+        // Append regs after opcode
+        sprintf(Regs_String, "A:%02X %s B:%02X C:%02X D:%02X E:%02X H:%02X L:%02X SP:%02X",
+            i85stat.regs.AF.b.h,
+                flags,
+                i85stat.regs.BC.b.h,
+                i85stat.regs.BC.b.l,
+                i85stat.regs.DE.b.h,
+                i85stat.regs.DE.b.l,
+                i85stat.regs.HL.b.h,
+                i85stat.regs.HL.b.l,
+                i85stat.regs.SP.b);
+
+#endif
 }
 
 /* cycles lookup */

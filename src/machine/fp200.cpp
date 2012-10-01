@@ -26,7 +26,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0x10000;
-    InitMemValue	= 0x00;
+    InitMemValue	= 0xFF;
 
     SlotList.clear();
     SlotList.append(CSlot(32 , 0x0000 ,	":/fp200/fp200rom.bin"   , ""	, ROM , "ROM"));
@@ -79,8 +79,8 @@ bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ return(true);	}
-    if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(false);	}
-    if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(false);	}
+    if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(true);	}
+    if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(true);	}
     if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(false);	}
 
     return true;
