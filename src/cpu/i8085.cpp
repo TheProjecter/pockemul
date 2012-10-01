@@ -52,6 +52,7 @@
 #include "Inter.h"
 #include "Debug.h"
 #include "i8085cpu.h"
+#include "i8085daa.h"
 #include "ui/cregsz80widget.h"
 
 #define CPUTYPE_8080	0
@@ -271,20 +272,11 @@ INLINE void Ci8085::execute_one(int opcode)
         case 0x24:	M_INR(i85stat.regs.HL.b.h);							break;	/* INR  H */
         case 0x25:	M_DCR(i85stat.regs.HL.b.h);							break;	/* DCR  H */
         case 0x26:	M_MVI(i85stat.regs.HL.b.h);							break;	/* MVI  H,nn */
-        case 0x27:	i85stat.regs.WZ.b.h = i85stat.regs.AF.b.h;						/* DAA  */
-                    if (i85stat.regs.AF.b.l&VF) {
-                        if ((i85stat.regs.AF.b.l&HF) | ((i85stat.regs.AF.b.h&0xf)>9)) i85stat.regs.WZ.b.h-=6;
-                        if ((i85stat.regs.AF.b.l&CF) | (i85stat.regs.AF.b.h>0x99)) i85stat.regs.WZ.b.h-=0x60;
-                    }
-                    else {
-                        if ((i85stat.regs.AF.b.l&HF) | ((i85stat.regs.AF.b.h&0xf)>9)) i85stat.regs.WZ.b.h+=6;
-                        if ((i85stat.regs.AF.b.l&CF) | (i85stat.regs.AF.b.h>0x99)) i85stat.regs.WZ.b.h+=0x60;
-                    }
-
-                    i85stat.regs.AF.b.l=(i85stat.regs.AF.b.l&3) | (i85stat.regs.AF.b.h&0x28) | (i85stat.regs.AF.b.h>0x99) | ((i85stat.regs.AF.b.h^i85stat.regs.WZ.b.h)&0x10) | ZSP[i85stat.regs.WZ.b.h];
-                    i85stat.regs.AF.b.h=i85stat.regs.WZ.b.h;
-
-                    if (IS_8080()) i85stat.regs.AF.b.l &= 0xd5; // Ignore not used flags
+        case 0x27:  i85stat.regs.WZ.d = i85stat.regs.AF.b.h;                    /* DAA */
+                    if (i85stat.regs.AF.b.l & CF) i85stat.regs.WZ.d |= 0x100;
+                    if (i85stat.regs.AF.b.l & HF) i85stat.regs.WZ.d |= 0x200;
+                    if (i85stat.regs.AF.b.l & 0x02) i85stat.regs.WZ.d |= 0x400;
+                    i85stat.regs.AF.w.l = DAA[i85stat.regs.WZ.d];
                     break;
 
         case 0x28:	if (IS_8085()) {									/* LDEH nn */

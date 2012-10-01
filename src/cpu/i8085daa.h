@@ -1,6 +1,15 @@
 #ifndef I8085DAA_H
 #define I8085DAA_H
 
+#define SF              0x80
+#define ZF              0x40
+#define YF              0x20
+#define HF              0x10
+#define XF              0x08
+#define VF              0x04
+#define NF              0x02
+#define CF              0x01
+
 static quint16 DAA[2048] = {
   (0x00<<8)   +ZF         +VF      ,
   (0x01<<8)                        ,
