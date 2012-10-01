@@ -15,7 +15,7 @@
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 6144000/6);
+    setfrequency( (int) 6144000/2);
     setcfgfname(QString("fp200"));
 
     SessionHeader	= "FP200PKM";

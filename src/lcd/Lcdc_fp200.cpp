@@ -269,9 +269,9 @@ UINT8 FP200_CarDef[256][8]={
 
 Clcdc_fp200::Clcdc_fp200(CPObject *parent )	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
-                        (int) (92*contrast),
-                        (int) (120*contrast),
-                        (int) (103*contrast));
+                        (int) (118*contrast),
+                        (int) (149*contrast),
+                        (int) (136*contrast));
     updated = true;
     X = Y = 0;
     Status = 0;
