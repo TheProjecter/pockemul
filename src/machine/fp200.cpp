@@ -220,7 +220,8 @@ bool Cfp200::run()
 {
     if (ks==5) i85cpu->i8085_set_SID(Cetl?0:1);
     if (ks==6) i85cpu->i8085_set_SID(pKEYB->isShift?0:1);
-    if (ks==7) i85cpu->i8085_set_SID(1);
+    if (ks==7) i85cpu->i8085_set_SID(pKEYB->LastKey==0x03?0:1);        // BREAK
+//    if (ks==8) i85cpu->i8085_set_SID(1);        // GRAPH
     if (ks==9) i85cpu->i8085_set_SID(pKEYB->isCtrl?0:1);
 
     if (pKEYB->LastKey>0) {
