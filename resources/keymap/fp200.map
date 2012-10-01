@@ -10,14 +10,14 @@
     <KEY description="F5" height="58" left="319" scancode="0x1000034" top="267" width="58"/>
     <KEY description="INS" height="58" left="924" scancode="0x12" top="333" width="58"/>
     <KEY description="DEL" height="20" left="0" scancode="0x16" top="0" width="20"/>
-    <KEY description="HOME/CLR" height="58" left="709" scancode="0xc" top="284" width="58"/>
-    <KEY description="On/Brk" height="20" left="0" scancode="0x3" top="0" width="20"/>
+    <KEY description="HOME/CLR" height="58" left="700" scancode="0xc" top="271" width="58"/>
+    <KEY description="On/Brk" height="58" left="831" scancode="0x3" top="269" width="58"/>
     <KEY description="Off" height="20" left="0" scancode="0x100003b" top="0" width="20"/>
     <KEY description="F6" height="20" left="0" scancode="0x1000035" top="0" width="20"/>
-    <KEY description="Down Arrow" height="56" left="473" scancode="0x04" top="268" width="58"/>
-    <KEY description="Left Arrow" height="55" left="538" scancode="0x06" top="269" width="58"/>
-    <KEY description="Rigth Arrow" height="55" left="604" scancode="0x07" top="268" width="58"/>
-    <KEY description="Up Arrow" height="56" left="409" scancode="0x05" top="268" width="58"/>
+    <KEY description="Down Arrow" height="56" left="473" scancode="0x4" top="268" width="58"/>
+    <KEY description="Left Arrow" height="55" left="538" scancode="0x6" top="269" width="58"/>
+    <KEY description="Rigth Arrow" height="55" left="604" scancode="0x7" top="268" width="58"/>
+    <KEY description="Up Arrow" height="56" left="409" scancode="0x5" top="268" width="58"/>
     <KEY description="-" height="58" left="729" scancode="0x2d" top="331" width="58"/>
     <KEY description="^" height="58" left="792" scancode="0x5e" top="334" width="58"/>
     <KEY description="@" height="58" left="762" scancode="0x40" top="396" width="58"/>

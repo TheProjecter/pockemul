@@ -81,7 +81,7 @@ bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ return(true);	}
     if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(true);	}
     if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(true);	}
-    if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(false);	}
+    if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(true);	}
 
     return true;
 }
