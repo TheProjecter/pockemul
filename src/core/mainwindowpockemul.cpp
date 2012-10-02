@@ -633,6 +633,7 @@ bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 //    if (QGesture *pan = event->gesture(Qt::PanGesture))
 //        panTriggered(static_cast<QPanGesture *>(pan));
     if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+        startPosDrag = false;
         pinchTriggered(static_cast<QPinchGesture *>(pinch));
         event->accept();
     }
@@ -676,6 +677,7 @@ bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
      }
      if (gesture->state() == Qt::GestureFinished) {
          scaleFactor = 1;
+
          update();
      }
 

@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     QSplashScreen splash;
     splash.setPixmap(QPixmap(":/POCKEMUL/pockemul/splash.png").scaled(mainwindow->geometry().size()));
-    splash.show();
+    splash.showFullScreen();
     splash.showMessage("Loading modules...",Qt::AlignLeft,Qt::white);
     app.processEvents();
     splash.finish(mainwindow);
