@@ -64,7 +64,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"fp200.map");
-    pUART        = new Cuart(this);
+//    pUART        = new Cuart(this);
 
     pPARConnector = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
     publish(pPARConnector);
@@ -81,7 +81,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 Cfp200::~Cfp200() {
     delete pPARConnector;
     delete pSERConnector;
-    delete pUART;
+//    delete pUART;
 }
 
 
@@ -225,8 +225,8 @@ bool Cfp200::init()
     Cetl = false;
     sid = 0;
 
-    pUART->init();
-    pUART->pTIMER = pTIMER;
+//    pUART->init();
+//    pUART->pTIMER = pTIMER;
 
     return true;
 }
@@ -256,7 +256,7 @@ bool Cfp200::run()
 {
     if (ks==5) i85cpu->i8085_set_SID(Cetl?0:1);
     if (ks==6) i85cpu->i8085_set_SID(pKEYB->isShift?0:1);
-    if (ks==7) i85cpu->i8085_set_SID(pKEYB->LastKey==0x03?0:1);        // BREAK
+    if (ks==7) i85cpu->i8085_set_SID(pKEYB->LastKey == 0x03 ? 0:1);        // BREAK
 //    if (ks==8) i85cpu->i8085_set_SID(1);        // GRAPH
     if (ks==9) i85cpu->i8085_set_SID(pKEYB->isCtrl?0:1);
 
@@ -272,16 +272,7 @@ bool Cfp200::run()
 
     CpcXXXX::run();
 
-    //TODO Copy data to UART: Baudrate
 
-    pUART->Set_CS(true);        // for test purpose
-
-    pUART->run();
-
-    pSERConnector->Set_pin(3,pUART->Get_SD());      // TxD
-    pSERConnector->Set_pin(4,pUART->Get_RD());      // RxD
-    pSERConnector->Set_pin(6,pUART->Get_CS());      // CTS
-    pSERConnector->Set_pin(8,pUART->Get_RS());      // RTS
 
 }
 
@@ -294,7 +285,7 @@ void Cfp200::Reset()
 void Cfp200::TurnON()
 {
     CpcXXXX::TurnON();
-    pCPU->Reset();
+//    pCPU->Reset();
 }
 
 void Cfp200::TurnOFF()
@@ -326,7 +317,7 @@ quint16 Cfp200::getKey()
     UINT16 strobe = (0x01 << (ks));
 
 //    i85cpu->i8085_set_SID(0);
-    if (ks == 0x0B) strobe = 0xffff;
+//    if (ks == 0x0B) strobe = 0xffff;
 
 //    if ((pKEYB->LastKey>0))// && ks )
     {

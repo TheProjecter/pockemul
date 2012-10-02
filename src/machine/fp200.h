@@ -40,7 +40,7 @@ public:
     Cconnector *pSERConnector;    qint64      pSERConnector_value;
 
     Ci8085 *i85cpu;
-    Cuart    *pUART;
+//    Cuart    *pUART;
 
     quint8 ks;
     quint16 getKey();
