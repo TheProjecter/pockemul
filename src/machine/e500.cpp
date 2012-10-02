@@ -11,6 +11,31 @@
 //TODO: Connector output for ce-126p and ce-140f
 //TODO: Real Time Clock
 
+/*
+00000   -----------------------
+        |                     | you can peek ( 00000 - 000FF ) by PEEK ,
+        |   None.             | but it is not memory. It is cpu's internal ram.
+        |                     |
+        |                     |
+40000   -----------------------
+        |                     |
+        |   RAMCARD SLOT 2    | if you set 64kb-card, you can use 40000 - 4FFFF
+        |                     | ram slot "S2:" and ram drive "F:"
+        |                     |
+80000   -----------------------
+        |                     | PC-E500 has 32kb ( B8000 - BFFFF )
+        |   BUILDIN RAM       | PC-E550 has 64kb ( B0000 - BFFFF )
+        |           SLOT 1    | ram slot "S1:" and ram drive "E:"
+        |                     |
+C0000   -----------------------
+        |                     |
+        |   SYSTEM ROM        | rom slot "S3:" ( C0000 - DFFFF ) and
+        |                     | rom drive "G:"
+        |                     |
+FFFFF   -----------------------
+
+*/
+
 Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
     setfrequency( (int) 3072000/3);
@@ -635,20 +660,12 @@ Ce550::Ce550(CPObject *parent):Ce500(parent)
     Initial_Session_Fname ="e550.pkm";
 
     BackGroundFname	= ":/e500/pc-e550.png";
-//    LcdFname		= ":/e500/e500lcd.png";
-//    SymbFname		= ":/e500/e500symb.png";
+
     Lcd_X		= 70;
     Lcd_Y		= 96;
-    Lcd_DX		= 240;//168;//144 ;
-    Lcd_DY		= 32;
-    Lcd_ratio_X	= 348.0/240;
-    Lcd_ratio_Y	= 60.0/32;
 
     Lcd_Symb_X	= 70;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 76;//(int) (35 * 1.18);
-    Lcd_Symb_DX	= 348;
-    Lcd_Symb_DY	= 20;
-    Lcd_Symb_ratio_X	= 1;//1.18;
 
 }
 
