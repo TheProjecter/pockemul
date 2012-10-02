@@ -593,7 +593,7 @@ INLINE void Cpc1600::hack(DWORD pc)
     FUNC_CALL_C(0,0x01D8,0x11,QT_TR_NOOP("RS232 / SIO - [%1] - CRCTRL     - Read the state of the control signals.\n"));                break;
     FUNC_CALL_C(0,0x01D8,0x12,QT_TR_NOOP("RS232 / SIO - [%1] - CWDEV      - Select a channel and set the input and output device selection parameters for that channel.\n"));                break;
     FUNC_CALL_C(0,0x01D8,0x13,QT_TR_NOOP("RS232 / SIO - [%1] - CRDEV      - Read the currently seiected channel number and the input and output device selection parameters set by CWDEV routine.\n"));
-    pCPU->logsw=1;
+//    pCPU->logsw=1;
     pCPU->Check_Log();
     break;
     FUNC_CALL_C(0,0x01D8,0x14,QT_TR_NOOP("RS232 / SIO - [%1] - CESND      - Enable the transmission on(y when the specified incoming control signal (or signaIs) is high.\n"));                break;
