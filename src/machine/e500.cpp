@@ -625,3 +625,40 @@ BYTE Ce500::getKey()
 
 }
 
+
+
+Ce550::Ce550(CPObject *parent):Ce500(parent)
+{
+    setcfgfname(QString("e550"));
+
+    SessionHeader	= "E550PKM";
+    Initial_Session_Fname ="e550.pkm";
+
+    BackGroundFname	= ":/e500/pc-e550.png";
+//    LcdFname		= ":/e500/e500lcd.png";
+//    SymbFname		= ":/e500/e500symb.png";
+    Lcd_X		= 70;
+    Lcd_Y		= 96;
+    Lcd_DX		= 240;//168;//144 ;
+    Lcd_DY		= 32;
+    Lcd_ratio_X	= 348.0/240;
+    Lcd_ratio_Y	= 60.0/32;
+
+    Lcd_Symb_X	= 70;//(int) (45 * 1.18);
+    Lcd_Symb_Y	= 76;//(int) (35 * 1.18);
+    Lcd_Symb_DX	= 348;
+    Lcd_Symb_DY	= 20;
+    Lcd_Symb_ratio_X	= 1;//1.18;
+
+}
+
+
+bool Ce550::Chk_Adr(DWORD *d, DWORD data)
+{
+    return Ce500::Chk_Adr(d,data);
+}
+
+bool Ce550::Chk_Adr_R(DWORD *d, DWORD data)
+{
+    return Ce500::Chk_Adr_R(d,data);
+}

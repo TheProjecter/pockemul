@@ -55,4 +55,21 @@ private:
 
 };
 
+class Ce550:public Ce500{						//E500 emulator main class
+Q_OBJECT
+public:
+    const char*	GetClassName(){ return("Ce550");}
+
+    virtual bool	Chk_Adr(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+
+    Ce550(CPObject *parent = 0);
+
+    virtual ~Ce550()
+    {								//[constructor]
+    }
+
+
+
+};
 #endif // E500_H
