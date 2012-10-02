@@ -307,6 +307,12 @@ bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
     return true;
 }
 
+void Cfp200::ExtChanged()
+{
+    CpcXXXX::ExtChanged();
+    Reset();
+}
+
 #define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
 
 //#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )

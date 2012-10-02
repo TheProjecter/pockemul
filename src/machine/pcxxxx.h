@@ -193,6 +193,8 @@ public:
     virtual bool	Get_Connector(void) { return (1); }
 
 
+    virtual void    ExtChanged(void);
+
 	void	ClearRam(BYTE data) {	memset((void *)mem ,data,memsize); }	//initialize memory
 
 	char	Regs_String[1024];

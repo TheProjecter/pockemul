@@ -21,13 +21,19 @@ void CpcXXXX::updateExtension(CExtensionArray *array,QAction *action)
 		}
 }
 
+void CpcXXXX::ExtChanged(void) {
+    TurnOFF();
+    InitDisplay();
+}
+
+
 void CpcXXXX::updateExtension(QAction *action)
 {
 	for (int ind = 0; ind < 5; ind++){
 		if (extensionArray[ind]) updateExtension(extensionArray[ind],action);
 	}
-    TurnOFF();
-	InitDisplay();
+    ExtChanged();
+
 
 }
 

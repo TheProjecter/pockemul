@@ -34,6 +34,8 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
+    virtual void    ExtChanged(void);
+
 //    UINT16 getKey();
 
     Cconnector *pPARConnector;    qint64      pPARConnector_value;
