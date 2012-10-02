@@ -105,6 +105,7 @@ private:
     QPoint KeyDrag;
     bool startPosDrag;
     QPoint PosDrag;
+    qreal scaleFactor;
 
 
 

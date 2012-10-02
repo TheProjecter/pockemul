@@ -64,6 +64,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     dialoglog = 0;
     dialoganalogic = 0;
     windowide = 0;
+    scaleFactor = 1;
     zoom = 100;
     saveAll = ASK;
     startKeyDrag = false;
@@ -665,14 +666,19 @@ bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 //         rotationAngle += value - lastValue;
 //     }
      if (changeFlags & QPinchGesture::ScaleFactorChanged) {
-         qreal value = gesture->property("scaleFactor").toReal();
-         doZoom(gesture->centerPoint().toPoint(),(value*100.0)-100);
+         qreal value = gesture->scaleFactor();//property("scaleFactor").toReal();
+         scaleFactor *= value;
+         if ((scaleFactor >=1.1) || (scaleFactor <=.9)) {
+             doZoom(gesture->centerPoint().toPoint(),(scaleFactor*100.0)-100);
+             scaleFactor = 1;
+             update();
+         }
      }
      if (gesture->state() == Qt::GestureFinished) {
-//         scaleFactor *= currentStepScaleFactor;
-//         currentStepScaleFactor = 1;
+         scaleFactor = 1;
+         update();
      }
-     update();
+
  }
 
 void MainWindowPockemul::updateTimeTimer()
