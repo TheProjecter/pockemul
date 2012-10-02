@@ -272,7 +272,6 @@ Clcdc_fp200::Clcdc_fp200(CPObject *parent )	: Clcdc(parent){						//[constructor
                         (int) (118*contrast),
                         (int) (149*contrast),
                         (int) (136*contrast));
-    updated = true;
     X = Y = 0;
     Status = 0;
     memset((char*)mem_video,0,sizeof(mem_video));

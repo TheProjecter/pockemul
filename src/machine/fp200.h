@@ -47,6 +47,7 @@ public:
 //    void keyReleaseEvent(QKeyEvent *event);
 //    void keyPressEvent(QKeyEvent *event);
     UINT8 matrixResult;
+    virtual void initExtension(void);
 };
 
 

@@ -26,7 +26,7 @@ public:
 	bool	On;
 	bool	Refresh;
 	float	contrast;
-
+    bool    updated;
 	bool	DirtyBuf[0x1000];
     bool    ready;
 

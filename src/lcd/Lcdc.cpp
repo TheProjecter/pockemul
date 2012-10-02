@@ -22,6 +22,7 @@ Clcdc::Clcdc(CPObject *parent)
     redraw		= true;				//display redraw?(0:not need, 1:need)
     On			= true;
     Refresh		= false;
+    updated     = false;
     contrast	= 0.95;
     memset(&DirtyBuf,0,sizeof(DirtyBuf));
     Color_On.setRgb(0,0,0);

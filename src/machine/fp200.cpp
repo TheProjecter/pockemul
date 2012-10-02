@@ -8,6 +8,7 @@
 
 #include "Inter.h"
 #include "Keyb.h"
+#include "cextension.h"
 
 #include "Log.h"
 
@@ -79,9 +80,9 @@ bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
 {
     if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ return(true);	}
-    if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(true);	}
-    if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(true);	}
-    if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(true);	}
+    if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(ext_MemSlot1->ExtArray[ID_FP201]->IsChecked);	}
+    if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(ext_MemSlot2->ExtArray[ID_FP201]->IsChecked);	}
+    if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(ext_MemSlot3->ExtArray[ID_FP201]->IsChecked || ext_MemSlot3->ExtArray[ID_FP205]->IsChecked || ext_MemSlot3->ExtArray[ID_FP231CE]->IsChecked);	}
 
     return true;
 }
@@ -209,11 +210,33 @@ bool Cfp200::init()
     pCPU->logsw = true;
 #endif
     CpcXXXX::init();
+    initExtension();
     Reset();
     Cetl = false;
     sid = 0;
 
     return true;
+}
+
+void	Cfp200::initExtension(void)
+{
+    AddLog(LOG_MASTER,"INIT EXT FP-200");
+    // initialise ext_MemSlot1
+    ext_MemSlot1 = new CExtensionArray("RAM Slot 1","Add RAM Module");
+    ext_MemSlot2 = new CExtensionArray("RAM Slot 2","Add RAM Module");
+    ext_MemSlot3 = new CExtensionArray("RAM/ROM Slot 3","Add RAM or ROM Module");
+    ext_MemSlot1->setAvailable(ID_FP201,true); ext_MemSlot1->setChecked(ID_FP201,false);
+    ext_MemSlot2->setAvailable(ID_FP201,true); ext_MemSlot2->setChecked(ID_FP201,false);
+    ext_MemSlot3->setAvailable(ID_FP201,true); ext_MemSlot3->setChecked(ID_FP201,false);
+    ext_MemSlot3->setAvailable(ID_FP205,true);
+    ext_MemSlot3->setAvailable(ID_FP231CE,true);
+
+    addExtMenu(ext_MemSlot1);
+    addExtMenu(ext_MemSlot2);
+    addExtMenu(ext_MemSlot3);
+    extensionArray[0] = ext_MemSlot1;
+    extensionArray[1] = ext_MemSlot2;
+    extensionArray[2] = ext_MemSlot3;
 }
 
 bool Cfp200::run()
@@ -246,6 +269,7 @@ void Cfp200::Reset()
 void Cfp200::TurnON()
 {
     CpcXXXX::TurnON();
+    pCPU->Reset();
 }
 
 void Cfp200::TurnOFF()

@@ -22,7 +22,7 @@ public:
     //quint8 mem_video[160][8];
     quint8 mem_video[20][64];
     quint8 X,Y;
-    bool updated;
+
     quint8 Status;
     void AffCar(UINT8 x, UINT8 y, UINT8 Car);
 

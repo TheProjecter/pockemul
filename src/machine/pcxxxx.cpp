@@ -68,6 +68,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     ext_11pins		= 0;
     ext_MemSlot1	= 0;
     ext_MemSlot2	= 0;
+    ext_MemSlot3	= 0;
     ext_Serial		= 0;
     ext_60pins		= 0;
 
@@ -88,6 +89,9 @@ CpcXXXX::~CpcXXXX()
     delete pCONNECTOR;
     delete pSIOCONNECTOR;
     delete pCPU;
+//    delete ext_MemSlot1;
+//    delete ext_MemSlot2;
+//    delete ext_MemSlot3;
 }
 
 
@@ -616,8 +620,15 @@ void CpcXXXX::Mem_Save(QXmlStreamWriter *xmlOut,BYTE s)
     xmlOut->writeStartElement("bank");
         xmlOut->writeAttribute("label",SlotList[s].getLabel());
         xmlOut->writeAttribute("id",QString("%1").arg(s));
-        QByteArray ba((char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
-        xmlOut->writeTextElement("data",ba.toBase64());
+        int size = SlotList[s].getSize() * 1024;
+        int adr = SlotList[s].getAdr();
+        QByteArray ba((char *) &mem[adr],size );
+//        xmlOut->writeTextElement("data",ba.toBase64());
+        QString outHex = "\n";
+        for (int a=0;a<size;a+=16) {
+            outHex += QString("%1:").arg(a,6,16,QChar('0'))+ba.mid(a,16).toHex()+"\n";
+        }
+        xmlOut->writeTextElement("datahex",outHex);
     xmlOut->writeEndElement();
 }
 
@@ -689,6 +700,7 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
             }
 
             pCPU->Load_Internal(xmlIn);
+            AddLog(LOG_MASTER,"Loadmemory:"+xmlIn->name().toString());
             if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
                 AddLog(LOG_MASTER,"Load Memory");
                 for (int s=0; s<SlotList.size(); s++)				// Save Memory
@@ -836,11 +848,11 @@ bool CpcXXXX::LoadExt(QXmlStreamReader *xmlIn)
                         }
                     }
                 }
-                else
+//                else
                     xmlIn->skipCurrentElement();
             }
             AddLog(LOG_MASTER,"Loadext end name:"+xmlIn->name().toString());
-            if (found) xmlIn->skipCurrentElement();
+//            if (found) xmlIn->skipCurrentElement();
         }
 
     }
@@ -966,9 +978,17 @@ void CpcXXXX::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
 {
     if (xmlIn->readNextStartElement()) {
         if (xmlIn->name() == "bank" && xmlIn->attributes().value("id").toString().toInt() == s) {
-            if (xmlIn->readNextStartElement() && (xmlIn->name()=="data") ) {
-                QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toAscii());
-                memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+            if (xmlIn->readNextStartElement() ) {
+                if (xmlIn->name()=="data")  {
+                    QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toAscii());
+                    memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+                }
+                if (xmlIn->name()=="datahex")  {
+
+//                    MSG_ERROR(xmlIn->readElementText().replace(QRegExp("......:"),"").toAscii())
+                     QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toAscii());
+                    memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+                }
             }
         }
         xmlIn->skipCurrentElement();

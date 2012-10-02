@@ -47,7 +47,10 @@
 #define ID_OM54A    31      // CASL
 #define ID_OM55L    32      // LISP
 
-
+// CASIO FP-200 Module
+#define ID_FP201    33      // 8Ko RAM Module
+#define ID_FP205    34      // 8Ko EPROM Module
+#define ID_FP231CE  35      // 8Ko RAM Module
 
 
 

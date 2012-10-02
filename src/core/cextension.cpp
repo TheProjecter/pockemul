@@ -75,8 +75,11 @@ CExtensionArray::CExtensionArray(QString value1,QString value2)							//[constru
     ExtArray[ID_OM54A]= new CExtension("OM-54A",	"CASL Interpreter");
     ExtArray[ID_OM55L]= new CExtension("OM-55L",	"LISP Interpreter");
 
+    ExtArray[ID_FP201]= new CExtension("FP-201",	"8Ko RAM Module");
+    ExtArray[ID_FP205]= new CExtension("FP-205",	"8Ko EPROM Module");
+    ExtArray[ID_FP231CE]= new CExtension("FP-231CE",	"CETL II ROM Module");
 
-    for (int i = ID_OM55L+1;i<40;i++)
+    for (int i = ID_FP231CE+1;i<40;i++)
             ExtArray[i]= new CExtension();
 
 

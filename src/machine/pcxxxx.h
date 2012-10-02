@@ -253,6 +253,7 @@ public:
 	CExtensionArray	*ext_11pins;
 	CExtensionArray	*ext_MemSlot1;
 	CExtensionArray	*ext_MemSlot2;
+    CExtensionArray	*ext_MemSlot3;
 	CExtensionArray	*ext_Serial;
 	CExtensionArray	*ext_60pins;
 	

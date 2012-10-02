@@ -32,8 +32,7 @@
     </model>
     <model value="pc1360">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1360_e.html"/>
-        <url desc="Silicium (fr)" link="http://silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=188:sharp-pc-1360&amp;catid=55:calcs&amp;Itemid=29"/>
-    </model>
+        </model>
     <model value="pc1401">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1401_e.html"/>
     </model>
@@ -124,5 +123,9 @@
     </model>
     <model value="g850">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-g850v_e.html"/>
+    </model>
+    <model value="fp200">
+        <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=169"/>
+        <url desc="Silicium (fr)" link="http://www.silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=206:casio-fp-200&amp;catid=55:calcs&amp;Itemid=29"/>
     </model>
 </weblinks>
