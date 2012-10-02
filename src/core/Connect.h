@@ -35,7 +35,8 @@ public:
         Canon_Din,
         Casio_30,
         Centronics_36,
-        DB25
+        DB_25,
+        DIN_8
     };
 
 	bool	refresh;

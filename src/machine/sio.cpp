@@ -131,7 +131,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,9,this,pSIOCONNECTOR->Desc);
                                 break;
-    case Cconnector::DB25  :    signalMap.clear();
+    case Cconnector::DB_25  :    signalMap.clear();
                                 signalMap[S_SD] = 2;
                                 signalMap[S_RD] = 3;
                                 signalMap[S_RS] = 4;
@@ -142,9 +142,24 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 updateMapConsole();
                                 pSIOCONNECTOR->Desc = "DB25 Serial Connector";
                                 pSIOCONNECTOR->setNbpins(25);
-                                pSIOCONNECTOR->setType(Cconnector::DB25);
+                                pSIOCONNECTOR->setType(Cconnector::DB_25);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,25,this,pSIOCONNECTOR->Desc);
+                                break;
+    case Cconnector::DIN_8  :   signalMap.clear();
+                                signalMap[S_SD] = 2;
+                                signalMap[S_RD] = 3;
+                                signalMap[S_RS] = 4;
+                                signalMap[S_CS] = 5;
+                                signalMap[S_CD] = 8;
+                                signalMap[S_RR] = 11;
+                                signalMap[S_ER] = 14;
+                                updateMapConsole();
+                                pSIOCONNECTOR->Desc = "DIN 8 pins";
+                                pSIOCONNECTOR->setNbpins(8);
+                                pSIOCONNECTOR->setType(Cconnector::DIN_8);
+                                WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
+                                WatchPoint.add(&pSIOCONNECTOR_value,64,8,this,pSIOCONNECTOR->Desc);
                                 break;
     default: return false;
         break;
@@ -232,6 +247,7 @@ void Csio::contextMenuEvent ( QContextMenuEvent * event )
         menuConnectorType->addAction(tr("Sharp 15 pins"));
         menuConnectorType->addAction(tr("Canon 9 pins"));
         menuConnectorType->addAction(tr("DB25 Serial Connector"));
+        menuConnectorType->addAction(tr("DIN 8 pins"));
 
         connect(menuConnectorType, SIGNAL(triggered(QAction*)), this, SLOT(slotConnType(QAction*)));
 
@@ -252,7 +268,10 @@ void Csio::initConnectorType(QString type) {
         initSignalMap(Cconnector::Canon_9);
     }
     else if (type == QString("DB25 Serial Connector")) {
-        initSignalMap(Cconnector::DB25);
+        initSignalMap(Cconnector::DB_25);
+    }
+    else if (type == QString("DIN 8 pins")) {
+        initSignalMap(Cconnector::DIN_8);
     }
 
 }

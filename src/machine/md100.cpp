@@ -32,7 +32,7 @@ Cmd100::Cmd100(CPObject *parent):CPObject(parent)
 
     pCONNECTOR	   = new Cconnector(this,30,0,Cconnector::Casio_30,"Connector 30 pins",true,QPoint(666,540));	publish(pCONNECTOR);
     pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Centronic 36 pins",false,QPoint(417,13)); publish(pCENTCONNECTOR);
-    pSIOCONNECTOR  = new Cconnector(this,9,2,Cconnector::DB25,"Serial 25 pins",false,QPoint(517,13)); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR  = new Cconnector(this,9,2,Cconnector::DB_25,"Serial 25 pins",false,QPoint(517,13)); publish(pSIOCONNECTOR);
 
     pTIMER		= new Ctimer(this);
 

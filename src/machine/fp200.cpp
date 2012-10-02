@@ -9,6 +9,8 @@
 #include "Inter.h"
 #include "Keyb.h"
 #include "cextension.h"
+#include "uart.h"
+#include "Connect.h"
 
 #include "Log.h"
 
@@ -62,6 +64,12 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new Ci8085(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"fp200.map");
+    pUART        = new Cuart(this);
+
+    pPARConnector = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
+    publish(pPARConnector);
+    pSERConnector = new Cconnector(this,9,1,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
+    publish(pSERConnector);
 
     lastKeyBufSize = 0;
     newKey = false;
@@ -71,7 +79,9 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 }
 
 Cfp200::~Cfp200() {
-
+    delete pPARConnector;
+    delete pSERConnector;
+    delete pUART;
 }
 
 
@@ -215,6 +225,9 @@ bool Cfp200::init()
     Cetl = false;
     sid = 0;
 
+    pUART->init();
+    pUART->pTIMER = pTIMER;
+
     return true;
 }
 
@@ -258,6 +271,18 @@ bool Cfp200::run()
 
 
     CpcXXXX::run();
+
+    //TODO Copy data to UART: Baudrate
+
+    pUART->Set_CS(true);        // for test purpose
+
+    pUART->run();
+
+    pSERConnector->Set_pin(3,pUART->Get_SD());      // TxD
+    pSERConnector->Set_pin(4,pUART->Get_RD());      // RxD
+    pSERConnector->Set_pin(6,pUART->Get_CS());      // CTS
+    pSERConnector->Set_pin(8,pUART->Get_RS());      // RTS
+
 }
 
 void Cfp200::Reset()

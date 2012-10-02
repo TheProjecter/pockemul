@@ -3,6 +3,7 @@
 
 class CPObject;
 class Ci8085;
+class Cuart;
 
 #include "pcxxxx.h"
 
@@ -35,7 +36,11 @@ public:
 
 //    UINT16 getKey();
 
+    Cconnector *pPARConnector;    qint64      pPARConnector_value;
+    Cconnector *pSERConnector;    qint64      pSERConnector_value;
+
     Ci8085 *i85cpu;
+    Cuart    *pUART;
 
     quint8 ks;
     quint16 getKey();
