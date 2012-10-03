@@ -46,6 +46,7 @@ public:
     bool run();
 
     void computeSound();
+    virtual void MemMirror(DWORD *d);
 protected:
 //	BYTE previous_key;
 
@@ -60,6 +61,7 @@ Q_OBJECT
 public:
     const char*	GetClassName(){ return("Ce550");}
 
+    virtual void MemMirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
 

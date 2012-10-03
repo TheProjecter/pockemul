@@ -286,16 +286,34 @@ void Ce500::disp(qint8 cmd,DWORD data)
 /*  ENTRY :DWORD d=Address													 */
 /*  RETURN:bool (1=RAM,0=ROM)												 */
 /*****************************************************************************/
+
+void Ce500::MemMirror(DWORD *d) {
+    // 32Ko internal
+    if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
+        *d = ((*d+0x8000) & 0xffff) | 0xB8000;
+    }
+}
+
 bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 {
-    if(*d>0xbffff) return(0);			/* ROM area(c0000-fffff) S3: */
-    if(*d>0x7ffff) return(1);			/* RAM area(80000-bffff) S1: */
-    if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
+    MemMirror(d);
 
-    if((*d&0x6000)==0x2000){
-        *d&=0x200f; disp(*d&15,data);//lcdc.access=1; lcdc.lcdcadr=*d&15;
-        return(1-(*d&1));			/* LCDC (0200x) */
+    if ( (*d>=0x00000) && (*d<=0x3FFFF)) {
+        if((*d&0x6000)==0x2000){
+            *d&=0x200f; disp(*d&15,data);//lcdc.access=1; lcdc.lcdcadr=*d&15;
+            return(1-(*d&1));			/* LCDC (0200x) */
+        }
+        return 1;
     }
+
+    if ( (*d>=0x40000) && (*d<=0x4FFFF)) return 0;
+    if ( (*d>=0xB0000) && (*d<=0xBFFFF)) return 1;
+    if ( (*d>=0xC0000) && (*d<=0xFFFFF)) return 0;
+
+//    if(*d>0xbffff) return(0);			/* ROM area(c0000-fffff) S3: */
+//    if(*d>0x7ffff) return(1);			/* RAM area(80000-bffff) S1: */
+//    if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
+
 
 #if 0
 
@@ -320,7 +338,7 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
         return((*d&0x10)==0);		/* CLOCK (010xx) */
     }
 #endif
-    return true;
+    return false;
 }
 
 /*****************************************************************************/
@@ -330,6 +348,12 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 /*****************************************************************************/
 bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 {
+
+    MemMirror(d);
+
+//    if ( (*d>=0xB0000) && (*d<=0xB7FFF)) { *d += 0x8000;return 1;}
+
+
     if(*d>0xbffff) return(1);			/* ROM area(c0000-fffff) S3: */
     if(*d>0x7ffff) return(1);			/* RAM area(80000-bffff) S1: */
     if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
@@ -678,4 +702,13 @@ bool Ce550::Chk_Adr(DWORD *d, DWORD data)
 bool Ce550::Chk_Adr_R(DWORD *d, DWORD data)
 {
     return Ce500::Chk_Adr_R(d,data);
+}
+
+
+void Ce550::MemMirror(DWORD *d)
+{
+    // 64Ko internal
+    if ( (*d>=0x80000) && (*d<=0xAFFFF)) {
+        *d = (*d & 0xffff) | 0xB0000;
+    }
 }
