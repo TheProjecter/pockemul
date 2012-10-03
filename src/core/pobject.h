@@ -111,7 +111,7 @@ public:
 	virtual	bool	init();			// initialize
 	virtual bool	InitDisplay(void);
     virtual bool	UpdateFinalImage(void);
-    virtual	bool	run(void){ return true;}					// emulator main step
+    virtual	bool	run(void);					// emulator main step
             qint64     runRange(qint64);
 	virtual bool	exit();					// exit
     virtual bool	Set_Connector(void) { return true; }
@@ -253,6 +253,8 @@ private:
 
     bool disp_on;
     bool disp_onRaised;
+
+    quint64 resetAt;
 
     TapAndHoldGesture* _gestureHandler;
 

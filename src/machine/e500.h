@@ -47,6 +47,7 @@ public:
 
     void computeSound();
     virtual void MemMirror(DWORD *d);
+    virtual void initExtension();
 protected:
 //	BYTE previous_key;
 

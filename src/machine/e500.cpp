@@ -7,6 +7,7 @@
 #include "Inter.h"
 #include "Log.h"
 #include "init.h"
+#include "cextension.h"
 
 //TODO: Connector output for ce-126p and ce-140f
 //TODO: Real Time Clock
@@ -17,12 +18,13 @@
         |   None.             | but it is not memory. It is cpu's internal ram.
         |                     |
         |                     |
-40000   -----------------------
+40000H  +---------------------+---------+---------+8KB CARD+
+        |                     |32KB CARD|16KB CARD+--------+
+        |   64KB CARD         |         +---------+
+        |                     +---------+
         |                     |
-        |   RAMCARD SLOT 2    | if you set 64kb-card, you can use 40000 - 4FFFF
-        |                     | ram slot "S2:" and ram drive "F:"
         |                     |
-80000   -----------------------
+50000H  +---------------------+
         |                     | PC-E500 has 32kb ( B8000 - BFFFF )
         |   BUILDIN RAM       | PC-E550 has 64kb ( B0000 - BFFFF )
         |           SLOT 1    | ram slot "S1:" and ram drive "E:"
@@ -95,11 +97,32 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
 
 }
 
+void	Ce500::initExtension(void)
+{
+    AddLog(LOG_MASTER,"INIT EXT PC-E500");
+    // initialise ext_MemSlot1
+    ext_MemSlot1 = new CExtensionArray("RAM Slot","Add RAM Module");
+    ext_MemSlot1->setAvailable(ID_CE210M,true);
+    ext_MemSlot1->setAvailable(ID_CE211M,true);
+    ext_MemSlot1->setAvailable(ID_CE212M,true);
+    ext_MemSlot1->setAvailable(ID_CE2H16M,true);
+    ext_MemSlot1->setAvailable(ID_CE2H32M,true);
+    ext_MemSlot1->setAvailable(ID_CE2H64M,true);
+
+    ext_MemSlot1->setChecked(ID_CE2H64M,true);
+    addExtMenu(ext_MemSlot1);
+
+    extensionArray[0] = ext_MemSlot1;
+
+}
+
 bool Ce500::init(void) {
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
     CpcXXXX::init();
+
+    initExtension();
 
     WatchPoint.remove(this);
     WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
@@ -288,9 +311,32 @@ void Ce500::disp(qint8 cmd,DWORD data)
 /*****************************************************************************/
 
 void Ce500::MemMirror(DWORD *d) {
+
+    if ((*d>=0x40000) && (*d<=0xB7FFF))
+    {
+        if (ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked) {
+            *d = (*d & 0xffff) | 0x40000;
+        }
+        if (ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked) {
+            *d = (*d & 0x7fff) | 0x40000;
+        }
+        if (ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked) {
+            *d = (*d & 0x3fff) | 0x40000;
+        }
+        if (ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked) {
+            *d = (*d & 0x1fff) | 0x40000;
+        }
+        if (ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked) {
+            *d = (*d & 0xfff) | 0x40000;
+        }
+        if (ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked) {
+            *d = (*d & 0x7ff) | 0x40000;
+        }
+    }
     // 32Ko internal
-    if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
-        *d = ((*d+0x8000) & 0xffff) | 0xB8000;
+    else if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
+        //*d = ((*d+0x8000) & 0xffff) | 0xB8000;
+        *d = (*d & 0x7fff) | 0xB8000;
     }
 }
 
@@ -306,8 +352,13 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
         return 1;
     }
 
-    if ( (*d>=0x40000) && (*d<=0x4FFFF)) return 0;
-    if ( (*d>=0xB0000) && (*d<=0xBFFFF)) return 1;
+    if ( (*d>=0x40000) && (*d<=0x4FFFF)) return (ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
+                                                 ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
+                                                 ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked ||
+                                                 ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked ||
+                                                 ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked ||
+                                                 ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked);
+    if ( (*d>=0xB8000) && (*d<=0xBFFFF)) return 1;
     if ( (*d>=0xC0000) && (*d<=0xFFFFF)) return 0;
 
 //    if(*d>0xbffff) return(0);			/* ROM area(c0000-fffff) S3: */

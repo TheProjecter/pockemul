@@ -70,6 +70,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
         ioFreq = 0;
         off =true;
         closed = false;
+        resetAt = 0;
 		
         _gestureHandler = new TapAndHoldGesture(this);
         connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
@@ -220,6 +221,13 @@ qint64 CPObject::runRange(qint64 step) {
     return 0;
 }
 
+bool CPObject::run(void){
+    if ((resetAt>0) && (pTIMER->state >= resetAt)) {
+        Reset();
+        resetAt = 0;
+    }
+   return true;
+}
 
 #define SAMPLERATE 8000
 #define BUFFLEN 500
@@ -1064,7 +1072,9 @@ void CPObject::slotPower()
 }
 
 void CPObject::slotReset() {
-    Reset();
+    resetAt = (pTIMER->CPUSpeed * getfrequency())*5 + pTIMER->state;
+
+//    Reset();
 }
 
 void CPObject::slotLoadSession()

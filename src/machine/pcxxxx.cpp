@@ -521,7 +521,8 @@ bool CpcXXXX::exit(void)
 /*****************************************************************************/
 bool CpcXXXX::run(void)
 {	
-	
+    CPObject::run();
+
 	old_state = pTIMER->state;
 
     Get_Connector();
