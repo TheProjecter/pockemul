@@ -349,7 +349,7 @@ void Ce500::MemMirror(DWORD *d) {
     }
     // 32Ko internal
     else if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
-        quint16 tmp = *d;
+//        quint32 tmp = *d;
         *d = (*d & 0x7fff) | 0xB8000;
 //        AddLog(LOG_MASTER,QString("adr;%1 -> %2").arg(tmp,6,16,QChar('0')).arg(*d,6,16,QChar('0')));
     }

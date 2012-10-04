@@ -3,7 +3,7 @@
 /*                       Copyright (C) Matsumo 1998,1999  */
 /**********************************************************/
 
-
+//TODO: transfert I/O to the pocket in/out instead of check imem
 
 //#include <stdlib.h>
 //#include <string.h>
@@ -157,6 +157,7 @@ inline void Csc62015::Chk_imemAdr_Read(BYTE d,BYTE len)
     if (fp_log) fprintf(fp_log,"IMEM access : %02X  l=%d\n",d,len);
     for(i=0;i<len;i++){
         switch(d){
+        case    IMEM_AMC: AddLog(LOG_CONSOLE,QString("read [EF]=%1\n").arg(imem[d],2,16,QChar('0')));break;
         case	IMEM_KOL:
         case	IMEM_KOH:((Ce500*)pPC)->getKey(); break;	// key matrix
 //		case	IMEM_RxD:sio.si=1; break;		// sio RxD
@@ -188,6 +189,7 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
 //		case	IMEM_SCR:snd.scr=1; break;		// sound
 //		case	IMEM_EOL:opt11.eio=IMEM_EOL; break;
 //		case	IMEM_EIL:opt11.eio=IMEM_EIL; break;
+        case    IMEM_AMC: AddLog(LOG_CONSOLE,QString("write [EF]=%1\n").arg(data,4,16,QChar('0')));break;
         case IMEM_EIH:
         case IMEM_EIL:
         case IMEM_EOH:

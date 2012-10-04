@@ -36,6 +36,7 @@
 #define		IMEM_TxD	0xfa			// UART Send Buffer
 
 #define		IMEM_IISR	0xeb			/* Interrupt In Service Register address*/
+#define		IMEM_AMC	0xef
 #define		IMEM_IMR	0xfb			/* Interrupt Mask Register address*/
 #define		IMEM_ISR	0xfc			/* Interrupt Status Register address*/
 #define		IMEM_SCR	0xfd			/* System Control Register address*/
