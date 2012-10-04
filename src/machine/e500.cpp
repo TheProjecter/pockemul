@@ -11,6 +11,8 @@
 
 //TODO: Connector output for ce-126p and ce-140f
 //TODO: Real Time Clock
+//TODO: UART Emulation
+//TODO: Memory cards management
 
 /*
 00000   -----------------------
@@ -311,32 +313,43 @@ void Ce500::disp(qint8 cmd,DWORD data)
 /*****************************************************************************/
 
 void Ce500::MemMirror(DWORD *d) {
-
-    if ((*d>=0x40000) && (*d<=0xB7FFF))
+    if ((ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked) &&
+            (*d>=0x40000) && (*d<=0xB7FFF))
     {
         if (ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked) {
             *d = (*d & 0xffff) | 0x40000;
         }
+        else
         if (ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked) {
             *d = (*d & 0x7fff) | 0x40000;
         }
+        else
         if (ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked) {
             *d = (*d & 0x3fff) | 0x40000;
         }
+        else
         if (ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked) {
             *d = (*d & 0x1fff) | 0x40000;
         }
+        else
         if (ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked) {
             *d = (*d & 0xfff) | 0x40000;
         }
+        else
         if (ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked) {
             *d = (*d & 0x7ff) | 0x40000;
         }
     }
     // 32Ko internal
     else if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
-        //*d = ((*d+0x8000) & 0xffff) | 0xB8000;
+        quint16 tmp = *d;
         *d = (*d & 0x7fff) | 0xB8000;
+//        AddLog(LOG_MASTER,QString("adr;%1 -> %2").arg(tmp,6,16,QChar('0')).arg(*d,6,16,QChar('0')));
     }
 }
 
@@ -358,6 +371,9 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
                                                  ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked ||
                                                  ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked ||
                                                  ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked);
+    if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
+        MSG_ERROR(QString("adr;%1").arg(*d,6,16,QChar('0')));
+    }
     if ( (*d>=0xB8000) && (*d<=0xBFFFF)) return 1;
     if ( (*d>=0xC0000) && (*d<=0xFFFFF)) return 0;
 
@@ -716,6 +732,10 @@ BYTE Ce500::getKey()
 
     }
 
+    if (KEY(K_BRK)) {
+        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_ONKEY);
+    }
+    else
     if(data) {
         ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
     }

@@ -67,4 +67,7 @@ void DialogLog::keyPressEvent (QKeyEvent * event )
 	event->ignore();
 }
 
-
+void DialogLog::closeEvent(QCloseEvent *event)
+{
+    mainwindow->dialoglog = 0;
+}

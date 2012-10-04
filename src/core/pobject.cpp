@@ -848,7 +848,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
 	{
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));
 			menupocket->addAction(tr("Turn On"),this,SLOT(slotPower()));
-			menupocket->addAction(tr("Reset"),this,SLOT(slotReset()));
+            menupocket->addAction(tr("Reset (5s delay)"),this,SLOT(slotReset()));
             //menupocket->addAction(tr("Detach"),this,SLOT(slotDetach()));
             menupocket->addSeparator();
             menupocket->addAction(tr("Load ..."),this,SLOT(slotLoadSession()));

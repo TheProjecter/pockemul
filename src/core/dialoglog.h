@@ -12,7 +12,7 @@ class DialogLog : public QDialog, public Ui::DialogLog
 public:
 	DialogLog( QWidget * parent = 0, Qt::WFlags f = 0 );
 	int LogLevel;
-	
+
 private slots:
 	void additem( QString );
     void addconsole( QString );
@@ -21,6 +21,6 @@ private slots:
 private:
 	void addCkeckableItem(QString,int);
 	void keyPressEvent(QKeyEvent *event);
-
+    void closeEvent(QCloseEvent *event);
 };
 #endif
