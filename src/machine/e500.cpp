@@ -355,6 +355,47 @@ void Ce500::MemMirror(DWORD *d) {
     }
 }
 
+void Ce550::MemMirror(DWORD *d)
+{
+    if ((ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked ||
+         ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked) &&
+            (*d>=0x40000) && (*d<=0xB7FFF))
+    {
+        if (ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked) {
+            *d = (*d & 0xffff) | 0x40000;
+        }
+        else
+        if (ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked) {
+            *d = (*d & 0x7fff) | 0x40000;
+        }
+        else
+        if (ext_MemSlot1->ExtArray[ID_CE2H16M]->IsChecked) {
+            *d = (*d & 0x3fff) | 0x40000;
+        }
+        else
+        if (ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked) {
+            *d = (*d & 0x1fff) | 0x40000;
+        }
+        else
+        if (ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked) {
+            *d = (*d & 0xfff) | 0x40000;
+        }
+        else
+        if (ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked) {
+            *d = (*d & 0x7ff) | 0x40000;
+        }
+    }
+    else
+    // 64Ko internal
+    if ( (*d>=0x80000) && (*d<=0xAFFFF)) {
+        *d = (*d & 0xffff) | 0xB0000;
+    }
+}
+
 bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 {
     MemMirror(d);
@@ -374,7 +415,7 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
                                                  ext_MemSlot1->ExtArray[ID_CE2H32M]->IsChecked ||
                                                  ext_MemSlot1->ExtArray[ID_CE2H64M]->IsChecked);
     if ( (*d>=0x80000) && (*d<=0xB7FFF)) {
-        MSG_ERROR(QString("adr;%1").arg(*d,6,16,QChar('0')));
+        AddLog(LOG_RAM,QString("adr;%1").arg(*d,6,16,QChar('0')));
     }
     if ( (*d>=0xB8000) && (*d<=0xBFFFF)) return 1;
     if ( (*d>=0xC0000) && (*d<=0xFFFFF)) return 0;
@@ -788,10 +829,4 @@ bool Ce550::Chk_Adr_R(DWORD *d, DWORD data)
 }
 
 
-void Ce550::MemMirror(DWORD *d)
-{
-    // 64Ko internal
-    if ( (*d>=0x80000) && (*d<=0xAFFFF)) {
-        *d = (*d & 0xffff) | 0xB0000;
-    }
-}
+
