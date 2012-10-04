@@ -10,6 +10,7 @@
 
 #include "pobject.h"
 #include "dialogstartup.h"
+#include "init.h"
 
 //QTM_USE_NAMESPACE
 
@@ -138,6 +139,11 @@ int main(int argc, char *argv[])
 
     mainwindow->show();
 
+//    QStringList args = app.arguments();
+//    MSG_ERROR(QString("%1").arg(args.count()));
+//    MSG_ERROR(args[0]);
+
+//    mainwindow->LoadPocket(FP200);
 #endif
     return app.exec();
 

@@ -71,6 +71,8 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
         off =true;
         closed = false;
         resetAt = 0;
+        hardresetAt = 0;
+        hardreset = false;
 		
         _gestureHandler = new TapAndHoldGesture(this);
         connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
@@ -225,6 +227,12 @@ bool CPObject::run(void){
     if ((resetAt>0) && (pTIMER->state >= resetAt)) {
         Reset();
         resetAt = 0;
+    }
+    if ((hardresetAt>0) && (pTIMER->state >= hardresetAt)) {
+        hardreset = true;
+        init();
+        Reset();
+        hardresetAt = 0;
     }
    return true;
 }
@@ -849,6 +857,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));
 			menupocket->addAction(tr("Turn On"),this,SLOT(slotPower()));
             menupocket->addAction(tr("Reset (5s delay)"),this,SLOT(slotReset()));
+            menupocket->addAction(tr("Hard Reset (5s delay)"),this,SLOT(slotHardReset()));
             //menupocket->addAction(tr("Detach"),this,SLOT(slotDetach()));
             menupocket->addSeparator();
             menupocket->addAction(tr("Load ..."),this,SLOT(slotLoadSession()));
@@ -1072,6 +1081,12 @@ void CPObject::slotPower()
 }
 
 void CPObject::slotReset() {
+    resetAt = (pTIMER->CPUSpeed * getfrequency())*5 + pTIMER->state;
+
+//    Reset();
+}
+
+void CPObject::slotHardReset() {
     resetAt = (pTIMER->CPUSpeed * getfrequency())*5 + pTIMER->state;
 
 //    Reset();

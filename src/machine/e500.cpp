@@ -315,6 +315,7 @@ void Ce500::disp(qint8 cmd,DWORD data)
 /*****************************************************************************/
 
 void Ce500::MemMirror(DWORD *d) {
+
     if ((ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
          ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
          ext_MemSlot1->ExtArray[ID_CE212M]->IsChecked ||
@@ -398,7 +399,10 @@ void Ce550::MemMirror(DWORD *d)
 
 bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 {
+    quint32 tmp = *d;
     MemMirror(d);
+
+    if ( (tmp>=0x40000) && (tmp<=0xBFFFF) && (pCPU->fp_log)) fprintf(pCPU->fp_log,"\nRAM WRITE: [%06X] -> [%06X]=%02X\n",tmp,*d,data);
 
     if ( (*d>=0x00000) && (*d<=0x3FFFF)) {
         if((*d&0x6000)==0x2000){
@@ -458,8 +462,9 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 /*****************************************************************************/
 bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 {
-
+    quint32 tmp = *d;
     MemMirror(d);
+    if ( (tmp>=0x40000) && (tmp<=0xBFFFF) && (pCPU->fp_log)) fprintf(pCPU->fp_log,"\nRAM READ : [%06X] -> [%06X]\n",tmp,*d);
 
 //    if ( (*d>=0xB0000) && (*d<=0xB7FFF)) { *d += 0x8000;return 1;}
 
@@ -513,7 +518,10 @@ void Ce500::TurnON()
 {
     if (!Power && pKEYB->LastKey == K_BRK) {
         AddLog(LOG_MASTER,"TURN ON");
-        Initial_Session_Load();
+        if (!hardreset) {
+            Initial_Session_Load();
+        }
+        else hardreset = false;
         off = 0;
         Power = true;
         PowerSwitch = PS_RUN;

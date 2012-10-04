@@ -159,6 +159,8 @@ public:
     int DataFrequencyHz;
     int BufferSize;
 
+    bool hardreset;
+
 	DialogKeyList	*dialogkeylist;
     DialogDump		*dialogdump;
     DialogDasm      *dialogdasm;
@@ -222,6 +224,7 @@ public slots:
 
 	void slotPower();
 	void slotReset();
+    void slotHardReset();
     //void slotDetach();
     void slotLoadSession();
     void slotSaveSession();
@@ -254,7 +257,8 @@ private:
     bool disp_on;
     bool disp_onRaised;
 
-    quint64 resetAt;
+    quint64 resetAt,hardresetAt;
+
 
     TapAndHoldGesture* _gestureHandler;
 

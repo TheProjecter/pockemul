@@ -198,7 +198,10 @@ void CpcXXXX::TurnON(void)
          (!Power && pKEYB->LastKey == K_BRK))
     {
         AddLog(LOG_MASTER,"Power ON");
-        Initial_Session_Load();
+        if (!hardreset) {
+            Initial_Session_Load();
+        }
+        else hardreset = false;
         off = 0;
         Power = true;
         PowerSwitch = PS_RUN;
