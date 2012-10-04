@@ -122,9 +122,10 @@ bool Ce500::init(void) {
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
+    initExtension();
+
     CpcXXXX::init();
 
-    initExtension();
 
     WatchPoint.remove(this);
     WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
@@ -732,13 +733,13 @@ BYTE Ce500::getKey()
 
     }
 
-    if (KEY(K_BRK)) {
-        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_ONKEY);
-    }
-    else
-    if(data) {
-        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
-    }
+//    if (KEY(K_BRK)) {
+//        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_ONKEY);
+//    }
+//    else
+//    if(data) {
+//        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
+//    }
     pCPU->imem[IMEM_KI] = data;					//set data to ki
     return data^0xff;start2khz = 0;
     start4khz = 0;

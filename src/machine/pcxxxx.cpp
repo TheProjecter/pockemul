@@ -450,10 +450,6 @@ bool CpcXXXX::init(void)
 	ClearRam(InitMemValue);
 	AddLog(LOG_MASTER,tr("Success"));
 
-	AddLog(LOG_MASTER,tr("CPU init"));
-    if (!pCPU) return 0;
-	if(!(pCPU->init())) return(0);
-	AddLog(LOG_MASTER,"Success");
 
 	AddLog(LOG_MASTER,tr("LCD init"));
 
@@ -467,6 +463,11 @@ bool CpcXXXX::init(void)
 	}
 	AddLog(LOG_MASTER,"Success");
 
+
+    AddLog(LOG_MASTER,tr("CPU init"));
+    if (!pCPU) return 0;
+    if(!(pCPU->init())) return(0);
+    AddLog(LOG_MASTER,"Success");
 
 	if(pKEYB)	pKEYB->init();
 	if(pTIMER)	pTIMER->init();

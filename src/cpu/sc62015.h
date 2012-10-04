@@ -39,6 +39,7 @@
 #define		IMEM_IMR	0xfb			/* Interrupt Mask Register address*/
 #define		IMEM_ISR	0xfc			/* Interrupt Status Register address*/
 #define		IMEM_SCR	0xfd			/* System Control Register address*/
+#define		IMEM_ACM	0xfe
 #define		IMEM_SSR	0xff			/* System Status Register address*/
 
 #define		VECT_IR		0xffffa			/* Interrupt Vector address */

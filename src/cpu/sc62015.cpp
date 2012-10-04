@@ -126,7 +126,7 @@ inline void Csc62015::AddState(BYTE n)
 inline BYTE Csc62015::Conv_imemAdr(BYTE d,bool m)
 {
 /*printf("mode=%d\n",m);*/
-	register BYTE	r;
+    BYTE	r=0;
 	if(m==0){
 		switch(pre_1){					/* first operand */
 		case	0:r=d;			   break;	/* (n) */
@@ -206,28 +206,28 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
 /*  ENTRY :BYTE a=internal RAM address										 */
 /*  RETURN:(BYTE(8),WORD(16),DWORD(20,24) data)								 */
 /*****************************************************************************/
-BYTE Csc62015::Get_i8(BYTE a,bool m)
+inline BYTE Csc62015::Get_i8(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
     Chk_imemAdr_Read(adr,SIZE_8);
 	return(imem[adr]);
 }
-WORD Csc62015::Get_i16(BYTE a,bool m)
+inline WORD Csc62015::Get_i16(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
     Chk_imemAdr_Read(adr,SIZE_16);
 	return(imem[adr]+(imem[adr+1]<<8));
 }
-DWORD Csc62015::Get_i20(BYTE a,bool m)
+inline DWORD Csc62015::Get_i20(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
     Chk_imemAdr_Read(adr,SIZE_20);
 	return((imem[adr]+(imem[adr+1]<<8)+(imem[adr+2]<<16))&MASK_20);
 }
-DWORD Csc62015::Get_i24(BYTE a,bool m)
+inline DWORD Csc62015::Get_i24(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -239,14 +239,14 @@ DWORD Csc62015::Get_i24(BYTE a,bool m)
 /* Set data to imem[]														 */
 /*  ENTRY :BYTE a=internal RAM address, BYTE(8),WORD(16),DWORD(20,24) d=data */
 /*****************************************************************************/
-void Csc62015::Set_i8(BYTE a,BYTE d,bool m)
+inline void Csc62015::Set_i8(BYTE a,BYTE d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
     Chk_imemAdr(adr,SIZE_8,d);
 	imem[adr]=d;
 }
-void Csc62015::Set_i16(BYTE a,WORD d,bool m)
+inline void Csc62015::Set_i16(BYTE a,WORD d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -254,7 +254,7 @@ void Csc62015::Set_i16(BYTE a,WORD d,bool m)
 	imem[adr++]=d;
 	imem[adr]=(d>>8);
 }
-void Csc62015::Set_i20(BYTE a,DWORD d,bool m)
+inline void Csc62015::Set_i20(BYTE a,DWORD d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -263,7 +263,7 @@ void Csc62015::Set_i20(BYTE a,DWORD d,bool m)
 	imem[adr++]=(d>>8);
 	imem[adr]=(d>>16)&MASK_4;
 }
-void Csc62015::Set_i24(BYTE a,DWORD d,bool m)
+inline void Csc62015::Set_i24(BYTE a,DWORD d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -370,7 +370,7 @@ inline void Csc62015::Chk_Zero(DWORD d,BYTE len)
 /* Make effective address from current reg.x.p	for MV r,[r3] or MV [r3],r	 */
 /*  RETURN:DWORD address													 */
 /*****************************************************************************/
-DWORD Csc62015::Get_d(BYTE len)
+inline DWORD Csc62015::Get_d(BYTE len)
 {
     register BYTE	t;
     register DWORD	a;
@@ -391,7 +391,7 @@ DWORD Csc62015::Get_d(BYTE len)
 /*	for MV (n),[r3] or MV [r3],(n)											 */
 /*  RETURN:DWORD address, BYTE r=i-mem address								 */
 /*****************************************************************************/
-DWORD Csc62015::Get_d2(BYTE len, BYTE *r)
+inline DWORD Csc62015::Get_d2(BYTE len, BYTE *r)
 {
     register BYTE	t;
     register DWORD	a;
@@ -413,7 +413,7 @@ DWORD Csc62015::Get_d2(BYTE len, BYTE *r)
 /* Make effective address from current reg.x.p	for MV r,[(n)] or MV [(n)],r */
 /*  RETURN:DWORD address													 */
 /*****************************************************************************/
-DWORD Csc62015::Get_i(void)
+inline DWORD Csc62015::Get_i(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -434,7 +434,7 @@ DWORD Csc62015::Get_i(void)
 /*  ENTRY :BYTE r=mode(0:MV (m),[(n)] , 1:MV [(m)],(n) )					 */
 /*  RETURN:DWORD address, BYTE r=i-mem address								 */
 /*****************************************************************************/
-DWORD Csc62015::Get_i2(BYTE *r)
+inline DWORD Csc62015::Get_i2(BYTE *r)
 {
 	register BYTE	t,u,v,w;
 	register DWORD	a;
@@ -480,12 +480,12 @@ inline WORD Csc62015::hex2bcd(BYTE d)
 
 /*---------------------------------------------------------------------------*/
 /* NOP */
-void Csc62015::Op_00(void)
+inline void Csc62015::Op_00(void)
 {
 	AddState(1);
 }
 /* RETI */
-void Csc62015::Op_01(void)
+inline void Csc62015::Op_01(void)
 {
     imem[IMEM_IMR]=pPC->Get_8(reg.x.s);
 	reg.x.s++;
@@ -497,19 +497,19 @@ void Csc62015::Op_01(void)
 	AddState(7);
 }
 /* JP mn */
-void Csc62015::Op_02(void)
+inline void Csc62015::Op_02(void)
 {
     reg.r.pc=pPC->Get_16(reg.x.p);
 	AddState(4);
 }
 /* JPF lmn */
-void Csc62015::Op_03(void)
+inline void Csc62015::Op_03(void)
 {
     reg.x.p=pPC->Get_20(reg.x.p);
 	AddState(5);
 }
 /* CALL mn */
-void Csc62015::Op_04(void)
+inline void Csc62015::Op_04(void)
 {
 	register WORD	t;
     t=pPC->Get_16(reg.x.p);
@@ -521,7 +521,7 @@ void Csc62015::Op_04(void)
 	AddState(6);
 }
 /* CALLF lmn */
-void Csc62015::Op_05(void)
+inline void Csc62015::Op_05(void)
 {
 	register DWORD	t;
     t=pPC->Get_20(reg.x.p);
@@ -533,7 +533,7 @@ void Csc62015::Op_05(void)
 	AddState(8);
 }
 /* RET */
-void Csc62015::Op_06(void)
+inline void Csc62015::Op_06(void)
 {
     reg.r.pc=pPC->Get_16(reg.x.s);
 	reg.x.s+=SIZE_16;
@@ -541,7 +541,7 @@ void Csc62015::Op_06(void)
 	AddState(4);
 }
 /* RETF */
-void Csc62015::Op_07(void)
+inline void Csc62015::Op_07(void)
 {
     reg.x.p=pPC->Get_20(reg.x.s);
 	reg.x.s+=SIZE_20;
@@ -549,14 +549,14 @@ void Csc62015::Op_07(void)
 	AddState(5);
 }
 /* MV A,n */
-void Csc62015::Op_08(void)
+inline void Csc62015::Op_08(void)
 {
     reg.r.a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	AddState(2);
 }
 /* MV IL,n */
-void Csc62015::Op_09(void)
+inline void Csc62015::Op_09(void)
 {
     reg.r.il=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
@@ -564,75 +564,75 @@ void Csc62015::Op_09(void)
 	AddState(3);
 }
 /* MV BA,mn */
-void Csc62015::Op_0a(void)
+inline void Csc62015::Op_0a(void)
 {
     reg.x.ba=pPC->Get_16(reg.x.p);
 	reg.r.pc+=SIZE_16;
 	AddState(3);
 }
 /* MV I,mn */
-void Csc62015::Op_0b(void)
+inline void Csc62015::Op_0b(void)
 {
     reg.x.i=pPC->Get_16(reg.x.p);
 	reg.r.pc+=SIZE_16;
 	AddState(3);
 }
 /* MV X,lmn */
-void Csc62015::Op_0c(void)
+inline void Csc62015::Op_0c(void)
 {
     reg.x.x=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
 	AddState(4);
 }
 /* MV Y,lmn */
-void Csc62015::Op_0d(void)
+inline void Csc62015::Op_0d(void)
 {
     reg.x.y=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
 	AddState(4);
 }
 /* MV U,lmn */
-void Csc62015::Op_0e(void)
+inline void Csc62015::Op_0e(void)
 {
     reg.x.u=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
 	AddState(4);
 }
 /* MV S,lmn */
-void Csc62015::Op_0f(void)
+inline void Csc62015::Op_0f(void)
 {
     reg.x.s=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
 	AddState(4);
 }
 /* JP (n) */
-void Csc62015::Op_10(void)
+inline void Csc62015::Op_10(void)
 {
     reg.x.p=Get_i20(pPC->Get_8(reg.x.p),OPR1);
 	AddState(6);
 }
 /* JP r3 */
-void Csc62015::Op_11(void)
+inline void Csc62015::Op_11(void)
 {
     reg.x.p=Get_r(pPC->Get_8(reg.x.p));
 	AddState(4);
 }
 /* JR +n */
-void Csc62015::Op_12(void)
+inline void Csc62015::Op_12(void)
 {
     reg.r.pc+=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	AddState(3);
 }
 /* JR -n */
-void Csc62015::Op_13(void)
+inline void Csc62015::Op_13(void)
 {
     reg.r.pc-=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	AddState(3);
 }
 /* JPZ mn */
-void Csc62015::Op_14(void)
+inline void Csc62015::Op_14(void)
 {
 	register WORD	t;
     t=pPC->Get_16(reg.x.p);
@@ -641,7 +641,7 @@ void Csc62015::Op_14(void)
 	AddState(3);
 }
 /* JPNZ mn */
-void Csc62015::Op_15(void)
+inline void Csc62015::Op_15(void)
 {
 	register WORD	t;
     t=pPC->Get_16(reg.x.p);
@@ -650,7 +650,7 @@ void Csc62015::Op_15(void)
 	AddState(3);
 }
 /* JPC mn */
-void Csc62015::Op_16(void)
+inline void Csc62015::Op_16(void)
 {
 	register WORD	t;
     t=pPC->Get_16(reg.x.p);
@@ -659,7 +659,7 @@ void Csc62015::Op_16(void)
 	AddState(3);
 }
 /* JPNC mn */
-void Csc62015::Op_17(void)
+inline void Csc62015::Op_17(void)
 {
 	register WORD	t;
     t=pPC->Get_16(reg.x.p);
@@ -668,7 +668,7 @@ void Csc62015::Op_17(void)
 	AddState(3);
 }
 /* JRZ +n */
-void Csc62015::Op_18(void)
+inline void Csc62015::Op_18(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -677,7 +677,7 @@ void Csc62015::Op_18(void)
 	AddState(2);
 }
 /* JRZ -n */
-void Csc62015::Op_19(void)
+inline void Csc62015::Op_19(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -686,7 +686,7 @@ void Csc62015::Op_19(void)
 	AddState(2);
 }
 /* JRNZ +n */
-void Csc62015::Op_1a(void)
+inline void Csc62015::Op_1a(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -695,7 +695,7 @@ void Csc62015::Op_1a(void)
 	AddState(2);
 }
 /* JRNZ -n */
-void Csc62015::Op_1b(void)
+inline void Csc62015::Op_1b(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -704,7 +704,7 @@ void Csc62015::Op_1b(void)
 	AddState(2);
 }
 /* JRC +n */
-void Csc62015::Op_1c(void)
+inline void Csc62015::Op_1c(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -713,7 +713,7 @@ void Csc62015::Op_1c(void)
 	AddState(2);
 }
 /* JRC -n */
-void Csc62015::Op_1d(void)
+inline void Csc62015::Op_1d(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -722,7 +722,7 @@ void Csc62015::Op_1d(void)
 	AddState(2);
 }
 /* JRNC +n */
-void Csc62015::Op_1e(void)
+inline void Csc62015::Op_1e(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -731,7 +731,7 @@ void Csc62015::Op_1e(void)
 	AddState(2);
 }
 /* JRNC -n */
-void Csc62015::Op_1f(void)
+inline void Csc62015::Op_1f(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -740,13 +740,13 @@ void Csc62015::Op_1f(void)
 	AddState(2);
 }
 /* Undefined Code */
-void Csc62015::Op_20(void)
+inline void Csc62015::Op_20(void)
 {
 //UN_DEFINE
 	AddState(1);
 }
 /* PRE 21h */
-void Csc62015::Op_21(void)
+inline void Csc62015::Op_21(void)
 {
 	pre_1=1;
 	pre_2=3;
@@ -754,7 +754,7 @@ void Csc62015::Op_21(void)
 	Step_sc62015_();
 }
 /* PRE 22h */
-void Csc62015::Op_22(void)
+inline void Csc62015::Op_22(void)
 {
 	pre_1=1;
 	pre_2=0;
@@ -762,7 +762,7 @@ void Csc62015::Op_22(void)
 	Step_sc62015_();
 }
 /* PRE 23h */
-void Csc62015::Op_23(void)
+inline void Csc62015::Op_23(void)
 {
 	pre_1=1;
 	pre_2=2;
@@ -770,7 +770,7 @@ void Csc62015::Op_23(void)
 	Step_sc62015_();
 }
 /* PRE 24h */
-void Csc62015::Op_24(void)
+inline void Csc62015::Op_24(void)
 {
 	pre_1=3;
 	pre_2=1;
@@ -778,7 +778,7 @@ void Csc62015::Op_24(void)
 	Step_sc62015_();
 }
 /* PRE 25h */
-void Csc62015::Op_25(void)
+inline void Csc62015::Op_25(void)
 {
 	pre_1=3;
 	pre_2=3;
@@ -786,7 +786,7 @@ void Csc62015::Op_25(void)
 	Step_sc62015_();
 }
 /* PRE 26h */
-void Csc62015::Op_26(void)
+inline void Csc62015::Op_26(void)
 {
 	pre_1=3;
 	pre_2=0;
@@ -794,7 +794,7 @@ void Csc62015::Op_26(void)
 	Step_sc62015_();
 }
 /* PRE 27h */
-void Csc62015::Op_27(void)
+inline void Csc62015::Op_27(void)
 {
 	pre_1=3;
 	pre_2=2;
@@ -802,56 +802,56 @@ void Csc62015::Op_27(void)
 	Step_sc62015_();
 }
 /* PUSHU A */
-void Csc62015::Op_28(void)
+inline void Csc62015::Op_28(void)
 {
 	reg.x.u--;
     pPC->Set_8(reg.x.u,reg.r.a);
 	AddState(3);
 }
 /* PUSH IL */
-void Csc62015::Op_29(void)
+inline void Csc62015::Op_29(void)
 {
 	reg.x.u--;
     pPC->Set_8(reg.x.u,reg.r.il);
 	AddState(3);
 }
 /* PUSHU BA */
-void Csc62015::Op_2a(void)
+inline void Csc62015::Op_2a(void)
 {
 	reg.x.u-=SIZE_16;
     pPC->Set_16(reg.x.u,reg.x.ba);
 	AddState(4);
 }
 /* PUSHU I */
-void Csc62015::Op_2b(void)
+inline void Csc62015::Op_2b(void)
 {
 	reg.x.u-=SIZE_16;
     pPC->Set_16(reg.x.u,reg.x.i);
 	AddState(4);
 }
 /* PUSHU X */
-void Csc62015::Op_2c(void)
+inline void Csc62015::Op_2c(void)
 {
 	reg.x.u-=SIZE_20;
     pPC->Set_20(reg.x.u,reg.x.x);
 	AddState(5);
 }
 /* PUSHU Y */
-void Csc62015::Op_2d(void)
+inline void Csc62015::Op_2d(void)
 {
 	reg.x.u-=SIZE_20;
     pPC->Set_20(reg.x.u,reg.x.y);
 	AddState(5);
 }
 /* PUSHU F */
-void Csc62015::Op_2e(void)
+inline void Csc62015::Op_2e(void)
 {
 	reg.x.u--;
     pPC->Set_8(reg.x.u,reg.x.f);
 	AddState(3);
 }
 /* PUSHU IMR */
-void Csc62015::Op_2f(void)
+inline void Csc62015::Op_2f(void)
 {
 	reg.x.u--;
     pPC->Set_8(reg.x.u,imem[IMEM_IMR]);
@@ -859,7 +859,7 @@ void Csc62015::Op_2f(void)
 	AddState(3);
 }
 /* PRE 30h */
-void Csc62015::Op_30(void)
+inline void Csc62015::Op_30(void)
 {
 	pre_1=0;
 	pre_2=1;
@@ -867,7 +867,7 @@ void Csc62015::Op_30(void)
 	Step_sc62015_();
 }
 /* PRE 31h */
-void Csc62015::Op_31(void)
+inline void Csc62015::Op_31(void)
 {
 	pre_1=0;
 	pre_2=3;
@@ -875,7 +875,7 @@ void Csc62015::Op_31(void)
 	Step_sc62015_();
 }
 /* PRE 32h */
-void Csc62015::Op_32(void)
+inline void Csc62015::Op_32(void)
 {
 	pre_1=0;
 	pre_2=0;
@@ -883,7 +883,7 @@ void Csc62015::Op_32(void)
 	Step_sc62015_();
 }
 /* PRE 33h */
-void Csc62015::Op_33(void)
+inline void Csc62015::Op_33(void)
 {
 	pre_1=0;
 	pre_2=2;
@@ -891,7 +891,7 @@ void Csc62015::Op_33(void)
 	Step_sc62015_();
 }
 /* PRE 34h */
-void Csc62015::Op_34(void)
+inline void Csc62015::Op_34(void)
 {
 	pre_1=2;
 	pre_2=1;
@@ -899,7 +899,7 @@ void Csc62015::Op_34(void)
 	Step_sc62015_();
 }
 /* PRE 35h */
-void Csc62015::Op_35(void)
+inline void Csc62015::Op_35(void)
 {
 	pre_1=2;
 	pre_2=3;
@@ -907,7 +907,7 @@ void Csc62015::Op_35(void)
 	Step_sc62015_();
 }
 /* PRE 36h */
-void Csc62015::Op_36(void)
+inline void Csc62015::Op_36(void)
 {
 	pre_1=2;
 	pre_2=0;
@@ -915,7 +915,7 @@ void Csc62015::Op_36(void)
 	Step_sc62015_();
 }
 /* PRE 37h */
-void Csc62015::Op_37(void)
+inline void Csc62015::Op_37(void)
 {
 	pre_1=2;
 	pre_2=2;
@@ -923,14 +923,14 @@ void Csc62015::Op_37(void)
 	Step_sc62015_();
 }
 /* POPU A */
-void Csc62015::Op_38(void)
+inline void Csc62015::Op_38(void)
 {
     reg.r.a=pPC->Get_8(reg.x.u);
 	reg.x.u++;
 	AddState(2);
 }
 /* POPU IL */
-void Csc62015::Op_39(void)
+inline void Csc62015::Op_39(void)
 {
     reg.r.il=pPC->Get_8(reg.x.u);
 	reg.x.u++;
@@ -938,49 +938,49 @@ void Csc62015::Op_39(void)
 	AddState(3);
 }
 /* POPU BA */
-void Csc62015::Op_3a(void)
+inline void Csc62015::Op_3a(void)
 {
     reg.x.ba=pPC->Get_16(reg.x.u);
 	reg.x.u+=SIZE_16;
 	AddState(3);
 }
 /* POPU I */
-void Csc62015::Op_3b(void)
+inline void Csc62015::Op_3b(void)
 {
     reg.x.i=pPC->Get_16(reg.x.u);
 	reg.x.u+=SIZE_16;
 	AddState(3);
 }
 /* POPU X */
-void Csc62015::Op_3c(void)
+inline void Csc62015::Op_3c(void)
 {
     reg.x.x=pPC->Get_20(reg.x.u);
 	reg.x.u+=SIZE_20;
 	AddState(4);
 }
 /* POPU Y */
-void Csc62015::Op_3d(void)
+inline void Csc62015::Op_3d(void)
 {
     reg.x.y=pPC->Get_20(reg.x.u);
 	reg.x.u+=SIZE_20;
 	AddState(4);
 }
 /* POPU F */
-void Csc62015::Op_3e(void)
+inline void Csc62015::Op_3e(void)
 {
     reg.x.f=pPC->Get_8(reg.x.u);
 	reg.x.u++;
 	AddState(2);
 }
 /* POPU IMR */
-void Csc62015::Op_3f(void)
+inline void Csc62015::Op_3f(void)
 {
     imem[IMEM_IMR]=pPC->Get_8(reg.x.u);
 	reg.x.u++;
 	AddState(2);
 }
 /* ADD A,n */
-void Csc62015::Op_40(void)
+inline void Csc62015::Op_40(void)
 {
 	register DWORD	t;
     t=reg.r.a+pPC->Get_8(reg.x.p);
@@ -990,7 +990,7 @@ void Csc62015::Op_40(void)
 	AddState(3);
 }
 /* ADD (m),n */
-void Csc62015::Op_41(void)
+inline void Csc62015::Op_41(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1003,7 +1003,7 @@ void Csc62015::Op_41(void)
 	AddState(4);
 }
 /* ADD A,(n) */
-void Csc62015::Op_42(void)
+inline void Csc62015::Op_42(void)
 {
 	register DWORD	t;
     t=reg.r.a+Get_i8(pPC->Get_8(reg.x.p),OPR1);
@@ -1013,7 +1013,7 @@ void Csc62015::Op_42(void)
 	AddState(4);
 }
 /* ADD (n),A */
-void Csc62015::Op_43(void)
+inline void Csc62015::Op_43(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1025,7 +1025,7 @@ void Csc62015::Op_43(void)
 	AddState(4);
 }
 /* ADD r2,r2' */
-void Csc62015::Op_44(void)
+inline void Csc62015::Op_44(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1037,7 +1037,7 @@ void Csc62015::Op_44(void)
 	AddState(5);
 }
 /* ADD r3,r' */
-void Csc62015::Op_45(void)
+inline void Csc62015::Op_45(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1049,7 +1049,7 @@ void Csc62015::Op_45(void)
 	AddState(7);
 }
 /* ADD r1,r1' */
-void Csc62015::Op_46(void)
+inline void Csc62015::Op_46(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1061,7 +1061,7 @@ void Csc62015::Op_46(void)
 	AddState(3);
 }
 /* PMDF (m),n */
-void Csc62015::Op_47(void)
+inline void Csc62015::Op_47(void)
 {
 	register BYTE	a;
     a=pPC->Get_8(reg.x.p);
@@ -1071,7 +1071,7 @@ void Csc62015::Op_47(void)
 	AddState(4);
 }
 /* SUB A,n */
-void Csc62015::Op_48(void)
+inline void Csc62015::Op_48(void)
 {
 	register DWORD	t;
     t=reg.r.a-pPC->Get_8(reg.x.p);
@@ -1081,7 +1081,7 @@ void Csc62015::Op_48(void)
 	AddState(3);
 }
 /* SUB (m),n */
-void Csc62015::Op_49(void)
+inline void Csc62015::Op_49(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1094,7 +1094,7 @@ void Csc62015::Op_49(void)
 	AddState(4);
 }
 /* SUB A,(n) */
-void Csc62015::Op_4a(void)
+inline void Csc62015::Op_4a(void)
 {
 	register DWORD	t;
     t=reg.r.a-Get_i8(pPC->Get_8(reg.x.p),OPR1);
@@ -1104,7 +1104,7 @@ void Csc62015::Op_4a(void)
 	AddState(4);
 }
 /* SUB (n),A */
-void Csc62015::Op_4b(void)
+inline void Csc62015::Op_4b(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1116,7 +1116,7 @@ void Csc62015::Op_4b(void)
 	AddState(4);
 }
 /* SUB r2,r2' */
-void Csc62015::Op_4c(void)
+inline void Csc62015::Op_4c(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1128,7 +1128,7 @@ void Csc62015::Op_4c(void)
 	AddState(5);
 }
 /* SUB r3,r' */
-void Csc62015::Op_4d(void)
+inline void Csc62015::Op_4d(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1140,7 +1140,7 @@ void Csc62015::Op_4d(void)
 	AddState(7);
 }
 /* SUB r1,r1' */
-void Csc62015::Op_4e(void)
+inline void Csc62015::Op_4e(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1152,14 +1152,14 @@ void Csc62015::Op_4e(void)
 	AddState(3);
 }
 /* PUSHS F */
-void Csc62015::Op_4f(void)
+inline void Csc62015::Op_4f(void)
 {
 	reg.x.s--;
     pPC->Set_8(reg.x.s,reg.x.f);
 	AddState(3);
 }
 /* ADC A,n */
-void Csc62015::Op_50(void)
+inline void Csc62015::Op_50(void)
 {
 	register DWORD	t;
     t=reg.r.a+pPC->Get_8(reg.x.p)+reg.r.c;
@@ -1169,7 +1169,7 @@ void Csc62015::Op_50(void)
 	AddState(3);
 }
 /* ADC (m),n */
-void Csc62015::Op_51(void)
+inline void Csc62015::Op_51(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1182,7 +1182,7 @@ void Csc62015::Op_51(void)
 	AddState(4);
 }
 /* ADC A,(n) */
-void Csc62015::Op_52(void)
+inline void Csc62015::Op_52(void)
 {
 	register DWORD	t;
     t=reg.r.a+Get_i8(pPC->Get_8(reg.x.p),OPR1)+reg.r.c;
@@ -1192,7 +1192,7 @@ void Csc62015::Op_52(void)
 	AddState(4);
 }
 /* ADC (n),A */
-void Csc62015::Op_53(void)
+inline void Csc62015::Op_53(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1204,7 +1204,7 @@ void Csc62015::Op_53(void)
 	AddState(4);
 }
 /* ADCL (m),(n) */
-void Csc62015::Op_54(void)
+inline void Csc62015::Op_54(void)
 {
 	register BYTE	m,n;
 	register DWORD	t,b;
@@ -1226,7 +1226,7 @@ void Csc62015::Op_54(void)
 	Chk_Zero(b,SIZE_8);
 }
 /* ADCL (n),A */
-void Csc62015::Op_55(void)
+inline void Csc62015::Op_55(void)
 {
 	register BYTE	a;
 	register DWORD	t,b;
@@ -1246,7 +1246,7 @@ void Csc62015::Op_55(void)
 	Chk_Zero(b,SIZE_8);
 }
 /* MVL (m),[r3+-n] */
-void Csc62015::Op_56(void)
+inline void Csc62015::Op_56(void)
 {
 	register BYTE	d;
 	register DWORD	s;
@@ -1257,7 +1257,7 @@ void Csc62015::Op_56(void)
     Set_i8d(d,pPC->Get_8(s));
 }
 /* PMDF (n),A */
-void Csc62015::Op_57(void)
+inline void Csc62015::Op_57(void)
 {
 	register BYTE	a;
     a=pPC->Get_8(reg.x.p);
@@ -1266,7 +1266,7 @@ void Csc62015::Op_57(void)
 	AddState(4);
 }
 /* SBC A,n */
-void Csc62015::Op_58(void)
+inline void Csc62015::Op_58(void)
 {
 	register DWORD	t;
     t=reg.r.a-pPC->Get_8(reg.x.p)-reg.r.c;
@@ -1276,7 +1276,7 @@ void Csc62015::Op_58(void)
 	AddState(3);
 }
 /* SBC (m),n */
-void Csc62015::Op_59(void)
+inline void Csc62015::Op_59(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1289,7 +1289,7 @@ void Csc62015::Op_59(void)
 	AddState(4);
 }
 /* SBC A,(n) */
-void Csc62015::Op_5a(void)
+inline void Csc62015::Op_5a(void)
 {
 	register DWORD	t;
     t=reg.r.a-Get_i8(pPC->Get_8(reg.x.p),OPR1)-reg.r.c;
@@ -1299,7 +1299,7 @@ void Csc62015::Op_5a(void)
 	AddState(4);
 }
 /* SBC (n),A */
-void Csc62015::Op_5b(void)
+inline void Csc62015::Op_5b(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1311,7 +1311,7 @@ void Csc62015::Op_5b(void)
 	AddState(4);
 }
 /* SBCL (m),(n) */
-void Csc62015::Op_5c(void)
+inline void Csc62015::Op_5c(void)
 {
 	register BYTE	m,n;
 	register DWORD	t,b;
@@ -1333,7 +1333,7 @@ void Csc62015::Op_5c(void)
 	Chk_Zero(b,SIZE_8);
 }
 /* SBCL (n),A */
-void Csc62015::Op_5d(void)
+inline void Csc62015::Op_5d(void)
 {
 	register BYTE	a;
 	register DWORD	t,b;
@@ -1353,7 +1353,7 @@ void Csc62015::Op_5d(void)
 	Chk_Zero(b,SIZE_8);
 }
 /* MVL [r3+-n],(m) */
-void Csc62015::Op_5e(void)
+inline void Csc62015::Op_5e(void)
 {
 	register BYTE	s;
 	register DWORD	d;
@@ -1364,14 +1364,14 @@ void Csc62015::Op_5e(void)
     pPC->Set_8(d,Get_i8d(s));
 }
 /* POPS F */
-void Csc62015::Op_5f(void)
+inline void Csc62015::Op_5f(void)
 {
     reg.x.f=pPC->Get_8(reg.x.s);
 	reg.x.s++;
 	AddState(2);
 }
 /* CMP A,n */
-void Csc62015::Op_60(void)
+inline void Csc62015::Op_60(void)
 {
 	register DWORD	t;
     t=reg.r.a-pPC->Get_8(reg.x.p);
@@ -1380,7 +1380,7 @@ void Csc62015::Op_60(void)
 	AddState(3);
 }
 /* CMP (m),n */
-void Csc62015::Op_61(void)
+inline void Csc62015::Op_61(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1392,7 +1392,7 @@ void Csc62015::Op_61(void)
 	AddState(4);
 }
 /* CMP [klm],n */
-void Csc62015::Op_62(void)
+inline void Csc62015::Op_62(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1404,7 +1404,7 @@ void Csc62015::Op_62(void)
 	AddState(6);
 }
 /* CMP (n),A */
-void Csc62015::Op_63(void)
+inline void Csc62015::Op_63(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1415,7 +1415,7 @@ void Csc62015::Op_63(void)
 	AddState(4);
 }
 /* TEST A,n */
-void Csc62015::Op_64(void)
+inline void Csc62015::Op_64(void)
 {
 	register DWORD	t;
     t=reg.r.a&pPC->Get_8(reg.x.p);
@@ -1424,7 +1424,7 @@ void Csc62015::Op_64(void)
 	AddState(3);
 }
 /* TEST (m),n */
-void Csc62015::Op_65(void)
+inline void Csc62015::Op_65(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1436,7 +1436,7 @@ void Csc62015::Op_65(void)
 	AddState(4);
 }
 /* TEST [klm],n */
-void Csc62015::Op_66(void)
+inline void Csc62015::Op_66(void)
 {
 	register DWORD	t,a;
     a=pPC->Get_20(reg.x.p);
@@ -1447,7 +1447,7 @@ void Csc62015::Op_66(void)
 	AddState(6);
 }
 /* TEST (n),A */
-void Csc62015::Op_67(void)
+inline void Csc62015::Op_67(void)
 {
 	register DWORD	t;
     t=reg.r.a&Get_i8(pPC->Get_8(reg.x.p),OPR1);
@@ -1456,7 +1456,7 @@ void Csc62015::Op_67(void)
 	AddState(4);
 }
 /* XOR A,n */
-void Csc62015::Op_68(void)
+inline void Csc62015::Op_68(void)
 {
 	register DWORD	t;
     t=reg.r.a^pPC->Get_8(reg.x.p);
@@ -1466,7 +1466,7 @@ void Csc62015::Op_68(void)
 	AddState(3);
 }
 /* XOR (m),n */
-void Csc62015::Op_69(void)
+inline void Csc62015::Op_69(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1479,7 +1479,7 @@ void Csc62015::Op_69(void)
 	AddState(4);
 }
 /* XOR [klm],n */
-void Csc62015::Op_6a(void)
+inline void Csc62015::Op_6a(void)
 {
 	register DWORD	t,a;
     a=pPC->Get_20(reg.x.p);
@@ -1491,7 +1491,7 @@ void Csc62015::Op_6a(void)
 	AddState(7);
 }
 /* XOR (n),A */
-void Csc62015::Op_6b(void)
+inline void Csc62015::Op_6b(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1503,7 +1503,7 @@ void Csc62015::Op_6b(void)
 	AddState(4);
 }
 /* INC r */
-void Csc62015::Op_6c(void)
+inline void Csc62015::Op_6c(void)
 {
 	BYTE	reg_size[]={SIZE_8 ,SIZE_8 ,SIZE_16,SIZE_16,
 						SIZE_20,SIZE_20,SIZE_20,SIZE_20};
@@ -1517,7 +1517,7 @@ void Csc62015::Op_6c(void)
 	AddState(3);
 }
 /* INC (n) */
-void Csc62015::Op_6d(void)
+inline void Csc62015::Op_6d(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1529,7 +1529,7 @@ void Csc62015::Op_6d(void)
 	AddState(3);
 }
 /* XOR (m),(n) */
-void Csc62015::Op_6e(void)
+inline void Csc62015::Op_6e(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1542,7 +1542,7 @@ void Csc62015::Op_6e(void)
 	AddState(6);
 }
 /* XOR A,(n) */
-void Csc62015::Op_6f(void)
+inline void Csc62015::Op_6f(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1553,7 +1553,7 @@ void Csc62015::Op_6f(void)
 	AddState(4);
 }
 /* AND A,n */
-void Csc62015::Op_70(void)
+inline void Csc62015::Op_70(void)
 {
 	register DWORD	t;
     t=reg.r.a&pPC->Get_8(reg.x.p);
@@ -1563,7 +1563,7 @@ void Csc62015::Op_70(void)
 	AddState(3);
 }
 /* AND (m),n */
-void Csc62015::Op_71(void)
+inline void Csc62015::Op_71(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1576,7 +1576,7 @@ void Csc62015::Op_71(void)
 	AddState(4);
 }
 /* AND [klm],n */
-void Csc62015::Op_72(void)
+inline void Csc62015::Op_72(void)
 {
 	register DWORD	t,a;
     a=pPC->Get_20(reg.x.p);
@@ -1588,7 +1588,7 @@ void Csc62015::Op_72(void)
 	AddState(7);
 }
 /* AND (n),A */
-void Csc62015::Op_73(void)
+inline void Csc62015::Op_73(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1600,19 +1600,19 @@ void Csc62015::Op_73(void)
 	AddState(4);
 }
 /* MV A,B */
-void Csc62015::Op_74(void)
+inline void Csc62015::Op_74(void)
 {
 	reg.r.a=reg.r.b;
 	AddState(1);
 }
 /* MV B,A */
-void Csc62015::Op_75(void)
+inline void Csc62015::Op_75(void)
 {
 	reg.r.b=reg.r.a;
 	AddState(1);
 }
 /* AND (m),(n) */
-void Csc62015::Op_76(void)
+inline void Csc62015::Op_76(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1625,7 +1625,7 @@ void Csc62015::Op_76(void)
 	AddState(6);
 }
 /* AND A,(n) */
-void Csc62015::Op_77(void)
+inline void Csc62015::Op_77(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1636,7 +1636,7 @@ void Csc62015::Op_77(void)
 	AddState(4);
 }
 /* OR A,n */
-void Csc62015::Op_78(void)
+inline void Csc62015::Op_78(void)
 {
 	register DWORD	t;
     t=reg.r.a|pPC->Get_8(reg.x.p);
@@ -1646,7 +1646,7 @@ void Csc62015::Op_78(void)
 	AddState(3);
 }
 /* OR (m),n */
-void Csc62015::Op_79(void)
+inline void Csc62015::Op_79(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1659,7 +1659,7 @@ void Csc62015::Op_79(void)
 	AddState(4);
 }
 /* OR [klm],n */
-void Csc62015::Op_7a(void)
+inline void Csc62015::Op_7a(void)
 {
 	register DWORD	t,a;
     a=pPC->Get_20(reg.x.p);
@@ -1671,7 +1671,7 @@ void Csc62015::Op_7a(void)
 	AddState(7);
 }
 /* OR (n),A */
-void Csc62015::Op_7b(void)
+inline void Csc62015::Op_7b(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1683,7 +1683,7 @@ void Csc62015::Op_7b(void)
 	AddState(4);
 }
 /* DEC r */
-void Csc62015::Op_7c(void)
+inline void Csc62015::Op_7c(void)
 {
 	BYTE	reg_size[]={SIZE_8 ,SIZE_8 ,SIZE_16,SIZE_16,
 						SIZE_20,SIZE_20,SIZE_20,SIZE_20};
@@ -1697,7 +1697,7 @@ void Csc62015::Op_7c(void)
 	AddState(3);
 }
 /* DEC (n) */
-void Csc62015::Op_7d(void)
+inline void Csc62015::Op_7d(void)
 {
 	register BYTE	t;
 	register DWORD	d;
@@ -1709,7 +1709,7 @@ void Csc62015::Op_7d(void)
 	AddState(3);
 }
 /* OR (m),(n) */
-void Csc62015::Op_7e(void)
+inline void Csc62015::Op_7e(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1722,7 +1722,7 @@ void Csc62015::Op_7e(void)
 	AddState(6);
 }
 /* OR A,(n) */
-void Csc62015::Op_7f(void)
+inline void Csc62015::Op_7f(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -1733,14 +1733,14 @@ void Csc62015::Op_7f(void)
 	AddState(4);
 }
 /* MV A,(n) */
-void Csc62015::Op_80(void)
+inline void Csc62015::Op_80(void)
 {
     reg.r.a=Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(3);
 }
 /* MV IL,(n) */
-void Csc62015::Op_81(void)
+inline void Csc62015::Op_81(void)
 {
     reg.r.il=Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -1748,56 +1748,56 @@ void Csc62015::Op_81(void)
 	AddState(4);
 }
 /* MV BA,(n) */
-void Csc62015::Op_82(void)
+inline void Csc62015::Op_82(void)
 {
     reg.x.ba=Get_i16(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(4);
 }
 /* MV I,(n) */
-void Csc62015::Op_83(void)
+inline void Csc62015::Op_83(void)
 {
     reg.x.i=Get_i16(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(4);
 }
 /* MV X,(n) */
-void Csc62015::Op_84(void)
+inline void Csc62015::Op_84(void)
 {
     reg.x.x=Get_i20(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV Y,(n) */
-void Csc62015::Op_85(void)
+inline void Csc62015::Op_85(void)
 {
     reg.x.y=Get_i20(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV U,(n) */
-void Csc62015::Op_86(void)
+inline void Csc62015::Op_86(void)
 {
     reg.x.u=Get_i20(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV S,(n) */
-void Csc62015::Op_87(void)
+inline void Csc62015::Op_87(void)
 {
     reg.x.s=Get_i20(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV A,[lmn] */
-void Csc62015::Op_88(void)
+inline void Csc62015::Op_88(void)
 {
     reg.r.a=pPC->Get_8(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(6);
 }
 /* MV IL,[lmn] */
-void Csc62015::Op_89(void)
+inline void Csc62015::Op_89(void)
 {
     reg.r.il=pPC->Get_8(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
@@ -1805,300 +1805,300 @@ void Csc62015::Op_89(void)
 	AddState(6);
 }
 /* MV BA,[lmn] */
-void Csc62015::Op_8a(void)
+inline void Csc62015::Op_8a(void)
 {
     reg.x.ba=pPC->Get_16(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(7);
 }
 /* MV I,[lmn] */
-void Csc62015::Op_8b(void)
+inline void Csc62015::Op_8b(void)
 {
     reg.x.i=pPC->Get_16(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(7);
 }
 /* MV X,[lmn] */
-void Csc62015::Op_8c(void)
+inline void Csc62015::Op_8c(void)
 {
     reg.x.x=pPC->Get_20(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(8);
 }
 /* MV Y,[lmn] */
-void Csc62015::Op_8d(void)
+inline void Csc62015::Op_8d(void)
 {
     reg.x.y=pPC->Get_20(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(8);
 }
 /* MV U,[lmn] */
-void Csc62015::Op_8e(void)
+inline void Csc62015::Op_8e(void)
 {
     reg.x.u=pPC->Get_20(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(8);
 }
 /* MV S,[lmn] */
-void Csc62015::Op_8f(void)
+inline void Csc62015::Op_8f(void)
 {
     reg.x.s=pPC->Get_20(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
 	AddState(8);
 }
 /* MV A,[r3] */
-void Csc62015::Op_90(void)
+inline void Csc62015::Op_90(void)
 {
     reg.r.a=pPC->Get_8(Get_d(SIZE_8));
 	AddState(4);
 }
 /* MV IL,[r3] */
-void Csc62015::Op_91(void)
+inline void Csc62015::Op_91(void)
 {
     reg.x.i=pPC->Get_8(Get_d(SIZE_8));
 	AddState(5);
 }
 /* MV BA,[r3] */
-void Csc62015::Op_92(void)
+inline void Csc62015::Op_92(void)
 {
     reg.x.ba=pPC->Get_16(Get_d(SIZE_16));
 	AddState(5);
 }
 /* MV I,[r3] */
-void Csc62015::Op_93(void)
+inline void Csc62015::Op_93(void)
 {
     reg.x.i=pPC->Get_16(Get_d(SIZE_16));
 	AddState(5);
 }
 /* MV X,[r3] */
-void Csc62015::Op_94(void)
+inline void Csc62015::Op_94(void)
 {
     reg.x.x=pPC->Get_20(Get_d(SIZE_20));
 	AddState(6);
 }
 /* MV Y,[r3] */
-void Csc62015::Op_95(void)
+inline void Csc62015::Op_95(void)
 {
     reg.x.y=pPC->Get_20(Get_d(SIZE_20));
 	AddState(6);
 }
 /* MV U,[r3] */
-void Csc62015::Op_96(void)
+inline void Csc62015::Op_96(void)
 {
     reg.x.u=pPC->Get_20(Get_d(SIZE_20));
 	AddState(6);
 }
 /* SC */
-void Csc62015::Op_97(void)
+inline void Csc62015::Op_97(void)
 {
 	reg.r.c=1;
 	AddState(1);
 }
 /* MV A,[(n)] */
-void Csc62015::Op_98(void)
+inline void Csc62015::Op_98(void)
 {
     reg.r.a=pPC->Get_8(Get_i());
 	AddState(9);
 }
 /* MV IL,[(n)] */
-void Csc62015::Op_99(void)
+inline void Csc62015::Op_99(void)
 {
     reg.r.il=pPC->Get_8(Get_i());
 	reg.r.ih=0;
 	AddState(10);
 }
 /* MV BA,[(n)] */
-void Csc62015::Op_9a(void)
+inline void Csc62015::Op_9a(void)
 {
     reg.x.ba=pPC->Get_16(Get_i());
 	AddState(10);
 }
 /* MV I,[(n)] */
-void Csc62015::Op_9b(void)
+inline void Csc62015::Op_9b(void)
 {
     reg.x.i=pPC->Get_16(Get_i());
 	AddState(10);
 }
 /* MV X,[(n)] */
-void Csc62015::Op_9c(void)
+inline void Csc62015::Op_9c(void)
 {
     reg.x.x=pPC->Get_20(Get_i());
 	AddState(11);
 }
 /* MV Y,[(n)] */
-void Csc62015::Op_9d(void)
+inline void Csc62015::Op_9d(void)
 {
     reg.x.y=pPC->Get_20(Get_i());
 	AddState(11);
 }
 /* MV U,[(n)] */
-void Csc62015::Op_9e(void)
+inline void Csc62015::Op_9e(void)
 {
     reg.x.u=pPC->Get_20(Get_i());
 	AddState(11);
 }
 /* RC */
-void Csc62015::Op_9f(void)
+inline void Csc62015::Op_9f(void)
 {
 	reg.r.c=0;
 	AddState(1);
 }
 /* MV (n),A */
-void Csc62015::Op_a0(void)
+inline void Csc62015::Op_a0(void)
 {
     Set_i8(pPC->Get_8(reg.x.p),reg.r.a,OPR1);
 	reg.r.pc++;
 	AddState(3);
 }
 /* MV (n),IL */
-void Csc62015::Op_a1(void)
+inline void Csc62015::Op_a1(void)
 {
     Set_i8(pPC->Get_8(reg.x.p),reg.r.il,OPR1);
 	reg.r.pc++;
 	AddState(3);
 }
 /* MV (n),BA */
-void Csc62015::Op_a2(void)
+inline void Csc62015::Op_a2(void)
 {
     Set_i16(pPC->Get_8(reg.x.p),reg.x.ba,OPR1);
 	reg.r.pc++;
 	AddState(4);
 }
 /* MV (n),I */
-void Csc62015::Op_a3(void)
+inline void Csc62015::Op_a3(void)
 {
     Set_i16(pPC->Get_8(reg.x.p),reg.x.i,OPR1);
 	reg.r.pc++;
 	AddState(4);
 }
 /* MV (n),X */
-void Csc62015::Op_a4(void)
+inline void Csc62015::Op_a4(void)
 {
     Set_i20(pPC->Get_8(reg.x.p),reg.x.x,OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV (n),Y */
-void Csc62015::Op_a5(void)
+inline void Csc62015::Op_a5(void)
 {
     Set_i20(pPC->Get_8(reg.x.p),reg.x.y,OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV (n),U */
-void Csc62015::Op_a6(void)
+inline void Csc62015::Op_a6(void)
 {
     Set_i20(pPC->Get_8(reg.x.p),reg.x.u,OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV (n),S */
-void Csc62015::Op_a7(void)
+inline void Csc62015::Op_a7(void)
 {
     Set_i20(pPC->Get_8(reg.x.p),reg.x.s,OPR1);
 	reg.r.pc++;
 	AddState(5);
 }
 /* MV [lmn],A */
-void Csc62015::Op_a8(void)
+inline void Csc62015::Op_a8(void)
 {
     pPC->Set_8(pPC->Get_20(reg.x.p),reg.r.a);
 	reg.r.pc+=SIZE_20;
 	AddState(5);
 }
 /* MV [lmn],IL */
-void Csc62015::Op_a9(void)
+inline void Csc62015::Op_a9(void)
 {
     pPC->Set_8(pPC->Get_20(reg.x.p),reg.r.il);
 	reg.r.pc+=SIZE_20;
 	AddState(5);
 }
 /* MV [lmn],BA */
-void Csc62015::Op_aa(void)
+inline void Csc62015::Op_aa(void)
 {
     pPC->Set_16(pPC->Get_20(reg.x.p),reg.x.ba);
 	reg.r.pc+=SIZE_20;
 	AddState(6);
 }
 /* MV [lmn],I */
-void Csc62015::Op_ab(void)
+inline void Csc62015::Op_ab(void)
 {
     pPC->Set_16(pPC->Get_20(reg.x.p),reg.x.i);
 	reg.r.pc+=SIZE_20;
 	AddState(6);
 }
 /* MV [lmn],X */
-void Csc62015::Op_ac(void)
+inline void Csc62015::Op_ac(void)
 {
     pPC->Set_20(pPC->Get_20(reg.x.p),reg.x.x);
 	reg.r.pc+=SIZE_20;
 	AddState(7);
 }
 /* MV [lmn],Y */
-void Csc62015::Op_ad(void)
+inline void Csc62015::Op_ad(void)
 {
     pPC->Set_20(pPC->Get_20(reg.x.p),reg.x.y);
 	reg.r.pc+=SIZE_20;
 	AddState(7);
 }
 /* MV [lmn],U */
-void Csc62015::Op_ae(void)
+inline void Csc62015::Op_ae(void)
 {
     pPC->Set_20(pPC->Get_20(reg.x.p),reg.x.u);
 	reg.r.pc+=SIZE_20;
 	AddState(7);
 }
 /* MV [lmn],S */
-void Csc62015::Op_af(void)
+inline void Csc62015::Op_af(void)
 {
     pPC->Set_20(pPC->Get_20(reg.x.p),reg.x.s);
 	reg.r.pc+=SIZE_20;
 	AddState(7);
 }
 /* MV [r3],A */
-void Csc62015::Op_b0(void)
+inline void Csc62015::Op_b0(void)
 {
     pPC->Set_8(Get_d(SIZE_8),reg.r.a);
 	AddState(4);
 }
 /* MV [r3],IL */
-void Csc62015::Op_b1(void)
+inline void Csc62015::Op_b1(void)
 {
     pPC->Set_8(Get_d(SIZE_8),reg.r.il);
 	AddState(4);
 }
 /* MV [r3],BA */
-void Csc62015::Op_b2(void)
+inline void Csc62015::Op_b2(void)
 {
     pPC->Set_16(Get_d(SIZE_16),reg.x.ba);
 	AddState(5);
 }
 /* MV [r3],I */
-void Csc62015::Op_b3(void)
+inline void Csc62015::Op_b3(void)
 {
     pPC->Set_16(Get_d(SIZE_16),reg.x.i);
 	AddState(5);
 }
 /* MV [r3],X */
-void Csc62015::Op_b4(void)
+inline void Csc62015::Op_b4(void)
 {
     pPC->Set_20(Get_d(SIZE_20),reg.x.x);
 	AddState(6);
 }
 /* MV [r3],Y */
-void Csc62015::Op_b5(void)
+inline void Csc62015::Op_b5(void)
 {
     pPC->Set_20(Get_d(SIZE_20),reg.x.y);
 	AddState(6);
 }
 /* MV [r3],U */
-void Csc62015::Op_b6(void)
+inline void Csc62015::Op_b6(void)
 {
     pPC->Set_20(Get_d(SIZE_20),reg.x.u);
 	AddState(6);
 }
 /* CMP (m),(n) */
-void Csc62015::Op_b7(void)
+inline void Csc62015::Op_b7(void)
 {
 	register DWORD	t;
     t=Get_i8(pPC->Get_8(reg.x.p),OPR1);
@@ -2109,55 +2109,55 @@ void Csc62015::Op_b7(void)
 	AddState(6);
 }
 /* MV [(n)],A */
-void Csc62015::Op_b8(void)
+inline void Csc62015::Op_b8(void)
 {
     pPC->Set_8(Get_i(),reg.r.a);
 	AddState(9);
 }
 /* MV [(n)],IL */
-void Csc62015::Op_b9(void)
+inline void Csc62015::Op_b9(void)
 {
     pPC->Set_8(Get_i(),reg.r.il);
 	AddState(9);
 }
 /* MV [(n)],BA */
-void Csc62015::Op_ba(void)
+inline void Csc62015::Op_ba(void)
 {
     pPC->Set_16(Get_i(),reg.x.ba);
 	AddState(10);
 }
 /* MV [(n)],I */
-void Csc62015::Op_bb(void)
+inline void Csc62015::Op_bb(void)
 {
     pPC->Set_16(Get_i(),reg.x.i);
 	AddState(10);
 }
 /* MV [(n)],X */
-void Csc62015::Op_bc(void)
+inline void Csc62015::Op_bc(void)
 {
     pPC->Set_20(Get_i(),reg.x.x);
 	AddState(11);
 }
 /* MV [(n)],Y */
-void Csc62015::Op_bd(void)
+inline void Csc62015::Op_bd(void)
 {
     pPC->Set_20(Get_i(),reg.x.y);
 	AddState(11);
 }
 /* MV [(n)],U */
-void Csc62015::Op_be(void)
+inline void Csc62015::Op_be(void)
 {
     pPC->Set_20(Get_i(),reg.x.u);
 	AddState(11);
 }
 /* Undefined Code */
-void Csc62015::Op_bf(void)
+inline void Csc62015::Op_bf(void)
 {
 //UN_DEFINE
 	AddState(1);
 }
 /* EX (m),(n) */
-void Csc62015::Op_c0(void)
+inline void Csc62015::Op_c0(void)
 {
 	register BYTE	d,s;
 	register BYTE	w;
@@ -2169,7 +2169,7 @@ void Csc62015::Op_c0(void)
 	AddState(7);
 }
 /* EXW (m),(n) */
-void Csc62015::Op_c1(void)
+inline void Csc62015::Op_c1(void)
 {
 	register BYTE	d,s;
 	register WORD	w;
@@ -2181,7 +2181,7 @@ void Csc62015::Op_c1(void)
 	AddState(10);
 }
 /* EXP (m),(n) */
-void Csc62015::Op_c2(void)
+inline void Csc62015::Op_c2(void)
 {
 	register BYTE	d,s;
 	register DWORD	w;
@@ -2193,7 +2193,7 @@ void Csc62015::Op_c2(void)
 	AddState(13);
 }
 /* EXL (m),(n) */
-void Csc62015::Op_c3(void)
+inline void Csc62015::Op_c3(void)
 {
 	register BYTE	d,s,w;
 	AddState(5+3*reg.x.i);
@@ -2208,7 +2208,7 @@ void Csc62015::Op_c3(void)
 	w=Get_i8d(d); Set_i8d(d,Get_i8d(s)); Set_i8d(s,w);
 }
 /* DADL (m),(n) */
-void Csc62015::Op_c4(void)
+inline void Csc62015::Op_c4(void)
 {
 	register BYTE	d,s,b;
 	register WORD	w;
@@ -2231,7 +2231,7 @@ void Csc62015::Op_c4(void)
 //printf("DADL (m),(n)\n");
 }
 /* DADL (n),A */
-void Csc62015::Op_c5(void)
+inline void Csc62015::Op_c5(void)
 {
 	register BYTE	d,b;
 	register WORD	w;
@@ -2252,7 +2252,7 @@ void Csc62015::Op_c5(void)
 //printf("DADL (n),A\n");
 }
 /* CMPW (m),(n) */
-void Csc62015::Op_c6(void)
+inline void Csc62015::Op_c6(void)
 {
 	register DWORD	t;
     t=Get_i16(pPC->Get_8(reg.x.p),OPR1);
@@ -2263,7 +2263,7 @@ void Csc62015::Op_c6(void)
 	AddState(8);
 }
 /* CMPP (m),(n) */
-void Csc62015::Op_c7(void)
+inline void Csc62015::Op_c7(void)
 {
 	register DWORD	t;
     t=Get_i24(pPC->Get_8(reg.x.p),OPR1);
@@ -2274,7 +2274,7 @@ void Csc62015::Op_c7(void)
 	AddState(10);
 }
 /* MV (m),(n) */
-void Csc62015::Op_c8(void)
+inline void Csc62015::Op_c8(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2284,7 +2284,7 @@ void Csc62015::Op_c8(void)
 	AddState(6);
 }
 /* MVW (m),(n) */
-void Csc62015::Op_c9(void)
+inline void Csc62015::Op_c9(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2294,7 +2294,7 @@ void Csc62015::Op_c9(void)
 	AddState(8);
 }
 /* MVP (m),(n) */
-void Csc62015::Op_ca(void)
+inline void Csc62015::Op_ca(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2304,7 +2304,7 @@ void Csc62015::Op_ca(void)
 	AddState(10);
 }
 /* MVL (n),(m) */
-void Csc62015::Op_cb(void)
+inline void Csc62015::Op_cb(void)
 {
 	register BYTE	d,s;
 	AddState(5+2*reg.x.i);
@@ -2316,7 +2316,7 @@ void Csc62015::Op_cb(void)
 	Set_i8d(d,Get_i8d(s));
 }
 /* MV (m),n */
-void Csc62015::Op_cc(void)
+inline void Csc62015::Op_cc(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2326,7 +2326,7 @@ void Csc62015::Op_cc(void)
 	AddState(3);
 }
 /* MVW (l),mn */
-void Csc62015::Op_cd(void)
+inline void Csc62015::Op_cd(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2336,13 +2336,13 @@ void Csc62015::Op_cd(void)
 	AddState(4);
 }
 /* TCL ??? */
-void Csc62015::Op_ce(void)
+inline void Csc62015::Op_ce(void)
 {
 //UN_DEFINE
 	AddState(1);
 }
 /* MVLD (m),(n) */
-void Csc62015::Op_cf(void)
+inline void Csc62015::Op_cf(void)
 {
 	register BYTE	d,s;
 	AddState(5+2*reg.x.i);
@@ -2354,7 +2354,7 @@ void Csc62015::Op_cf(void)
 	Set_i8d(d,Get_i8d(s));
 }
 /* MV (k),[lmn] */
-void Csc62015::Op_d0(void)
+inline void Csc62015::Op_d0(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2364,7 +2364,7 @@ void Csc62015::Op_d0(void)
 	AddState(7);
 }
 /* MVW (k),[lmn] */
-void Csc62015::Op_d1(void)
+inline void Csc62015::Op_d1(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2374,7 +2374,7 @@ void Csc62015::Op_d1(void)
 	AddState(8);
 }
 /* MVP (k),[lmn] */
-void Csc62015::Op_d2(void)
+inline void Csc62015::Op_d2(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2384,7 +2384,7 @@ void Csc62015::Op_d2(void)
 	AddState(9);
 }
 /* MVL (k),[lmn] */
-void Csc62015::Op_d3(void)
+inline void Csc62015::Op_d3(void)
 {
 	register BYTE	d;
 	register DWORD	s;
@@ -2397,7 +2397,7 @@ void Csc62015::Op_d3(void)
     Set_i8d(d,pPC->Get_8(s));
 }
 /* DSBL (m),(n) */
-void Csc62015::Op_d4(void)
+inline void Csc62015::Op_d4(void)
 {
 	register BYTE	d,s,b;
 	register WORD	w;
@@ -2420,7 +2420,7 @@ void Csc62015::Op_d4(void)
 //printf("DSBL (m),(n)\n");
 }
 /* DSBL (n),A */
-void Csc62015::Op_d5(void)
+inline void Csc62015::Op_d5(void)
 {
 	register BYTE	d,b;
 	register WORD	w;
@@ -2441,7 +2441,7 @@ void Csc62015::Op_d5(void)
 //printf("DSBL (n),A\n");
 }
 /* CMPW (n),r2 */
-void Csc62015::Op_d6(void)
+inline void Csc62015::Op_d6(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -2453,7 +2453,7 @@ void Csc62015::Op_d6(void)
 	AddState(7);
 }
 /* CMPP (n),r3 */
-void Csc62015::Op_d7(void)
+inline void Csc62015::Op_d7(void)
 {
 	register BYTE	a;
 	register DWORD	t;
@@ -2465,7 +2465,7 @@ void Csc62015::Op_d7(void)
 	AddState(9);
 }
 /* MV [klm],(n) */
-void Csc62015::Op_d8(void)
+inline void Csc62015::Op_d8(void)
 {
 	register DWORD	t;
     t=pPC->Get_20(reg.x.p);
@@ -2475,7 +2475,7 @@ void Csc62015::Op_d8(void)
 	AddState(6);
 }
 /* MVW [klm],(n) */
-void Csc62015::Op_d9(void)
+inline void Csc62015::Op_d9(void)
 {
 	register DWORD	t;
     t=pPC->Get_20(reg.x.p);
@@ -2485,7 +2485,7 @@ void Csc62015::Op_d9(void)
 	AddState(7);
 }
 /* MVP [klm],(n) */
-void Csc62015::Op_da(void)
+inline void Csc62015::Op_da(void)
 {
 	register DWORD	t;
     t=pPC->Get_20(reg.x.p);
@@ -2495,7 +2495,7 @@ void Csc62015::Op_da(void)
 	AddState(8);
 }
 /* MVL [klm],(n) */
-void Csc62015::Op_db(void)
+inline void Csc62015::Op_db(void)
 {
 	register BYTE	s;
 	register DWORD	d;
@@ -2508,7 +2508,7 @@ void Csc62015::Op_db(void)
     pPC->Set_8(d,Get_i8d(s));
 }
 /* MVP (k),lmn */
-void Csc62015::Op_dc(void)
+inline void Csc62015::Op_dc(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2518,14 +2518,14 @@ void Csc62015::Op_dc(void)
 	AddState(5);
 }
 /* EX A,B */
-void Csc62015::Op_dd(void)
+inline void Csc62015::Op_dd(void)
 {
 	register BYTE	t;
 	t=reg.r.a; reg.r.a=reg.r.b; reg.r.b=t;
 	AddState(3);
 }
 /* HALT */
-void Csc62015::Op_de(void)
+inline void Csc62015::Op_de(void)
 {
 //AddLog(LOG_TEMP,"System HALT!!");/*exit(1);*/
 //debug.isdebug=1;
@@ -2533,7 +2533,7 @@ void Csc62015::Op_de(void)
 	AddState(2);
 }
 /* OFF */
-void Csc62015::Op_df(void)
+inline void Csc62015::Op_df(void)
 {
 //AddLog(LOG_TEMP,"Software POWER OFF!!");/*exit(1);*/
 //debug.isdebug=1;
@@ -2543,7 +2543,7 @@ void Csc62015::Op_df(void)
 	AddState(2);
 }
 /* MV (n),[r3] */
-void Csc62015::Op_e0(void)
+inline void Csc62015::Op_e0(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -2552,7 +2552,7 @@ void Csc62015::Op_e0(void)
 	AddState(6);
 }
 /* MVW (n),[r3] */
-void Csc62015::Op_e1(void)
+inline void Csc62015::Op_e1(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -2561,7 +2561,7 @@ void Csc62015::Op_e1(void)
 	AddState(7);
 }
 /* MVP (n),[r3] */
-void Csc62015::Op_e2(void)
+inline void Csc62015::Op_e2(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -2570,7 +2570,7 @@ void Csc62015::Op_e2(void)
 	AddState(8);
 }
 /* MVL (n),[r3] */
-void Csc62015::Op_e3(void)
+inline void Csc62015::Op_e3(void)
 {
 	register BYTE	d,t;
 	register DWORD	s;
@@ -2585,7 +2585,7 @@ void Csc62015::Op_e3(void)
 	Set_r(t,s);
 }
 /* ROR A */
-void Csc62015::Op_e4(void)
+inline void Csc62015::Op_e4(void)
 {
 	register BYTE	a,c;
 	a=reg.r.a;
@@ -2597,7 +2597,7 @@ void Csc62015::Op_e4(void)
 	AddState(2);
 }
 /* ROR (n) */
-void Csc62015::Op_e5(void)
+inline void Csc62015::Op_e5(void)
 {
 	register BYTE	a,c,t;
     t=pPC->Get_8(reg.x.p);
@@ -2611,7 +2611,7 @@ void Csc62015::Op_e5(void)
 	AddState(3);
 }
 /* ROL A */
-void Csc62015::Op_e6(void)
+inline void Csc62015::Op_e6(void)
 {
 	register BYTE	a,c;
 	a=reg.r.a;
@@ -2623,7 +2623,7 @@ void Csc62015::Op_e6(void)
 	AddState(2);
 }
 /* ROL (n) */
-void Csc62015::Op_e7(void)
+inline void Csc62015::Op_e7(void)
 {
 	register BYTE	a,c,t;
     t=pPC->Get_8(reg.x.p);
@@ -2637,7 +2637,7 @@ void Csc62015::Op_e7(void)
 	AddState(3);
 }
 /* MV [r3],(n) */
-void Csc62015::Op_e8(void)
+inline void Csc62015::Op_e8(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -2646,7 +2646,7 @@ void Csc62015::Op_e8(void)
 	AddState(6);
 }
 /* MVW [r3],(n) */
-void Csc62015::Op_e9(void)
+inline void Csc62015::Op_e9(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -2655,7 +2655,7 @@ void Csc62015::Op_e9(void)
 	AddState(7);
 }
 /* MVP [r3],(n) */
-void Csc62015::Op_ea(void)
+inline void Csc62015::Op_ea(void)
 {
 	register BYTE	t;
 	register DWORD	a;
@@ -2664,7 +2664,7 @@ void Csc62015::Op_ea(void)
 	AddState(8);
 }
 /* MVL [r3],(n) */
-void Csc62015::Op_eb(void)
+inline void Csc62015::Op_eb(void)
 {
 	register BYTE	s,t;
 	register DWORD	d;
@@ -2679,7 +2679,7 @@ void Csc62015::Op_eb(void)
 	Set_r(t,d);
 }
 /* DSLL (n) */
-void Csc62015::Op_ec(void)
+inline void Csc62015::Op_ec(void)
 {
 	register BYTE	n;
 	register DWORD	s,t,u,b;
@@ -2701,7 +2701,7 @@ void Csc62015::Op_ec(void)
 	Chk_Zero(b,SIZE_8);
 }
 /* EX r,r' */
-void Csc62015::Op_ed(void)
+inline void Csc62015::Op_ed(void)
 {
 	register BYTE	t;
 	register DWORD	w;
@@ -2711,21 +2711,21 @@ void Csc62015::Op_ed(void)
 	AddState(4);
 }
 /* SWAP A */
-void Csc62015::Op_ee(void)
+inline void Csc62015::Op_ee(void)
 {
 	reg.r.a=(reg.r.a>>4)|(reg.r.a<<4);
 	Chk_Zero(reg.r.a,SIZE_8);
 	AddState(3);
 }
 /* WAIT */
-void Csc62015::Op_ef(void)
+inline void Csc62015::Op_ef(void)
 {
 	AddState(1+reg.x.i);
 	while(--reg.x.i!=0);				/* dummy !!! */
 //	reg.x.i=0;							// for a little speed up!!
 }
 /* MV (m),[(n)] */
-void Csc62015::Op_f0(void)
+inline void Csc62015::Op_f0(void)
 {
 	register BYTE	t=0;
 	register DWORD	a;
@@ -2734,7 +2734,7 @@ void Csc62015::Op_f0(void)
 	AddState(11);
 }
 /* MVW (m),[(n)] */
-void Csc62015::Op_f1(void)
+inline void Csc62015::Op_f1(void)
 {
 	register BYTE	t=0;
 	register DWORD	a;
@@ -2743,7 +2743,7 @@ void Csc62015::Op_f1(void)
 	AddState(12);
 }
 /* MVP (m),[(n)] */
-void Csc62015::Op_f2(void)
+inline void Csc62015::Op_f2(void)
 {
 	register BYTE	t=0;
 	register DWORD	a;
@@ -2752,7 +2752,7 @@ void Csc62015::Op_f2(void)
 	AddState(13);
 }
 /* MVL (l),[(n)] */
-void Csc62015::Op_f3(void)
+inline void Csc62015::Op_f3(void)
 {
 	register BYTE	d=0;
 	register DWORD	s;
@@ -2763,7 +2763,7 @@ void Csc62015::Op_f3(void)
     Set_i8d(d,pPC->Get_8(s));
 }
 /* SHR A */
-void Csc62015::Op_f4(void)
+inline void Csc62015::Op_f4(void)
 {
 	register BYTE	a,c;
 	a=reg.r.a;
@@ -2775,7 +2775,7 @@ void Csc62015::Op_f4(void)
 	AddState(2);
 }
 /* SHR (n) */
-void Csc62015::Op_f5(void)
+inline void Csc62015::Op_f5(void)
 {
 	register BYTE	a,c,t;
     t=pPC->Get_8(reg.x.p);
@@ -2789,7 +2789,7 @@ void Csc62015::Op_f5(void)
 	AddState(3);
 }
 /* SHL A */
-void Csc62015::Op_f6(void)
+inline void Csc62015::Op_f6(void)
 {
 	register BYTE	a,c;
 	a=reg.r.a;
@@ -2801,7 +2801,7 @@ void Csc62015::Op_f6(void)
 	AddState(2);
 }
 /* SHL (n) */
-void Csc62015::Op_f7(void)
+inline void Csc62015::Op_f7(void)
 {
 	register BYTE	a,c,t;
     t=pPC->Get_8(reg.x.p);
@@ -2815,7 +2815,7 @@ void Csc62015::Op_f7(void)
 	AddState(3);
 }
 /* MV [(m)],(n) */
-void Csc62015::Op_f8(void)
+inline void Csc62015::Op_f8(void)
 {
 	register BYTE	t=1;
 	register DWORD	a;
@@ -2824,7 +2824,7 @@ void Csc62015::Op_f8(void)
 	AddState(11);
 }
 /* MVW [(m)].(n) */
-void Csc62015::Op_f9(void)
+inline void Csc62015::Op_f9(void)
 {
 	register BYTE	t=1;
 	register DWORD	a;
@@ -2833,7 +2833,7 @@ void Csc62015::Op_f9(void)
 	AddState(12);
 }
 /* MVP [(m)],(n) */
-void Csc62015::Op_fa(void)
+inline void Csc62015::Op_fa(void)
 {
 	register BYTE	t=1;
 	register DWORD	a;
@@ -2842,7 +2842,7 @@ void Csc62015::Op_fa(void)
 	AddState(13);
 }
 /* MVL [(m)],(n) */
-void Csc62015::Op_fb(void)
+inline void Csc62015::Op_fb(void)
 {
 	register BYTE	s=1;
 	register DWORD	d;
@@ -2853,7 +2853,7 @@ void Csc62015::Op_fb(void)
     pPC->Set_8(d,Get_i8d(s));
 }
 /* DSRL (n) */
-void Csc62015::Op_fc(void)
+inline void Csc62015::Op_fc(void)
 {
 	register BYTE	n;
 	register DWORD	s,t,u,b;
@@ -2875,7 +2875,7 @@ void Csc62015::Op_fc(void)
 	Chk_Zero(b,SIZE_8);
 }
 /* MV r,r' */
-void Csc62015::Op_fd(void)
+inline void Csc62015::Op_fd(void)
 {
 	register BYTE	t;
     t=pPC->Get_8(reg.x.p);
@@ -2884,7 +2884,7 @@ void Csc62015::Op_fd(void)
 	AddState(2);
 }
 /* IR */
-void Csc62015::Op_fe(void)
+inline void Csc62015::Op_fe(void)
 {
 	reg.x.s-=SIZE_20;
     pPC->Set_20(reg.x.s,reg.x.p-1);
@@ -2897,7 +2897,7 @@ void Csc62015::Op_fe(void)
 	AddState(1);
 }
 /* RESET */
-void Csc62015::Op_ff(void)
+inline void Csc62015::Op_ff(void)
 {
     reg.x.p=pPC->Get_20(VECT_RESET);
 	AddState(1);
@@ -3059,11 +3059,11 @@ void Csc62015::EMS_Save(void)
 bool Csc62015::init(void)
 {
     Check_Log();
-	printf("MEMORY initializing...");
+//	printf("MEMORY initializing...");
 //	if((mem=(BYTE *)malloc(MAX_MEM))==NULL) return(0);		/* alloc main ram */
 //	if((imem=(BYTE *)malloc(MAX_IMEM))==NULL) return(0);	/* internal ram*/
 //	memset((void *)mem,255,MAX_MEM);			//initialize memory
-	printf("done.\n");
+//	printf("done.\n");
 //	printf("main memory(alloc:%p),internal memory(alloc:%p)\n",mem,imem);
 
 	char t[16];
@@ -3093,15 +3093,16 @@ bool Csc62015::init(void)
 }
 
 void Csc62015::Reset(void) {
-    memset((void *)imem,0,MAX_IMEM);
-    reg.x.f=0;									//initialize registers
-    reg.x.ba=0;
-    reg.x.i=0;
-    reg.x.x=0;
-    reg.x.y=0;
-    reg.x.u=0xb0000;
-    reg.x.s=0xc0000;
-    reg.x.p=0;
+
+    imem[IMEM_ACM] &= 0x7F;
+    imem[IMEM_UCR] = 0;
+    imem[IMEM_USR] &= 0xD8;
+    imem[IMEM_IMR] = 0;
+    imem[IMEM_SCR] = 0;
+    imem[IMEM_SSR] &= 0xFB;
+    imem[IMEM_USR] |= 0x18;
+    reg.x.p=pPC->Get_20(VECT_RESET);
+
 }
 
 /*****************************************************************************/
@@ -3164,7 +3165,7 @@ void Csc62015::step(void)
 	}
 }
 
-void Csc62015::OpExec(BYTE Op)
+inline void Csc62015::OpExec(BYTE Op)
 {
 
     switch(Op)	{
@@ -3502,7 +3503,7 @@ void Csc62015::set_reg(REGNAME regname,DWORD data)
 /*  ENTRY :DOWRD adr=address, OPRMODE opr=OPR_xxx DWORD data=value			 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-void Csc62015::opr_mem(DWORD adr,OPRMODE opr,BYTE data)
+inline void Csc62015::opr_mem(DWORD adr,OPRMODE opr,BYTE data)
 {
 //	switch(opr){
 //	case OPR_AND:mem[adr]&=data; break;
@@ -3526,7 +3527,7 @@ DWORD Csc62015::get_imem(BYTE adr)
 /*  ENTRY :BYTE adr=address, BYTE data=value								 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-void Csc62015::set_imem(BYTE adr,BYTE data)
+inline void Csc62015::set_imem(BYTE adr,BYTE data)
 {
 	imem[adr]=data;
 }
@@ -3550,16 +3551,34 @@ void Csc62015::Load_Internal(QFile *)
 {
 }
 
-void Csc62015::Load_Internal(QXmlStreamReader *)
+void Csc62015::Load_Internal(QXmlStreamReader *xmlIn)
 {
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "sc62015")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &reg,ba_reg.data(),REG_LEN);
+            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+            memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
+        }
+        xmlIn->skipCurrentElement();
+    }
 }
 
 void Csc62015::save_internal(QFile *)
 {
+
 }
 
-void Csc62015::save_internal(QXmlStreamWriter *)
+void Csc62015::save_internal(QXmlStreamWriter *xmlOut)
 {
+    xmlOut->writeStartElement("cpu");
+     xmlOut->writeAttribute("model","sc62015");
+     QByteArray ba_reg((char*)&reg,REG_LEN);
+     xmlOut->writeAttribute("registers",ba_reg.toBase64());
+     QByteArray ba_imem((char*)imem,IMEM_LEN);
+     xmlOut->writeAttribute("iMem",ba_imem.toBase64());
+     xmlOut->writeEndElement();
 }
 
 #if 0
