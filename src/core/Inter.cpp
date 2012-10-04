@@ -125,6 +125,15 @@ void Ctimer::deleteTP(int index)
     frequency_tp[index] = 0;
 }
 
+int Ctimer::getFreqTP(int index)
+{
+    return frequency_tp[index];
+}
+void Ctimer::setFreqTP(int index,int freq)
+{
+    previous_state_tp[index] = state;
+    frequency_tp[index] = freq;
+}
 void Ctimer::resetTP(int index)
 {
     tp[index] = false;
@@ -133,7 +142,7 @@ void Ctimer::resetTP(int index)
 
 bool	Ctimer::GetTP(int index)
 {
-    if ( (index < 0) && (index >= 10)) return false;
+    if ( (index < 0) || (index >= 10)) return false;
 
 // generate Timer Pulse signal
 #define TP_STATE(index)		(pPC->getfrequency() / frequency_tp[index])

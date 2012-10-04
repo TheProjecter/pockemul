@@ -70,9 +70,9 @@ public:
     void ReceiveFromT6834(UINT8 Cmd, PorT_FX *Port);
     void SendToT6834(PorT_FX *Port);
 
-    UINT8 Mode_K7;
-    UINT8 Mode_BUZ;
-    UINT8 Mode_SERIE;
+    bool Mode_K7;
+    bool Mode_BUZ;
+    bool Mode_SERIE;
 
     int IT_T6834;
     UINT8 Int_nsc800_BB;
@@ -89,6 +89,8 @@ public:
     void keyReleaseEvent(QKeyEvent *event);
 
     void Reset();
+
+    int soundTP;
 
     int Cpt;
     int Lng_Cmd;
@@ -111,6 +113,7 @@ public:
     void SendToSerial(PorT_FX *Port);
 
     void ReceiveFromSerial(PorT_FX *Port);
+    void manageSound();
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
 };

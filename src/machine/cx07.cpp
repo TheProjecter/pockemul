@@ -13,6 +13,7 @@
 #include "Connect.h"
 #include "dialoganalog.h"
 
+//TODO: Sound emulation PORT F4
 
 /*
            Mémoire du XO7
@@ -135,6 +136,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     Lec_K7=0;
     IT_T6834 = 0;
 
+    soundTP = -1;
 }
 
 Cx07::~Cx07() {
@@ -286,6 +288,8 @@ bool Cx07::run() {
           //return (INT_NONE);
       }
 
+    if (soundTP >= 0) fillSoundBuffer(pTIMER->GetTP(soundTP)? 0xff:0x00);
+
     pPARConnector_value = pPARConnector->Get_values();
     pSERConnector_value = pSERConnector->Get_values();
 }
@@ -355,6 +359,26 @@ UINT8 Cx07::in(UINT8 Port)
      return (Value);
 }
 
+void Cx07::manageSound(void) {
+    int divisor = ((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2) + 1;
+    int freq = 192000 / divisor;
+    AddLog(LOG_CONSOLE,tr("Init baudrate %1 d=%2 f=%3\n").arg(soundTP).arg(divisor).arg(freq));
+    if (!Mode_BUZ) return;
+
+ // Start the beep at the correspondig frequency
+    if (soundTP==-1) {
+        soundTP = pTIMER->initTP(freq);
+        AddLog(LOG_CONSOLE,tr("Init soundTP %1 d=%2 f=%3\n").arg(soundTP).arg(divisor).arg(freq));
+    }
+    else {
+        if (freq != pTIMER->getFreqTP(soundTP)) {
+            pTIMER->setFreqTP(soundTP,freq);
+            AddLog(LOG_CONSOLE,tr("New freq %1,%2\n").arg(soundTP).arg(freq));
+
+        }
+    }
+}
+
 UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
 
@@ -376,29 +400,47 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                break;
    case 0xF2 : /* Controle de BAUDS (poids faible) */
                Port_FX.W.F2 = Value;
+               manageSound();
                break;
    case 0xF3 : /* Controle de BAUDS (poids fort) */
                Port_FX.W.F3 = Value;
+               manageSound();
                break;
    case 0xF4 : /* Modes */
                Port_FX.W.F4 = Value;
                Port_FX.R.F4 = Value;
 
+               AddLog(LOG_CONSOLE,tr("F4=%1\n").arg(Value,2,16,QChar('0')));
                if (Value & 0x80) {
                    AddLog(LOG_SIO,tr("Reglage Bauds : %1 - %2  = %3").arg(Port_FX.W.F2,2,16,QChar('0')).arg(Port_FX.W.F3,2,16,QChar('0')).arg(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2),2,16,QChar('0')));
                    int divisor = ((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2) + 1;
                    if (divisor) pUART->Set_BaudRate(24000/divisor);
                }
 
+               Mode_K7 = ((Value & 0x0C) == 0x08) ? true : false;
+               Mode_BUZ= ((Value & 0x0E) == 0x0E) ? true : false;
+               Mode_SERIE=((Value & 0x0C)== 0x04) ? true : false;
+
                if (Value & 0x40) {
-                   AddLog(LOG_SIO,tr("Bauds Counter START"));
+                   AddLog(LOG_CONSOLE,tr("Bauds Counter START\n"));
+
+                   if (Mode_BUZ) {
+                       manageSound();
+                   }
+                   else {
+                       pTIMER->resetTP(soundTP);
+                       soundTP = -1;
+                       AddLog(LOG_CONSOLE,tr("SoundTP = -1\n"));
+                   }
                }
                else {
-                   AddLog(LOG_SIO,tr("Bauds Counter STOP"));
+                   AddLog(LOG_CONSOLE,tr("Bauds Counter STOP\n"));
+
+                   // Stop beep
+                   soundTP = -1;
+                   pTIMER->resetTP(soundTP);
                }
-               Mode_K7 = ((Value & 0x0C) == 0x08) ? 1 : 0;
-               Mode_BUZ= ((Value & 0x0E) == 0x0E) ? 1 : 0;
-               Mode_SERIE=((Value & 0x0C)== 0x04) ? 1 : 0;
+
 
                if (Mode_SERIE) {
                    AddLog(LOG_CANON,"MODE SERIE");

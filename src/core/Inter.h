@@ -95,6 +95,8 @@ public:
     }
 
 
+    int getFreqTP(int index);
+    void setFreqTP(int index, int freq);
 private:
     qint64 previous_state_tp[10];
     qint64 timerSate[10];
