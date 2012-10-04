@@ -63,6 +63,7 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     usestatus=0;
     fp_status=0;
     fn_status="e500e.sta";
+    fn_log="sc62015.log";
     CallSubLevel=0;
 
     div500	= div2	= false;
@@ -3085,7 +3086,7 @@ bool Csc62015::init(void)
 		fclose(fp_status); fp_status=0;
 		printf("done.\n");
 	}else{
-        Reset();
+//        Reset();
 	}
 
 

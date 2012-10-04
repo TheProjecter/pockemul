@@ -119,6 +119,7 @@ void	Ce500::initExtension(void)
 }
 
 bool Ce500::init(void) {
+//    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -480,6 +481,13 @@ void Ce500::TurnON()
     }
 }
 
+void Ce500::TurnOFF()
+{
+    mainwindow->saveAll = YES;
+    CpcXXXX::TurnOFF();
+    mainwindow->saveAll = ASK;
+}
+
 bool Ce500::LoadExtra(QFile *)
 {
     return true;
@@ -733,13 +741,16 @@ BYTE Ce500::getKey()
 
     }
 
-//    if (KEY(K_BRK)) {
+    if (KEY(K_BRK)) {
 //        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_ONKEY);
-//    }
+        pCPU->setImemBit(IMEM_SSR,4,1);
+    }
+    else
+        pCPU->setImemBit(IMEM_SSR,4,0);
 //    else
-//    if(data) {
-//        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
-//    }
+    if(data) {
+        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_KEY);	// set status to ISR
+    }
     pCPU->imem[IMEM_KI] = data;					//set data to ki
     return data^0xff;start2khz = 0;
     start4khz = 0;

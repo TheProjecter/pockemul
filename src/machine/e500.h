@@ -10,7 +10,8 @@ Q_OBJECT
 public:
     const char*	GetClassName(){ return("Ce500");}
 
-    void	TurnON(void);
+    virtual void	TurnON(void);
+    virtual void	TurnOFF(void);
 
 
     virtual bool	Set_Connector(void);
@@ -48,6 +49,7 @@ public:
     void computeSound();
     virtual void MemMirror(DWORD *d);
     virtual void initExtension();
+
 protected:
 //	BYTE previous_key;
 
