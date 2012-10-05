@@ -114,7 +114,7 @@ const int CT6834::udk_ofs[12] = {
 const int CT6834::udk_size[12] = {
     42, 42, 42, 42, 42, 46, 42, 42, 42, 42, 42, 46
 };
-
+extern FILE *fp_tmp3;
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
     int    Lng_rsp;
@@ -123,6 +123,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
     Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
 
+    if (fp_tmp3)  fprintf(fp_tmp3,"ORDER %02X\n",Ordre);
  switch (Ordre & 0x7F)
   {
    case 0x00: //lng_rsp = Cmd_T6834[Ordre].lng_rsp;
@@ -173,7 +174,8 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x06: // RamWrite
-              Adresse = Send_Cmd_T6834[2] + ( Send_Cmd_T6834[3] << 8);
+     Adresse = Send_Cmd_T6834[2] + ( Send_Cmd_T6834[3] << 8);
+     if (fp_tmp3) fprintf(fp_tmp3,"Ecriture adr %04X : %02X\n",Adresse,Send_Cmd_T6834[1]);
               if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"Ecriture adr %04X : %02X",Adresse,Send_Cmd_T6834[1]);
               AddLog(LOG_CANON,tr("Ecriture adr [%1]=%2").arg(Adresse,4,16,QChar('0')).arg(Send_Cmd_T6834[1],2,16,QChar('0')));
               Adresse |= 0xC000;
@@ -414,7 +416,8 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               General_Info.Aff_Udk = 0;
               LineClear (3);
               break;
-
+    case 0x37: Rsp[0]=0;
+              break;
    case 0x3b: // KeybOn
                 General_Info.EnableKeyEntry = true;
                 break;

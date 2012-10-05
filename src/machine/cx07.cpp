@@ -14,6 +14,7 @@
 #include "dialoganalog.h"
 
 //TODO: Sound emulation PORT F4
+//TODO: SERIAL INPUT  INIT#5,"COM:"  EXEC &HEE1F
 
 /*
            Mémoire du XO7
@@ -137,6 +138,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     IT_T6834 = 0;
 
     soundTP = -1;
+    Presence_k7 =false;
 }
 
 Cx07::~Cx07() {
@@ -148,9 +150,9 @@ Cx07::~Cx07() {
 
 bool Cx07::init(void)				// initialize
 {
-
+//pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+    pCPU->logsw = false;
 #endif
     CpcXXXX::init();
 
@@ -269,7 +271,7 @@ bool Cx07::run() {
                   return (IT_RST_A);
                   break;
               case 3:
-//                  if (Lec_K7 >= 100)
+                  if (Lec_K7 >= 100)
                   {
                       AddLog (LOG_TEMP,"It3_6834\n");
                       IT_T6834 = 0;
@@ -278,10 +280,10 @@ bool Cx07::run() {
                       ((CZ80*)pCPU)->z80nsc800intr(&((CZ80*)pCPU)->z80,IT_RST_B);
                       return (IT_RST_B);
                   }
-//                  else
-//                  {
-//                      Lec_K7 ++;
-//                  }
+                  else
+                  {
+                      Lec_K7 ++;
+                  }
                   break;
               }
           }
@@ -292,6 +294,8 @@ bool Cx07::run() {
 
     pPARConnector_value = pPARConnector->Get_values();
     pSERConnector_value = pSERConnector->Get_values();
+
+    return true;
 }
 
 bool Cx07::Chk_Adr(DWORD *d, DWORD data)
@@ -360,7 +364,7 @@ UINT8 Cx07::in(UINT8 Port)
 }
 
 void Cx07::manageSound(void) {
-    int divisor = ((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2) + 1;
+    int divisor = (((Port_FX.W.F3&0x0F)<<8) | Port_FX.W.F2) + 1;
     int freq = 192000 / divisor;
     AddLog(LOG_CONSOLE,tr("Init baudrate %1 d=%2 f=%3\n").arg(soundTP).arg(divisor).arg(freq));
     if (!Mode_BUZ) return;
@@ -379,9 +383,17 @@ void Cx07::manageSound(void) {
     }
 }
 
+FILE *fp_tmp3;
+
 UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
 
+    if (fp_tmp3==NULL)
+        fp_tmp3=fopen("LOG out x07.txt","wb");
+//    if (Mode_BUZ)
+    {
+        fprintf(fp_tmp3,"out[%02X]=%02X\n",Port,Value);
+    }
  if ((Port!=0xf0) && (Value!=0x44)) {
      AddLog(LOG_SIO,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 }
@@ -413,7 +425,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                AddLog(LOG_CONSOLE,tr("F4=%1\n").arg(Value,2,16,QChar('0')));
                if (Value & 0x80) {
                    AddLog(LOG_SIO,tr("Reglage Bauds : %1 - %2  = %3").arg(Port_FX.W.F2,2,16,QChar('0')).arg(Port_FX.W.F3,2,16,QChar('0')).arg(((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2),2,16,QChar('0')));
-                   int divisor = ((Port_FX.W.F3&0x0F)<<8) | (Port_FX.W.F2) + 1;
+                   int divisor = (((Port_FX.W.F3&0x0F)<<8) | Port_FX.W.F2) + 1;
                    if (divisor) pUART->Set_BaudRate(24000/divisor);
                }
 
@@ -448,7 +460,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 
                if (Port_FX.W.F5 & 0x04) {
                    if (Mode_K7) {
-//                       Receive_from_K7 (&Port_FX);
+                       Receive_from_K7 (&Port_FX);
                    }
                    if (Mode_SERIE ) {//&& !(Port_FX.W.F6 & 0x20)) {
                        ReceiveFromSerial(&Port_FX);
@@ -473,7 +485,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                if (Value & 0x04) {
                    AddLog(LOG_CANON,tr("Interruption F5 & 0x04 = %1").arg(Value,2,16,QChar('0')));
                    if (Mode_K7) {
-//                   Receive_from_K7 (&Port_FX);
+                   Receive_from_K7 (&Port_FX);
                    }
                    if (Mode_SERIE ){//&& !(Port_FX.W.F6 & 0x20)) {
                        ReceiveFromSerial(&Port_FX);
@@ -753,8 +765,8 @@ bool Cx07::SaveConfig(QXmlStreamWriter *xmlOut)
     return true;
 }
 
-/*
-void Send_to_K7 (PorT_FX *Port)
+
+void Cx07::Send_to_K7 (PorT_FX *Port)
 {
  if ((Port->R.F4 & 0x09) == 0x09)
   {
@@ -762,35 +774,22 @@ void Send_to_K7 (PorT_FX *Port)
   }
 }
 
-void Receive_from_K7 (PorT_FX *Port)
+void Cx07::Receive_from_K7 (PorT_FX *Port)
 {
-// static int Cpt=0;
 
-// if (!Presence_k7)
-//  {
-//   Fichier = fopen ("fichiers.xo7/DOMINO.LST","r");
-//   Fichier = fopen ("fichiers.xo7/BURGER.LST","r");
-//   Fichier = fopen ("fichiers.xo7/KARATE.LST","r");
-//   Fichier_k7 = fopen ("fichiers.xo7/AVENTUR.LST","r");
-//   Presence_k7 = 1;
-//  }
-
- if (Presence_k7 && ((Port->R.F4 & 0x09) == 0x09))
-  {
-   if (feof(Fichier_k7))
+    if (Presence_k7 && ((Port->R.F4 & 0x09) == 0x09))
     {
-     rewind (Fichier_k7);
+//        if (!Fichier_k7.atEnd())
+//        {
+//            Fichier_k7.seek(0);
+//        }
+        Fichier_k7.getChar((char*)&Port->R.F7);//fgetc (Fichier_k7);
+        Port->R.F6 |= 0x02;
+        IT_T6834 = 3;
     }
-   Port->R.F7  = fgetc (Fichier_k7);
-   Port->R.F6 |= 0x02;
-   IT_T6834 = 3;
-//   fprintf (stderr,"Receive from K7 %02X ",Port->R.F7);
-//   if (Cpt>=60)
-//    Cpt=0;
-  }
 }
 
-*/
+
 
 void Cx07::ReceiveFromSerial(PorT_FX *Port) {
     if ((Port->W.F6 & 0x04) && pUART->isInputByte()) {
@@ -823,5 +822,31 @@ void Cx07::contextMenuEvent ( QContextMenuEvent * event )
     menuUart->addAction(tr("Show console"),pUART,SLOT(ShowConsole()));
     menuUart->addAction(tr("Hide console"),pUART,SLOT(HideConsole()));
 
+    menu.addAction(tr("Load Tape..."),this,SLOT(LoadK7()));
+
     menu.exec(event->globalPos () );
+}
+
+void Cx07::LoadK7()
+{
+
+    QString fileName = QFileDialog::getOpenFileName(
+                                        mainwindow,
+                                        tr("Choose a file"),
+                                        ".",
+                                        tr("Tape File (*.cas)"));
+
+    Fichier_k7.setFileName(fileName);
+    if (!Fichier_k7.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(mainwindow,tr("PockEmul"),
+                                tr("Cannot read file %1:\n%2.")
+                                .arg(Fichier_k7.fileName())
+                                .arg(Fichier_k7.errorString()));
+        return ;
+    }
+
+     /* Ouverture de la mouvelle K7 */
+     /*-----------------------------*/
+
+       Presence_k7 = true;
 }

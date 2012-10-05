@@ -43,7 +43,7 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="tabWidgetPage2" native="true">
+       <widget class="QWidget" name="tabWidgetPage2">
         <attribute name="title">
          <string>Input</string>
         </attribute>
@@ -199,7 +199,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tabWidgetPage1" native="true">
+       <widget class="QWidget" name="tabWidgetPage1">
         <attribute name="title">
          <string>Output</string>
         </attribute>
@@ -291,7 +291,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tabWidgetPage3" native="true">
+       <widget class="QWidget" name="tabWidgetPage3">
         <attribute name="title">
          <string>Config</string>
         </attribute>
@@ -512,5 +512,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pbClear</sender>
+   <signal>clicked()</signal>
+   <receiver>textEdit_out</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

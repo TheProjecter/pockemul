@@ -56,6 +56,7 @@ typedef struct
 
 class Cx07 : public CpcXXXX
 {
+    Q_OBJECT
 public:
     Cx07(CPObject *parent = 0);
     virtual ~Cx07();
@@ -114,8 +115,17 @@ public:
 
     void ReceiveFromSerial(PorT_FX *Port);
     void manageSound();
+    void Send_to_K7(PorT_FX *Port);
+    void Receive_from_K7(PorT_FX *Port);
+    bool Presence_k7;
+    QFile Fichier_k7; /* Fichier de k7 */
+
+public slots:
+    void LoadK7(void);
+
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
+
 };
 
 #endif // CX07_H
