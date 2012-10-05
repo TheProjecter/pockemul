@@ -83,9 +83,9 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
-    SlotList.append(CSlot(8 , 0x4000 ,	""					, ""	, ROM , "Prise ROM 8kb"));
-    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, ROM , "ROM Carte 8kb"));
-    SlotList.append(CSlot(6 , 0x8000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
+    SlotList.append(CSlot(8 , 0x4000 ,	""					, ""	, RAM , "Prise ROM 8kb"));
+    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "ROM Carte 8kb"));
+    SlotList.append(CSlot(8 , 0x8000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
     SlotList.append(CSlot(4 , 0xA000 ,	""                  , ""	, ROM , "ROM TV"));
     SlotList.append(CSlot(20, 0xB000 ,	":/x07/rom_xo7.bin" , "x07/rom_xo7.bin" 	, ROM , "BASIC ROM"));
 
@@ -300,8 +300,10 @@ bool Cx07::run() {
 
 bool Cx07::Chk_Adr(DWORD *d, DWORD data)
 {
-    if ( (*d>=0x0000) && (*d<=0x3FFF) )	return(true);		// RAM area()
-    if ( (*d>=0x8000) && (*d<=0x97FF) )	return(true);		// RAM area()
+    if ( (*d>=0x0000) && (*d<=0xAFFF) )	return(true);		// RAM area()
+
+    if ( (*d>=0x4000) && (*d<=0x5FFF) )	return(true);		// RAM area()
+    if ( (*d>=0x8000) && (*d<=0x9FFF) )	return(true);		// RAM area()
 
     return false;
 }
