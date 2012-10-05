@@ -383,17 +383,17 @@ void Cx07::manageSound(void) {
     }
 }
 
-FILE *fp_tmp3;
+//FILE *fp_tmp3;
 
 UINT8 Cx07::out(UINT8 Port, UINT8 Value)
 {
 
-    if (fp_tmp3==NULL)
-        fp_tmp3=fopen("LOG out x07.txt","wb");
-//    if (Mode_BUZ)
-    {
-        fprintf(fp_tmp3,"out[%02X]=%02X\n",Port,Value);
-    }
+//    if (fp_tmp3==NULL)
+//        fp_tmp3=fopen("LOG out x07.txt","wb");
+////    if (Mode_BUZ)
+//    {
+//        fprintf(fp_tmp3,"out[%02X]=%02X\n",Port,Value);
+//    }
  if ((Port!=0xf0) && (Value!=0x44)) {
      AddLog(LOG_SIO,tr("(%1) Out %2,%3").arg(((CZ80*)pCPU)->z80.r16.pc,4,16,QChar('0')).arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
 }
@@ -770,7 +770,7 @@ void Cx07::Send_to_K7 (PorT_FX *Port)
 {
  if ((Port->R.F4 & 0x09) == 0x09)
   {
-   fprintf (stderr,"%02X ",Port->W.F7);
+     Fichier_k7.putChar(Port->W.F7);
   }
 }
 
@@ -822,9 +822,43 @@ void Cx07::contextMenuEvent ( QContextMenuEvent * event )
     menuUart->addAction(tr("Show console"),pUART,SLOT(ShowConsole()));
     menuUart->addAction(tr("Hide console"),pUART,SLOT(HideConsole()));
 
-    menu.addAction(tr("Load Tape..."),this,SLOT(LoadK7()));
+    QMenu *menuTape = menu.addMenu(tr("Tape I/O"));
+    menuTape->addAction(tr("Load CAS..."),this,SLOT(LoadK7()));
+    menuTape->addAction(tr("Save to CAS..."),this,SLOT(LoadNewK7()));
 
     menu.exec(event->globalPos () );
+}
+
+void Cx07::LoadNewK7()
+{
+    QString fn = QFileDialog::getSaveFileName(
+                mainwindow,
+                tr("Choose a filename to save CAS"),
+                ".",
+                tr("Tape File (*.cas)"));
+
+
+    QFileInfo fi( fn );
+            if (fi.suffix().isEmpty())
+            {
+                    // no suffix, adding .pml  - BUG For Android
+                fn.append(".cas");
+            }
+
+    Fichier_k7.close();
+    Fichier_k7.setFileName(fn);
+    if (!Fichier_k7.open(QFile::WriteOnly | QFile::Truncate)) {
+        QMessageBox::warning(mainwindow,tr("PockEmul"),
+                                tr("Cannot create file %1:\n%2.")
+                                .arg(Fichier_k7.fileName())
+                                .arg(Fichier_k7.errorString()));
+        return ;
+    }
+
+     /* Ouverture de la nouvelle K7 */
+     /*-----------------------------*/
+
+       Presence_k7 = true;
 }
 
 void Cx07::LoadK7()
@@ -836,6 +870,7 @@ void Cx07::LoadK7()
                                         ".",
                                         tr("Tape File (*.cas)"));
 
+    Fichier_k7.close();
     Fichier_k7.setFileName(fileName);
     if (!Fichier_k7.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(mainwindow,tr("PockEmul"),

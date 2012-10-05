@@ -114,7 +114,7 @@ const int CT6834::udk_ofs[12] = {
 const int CT6834::udk_size[12] = {
     42, 42, 42, 42, 42, 46, 42, 42, 42, 42, 42, 46
 };
-extern FILE *fp_tmp3;
+//extern FILE */*fp_tm*/p3;
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
     int    Lng_rsp;
@@ -123,7 +123,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
     Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
 
-    if (fp_tmp3)  fprintf(fp_tmp3,"ORDER %02X\n",Ordre);
+//    if (fp_tmp3)  fprintf(fp_tmp3,"ORDER %02X\n",Ordre);
  switch (Ordre & 0x7F)
   {
    case 0x00: //lng_rsp = Cmd_T6834[Ordre].lng_rsp;
@@ -143,7 +143,18 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
 
    case 0x02: AddLog (LOG_TEMP,tr("Stick = %1").arg(General_Info.Stick,2,16,QChar('0')));
-              Rsp[0] = General_Info.Stick;
+     switch (General_Info.Stick) {
+         case 0x00: Rsp[0] = 0x30; break;
+         case 0x01: Rsp[0] = 0x31; break;
+         case 0x03: Rsp[0] = 0x32; break;
+         case 0x02: Rsp[0] = 0x33; break;
+         case 0x06: Rsp[0] = 0x34; break;
+         case 0x04: Rsp[0] = 0x35; break;
+         case 0x0C: Rsp[0] = 0x36; break;
+         case 0x08: Rsp[0] = 0x37; break;
+         case 0x09: Rsp[0] = 0x38; break;
+     default: Rsp[0] = 0x30; break;
+     }
               break;
 
    case 0x03: AddLog (LOG_TEMP,tr("Strig = %1").arg(General_Info.Strig,2,16,QChar('0')));
@@ -175,7 +186,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x06: // RamWrite
      Adresse = Send_Cmd_T6834[2] + ( Send_Cmd_T6834[3] << 8);
-     if (fp_tmp3) fprintf(fp_tmp3,"Ecriture adr %04X : %02X\n",Adresse,Send_Cmd_T6834[1]);
+//     if (fp_tmp3) fprintf(fp_tmp3,"Ecriture adr %04X : %02X\n",Adresse,Send_Cmd_T6834[1]);
               if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"Ecriture adr %04X : %02X",Adresse,Send_Cmd_T6834[1]);
               AddLog(LOG_CANON,tr("Ecriture adr [%1]=%2").arg(Adresse,4,16,QChar('0')).arg(Send_Cmd_T6834[1],2,16,QChar('0')));
               Adresse |= 0xC000;
@@ -797,7 +808,7 @@ bool CT6834::init()
     General_Info.Curseur      = false;
     General_Info.Aff_Udk      = 0;
     General_Info.Rem_Canal    = 0;
-    General_Info.Stick        = 0x30;
+    General_Info.Stick        = 0x00;
     General_Info.Strig        = 0xFF;
     General_Info.Strig1       = 0xFF;
     General_Info.Break        = 0;
@@ -844,18 +855,16 @@ void CT6834::keyRelease(QKeyEvent *event)
 
     switch(event->key()) {
     case Qt::Key_Backspace:	// bs->left
-        General_Info.Stick = 0x30;
+        General_Info.Stick = 0x00;
         break;
 
     case Qt::Key_Space:
         General_Info.Strig1 = 0xff;
         break;
-    case Qt::Key_Up    :
-    case Qt::Key_Right :
-    case Qt::Key_Down  :
-    case Qt::Key_Left  :
-        General_Info.Stick = 0x30;
-        break;
+    case Qt::Key_Up    : General_Info.Stick &= ~0x01; break;
+    case Qt::Key_Right : General_Info.Stick &= ~0x02; break;
+    case Qt::Key_Down  : General_Info.Stick &= ~0x04; break;
+    case Qt::Key_Left  : General_Info.Stick &= ~0x08; break;
     case Qt::Key_F6:	// F6
         General_Info.Strig = 0xff;
         break;
@@ -897,10 +906,10 @@ void CT6834::keyPress(QKeyEvent *event)
     case Qt::Key_F6    : break;
     case Qt::Key_F12   : TurnOFF(); break;
 
-    case Qt::Key_Up    : General_Info.Stick = 0x31; AddKey(0x1e);break;
-    case Qt::Key_Right : General_Info.Stick = 0x32; AddKey(0x1c);break;
-    case Qt::Key_Down  : General_Info.Stick = 0x36; AddKey(0x1f);break;
-    case Qt::Key_Left  : General_Info.Stick = 0x37; AddKey(0x1d);break;
+    case Qt::Key_Up    : General_Info.Stick |= 0x01; AddKey(0x1e);break;
+    case Qt::Key_Right : General_Info.Stick |= 0x02; AddKey(0x1c);break;
+    case Qt::Key_Down  : General_Info.Stick |= 0x04; AddKey(0x1f);break;
+    case Qt::Key_Left  : General_Info.Stick |= 0x08; AddKey(0x1d);break;
 
 
     case Qt::Key_Return : AddKey(0x0d);break;

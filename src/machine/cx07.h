@@ -122,6 +122,7 @@ public:
 
 public slots:
     void LoadK7(void);
+    void LoadNewK7(void);
 
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
