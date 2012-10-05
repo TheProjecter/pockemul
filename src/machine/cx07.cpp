@@ -497,7 +497,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                if (Value & 0x08) {
                    AddLog(LOG_CANON,tr("Interruption F5 & 0x08 = %1").arg(Value,2,16,QChar('0')));
                    if (Mode_K7) {
-//                   Send_to_K7 (&Port_FX);
+                       Send_to_K7 (&Port_FX);
                    }
                    if (Mode_SERIE ){//&& (Port_FX.W.F6 & 0x20)) {
                        SendToSerial(&Port_FX);
@@ -768,9 +768,10 @@ bool Cx07::SaveConfig(QXmlStreamWriter *xmlOut)
 
 void Cx07::Send_to_K7 (PorT_FX *Port)
 {
- if ((Port->R.F4 & 0x09) == 0x09)
+ if (Presence_k7 && ((Port->R.F4 & 0x09) == 0x09))
   {
      Fichier_k7.putChar(Port->W.F7);
+     Fichier_k7.flush();
   }
 }
 
