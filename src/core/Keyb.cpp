@@ -29,10 +29,12 @@ typedef struct{
 const int RIGHT[11] = { 25 , 32 , 59 , 19, 21, 13, 21, 16, 31,16,16 };
 const int BOTTOM[11]= { 16 , 22 , 16 , 21, 10, 13, 13, 31, 31,16,16 };
 
-CKey::CKey(int scancode, QString description,QRect rect )	
+CKey::CKey(int scancode, QString description,QRect rect,int masterscancode,QString modifier)
 {
 	Description = description;
 	ScanCode	= scancode;
+    MasterScanCode = masterscancode;
+    Modifier = modifier;
 	Rect = rect;
 }
 
@@ -253,11 +255,13 @@ bool Ckeyb::exit(void)
 	{
     	AttrMap attrs;
     	attrs.insert( "description", j->Description.trimmed () );
-    	attrs.insert( "scancode", QString("0x%1").arg(j->ScanCode,0,16) );
+        attrs.insert( "scancode", QString("0x%1").arg(j->ScanCode,2,16,QChar('0')) );
+        attrs.insert( "masterscancode", QString("0x%1").arg(j->MasterScanCode,2,16,QChar('0')) );
     	attrs.insert( "left", QString("%1").arg(j->Rect.left()) );
     	attrs.insert( "top", QString("%1").arg(j->Rect.top() ));
     	attrs.insert( "width", QString("%1").arg(j->Rect.width() ) );
     	attrs.insert( "height", QString("%1").arg(j->Rect.height() ) );
+        attrs.insert( "modifier", j->Modifier );
     	xw.writeAtomTag( "KEY", attrs );
     }
 
@@ -284,10 +288,11 @@ bool KEYBMAPParser::endElement( const QString&, const QString&, const QString &n
 bool KEYBMAPParser::startElement( const QString&, const QString&, const QString &name, const QXmlAttributes &attrs )
 {
 	QString desc = "";
-	int scancode,x,y,w,h;
+    QString modifier="";
+    int scancode,masterscancode,x,y,w,h;
 	bool ok = false;
 	
-	scancode=x=y=w=h=0;
+    scancode=masterscancode=x=y=w=h=0;
 	
 	if( inKeyboard && name == "KEY" )
 	{
@@ -306,9 +311,18 @@ bool KEYBMAPParser::startElement( const QString&, const QString&, const QString 
 				w = attrs.value( i ).toInt(&ok,10);
 			else if( attrs.localName( i ) == "height" )
 				h = attrs.value( i ).toInt(&ok,10);
+            else if( attrs.localName( i ) == "masterscancode" )
+                masterscancode = attrs.value( i ).toInt(&ok,16);
+            else if( attrs.localName( i ) == "modifier" )
+                modifier = attrs.value( i );
 		}
-        Parent->Keys.append(CKey(scancode,desc,QRect(x,y,w,h)));
-		AddLog(LOG_KEYBOARD,mainwindow->tr("XML Read key : %1, scan=0x%2 , Rect=(%3,%4,%5,%6)").arg(desc).arg(scancode,0,16).arg(x).arg(y).arg(w).arg(h));
+        Parent->Keys.append(CKey(scancode,desc,QRect(x,y,w,h),masterscancode,modifier));
+        AddLog(LOG_KEYBOARD,mainwindow->tr("XML Read key : %1, scan=0x%2 , Rect=(%3,%4,%5,%6), mscan=0x%7, mod=%8").
+               arg(desc).
+               arg(scancode,2,16,QChar('0')).
+               arg(x).arg(y).arg(w).arg(h).
+               arg(masterscancode,2,16,QChar('0')).
+               arg(modifier));
 	}
 	else if( name == "Keyboard" )
 		inKeyboard = true;

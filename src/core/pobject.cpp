@@ -764,14 +764,20 @@ void CPObject::keyReleaseEvent(QKeyEvent * event )
 
 int CPObject::mapKey(QKeyEvent * event) {
     int key = 0;
-    switch (event->key()) {
-        case Qt::Key_Shift:		key = K_SHT;		event->accept();	break;
+    if ( (event->key() & 0x2000000) == 0x2000000 ) pKEYB->isShift = true;
+    if ( (event->key() & 0x4000000) == 0x4000000 ) pKEYB->isCtrl = true;
+    switch (event->key() & 0x1FFFFFF) {
+//        case K_SHIFT_DOWN_MOD:  pKEYB->isShift = true;  event->accept(); break;
+//        case K_CTRL_DOWN_MOD:   pKEYB->isCtrl = true;   event->accept(); break;
+//        case K_SHIFT_UP_MOD:    pKEYB->isShift = false; event->accept(); break;
+//        case K_CTRL_UP_MOD:     pKEYB->isCtrl = false;  event->accept(); break;
+        case Qt::Key_Shift:		key = K_SHT;	event->accept();	break;
         case Qt::Key_Control:	key = K_CTRL;	event->accept();	break;
-        case Qt::Key_Return:	key = K_RET;		event->accept();	break;
-        case Qt::Key_Delete:	key = K_DEL;		event->accept();	break;
-        case Qt::Key_Insert:	key = K_INS;		event->accept();	break;
-        case Qt::Key_QuoteLeft: key = K_QUOTE;   event->accept();    break;
-        case Qt::Key_Tab:       key = K_TAB;     event->accept();    break;
+        case Qt::Key_Return:	key = K_RET;	event->accept();	break;
+        case Qt::Key_Delete:	key = K_DEL;	event->accept();	break;
+        case Qt::Key_Insert:	key = K_INS;	event->accept();	break;
+        case Qt::Key_QuoteLeft: key = K_QUOTE;  event->accept();    break;
+        case Qt::Key_Tab:       key = K_TAB;    event->accept();    break;
         case Qt::Key_Space:		key = ' ';		event->accept();	break;
         case Qt::Key_Period:	key = '.';		event->accept();	break;
         case Qt::Key_Plus:		key = '+';		event->accept();	break;
@@ -802,7 +808,7 @@ int CPObject::mapKey(QKeyEvent * event) {
         case Qt::Key_F8:		key = K_CLR;		event->accept();	break;
         case Qt::Key_F9:		key = K_DEF;		event->accept();	break;
         case Qt::Key_F11:		key = K_BRK;		event->accept();	break;
-    default: key = event->key();event->accept();
+    default: key = event->key() & 0x1FFFFFF; event->accept();
         }
 //    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
 //    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}
@@ -818,6 +824,7 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 
     pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
     pKEYB->isCtrl = (QApplication::keyboardModifiers() == Qt::ControlModifier);
+
 
     pKEYB->LastKey = mapKey(event);
 

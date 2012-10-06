@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QXmlDefaultHandler>
+#include "common.h"
 
 
 enum KEY_NAME {
@@ -219,18 +220,24 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_RESET     0x20d
 #define K_CETL      0x20e
 
+#define K_SHIFT_DOWN_MOD 0x210
+#define K_SHIFT_UP_MOD 0x211
+#define K_CTRL_DOWN_MOD  0x212
+#define K_CTRL_UP_MOD  0x213
+
 class CPObject;
 class CpcXXXX;
 class Ckeyb;
 
 class CKey{
 public:
-	CKey(int ScanCode, QString Description,QRect Rect = QRect());
+    CKey(int ScanCode, QString Description,QRect Rect = QRect(),int masterscancode=0,QString modifier = QString());
     ~CKey(){}
 	
 	int		Icode;
     QString	Description;
-	int		ScanCode;
+    int		ScanCode,MasterScanCode;
+    QString Modifier;
 	QRect	Rect;
 protected:
 };

@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QHash>
 
+#include "Keyb.h"
+
 class CPObject;
 class QListWidgetItem;
 
@@ -21,6 +23,7 @@ public:
     
     void PopulateKeyList();
     int convertKeyCode(int c);
+    void processEscKey(QString word);
 private slots:
     void InsertKeySlot(QListWidgetItem*);
     void senData();
@@ -28,7 +31,8 @@ private slots:
 private:
     Ui::DialogVKeyboard *ui;
     CPObject *pPC;
-    QHash<QString, int> dict;
+    QHash<QString, CKey *> dict;
+    QList<int> final;
 };
 
 #endif // DIALOGVKEYBOARD_H

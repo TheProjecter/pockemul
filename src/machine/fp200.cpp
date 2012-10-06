@@ -217,7 +217,7 @@ bool Cfp200::init()
 {
 //    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+    pCPU->logsw = false;
 #endif
     CpcXXXX::init();
     initExtension();

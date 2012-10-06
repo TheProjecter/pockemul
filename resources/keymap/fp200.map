@@ -69,5 +69,20 @@
     <KEY description="X" height="58" left="228" scancode="0x58" top="517" width="58"/>
     <KEY description="Y" height="58" left="437" scancode="0x59" top="394" width="58"/>
     <KEY description="Z" height="58" left="166" scancode="0x5a" top="517" width="58"/>
+    <KEY description="!" masterscancode="0x31" modifier="shift"/>
+    <KEY description="&quot;" masterscancode="0x32" modifier="shift"/>
+    <KEY description="#" masterscancode="0x33" modifier="shift"/>
+    <KEY description="$" masterscancode="0x34" modifier="shift"/>
+    <KEY description="%" masterscancode="0x35" modifier="shift"/>
+    <KEY description="&amp;" masterscancode="0x36" modifier="shift"/>
+    <KEY description="'" masterscancode="0x37" modifier="shift"/>
+    <KEY description="(" masterscancode="0x38" modifier="shift"/>
+    <KEY description=")" masterscancode="0x39" modifier="shift"/>
+    <KEY description="=" masterscancode="0x2d" modifier="shift"/>
+    <KEY description="+" masterscancode="0x3b" modifier="shift"/>
+    <KEY description="*" masterscancode="0x3a" modifier="shift"/>
+    <KEY description="&lt;" masterscancode="0x2c" modifier="shift"/>
+    <KEY description="&gt;" masterscancode="0x2e" modifier="shift"/>
+    <KEY description="?" masterscancode="0x2f" modifier="shift"/>
 </Keyboard>
 </KEYBMAP>

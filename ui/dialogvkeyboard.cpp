@@ -36,18 +36,45 @@ void DialogVKeyboard::PopulateKeyList()
 
     dict.clear();
     QList<CKey>::iterator it;
-    for (it = pPC->pKEYB->Keys.begin(); it != pPC->pKEYB->Keys.end(); ++it)
-    {
-        item = new QListWidgetItem(it->Description, ui->keylistWidget);
-        item->setData( Qt::UserRole, qVariantFromValue( it->ScanCode ) );
-        dict.insert(it->Description,it->ScanCode);
+    for (int i=0; i< pPC->pKEYB->Keys.size();i++) {
+        CKey *k = &(pPC->pKEYB->Keys[i]);
+        item = new QListWidgetItem(k->Description, ui->keylistWidget);
+        item->setData( Qt::UserRole, qVariantFromValue( k->ScanCode ) );
+//        dict.insert(it->Description,it->ScanCode);
+        dict.insert(k->Description,k);
     }
+//    for (it = pPC->pKEYB->Keys.begin(); it != pPC->pKEYB->Keys.end(); ++it)
+//    {
+//        item = new QListWidgetItem(it->Description, ui->keylistWidget);
+//        item->setData( Qt::UserRole, qVariantFromValue( it->ScanCode ) );
+////        dict.insert(it->Description,it->ScanCode);
+//        dict.insert(it);
+//    }
 
 }
 
 void DialogVKeyboard::InsertKeySlot(QListWidgetItem *item)
 {
     ui->textEdit->textCursor().insertText("["+item->text()+"]");
+}
+
+void DialogVKeyboard::processEscKey(QString word) {
+
+    CKey *k = dict.value(word);
+    if (k->MasterScanCode==0x00) final.append(k->ScanCode);
+    else {
+        if (k->Modifier == "shift") {
+//            final.append(K_SHIFT_DOWN_MOD);
+            final.append(k->MasterScanCode | 0x2000000);
+//            final.append(K_SHIFT_UP_MOD);
+        }
+        if (k->Modifier == "ctrl") {
+//            final.append(K_CTRL_DOWN_MOD);
+            final.append(k->MasterScanCode | 0x4000000);
+//            final.append(K_CTRL_UP_MOD);
+        }
+    }
+
 }
 
 void DialogVKeyboard::senData()
@@ -63,17 +90,23 @@ void DialogVKeyboard::senData()
 
     QStringList list = finalString.split(QRegExp("[\\[\\]]"));
 
-    QList<int> final;
+    final.clear();
     for (int i=0; i < list.size(); ++i)
     {
         QString word = list[i];
         if (dict.contains(word))
         {
-            final.append(dict.value(word));
+            processEscKey(word);
         }
         else {
             QByteArray b = word.toAscii();
-            for (int j=0;j<b.size();j++) final.append(b.at(j));
+            for (int j=0;j<b.size();j++) {
+                QString word (b.at(j));
+                if (dict.contains(word))
+                    processEscKey(word);
+                else
+                    final.append(b.at(j));
+            }
         }
     }
 

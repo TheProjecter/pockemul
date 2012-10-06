@@ -35,9 +35,12 @@ void DialogKeyList::InsertKeys(void)
 	QList<CKey>::iterator it;
  	for (it = pPC->pKEYB->Keys.begin(); it != pPC->pKEYB->Keys.end(); ++it)
  	{
- 		item = new QListWidgetItem(it->Description, lwKeys);	
-		item->setData( Qt::UserRole, qVariantFromValue( it->ScanCode ) );
-	}
+//        if (it->MasterScanCode == 0 )
+        {
+            item = new QListWidgetItem(it->Description, lwKeys);
+            item->setData( Qt::UserRole, qVariantFromValue( it->ScanCode ) );
+        }
+    }
 }
 
 void DialogKeyList::slotDelKey()
