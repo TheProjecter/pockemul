@@ -815,6 +815,7 @@ bool CT6834::init()
     General_Info.EnableKeyEntry = true;
     General_Info.LcdOn        = false;
 
+    connect(this,SIGNAL(TurnOFFSig()),pPC,SLOT(TurnOFFSlot()));
 }
 
 void CT6834::Reset()
@@ -960,7 +961,8 @@ void CT6834::TurnOFF() {
     mem[0x0006] &= 0xBF;      // bit 6 to 0 for SLEEP
     mem[0x0006] |= 0x01;      // bit 0 to 1 for OFF
     General_Info.LcdOn = false;
-    pPC->TurnOFF();
+    emit TurnOFFSig();
+//    pPC->TurnOFF();
 }
 
 /*

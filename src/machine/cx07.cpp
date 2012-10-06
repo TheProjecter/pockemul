@@ -300,9 +300,9 @@ bool Cx07::run() {
 
 bool Cx07::Chk_Adr(DWORD *d, DWORD data)
 {
-    if ( (*d>=0x0000) && (*d<=0xAFFF) )	return(true);		// RAM area()
+    if ( (*d>=0x0000) && (*d<=0x9FFF) )	return(true);		// RAM area()
 
-    if ( (*d>=0x4000) && (*d<=0x5FFF) )	return(true);		// RAM area()
+    if ( (*d>=0x0000) && (*d<=0x5FFF) )	return(true);		// RAM area()
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	return(true);		// RAM area()
 
     return false;
@@ -725,6 +725,10 @@ void Cx07::keyPressEvent(QKeyEvent *event)
 
     pT6834->keyPress(event);
 
+}
+
+void Cx07::TurnOFFSlot(void){
+    TurnOFF();
 }
 
 
