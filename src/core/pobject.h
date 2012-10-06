@@ -26,6 +26,7 @@ class CExtensionArray;
 class DialogKeyList;
 class DialogDump;
 class DialogDasm;
+class DialogVKeyboard;
 class TapAndHoldGesture;
 
 
@@ -164,6 +165,7 @@ public:
 	DialogKeyList	*dialogkeylist;
     DialogDump		*dialogdump;
     DialogDasm      *dialogdasm;
+    DialogVKeyboard  *dialogVKeyboard;
 
     QPixmap         mask;
 
@@ -230,6 +232,7 @@ public slots:
     void slotSaveSession();
 	void Dump();
     void Dasm();
+    void VirtualKeyboard();
 
 	
 private:

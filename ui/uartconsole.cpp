@@ -9,7 +9,8 @@ CUartConsole::CUartConsole(QWidget *parent) :
     ui->setupUi(this);
     pUart = (Cuart*) parent;
 
-    connect(ui->textEdit_in,SIGNAL(textChanged()),this,SLOT(newInputByte()));
+    //connect(ui->textEdit_in,SIGNAL(textChanged()),this,SLOT(newInputByte()));
+    connect(ui->pbSend,SIGNAL(clicked()),this,SLOT(newInputByte()));
 }
 
 CUartConsole::~CUartConsole()

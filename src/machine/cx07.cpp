@@ -208,6 +208,8 @@ bool Cx07::run() {
     pSERConnector->Set_pin(6,pUART->Get_CS());      // CTS
     pSERConnector->Set_pin(7,pUART->Get_RS());      // RTS
 
+    if (pUART->isInputByte()) IT_T6834 = 3;
+
     if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
     {
         if (!pT6834->Clavier.isEmpty()) {
@@ -431,9 +433,9 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                    if (divisor) pUART->Set_BaudRate(24000/divisor);
                }
 
-               Mode_K7 = ((Value & 0x0C) == 0x08) ? true : false;
+               Mode_K7 = ((Value & 0x0D) == 0x09) ? true : false;
                Mode_BUZ= ((Value & 0x0E) == 0x0E) ? true : false;
-               Mode_SERIE=((Value & 0x0C)== 0x04) ? true : false;
+               Mode_SERIE=((Value & 0x0D)== 0x04) ? true : false;
 
                if (Value & 0x40) {
                    AddLog(LOG_CONSOLE,tr("Bauds Counter START\n"));
@@ -487,7 +489,7 @@ UINT8 Cx07::out(UINT8 Port, UINT8 Value)
                if (Value & 0x04) {
                    AddLog(LOG_CANON,tr("Interruption F5 & 0x04 = %1").arg(Value,2,16,QChar('0')));
                    if (Mode_K7) {
-                   Receive_from_K7 (&Port_FX);
+                       Receive_from_K7 (&Port_FX);
                    }
                    if (Mode_SERIE ){//&& !(Port_FX.W.F6 & 0x20)) {
                        ReceiveFromSerial(&Port_FX);
@@ -799,11 +801,13 @@ void Cx07::Receive_from_K7 (PorT_FX *Port)
 
 
 void Cx07::ReceiveFromSerial(PorT_FX *Port) {
-    if ((Port->W.F6 & 0x04) && pUART->isInputByte()) {
+    if (
+//            (Port->R.F6 & 0x04) &&
+            pUART->isInputByte()) {
         AddLog(LOG_SIO,tr("POP BYTE:%1 - %2").arg(pUART->getInputByte(),2,16,QChar('0')).arg(QChar(pUART->getInputByte())));
         Port->R.F7  = pUART->popInputByte();
         Port->R.F6 |= 0x02;
-        Port->R.F6 &= ~0x04;
+//        Port->R.F6 &= ~0x04;
         IT_T6834 = 3;
     }
 }

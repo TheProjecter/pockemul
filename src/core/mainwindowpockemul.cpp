@@ -219,6 +219,8 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
                     newpPC->BuildContextMenu(ctxMenu);
                     actionDistConn->setMenu(ctxMenu);
 
+                    emit NewPObjectsSignal(newpPC);
+
                     if (dialoganalogic) {
                         dialoganalogic->fill_twWatchPoint();
                         dialoganalogic->update();

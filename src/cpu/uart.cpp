@@ -220,7 +220,7 @@ Cuart::BIT_TYPE Cuart::byteToBit(qint8 data)
     return(Bit_Start);
 }
 
-qint8 Cuart::getInputByte(void) {
+quint8 Cuart::getInputByte(void) {
     if (inputBuffer.size()) return inputBuffer.at(0);
     return 0;
 }
@@ -229,7 +229,7 @@ bool Cuart::isInputByte(void) {
     return !inputBuffer.isEmpty();
 }
 
-qint8 Cuart::popInputByte(void) {
+quint8 Cuart::popInputByte(void) {
     if (!inputBuffer.isEmpty()) {
         qint8 data = inputBuffer.at(0);
         inputBuffer.remove(0,1);

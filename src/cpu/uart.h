@@ -66,9 +66,9 @@ public:
     }
 
     void sendByte(UINT8 data);
-    qint8 getInputByte();
+    quint8 getInputByte();
     bool isInputByte();
-    qint8 popInputByte();
+    quint8 popInputByte();
     void newInputByte(qint8 data);
     void newInputArray(QByteArray badata);
     void clearInputBuffer(void);

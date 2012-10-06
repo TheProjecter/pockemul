@@ -14,6 +14,7 @@
 #include "dialogkeylist.h"
 #include "dialogdump.h"
 #include "ui/dialogdasm.h"
+#include "ui/dialogvkeyboard.h"
 
 #include "weblinksparser.h"
 #include "sc61860.h"
@@ -903,6 +904,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
 
     if (pKEYB) {
         menuconfig->addAction(tr("Keyboard"),this,SLOT(KeyList()));
+        menu->addAction(tr("Keyboard Simulator"),this,SLOT(VirtualKeyboard()));
     }
 
     if ( dynamic_cast<CpcXXXX *>(this) ) {
@@ -1112,6 +1114,12 @@ void CPObject::Dasm()
 {
     dialogdasm = new DialogDasm(this);
     dialogdasm->show();
+}
+
+void CPObject::VirtualKeyboard()
+{
+    dialogVKeyboard = new DialogVKeyboard(this);
+    dialogVKeyboard->show();
 }
 
 bool CPObject::getdisp_onRaised()

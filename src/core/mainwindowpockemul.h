@@ -98,6 +98,7 @@ signals:
     void AddLogItem(QString);
     void AddLogConsole(QString);
     void DestroySignal(CPObject *pObject);
+    void NewPObjectsSignal(CPObject *pObject);
 
 private:
     QList<CKey>::iterator keyIterator;
