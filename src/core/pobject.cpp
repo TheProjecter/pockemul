@@ -802,9 +802,10 @@ int CPObject::mapKey(QKeyEvent * event) {
         case Qt::Key_F8:		key = K_CLR;		event->accept();	break;
         case Qt::Key_F9:		key = K_DEF;		event->accept();	break;
         case Qt::Key_F11:		key = K_BRK;		event->accept();	break;
+    default: key = event->key();event->accept();
         }
-    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
-    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}
+//    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
+//    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}
 
     return key;
 }

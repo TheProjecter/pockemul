@@ -2,6 +2,7 @@
 #define DIALOGVKEYBOARD_H
 
 #include <QDialog>
+#include <QHash>
 
 class CPObject;
 class QListWidgetItem;
@@ -19,6 +20,7 @@ public:
     ~DialogVKeyboard();
     
     void PopulateKeyList();
+    int convertKeyCode(int c);
 private slots:
     void InsertKeySlot(QListWidgetItem*);
     void senData();
@@ -26,6 +28,7 @@ private slots:
 private:
     Ui::DialogVKeyboard *ui;
     CPObject *pPC;
+    QHash<QString, int> dict;
 };
 
 #endif // DIALOGVKEYBOARD_H

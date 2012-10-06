@@ -156,6 +156,7 @@ CpcXXXX::run();
         pKEYB->LastKey = 0;
     }
 
+//BUG: Keyboard issue
 //    if (pKEYB->LastKey) {
 //        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
 //    }
