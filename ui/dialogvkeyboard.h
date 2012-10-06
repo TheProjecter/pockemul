@@ -21,6 +21,7 @@ public:
     void PopulateKeyList();
 private slots:
     void InsertKeySlot(QListWidgetItem*);
+    void senData();
 
 private:
     Ui::DialogVKeyboard *ui;
