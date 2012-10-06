@@ -41,7 +41,8 @@ FORMS += ui/about.ui \
     ui/cregslh5801widget.ui \
     ui/cregsz80widget.ui \
     ui/uartconsole.ui \
-    ui/cregshd61700widget.ui
+    ui/cregshd61700widget.ui \
+    ui/dialogvkeyboard.ui
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -278,7 +279,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/i8085daa.h \
     src/machine/fp200.h \
     src/lcd/Lcdc_fp200.h \
-    src/cpu/rp5c01.h
+    src/cpu/rp5c01.h \
+    ui/dialogvkeyboard.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -508,7 +510,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/fp200.cpp \
     src/cpu/i8085_dasm.cpp \
     src/lcd/Lcdc_fp200.cpp \
-    src/cpu/rp5c01.cpp
+    src/cpu/rp5c01.cpp \
+    ui/dialogvkeyboard.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
