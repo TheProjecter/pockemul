@@ -288,7 +288,7 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
             updated = true;
         }
         else {
-            AddLog(LOG_CONSOLE,tr("W Video[%1,%2]=[%3]\n").arg(X+offset,2,16,QChar('0')).arg(Y,2,16,QChar('0')).arg(val,2,16,QChar('0')));
+            AddLog(LOG_DISPLAY,tr("W Video[%1,%2]=[%3]\n").arg(X+offset,2,16,QChar('0')).arg(Y,2,16,QChar('0')).arg(val,2,16,QChar('0')));
             mem_video[X+offset][Y] = val;
             updated = true;
         }
@@ -301,7 +301,7 @@ void Clcdc_fp200::Write(quint8 side, quint8 val) {
         case 0x50: // Scroll 1 line ???
             displaySL[side - 1] = Y;
             if (displaySL[side - 1] > 63) displaySL[side - 1] = 0;
-            AddLog(LOG_CONSOLE,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
+            AddLog(LOG_DISPLAY,tr("%1:DSL=[%2,%3]\n").arg(side).arg(displaySL[0],2,16,QChar('0')).arg(displaySL[1],2,16,QChar('0')));
             updated = true;
             break;
         case 0x60: // ???????? text mode ?
@@ -399,7 +399,7 @@ void Clcdc_fp200::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 
 
     if (Car>0) {
-        AddLog (LOG_CONSOLE,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
+        AddLog (LOG_DISPLAY,tr("Draw char (%1) at %2,%3\n").arg(Car,2,16,QChar('0')).arg(x).arg(y));
         if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"\nDraw char (%c) at %i,%i\n",Car,x,y);
     }
     for (int P_y=0;P_y<8;P_y++)

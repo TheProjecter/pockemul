@@ -295,7 +295,8 @@ HEADERS += src/core/Connect.h \
     src/machine/fp200.h \
     src/lcd/Lcdc_fp200.h \
     src/cpu/rp5c01.h \
-    ui/dialogvkeyboard.h
+    ui/dialogvkeyboard.h \
+    src/cpu/ctronics.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -526,7 +527,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i8085_dasm.cpp \
     src/lcd/Lcdc_fp200.cpp \
     src/cpu/rp5c01.cpp \
-    ui/dialogvkeyboard.cpp
+    ui/dialogvkeyboard.cpp \
+    src/cpu/ctronics.cpp
 
 
 

@@ -10,11 +10,16 @@
 #include "Keyb.h"
 #include "cextension.h"
 #include "uart.h"
+#include "ctronics.h"
+
 #include "Connect.h"
+#include "dialoganalog.h"
 
 #include "Log.h"
 
 // TODO: MultiTouch Events
+
+#define STROBE_TIMER 5
 
 Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -65,23 +70,25 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"fp200.map");
 //    pUART        = new Cuart(this);
+    pCENT       = new Cctronics(this);
 
-    pPARConnector = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
-    publish(pPARConnector);
-    pSERConnector = new Cconnector(this,9,1,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
-    publish(pSERConnector);
+    pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
+    publish(pCENTCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,9,1,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
+    publish(pSIOCONNECTOR);
 
     lastKeyBufSize = 0;
     newKey = false;
 
-//    ioFreq = 0;
+    ioFreq = 0;
     i85cpu = (Ci8085*)pCPU;
 }
 
 Cfp200::~Cfp200() {
-    delete pPARConnector;
-    delete pSERConnector;
+    delete pCENTCONNECTOR;
+    delete pSIOCONNECTOR;
 //    delete pUART;
+    delete pCENT;
 }
 
 
@@ -116,27 +123,37 @@ UINT8 Cfp200::in(UINT8 Port)
         {
         case 0x01 : /* Read 8bits data to LCD left-half */
             Value = pLcd->Read(1);
-            AddLog(LOG_CONSOLE,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x02 : /* Read 8bits data to LCD right-half */
             Value = pLcd->Read(2);
-            AddLog(LOG_CONSOLE,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x08 : /* Read 6 bits data : */
             Value = (pLcd->Status << 4) | ((pLcd->Y >> 4) & 0x03);
-            AddLog(LOG_CONSOLE,tr("IN [08]=[%1]\n").arg(Value,2,16,QChar('0')));
+            AddLog(LOG_DISPLAY,tr("IN [08]=[%1]\n").arg(Value,2,16,QChar('0')));
             break;
         case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
             Value = (pLcd->X & 0x0f) | ((pLcd->Y & 0x0f) <<4);
-            AddLog(LOG_CONSOLE,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
+            AddLog(LOG_DISPLAY,tr("IN [09]=[%1]\n").arg(Value,2,16,QChar('0')));
             break;
+
+        case 0x10: Value = pCPU->imem[Port] | 0x04;
+//            pCPU->logsw=true;pCPU->Check_Log();
+            AddLog(LOG_PRINTER,tr("IN [%1] = %2\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')));
+            break;
+
         case 0x20: tmp = getKey();
             Value= tmp & 0xff;
             sid = (tmp >> 8);
             if ((tmp>>8) > 0) {
-                AddLog(LOG_CONSOLE,tr("SID=[%1]\n").arg(tmp>>8,2,16,QChar('0')));
+//                AddLog(LOG_CONSOLE,tr("SID=[%1]\n").arg(tmp>>8,2,16,QChar('0')));
             }
             break;
+        case 0x81: Value = pCENT->Get_BUSY()?0x80:0x00;
+            AddLog(LOG_CONSOLE,tr("IN [%1]\n").arg(Port,2,16,QChar('0')));
+//            pCPU->logsw=true;pCPU->Check_Log();
+            break;//printerBUSY ? 0x80:0x00;
         default: AddLog(LOG_CONSOLE,tr("IN [%1]\n").arg(Port,2,16,QChar('0')));
             break;
         }
@@ -156,17 +173,17 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
         {
         case 0x01 : /* Write 8bits data to LCD left-half */
             pLcd->Write(1,Value);
-            AddLog(LOG_CONSOLE,tr("OUT[01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("OUT[01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x02 : /* Write 8bits data to LCD right-half */
             pLcd->Write(2,Value);
-            AddLog(LOG_CONSOLE,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x08 : /* write 6 bits data : */
 
             pLcd->Status = (Value >>4) & 0x0f;
             if (pLcd->Status==0x0b) pLcd->Y = (pLcd->Y & 0x0f) | ((Value & 0x03) << 4);
-            AddLog(LOG_CONSOLE,tr("OUT[08]=[%1] Status=%2 Y=%3\n").
+            AddLog(LOG_DISPLAY,tr("OUT[08]=[%1] Status=%2 Y=%3\n").
                    arg(Value,2,16,QChar('0')).
                    arg(pLcd->Status,2,16,QChar('0')).
                    arg(pLcd->Y,2,16,QChar('0')));
@@ -175,16 +192,23 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
         case 0x09: /* D0-D3 for X, D4-D7 for part of Y */
             pLcd->X = Value & 0x0f;
             pLcd->Y = (pLcd->Y & 0x30) | (Value >> 4);
-            AddLog(LOG_CONSOLE,tr("OUT[09]=[%1] X=%2 Y=%3\n").arg(Value,2,16,QChar('0')).
+            AddLog(LOG_DISPLAY,tr("OUT[09]=[%1] X=%2 Y=%3\n").arg(Value,2,16,QChar('0')).
                    arg(pLcd->X,2,16,QChar('0')).
                    arg(pLcd->Y,2,16,QChar('0')));
             break;
             //    case 0x20: i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
             //        break;
+
         case 0x20:break;
         case 0x21: ks = Value & 0x0f;
             break;
+
+        case 0x80: pCENT->newOutChar( Value );
+//            pCPU->logsw=true;pCPU->Check_Log();
+            AddLog(LOG_PRINTER,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            break;
         default: AddLog(LOG_CONSOLE,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            pCPU->imem[Port] = Value;
             break;
         }
     }
@@ -227,6 +251,25 @@ bool Cfp200::init()
 
 //    pUART->init();
 //    pUART->pTIMER = pTIMER;
+    pCENT->init();
+    pCENT->pTIMER = pTIMER;
+
+    QHash<int,QString> lbl;
+    lbl.clear();
+    lbl[1] = "STROBE";
+    lbl[2] = "D1";
+    lbl[3] = "D2";
+    lbl[4] = "D3";
+    lbl[5] = "D4";
+    lbl[6] = "D5";
+    lbl[7] = "D6";
+    lbl[8] = "D7";
+    lbl[9] = "D8";
+    lbl[10]= "ACK";
+    lbl[11]= "BUSY";
+    lbl[31]= "INIT";
+    lbl[32]= "ERROR";
+    WatchPoint.add(&pCENTCONNECTOR_value,64,36,this,"Centronic 36pins connector",lbl);
 
     return true;
 }
@@ -254,6 +297,10 @@ void	Cfp200::initExtension(void)
 
 bool Cfp200::run()
 {
+
+    pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+
     if (ks==5) i85cpu->i8085_set_SID(Cetl?0:1);
     if (ks==6) i85cpu->i8085_set_SID(pKEYB->isShift?0:1);
     if (ks==7) i85cpu->i8085_set_SID(pKEYB->LastKey == 0x03 ? 0:1);        // BREAK
@@ -267,13 +314,15 @@ bool Cfp200::run()
     else
         i85cpu->i8085_set_irq_line(I8085_RST75_LINE,0);
 
-
-
-
     CpcXXXX::run();
 
+    pCENT->run();
 
 
+    pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+
+    return true;
 }
 
 void Cfp200::Reset()
@@ -458,3 +507,66 @@ quint16 Cfp200::getKey()
 //    CpcXXXX::keyPressEvent(event);
 //}
 
+bool Cfp200::Get_Connector(void) {
+    Get_MainConnector();
+    Get_CentConnector();
+    Get_SIOConnector();
+
+    return true;
+}
+bool Cfp200::Set_Connector(void) {
+    Set_SIOConnector();
+    Set_CentConnecor();
+    Set_MainConnector();
+
+    return true;
+}
+
+void Cfp200::Get_CentConnector(void) {
+
+    pCENT->Set_ACK( pCENTCONNECTOR->Get_pin(10));
+    pCENT->Set_BUSY( pCENTCONNECTOR->Get_pin(11));
+    pCENT->Set_ERROR( pCENTCONNECTOR->Get_pin(32));
+}
+
+void Cfp200::Set_CentConnecor(void) {
+
+    pCENTCONNECTOR->Set_pin((1) ,pCENT->Get_STROBE());
+
+    quint8 d = pCENT->Get_DATA();
+    pCENTCONNECTOR->Set_pin(2	,READ_BIT(d,0));
+    pCENTCONNECTOR->Set_pin(3	,READ_BIT(d,1));
+    pCENTCONNECTOR->Set_pin(4	,READ_BIT(d,2));
+    pCENTCONNECTOR->Set_pin(5	,READ_BIT(d,3));
+    pCENTCONNECTOR->Set_pin(6	,READ_BIT(d,4));
+    pCENTCONNECTOR->Set_pin(7	,READ_BIT(d,5));
+    pCENTCONNECTOR->Set_pin(8	,READ_BIT(d,6));
+    pCENTCONNECTOR->Set_pin(9	,READ_BIT(d,7));
+
+    pCENTCONNECTOR->Set_pin(31	,pCENT->Get_INIT());
+
+}
+
+void Cfp200::Get_SIOConnector(void) {
+
+}
+
+void Cfp200::Set_SIOConnector(void) {
+
+}
+
+#define PIN(x)    (pCONNECTOR->Get_pin(x))
+bool Cfp200::Get_MainConnector(void) {
+
+
+
+    return true;
+}
+
+#define PORT(x)  (port << (x))
+bool Cfp200::Set_MainConnector(void) {
+
+
+
+    return true;
+}

@@ -44,6 +44,7 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     setPaperPos(QRect(154,26,731,300));
 
     printerACK = false;
+    printerBUSY = false;
     Paper_DX = 960;
 
     capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
@@ -106,7 +107,9 @@ bool Cfp100::run(void) {
         printerACK = false;
     }
 
+    printerBUSY = (moveBuffer.size()>100) ? true:false;
     pCONNECTOR->Set_pin(10,printerACK);
+    pCONNECTOR->Set_pin(11,printerBUSY);
     pCONNECTOR->Set_pin(32,true);
 
     pSavedCONNECTOR->Set_values(pCONNECTOR->Get_values());

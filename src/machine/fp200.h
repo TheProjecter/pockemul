@@ -4,6 +4,7 @@
 class CPObject;
 class Ci8085;
 class Cuart;
+class Cctronics;
 
 #include "pcxxxx.h"
 
@@ -23,6 +24,10 @@ public:
     virtual UINT8 out8(UINT16 Port,UINT8 x);
     virtual UINT16 in16(UINT16 Port);
     virtual UINT16 out16(UINT16 Port, UINT16 x);
+
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+
     bool init();
 
     virtual bool run();
@@ -38,11 +43,11 @@ public:
 
 //    UINT16 getKey();
 
-    Cconnector *pPARConnector;    qint64      pPARConnector_value;
-    Cconnector *pSERConnector;    qint64      pSERConnector_value;
+    Cconnector *pCENTCONNECTOR;    qint64      pCENTCONNECTOR_value;
 
     Ci8085 *i85cpu;
 //    Cuart    *pUART;
+    Cctronics *pCENT;
 
     quint8 ks;
     quint16 getKey();
@@ -55,6 +60,15 @@ public:
 //    void keyPressEvent(QKeyEvent *event);
     UINT8 matrixResult;
     virtual void initExtension(void);
+private:
+    bool Get_MainConnector(void);
+    bool Set_MainConnector(void);
+    void Get_CentConnector(void);
+    void Set_CentConnecor(void);
+    void Get_SIOConnector(void);
+    void Set_SIOConnector(void);
+
+
 };
 
 
