@@ -754,7 +754,7 @@ void CPObject::keyReleaseEvent(QKeyEvent * event )
 //    if (event->isAutoRepeat()) return;
 
 	if (!pKEYB) return;	// if no Keyboard then return;
-    pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
+    pKEYB->isShift = event->modifiers() &  Qt::ShiftModifier;//(QApplication::keyboardModifiers() == Qt::ShiftModifier);
     pKEYB->isCtrl = (QApplication::keyboardModifiers() == Qt::ControlModifier);
 
     pKEYB->keyPressedList.removeAll(mapKey(event));
@@ -764,14 +764,14 @@ void CPObject::keyReleaseEvent(QKeyEvent * event )
 
 int CPObject::mapKey(QKeyEvent * event) {
     int key = 0;
-    if ( (event->key() & 0x2000000) == 0x2000000 ) pKEYB->isShift = true;
-    if ( (event->key() & 0x4000000) == 0x4000000 ) pKEYB->isCtrl = true;
+//    if ( (event->key() & 0x2000000) == 0x2000000 ) pKEYB->isShift = true;
+//    if ( (event->key() & 0x4000000) == 0x4000000 ) pKEYB->isCtrl = true;
     switch (event->key() & 0x1FFFFFF) {
 //        case K_SHIFT_DOWN_MOD:  pKEYB->isShift = true;  event->accept(); break;
 //        case K_CTRL_DOWN_MOD:   pKEYB->isCtrl = true;   event->accept(); break;
 //        case K_SHIFT_UP_MOD:    pKEYB->isShift = false; event->accept(); break;
 //        case K_CTRL_UP_MOD:     pKEYB->isCtrl = false;  event->accept(); break;
-        case Qt::Key_Shift:		key = K_SHT;	event->accept();	break;
+//        case Qt::Key_Shift:		key = K_SHT;	event->accept();	break;
         case Qt::Key_Control:	key = K_CTRL;	event->accept();	break;
         case Qt::Key_Return:	key = K_RET;	event->accept();	break;
         case Qt::Key_Delete:	key = K_DEL;	event->accept();	break;
@@ -822,7 +822,7 @@ void CPObject::keyPressEvent (QKeyEvent * event )
 //    if (event->isAutoRepeat()) return;
 	if (!pKEYB) return;	// if no Keyboard then return;
 
-    pKEYB->isShift = (QApplication::keyboardModifiers() == Qt::ShiftModifier);
+    pKEYB->isShift = event->modifiers() &  Qt::ShiftModifier;//QApplication::keyboardModifiers() == Qt::ShiftModifier);
     pKEYB->isCtrl = (QApplication::keyboardModifiers() == Qt::ControlModifier);
 
 

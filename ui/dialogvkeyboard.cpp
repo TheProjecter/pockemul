@@ -23,6 +23,20 @@ DialogVKeyboard::DialogVKeyboard(QWidget *parent) :
 
     connect(ui->keylistWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(InsertKeySlot(QListWidgetItem*)));
     connect(ui->SendPB,SIGNAL(clicked()),this,SLOT(senData()));
+
+    if (pPC->getcfgfname()=="e500") {
+        changeCharWait(5);
+        changeCRWait(50);
+    }
+    if (pPC->getcfgfname()=="fp200") {
+        changeCharWait(10);
+        changeCRWait(50);
+    }
+    if (pPC->getcfgfname()=="x07") {
+        changeCharWait(5);
+        changeCRWait(50);
+    }
+
 }
 
 DialogVKeyboard::~DialogVKeyboard()
@@ -77,6 +91,16 @@ void DialogVKeyboard::processEscKey(QString word) {
 
 }
 
+void DialogVKeyboard::changeCharWait(int v) {
+    ui->charWaitLE->setText( QString("%1").arg(v));
+    update();
+}
+
+void DialogVKeyboard::changeCRWait(int v) {
+    ui->CRWaitLE->setText(QString("%1").arg(v));
+    update();
+}
+
 void DialogVKeyboard::senData()
 {
 
@@ -110,19 +134,34 @@ void DialogVKeyboard::senData()
         }
     }
 
+    qint64 refstate ;
+
     for (int i=0;i<final.size();i++) {
         int b = final.at(i);
 
         int c = convertKeyCode(b);
-        QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, c, Qt::NoModifier);
+        Qt::KeyboardModifier mod = Qt::NoModifier;
+        if (c & 0x2000000) mod = Qt::ShiftModifier;
+        if (c & 0x4000000) mod = Qt::ControlModifier;
+        c&=0x1FFFFFF;
+        QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, 0, mod);
         QCoreApplication::postEvent (pPC, event);
-        qint64 refstate = pPC->pTIMER->state;
-        do{QCoreApplication::processEvents(QEventLoop::AllEvents, 100);} while (pPC->pTIMER->msElapsed(refstate)<charWait);
+        refstate = pPC->pTIMER->state;
+        do{QCoreApplication::processEvents(QEventLoop::AllEvents, 1);} while (pPC->pTIMER->msElapsed(refstate)<charWait);
+        event = new QKeyEvent ( QEvent::KeyPress, c,mod);
+        QCoreApplication::postEvent (pPC, event);
+        refstate = pPC->pTIMER->state;
+        do{QCoreApplication::processEvents(QEventLoop::AllEvents, charWait);} while (pPC->pTIMER->msElapsed(refstate)<charWait);
 
+        event = new QKeyEvent ( QEvent::KeyRelease, c, mod);
+        QCoreApplication::postEvent (pPC, event);
+        refstate = pPC->pTIMER->state;
+        do{QCoreApplication::processEvents(QEventLoop::AllEvents, 10);} while (pPC->pTIMER->msElapsed(refstate)<((c==Qt::Key_Return)?crWait:charWait));
         event = new QKeyEvent ( QEvent::KeyRelease, c, Qt::NoModifier);
         QCoreApplication::postEvent (pPC, event);
         refstate = pPC->pTIMER->state;
-        do{QCoreApplication::processEvents(QEventLoop::AllEvents, (c==Qt::Key_Return)?crWait:charWait);} while (pPC->pTIMER->msElapsed(refstate)<100);
+        do{QCoreApplication::processEvents(QEventLoop::AllEvents, 1);} while (pPC->pTIMER->msElapsed(refstate)<charWait);
+
     }
 }
 

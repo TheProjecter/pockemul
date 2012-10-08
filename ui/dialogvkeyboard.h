@@ -24,6 +24,8 @@ public:
     void PopulateKeyList();
     int convertKeyCode(int c);
     void processEscKey(QString word);
+    void changeCharWait(int v);
+    void changeCRWait(int v);
 private slots:
     void InsertKeySlot(QListWidgetItem*);
     void senData();

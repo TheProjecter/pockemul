@@ -22,7 +22,7 @@
     <KEY description="Left Arrow" height="16" left="347" scancode="0x6" top="320" width="25"/>
     <KEY description="MODE" height="16" left="1" scancode="0x8" top="0" width="25"/>
     <KEY description="Rigth Arrow" height="16" left="384" scancode="0x7" top="320" width="25"/>
-    <KEY description="2ndF" height="16" left="430" scancode="0x11" top="192" width="23"/>
+    <KEY description="2ndF" height="16" left="430" scancode="0x12" top="192" width="23"/>
     <KEY description="SML" height="16" left="129" scancode="0x14" top="320" width="25"/>
     <KEY description="CTRL" height="16" left="88" scancode="0xd5" top="319" width="30"/>
     <KEY description="ANS" height="16" left="166" scancode="0xdc" top="321" width="25"/>
@@ -93,5 +93,15 @@
     <KEY description="PF3" height="17" left="211" scancode="0xf8" top="191" width="60"/>
     <KEY description="PF4" height="17" left="283" scancode="0xf9" top="191" width="60"/>
     <KEY description="PF5" height="17" left="356" scancode="0xfa" top="191" width="60"/>
+    <KEY description="!" masterscancode="0x71" modifier="shift"/>
+    <KEY description="&quot;" masterscancode="0x77" modifier="shift"/>
+    <KEY description="#" masterscancode="0x65" modifier="shift"/>
+    <KEY description="$" masterscancode="0x72" modifier="shift"/>
+    <KEY description="%" masterscancode="0x74" modifier="shift"/>
+    <KEY description="&amp;" masterscancode="0x79" modifier="shift"/>
+    <KEY description="'" masterscancode="0x75" modifier="shift"/>
+    <KEY description="&lt;" masterscancode="0x69" modifier="shift"/>
+    <KEY description="&gt;" masterscancode="0x6f" modifier="shift"/>
+    <KEY description="@" masterscancode="0x70" modifier="shift"/>
 </Keyboard>
 </KEYBMAP>

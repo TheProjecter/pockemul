@@ -159,7 +159,7 @@ inline void Csc62015::Chk_imemAdr_Read(BYTE d,BYTE len)
         switch(d){
         case    IMEM_AMC: AddLog(LOG_CONSOLE,QString("read [EF]=%1\n").arg(imem[d],2,16,QChar('0')));break;
         case	IMEM_KOL:
-        case	IMEM_KOH:((Ce500*)pPC)->getKey(); break;	// key matrix
+        case	IMEM_KOH:/*((Ce500*)pPC)->getKey();*/ break;	// key matrix
 //		case	IMEM_RxD:sio.si=1; break;		// sio RxD
 //		case	IMEM_TxD:sio.so=1; break;		// sio TxD
 //		case	IMEM_SCR:snd.scr=1; break;		// sound

@@ -669,7 +669,7 @@ BYTE Ce500::getKey()
 
     DWORD ks = (pCPU->imem[IMEM_KOH]<<8)+pCPU->imem[IMEM_KOL];
 
-    if ((pKEYB->LastKey) )
+//    if ((pKEYB->LastKey) )
     {
         AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ks,4,16,QChar('0')));
         if (ks&1) {
@@ -679,7 +679,7 @@ BYTE Ce500::getKey()
             if (KEY('A'))			data|=0x08;
             if (KEY(K_BASIC))		data|=0x10;
             if (KEY('Z'))			data|=0x20;
-//            if (KEY(K_SHT))			data|=0x40;
+            if (pKEYB->isShift)		data|=0x40;
             if (KEY(K_CTRL))		data|=0x80;			// UP ARROW
         }
         if (ks&2) {
@@ -774,7 +774,7 @@ BYTE Ce500::getKey()
         }
         if (ks&0x400) {
             if (KEY('P'))			data|=0x01;
-            if (KEY(K_SHT))			data|=0x02;
+            if (KEY(K_SHT2))		data|=0x02;
             if (KEY(K_F5))			data|=0x04;
             if (KEY(K_F4))			data|=0x08;
             if (KEY(K_F3))			data|=0x10;
