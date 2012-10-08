@@ -26,6 +26,7 @@ public:
     void processEscKey(QString word);
     void changeCharWait(int v);
     void changeCRWait(int v);
+    void configWait(QString cfg);
 private slots:
     void InsertKeySlot(QListWidgetItem*);
     void senData();

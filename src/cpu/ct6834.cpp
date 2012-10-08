@@ -520,7 +520,8 @@ void CT6834::AffUdkON (bool shift)
 void CT6834::ClrScr (void)
 {
     memset(&Ram_Video,0,sizeof(Ram_Video));
-    RefreshVideo ();
+//    RefreshVideo ();
+    pPC->Refresh_Display = true;
 }
 
 void CT6834::RefreshVideo (void)
@@ -639,7 +640,8 @@ void CT6834::ScrollVideo (void)
                 Ram_Video [x][y] = Ram_Video[x][y+8];
             else
                 Ram_Video [x][y] = 0;
-    RefreshVideo ();
+//    RefreshVideo ();
+    pPC->Refresh_Display=true;
 }
 
 void CT6834::LineClear (UINT8 P_y)

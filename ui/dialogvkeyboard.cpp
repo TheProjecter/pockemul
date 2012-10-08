@@ -24,24 +24,28 @@ DialogVKeyboard::DialogVKeyboard(QWidget *parent) :
     connect(ui->keylistWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(InsertKeySlot(QListWidgetItem*)));
     connect(ui->SendPB,SIGNAL(clicked()),this,SLOT(senData()));
 
-    if (pPC->getcfgfname()=="e500") {
-        changeCharWait(5);
-        changeCRWait(50);
-    }
-    if (pPC->getcfgfname()=="fp200") {
-        changeCharWait(10);
-        changeCRWait(50);
-    }
-    if (pPC->getcfgfname()=="x07") {
-        changeCharWait(5);
-        changeCRWait(50);
-    }
+    configWait(pPC->getcfgfname());
 
 }
 
 DialogVKeyboard::~DialogVKeyboard()
 {
     delete ui;
+}
+
+void DialogVKeyboard::configWait(QString cfg) {
+    if (cfg=="e500") {
+        changeCharWait(5);
+        changeCRWait(50);
+    }
+    if (cfg=="fp200") {
+        changeCharWait(20);
+        changeCRWait(50);
+    }
+    if (cfg=="x07") {
+        changeCharWait(5);
+        changeCRWait(100);
+    }
 }
 
 void DialogVKeyboard::PopulateKeyList()

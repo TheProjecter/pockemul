@@ -86,7 +86,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
 
 Cfp200::~Cfp200() {
     delete pCENTCONNECTOR;
-    delete pSIOCONNECTOR;
+//    delete pSIOCONNECTOR;
 //    delete pUART;
     delete pCENT;
 }
