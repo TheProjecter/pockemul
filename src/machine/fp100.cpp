@@ -198,6 +198,7 @@ bool Cfp100::UpdateFinalImage(void) {
 
     painter.end();
 
+    return true;
 }
 
 void Cfp100::paintEvent(QPaintEvent *event)

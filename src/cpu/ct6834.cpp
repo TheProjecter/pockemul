@@ -528,7 +528,6 @@ void CT6834::RefreshVideo (void)
 {
     int x;
     int y;
-    int ColorIndex;
 
 
     //AffCurseur ();
@@ -818,6 +817,8 @@ bool CT6834::init()
     General_Info.LcdOn        = false;
 
     connect(this,SIGNAL(TurnOFFSig()),pPC,SLOT(TurnOFFSlot()));
+
+    return true;
 }
 
 void CT6834::Reset()

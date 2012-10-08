@@ -312,6 +312,7 @@ inline DWORD Csc62015::Get_r2(BYTE r)
 	case	6:return(reg.x.u ); break;
 	case	7:return(reg.x.s ); break;
 	}
+    return 0;
 }
 
 /*****************************************************************************/

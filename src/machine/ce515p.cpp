@@ -119,8 +119,8 @@ void Cce515p::PaperFeed(void) {
 
 bool Cce515p::run(void)
 {
-    bool bit = false;
-    bool has_moved = false;
+//    bool bit = false;
+//    bool has_moved = false;
 
     int deltastate=0;
     if (oldstate_run == 0)	oldstate_run = pTIMER->state;
@@ -336,7 +336,7 @@ void Cce515p::Print(CMove point)
                 fillSoundBuffer(0x00);
             }
             else {
-                int ps = m_audioOutput->periodSize();
+//                int ps = m_audioOutput->periodSize();
                 mainwindow->audioMutex.lock();
                 QByteArray buff;
                 buff.append(0xFF);
