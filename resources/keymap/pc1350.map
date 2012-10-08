@@ -72,5 +72,8 @@
     <KEY description="&amp;" masterscancode="0x79" modifier="2nd"/>
     <KEY description="?" masterscancode="0x75" modifier="2nd"/>
     <KEY description="@" masterscancode="0x70" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x28" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x29" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x2d" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

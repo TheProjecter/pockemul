@@ -85,5 +85,18 @@
     <KEY description="Sin" height="16" left="456" scancode="0xf3" top="20" width="25"/>
     <KEY description="Hyp" height="16" left="420" scancode="0xf4" top="19" width="25"/>
     <KEY description="RM" height="22" left="588" scancode="0xf5" top="143" width="32"/>
+    <KEY description="!" masterscancode="0x71" modifier="2nd"/>
+    <KEY description="&quot;" masterscancode="0x77" modifier="2nd"/>
+    <KEY description="#" masterscancode="0x65" modifier="2nd"/>
+    <KEY description="$" masterscancode="0x72" modifier="2nd"/>
+    <KEY description="%" masterscancode="0x74" modifier="2nd"/>
+    <KEY description="&amp;" masterscancode="0x79" modifier="2nd"/>
+    <KEY description="?" masterscancode="0x75" modifier="2nd"/>
+    <KEY description="@" masterscancode="0x69" modifier="2nd"/>
+    <KEY description=":" masterscancode="0x6a" modifier="2nd"/>
+    <KEY description=";" masterscancode="0x70" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x2a" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x2d" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x2b" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

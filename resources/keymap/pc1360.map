@@ -65,5 +65,16 @@
     <KEY description="Y" height="16" left="232" scancode="0x79" top="155" width="25"/>
     <KEY description="Z" height="16" left="57" scancode="0x7a" top="221" width="25"/>
     <KEY description="" height="500" left="1" scancode="0x0" top="0" width="0"/>
+    <KEY description="!" masterscancode="0x71" modifier="2nd"/>
+    <KEY description="&quot;" masterscancode="0x77" modifier="2nd"/>
+    <KEY description="#" masterscancode="0x65" modifier="2nd"/>
+    <KEY description="$" masterscancode="0x72" modifier="2nd"/>
+    <KEY description="%" masterscancode="0x74" modifier="2nd"/>
+    <KEY description="&amp;" masterscancode="0x79" modifier="2nd"/>
+    <KEY description="?" masterscancode="0x75" modifier="2nd"/>
+    <KEY description="@" masterscancode="0x70" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x28" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x29" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x2d" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

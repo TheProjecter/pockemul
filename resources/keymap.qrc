@@ -28,5 +28,6 @@
         <file>keymap/g850v.map</file>
         <file>keymap/z1.map</file>
         <file>keymap/fp200.map</file>
+        <file>keymap/pc1260.map</file>
     </qresource>
 </RCC>

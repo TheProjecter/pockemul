@@ -38,14 +38,19 @@ void DialogVKeyboard::configWait(QString cfg) {
         changeCharWait(5);
         changeCRWait(50);
     }
-    if (cfg=="fp200") {
+    else if (cfg=="fp200") {
         changeCharWait(20);
         changeCRWait(50);
     }
-    if (cfg=="x07") {
+    else if (cfg=="x07") {
         changeCharWait(5);
         changeCRWait(100);
     }
+    else {
+        changeCharWait(20);
+        changeCRWait(200);
+    }
+
 }
 
 void DialogVKeyboard::PopulateKeyList()

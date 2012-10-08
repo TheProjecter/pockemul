@@ -73,5 +73,28 @@
     <KEY description="CTRL" height="16" left="24" scancode="0xd5" top="230" width="25"/>
     <KEY description="BS" height="12" left="459" scancode="0xd6" top="114" width="25"/>
     <KEY description="KBII" height="10" left="378" scancode="0xd7" top="136" width="21"/>
+    <KEY description="!" masterscancode="0xf6" modifier="2nd"/>
+    <KEY description="&quot;" masterscancode="0xf7" modifier="2nd"/>
+    <KEY description="#" masterscancode="0xf8" modifier="2nd"/>
+    <KEY description="$" masterscancode="0xf9" modifier="2nd"/>
+    <KEY description="%" masterscancode="0xfa" modifier="2nd"/>
+    <KEY description="&amp;" masterscancode="0xfb" modifier="2nd"/>
+    <KEY description="?" masterscancode="0x2f" modifier="2nd"/>
+    <KEY description="@" masterscancode="0x3d" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x28" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x29" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x20" modifier="2nd"/>
+    <KEY description=":" masterscancode="0x2a" modifier="2nd"/>
+    <KEY description="," masterscancode="0x2d" modifier="2nd"/>
+    <KEY description=";" masterscancode="0x2b" modifier="2nd"/>
+    <KEY description="[" masterscancode="0x32" modifier="2nd"/>
+    <KEY description="]" masterscancode="0x33" modifier="2nd"/>
+    <KEY description="{" masterscancode="0x35" modifier="2nd"/>
+    <KEY description="}" masterscancode="0x36" modifier="2nd"/>
+    <KEY description="|" masterscancode="0x30" modifier="2nd"/>
+    <KEY description="_" masterscancode="0x2e" modifier="2nd"/>
+    <KEY description="&quot;" masterscancode="0x34" modifier="2nd"/>
+    <KEY description="\" masterscancode="0x37" modifier="2nd"/>
+    <KEY description="~" masterscancode="0x38" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

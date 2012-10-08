@@ -8,7 +8,6 @@
     <KEY description="," height="45" left="533" scancode="0x2c" top="542" width="45"/>
     <KEY description="." height="45" left="594" scancode="0x2e" top="542" width="45"/>
     <KEY description="/" height="45" left="671" scancode="0x2f" top="419" width="45"/>
-    <KEY description=":" height="22" left="584" scancode="0x3a" top="144" width="32"/>
     <KEY description=";" height="45" left="625" scancode="0x3b" top="481" width="45"/>
     <KEY description="+" height="41" left="898" scancode="0x2b" top="605" width="37"/>
     <KEY description="CLS" height="16" left="858" scancode="0xc" top="274" width="48"/>
@@ -83,5 +82,21 @@
     <KEY description="Numpad -" height="40" left="843" scancode="0xaa" top="606" width="37"/>
     <KEY description="Numpad ." height="40" left="787" scancode="0xab" top="606" width="37"/>
     <KEY description="Numpad /" height="40" left="898" scancode="0xac" top="482" width="37"/>
+    <KEY description="!" masterscancode="0x31" modifier="shift"/>
+    <KEY description="@" masterscancode="0x32" modifier="shift"/>
+    <KEY description="#" masterscancode="0x33" modifier="shift"/>
+    <KEY description="$" masterscancode="0x34" modifier="shift"/>
+    <KEY description="%" masterscancode="0x35" modifier="shift"/>
+    <KEY description="^" masterscancode="0x36" modifier="shift"/>
+    <KEY description="&amp;" masterscancode="0x37" modifier="shift"/>
+    <KEY description="(" masterscancode="0x39" modifier="shift"/>
+    <KEY description=")" masterscancode="0x30" modifier="shift"/>
+    <KEY description="_" masterscancode="0x2d" modifier="shift"/>
+    <KEY description="&quot;" masterscancode="0x2c" modifier="shift"/>
+    <KEY description="]" masterscancode="0xb1" modifier="shift"/>
+    <KEY description="?" masterscancode="0x2f" modifier="shift"/>
+    <KEY description=":" masterscancode="0x3b" modifier="shift"/>
+    <KEY description="&lt;" masterscancode="0x2c" modifier="shift"/>
+    <KEY description="&gt;" masterscancode="0x3e" modifier="shift"/>
 </Keyboard>
 </KEYBMAP>

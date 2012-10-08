@@ -2,6 +2,7 @@
  
 #include "pc1260.h"
 #include "Lcdc.h"
+#include "Keyb.h"
 
 Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
 {								//[constructor]
@@ -41,7 +42,7 @@ Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
     Lcd_Symb_ratio_X	= 1;//1.18;
 
     delete pLCDC;	pLCDC = new Clcdc_pc1260(this);
-
+    pKEYB->fn_KeyMap = "pc1260.map";
 }
 
 BYTE	Cpc1260::Get_PortB(void)

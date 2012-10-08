@@ -71,5 +71,19 @@
     <KEY description="F5" height="12" left="344" scancode="0xfa" top="122" width="23"/>
     <KEY description="F6" height="12" left="400" scancode="0xfb" top="122" width="23"/>
     <KEY description="PRINT" height="22" left="1" scancode="0xc1" top="0" width="21"/>
+    <KEY description="!" masterscancode="0xf6" modifier="2nd"/>
+    <KEY description="&quot;" masterscancode="0xf7" modifier="2nd"/>
+    <KEY description="#" masterscancode="0xf8" modifier="2nd"/>
+    <KEY description="$" masterscancode="0xf9" modifier="2nd"/>
+    <KEY description="%" masterscancode="0xfa" modifier="2nd"/>
+    <KEY description="&amp;" masterscancode="0xfb" modifier="2nd"/>
+    <KEY description="?" masterscancode="0x2f" modifier="2nd"/>
+    <KEY description="@" masterscancode="0x3d" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x28" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x29" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x20" modifier="2nd"/>
+    <KEY description=":" masterscancode="0x2a" modifier="2nd"/>
+    <KEY description="," masterscancode="0x2d" modifier="2nd"/>
+    <KEY description=";" masterscancode="0x2b" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

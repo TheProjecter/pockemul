@@ -65,5 +65,11 @@
     <KEY description=":" masterscancode="0x69" modifier="2nd"/>
     <KEY description="," masterscancode="0x6f" modifier="2nd"/>
     <KEY description=";" masterscancode="0x70" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x2f" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x2a" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x2d" modifier="2nd"/>
+    <KEY description="(" masterscancode="0x04" modifier="2nd"/>
+    <KEY description=")" masterscancode="0x05" modifier="2nd"/>
+    <KEY description="@" masterscancode="0x33" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>
