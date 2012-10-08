@@ -41,17 +41,19 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     setDX(1078);//Pc_DX	= 895;
     setDY(817);//Pc_DY	= 615;
 
-    setPaperPos(QRect(154,26,731,300));
+
 
     printerACK = false;
     printerBUSY = false;
-    Paper_DX = 960;
+
 
     capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
     head = LoadImage(QSize(79,161),":/EXT/ext/fp100head.png");
     cable = LoadImage(QSize(75,10),":/EXT/ext/fp100cable.png");
 
     margin = 40;
+    Paper_DX = 960+2*margin;
+    setPaperPos(QRect(154,26,731,300));
 }
 
 Cfp100::~Cfp100() {
@@ -176,9 +178,10 @@ bool Cfp100::UpdateFinalImage(void) {
 
     QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
                                  paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
-                          QPoint(paperWidget->bufferImage->width() ,
+                          QPoint(paperWidget->bufferImage->width(),
                                  paperWidget->getOffset().y() +10)
                           );
+//    MSG_ERROR(QString("%1 - %2").arg(source.width()).arg(PaperPos().width()));
     painter.drawImage(PaperPos(),
                       paperWidget->bufferImage->copy(source).scaled(PaperPos().size(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation )
                       );

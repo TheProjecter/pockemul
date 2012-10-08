@@ -414,6 +414,7 @@ void Cce515p::Command(quint8 t) {
                 break;
             case 0x0D:  ProcessMultiPointCommand(QString("R0,%1").arg(12*charSize));
                         ProcessMultiPointCommand(QString("R%1,0").arg(-1*TRANSX(Pen_X)));
+
                         //Pen_Y+=(12*charSize); Pen_X = 0;
                 break;
             case 0x1B: escMode = true; break;
@@ -427,6 +428,7 @@ void Cce515p::Command(quint8 t) {
             case DC1:   mode = TEXT;
                         orig_X = 0 ;            Pen_X = 0;
                         orig_Y = TRANSY(Pen_Y); Pen_Y = 0;
+
                         break;
             case 0x1B: escMode = true; break;
             case 0x0D:
@@ -657,6 +659,12 @@ void Cce515p::drawChar(quint8 data, qint8 rot) {
     //Pen_Y = origY;
     Pen_X=origX + (rot==0)*(6*charSize) + (rot==2)*(-6*charSize);
     Pen_Y=origY + (rot==1)*(6*charSize) + (rot==3)*(-6*charSize);
+
+    if ( (Pen_X + (6*charSize)) >= (Paper_DX-2*margin)) {
+        Command(0x0D);
+//        Pen_X = 0;
+//        Pen_Y += 12*charSize;
+    }
     ProcessMultiPointCommand(QString("M%1,%2").arg(Pen_X).arg(Pen_Y));
 }
 

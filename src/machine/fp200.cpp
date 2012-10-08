@@ -150,7 +150,7 @@ UINT8 Cfp200::in(UINT8 Port)
 //                AddLog(LOG_CONSOLE,tr("SID=[%1]\n").arg(tmp>>8,2,16,QChar('0')));
             }
             break;
-        case 0x81: Value = pCENT->Get_BUSY()?0x80:0x00;
+        case 0x81: Value = pCENT->isAvailable()?0x00:0x80;
             AddLog(LOG_CONSOLE,tr("IN [%1]\n").arg(Port,2,16,QChar('0')));
 //            pCPU->logsw=true;pCPU->Check_Log();
             break;//printerBUSY ? 0x80:0x00;
@@ -252,6 +252,7 @@ bool Cfp200::init()
 //    pUART->init();
 //    pUART->pTIMER = pTIMER;
     pCENT->init();
+    pCENT->setBufferSize(10);
     pCENT->pTIMER = pTIMER;
 
     QHash<int,QString> lbl;

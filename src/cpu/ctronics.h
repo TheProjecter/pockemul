@@ -31,6 +31,10 @@ class Cctronics : public CPObject {
 
         virtual void Set_ERROR(bool v) { ERROR = v; }
 
+        void setBufferSize(int s);
+
+        bool isAvailable(void);
+
         bool Get_BUSY(void) {return BUSY; }
         bool Get_ACK(void) { return ACK; }
         quint8 Get_DATA(void) { return DATA; }
@@ -52,6 +56,7 @@ class Cctronics : public CPObject {
 
         qint64  stateStrobeDelay,stateAckDelay;
         QByteArray outputBuffer;
+        int bufferSize;
 };
 
 #endif // CTRONICS_H

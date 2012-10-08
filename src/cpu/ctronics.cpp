@@ -2,6 +2,7 @@
 #include "Inter.h"
 
 #define STROBE_DELAY 5
+#define DEFAULT_BUFFERSIZE 100
 
 Cctronics::Cctronics(CPObject *parent)
 {
@@ -15,6 +16,7 @@ bool Cctronics::init()
     STROBE=INIT=ACK=BUSY=ERROR=false;
     DATA=0;
     mode = READY_TO_SEND;
+    bufferSize = DEFAULT_BUFFERSIZE;
     return true;
 }
 
@@ -25,10 +27,21 @@ bool Cctronics::exit()
     return true;
 }
 
+void Cctronics::setBufferSize(int s)
+{
+    bufferSize = s;
+}
+
+bool Cctronics::isAvailable()
+{
+    return (outputBuffer.size()< bufferSize);
+}
+
 
 bool Cctronics::run()
 {
     if (!pTIMER) return true;
+
 
 
     switch (mode) {
@@ -56,7 +69,7 @@ bool Cctronics::run()
         break;
 
      case READY_TO_SEND:
-        if (!BUSY & !outputBuffer.isEmpty()) {
+        if (!BUSY && !outputBuffer.isEmpty()) {
             DATA = outputBuffer.at(0);
             outputBuffer.remove(0,1);
             STROBE = true;
