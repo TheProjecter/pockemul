@@ -76,5 +76,16 @@
     <KEY description="BS" height="16" left="307" scancode="0xd6" top="328" width="26"/>
     <KEY description="M+" height="16" left="435" scancode="0xee" top="328" width="26"/>
     <KEY description="=(CAL)" height="16" left="393" scancode="0xd9" top="465" width="26"/>
+    <KEY description="@" masterscancode="0x21" modifier="2nd"/>
+    <KEY description="'" masterscancode="0x22" modifier="2nd"/>
+    <KEY description="^" masterscancode="0x23" modifier="2nd"/>
+    <KEY description="\" masterscancode="0x24" modifier="2nd"/>
+    <KEY description=":" masterscancode="0x3b" modifier="2nd"/>
+    <KEY description="&amp;" masterscancode="0x2c" modifier="2nd"/>
+    <KEY description="?" masterscancode="0x25" modifier="2nd"/>
+    <KEY description="[" masterscancode="0x6f" modifier="2nd"/>
+    <KEY description="]" masterscancode="0x70" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x28" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x29" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

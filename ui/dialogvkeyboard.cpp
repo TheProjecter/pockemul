@@ -46,6 +46,10 @@ void DialogVKeyboard::configWait(QString cfg) {
         changeCharWait(5);
         changeCRWait(100);
     }
+    else if (cfg=="pc1280") {
+        changeCharWait(40);
+        changeCRWait(200);
+    }
     else {
         changeCharWait(20);
         changeCRWait(200);
@@ -58,21 +62,24 @@ void DialogVKeyboard::PopulateKeyList()
     QListWidgetItem *item;
 
     dict.clear();
-    QList<CKey>::iterator it;
+
+    CKey *wk1 = new CKey(0x8000001,"WAIT 1s");
+    CKey *wk2 = new CKey(0x8000005,"WAIT 5s");
+    CKey *wk3 = new CKey(0x800000a,"WAIT 10s");
+    dict.insert(wk1->Description,wk1);
+    dict.insert(wk2->Description,wk2);
+    dict.insert(wk3->Description,wk3);
+    item = new QListWidgetItem(wk1->Description, ui->keylistWidget);
+    item = new QListWidgetItem(wk2->Description, ui->keylistWidget);
+    item = new QListWidgetItem(wk3->Description, ui->keylistWidget);
+
     for (int i=0; i< pPC->pKEYB->Keys.size();i++) {
         CKey *k = &(pPC->pKEYB->Keys[i]);
         item = new QListWidgetItem(k->Description, ui->keylistWidget);
         item->setData( Qt::UserRole, qVariantFromValue( k->ScanCode ) );
-//        dict.insert(it->Description,it->ScanCode);
         dict.insert(k->Description,k);
     }
-//    for (it = pPC->pKEYB->Keys.begin(); it != pPC->pKEYB->Keys.end(); ++it)
-//    {
-//        item = new QListWidgetItem(it->Description, ui->keylistWidget);
-//        item->setData( Qt::UserRole, qVariantFromValue( it->ScanCode ) );
-////        dict.insert(it->Description,it->ScanCode);
-//        dict.insert(it);
-//    }
+
 
 }
 
@@ -152,6 +159,12 @@ void DialogVKeyboard::senData()
         Qt::KeyboardModifier mod = Qt::NoModifier;
         if (c & 0x2000000) mod = Qt::ShiftModifier;
         if (c & 0x4000000) mod = Qt::ControlModifier;
+        if (c & 0x8000000) {
+            refstate = pPC->pTIMER->state;
+            do{QCoreApplication::processEvents(QEventLoop::AllEvents, 100);}
+            while (pPC->pTIMER->msElapsed(refstate) < (1000 * (c & 0xFFFF)));
+            continue;
+        }
         c&=0x1FFFFFF;
         QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, 0, mod);
         QCoreApplication::postEvent (pPC, event);
