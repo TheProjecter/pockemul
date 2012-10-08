@@ -80,7 +80,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     lastKeyBufSize = 0;
     newKey = false;
 
-    ioFreq = 0;
+    ioFreq = 0;             // Mandatory for Centronics synchronization
     i85cpu = (Ci8085*)pCPU;
 }
 
