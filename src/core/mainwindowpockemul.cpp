@@ -1,6 +1,7 @@
 #include <QtGui>
 #include <QString>
 #include <QPainter>
+#include <iostream>
 
 
 /** \mainpage
@@ -876,6 +877,7 @@ void MainWindowPockemul::initCommandLine(void) {
 //       cmdline->addParam("target", "the target", QCommandLine::Mandatory);
 
        cmdline->addOption('l',"load","Load a .pml session file");
+       cmdline->addSwitch('v', "version", "show current version");
 
 
 

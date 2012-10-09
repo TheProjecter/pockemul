@@ -24,7 +24,10 @@
 #include <QtCore/QFileInfo>
 #include <QDebug>
 #include <iostream>
+#include <QtGui>
 
+#include "mainwindowpockemul.h"
+extern MainWindowPockemul *mainwindow;
 #include "qcommandline.h"
 
 const QCommandLineConfigEntry QCommandLine::helpEntry = { QCommandLine::Switch, QLatin1Char('h'), QLatin1String("help"), tr("Display this help and exit"), QCommandLine::Optional };
@@ -506,6 +509,7 @@ void
 QCommandLine::showHelp(bool quit, int returnCode)
 {
   std::cerr << qPrintable(help());
+  QMessageBox::information(mainwindow,QString("Help..."),help(),QMessageBox::Ok);
   if (quit) {
     // Can't call QApplication::exit() here, because we may be called before app.exec()
     exit(returnCode);
@@ -516,6 +520,7 @@ void
 QCommandLine::showVersion(bool quit, int returnCode)
 {
   std::cerr << qPrintable(version());
+  QMessageBox::information(mainwindow,QString("Version"), version(),QMessageBox::Ok);
   if (quit) {
     exit(returnCode);
   }
