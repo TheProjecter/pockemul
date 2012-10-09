@@ -583,10 +583,10 @@ void MainWindowPockemul::updateTimer()
 
 }
 
-void MainWindowPockemul::doZoom(QPoint point,float delta) {
+void MainWindowPockemul::doZoom(QPoint point,float delta,int step) {
     if (((zoom >= 20) && (delta<0)) ||
         ((zoom <300) && (delta >0))){
-        int d = (delta>0) ? 10 : -10;
+        int d = (delta>0) ? step : -step;
         delta = ((zoom+d)/zoom - 1)*100;
         zoom += d;
 
@@ -775,6 +775,14 @@ void MainWindowPockemul::mousePressEvent	( QMouseEvent *event){
     startPosDrag = true;
     PosDrag = event->globalPos();
     event->accept();
+}
+
+void MainWindowPockemul::MoveAll(QPoint p) {
+    // Fetch all_object and move them
+    for (int i=0;i<listpPObject.size();i++)
+    {
+        listpPObject.at(i)->Move(p);
+    }
 }
 
 void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){

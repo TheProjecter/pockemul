@@ -153,6 +153,19 @@ void CPObject::Move(QPoint p)
 	QWidget::move(QPoint(PosX,PosY));
 }
 
+QRect CPObject::RectWithLinked(void) {
+    QRect r(rect());
+    // Search all conected objects then compute resulted rect
+    QList<CPObject *> ConList;
+//    ConList.append(this);
+    mainwindow->pdirectLink->findAllObj(this,&ConList);
+    for (int i=0;i<ConList.size();i++)
+    {
+        r = r.united(ConList.at(i)->rect());
+    }
+    return r;
+}
+
 void CPObject::MoveWithLinked(QPoint p) {
     // Search all conected objects then move them
     QList<CPObject *> ConList;
@@ -360,7 +373,8 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
         return;
     }
 
-#ifndef Q_OS_ANDROID
+
+#if 0
     bool detach = (parentWidget() != 0);
     // Search all conected objects then compute them
     QList<CPObject *> LinkedList;
@@ -378,7 +392,27 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
             LinkedList.at(i)->show();
         }
     }
+#else
+    if (mainwindow->zoom <= 100) {
+        // Compute global rect
+        QRect rs = RectWithLinked();
+        int rw= 100*mainwindow->centralwidget->rect().width()/rs.width();
+        int rh= 100*mainwindow->centralwidget->rect().height()/rs.height();
+        int r = MIN(rw,rh);
+        if (r>100) {
+            mainwindow->doZoom(event->pos(),1,r-mainwindow->zoom);
+            //move to upper left
+            // Fetch all_object and move them
+            rs = RectWithLinked();
+            mainwindow->MoveAll(- rs.topLeft());
+        }
+    }
+    else {
+        mainwindow->doZoom(event->pos(),-1,mainwindow->zoom-100);
+    }
+
 #endif
+
 
 }
 

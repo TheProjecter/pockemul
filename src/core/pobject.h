@@ -207,6 +207,7 @@ public:
     virtual void TurnCLOSE(void);
 
     int mapKey(QKeyEvent *event);
+    QRect RectWithLinked();
 signals:
     void msgError(QString);
 

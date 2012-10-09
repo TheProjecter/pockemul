@@ -54,11 +54,12 @@ public:
     LaunchButtonWidget* launch;
     LaunchButtonWidget* launch2;
 
-    void doZoom(QPoint point, float delta);
+    void doZoom(QPoint point, float delta, int step=10);
 
     bool event(QEvent *event);
     bool gestureEvent(QGestureEvent *event);
     void pinchTriggered(QPinchGesture *gesture);
+    void MoveAll(QPoint p);
 private slots:
     void about();
     void Log();
