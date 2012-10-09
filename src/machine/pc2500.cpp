@@ -114,7 +114,7 @@ void Cpc2500::resizeEvent ( QResizeEvent * ) {
 
 BYTE	Cpc2500::Get_PortA(void)
 {
-    //BYTE data = Cpc13XX::Get_PortA();
+//    BYTE data = Cpc13XX::Get_PortA();
     BYTE data = pKEYB->Read(IO_A);
     IO_A = data;
     BYTE ks = pKEYB->Get_KS();

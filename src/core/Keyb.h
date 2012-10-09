@@ -5,7 +5,7 @@
 #include <QXmlDefaultHandler>
 #include "common.h"
 
-
+#if 0
 enum KEY_NAME {
 K_BRK,
 K_UA,
@@ -51,7 +51,7 @@ K_F0,K_F1,K_F2,K_F3,K_F4,K_F5,K_F6,K_F7,
 K_A,K_B,K_C,K_D,K_E,K_F,K_G,K_H,K_I,K_J,K_K,K_L,K_M,K_N,K_O,K_P,K_Q,K_R,K_S,K_T,K_U,K_V,K_W,K_X,K_Y,K_Z,
 K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 };
-
+#endif
 
 #define	MAX_KO		12					//KOn(0-11)
 #define NUL			0xff
@@ -78,7 +78,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_OF		0x3e
 #define K_DBLQUOTE  0x22
 
-#if 0
+#if 1
 #define K_0         0xa0
 #define K_1         0xa1
 #define K_2         0xa2

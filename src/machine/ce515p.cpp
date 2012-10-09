@@ -1,4 +1,4 @@
-//TODO: Automatic CR/LF if line too long depending of size
+
 
 
 #include <QPainter>
