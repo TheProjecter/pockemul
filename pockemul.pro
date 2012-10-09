@@ -296,7 +296,8 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_fp200.h \
     src/cpu/rp5c01.h \
     ui/dialogvkeyboard.h \
-    src/cpu/ctronics.h
+    src/cpu/ctronics.h \
+    src/core/qcommandline.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -528,7 +529,8 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_fp200.cpp \
     src/cpu/rp5c01.cpp \
     ui/dialogvkeyboard.cpp \
-    src/cpu/ctronics.cpp
+    src/cpu/ctronics.cpp \
+    src/core/qcommandline.cpp
 
 
 

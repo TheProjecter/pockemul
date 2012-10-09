@@ -16,7 +16,7 @@
 
 
 
-
+#define	POCKEMUL_VERSION	"0.9.4.2"
 
 MainWindowPockemul* mainwindow;
 
@@ -26,6 +26,11 @@ int main(int argc, char *argv[])
 {
 
     QApplication app(argc, argv);
+
+    QCoreApplication::setOrganizationDomain("pockemul.free.fr");
+    QCoreApplication::setOrganizationName("Remy Corp.");
+    QCoreApplication::setApplicationName("PockEmul ");
+    QCoreApplication::setApplicationVersion(POCKEMUL_VERSION);
 
 #ifdef Q_OS_MAC
     QDir dir(QApplication::applicationDirPath());
@@ -135,22 +140,10 @@ int main(int argc, char *argv[])
     exit->setGeometry(0,375,48,48);
     exit->setToolTip("Exit PockEmul.");
 
-#if 0 //def Q_OS_ANDROID
-    DialogStartup dialogstartup(0);
-    int result = dialogstartup.exec();
-    CPObject * pPC = mainwindow->LoadPocket(result);
-    pPC->setParent(0,Qt::FramelessWindowHint);
-    pPC->show();
-#else
-
     mainwindow->show();
 
-//    QStringList args = app.arguments();
-//    MSG_ERROR(QString("%1").arg(args.count()));
-//    MSG_ERROR(args[0]);
+    mainwindow->initCommandLine();
 
-//    mainwindow->LoadPocket(FP200);
-#endif
     return app.exec();
 
 }

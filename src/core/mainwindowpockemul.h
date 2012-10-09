@@ -19,6 +19,7 @@ class CpcXXXX;
 class Cconnector;
 class WindowIDE;
 class LaunchButtonWidget;
+class QCommandLine;
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -60,6 +61,11 @@ public:
     bool gestureEvent(QGestureEvent *event);
     void pinchTriggered(QPinchGesture *gesture);
     void MoveAll(QPoint p);
+
+    void initCommandLine();
+
+    QCommandLine *cmdline;
+
 private slots:
     void about();
     void Log();
@@ -71,7 +77,7 @@ private slots:
     void resetZoom();
     void SelectPocket(QAction *);
     int  newsession();
-    void opensession();
+    void opensession(QString sessionFN=QString());
         void saveassession();
     void updateTimer();
     void updateFrameTimer();
@@ -83,6 +89,11 @@ private slots:
     void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
     void slotMsgError(QString);
+
+    void parseError(const QString &error);
+    void paramFound(const QString &name, const QVariant &value);
+    void optionFound(const QString &name, const QVariant &value);
+    void switchFound(const QString &name);
 
 protected:
     void paintEvent(QPaintEvent *);

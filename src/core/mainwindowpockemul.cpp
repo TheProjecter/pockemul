@@ -13,7 +13,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 
 
-
+#include "qcommandline.h"
 
 #include "mainwindowpockemul.h"
 
@@ -102,6 +102,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
+
 
 
 }
@@ -321,7 +322,7 @@ void MainWindowPockemul::CheckUpdates()
     dialogcheckupdate.exec();
 }
 
-void MainWindowPockemul::opensession()
+void MainWindowPockemul::opensession(QString sessionFN)
 {
     QHash<QString, Models> objtable;
 
@@ -390,13 +391,15 @@ void MainWindowPockemul::opensession()
 
     QMap<int,CPObject*> map;
 
-    QString fileName = QFileDialog::getOpenFileName(
+    if (sessionFN=="") {
+        sessionFN = QFileDialog::getOpenFileName(
                 mainwindow,
                 tr("Choose a file"),
                 ".",
                 tr("PockEmul sessions (*.pml)"));
+    }
 
-    QFile file(fileName);
+    QFile file(sessionFN);
     if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(mainwindow,tr("PockEmul"),
                              tr("Cannot read file %1:\n%2.")
@@ -410,7 +413,7 @@ void MainWindowPockemul::opensession()
     xml.setDevice(&file);
 
     CPObject * firstPC = 0;
-//TODO: Add Load session
+
     if (xml.readNextStartElement()) {
         if (xml.name() == "pml" && xml.attributes().value("version") == "1.0") {
             zoom = xml.attributes().value("zoom").toString().toFloat();
@@ -853,4 +856,64 @@ void MainWindowPockemul::closeEvent(QCloseEvent *event)
 
 void MainWindowPockemul::slotMsgError(QString msg) {
     MSG_ERROR(msg);
+}
+
+
+
+void MainWindowPockemul::initCommandLine(void) {
+//    static const struct QCommandLineConfigEntry conf[] =
+//        {
+//          { QCommandLine::Option, "v", "verbose", "Verbose level (0-3)", QCommandLine::Mandatory },
+//          { QCommandLine::Switch, "l", "list", "Show a list", QCommandLine::Optional },
+//          { QCommandLine::Param, NULL, "target", "The target", QCommandLine::Mandatory },
+//          { QCommandLine::Param, NULL, "source", "The sources", QCommandLine::MandatoryMultiple },
+//          { QCommandLine::None, NULL, NULL, NULL, QCommandLine::Default }
+//        };
+       cmdline = new QCommandLine(this);
+//       cmdline->addOption(QChar('v'), "verbose", "verbose level (0-3)");
+//       cmdline->addSwitch(QChar('l'), "list", "show a list");
+//       cmdline->addParam("source", "the sources", QCommandLine::MandatoryMultiple);
+//       cmdline->addParam("target", "the target", QCommandLine::Mandatory);
+
+       cmdline->addOption('l',"load","Load a .pml session file");
+
+
+
+//       cmdline->setConfig(conf);
+       cmdline->enableVersion(true); // enable -v // --version
+       cmdline->enableHelp(true); // enable -h / --help
+
+      connect(cmdline, SIGNAL(switchFound(const QString &)),
+              this, SLOT(switchFound(const QString &)));
+      connect(cmdline, SIGNAL(optionFound(const QString &, const QVariant &)),
+              this, SLOT(optionFound(const QString &, const QVariant &)));
+      connect(cmdline, SIGNAL(paramFound(const QString &, const QVariant &)),
+              this, SLOT(paramFound(const QString &, const QVariant &)));
+      connect(cmdline, SIGNAL(parseError(const QString &)),
+              this, SLOT(parseError(const QString &)));
+
+      cmdline->parse();
+}
+
+void MainWindowPockemul::switchFound(const QString & name)
+{
+  qDebug() << "Switch:" << name;
+}
+
+void MainWindowPockemul::optionFound(const QString & name, const QVariant & value)
+{
+  qDebug() << "Option:" << name << value;
+  if (name == "load") { opensession(value.toString()); }
+}
+
+void MainWindowPockemul::paramFound(const QString & name, const QVariant & value)
+{
+  qDebug() << "Param:" << name << value;
+}
+
+void MainWindowPockemul::parseError(const QString & error)
+{
+  qDebug() << qPrintable(error);
+  cmdline->showHelp(true, -1);
+  QCoreApplication::quit();
 }
