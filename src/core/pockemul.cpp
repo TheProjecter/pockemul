@@ -142,8 +142,9 @@ int main(int argc, char *argv[])
 
     mainwindow->show();
 
+#ifndef Q_OS_ANDROID
     mainwindow->initCommandLine();
-
+#endif
     return app.exec();
 
 }
