@@ -59,6 +59,8 @@ bool Cx710::init(void) {
     WatchPoint.add(&pCONNECTOR_value,64,15,this,"// 15pins connector");
 
 //    connect(pSIO,SIGNAL(newData(qint8)),this,SLOT(CommandSlot(qint8)));
+    margin = 20;
+    Paper_DX = 480+2*margin;
 
     return true;
 }
@@ -141,6 +143,8 @@ bool Cx710::UpdateFinalImage(void) {
 //    painter.end();
 
 //    Refresh_Display = true;
+
+    return true;
 }
 
 void Cx710::paintEvent(QPaintEvent *event)

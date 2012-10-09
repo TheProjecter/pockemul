@@ -103,6 +103,8 @@ CPObject::~CPObject()
 //    delete extensionArray[4];
 }
 
+
+
 void CPObject::serialize(QXmlStreamWriter *xml,int id) {
     xml->writeStartElement("object");
     xml->writeAttribute("name", getName());

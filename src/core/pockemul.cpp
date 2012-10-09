@@ -14,6 +14,10 @@
 
 //QTM_USE_NAMESPACE
 
+
+
+
+
 MainWindowPockemul* mainwindow;
 
 
@@ -47,14 +51,16 @@ int main(int argc, char *argv[])
 
 
 #ifdef Q_OS_ANDROID
-    QFont f = app.font();
-    f.setItalic(true); //bold also works
-    app.setFont(f);
+//    QFont f = app.font();
+//    f.setItalic(true); //bold also works
+//    app.setFont(f);
 
     // Change currentPath to /sdcard/pockemul
     QDir d("/");
     d.mkdir("/sdcard/pockemul");
     QDir::setCurrent("/sdcard/pockemul");
+
+//    QApplication::setStyle(new QAndroidStyle());
 
 #endif
 

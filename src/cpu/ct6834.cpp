@@ -159,10 +159,12 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
    case 0x03: AddLog (LOG_TEMP,tr("Strig = %1").arg(General_Info.Strig,2,16,QChar('0')));
               Rsp[0] = General_Info.Strig;
+              Clavier.clear();
               break;
 
    case 0x04: AddLog(LOG_TEMP,tr("Strig1 = %1").arg(General_Info.Strig1,2,16,QChar('0')));
               Rsp[0] = General_Info.Strig1;
+              Clavier.clear();
               break;
 
    case 0x05: // RamRead
@@ -880,7 +882,7 @@ void CT6834::keyPress(QKeyEvent *event)
 {
     UINT8 code,val;
 
-
+General_Info.Strig = 0;
 
     switch (event->modifiers()) {
     case Qt::ShiftModifier : switch (event->key()) {
@@ -897,7 +899,7 @@ void CT6834::keyPress(QKeyEvent *event)
         case Qt::Key_F3    : AddFKey (2);break;
         case Qt::Key_F4    : AddFKey (3);break;
         case Qt::Key_F5    : AddFKey (4);break;
-        case Qt::Key_F6    : General_Info.Strig = 0; AddFKey (5);break;
+        case Qt::Key_F6    : General_Info.Strig = 0x00; AddFKey (5);break;
         }
     }
 
@@ -921,6 +923,9 @@ void CT6834::keyPress(QKeyEvent *event)
     case Qt::Key_Shift : shift = true; break;
     case Qt::Key_Control: ctrl = true; break;
     case Qt::Key_Alt:   graph = true; break;
+
+    case Qt::Key_Space:
+        General_Info.Strig1 = 0x00;
     default:
 
         kana=graph=shift=ctrl = false;

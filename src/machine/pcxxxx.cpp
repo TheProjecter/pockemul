@@ -34,7 +34,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     KeyMapLenght = 0;
 
     fp_log  = 0;
-    off			= TRUE;
+    off			= true;
     DialogExtensionID = 0;
     setcfgfname(QString("pcXXXX"));
     SessionHeader	= "PCXXXXPKM";

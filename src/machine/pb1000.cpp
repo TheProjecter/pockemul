@@ -140,6 +140,7 @@ bool Cpb1000::init(void)				// initialize
     WatchPoint.remove(this);
     WatchPoint.add(&pCONNECTOR_value,64,30,this,"30 pins connector",lbl);
 
+    pdi = 0xfb;
 
     return true;
 }
@@ -157,7 +158,7 @@ CpcXXXX::run();
     }
 
 //BUG: Keyboard issue
-//    if (pKEYB->LastKey) {
+//    if (pKEYB->LastKey>0) {
 //        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
 //    }
 
@@ -345,14 +346,14 @@ UINT16 Cpb1000::getKey(void) {
 //    AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-1000"));
 
     switch (m_kb_matrix & 0x0f) {
-        case 0: return 0;
+        case 0 : ko = 0; break;
         case 13: ko = 0xffff; break;
         case 14:
         case 15: ko = 0; break;
         default: ko = (1<<(m_kb_matrix-1)); break;
     }
 AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
-    if ((pKEYB->LastKey) )
+//    if ((pKEYB->LastKey) )
     {
 
 //AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
@@ -491,7 +492,7 @@ AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(k
         }
     }
 
-if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
+    if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
 
     return data;
 

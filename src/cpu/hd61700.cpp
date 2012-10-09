@@ -1767,7 +1767,7 @@ void CHD61700::execute_run()
                         AddLog(LOG_CPU,"gre");
                         if (idx >= 5)
                         {
-                            UINT16 port = 0xff;
+                            UINT16 port = 0xffff;
 
 //                            if (m_kb_r)
 //                                port = (*m_kb_r)(*this);

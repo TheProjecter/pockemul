@@ -293,10 +293,10 @@ INCLUDEPATH += . \
 INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa
 LANGUAGE += C++
 LICENSE += GPL
-MOC_DIR += build/moc
+MOC_DIR += b/moc
 OPENEDFILES += 
 
-RCC_DIR += build/rcc
+RCC_DIR += b/rcc
 RESOURCES += resources/ext.qrc \
     resources/pc1245.qrc \
     resources/pc1250.qrc \
@@ -518,12 +518,12 @@ SOURCES += src/core/Connect.cpp \
 TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
-UI_DIR += build/ui
-mac:OBJECTS_DIR += build/o/mac
-unix:OBJECTS_DIR += build/o/unix
+UI_DIR += b/ui
+mac:OBJECTS_DIR += b/o/mac
+unix:OBJECTS_DIR += b/o/unix
 win32 { 
-    debug:OBJECTS_DIR += build/o/d
-    release:OBJECTS_DIR += build/o/r
+    debug:OBJECTS_DIR += b/o/d
+    release:OBJECTS_DIR += b/o/r
 }
 
 OTHER_FILES += \

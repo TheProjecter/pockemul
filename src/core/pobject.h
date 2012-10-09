@@ -208,6 +208,7 @@ public:
 
     int mapKey(QKeyEvent *event);
     QRect RectWithLinked();
+
 signals:
     void msgError(QString);
 

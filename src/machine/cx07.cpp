@@ -178,7 +178,7 @@ bool Cx07::init(void)				// initialize
 
 bool Cx07::run() {
 
-    if (off && pT6834->General_Info.Break == 1)
+    if (!Power && pT6834->General_Info.Break == 1)
     {
             pT6834->General_Info.Break = 0;
             TurnON();
@@ -743,13 +743,26 @@ void Cx07::TurnOFF(void) {
 }
 
 void Cx07::TurnON(void){
-    CpcXXXX::TurnON();
-    pCPU->Reset();
-    ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
-    pT6834->General_Info.LcdOn = true;
 
-    AddLog(LOG_CANON,"TURN ON");
 
+
+
+
+    if (!Power && pKEYB->LastKey == K_BRK) {
+        AddLog(LOG_MASTER,"TURN ON");
+        if (!hardreset) {
+            Initial_Session_Load();
+        }
+        else hardreset = false;
+        off = 0;
+        Power = true;
+        PowerSwitch = PS_RUN;
+        pCPU->Reset();
+        ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
+        pT6834->General_Info.LcdOn = true;
+
+        AddLog(LOG_CANON,"TURN ON");
+    }
 }
 
 
