@@ -79,7 +79,7 @@ bool Cce1600p::init(void)
         clearPaper();
 
         // Create a paper widget
-        paperWidget = new CpaperWidget(QRect(160,30,650,170),ce150buf,this);
+        paperWidget = new CpaperWidget(QRect(195,30,695,170),ce150buf,this);
         paperWidget->show();
 
 

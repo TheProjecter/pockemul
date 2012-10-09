@@ -2,8 +2,6 @@
 <model>pc2500</model>
 <Keyboard>
     <KEY description="-" height="45" left="641" scancode="0x2d" top="358" width="45"/>
-    <KEY description="(" height="22" left="542" scancode="0x28" top="107" width="32"/>
-    <KEY description=")" height="22" left="584" scancode="0x29" top="107" width="32"/>
     <KEY description="*" height="40" left="898" scancode="0x2a" top="544" width="38"/>
     <KEY description="," height="45" left="533" scancode="0x2c" top="542" width="45"/>
     <KEY description="." height="45" left="594" scancode="0x2e" top="542" width="45"/>
