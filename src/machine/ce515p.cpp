@@ -217,8 +217,9 @@ void Cce515p::Draw(void) {
     // Draw printer
     //---------------------------------------------------
     //if (has_moved) Print();
-        printer_deltastate = pTIMER->state - printer_oldstate_draw;
-        if (printer_deltastate >= PRINTER_TICKS){
+        printer_deltastate = pTIMER->state;// - printer_oldstate_draw;
+//        if (printer_deltastate >= PRINTER_TICKS){
+        if (pTIMER->usElapsed(printer_oldstate_draw)>3846) {    // 52mm/s  1step=.2mm -> 260steps/s  3,846ms/step
             printer_oldstate_draw	= pTIMER->state;
             if (moveBuffer.length()>0) {
                 lastX = moveBuffer.at(0).X;

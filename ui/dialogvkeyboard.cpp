@@ -51,7 +51,7 @@ void DialogVKeyboard::configWait(QString cfg) {
         changeCRWait(200);
     }
     else {
-        changeCharWait(20);
+        changeCharWait(40);
         changeCRWait(200);
     }
 
