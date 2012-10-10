@@ -59,6 +59,7 @@
      QImage* getImage();
      QString getCaption();
      QString getIdPocket();
+     QStringList getArguments();
 
  public slots:
      void processStarted();

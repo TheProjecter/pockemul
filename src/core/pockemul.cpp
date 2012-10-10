@@ -4,9 +4,9 @@
 #include <QDir>
 #include <QSplashScreen>
 //#include <QFeedbackHapticsEffect>
-
-#include "mainwindowpockemul.h"
 #include "launchbuttonwidget.h"
+#include "mainwindowpockemul.h"
+
 
 #include "pobject.h"
 #include "dialogstartup.h"
@@ -124,6 +124,7 @@ int main(int argc, char *argv[])
     save->setGeometry(0,225,48,48);
     save->setToolTip("Save the current session.");
 
+#if 0
     LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::Action,
                                                       "",
@@ -131,6 +132,16 @@ int main(int argc, char *argv[])
     mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
     load->setGeometry(0,300,48,48);
     load->setToolTip("Load an existing session.");
+#else
+    LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow->centralwidget,
+                                                      LaunchButtonWidget::FileBrowser,
+                                                      ".",
+                                                      ":/POCKEMUL/pockemul/load.png");
+//    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
+    load->setGeometry(0,300,48,48);
+    load->setToolTip("Load an existing session.");
+
+#endif
 
     LaunchButtonWidget* exit = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::Action,

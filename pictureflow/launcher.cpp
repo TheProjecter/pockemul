@@ -83,6 +83,11 @@
      return idPocket;
  }
 
+ QStringList Launcher::getArguments()
+ {
+     return arguments;
+ }
+
  QString Launcher::getCaption()
  {
      return appCaption;

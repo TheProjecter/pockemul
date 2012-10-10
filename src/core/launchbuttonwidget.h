@@ -3,10 +3,10 @@
 
 #include <QWidget>
 
-class FluidLauncher;
+
 class QTabWidget;
 
-
+#include "fluidlauncher.h"
 
 
 class LaunchButtonWidget:public QWidget
@@ -18,8 +18,10 @@ public:
     enum LaunchType
     {
         PictureFlow,
+        FileBrowser,
         Action
     };
+
 
 
     LaunchButtonWidget(QWidget* parent,LaunchType type,QString param,QString img);

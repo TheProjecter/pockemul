@@ -18,7 +18,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 #include "mainwindowpockemul.h"
 
-#include "fluidlauncher.h"
+//#include "fluidlauncher.h"
 #include "launchbuttonwidget.h"
 #include "dialoganalog.h"
 #include "dialogabout.h"
@@ -502,6 +502,13 @@ void MainWindowPockemul::saveassession()
 {
     QMap<CPObject*,int> map;
 
+    // Take a snapshot
+
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    QPixmap::grabWidget(this).toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
+
     saveAll = YES;
     QString s;
     QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
@@ -509,7 +516,7 @@ void MainWindowPockemul::saveassession()
     xml->writeStartElement("pml");
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
-
+    xml->writeTextElement("snapshot",ba.toBase64());
     // Fetch all objects
     for (int i=0;i<listpPObject.size();i++)
     {

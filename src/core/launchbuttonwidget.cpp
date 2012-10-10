@@ -16,7 +16,12 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
     image = img;
     setAttribute(Qt::WA_DeleteOnClose);
     if (type == PictureFlow){
-        launcher = new FluidLauncher(mainwindow,config);
+        launcher = new FluidLauncher(mainwindow,config,FluidLauncher::PictureFlowType);
+        launcher->hide();
+    }
+    if (type == FileBrowser){
+
+        launcher = new FluidLauncher(mainwindow,config,FluidLauncher::FileBrowserType);
         launcher->hide();
     }
 }
@@ -29,7 +34,7 @@ void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 
     emit clicked();
 
-    if (type == PictureFlow)
+    if ((type == PictureFlow) || (type == FileBrowser))
     {
 //        launcher = new FluidLauncher(mainwindow,config);
 //        launcher->setAttribute(Qt::WA_DeleteOnClose);
@@ -55,3 +60,4 @@ void LaunchButtonWidget::paintEvent(QPaintEvent *event) {
     painter.end();
 
 }
+

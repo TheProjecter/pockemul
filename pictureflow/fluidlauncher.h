@@ -54,9 +54,17 @@
      Q_OBJECT
 
  public:
-     FluidLauncher(QWidget *,QString);
+
+     enum LaunchType
+     {
+         PictureFlowType,
+         FileBrowserType
+     };
+
+     FluidLauncher(QWidget *,QString,LaunchType);
      ~FluidLauncher();
 
+     void populateFileBrowser(QString path);
  public slots:
      void launchApplication(int index);
      void demoFinished();
@@ -64,9 +72,13 @@
 
  private:
 
+     QDir dir;
+
      PictureFlow* pictureFlowWidget;
 
      QList<Launcher*> demoList;
+
+     LaunchType Type;
 
      bool loadConfig(QString configPath);
      void populatePictureFlow();

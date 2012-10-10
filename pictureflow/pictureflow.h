@@ -152,6 +152,7 @@
    virtual void setSlide(int index, const QImage& image);
 
    virtual void setSlideCaption(int index, QString caption);
+   virtual QString getSlideCaption(int index);
 
    /*!
      Sets a pixmap for specified slide. If the slide already exists,

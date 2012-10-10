@@ -504,7 +504,9 @@ int PictureFlowPrivate::currentSlide() const
 void PictureFlowPrivate::setCurrentSlide(int index)
 {
   step = 0;
+  animateTimer.stop();
   centerIndex = qBound(index, 0, slideImages.count()-1);
+//  qWarning(" setCurrentSlide   centerId=%i   Target=%i",centerIndex,target);
   target = centerIndex;
   slideFrame = index << 16;
   resetSlides();
@@ -529,6 +531,7 @@ void PictureFlowPrivate::showPrevious()
 
 void PictureFlowPrivate::showNext()
 {
+//    qWarning("showNext: s=%i  t=%i  c=%i\n",step,target,centerIndex);
   if(step <= 0)
   {
     if(centerIndex < slideImages.count()-1)
@@ -1011,6 +1014,7 @@ void PictureFlowPrivate::recalc(int ww, int wh)
 
 void PictureFlowPrivate::startAnimation()
 {
+
   if(!animateTimer.isActive())
   {
     step = (target < centerSlide.slideIndex) ? -1 : 1;
@@ -1071,6 +1075,7 @@ void PictureFlowPrivate::updateAnimation()
   centerSlide.cx = -step * fmul(offsetX, ftick);
   centerSlide.cy = fmul(offsetY, ftick);
 
+//  qWarning("centerId=%i   Target=%i",centerIndex,target);
   if(centerIndex == target)
   {
     resetSlides();
@@ -1210,7 +1215,10 @@ void PictureFlow::setSlideCaption(int index, QString caption)
 {
   d->captions[index] = caption;
 }
-
+QString PictureFlow::getSlideCaption(int index)
+{
+  return d->captions[index];
+}
 int PictureFlow::currentSlide() const
 {
   return d->currentSlide();
@@ -1420,11 +1428,12 @@ void PictureFlow::mouseReleaseEvent(QMouseEvent* event)
 
 void PictureFlow::wheelEvent(QWheelEvent * event)
 {
-    if (event->delta()>0)
+    if (event->delta()>0) {
         showNext();
-    else
+    }
+    else {
         showPrevious();
-
+    }
     event->accept();
 
     emit inputReceived();

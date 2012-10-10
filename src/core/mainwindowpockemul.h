@@ -9,6 +9,7 @@
 #include "ui_pockemul.h"
 #include "common.h"
 
+
 class DialogLog;
 class CpaperWidget;
 class dialogAnalog;
@@ -66,6 +67,9 @@ public:
 
     QCommandLine *cmdline;
 
+public slots:
+    void opensession(QString sessionFN=QString());
+
 private slots:
     void about();
     void Log();
@@ -77,7 +81,7 @@ private slots:
     void resetZoom();
     void SelectPocket(QAction *);
     int  newsession();
-    void opensession(QString sessionFN=QString());
+
         void saveassession();
     void updateTimer();
     void updateFrameTimer();
