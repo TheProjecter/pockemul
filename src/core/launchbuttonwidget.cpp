@@ -26,7 +26,9 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
     }
 }
 
-
+LaunchButtonWidget::~LaunchButtonWidget() {
+    qWarning("test");
+}
 
 
 void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)

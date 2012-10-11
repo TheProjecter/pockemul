@@ -25,6 +25,7 @@ public:
 
 
     LaunchButtonWidget(QWidget* parent,LaunchType type,QString param,QString img);
+    ~LaunchButtonWidget();
 
     void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *event);

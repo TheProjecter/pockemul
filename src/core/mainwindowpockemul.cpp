@@ -104,11 +104,12 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
 
-
+qWarning("create");
 
 }
 
 MainWindowPockemul::~MainWindowPockemul() {
+    qWarning("DELETE dialoglog");
     delete dialoglog;
     delete dialoganalogic;
     delete windowide;

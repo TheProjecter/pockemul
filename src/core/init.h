@@ -94,7 +94,7 @@ public:
 	void SendSignal_Resize(QSize,CPObject * );
 	
 
-	CPocketThread(CPObject * material)
+    CPocketThread(QObject * parent):QThread(parent)
 	{
 //		pPC = material;
 	}
