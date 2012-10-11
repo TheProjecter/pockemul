@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
                                                       LaunchButtonWidget::Action,
                                                       "",
                                                       ":/POCKEMUL/pockemul/exit.png");
-    mainwindow->connect(exit,SIGNAL(clicked()),mainwindow,SLOT(close()));
+    mainwindow->connect(exit,SIGNAL(clicked()),qApp, SLOT(closeAllWindows()));
     exit->setGeometry(0,375,48,48);
     exit->setToolTip("Exit PockEmul.");
 

@@ -96,7 +96,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     timer->start(TIMER_RES);
 
     // Create the Pocket Thread
-    PcThread = new CPocketThread(0);
+    PcThread = new CPocketThread(this);
     PcThread->connect(PcThread,SIGNAL(Resize(QSize,CPObject * )),this,SLOT(resizeSlot(QSize,CPObject * )));
     PcThread->connect(PcThread,SIGNAL(Destroy(CPObject * )),this,SLOT(DestroySlot(CPObject * )));
     PcThread->start();
