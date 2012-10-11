@@ -20,9 +20,11 @@ TARGET = Pockemul
 TEMPLATE = app
 TRANSLATIONS += pockemul_fr.ts
 UI_DIR += build/ui
+
+
 mac {
-    Debug:OBJECTS_DIR += build/o/wd
-    Release:OBJECTS_DIR += build/o/wr
+    debug:OBJECTS_DIR += build/o/wd
+    release:OBJECTS_DIR += build/o/wr
 }
 unix {
     Debug:OBJECTS_DIR += build/o/wd
