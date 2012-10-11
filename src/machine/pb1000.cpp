@@ -83,6 +83,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     m_zoom = 1;
 
     writeIO = false;
+    adrBus = 0;
 
 }
 
@@ -246,6 +247,7 @@ bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Cpb1000::in(UINT8 Port)
 {
 
+    return 0;
 }
 
 UINT8 Cpb1000::out(UINT8 Port, UINT8 Value)

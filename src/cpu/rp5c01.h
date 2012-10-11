@@ -22,7 +22,7 @@
 
 **********************************************************************/
 
-#if 0
+#if 1
 
 #include <QObject>
 
@@ -34,31 +34,56 @@ class CPObject;
 //**************************************************************************
 
 class CRP5C01:public QObject {
+    Q_OBJECT
 public:
+
+    // registers
+    enum
+    {
+        REGISTER_1_SECOND = 0,
+        REGISTER_10_SECOND,
+        REGISTER_1_MINUTE,
+        REGISTER_10_MINUTE,
+        REGISTER_1_HOUR,
+        REGISTER_10_HOUR,
+        REGISTER_DAY_OF_THE_WEEK,
+        REGISTER_1_DAY,
+        REGISTER_10_DAY,
+        REGISTER_1_MONTH,
+        REGISTER_10_MONTH, REGISTER_12_24_SELECT = REGISTER_10_MONTH,
+        REGISTER_1_YEAR, REGISTER_LEAP_YEAR = REGISTER_1_YEAR,
+        REGISTER_10_YEAR,
+        REGISTER_MODE,
+        REGISTER_TEST,
+        REGISTER_RESET
+    };
+
     const char*	GetClassName(){ return("CRP5C01");}
     // construction/destruction
 //    CRP5C01(const machine_config &mconfig, const char *tag, device_t *owner, UINT32 clock);
     CRP5C01(CPObject *parent);
-    virtual ~CRP5C01();
+    ~CRP5C01();
 
     bool	init(void);						//initialize
     bool	exit(void);						//end
     void	Reset(void);
     bool	step(void);
 
-    void	Load_Internal(FILE *ffile);
-    void	save_internal(FILE *file);
+    quint8 read(quint8 offset);
+    void write(quint8 offset, quint8 data);
 
 protected:
-    // device-level overrides
-    virtual void device_config_complete();
-    virtual void device_start();
-    virtual void device_reset();
-    virtual void device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr);
+//    // device-level overrides
+//    virtual void device_config_complete();
+//    virtual void device_start();
+//    virtual void device_reset();
+//    virtual void device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr);
 
     // device_rtc_interface overrides
-    virtual bool rtc_feature_leap_year() { return true; }
+
     virtual void rtc_clock_updated(int year, int month, int day, int day_of_week, int hour, int minute, int second);
+
+    CPObject *pPC;
 
 private:
     inline void set_alarm_line();
@@ -66,10 +91,7 @@ private:
     inline void write_counter(int counter, int value);
     inline void check_alarm();
 
-    static const device_timer_id TIMER_CLOCK = 0;
-    static const device_timer_id TIMER_16HZ = 1;
 
-    devcb_resolved_write_line	m_out_alarm_func;
 
     quint8 m_reg[2][13];			// clock registers
     quint8 m_ram[13];			// RAM
@@ -81,9 +103,8 @@ private:
     int m_1hz;					// 1 Hz condition
     int m_16hz;					// 16 Hz condition
 
-    // timers
-    emu_timer *m_clock_timer;
-    emu_timer *m_16hz_timer;
+    qint64 statelog;
+
 };
 
 #endif

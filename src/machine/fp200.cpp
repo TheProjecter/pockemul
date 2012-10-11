@@ -5,6 +5,7 @@
 #include "fp200.h"
 #include "Lcdc_fp200.h"
 #include "i8085.h"
+#include "rp5c01.h"
 
 #include "Inter.h"
 #include "Keyb.h"
@@ -18,6 +19,7 @@
 #include "Log.h"
 
 // TODO: MultiTouch Events
+// TODO: Timer chip
 
 #define STROBE_TIMER 5
 
@@ -71,6 +73,7 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pKEYB		= new Ckeyb(this,"fp200.map");
 //    pUART        = new Cuart(this);
     pCENT       = new Cctronics(this);
+    pRP5C01     = new CRP5C01(this);
 
     pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
     publish(pCENTCONNECTOR);
@@ -89,6 +92,7 @@ Cfp200::~Cfp200() {
 //    delete pSIOCONNECTOR;
 //    delete pUART;
     delete pCENT;
+    delete pRP5C01;
 }
 
 
@@ -158,6 +162,11 @@ UINT8 Cfp200::in(UINT8 Port)
             break;
         }
     }
+    else {
+        if ((Port >=0x10) && (Port <= 0x1F)) {
+            Value = pRP5C01->read(Port - 0x10);
+        }
+    }
 
      pCPU->imem[Port] = Value;
      return (Value);
@@ -212,6 +221,11 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
             break;
         }
     }
+    else {
+        if ((Port >=0x10) && (Port <= 0x1F)) {
+            pRP5C01->write(Port - 0x10,Value);
+        }
+    }
     return 0;
 }
 
@@ -254,6 +268,8 @@ bool Cfp200::init()
     pCENT->init();
     pCENT->setBufferSize(10);
     pCENT->pTIMER = pTIMER;
+
+    pRP5C01->init();
 
     QHash<int,QString> lbl;
     lbl.clear();
@@ -318,6 +334,7 @@ bool Cfp200::run()
     CpcXXXX::run();
 
     pCENT->run();
+    pRP5C01->step();
 
 
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();

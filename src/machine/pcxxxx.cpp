@@ -696,7 +696,7 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
              (xmlIn->attributes().value("model") == SessionHeader) ) {
             QString version = xmlIn->attributes().value("version").toString();
             if (!LoadConfig(xmlIn)) {
-                MSG_ERROR("ERROR Loading Session Config");
+                emit msgError("ERROR Loading Session Config:"+SessionHeader);
                 return false;
             }
             if ( (version == "2.0") && !LoadExt(xmlIn)) {

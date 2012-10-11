@@ -5,6 +5,7 @@ class CPObject;
 class Ci8085;
 class Cuart;
 class Cctronics;
+class CRP5C01;
 
 #include "pcxxxx.h"
 
@@ -48,6 +49,7 @@ public:
     Ci8085 *i85cpu;
 //    Cuart    *pUART;
     Cctronics *pCENT;
+    CRP5C01 *pRP5C01;
 
     quint8 ks;
     quint16 getKey();

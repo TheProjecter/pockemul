@@ -439,15 +439,18 @@ void Cg850v::Set_Port(PORTS Port, BYTE data)
 
 BYTE Cg850v::Get_Port(PORTS Port)
 {
+    return 0;
 }
 
 
 bool Cg850v::LoadConfig(QXmlStreamReader *)
 {
+    return true;
 }
 
 bool Cg850v::SaveConfig(QXmlStreamWriter *)
 {
+    return true;
 }
 
 bool Cg850v::InitDisplay()
@@ -459,6 +462,7 @@ bool Cg850v::InitDisplay()
 
 bool Cg850v::CompleteDisplay()
 {
+    return true;
 }
 
 //#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )

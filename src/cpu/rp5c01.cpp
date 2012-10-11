@@ -17,13 +17,12 @@
     - timer reset
 
 */
-#if 0
+#if 1
+#include <QDateTime>
 
 #include "rp5c01.h"
-
-
-// device type definition
-const device_type RP5C01 = &device_creator<rp5c01_device>;
+#include "pobject.h"
+#include "Inter.h"
 
 
 //**************************************************************************
@@ -36,26 +35,6 @@ const device_type RP5C01 = &device_creator<rp5c01_device>;
 #define RAM_SIZE 13
 
 
-// registers
-enum
-{
-    REGISTER_1_SECOND = 0,
-    REGISTER_10_SECOND,
-    REGISTER_1_MINUTE,
-    REGISTER_10_MINUTE,
-    REGISTER_1_HOUR,
-    REGISTER_10_HOUR,
-    REGISTER_DAY_OF_THE_WEEK,
-    REGISTER_1_DAY,
-    REGISTER_10_DAY,
-    REGISTER_1_MONTH,
-    REGISTER_10_MONTH, REGISTER_12_24_SELECT = REGISTER_10_MONTH,
-    REGISTER_1_YEAR, REGISTER_LEAP_YEAR = REGISTER_1_YEAR,
-    REGISTER_10_YEAR,
-    REGISTER_MODE,
-    REGISTER_TEST,
-    REGISTER_RESET
-};
 
 
 // register write mask
@@ -117,9 +96,9 @@ inline void CRP5C01::set_alarm_line()
 
     if (m_alarm != alarm)
     {
-        if (LOG) logerror("RP5C01 '%s' Alarm %u\n", tag(), alarm);
+//        if (LOG) logerror("RP5C01 '%s' Alarm %u\n", tag(), alarm);
 
-        m_out_alarm_func(alarm);
+//        m_out_alarm_func(alarm);
         m_alarm = alarm;
     }
 }
@@ -174,62 +153,53 @@ inline void CRP5C01::check_alarm()
 //  rp5c01_device - constructor
 //-------------------------------------------------
 
-CRP5C01::CRP5C01(const machine_config &mconfig, const char *tag, device_t *owner, UINT32 clock)
-    : device_t(mconfig, RP5C01, "RP5C01", tag, owner, clock),
-      device_rtc_interface(mconfig, *this),
-      device_nvram_interface(mconfig, *this),
-      m_alarm(1),
+CRP5C01::CRP5C01(CPObject *parent)
+    : m_alarm(1),
       m_alarm_on(1),
       m_1hz(1),
       m_16hz(1)
 {
+    pPC = parent;
 }
 
-
-//-------------------------------------------------
-//  device_config_complete - perform any
-//  operations now that the configuration is
-//  complete
-//-------------------------------------------------
-
-void CRP5C01::device_config_complete()
+CRP5C01::~CRP5C01()
 {
-    // inherit a copy of the static data
-    const rp5c01_interface *intf = reinterpret_cast<const rp5c01_interface *>(static_config());
-    if (intf != NULL)
-        *static_cast<rp5c01_interface *>(this) = *intf;
-
-    // or initialize to defaults if none provided
-    else
-    {
-        memset(&m_out_alarm_cb, 0, sizeof(m_out_alarm_cb));
-    }
 }
+
 
 
 //-------------------------------------------------
 //  device_start - device-specific startup
 //-------------------------------------------------
 
-void CRP5C01::device_start()
+bool CRP5C01::init()
 {
 
     // allocate timers
-    m_clock_timer = timer_alloc(TIMER_CLOCK);
-    m_clock_timer->adjust(attotime::from_hz(clock() / 16384), 0, attotime::from_hz(clock() / 16384));
+//    m_clock_timer = timer_alloc(TIMER_CLOCK);
+//    m_clock_timer->adjust(attotime::from_hz(clock() / 16384), 0, attotime::from_hz(clock() / 16384));
 
-    m_16hz_timer = timer_alloc(TIMER_16HZ);
-    m_16hz_timer->adjust(attotime::from_hz(clock() / 1024), 0, attotime::from_hz(clock() / 1024));
+//    m_16hz_timer = timer_alloc(TIMER_16HZ);
+//    m_16hz_timer->adjust(attotime::from_hz(clock() / 1024), 0, attotime::from_hz(clock() / 1024));
 
-    // state saving
-    save_item(NAME(m_reg[MODE00]));
-    save_item(NAME(m_reg[MODE01]));
-    save_item(NAME(m_mode));
-    save_item(NAME(m_reset));
-    save_item(NAME(m_alarm));
-    save_item(NAME(m_alarm_on));
-    save_item(NAME(m_1hz));
-    save_item(NAME(m_16hz));
+    QDateTime lastDateTime = QDateTime::currentDateTime();
+    rtc_clock_updated(lastDateTime.date().year()%100,
+                      lastDateTime.date().month(),
+                      lastDateTime.date().day(),
+                      lastDateTime.date().dayOfWeek(),
+                      lastDateTime.time().hour(),
+                      lastDateTime.time().minute(),
+                      lastDateTime.time().second());
+
+
+    statelog = pPC->pTIMER->state;
+
+    return true;
+}
+
+bool CRP5C01::exit()
+{
+    return true;
 }
 
 
@@ -237,16 +207,33 @@ void CRP5C01::device_start()
 //  device_reset - device-specific reset
 //-------------------------------------------------
 
-void CRP5C01::device_reset()
+void CRP5C01::Reset()
 {
-    set_current_time(machine());
+    //    set_current_time(machine());
+}
+
+bool CRP5C01::step()
+{
+
+    if (pPC->pTIMER->msElapsed(statelog)>1000) {
+        QDateTime lastDateTime = QDateTime::currentDateTime();
+        rtc_clock_updated(lastDateTime.date().year()%100,
+                          lastDateTime.date().month(),
+                          lastDateTime.date().day(),
+                          lastDateTime.date().dayOfWeek(),
+                          lastDateTime.time().hour(),
+                          lastDateTime.time().minute(),
+                          lastDateTime.time().second());
+        statelog = pPC->pTIMER->state;
+    }
+    return true;
 }
 
 
 //-------------------------------------------------
 //  device_timer - handler timer events
 //-------------------------------------------------
-
+#if 0
 void CRP5C01::device_timer(emu_timer &timer, device_timer_id id, int param, void *ptr)
 {
     switch (id)
@@ -268,7 +255,7 @@ void CRP5C01::device_timer(emu_timer &timer, device_timer_id id, int param, void
     }
 }
 
-
+#endif
 //-------------------------------------------------
 //  rtc_clock_updated -
 //-------------------------------------------------
@@ -290,26 +277,16 @@ void CRP5C01::rtc_clock_updated(int year, int month, int day, int day_of_week, i
 
 
 
-//-------------------------------------------------
-//  adj_w -
-//-------------------------------------------------
 
-void CRP5C01::adj_w( void )
-{
-    if (state)
-    {
-        adjust_seconds();
-    }
-}
 
 
 //-------------------------------------------------
 //  read -
 //-------------------------------------------------
 
-quint8 CRP5C01::read( void)
+quint8 CRP5C01::read( quint8 offset)
 {
-    UINT8 data = 0;
+    quint8 data = 0;
 
     switch (offset & 0x0f)
     {
@@ -327,7 +304,7 @@ quint8 CRP5C01::read( void)
         break;
     }
 
-    if (LOG) logerror("RP5C01 '%s' Register %u Read %02x\n", tag(), offset & 0x0f, data);
+//    if (LOG) logerror("RP5C01 '%s' Register %u Read %02x\n", tag(), offset & 0x0f, data);
 
     return data & 0x0f;
 }
@@ -337,7 +314,7 @@ quint8 CRP5C01::read( void)
 //  write -
 //-------------------------------------------------
 
-void CRP5C01::write()
+void CRP5C01::write(quint8 offset,quint8 data)
 {
     int mode = m_mode & MODE_MASK;
 
@@ -348,14 +325,14 @@ void CRP5C01::write()
 
         if (LOG)
         {
-            logerror("RP5C01 '%s' Mode %u\n", tag(), data & MODE_MASK);
-            logerror("RP5C01 '%s' Timer %s\n", tag(), (data & MODE_TIMER_EN) ? "enabled" : "disabled");
-            logerror("RP5C01 '%s' Alarm %s\n", tag(), (data & MODE_ALARM_EN) ? "enabled" : "disabled");
+//            logerror("RP5C01 '%s' Mode %u\n", tag(), data & MODE_MASK);
+//            logerror("RP5C01 '%s' Timer %s\n", tag(), (data & MODE_TIMER_EN) ? "enabled" : "disabled");
+//            logerror("RP5C01 '%s' Alarm %s\n", tag(), (data & MODE_ALARM_EN) ? "enabled" : "disabled");
         }
         break;
 
     case REGISTER_TEST:
-        if (LOG) logerror("RP5C01 '%s' Test %u not supported!\n", tag(), data);
+//        if (LOG) logerror("RP5C01 '%s' Test %u not supported!\n", tag(), data);
         break;
 
     case REGISTER_RESET:
@@ -374,10 +351,10 @@ void CRP5C01::write()
 
         if (LOG)
         {
-            if (data & RESET_ALARM) logerror("RP5C01 '%s' Alarm Reset\n", tag());
-            if (data & RESET_TIMER) logerror("RP5C01 '%s' Timer Reset not supported!\n", tag());
-            logerror("RP5C01 '%s' 16Hz Signal %s\n", tag(), (data & RESET_16_HZ) ? "disabled" : "enabled");
-            logerror("RP5C01 '%s' 1Hz Signal %s\n", tag(), (data & RESET_1_HZ) ? "disabled" : "enabled");
+//            if (data & RESET_ALARM) logerror("RP5C01 '%s' Alarm Reset\n", tag());
+//            if (data & RESET_TIMER) logerror("RP5C01 '%s' Timer Reset not supported!\n", tag());
+//            logerror("RP5C01 '%s' 16Hz Signal %s\n", tag(), (data & RESET_16_HZ) ? "disabled" : "enabled");
+//            logerror("RP5C01 '%s' 1Hz Signal %s\n", tag(), (data & RESET_1_HZ) ? "disabled" : "enabled");
         }
         break;
 
@@ -388,8 +365,14 @@ void CRP5C01::write()
         case MODE01:
             m_reg[mode][offset & 0x0f] = data & REGISTER_WRITE_MASK[mode][offset & 0x0f];
 
-            set_time(false, read_counter(REGISTER_1_YEAR), read_counter(REGISTER_1_MONTH), read_counter(REGISTER_1_DAY), m_reg[MODE00][REGISTER_DAY_OF_THE_WEEK],
-                read_counter(REGISTER_1_HOUR), read_counter(REGISTER_1_MINUTE), read_counter(REGISTER_1_SECOND));
+//            set_time(false,
+//                     read_counter(REGISTER_1_YEAR),
+//                     read_counter(REGISTER_1_MONTH),
+//                     read_counter(REGISTER_1_DAY),
+//                     m_reg[MODE00][REGISTER_DAY_OF_THE_WEEK],
+//                     read_counter(REGISTER_1_HOUR),
+//                     read_counter(REGISTER_1_MINUTE),
+//                     read_counter(REGISTER_1_SECOND));
             break;
 
         case BLOCK10:
@@ -401,7 +384,7 @@ void CRP5C01::write()
             break;
         }
 
-        if (LOG) logerror("RP5C01 '%s' Register %u Write %02x\n", tag(), offset & 0x0f, data);
+//        if (LOG) logerror("RP5C01 '%s' Register %u Write %02x\n", tag(), offset & 0x0f, data);
         break;
     }
 }
