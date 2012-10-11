@@ -53,9 +53,6 @@ public:
     ASKYN saveAll;
     float	zoom;
 
-    LaunchButtonWidget* launch;
-    LaunchButtonWidget* launch2;
-
     void doZoom(QPoint point, float delta, int step=10);
 
     bool event(QEvent *event);

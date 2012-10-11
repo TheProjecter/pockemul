@@ -114,8 +114,6 @@ MainWindowPockemul::~MainWindowPockemul() {
     delete windowide;
     delete FrameTimer;
     delete pdirectLink;
-    delete launch;
-    delete launch2;
 
 }
 

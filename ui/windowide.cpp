@@ -99,10 +99,7 @@ void WindowIDE::setupEditor()
     m_languages = new QLanguageFactory(m_formats, this);
     m_languages->addDefinitionPath(":QXS");
 
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(10);
+
 
     refreshFileList();
 
@@ -311,6 +308,12 @@ CEditorWidget * WindowIDE::createEditorTab(QString fname, QString text,bool load
     //e->setEditor(locEditorWidget->m_editControl->editor());
     m_languages->addCompletionEngine(e);
     locEditorWidget->m_editControl->editor()->setCompletionEngine(e->clone());
+
+    QFont font;
+    font.setFamily("Courier");
+    font.setFixedPitch(true);
+    font.setPointSize(14);
+    locEditorWidget->m_editControl->editor()->setFont(font);
 
     locEditorWidget->m_editControl->editor()->setText(text);
     locEditorWidget->m_editControl->editor()->setFileName(fname);
