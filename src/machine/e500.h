@@ -4,6 +4,7 @@
 #include "pcxxxx.h"
 
 class CHD61102;
+//class CRP5C01;
 
 class Ce500:public CpcXXXX{						//E500 emulator main class
 Q_OBJECT
@@ -41,6 +42,8 @@ public:
 
     CHD61102        *pHD61102_1;
     CHD61102        *pHD61102_2;
+
+//    CRP5C01         *pRP5C01;
 
     void disp(qint8 cmd, DWORD data);
     BYTE getKey();

@@ -1,6 +1,7 @@
 #include "e500.h"
 #include "sc62015.h"
 #include "hd61102.h"
+//#include "rp5c01.h"
 #include "Connect.h"
 #include "Keyb.h"
 #include "Lcdc_e500.h"
@@ -10,10 +11,11 @@
 #include "cextension.h"
 
 //TODO: Connector output for ce-126p and ce-140f
-//TODO: Real Time Clock
+
 //TODO: UART Emulation
 //TODO: Memory cards management
 
+#define TEST_MEMORY_MAPPING 0
 /*
 00000   -----------------------
         |                     | you can peek ( 00000 - 000FF ) by PEEK ,
@@ -93,6 +95,7 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     pHD61102_1  = new CHD61102(this);
     pHD61102_2  = new CHD61102(this);
 
+//    pRP5C01     = new CRP5C01(this);
     start2khz = 0;
     start4khz = 0;
     Xin=Xout=false;
@@ -111,7 +114,7 @@ void	Ce500::initExtension(void)
     ext_MemSlot1->setAvailable(ID_CE2H32M,true);
     ext_MemSlot1->setAvailable(ID_CE2H64M,true);
 
-    ext_MemSlot1->setChecked(ID_CE2H64M,true);
+//    ext_MemSlot1->setChecked(ID_CE2H64M,true);
     addExtMenu(ext_MemSlot1);
 
     extensionArray[0] = ext_MemSlot1;
@@ -127,6 +130,7 @@ bool Ce500::init(void) {
 
     CpcXXXX::init();
 
+//    pRP5C01->init();
 
     WatchPoint.remove(this);
     WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
@@ -156,6 +160,8 @@ bool Ce500::run(void) {
     // SOUND
     //
     computeSound();
+
+//    pRP5C01->step();
 
     return true;
 }
@@ -399,18 +405,28 @@ void Ce550::MemMirror(DWORD *d)
 
 bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 {
+#if (TEST_MEMORY_MAPPING)
     quint32 tmp = *d;
     MemMirror(d);
 
     if ( (tmp>=0x40000) && (tmp<=0xBFFFF) && (pCPU->fp_log)) fprintf(pCPU->fp_log,"\nRAM WRITE: [%06X] -> [%06X]=%02X\n",tmp,*d,data);
+#endif
+
 
     if ( (*d>=0x00000) && (*d<=0x3FFFF)) {
+
+//        if((*d&0x3000)==0x1000){
+//            *d&=0x103f; pRP5C01->write(*d&31,data);
+//            return((*d&0x10)==0);		/* CLOCK (010xx) */
+//        }
+
         if((*d&0x6000)==0x2000){
             *d&=0x200f; disp(*d&15,data);//lcdc.access=1; lcdc.lcdcadr=*d&15;
             return(1-(*d&1));			/* LCDC (0200x) */
         }
         return 1;
     }
+#if (TEST_MEMORY_MAPPING)
 
     if ( (*d>=0x40000) && (*d<=0x4FFFF)) return (ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
                                                  ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
@@ -422,6 +438,10 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
         AddLog(LOG_RAM,QString("adr;%1").arg(*d,6,16,QChar('0')));
     }
     if ( (*d>=0xB8000) && (*d<=0xBFFFF)) return 1;
+#endif
+
+    if ( (*d>=0x40000) && (*d<=0xBFFFF)) return 1;
+
     if ( (*d>=0xC0000) && (*d<=0xFFFFF)) return 0;
 
 //    if(*d>0xbffff) return(0);			/* ROM area(c0000-fffff) S3: */
@@ -462,10 +482,11 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 /*****************************************************************************/
 bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
 {
+#if (TEST_MEMORY_MAPPING)
     quint32 tmp = *d;
     MemMirror(d);
     if ( (tmp>=0x40000) && (tmp<=0xBFFFF) && (pCPU->fp_log)) fprintf(pCPU->fp_log,"\nRAM READ : [%06X] -> [%06X]\n",tmp,*d);
-
+#endif
 //    if ( (*d>=0xB0000) && (*d<=0xB7FFF)) { *d += 0x8000;return 1;}
 
 
@@ -477,6 +498,12 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
         *d&=0x200f; disp(*d&15,data);//pLCDC->SetDirtyBuf(pLCDC->SetDirtyBuf(*d & 15));
         return(1);//-(*d&1));			/* LCDC (0200x) */
     }
+
+//    if((*d&0x3000)==0x1000){
+//        *d&=0x103f; mem[*d]= pRP5C01->read(*d&0x1f);
+//        return((*d&0x10)==0);		/* CLOCK (010xx) */
+//    }
+
 #if 0
     if(*d>0x1ffff){
         if(sc.e6) return(0);			/* ROM area(20000-3ffff) ->E650/U6000 */
