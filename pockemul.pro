@@ -299,7 +299,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/rp5c01.h \
     ui/dialogvkeyboard.h \
     src/cpu/ctronics.h \
-    src/core/qcommandline.h
+    src/core/qcommandline.h \
+    src/core/version.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \

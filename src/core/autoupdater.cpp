@@ -2,11 +2,11 @@
  #include <QtGui>
  #include <QtNetwork>
 
+#include "version.h"
 #include "common.h" 
 #include "autoupdater.h"
 
 #define POCKEMUL_UPDATE_FILE "http://pockemul.free.fr/update/autoupdater.txt"
-#define CURRENT_VERSION "0.9.3.0"
 
 extern QMainWindow *mainwindow;
 
@@ -68,7 +68,7 @@ void CAutoUpdater::done(bool error)
 	else {
 		QString result(http->readAll());
 //		MSG_ERROR(result)
-		if (result != CURRENT_VERSION){
+        if (result != POCKEMUL_VERSION){
 			QMessageBox::about(this, tr("New Release"),tr("A new release is available\nCheck Web Site : http://pockemul.free.fr"));
 			close();
 		}

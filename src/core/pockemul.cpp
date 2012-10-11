@@ -14,9 +14,10 @@
 
 //QTM_USE_NAMESPACE
 
+#include "version.h"
 
 
-#define	POCKEMUL_VERSION	"0.9.4.2"
+
 
 MainWindowPockemul* mainwindow;
 
