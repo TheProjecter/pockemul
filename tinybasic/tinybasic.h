@@ -61,6 +61,7 @@ public:
        void go_RUN(QByteArray code);
 
 
+       void inputChar(quint8 c);
 };
 
 #endif // TINYBASIC_H

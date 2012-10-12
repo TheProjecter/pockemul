@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "tinybasic.h"
+#include "Keyb.h"
 
 enum {
     MEM,
@@ -53,6 +54,21 @@ void CTinyBasic::Load_Internal(QXmlStreamReader *)
 
 void CTinyBasic::save_internal(QXmlStreamWriter *)
 {
+}
+
+void CTinyBasic::inputChar(quint8 c) {
+    switch (c) {
+    case K_SHT: break;
+    default:
+        commandBuffer.append(c);
+    }
+
+    qWarning()<< commandBuffer;
+    if (c == K_RET) {
+        Parse();
+        Interpret(commandBuffer);
+        commandBuffer.clear();
+    }
 }
 
 void CTinyBasic::test() {

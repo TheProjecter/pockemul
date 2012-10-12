@@ -1,7 +1,7 @@
 #include "pc1211.h"
 #include "cpu.h"
 #include "Keyb.h"
-#include "Lcdc.h"
+#include "Lcdc_pc1211.h"
 #include "tinybasic/tinybasic.h"
 #include "Inter.h"
 
@@ -45,12 +45,42 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     Lcd_Symb_DY	= 5;
     Lcd_Symb_ratio_X	= 1;//1.18;
 
-    pLCDC		= new Clcdc_pc1250(this);
-    pKEYB		= new Ckeyb(this,"pc1250.map");
+    pLCDC		= new Clcdc_pc1211(this);
+    pKEYB		= new Ckeyb(this,"pc1211.map");
     pCPU = new CTinyBasic(this);
     pTIMER		= new Ctimer(this);
 }
 
 Cpc1211::~Cpc1211()
 {
+}
+
+bool Cpc1211::init()
+{
+
+    return true;
+}
+
+bool Cpc1211::run()
+{
+    CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
+
+    if (pKEYB->LastKey>0) {
+        qWarning("New char");
+        pBASIC->inputChar(pKEYB->LastKey);
+        afficheChar(pKEYB->LastKey);
+        pKEYB->LastKey = 0;
+    }
+
+    return true;
+}
+
+void Cpc1211::afficheChar(quint8 c) {
+
+}
+
+bool Cpc1211::exit()
+{
+
+    return true;
 }
