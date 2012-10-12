@@ -157,7 +157,7 @@ CPObject *pPC=0;
     }
 	AddLog(LOG_MASTER,"OK1");
 	if (!pPC->init()) return 0;
- 
+
 //	int l = mainwindow->menuBar()->height();
 //	mainwindow->resize(QSize(pPC->Pc_DX, pPC->Pc_DY+l));
 

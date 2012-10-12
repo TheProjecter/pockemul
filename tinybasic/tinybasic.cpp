@@ -19,7 +19,7 @@ enum {
 #define STRINGCHAR(c)       QString("\"'").contains(c)
 #define NUMERIC(c)          QString("0123456789").contains(c)
 
-CTinyBasic::CTinyBasic(QObject *parent)
+CTinyBasic::CTinyBasic(CPObject *parent):CCPU(parent)
 {
     CommandMap["LIST"] = CKeyword("LIST",KW_LIST);
     CommandMap["PRINT"] = CKeyword("PRINT",KW_PRINT);
@@ -30,6 +30,29 @@ CTinyBasic::CTinyBasic(QObject *parent)
     CommandMap["TO"] = CKeyword("TO",KW_TO);
 
     mode = COMMAND;
+}
+
+bool CTinyBasic::init()
+{
+    return true;
+}
+
+bool CTinyBasic::exit()
+{
+    return true;
+}
+
+void CTinyBasic::step()
+{
+
+}
+
+void CTinyBasic::Load_Internal(QXmlStreamReader *)
+{
+}
+
+void CTinyBasic::save_internal(QXmlStreamWriter *)
+{
 }
 
 void CTinyBasic::test() {
@@ -190,4 +213,9 @@ CKeyword::CKeyword(QString name, quint8 code)
 {
     Name = name;
     Code = code;
+}
+
+
+void CTinyBasic::Reset()
+{
 }
