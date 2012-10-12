@@ -21,6 +21,7 @@ class CTinyBasic : public CCPU
 public:
 
     enum Mode{RUN,COMMAND };
+    enum Action{INITIAL,UP_ARROW,DOWN_ARROW,ENTER,BREAK,NO_ACTION};
 
        CTinyBasic(CPObject *parent = 0);
 
@@ -49,6 +50,8 @@ public:
        void Parse();
 
        QByteArray commandBuffer;
+       QByteArray outputBuffer;
+
        QMap<QByteArray,CKeyword> CommandMap;
 
        QMap<int,QByteArray> basicLines;
@@ -56,12 +59,15 @@ public:
        Mode mode;
        void saveBasicLine();
        void test();
-       void executeCommand(QByteArray code);
-       void go_LIST(QByteArray code);
-       void go_RUN(QByteArray code);
+       void executeCommand(QByteArray code, Action action = INITIAL);
+       void go_LIST(QByteArray code,Action action = INITIAL);
+       void go_RUN(QByteArray code,Action action = INITIAL);
+
+       quint8 runningCmd;
 
 
        void inputChar(quint8 c);
+       void outputChar(QByteArray ba);
 };
 
 #endif // TINYBASIC_H

@@ -65,7 +65,12 @@ bool Cpc1211::run()
 {
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
-    if (pKEYB->LastKey>0) {
+    switch (pKEYB->LastKey) {
+    case 0: break;
+    case K_LA: pBASIC->commandBuffer.remove(pBASIC->commandBuffer.count()-1,1);
+        break;
+
+    default:
         qWarning("New char");
         pBASIC->inputChar(pKEYB->LastKey);
         afficheChar(pKEYB->LastKey);

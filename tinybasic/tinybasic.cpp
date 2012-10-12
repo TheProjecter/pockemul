@@ -31,6 +31,9 @@ CTinyBasic::CTinyBasic(CPObject *parent):CCPU(parent)
     CommandMap["TO"] = CKeyword("TO",KW_TO);
 
     mode = COMMAND;
+    runningCmd=0;
+
+    test();
 }
 
 bool CTinyBasic::init()
@@ -56,9 +59,29 @@ void CTinyBasic::save_internal(QXmlStreamWriter *)
 {
 }
 
+void CTinyBasic::outputChar(QByteArray ba) {
+    outputBuffer.append(ba);
+    qWarning()<<ba;
+}
+
 void CTinyBasic::inputChar(quint8 c) {
+
+    if (runningCmd) {
+        Action action;
+        switch (c) {
+        case K_UA: action = UP_ARROW; break;
+        case K_DA: action = DOWN_ARROW; break;
+        case K_BRK:action = BREAK; break;
+        case K_RET:action = ENTER; break;
+        default: action = NO_ACTION;
+        }
+        executeCommand(QByteArray(1,runningCmd),action);
+        return;
+    }
+
     switch (c) {
     case K_SHT: break;
+
     default:
         commandBuffer.append(c);
     }
@@ -72,18 +95,18 @@ void CTinyBasic::inputChar(quint8 c) {
 }
 
 void CTinyBasic::test() {
-    inputCommand("LIST");
-    Interpret(commandBuffer);
+//    inputCommand("LIST");
+//    Interpret(commandBuffer);
     inputCommand("100APRI NTB C  (13*4):\" CLS\":LIST");
     Interpret(commandBuffer);
     inputCommand("   50   FOR I = 1 TO 4");
     Interpret(commandBuffer);
     inputCommand("   10CLS");
     Interpret(commandBuffer);
-    inputCommand("LIST");
-    Interpret(commandBuffer);
-    inputCommand("RUN");
-    Interpret(commandBuffer);
+//    inputCommand("LIST");
+//    Interpret(commandBuffer);
+//    inputCommand("RUN");
+//    Interpret(commandBuffer);
 
 }
 
@@ -96,15 +119,16 @@ void CTinyBasic::saveBasicLine() {
 
 }
 
-void CTinyBasic::executeCommand(QByteArray code) {
+void CTinyBasic::executeCommand(QByteArray code,Action action) {
+//    qWarning()<< "Execute Command:"<<code;
     switch (code.at(0)) {
     case KW_LIST :  go_LIST(code.mid(1)); break;
     case KW_RUN:    go_RUN(code.mid(1)); break;
     }
 }
 
-void CTinyBasic::go_RUN(QByteArray code) {
-    qWarning()<< "RUN BASIC PROGRAMME";
+void CTinyBasic::go_RUN(QByteArray code, Action action) {
+    outputChar("RUN BASIC PROGRAMME");
     // Check parameters
 
     mode = RUN;
@@ -115,16 +139,31 @@ void CTinyBasic::go_RUN(QByteArray code) {
      }
 }
 
-void CTinyBasic::go_LIST(QByteArray code) {
+void CTinyBasic::go_LIST(QByteArray code,Action action) {
 
+    static int curIndex = -1;
     // Check parameters
 
-    qWarning() << "LIST File:";
-    QMapIterator<int,QByteArray> i(basicLines);
-     while (i.hasNext()) {
-         i.next();
-         qWarning() << i.key() << ": " << i.value();
-     }
+
+    outputChar("LIST File:");
+    QList<int> linenbList = basicLines.keys();
+
+    if ( linenbList.isEmpty()) {
+        runningCmd = 0;
+        return;
+    }
+
+    if (action == INITIAL) curIndex=0;
+    if (action == UP_ARROW) curIndex++;
+    if (action == DOWN_ARROW) curIndex--;
+
+    if (curIndex <0 ) curIndex = 0;
+    if (curIndex >= linenbList.count()) {
+        runningCmd = 0;
+
+    }
+    int linenb=linenbList.at(curIndex);
+    outputChar( QString("%1").arg(linenb).toAscii() + ":" + basicLines.value(linenb));
 }
 
 void CTinyBasic::Interpret(QByteArray ops,int pos)
@@ -148,6 +187,7 @@ void CTinyBasic::Interpret(QByteArray ops,int pos)
         }
     }
 
+    commandBuffer.clear();
 
 }
 
@@ -162,6 +202,7 @@ void CTinyBasic::inputCommand(QByteArray command)
 
 void CTinyBasic::Parse()
 {
+    qWarning()<<"Parse:"+commandBuffer;
     commandBuffer.append('\r');
     int startToken = 0;
     int lenght=0;
