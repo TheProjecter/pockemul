@@ -17,14 +17,26 @@ class CTinyBasic : public QObject
 {
     Q_OBJECT
 public:
+
+    enum Mode{RUN,COMMAND };
+
        CTinyBasic(QObject *parent = 0);
 
-       void Interpret(QByteArray, int pos);
+       void Interpret(QByteArray, int pos = 0);
        void Command(QByteArray);
        void Parse();
 
        QByteArray commandBuffer;
        QMap<QByteArray,CKeyword> CommandMap;
+
+       QMap<int,QByteArray> basicLines;
+
+       Mode mode;
+       void saveBasicLine();
+       void test();
+       void command(QByteArray code);
+       void go_LIST(QByteArray code);
+       void go_RUN(QByteArray code);
 };
 
 #endif // TINYBASIC_H

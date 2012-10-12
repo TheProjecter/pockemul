@@ -300,7 +300,9 @@ HEADERS += src/core/Connect.h \
     ui/dialogvkeyboard.h \
     src/cpu/ctronics.h \
     src/core/qcommandline.h \
-    src/core/version.h
+    src/core/version.h \
+    tinybasic/tinybasic.h \
+    tinybasic/tbthread.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -533,7 +535,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/rp5c01.cpp \
     ui/dialogvkeyboard.cpp \
     src/cpu/ctronics.cpp \
-    src/core/qcommandline.cpp
+    src/core/qcommandline.cpp \
+    tinybasic/tinybasic.cpp
 
 
 

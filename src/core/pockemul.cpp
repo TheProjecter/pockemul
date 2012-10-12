@@ -16,7 +16,7 @@
 
 #include "version.h"
 
-
+#include "tinybasic/tinybasic.h"
 
 
 MainWindowPockemul* mainwindow;
@@ -151,6 +151,10 @@ int main(int argc, char *argv[])
     mainwindow->connect(exit,SIGNAL(clicked()),qApp, SLOT(closeAllWindows()));
     exit->setGeometry(0,375,48,48);
     exit->setToolTip("Exit PockEmul.");
+
+    CTinyBasic tb;
+    tb.test();
+
 
     mainwindow->show();
 
