@@ -111,6 +111,7 @@ extern CPocketThread* PcThread;
 enum Models {
     EMPTY,
 
+    PC1211,
     PC1245,
     MC2200,
     PC1250,

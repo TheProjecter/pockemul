@@ -161,6 +161,9 @@ int main(int argc, char *argv[])
 #ifndef Q_OS_ANDROID
     mainwindow->initCommandLine();
 #endif
+
+//    mainwindow->LoadPocket(PC1211);
+
     return app.exec();
 
 }
