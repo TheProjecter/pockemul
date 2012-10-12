@@ -152,8 +152,8 @@ int main(int argc, char *argv[])
     exit->setGeometry(0,375,48,48);
     exit->setToolTip("Exit PockEmul.");
 
-    CTinyBasic tb;
-    tb.test();
+//    CTinyBasic tb;
+//    tb.test();
 
 
     mainwindow->show();
