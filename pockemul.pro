@@ -302,7 +302,8 @@ HEADERS += src/core/Connect.h \
     src/core/qcommandline.h \
     src/core/version.h \
     tinybasic/tinybasic.h \
-    tinybasic/tbthread.h
+    tinybasic/tbthread.h \
+    src/machine/pc1211.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -353,7 +354,8 @@ RESOURCES += resources/ext.qrc \
     resources/g850v.qrc \
     resources/ext2.qrc \
     resources/z1.qrc \
-    resources/fp200.qrc
+    resources/fp200.qrc \
+    resources/pc1211.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -536,7 +538,8 @@ SOURCES += src/core/Connect.cpp \
     ui/dialogvkeyboard.cpp \
     src/cpu/ctronics.cpp \
     src/core/qcommandline.cpp \
-    tinybasic/tinybasic.cpp
+    tinybasic/tinybasic.cpp \
+    src/machine/pc1211.cpp
 
 
 

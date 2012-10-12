@@ -23,7 +23,7 @@ public:
        CTinyBasic(QObject *parent = 0);
 
        void Interpret(QByteArray, int pos = 0);
-       void Command(QByteArray);
+       void inputCommand(QByteArray);
        void Parse();
 
        QByteArray commandBuffer;
@@ -34,7 +34,7 @@ public:
        Mode mode;
        void saveBasicLine();
        void test();
-       void command(QByteArray code);
+       void executeCommand(QByteArray code);
        void go_LIST(QByteArray code);
        void go_RUN(QByteArray code);
 };

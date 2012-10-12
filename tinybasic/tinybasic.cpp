@@ -33,17 +33,17 @@ CTinyBasic::CTinyBasic(QObject *parent)
 }
 
 void CTinyBasic::test() {
-    Command("LIST");
+    inputCommand("LIST");
     Interpret(commandBuffer);
-    Command("100APRI NTB C  (13*4):\" CLS\":LIST");
+    inputCommand("100APRI NTB C  (13*4):\" CLS\":LIST");
     Interpret(commandBuffer);
-    Command("   50   FOR I = 1 TO 4");
+    inputCommand("   50   FOR I = 1 TO 4");
     Interpret(commandBuffer);
-    Command("   10CLS");
+    inputCommand("   10CLS");
     Interpret(commandBuffer);
-    Command("LIST");
+    inputCommand("LIST");
     Interpret(commandBuffer);
-    Command("RUN");
+    inputCommand("RUN");
     Interpret(commandBuffer);
 
 }
@@ -57,7 +57,7 @@ void CTinyBasic::saveBasicLine() {
 
 }
 
-void CTinyBasic::command(QByteArray code) {
+void CTinyBasic::executeCommand(QByteArray code) {
     switch (code.at(0)) {
     case KW_LIST :  go_LIST(code.mid(1)); break;
     case KW_RUN:    go_RUN(code.mid(1)); break;
@@ -93,7 +93,7 @@ void CTinyBasic::Interpret(QByteArray ops,int pos)
 
     if (mode == RUN) {
         qWarning()<<"Interpret : "<< ops.mid(pos);
-        command(ops.mid(pos));
+        executeCommand(ops.mid(pos));
     }
     if (mode == COMMAND) {
         // Check if buffer start by number
@@ -105,15 +105,16 @@ void CTinyBasic::Interpret(QByteArray ops,int pos)
         }
         else
         {
-            command(ops.mid(pos));
+            executeCommand(ops.mid(pos));
         }
     }
 
 
 }
 
-void CTinyBasic::Command(QByteArray command)
+void CTinyBasic::inputCommand(QByteArray command)
 {
+    qWarning()<< command;
     commandBuffer = command;
     Parse();
 }
@@ -128,7 +129,7 @@ void CTinyBasic::Parse()
     bool foundToken = false;
     for (int i = 0 ; i<commandBuffer.size();i++) {
         char c = commandBuffer.at(i);
-        qWarning()<< c;
+//        qWarning()<< c;
 
         if (STRINGCHAR(c)) {        // STRING found continue until end of string
             i++;
@@ -139,29 +140,29 @@ void CTinyBasic::Parse()
         // Remove all spaces
         if (c==' ') {
             commandBuffer.remove(i,1);
-            qWarning()<<"remove space:"<<commandBuffer;
+//            qWarning()<<"remove space:"<<commandBuffer;
             i--;
             continue;
         }
 
         if ( !foundToken && TOKENSTARTCHAR(c)) {
-            qWarning()<<"Start Token";
+//            qWarning()<<"Start Token";
             foundToken = true;
             startToken = i;
         }
 
         if (foundToken && !TOKENCHAR(c) ) {
-            qWarning()<<"End Token";
+//            qWarning()<<"End Token";
 
             lenght = i - startToken;
 
             QByteArray currentToken = commandBuffer.mid(startToken,lenght);
-            qWarning() << "currentToken:" << currentToken;
+//            qWarning() << "currentToken:" << currentToken;
 
             for (int k = currentToken.size();k>0;k--) {
-                qWarning()<< "search:"<<currentToken.mid(0,k);
+//                qWarning()<< "search:"<<currentToken.mid(0,k);
                 if (CommandMap.contains(currentToken.mid(0,k))) {
-                    qWarning()<<"found";
+//                    qWarning()<<"found";
                     // Replace by code in the buffer
                     commandBuffer.replace(startToken,k,QByteArray(1,CommandMap[currentToken.mid(0,k)].Code));
 //                    startToken++;
@@ -178,7 +179,7 @@ void CTinyBasic::Parse()
         }
 
     }
-    qWarning()<< commandBuffer;
+//    qWarning()<< commandBuffer;
 
 
 
