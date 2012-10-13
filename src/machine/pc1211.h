@@ -3,6 +3,8 @@
 
 #include "pcxxxx.h"
 
+class CTinyBasic;
+
 class Cpc1211 : public CpcXXXX
 {
 public:
@@ -19,6 +21,8 @@ public:
     virtual UINT8 in(UINT8 address) {return 0;}
     virtual UINT8 out(UINT8 address,UINT8 value) {return 0;}
     void afficheChar(quint8 c);
+
+    CTinyBasic *pBASIC;
 };
 
 #endif // PC1211_H

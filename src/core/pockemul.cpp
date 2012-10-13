@@ -16,7 +16,6 @@
 
 #include "version.h"
 
-#include "tinybasic/tinybasic.h"
 
 
 MainWindowPockemul* mainwindow;

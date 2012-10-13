@@ -7,6 +7,12 @@
 
 #include "cpu.h"
 
+#ifndef boolean
+#define boolean int
+#define true 1
+#define false 0
+#endif
+
 class CKeyword {
 public:
     CKeyword(QString name = QString(),quint8 code = 0);
@@ -21,7 +27,16 @@ class CTinyBasic : public CCPU
 public:
 
     enum Mode{RUN,COMMAND };
-    enum Action{INITIAL,UP_ARROW,DOWN_ARROW,ENTER,BREAK,NO_ACTION};
+    enum Action{INITIAL,RUNNING,UP_ARROW,DOWN_ARROW,ENTER,BREAK,NO_ACTION};
+    enum NEXT_STEP {
+        WARMSTART,PROMPT,DIRECT,QHOW,EXECLINE,
+        EXECNEXTLINE,INTERPERATEATTXTPOS,
+        FILES,LIST,CHAIN,LOAD,MEM,QWHAT,SAVE,NEXT,ASSIGNMENT,
+        UNIMPLEMENTED,GOSUB,GOSUB_RETURN,FORLOOP,INPUT,PRINT,POKE,BYE,GETLN,GETLN_END
+
+    };
+
+    NEXT_STEP nextStep;
 
        CTinyBasic(CPObject *parent = 0);
 
@@ -68,6 +83,44 @@ public:
 
        void inputChar(quint8 c);
        void outputChar(QByteArray ba);
+
+       int curDispLine;
+       void clearOutput();
+       QByteArray convertToDisplay(QByteArray ba);
+       QByteArray go_PI();
+       void outchar(unsigned char c);
+       void ignore_blanks();
+       void scantable(unsigned char *table);
+       int isValidFnChar(char c);
+       unsigned char *filenameWord();
+       void line_terminator();
+       void setup();
+       unsigned char breakcheck();
+       int inchar();
+       unsigned short testnum();
+       void pushb(unsigned char b);
+       unsigned char popb();
+       void printnum(int num);
+       void printUnum(unsigned int num);
+       void printmsgNoNL(const unsigned char *msg);
+       void loop();
+       short expression();
+       unsigned char print_quoted_string();
+       unsigned char *findline();
+       void toUppercaseBuffer();
+       void printline();
+       short expr4();
+       short expr3();
+       short expr2();
+       void printmsg(const unsigned char *msg);
+       void getln(char prompt);
+
+       unsigned char *start;
+       unsigned char *newEnd;
+       unsigned char linelen;
+           boolean isDigital;
+           boolean alsoWait;
+           int val;
 };
 
 #endif // TINYBASIC_H

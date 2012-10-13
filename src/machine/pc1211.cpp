@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "pc1211.h"
 #include "cpu.h"
 #include "Keyb.h"
@@ -49,6 +51,7 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     pKEYB		= new Ckeyb(this,"pc1211.map");
     pCPU = new CTinyBasic(this);
     pTIMER		= new Ctimer(this);
+    pBASIC = (CTinyBasic *)pCPU;
 }
 
 Cpc1211::~Cpc1211()
@@ -57,25 +60,24 @@ Cpc1211::~Cpc1211()
 
 bool Cpc1211::init()
 {
-
+    pCPU->init();
     return true;
 }
 
 bool Cpc1211::run()
 {
+//    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
     switch (pKEYB->LastKey) {
     case 0: break;
-    case K_LA: pBASIC->commandBuffer.remove(pBASIC->commandBuffer.count()-1,1);
-        break;
-
+    case K_SHT: break;
     default:
-        qWarning("New char");
-        pBASIC->inputChar(pKEYB->LastKey);
-        afficheChar(pKEYB->LastKey);
+        pBASIC->commandBuffer.append(pKEYB->LastKey);
         pKEYB->LastKey = 0;
     }
+
+    CpcXXXX::run();
 
     return true;
 }
