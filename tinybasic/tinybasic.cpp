@@ -671,9 +671,9 @@ static const unsigned char whatmsg[]          = "What? ";
 static const unsigned char howmsg[]           =	"How?";
 static const unsigned char sorrymsg[]         = "Sorry!";
 static const unsigned char initmsg[]          = "TinyBasic Plus " kVersion;
-static const unsigned char memorymsg[]        = " bytes free.";
+static const unsigned char memorymsg[]        = " BYTES FREE.";
 static const unsigned char breakmsg[]         = "break!";
-static const unsigned char unimplimentedmsg[] = "Unimplemented";
+static const unsigned char unimplimentedmsg[] = "UNIMPLEMENTED";
 static const unsigned char backspacemsg[]     = "\b \b";
 static const unsigned char indentmsg[]        = "    ";
 static const unsigned char sderrormsg[]       = "SD card error.";
@@ -682,11 +682,11 @@ static const unsigned char dirextmsg[]        = "(dir)";
 static const unsigned char slashmsg[]         = "/";
 static const unsigned char spacemsg[]         = " ";
 
-static int inchar(void);
-static void outchar(unsigned char c);
-static void line_terminator(void);
-static short int expression(void);
-static unsigned char breakcheck(void);
+//static int inchar(void);
+//static void outchar(unsigned char c);
+//static void line_terminator(void);
+//static short int expression(void);
+//static unsigned char breakcheck(void);
 
 bool CTinyBasic::init()
 {
@@ -1216,7 +1216,7 @@ warmstart:
     // this signifies that it is running in 'direct' mode.
     current_line = 0;
     sp = program+sizeof(program);
-    printmsg(okmsg);
+//    printmsg(okmsg);
 
 prompt:
         if( triggerRun ){
@@ -1232,6 +1232,7 @@ getln:
     getln('>');
     return;
 getln_end:
+    outputBuffer.clear();
     toUppercaseBuffer();
 
     txtpos = program_end+sizeof(unsigned short);
@@ -2183,7 +2184,7 @@ unsigned char * CTinyBasic::filenameWord(void)
 void CTinyBasic::line_terminator(void)
 {
     outchar(NL);
-    outchar(CR);
+//    outchar(CR);
 }
 
 /***********************************************************/
@@ -2299,20 +2300,9 @@ void CTinyBasic::outchar(unsigned char c)
 {
   if( inhibitOutput ) return;
 
-#if ARDUINO
-#if ENABLE_FILEIO
-  if( outToFile ) {
-    // output to a file
-    fp.write( c );
-  } else {
-    Serial.write(c);
-  }
-#endif
-
-#else
-    outputChar(QByteArray(1,c));
+    outputChar(QByteArray(1,c).toUpper());
     putchar(c);
-#endif
+
 }
 
 /***********************************************************/

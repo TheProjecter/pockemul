@@ -23,6 +23,7 @@ public:
     void afficheChar(quint8 c);
 
     CTinyBasic *pBASIC;
+    bool DisplayWaitForRTN;
 };
 
 #endif // PC1211_H

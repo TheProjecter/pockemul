@@ -52,6 +52,7 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     pCPU = new CTinyBasic(this);
     pTIMER		= new Ctimer(this);
     pBASIC = (CTinyBasic *)pCPU;
+    DisplayWaitForRTN = false;
 }
 
 Cpc1211::~Cpc1211()
@@ -69,6 +70,22 @@ bool Cpc1211::run()
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
+    if (DisplayWaitForRTN) {
+        if (pKEYB->LastKey >0) {
+            qWarning()<< "Clear buffer";
+            // Remove until CR
+            pBASIC->outputBuffer.remove(0,pBASIC->outputBuffer.indexOf('\n')+1);
+            if (pBASIC->outputBuffer.right(1).startsWith('\n')) pBASIC->outputBuffer.chop(1);
+            if (!pBASIC->outputBuffer.contains('\n')) DisplayWaitForRTN = false;
+//            DisplayWaitForRTN = false;
+//            pBASIC->outputBuffer.clear();
+            Refresh_Display = true;
+//            pKEYB->LastKey = 0;
+        }
+        else
+            return true;
+    }
+
     switch (pKEYB->LastKey) {
     case 0: break;
     case K_SHT: break;
@@ -84,6 +101,12 @@ bool Cpc1211::run()
 
 void Cpc1211::afficheChar(quint8 c) {
 
+//    Clcdc_pc1211 *myLCD = (Clcdc_pc1211*) pLCDC;
+
+//    for (int i=0;i<pBASIC->outputBuffer.size();i++) {
+//        quint8 c = pBASIC->outputBuffer.at(i);
+//        myLCD->DrawChar(c,i);
+//    }
 }
 
 bool Cpc1211::exit()
