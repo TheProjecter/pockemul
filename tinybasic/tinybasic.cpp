@@ -1,5 +1,7 @@
 #include <QDebug>
 
+#include <math.h>
+
 #include "tinybasic.h"
 #include "pcxxxx.h"
 #include "Keyb.h"
@@ -307,8 +309,8 @@ enum {
 struct stack_for_frame {
     char frame_type;
     char for_var;
-    short int terminal;
-    short int step;
+    VAR_TYPE terminal;
+    VAR_TYPE step;
     unsigned char *current_line;
     unsigned char *txtpos;
 };
@@ -320,19 +322,27 @@ struct stack_gosub_frame {
 };
 
 static unsigned char func_tab[] = {
+    'S','I','N'+0x80,
+    'C','O','S'+0x80,
+    'T','A','N'+0x80,
     'P','E','E','K'+0x80,
     'A','B','S'+0x80,
-        'A','R','E','A','D'+0x80,
-        'D','R','E','A','D'+0x80,
-        'R','N','D'+0x80,
+    'A','R','E','A','D'+0x80,
+    'D','R','E','A','D'+0x80,
+    'R','N','D'+0x80,
     0
 };
-#define FUNC_PEEK    0
-#define FUNC_ABS     1
-#define FUNC_AREAD   2
-#define FUNC_DREAD   3
-#define FUNC_RND     4
-#define FUNC_UNKNOWN 5
+enum FUNCTIONS {
+    FUNC_SIN,
+    FUNC_COS,
+    FUNC_TAN,
+    FUNC_PEEK,
+    FUNC_ABS,
+    FUNC_AREAD,
+    FUNC_DREAD,
+    FUNC_RND,
+    FUNC_UNKNOWN
+};
 
 static unsigned char to_tab[] = {
     'T','O'+0x80,
@@ -383,11 +393,7 @@ static unsigned char inputoutput_tab[] = {
   'O'+0x80,
   0
 };
-#define INPUTOUTPUT_IN  2
-#define INPUTOUTPUT_UNKNOWN 6
 
-#define STACK_SIZE (sizeof(struct stack_for_frame)*5)
-#define VAR_SIZE sizeof(short int) // Size of variables in bytes
 
 static unsigned char *stack_limit;
 static unsigned char *program_start;
@@ -417,11 +423,7 @@ static const unsigned char dirextmsg[]        = "(dir)";
 static const unsigned char slashmsg[]         = "/";
 static const unsigned char spacemsg[]         = " ";
 
-//static int inchar(void);
-//static void outchar(unsigned char c);
-//static void line_terminator(void);
-//static short int expression(void);
-//static unsigned char breakcheck(void);
+
 
 bool CTinyBasic::init()
 {
@@ -507,26 +509,42 @@ unsigned char CTinyBasic::popb()
 }
 
 /***************************************************************************/
-void CTinyBasic::printnum(int num)
+void CTinyBasic::printnum(VAR_TYPE num,int size)
 {
-    int digits = 0;
+    switch (size) {
+    case 2: {
 
-    if(num < 0)
-    {
-        num = -num;
-        outchar('-');
-    }
-    do {
-        pushb(num%10+'0');
-        num = num/10;
-        digits++;
-    }
-    while (num > 0);
+        int digits = 0;
 
-    while(digits > 0)
-    {
-        outchar(popb());
-        digits--;
+        if(num < 0)
+        {
+            num = -num;
+            outchar('-');
+        }
+        do {
+            pushb(((int)num)%10+'0');
+            num = (int) (num/10);
+            digits++;
+        }
+        while (num > 0);
+
+        while(digits > 0)
+        {
+            outchar(popb());
+            digits--;
+        }
+    }
+        break;
+    case 8:{
+        char buffer[32];
+        snprintf(buffer, 32, "%11.9G", num);
+        qWarning()<<buffer;
+        for (int digit= 0;digit < 18;digit++) {
+//            if (digit == 13) digit++;   // don't print first Exp digit
+            outchar(buffer[digit]);
+        }
+
+    }
     }
 }
 
@@ -715,7 +733,7 @@ void CTinyBasic::printline()
 }
 
 /***************************************************************************/
-short int CTinyBasic::expr4(void)
+VAR_TYPE CTinyBasic::expr4(void)
 {
         // fix provided by J?rg Wullschleger wullschleger@gmail.com
         // fixes whitespace and unary operations
@@ -727,30 +745,49 @@ short int CTinyBasic::expr4(void)
         }
     // end fix
 
-    if(*txtpos == '0')
-    {
-        txtpos++;
-        return 0;
-    }
+//    if(*txtpos == '0')
+//    {
+//        txtpos++;
+//        return 0;
+//    }
 
-    if(*txtpos >= '1' && *txtpos <= '9')
+
+    if((*txtpos >= '0' && *txtpos <= '9') || *txtpos == '.' )
     {
-        short int a = 0;
-        do 	{
-            a = a*10 + *txtpos - '0';
-            txtpos++;
-        } while(*txtpos >= '0' && *txtpos <= '9');
+        VAR_TYPE a = 0;
+        // TODO Manage float 999.99999E+99. Replace this bloc by atof function
+        switch (sizeof(a)) {
+        case 2:
+            do 	{
+                a = a*10 + *txtpos - '0';
+                txtpos++;
+            } while(*txtpos >= '0' && *txtpos <= '9');
+            break;
+        case 8:
+            a = atof((const char*)txtpos);
+            bool exp = false;
+            do {
+                txtpos++;
+                if (*txtpos=='E') exp = true;
+            } while ( (*txtpos >= '0' && *txtpos <= '9')||
+                                   *txtpos=='.' ||
+                                   *txtpos=='E' ||
+                                   (exp && *txtpos=='+') ||
+                                   (exp &&*txtpos=='-'));
+            break;
+
+        }
         return a;
     }
 
     // Is it a function or variable reference?
     if(txtpos[0] >= 'A' && txtpos[0] <= 'Z')
     {
-        short int a;
+        VAR_TYPE a;
         // Is it a variable reference (single alpha)
         if(txtpos[1] < 'A' || txtpos[1] > 'Z')
         {
-            a = ((short int *)variables_begin)[*txtpos - 'A'];
+            a = ((VAR_TYPE *)variables_begin)[*txtpos - 'A'];
             txtpos++;
             return a;
         }
@@ -773,25 +810,30 @@ short int CTinyBasic::expr4(void)
         switch(f)
         {
             case FUNC_PEEK:
-                return program[a];
+                return 0;//program[a];
             case FUNC_ABS:
                 if(a < 0)
                     return -a;
                 return a;
+            case FUNC_SIN:
+                return sin(a);
+        case FUNC_COS:
+            return cos(a);
+        case FUNC_TAN:
+            return tan(a);
+//        case FUNC_AREAD:
+//            return analogRead( a );
+//        case FUNC_DREAD:
+//            return digitalRead( a );
 
-//                        case FUNC_AREAD:
-//                                return analogRead( a );
-//                        case FUNC_DREAD:
-//                                return digitalRead( a );
-
-//                        case FUNC_RND:
-//                                return( random( a ));
+//        case FUNC_RND:
+//            return( random( a ));
         }
     }
 
     if(*txtpos == '(')
     {
-        short int a;
+        VAR_TYPE a;
         txtpos++;
         a = expression();
         if(*txtpos != ')')
@@ -808,9 +850,9 @@ expr4_error:
 }
 
 /***************************************************************************/
-short int CTinyBasic::expr3(void)
+VAR_TYPE CTinyBasic::expr3(void)
 {
-    short int a,b;
+    VAR_TYPE a,b;
 
     a = expr4();
 
@@ -839,9 +881,9 @@ short int CTinyBasic::expr3(void)
 }
 
 /***************************************************************************/
-short int CTinyBasic::expr2(void)
+VAR_TYPE CTinyBasic::expr2(void)
 {
-    short int a,b;
+    VAR_TYPE a,b;
 
     if(*txtpos == '-' || *txtpos == '+')
         a = 0;
@@ -867,12 +909,12 @@ short int CTinyBasic::expr2(void)
     }
 }
 /***************************************************************************/
-short int CTinyBasic::expression(void)
+VAR_TYPE CTinyBasic::expression(void)
 {
-    short int a,b;
+    VAR_TYPE a,b;
 
     a = expr2();
-
+    qWarning()<<"expression:"<<a;
     // Check if we have an error
     if(expression_error)	return a;
 
@@ -1765,10 +1807,11 @@ void cmd_Files( void )
 #endif
 #endif
 
+//BUG extend printnum to integer
 void CTinyBasic::go_MEM() {
-    printnum(variables_begin-program_end);
+    printnum(variables_begin-program_end,2);
     printmsgNoNL((unsigned char*) "STEPS  ");
-    printnum((variables_begin-program_end)/8);
+    printnum((variables_begin-program_end)/8,2);
     printmsg((unsigned char*) "MEMORIES");
     nextStep = RUN_NEXT_STATEMENT;
 }
@@ -1832,7 +1875,7 @@ void CTinyBasic::go_PRINT() {
         }
         else
         {
-            short int e;
+            VAR_TYPE e;
             expression_error = 0;
             e = expression();
             if(expression_error){
@@ -1967,7 +2010,7 @@ void CTinyBasic::go_RETURN() {
                     // Is the the variable we are looking for?
                     if(txtpos[-1] == f->for_var)
                     {
-                        short int *varaddr = ((short int *)variables_begin) + txtpos[-1] - 'A';
+                        VAR_TYPE *varaddr = ((VAR_TYPE *)variables_begin) + txtpos[-1] - 'A';
                         *varaddr = *varaddr + f->step;
                         // Use a different test depending on the sign of the step increment
                         if((f->step > 0 && *varaddr <= f->terminal) || (f->step < 0 && *varaddr >= f->terminal))
@@ -2061,7 +2104,7 @@ void CTinyBasic::go_FORLOOP() {
 
         sp -= sizeof(struct stack_for_frame);
         f = (struct stack_for_frame *)sp;
-        ((short int *)variables_begin)[var_for-'A'] = initial_for;
+        ((VAR_TYPE *)variables_begin)[var_for-'A'] = initial_for;
         f->frame_type = STACK_FOR_FLAG;
         f->for_var = var_for;
         f->terminal = terminal_for;
@@ -2077,7 +2120,7 @@ void CTinyBasic::go_FORLOOP() {
 }
 
 void CTinyBasic::go_IF() {
-    short int val;
+    VAR_TYPE val;
     expression_error = 0;
     val = expression();
     if(expression_error || *txtpos == NL) {
@@ -2104,18 +2147,18 @@ void CTinyBasic::go_INPUT() {
     if(*txtpos != NL && *txtpos != ':') {
         nextStep = QWHAT; return;
     }
-    ((short int *)variables_begin)[var-'A'] = 99;
+    ((VAR_TYPE *)variables_begin)[var-'A'] = 99;
     nextStep = RUN_NEXT_STATEMENT;
 
 }
 
 void CTinyBasic::go_ASSIGNMENT() {
     qWarning("ASSIGNMENT");
-    short int value;
-    short int *var;
+    VAR_TYPE value;
+    VAR_TYPE *var;
 
     if(*txtpos < 'A' || *txtpos > 'Z') { nextStep=QHOW; return; }
-    var = (short int *)variables_begin + *txtpos - 'A';
+    var = (VAR_TYPE *)variables_begin + *txtpos - 'A';
     txtpos++;
 
     ignore_blanks();

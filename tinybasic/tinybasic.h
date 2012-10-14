@@ -14,8 +14,14 @@
 #endif
 
 // size of our program ram
-#define kRamSize   1558
+#define kRamSize   1800
 
+#define INPUTOUTPUT_IN  2
+#define INPUTOUTPUT_UNKNOWN 6
+
+#define STACK_SIZE (sizeof(struct stack_for_frame)*5)
+#define VAR_TYPE double    //short int
+#define VAR_SIZE sizeof(VAR_TYPE) // Size of variables in bytes
 
 class CKeyword {
 public:
@@ -87,18 +93,18 @@ public:
        unsigned short testnum();
        void pushb(unsigned char b);
        unsigned char popb();
-       void printnum(int num);
+       void printnum(VAR_TYPE num, int size=8);
        void printUnum(unsigned int num);
        void printmsgNoNL(const unsigned char *msg);
        void loop();
-       short expression();
+       VAR_TYPE expression();
        unsigned char print_quoted_string();
        unsigned char *findline();
        void toUppercaseBuffer();
        void printline();
-       short expr4();
-       short expr3();
-       short expr2();
+       VAR_TYPE expr4();
+       VAR_TYPE expr3();
+       VAR_TYPE expr2();
        void printmsg(const unsigned char *msg);
        void getln(char prompt);
 
@@ -110,7 +116,7 @@ public:
            int val;
 
            unsigned char var_for;
-           short int initial_for, step_for, terminal_for;
+           VAR_TYPE initial_for, step_for, terminal_for;
 
            boolean breakFlag;
            bool waitForRTN;
