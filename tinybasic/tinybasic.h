@@ -127,6 +127,7 @@ public:
            short int initial_for, step_for, terminal_for;
 
            boolean breakFlag;
+           bool waitForRTN;
 
            void go_MEM();
            void go_NEW();
@@ -141,6 +142,7 @@ public:
            void go_FORLOOP();
            void go_IF();
            void go_INPUT();
+           void go_ASSIGNMENT();
 };
 
 #endif // TINYBASIC_H

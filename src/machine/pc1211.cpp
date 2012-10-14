@@ -71,13 +71,13 @@ bool Cpc1211::run()
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
-    if (DisplayWaitForRTN) {
+    if (pBASIC->waitForRTN) {
         if (pKEYB->LastKey >0) {
             qWarning()<< "Clear buffer";
             // Remove until CR
             pBASIC->outputBuffer.remove(0,pBASIC->outputBuffer.indexOf('\n')+1);
             if (pBASIC->outputBuffer.right(1).startsWith('\n')) pBASIC->outputBuffer.chop(1);
-            if (!pBASIC->outputBuffer.contains('\n')) DisplayWaitForRTN = false;
+            if (!pBASIC->outputBuffer.contains('\n')) pBASIC->waitForRTN = false;
 //            DisplayWaitForRTN = false;
 //            pBASIC->outputBuffer.clear();
             Refresh_Display = true;
