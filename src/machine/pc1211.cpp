@@ -16,8 +16,8 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     Initial_Session_Fname ="pc1211.pkm";
 
     BackGroundFname	= ":/pc1211/pc-1211.png";
-    LcdFname		= ":/PC1245/pc1245/1245lcd.png";
-    SymbFname		= ":/PC1245/pc1245/1245symb.png";
+    LcdFname		= ":/pc1211/pc-1211lcd.png";
+    SymbFname		= ":/pc1211/pc-1211symb.png";
 
     memsize		= 0x10000;
 
@@ -34,12 +34,12 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     setDX(626);//Pc_DX		= 483;//409;
     setDY(252);//Pc_DY		= 252;//213;
 
-    Lcd_X		= 55;
-    Lcd_Y		= 49;
+    Lcd_X		= 46;
+    Lcd_Y		= 50;
     Lcd_DX		= 144;//168;//144 ;
     Lcd_DY		= 8;
-    Lcd_ratio_X	= 2 * 1.18;
-    Lcd_ratio_Y	= 2 * 1.18;
+    Lcd_ratio_X	= 2 * 1.375;
+    Lcd_ratio_Y	= 2 * 1.375;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);

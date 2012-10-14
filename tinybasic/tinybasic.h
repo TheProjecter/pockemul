@@ -13,6 +13,10 @@
 #define false 0
 #endif
 
+// size of our program ram
+#define kRamSize   1558
+
+
 class CKeyword {
 public:
     CKeyword(QString name = QString(),quint8 code = 0);
@@ -59,27 +63,9 @@ public:
 
        virtual void	Reset(void);
 
-
-
-       void Interpret(QByteArray, int pos = 0);
-       void inputCommand(QByteArray);
-       void Parse();
-
        QByteArray commandBuffer;
        QByteArray outputBuffer;
 
-       QMap<QByteArray,CKeyword> CommandMap;
-
-       QMap<int,QByteArray> basicLines;
-
-       Mode mode;
-       void saveBasicLine();
-       void test();
-       void executeCommand(QByteArray code, Action action = INITIAL);
-       void go_LIST(QByteArray code,Action action = INITIAL);
-       void go_RUN(QByteArray code,Action action = INITIAL);
-
-       quint8 runningCmd;
 
 
        void inputChar(quint8 c);
@@ -143,6 +129,11 @@ public:
            void go_IF();
            void go_INPUT();
            void go_ASSIGNMENT();
+
+           unsigned char program[kRamSize];
+           unsigned char *txtpos,*list_line;
+           unsigned char expression_error;
+           unsigned char *tempsp;
 };
 
 #endif // TINYBASIC_H

@@ -91,9 +91,9 @@ quint8 pc1211_carDef[0x500] = {
 
 Clcdc_pc1211::Clcdc_pc1211(CPObject *parent)	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
-                        (int) (95*contrast),
-                        (int) (107*contrast),
-                        (int) (97*contrast));
+                        (int) (102*contrast),
+                        (int) (106*contrast),
+                        (int) (29*contrast));
 
     pPC1211 = (Cpc1211*) parent;
 }

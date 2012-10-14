@@ -5,17 +5,7 @@
 #include "Keyb.h"
 #include "Inter.h"
 
-//enum {
-//    MEM,
-//    LIST
-//};
-//#define KW_LIST     0xE1
-//#define KW_PRINT    0xE2
-//#define KW_CLS      0xE3
-//#define KW_RUN      0xE4
-//#define KW_PI       0xE5
-//#define KW_FOR      0xE6
-//#define KW_TO       0xE7
+
 
 #define TOKENCHAR(c)        QString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").contains(c)
 #define TOKENSTARTCHAR(c)   QString("ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(c)
@@ -24,19 +14,7 @@
 
 CTinyBasic::CTinyBasic(CPObject *parent):CCPU(parent)
 {
-//    CommandMap["LIST"] = CKeyword("LIST",KW_LIST);
-//    CommandMap["PRINT"] = CKeyword("PRINT",KW_PRINT);
-//    CommandMap["CLS"] = CKeyword("CLS",KW_CLS);
-//    CommandMap["RUN"] = CKeyword("RUN",KW_RUN);
-//    CommandMap["PI"] = CKeyword("RUN",KW_PI);
-//    CommandMap["FOR"] = CKeyword("FOR",KW_FOR);
-//    CommandMap["TO"] = CKeyword("TO",KW_TO);
 
-//    mode = COMMAND;
-//    runningCmd=0;
-//    curDispLine = -1;
-
-//    test();
 }
 
 
@@ -69,246 +47,7 @@ void CTinyBasic::outputChar(QByteArray ba) {
     qWarning()<<ba;
 }
 
-QByteArray CTinyBasic::convertToDisplay(QByteArray ba) {
-    QList <CKeyword> list = CommandMap.values();
-    for (int i = 0; i<list.size();i++) {
 
-        if (ba.contains(list.at(i).Code)) ba.replace(list.at(i).Code,list.at(i).Name+" ");
-    }
-    return ba;
-}
-
-void CTinyBasic::inputChar(quint8 c) {
-
-    if (runningCmd) {
-        executeCommand(QByteArray(1,runningCmd),RUNNING);
-//        Action action;
-//        switch (c) {
-//        case K_UA: action = UP_ARROW; break;
-//        case K_DA: action = DOWN_ARROW; break;
-//        case K_BRK:action = BREAK; break;
-//        case K_RET:action = ENTER; break;
-//        default: action = NO_ACTION;
-//        }
-//        executeCommand(QByteArray(1,runningCmd),action);
-        return;
-    }
-
-    switch (c) {
-    case K_SHT: break;
-    case K_UA:
-    case K_DA: executeCommand(QByteArray(1,c)); return;
-
-    default:
-        commandBuffer.append(c);
-    }
-
-    qWarning()<< commandBuffer;
-    if (c == K_RET) {
-        Parse();
-        Interpret(commandBuffer);
-        commandBuffer.clear();
-    }
-}
-
-void CTinyBasic::test() {
-//    inputCommand("LIST");
-//    Interpret(commandBuffer);
-    inputCommand("100APRI NTB C  (13*4):\" CLS\":LIST");
-    Interpret(commandBuffer);
-    inputCommand("   50   FOR I = 1 TO 4");
-    Interpret(commandBuffer);
-    inputCommand("   10CLS");
-    Interpret(commandBuffer);
-//    inputCommand("LIST");
-//    Interpret(commandBuffer);
-//    inputCommand("RUN");
-//    Interpret(commandBuffer);
-
-}
-
-void CTinyBasic::saveBasicLine() {
-    // Search line number
-    int pos= 0;
-    while (NUMERIC(commandBuffer.at(pos))) pos++;
-    int lineNumber = commandBuffer.left(pos).toInt();
-    basicLines.insert(lineNumber,commandBuffer.mid(pos));
-
-}
-
-void CTinyBasic::executeCommand(QByteArray code,Action action) {
-//    qWarning()<< "Execute Command:"<<code;
-//    quint8 cmd = code.at(0);
-//    switch (cmd) {
-//    case K_DA:
-//    case K_UA:        go_LIST(code); break;
-//    case KW_LIST :  go_LIST(code); break;
-//    case KW_RUN:    go_RUN(code); break;
-//    case KW_PI:     go_PI();break;
-//    case K_RET: clearOutput();curDispLine = -1;outputChar("\r");break;
-//    }
-}
-
-void CTinyBasic::go_RUN(QByteArray code, Action action) {
-    outputChar("RUN BASIC PROGRAMME");
-    // Check parameters
-
-    mode = RUN;
-    QMapIterator<int,QByteArray> i(basicLines);
-     while (i.hasNext()) {
-         i.next();
-         Interpret( i.value());
-     }
-}
-
-QByteArray CTinyBasic::go_PI() {
-    return "3.1416";
-}
-
-void CTinyBasic::go_LIST(QByteArray code,Action action) {
-
-
-//    QList<int> linenbList = basicLines.keys();
-//    int nbLines = linenbList.count();
-
-//    // Check parameters
-//    quint8 cmd = code.at(0);
-//    switch(cmd) {
-//    case KW_LIST:curDispLine = 0; break;
-//    case K_DA:
-//        if (curDispLine>=nbLines-1) return;
-//        else curDispLine++;
-//        break;
-//    case K_UA:
-//        if (curDispLine == -1) curDispLine = nbLines-1;
-//        else if (curDispLine == 0) return;
-//        else curDispLine--;
-//        break;
-//    case K_CLR: clearOutput();
-//        curDispLine= -1;
-//        outputChar(QByteArray(1,0x13));
-//        break;
-//    }
-
-//    outputChar("LIST File:");
-
-
-//    if ( linenbList.isEmpty()) {
-//        runningCmd = 0;
-//        return;
-//    }
-
-
-
-//    int linenb=linenbList.at(curDispLine);
-//    outputChar( QString("%1").arg(linenb).toAscii() + ":" + basicLines.value(linenb));
-}
-
-void CTinyBasic::Interpret(QByteArray ops,int pos)
-{
-
-//    if (mode == RUN) {
-//        qWarning()<<"Interpret : "<< ops.mid(pos);
-//        executeCommand(ops.mid(pos));
-//    }
-//    if (mode == COMMAND) {
-//        // Check if buffer start by number
-//        if (NUMERIC(ops.at(pos))) {
-//            // record BASIC line
-
-//            qWarning()<< "Record BASIC LINE:"<<ops.mid(pos);
-//            saveBasicLine();
-//        }
-//        else
-//        {
-//            executeCommand(ops.mid(pos));
-//        }
-//    }
-
-//    commandBuffer.clear();
-
-}
-
-void CTinyBasic::inputCommand(QByteArray command)
-{
-//    qWarning()<< command;
-//    commandBuffer = command;
-//    Parse();
-}
-
-
-
-void CTinyBasic::Parse()
-{
-    qWarning()<<"Parse:"+commandBuffer;
-    commandBuffer.append('\r');
-    int startToken = 0;
-    int lenght=0;
-    bool foundToken = false;
-    for (int i = 0 ; i<commandBuffer.size();i++) {
-        char c = commandBuffer.at(i);
-//        qWarning()<< c;
-
-        if (STRINGCHAR(c)) {        // STRING found continue until end of string
-            i++;
-            while ( (i<commandBuffer.size()) && !STRINGCHAR(commandBuffer.at(i))) i++;
-            c = commandBuffer.at(i);
-        }
-
-        // Remove all spaces
-        if (c==' ') {
-            commandBuffer.remove(i,1);
-//            qWarning()<<"remove space:"<<commandBuffer;
-            i--;
-            continue;
-        }
-
-        if ( !foundToken && TOKENSTARTCHAR(c)) {
-//            qWarning()<<"Start Token";
-            foundToken = true;
-            startToken = i;
-        }
-
-        if (foundToken && !TOKENCHAR(c) ) {
-//            qWarning()<<"End Token";
-
-            lenght = i - startToken;
-
-            QByteArray currentToken = commandBuffer.mid(startToken,lenght);
-//            qWarning() << "currentToken:" << currentToken;
-
-            for (int k = currentToken.size();k>0;k--) {
-//                qWarning()<< "search:"<<currentToken.mid(0,k);
-                if (CommandMap.contains(currentToken.mid(0,k))) {
-//                    qWarning()<<"found";
-                    // Replace by code in the buffer
-                    commandBuffer.replace(startToken,k,QByteArray(1,CommandMap[currentToken.mid(0,k)].Code));
-//                    startToken++;
-                    i=startToken-1;
-                    foundToken = false;
-
-                    break;
-                }
-            }
-            foundToken = false;
-            i = startToken;
-
-
-        }
-
-    }
-//    qWarning()<< commandBuffer;
-
-
-
-}
-
-
-CKeyword::CKeyword(QString name, quint8 code)
-{
-    Name = name;
-    Code = code;
-}
 
 
 void CTinyBasic::Reset()
@@ -453,8 +192,7 @@ char eliminateCompileErrors = 1;  // fix to suppress arduino build errors
   // Not arduino setup
   #include <stdio.h>
 
-  // size of our program ram
-  #define kRamSize   4096
+
 
   #if ENABLE_FILEIO
   FILE * fp;
@@ -502,10 +240,7 @@ typedef short unsigned LINENUM;
 #endif
 
 
-static unsigned char program[kRamSize];
-static unsigned char *txtpos,*list_line;
-static unsigned char expression_error;
-static unsigned char *tempsp;
+
 
 /***********************************************************/
 // Keyword table and constants - the last character has 0x80 added to it
@@ -700,9 +435,9 @@ bool CTinyBasic::init()
     sp = program+sizeof(program);  // Needed for printnum
     stack_limit = program+sizeof(program)-STACK_SIZE;
     variables_begin = stack_limit - 27*VAR_SIZE;
-    printmsg(initmsg);
-    printnum(variables_begin-program_end);
-    printmsg(memorymsg);
+//    printmsg(initmsg);
+//    printnum(variables_begin-program_end);
+//    printmsg(memorymsg);
     return true;
 }
 
@@ -2032,7 +1767,9 @@ void cmd_Files( void )
 
 void CTinyBasic::go_MEM() {
     printnum(variables_begin-program_end);
-    printmsg(memorymsg);
+    printmsgNoNL((unsigned char*) "STEPS  ");
+    printnum((variables_begin-program_end)/8);
+    printmsg((unsigned char*) "MEMORIES");
     nextStep = RUN_NEXT_STATEMENT;
 }
 
