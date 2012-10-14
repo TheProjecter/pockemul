@@ -101,7 +101,7 @@ Clcdc_pc1211::Clcdc_pc1211(CPObject *parent)	: Clcdc(parent){						//[constructo
 void Clcdc_pc1211::disp()
 {
 
-    qWarning()<< "DISP:"<<pPC1211->pBASIC->outputBuffer<<"**";
+//    qWarning()<< "DISP:"<<pPC1211->pBASIC->outputBuffer<<"**";
     line.fill(0,24);
     QByteArray *buf = &pPC1211->pBASIC->outputBuffer;
     if (!buf->isEmpty()) {

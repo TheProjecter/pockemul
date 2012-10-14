@@ -62,6 +62,7 @@ Cpc1211::~Cpc1211()
 bool Cpc1211::init()
 {
     pCPU->init();
+    CpcXXXX::TurnON();
     return true;
 }
 
@@ -89,6 +90,7 @@ bool Cpc1211::run()
     switch (pKEYB->LastKey) {
     case 0: break;
     case K_SHT: break;
+    case K_BRK: pBASIC->breakFlag = true; break;
     default:
         pBASIC->commandBuffer.append(pKEYB->LastKey);
         pKEYB->LastKey = 0;

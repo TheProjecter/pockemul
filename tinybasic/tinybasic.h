@@ -31,8 +31,9 @@ public:
     enum NEXT_STEP {
         WARMSTART,PROMPT,DIRECT,QHOW,EXECLINE,
         EXECNEXTLINE,INTERPERATEATTXTPOS,
-        FILES,LIST,CHAIN,LOAD,MEM,QWHAT,SAVE,NEXT,ASSIGNMENT,
-        UNIMPLEMENTED,GOSUB,GOSUB_RETURN,FORLOOP,INPUT,PRINT,POKE,BYE,GETLN,GETLN_END
+        FILES,LIST,CHAIN,LOAD,MEM,QWHAT,QSORRY,SAVE,NEXT,ASSIGNMENT,
+        UNIMPLEMENTED,GOSUB,GOSUB_RETURN,FORLOOP,INPUT,PRINT,POKE,BYE,GETLN,GETLN_END,
+        RUN_NEXT_STATEMENT
 
     };
 
@@ -121,6 +122,25 @@ public:
            boolean isDigital;
            boolean alsoWait;
            int val;
+
+           unsigned char var_for;
+           short int initial_for, step_for, terminal_for;
+
+           boolean breakFlag;
+
+           void go_MEM();
+           void go_NEW();
+           void go_RUN();
+           void go_LIST();
+           void go_PRINT();
+           void go_GOTO();
+           void go_SAVE();
+           void go_RETURN();
+           void go_NEXT();
+           void go_GOSUB();
+           void go_FORLOOP();
+           void go_IF();
+           void go_INPUT();
 };
 
 #endif // TINYBASIC_H

@@ -1195,21 +1195,23 @@ void CTinyBasic::loop()
         case FILES:     goto files;
         case CHAIN:goto chain;
         case LOAD:goto load;
-        case MEM:goto mem;
+//        case MEM:goto mem;
         case QWHAT:goto qwhat;
-        case SAVE:goto save;
-        case NEXT:goto next;
+        case QSORRY:goto qsorry;
+//        case SAVE:goto save;
+//        case NEXT:goto next;
         case ASSIGNMENT:goto assignment;
         case UNIMPLEMENTED:goto unimplemented;
-        case GOSUB:goto gosub;
-        case GOSUB_RETURN:goto gosub_return;
-        case FORLOOP:goto forloop;
-        case INPUT:goto input;
-        case PRINT:goto print;
+//        case GOSUB:goto gosub;
+//        case GOSUB_RETURN:goto gosub_return;
+//        case FORLOOP:goto forloop;
+//        case INPUT:goto input;
+//        case PRINT:goto print;
         case POKE:goto poke;
-        case LIST:goto list;
+//        case LIST:goto list;
         case GETLN:goto getln;
         case GETLN_END:goto getln_end;
+        case RUN_NEXT_STATEMENT: goto run_next_statement;
         }
 
 warmstart:
@@ -1386,8 +1388,7 @@ qsorry:
     goto warmstart;
 
 run_next_statement:
-    while(*txtpos == ':')
-        txtpos++;
+    while(*txtpos == ':') txtpos++;
     ignore_blanks();
     if(*txtpos == NL) {
         nextStep = EXECNEXTLINE;
@@ -1437,10 +1438,7 @@ interperateAtTxtpos:
         nextStep = FILES;
         return;
         goto files;
-    case KW_LIST:
-        nextStep = LIST;
-        return;
-        goto list;
+    case KW_LIST: go_LIST(); return;
     case KW_CHAIN:
         nextStep = CHAIN;
         return;
@@ -1449,119 +1447,50 @@ interperateAtTxtpos:
         nextStep = LOAD;
         return;
         goto load;
-    case KW_MEM:
-        nextStep = MEM;
+    case KW_MEM: go_MEM(); return;
+    case KW_NEW: go_NEW(); return;
+    case KW_RUN: go_RUN(); return;
+    case KW_SAVE: go_SAVE(); return;
+    case KW_NEXT: go_NEXT(); return;
+    case KW_LET:
+        nextStep = ASSIGNMENT;
         return;
-        goto mem;
-    case KW_NEW:
+        goto assignment;
+    case KW_IF: go_IF(); return;
+    case KW_GOTO: go_GOTO(); return;
+    case KW_GOSUB: go_GOSUB(); return;
+    case KW_RETURN: go_RETURN(); return;
+    case KW_REM:
+    case KW_QUOTE: nextStep = EXECNEXTLINE; return;     // Ignore line completely
+    case KW_FOR: go_FORLOOP(); return;
+    case KW_INPUT: go_INPUT(); return;
+    case KW_PRINT:
+    case KW_QMARK: go_PRINT(); return;
+    case KW_POKE:
+        nextStep = POKE;
+        return;
+        goto poke;
+    case KW_END:
+    case KW_STOP:
+        // This is the easy way to end - set the current line to the end of program attempt to run it
         if(txtpos[0] != NL) {
             nextStep = QWHAT;
             return;
             goto qwhat;
         }
-        program_end = program_start;
-        nextStep = PROMPT;
+        current_line = program_end;
+        nextStep = EXECLINE;
         return;
-        goto prompt;
-    case KW_RUN:
-            current_line = program_start;
-            nextStep = EXECLINE;
-            return;
-            goto execline;
-        case KW_SAVE:
-        nextStep = SAVE;
-        return;
-            goto save;
-        case KW_NEXT:
-        nextStep = NEXT;
-        return;
-            goto next;
-        case KW_LET:
-        nextStep = ASSIGNMENT;
-        return;
-            goto assignment;
-        case KW_IF:
-            short int val;
-            expression_error = 0;
-            val = expression();
-            if(expression_error || *txtpos == NL) {
-                nextStep = QHOW;
-                return;
-                goto qhow;
-            }
-            if(val != 0) {
-                nextStep = INTERPERATEATTXTPOS;
-                return;
-                goto interperateAtTxtpos;
-            }
-            nextStep = EXECNEXTLINE;
-            return;
-            goto execnextline;
-
-        case KW_GOTO:
-            expression_error = 0;
-            linenum = expression();
-            if(expression_error || *txtpos != NL) {
-                nextStep = QHOW;
-                return;
-                goto qhow;
-            }
-            current_line = findline();
-            nextStep = EXECLINE;
-            return;
-            goto execline;
-
-        case KW_GOSUB:
-        nextStep = GOSUB;
-        return;
-            goto gosub;
-        case KW_RETURN:
-        nextStep = GOSUB_RETURN;
-        return;
-            goto gosub_return;
-        case KW_REM:
-                case KW_QUOTE:
-        nextStep = EXECNEXTLINE;
-        return;
-            goto execnextline;	// Ignore line completely
-        case KW_FOR:
-        nextStep = FORLOOP;
-        return;
-            goto forloop;
-        case KW_INPUT:
-        nextStep = INPUT;
-        return;
-            goto input;
-        case KW_PRINT:
-                case KW_QMARK:
-        nextStep = PRINT;
-        return;
-            goto print;
-        case KW_POKE:
-        nextStep = POKE;
-        return;
-            goto poke;
-        case KW_END:
-        case KW_STOP:
-            // This is the easy way to end - set the current line to the end of program attempt to run it
-            if(txtpos[0] != NL) {
-                nextStep = QWHAT;
-                return;
-                goto qwhat;
-            }
-            current_line = program_end;
-            nextStep = EXECLINE;
-            return;
-            goto execline;
-        case KW_BYE:
-            // Leave the basic interperater
+        goto execline;
+    case KW_BYE:
+        // Leave the basic interperater
         nextStep = BYE;
-            return;
+        return;
 
-                case KW_PINMODE:  // PINMODE <pin>, INPUT/OUTPUT
-                        goto pinmode;
-                case KW_AWRITE:  // AWRITE <pin>, HIGH|LOW
-                        isDigital = false;
+    case KW_PINMODE:  // PINMODE <pin>, INPUT/OUTPUT
+        goto pinmode;
+    case KW_AWRITE:  // AWRITE <pin>, HIGH|LOW
+        isDigital = false;
                         goto awrite;
                 case KW_DWRITE:  // DWRITE <pin>, HIGH|LOW
                         isDigital = true;
@@ -1587,181 +1516,92 @@ interperateAtTxtpos:
 
 
 execnextline:
-    if(current_line == NULL)		// Processing direct commands?
-        nextStep = PROMPT; return;
+    if(current_line == NULL) {		// Processing direct commands?
+        nextStep = PROMPT;
+        return;
         goto prompt;
+    }
     current_line +=	 current_line[sizeof(LINENUM)];
 
 execline:
     if(current_line == program_end) // Out of lines to run
         goto warmstart;
     txtpos = current_line+sizeof(LINENUM)+sizeof(char);
-    nextStep = INTERPERATEATTXTPOS; return;
+    nextStep = INTERPERATEATTXTPOS;
+    return;
     goto interperateAtTxtpos;
 
-input:
-    {
-        unsigned char var;
-        ignore_blanks();
-        if(*txtpos < 'A' || *txtpos > 'Z'){
-            nextStep = QWHAT; return;
-            goto qwhat;
-        }
-        var = *txtpos;
-        txtpos++;
-        ignore_blanks();
-        if(*txtpos != NL && *txtpos != ':') {
-            nextStep = QWHAT; return;
-            goto qwhat;
-        }
-        ((short int *)variables_begin)[var-'A'] = 99;
-
-        goto run_next_statement;
-    }
-
-forloop:
-    {
-        unsigned char var;
-        short int initial, step, terminal;
-        ignore_blanks();
-        if(*txtpos < 'A' || *txtpos > 'Z')
-            goto qwhat;
-        var = *txtpos;
-        txtpos++;
-        ignore_blanks();
-        if(*txtpos != '=')
-            goto qwhat;
-        txtpos++;
-        ignore_blanks();
-
-        expression_error = 0;
-        initial = expression();
-        if(expression_error)
-            goto qwhat;
-
-        scantable(to_tab);
-        if(table_index != 0)
-            goto qwhat;
-
-        terminal = expression();
-        if(expression_error)
-            goto qwhat;
-
-        scantable(step_tab);
-        if(table_index == 0)
-        {
-            step = expression();
-            if(expression_error)
-                goto qwhat;
-        }
-        else
-            step = 1;
-        ignore_blanks();
-        if(*txtpos != NL && *txtpos != ':')
-            goto qwhat;
 
 
-        if(!expression_error && *txtpos == NL)
-        {
-            struct stack_for_frame *f;
-            if(sp + sizeof(struct stack_for_frame) < stack_limit)
-                goto qsorry;
+//next:
+//    // Fnd the variable name
+//    ignore_blanks();
+//    if(*txtpos < 'A' || *txtpos > 'Z')
+//        goto qhow;
+//    txtpos++;
+//    ignore_blanks();
+//    if(*txtpos != ':' && *txtpos != NL)
+//        goto qwhat;
 
-            sp -= sizeof(struct stack_for_frame);
-            f = (struct stack_for_frame *)sp;
-            ((short int *)variables_begin)[var-'A'] = initial;
-            f->frame_type = STACK_FOR_FLAG;
-            f->for_var = var;
-            f->terminal = terminal;
-            f->step     = step;
-            f->txtpos   = txtpos;
-            f->current_line = current_line;
-            goto run_next_statement;
-        }
-    }
-    goto qhow;
-
-gosub:
-    expression_error = 0;
-    linenum = expression();
-    if(!expression_error && *txtpos == NL)
-    {
-        struct stack_gosub_frame *f;
-        if(sp + sizeof(struct stack_gosub_frame) < stack_limit)
-            goto qsorry;
-
-        sp -= sizeof(struct stack_gosub_frame);
-        f = (struct stack_gosub_frame *)sp;
-        f->frame_type = STACK_GOSUB_FLAG;
-        f->txtpos = txtpos;
-        f->current_line = current_line;
-        current_line = findline();
-        goto execline;
-    }
-    goto qhow;
-
-next:
-    // Fnd the variable name
-    ignore_blanks();
-    if(*txtpos < 'A' || *txtpos > 'Z')
-        goto qhow;
-    txtpos++;
-    ignore_blanks();
-    if(*txtpos != ':' && *txtpos != NL)
-        goto qwhat;
-
-gosub_return:
-    // Now walk up the stack frames and find the frame we want, if present
-    tempsp = sp;
-    while(tempsp < program+sizeof(program)-1)
-    {
-        switch(tempsp[0])
-        {
-            case STACK_GOSUB_FLAG:
-                if(table_index == KW_RETURN)
-                {
-                    struct stack_gosub_frame *f = (struct stack_gosub_frame *)tempsp;
-                    current_line	= f->current_line;
-                    txtpos			= f->txtpos;
-                    sp += sizeof(struct stack_gosub_frame);
-                    goto run_next_statement;
-                }
-                // This is not the loop you are looking for... so Walk back up the stack
-                tempsp += sizeof(struct stack_gosub_frame);
-                break;
-            case STACK_FOR_FLAG:
-                // Flag, Var, Final, Step
-                if(table_index == KW_NEXT)
-                {
-                    struct stack_for_frame *f = (struct stack_for_frame *)tempsp;
-                    // Is the the variable we are looking for?
-                    if(txtpos[-1] == f->for_var)
-                    {
-                        short int *varaddr = ((short int *)variables_begin) + txtpos[-1] - 'A';
-                        *varaddr = *varaddr + f->step;
-                        // Use a different test depending on the sign of the step increment
-                        if((f->step > 0 && *varaddr <= f->terminal) || (f->step < 0 && *varaddr >= f->terminal))
-                        {
-                            // We have to loop so don't pop the stack
-                            txtpos = f->txtpos;
-                            current_line = f->current_line;
-                            goto run_next_statement;
-                        }
-                        // We've run to the end of the loop. drop out of the loop, popping the stack
-                        sp = tempsp + sizeof(struct stack_for_frame);
-                        goto run_next_statement;
-                    }
-                }
-                // This is not the loop you are looking for... so Walk back up the stack
-                tempsp += sizeof(struct stack_for_frame);
-                break;
-            default:
-                //printf("Stack is stuffed!\n");
-                goto warmstart;
-        }
-    }
-    // Didn't find the variable we've been looking for
-    goto qhow;
+//gosub_return:
+//    // Now walk up the stack frames and find the frame we want, if present
+//    tempsp = sp;
+//    while(tempsp < program+sizeof(program)-1)
+//    {
+//        switch(tempsp[0])
+//        {
+//            case STACK_GOSUB_FLAG:
+//                if(table_index == KW_RETURN)
+//                {
+//                    struct stack_gosub_frame *f = (struct stack_gosub_frame *)tempsp;
+//                    current_line	= f->current_line;
+//                    txtpos			= f->txtpos;
+//                    sp += sizeof(struct stack_gosub_frame);
+//                    nextStep = RUN_NEXT_STATEMENT;
+//                    return;
+//                    goto run_next_statement;
+//                }
+//                // This is not the loop you are looking for... so Walk back up the stack
+//                tempsp += sizeof(struct stack_gosub_frame);
+//                break;
+//            case STACK_FOR_FLAG:
+//                // Flag, Var, Final, Step
+//                if(table_index == KW_NEXT)
+//                {
+//                    qWarning()<<"NEXT:";
+//                    struct stack_for_frame *f = (struct stack_for_frame *)tempsp;
+//                    // Is the the variable we are looking for?
+//                    if(txtpos[-1] == f->for_var)
+//                    {
+//                        short int *varaddr = ((short int *)variables_begin) + txtpos[-1] - 'A';
+//                        *varaddr = *varaddr + f->step;
+//                        // Use a different test depending on the sign of the step increment
+//                        if((f->step > 0 && *varaddr <= f->terminal) || (f->step < 0 && *varaddr >= f->terminal))
+//                        {
+//                            // We have to loop so don't pop the stack
+//                            txtpos = f->txtpos;
+//                            current_line = f->current_line;
+//                            nextStep = RUN_NEXT_STATEMENT;
+//                            return;
+//                            goto run_next_statement;
+//                        }
+//                        // We've run to the end of the loop. drop out of the loop, popping the stack
+//                        sp = tempsp + sizeof(struct stack_for_frame);
+//                        nextStep = RUN_NEXT_STATEMENT;
+//                        return;
+//                        goto run_next_statement;
+//                    }
+//                }
+//                // This is not the loop you are looking for... so Walk back up the stack
+//                tempsp += sizeof(struct stack_for_frame);
+//                break;
+//            default:
+//                //printf("Stack is stuffed!\n");
+//                goto warmstart;
+//        }
+//    }
+//    // Didn't find the variable we've been looking for
+//    goto qhow;
 
 assignment:
     {
@@ -1788,6 +1628,8 @@ assignment:
             goto qwhat;
         *var = value;
     }
+    nextStep = RUN_NEXT_STATEMENT;
+    return;
     goto run_next_statement;
 poke:
     {
@@ -1818,75 +1660,11 @@ poke:
         if(*txtpos != NL && *txtpos != ':')
             goto qwhat;
     }
+    nextStep = RUN_NEXT_STATEMENT;
+    return;
     goto run_next_statement;
 
-list:
-    linenum = testnum(); // Retuns 0 if no line found.
 
-    // Should be EOL
-    if(txtpos[0] != NL)
-        goto qwhat;
-
-    // Find the line
-    list_line = findline();
-    while(list_line != program_end)
-          printline();
-    goto warmstart;
-
-print:
-    // If we have an empty list then just put out a NL
-    if(*txtpos == ':' )
-    {
-        line_terminator();
-        txtpos++;
-        goto run_next_statement;
-    }
-    if(*txtpos == NL)
-    {
-        goto execnextline;
-    }
-
-    while(1)
-    {
-        ignore_blanks();
-        if(print_quoted_string())
-        {
-            ;
-        }
-        else if(*txtpos == '"' || *txtpos == '\'')
-            goto qwhat;
-        else
-        {
-            short int e;
-            expression_error = 0;
-            e = expression();
-            if(expression_error)
-                goto qwhat;
-            printnum(e);
-        }
-
-        // At this point we have three options, a comma or a new line
-        if(*txtpos == ',')
-            txtpos++;	// Skip the comma and move onto the next
-        else if(txtpos[0] == ';' && (txtpos[1] == NL || txtpos[1] == ':'))
-        {
-            txtpos++; // This has to be the end of the print - no newline
-            break;
-        }
-        else if(*txtpos == NL || *txtpos == ':')
-        {
-            line_terminator();	// The end of the print statement
-            break;
-        }
-        else
-            goto qwhat;
-    }
-    goto run_next_statement;
-
-mem:
-    printnum(variables_begin-program_end);
-    printmsg(memorymsg);
-        goto run_next_statement;
 
 
 /*************************************************/
@@ -1921,6 +1699,8 @@ pinmode: // PINMODE <pin>, I/O
                   pinMode( pinNo, OUTPUT );
                 }
         }
+    nextStep = RUN_NEXT_STATEMENT;
+    return;
         goto run_next_statement;
 
 awrite: // AWRITE <pin>,val
@@ -1968,6 +1748,8 @@ dwrite:
                   analogWrite( pinNo, value );
                 }
         }
+    nextStep = RUN_NEXT_STATEMENT;
+    return;
         goto run_next_statement;
 #else
 pinmode: // PINMODE <pin>, I/O
@@ -2032,45 +1814,7 @@ load:
 
 
 
-save:
-        // save from memory out to a file
-#if ENABLE_FILEIO
-        {
-          unsigned char *filename;
 
-          // Work out the filename
-          expression_error = 0;
-          filename = filenameWord();
-          if(expression_error)
-            goto qwhat;
-
-#if ARDUINO
-          // remove the old file if it exists
-          if( SD.exists( (char *)filename )) {
-            SD.remove( (char *)filename );
-          }
-
-          // open the file, switch over to file output
-          fp = SD.open( (const char *)filename, FILE_WRITE );
-          outToFile = true;
-
-      // copied from "List"
-      list_line = findline();
-      while(list_line != program_end)
-            printline();
-
-          // go back to standard output, close the file
-          outToFile = false;
-          fp.close();
-#else
-    // desktop
-#endif
-
-          goto warmstart;
-       }
-#else
-        goto unimplemented;
-#endif
 #if 0
 rseed:
       {
@@ -2235,7 +1979,11 @@ unsigned char CTinyBasic::breakcheck(void)
     return getch() == CTRLC;
    else
 #endif
-     return 0;
+      if (breakFlag) {
+          breakFlag = false;
+          return true;
+      }
+     return false;
 #endif
 }
 /***********************************************************/
@@ -2380,3 +2128,345 @@ void cmd_Files( void )
 }
 #endif
 #endif
+
+void CTinyBasic::go_MEM() {
+    printnum(variables_begin-program_end);
+    printmsg(memorymsg);
+    nextStep = RUN_NEXT_STATEMENT;
+}
+
+void CTinyBasic::go_NEW() {
+    if(txtpos[0] != NL) {
+        nextStep = QWHAT;
+        return;
+    }
+    program_end = program_start;
+    nextStep = PROMPT;
+}
+
+void CTinyBasic::go_RUN() {
+    current_line = program_start;
+    nextStep = EXECLINE;
+}
+
+void CTinyBasic::go_LIST() {
+
+    linenum = testnum(); // Retuns 0 if no line found.
+
+    // Should be EOL
+    if(txtpos[0] != NL) {
+        nextStep = QWHAT;
+        return;
+    }
+
+    // Find the line
+    list_line = findline();
+    while(list_line != program_end) printline();
+    nextStep = WARMSTART;
+}
+
+void CTinyBasic::go_PRINT() {
+
+    // If we have an empty list then just put out a NL
+    if(*txtpos == ':' )
+    {
+        line_terminator();
+        txtpos++;
+        nextStep = RUN_NEXT_STATEMENT;
+        return;
+    }
+    if(*txtpos == NL)
+    {
+        nextStep = EXECNEXTLINE;
+        return;
+    }
+
+    while(1)
+    {
+        ignore_blanks();
+        if(print_quoted_string())
+        {
+            ;
+        }
+        else if(*txtpos == '"' || *txtpos == '\'') {
+            nextStep = QWHAT;
+            return;
+        }
+        else
+        {
+            short int e;
+            expression_error = 0;
+            e = expression();
+            if(expression_error){
+                nextStep = QWHAT;
+                return;
+            }
+            printnum(e);
+        }
+
+        // At this point we have three options, a comma or a new line
+        if(*txtpos == ',')
+            txtpos++;	// Skip the comma and move onto the next
+        else if(txtpos[0] == ';' && (txtpos[1] == NL || txtpos[1] == ':'))
+        {
+            txtpos++; // This has to be the end of the print - no newline
+            break;
+        }
+        else if(*txtpos == NL || *txtpos == ':')
+        {
+            line_terminator();	// The end of the print statement
+            break;
+        }
+        else{
+            nextStep = QWHAT;
+            return;
+        }
+    }
+    nextStep = RUN_NEXT_STATEMENT;
+}
+
+void CTinyBasic::go_GOTO() {
+
+    expression_error = 0;
+    linenum = expression();
+    if(expression_error || *txtpos != NL) {
+        nextStep = QHOW;
+        return;
+    }
+    current_line = findline();
+    nextStep = EXECLINE;
+
+}
+
+void CTinyBasic::go_SAVE() {
+        // save from memory out to a file
+#if ENABLE_FILEIO
+        {
+          unsigned char *filename;
+
+          // Work out the filename
+          expression_error = 0;
+          filename = filenameWord();
+          if(expression_error)
+            goto qwhat;
+
+#if ARDUINO
+          // remove the old file if it exists
+          if( SD.exists( (char *)filename )) {
+            SD.remove( (char *)filename );
+          }
+
+          // open the file, switch over to file output
+          fp = SD.open( (const char *)filename, FILE_WRITE );
+          outToFile = true;
+
+      // copied from "List"
+      list_line = findline();
+      while(list_line != program_end)
+            printline();
+
+          // go back to standard output, close the file
+          outToFile = false;
+          fp.close();
+#else
+    // desktop
+#endif
+
+          nextStep = WARMSTART;
+          return;
+       }
+#else
+    nextStep = UNIMPLEMENTED;
+
+#endif
+}
+
+void CTinyBasic::go_NEXT() {
+
+    // Fnd the variable name
+    ignore_blanks();
+    if(*txtpos < 'A' || *txtpos > 'Z') {
+        nextStep = QHOW;
+        return;
+    }
+    txtpos++;
+    ignore_blanks();
+    if(*txtpos != ':' && *txtpos != NL) {
+        nextStep = QWHAT;
+        return;
+    }
+
+    go_RETURN();
+}
+
+void CTinyBasic::go_RETURN() {
+
+    // Now walk up the stack frames and find the frame we want, if present
+    tempsp = sp;
+    while(tempsp < program+sizeof(program)-1)
+    {
+        switch(tempsp[0])
+        {
+            case STACK_GOSUB_FLAG:
+                if(table_index == KW_RETURN)
+                {
+                    struct stack_gosub_frame *f = (struct stack_gosub_frame *)tempsp;
+                    current_line	= f->current_line;
+                    txtpos			= f->txtpos;
+                    sp += sizeof(struct stack_gosub_frame);
+                    nextStep = RUN_NEXT_STATEMENT;
+                    return;
+                }
+                // This is not the loop you are looking for... so Walk back up the stack
+                tempsp += sizeof(struct stack_gosub_frame);
+                break;
+            case STACK_FOR_FLAG:
+                // Flag, Var, Final, Step
+                if(table_index == KW_NEXT)
+                {
+                    qWarning()<<"NEXT:";
+                    struct stack_for_frame *f = (struct stack_for_frame *)tempsp;
+                    // Is the the variable we are looking for?
+                    if(txtpos[-1] == f->for_var)
+                    {
+                        short int *varaddr = ((short int *)variables_begin) + txtpos[-1] - 'A';
+                        *varaddr = *varaddr + f->step;
+                        // Use a different test depending on the sign of the step increment
+                        if((f->step > 0 && *varaddr <= f->terminal) || (f->step < 0 && *varaddr >= f->terminal))
+                        {
+                            // We have to loop so don't pop the stack
+                            txtpos = f->txtpos;
+                            current_line = f->current_line;
+                            nextStep = RUN_NEXT_STATEMENT;
+                            return;
+                        }
+                        // We've run to the end of the loop. drop out of the loop, popping the stack
+                        sp = tempsp + sizeof(struct stack_for_frame);
+                        nextStep = RUN_NEXT_STATEMENT;
+                        return;
+                    }
+                }
+                // This is not the loop you are looking for... so Walk back up the stack
+                tempsp += sizeof(struct stack_for_frame);
+                break;
+            default:
+                //printf("Stack is stuffed!\n");
+            nextStep = WARMSTART;
+            return;
+        }
+    }
+    // Didn't find the variable we've been looking for
+    nextStep = QHOW;
+}
+
+void CTinyBasic::go_GOSUB() {
+
+    expression_error = 0;
+    linenum = expression();
+    if(!expression_error && *txtpos == NL)
+    {
+        struct stack_gosub_frame *f;
+        if(sp + sizeof(struct stack_gosub_frame) < stack_limit) {
+            nextStep = QSORRY;
+            return;
+        }
+
+        sp -= sizeof(struct stack_gosub_frame);
+        f = (struct stack_gosub_frame *)sp;
+        f->frame_type = STACK_GOSUB_FLAG;
+        f->txtpos = txtpos;
+        f->current_line = current_line;
+        current_line = findline();
+        nextStep=EXECLINE;
+        return;
+    }
+    nextStep=QHOW;
+}
+
+void CTinyBasic::go_FORLOOP() {
+
+    ignore_blanks();
+    if(*txtpos < 'A' || *txtpos > 'Z') {nextStep=QWHAT; return;}
+    var_for = *txtpos;
+    txtpos++;
+    ignore_blanks();
+    if(*txtpos != '=') {nextStep=QWHAT; return;}
+    txtpos++;
+    ignore_blanks();
+
+    expression_error = 0;
+    initial_for = expression();
+    if(expression_error) {nextStep=QWHAT; return;}
+
+    scantable(to_tab);
+    if(table_index != 0){nextStep=QWHAT; return;}
+
+    terminal_for = expression();
+    if(expression_error) {nextStep=QWHAT; return;}
+
+    scantable(step_tab);
+    if(table_index == 0)
+    {
+        step_for = expression();
+        if(expression_error) {nextStep=QWHAT; return;}
+    }
+    else
+        step_for = 1;
+    ignore_blanks();
+    if(*txtpos != NL && *txtpos != ':') {nextStep=QWHAT; return;}
+
+
+    if(!expression_error && *txtpos == NL)
+    {
+        struct stack_for_frame *f;
+        if(sp + sizeof(struct stack_for_frame) < stack_limit){nextStep=QSORRY; return;}
+
+        sp -= sizeof(struct stack_for_frame);
+        f = (struct stack_for_frame *)sp;
+        ((short int *)variables_begin)[var_for-'A'] = initial_for;
+        f->frame_type = STACK_FOR_FLAG;
+        f->for_var = var_for;
+        f->terminal = terminal_for;
+        f->step     = step_for;
+        f->txtpos   = txtpos;
+        f->current_line = current_line;
+        nextStep = RUN_NEXT_STATEMENT;
+        return;
+    }
+
+    nextStep=QHOW;
+
+}
+
+void CTinyBasic::go_IF() {
+    short int val;
+    expression_error = 0;
+    val = expression();
+    if(expression_error || *txtpos == NL) {
+        nextStep = QHOW;
+        return;
+    }
+    if(val != 0) {
+        nextStep = INTERPERATEATTXTPOS;
+        return;
+    }
+    nextStep = EXECNEXTLINE;
+}
+
+void CTinyBasic::go_INPUT() {
+
+    unsigned char var;
+    ignore_blanks();
+    if(*txtpos < 'A' || *txtpos > 'Z'){
+        nextStep = QWHAT; return;
+    }
+    var = *txtpos;
+    txtpos++;
+    ignore_blanks();
+    if(*txtpos != NL && *txtpos != ':') {
+        nextStep = QWHAT; return;
+    }
+    ((short int *)variables_begin)[var-'A'] = 99;
+    nextStep = RUN_NEXT_STATEMENT;
+
+}
