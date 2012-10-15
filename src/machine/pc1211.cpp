@@ -43,7 +43,7 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
-    Lcd_Symb_DX	= 339;
+    Lcd_Symb_DX	= 380;
     Lcd_Symb_DY	= 5;
     Lcd_Symb_ratio_X	= 1;//1.18;
 
@@ -53,6 +53,7 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pBASIC = (CTinyBasic *)pCPU;
     DisplayWaitForRTN = false;
+    pLCDC1211 = (Clcdc_pc1211*)pLCDC;
 }
 
 Cpc1211::~Cpc1211()
@@ -61,7 +62,8 @@ Cpc1211::~Cpc1211()
 
 bool Cpc1211::init()
 {
-    pCPU->init();
+//    pCPU->init();
+    CpcXXXX::init();
     CpcXXXX::TurnON();
     return true;
 }
@@ -97,6 +99,7 @@ bool Cpc1211::run()
         pBASIC->outputBuffer.remove(0,pBASIC->outputBuffer.indexOf('\n')+1);
         if (pBASIC->outputBuffer.right(1).startsWith('\n')) pBASIC->outputBuffer.chop(1);
         if (!pBASIC->outputBuffer.contains('\n')) pBASIC->waitForRTN = false;
+        pBASIC->backupCommandBuffer.clear();
 //            DisplayWaitForRTN = false;
 //            pBASIC->outputBuffer.clear();
         Refresh_Display = true;
@@ -106,12 +109,29 @@ bool Cpc1211::run()
 
     switch (pKEYB->LastKey) {
     case 0: break;
-    case K_SHT:
+    case K_POW_ON:break;
+    case K_MOD: switch(pBASIC->runMode) {
+        case CTinyBasic::RUN: pBASIC->runMode = CTinyBasic::PRO;break;
+        case CTinyBasic::PRO: pBASIC->runMode = CTinyBasic::RESERVE;break;
+        case CTinyBasic::RESERVE: pBASIC->runMode = CTinyBasic::DEF;break;
+        case CTinyBasic::DEF: pBASIC->runMode = CTinyBasic::RUN;break;
+        }
+        pKEYB->LastKey=0;
+        return true;
+
+    case K_SHT: break;
     case K_LA:
-    case K_RA: break;
+        pLCDC1211->cursorPos--;
+        if (pLCDC1211->cursorPos<0) pLCDC1211->cursorPos=0;
+        pKEYB->LastKey = 0;
+        break;
+    case K_RA: pLCDC1211->cursorPos++;
+        pKEYB->LastKey = 0;
+        break;
     case K_BRK: pBASIC->breakFlag = true; break;
     default:
         pBASIC->commandBuffer.append(pKEYB->LastKey);
+        pLCDC1211->cursorPos++;
         pKEYB->LastKey = 0;
     }
 
@@ -122,16 +142,11 @@ bool Cpc1211::run()
 
 void Cpc1211::afficheChar(quint8 c) {
 
-//    Clcdc_pc1211 *myLCD = (Clcdc_pc1211*) pLCDC;
-
-//    for (int i=0;i<pBASIC->outputBuffer.size();i++) {
-//        quint8 c = pBASIC->outputBuffer.at(i);
-//        myLCD->DrawChar(c,i);
-//    }
 }
 
 bool Cpc1211::exit()
 {
+    CpcXXXX::exit();
 
     return true;
 }

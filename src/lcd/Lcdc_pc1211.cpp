@@ -2,8 +2,10 @@
 #include <QDebug>
 
 #include "Lcdc_pc1211.h"
+#include "Lcdc_symb.h"
 #include "pc1211.h"
 #include "tinybasic/tinybasic.h"
+#include "Inter.h"
 
 quint8 pc1211_carDef[0x500] = {
     /*0000:*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -85,7 +87,7 @@ quint8 pc1211_carDef[0x500] = {
     /*04C0:*/ 0xF8, 0x2B, 0x33, 0x36, 0x39, 0x23, 0x84, 0x83, 0x2E, 0x32, 0x35, 0x38, 0x24, 0x86, 0xF6, 0x30,
     /*04D0:*/ 0x31, 0x34, 0x37, 0x25, 0x87, 0x82, 0x14, 0x13, 0x05, 0x04, 0x07, 0x01, 0xB7, 0xCA, 0xDA, 0x0C,
     /*04E0:*/ 0x0B, 0x01, 0xB9, 0xCC, 0xDC, 0x08, 0x01, 0xBB, 0xCE, 0x20, 0x03, 0xBD, 0xD0, 0x06, 0xBF, 0xD2,
-    /*04F0:*/ 0x16, 0x10, 0x12, 0x15, 0xDE, 0xA2, 0xA5, 0x3E, 0xA7, 0xC1, 0xD3, 0xDF, 0x5C, 0x2F, 0x3C, 0xA8
+    /*04F0:*/ 0x16, 0x10, 0x12, 0x15, 0xDE, 0xA2, 0xA5, 0x3E, 0xA7, 0xC1, 0xD3, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 
@@ -96,10 +98,68 @@ Clcdc_pc1211::Clcdc_pc1211(CPObject *parent)	: Clcdc(parent){						//[constructo
                         (int) (29*contrast));
 
     pPC1211 = (Cpc1211*) parent;
+
+    cursorPos=0;
+    cursorBlink=false;
+    blinkState =  0;
+}
+
+static const struct {
+    int x,y;
+} pc1211_pos[11]={
+    {250,0},	// SHIFT
+    {200, 0},	// DEF
+    {280, 0},	// PRO
+    {240, 0},	// RUN
+    {320, 0},	// RESERVE
+    {88,0},	// DE
+    {96,0},	// G
+    {101,0},	// RAD
+    {290,0},	// E
+    {30,0},		// P
+    {0,0}		// BUSY
+};
+
+
+#define PRO_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::PRO)
+#define RUN_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::RUN)
+#define RSV_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::RESERVE)
+#define DEF_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::DEF)
+
+#define DEG_IND     (pPC1211->pBASIC->angleMode==CTinyBasic::DEGREE)
+#define RAD_IND     (pPC1211->pBASIC->angleMode==CTinyBasic::RADIAN)
+#define GRD_IND     (pPC1211->pBASIC->angleMode==CTinyBasic::GRAD)
+
+
+
+void Clcdc_pc1211::disp_symb(void)
+{
+
+//        disp_one_symb(S_SHIFT,	COLOR(SYMB2_1250&0x02),	pc1211_pos[0].x,	pc1211_pos[0].y);
+        disp_one_symb(S_DEF,		COLOR(DEF_MODE),	pc1211_pos[1].x,	pc1211_pos[1].y);
+        disp_one_symb(S_PRO,		COLOR(PRO_MODE),	pc1211_pos[2].x,	pc1211_pos[2].y);
+        disp_one_symb(S_RUN,		COLOR(RUN_MODE),	pc1211_pos[3].x,	pc1211_pos[3].y);
+        disp_one_symb(S_RESERVE,	COLOR(RSV_MODE),    pc1211_pos[4].x,	pc1211_pos[4].y);
+        disp_one_symb(S_DE,         COLOR(DEG_IND),     pc1211_pos[5].x,	pc1211_pos[5].y);
+        disp_one_symb(S_G,          COLOR(DEG_IND||GRD_IND),	pc1211_pos[6].x,	pc1211_pos[6].y);
+        disp_one_symb(S_RAD,		COLOR(RAD_IND||GRD_IND),	pc1211_pos[7].x,	pc1211_pos[7].y);
+//        disp_one_symb(S_E,          COLOR(SYMB2_1250&0x08),	pc1211_pos[8].x,	pc1211_pos[8].y);
+//        disp_one_symb(S_PRINT,      COLOR(SYMB1_1250&0x02),	pc1211_pos[9].x,	pc1211_pos[9].y);
+//        disp_one_symb(S_BUSY,       COLOR(SYMB2_1250&0x01),	pc1211_pos[10].x,	pc1211_pos[10].y);
+
+
+
+        Refresh = TRUE;
+
+
+    Clcdc::disp_symb();
+
 }
 
 void Clcdc_pc1211::disp()
 {
+
+    disp_symb();
 
 //    qWarning()<< "DISP:"<<pPC1211->pBASIC->outputBuffer<<"**";
     line.fill(0,24);
@@ -115,6 +175,15 @@ void Clcdc_pc1211::disp()
         c=line.at(i);
         DrawChar(c,i);
     }
+
+
+    if (pPC->pTIMER->msElapsed(blinkState)>500) {
+        DrawChar(0xff,cursorPos);
+    }
+    if (pPC->pTIMER->msElapsed(blinkState)>1000) {
+        blinkState = pPC->pTIMER->state;
+    }
+
     Refresh = true;
 }
 

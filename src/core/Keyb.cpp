@@ -193,7 +193,7 @@ bool Ckeyb::init(void)
 {
     isShift = false;
     isCtrl = false;
-
+    LastKey = 0;
 	QFile file( fn_KeyMap );
 	QXmlInputSource source(&file);
 

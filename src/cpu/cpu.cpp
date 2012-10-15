@@ -24,7 +24,7 @@ CCPU::CCPU(CPObject *parent)
     for (int i=0;i<imemsize;i++) imem[i]=0;
 
     regwidget = 0;
-
+    pDEBUG=0;
     connect(this,SIGNAL(msgError(QString)),mainwindow,SLOT(slotMsgError(QString)));
 }
 

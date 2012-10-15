@@ -4,6 +4,7 @@
 #include "pcxxxx.h"
 
 class CTinyBasic;
+class Clcdc_pc1211;
 
 class Cpc1211 : public CpcXXXX
 {
@@ -21,6 +22,8 @@ public:
     virtual UINT8 in(UINT8 address) {return 0;}
     virtual UINT8 out(UINT8 address,UINT8 value) {return 0;}
     void afficheChar(quint8 c);
+
+    Clcdc_pc1211* pLCDC1211;
 
     CTinyBasic *pBASIC;
     bool DisplayWaitForRTN;

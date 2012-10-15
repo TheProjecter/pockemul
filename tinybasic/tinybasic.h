@@ -148,6 +148,7 @@ public:
            enum ANGLE_MODE { DEGREE,RADIAN,GRAD};
            ANGLE_MODE angleMode;
            double convertToRad(double angle);
+           void convertLine();
 };
 
 #endif // TINYBASIC_H

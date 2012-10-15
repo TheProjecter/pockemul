@@ -437,6 +437,7 @@ bool CTinyBasic::init()
 
     waitForRTN = false;
 
+    memset(program,0,sizeof(program));
     program_start = program;
     program_end = program_start;
     sp = program+sizeof(program);  // Needed for printnum
@@ -455,6 +456,18 @@ void CTinyBasic::ignore_blanks(void)
         txtpos++;
 }
 
+// TODO convert instruction to internal code
+void CTinyBasic::convertLine() {
+
+    return;
+    int linelen=0;
+
+    while (1) {
+        scantable(keywords);
+        if (table_index==KW_DEFAULT) linelen++;
+
+    }
+}
 
 /***************************************************************************/
 void CTinyBasic::scantable(unsigned char *table)
@@ -544,7 +557,8 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
         char buffer[32];
 
         memset(buffer, 0x20, sizeof(buffer));
-        if (abs(num)<1)         snprintf(buffer, 32, "%11.9E", num);
+        if (num==0) sprintf(buffer,"0");
+        else if (abs(num)<1)         snprintf(buffer, 32, "%11.9E", num);
 
         else snprintf(buffer, 32, "%.10G", num);
         qWarning()<<buffer;
@@ -752,7 +766,7 @@ void CTinyBasic::printline()
     list_line += sizeof(LINENUM) + sizeof(char);
 
     // Output the line */
-    printnum(line_num);
+    printnum(line_num,2);
     outchar(' ');
     while(*list_line != NL)
     {
@@ -796,15 +810,18 @@ VAR_TYPE CTinyBasic::expr4(void)
             break;
         case 8:
             a = atof((const char*)txtpos);
+            qWarning()<<"read float:"<<a;
             bool exp = false;
             do {
                 txtpos++;
-                if (*txtpos=='E') exp = true;
+                if (*txtpos=='E') {
+                    txtpos++;
+                    if (*txtpos=='+' || *txtpos=='-') txtpos++;
+                    exp = true;
+                }
             } while ( (*txtpos >= '0' && *txtpos <= '9')||
                                    *txtpos=='.' ||
-                                   *txtpos=='E' ||
-                                   (exp && *txtpos=='+') ||
-                                   (exp &&*txtpos=='-'));
+                                   *txtpos=='E' );
             break;
 
         }
@@ -830,14 +847,21 @@ VAR_TYPE CTinyBasic::expr4(void)
 
         unsigned char f = table_index;
 
-        if(*txtpos != '(')
-            goto expr4_error;
+        // If not ( analyse next token
+        if(*txtpos == '(') {
+            //            goto expr4_error;
 
-        txtpos++;
-        a = expression();
-        if(*txtpos != ')')
+            txtpos++;
+            a = expression();
+            if(*txtpos != ')')
                 goto expr4_error;
-        txtpos++;
+            txtpos++;
+
+        }
+        else
+            a= expr4();
+
+
         switch(f)
         {
             case FUNC_PEEK:
@@ -1089,6 +1113,9 @@ getln_end:
         goto qhow;
     }
 
+    // Convert INSTRUCTIONS TO internal code
+    convertLine();
+
     // Find the length of what is left, including the (yet-to-be-populated) line header
     linelen = 0;
     while(txtpos[linelen] != NL)
@@ -1233,7 +1260,7 @@ interperateAtTxtpos:
           goto warmstart;
         }
 
-        if (runMode==RUN) {go_PRINT(); return;}
+
     scantable(keywords);
 
     switch(table_index)
@@ -1855,7 +1882,7 @@ void cmd_Files( void )
 //BUG extend printnum to integer
 void CTinyBasic::go_MEM() {
     printnum(variables_begin-program_end,2);
-    printmsgNoNL((unsigned char*) "STEPS  ");
+    printmsgNoNL((unsigned char*) "STEPS ");
     printnum((variables_begin-program_end)/8,2);
     printmsg((unsigned char*) "MEMORIES");
     nextStep = RUN_NEXT_STATEMENT;
@@ -2202,13 +2229,18 @@ void CTinyBasic::go_ASSIGNMENT() {
     VAR_TYPE value;
     VAR_TYPE *var;
 
-    if(*txtpos < 'A' || *txtpos > 'Z') { nextStep=QHOW; return; }
+    unsigned char* savepos = txtpos;
+    if(*txtpos < 'A' || *txtpos > 'Z') {
+        go_PRINT();return;nextStep=QHOW; return; }
     var = (VAR_TYPE *)variables_begin + *txtpos - 'A';
     txtpos++;
 
     ignore_blanks();
 
-    if (*txtpos != '=') { nextStep=QWHAT; return; }
+    if (*txtpos != '=') {
+        txtpos=savepos;go_PRINT();return;
+        nextStep=QWHAT; return;
+    }
     txtpos++;
     ignore_blanks();
     expression_error = 0;
