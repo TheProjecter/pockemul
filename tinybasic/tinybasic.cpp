@@ -16,7 +16,8 @@
 
 CTinyBasic::CTinyBasic(CPObject *parent):CCPU(parent)
 {
-
+    angleMode = DEGREE;
+    runMode = RUN;//STANDARD;
 }
 
 
@@ -265,21 +266,24 @@ static unsigned char keywords[] = {
     'P','O','K','E'+0x80,
     'S','T','O','P'+0x80,
     'B','Y','E'+0x80,
-        'F','I','L','E','S'+0x80,
-        'M','E','M'+0x80,
-        '?'+ 0x80,
-        '\''+ 0x80,
-        'A','W','R','I','T','E'+0x80,
-        'D','W','R','I','T','E'+0x80,
-        'P','I','N','M','O','D','E'+0x80,
-        'D','E','L','A','Y'+0x80,
-        'E','N','D'+0x80,
-        'R','S','E','E','D'+0x80,
-        'C','H','A','I','N'+0x80,
-        'T','O','N','E','W'+0x80,
-        'T','O','N','E'+0x80,
-        'N','O','T','O','N','E'+0x80,
-        0
+    'F','I','L','E','S'+0x80,
+    'M','E','M'+0x80,
+    '?'+ 0x80,
+    '\''+ 0x80,
+    'A','W','R','I','T','E'+0x80,
+    'D','W','R','I','T','E'+0x80,
+    'P','I','N','M','O','D','E'+0x80,
+    'D','E','L','A','Y'+0x80,
+    'E','N','D'+0x80,
+    'R','S','E','E','D'+0x80,
+    'C','H','A','I','N'+0x80,
+    'T','O','N','E','W'+0x80,
+    'T','O','N','E'+0x80,
+    'N','O','T','O','N','E'+0x80,
+    'R','A','D','I','A','N'+0x80,
+    'D','E','G','R','E','E'+0x80,
+    'G','R','A','D'+0x80,
+    0
 };
 
 // by moving the command list to an enum, we can easily remove sections
@@ -303,6 +307,7 @@ enum {
   KW_RSEED,
   KW_CHAIN,
   KW_TONEW, KW_TONE, KW_NOTONE,
+    KW_RADIAN,KW_DEGREE,KW_GRAD,
   KW_DEFAULT /* always the final one*/
 };
 
@@ -537,12 +542,38 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
         break;
     case 8:{
         char buffer[32];
-        snprintf(buffer, 32, "%11.9G", num);
+
+        memset(buffer, 0x20, sizeof(buffer));
+        if (abs(num)<1)         snprintf(buffer, 32, "%11.9E", num);
+
+        else snprintf(buffer, 32, "%.10G", num);
         qWarning()<<buffer;
+        bool exp = false;
+        bool decimalPt = false;
+        bool out = false;
         for (int digit= 0;digit < 18;digit++) {
-//            if (digit == 13) digit++;   // don't print first Exp digit
+            switch (buffer[digit]) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '-': break;
+            case 'E': exp = true; break;
+            case '.': decimalPt = true; break;
+            case '+': buffer[digit]=' ';break;
+            default: out = true;break;
+            }
+            if (out) break;
+            if (digit == 13) digit++;   // don't print first Exp digit
             outchar(buffer[digit]);
         }
+        if (!exp && !decimalPt) outchar('.');
 
     }
     }
@@ -816,11 +847,11 @@ VAR_TYPE CTinyBasic::expr4(void)
                     return -a;
                 return a;
             case FUNC_SIN:
-                return sin(a);
+                return sin(convertToRad(a));
         case FUNC_COS:
-            return cos(a);
+            return cos(convertToRad(a));
         case FUNC_TAN:
-            return tan(a);
+            return tan(convertToRad(a));
 //        case FUNC_AREAD:
 //            return analogRead( a );
 //        case FUNC_DREAD:
@@ -847,6 +878,18 @@ expr4_error:
     expression_error = 1;
     return 0;
 
+}
+
+double CTinyBasic::convertToRad(double angle) {
+
+    switch (angleMode) {
+    case DEGREE: return (angle *M_PI/180.0);
+    case RADIAN: return angle;
+    case GRAD:   return (angle *M_PI/100.0);
+    default: return angle;
+    }
+
+    return angle;
 }
 
 /***************************************************************************/
@@ -975,23 +1018,15 @@ void CTinyBasic::loop()
         case FILES:     goto files;
         case CHAIN:goto chain;
         case LOAD:goto load;
-//        case MEM:goto mem;
         case QWHAT:goto qwhat;
         case QSORRY:goto qsorry;
-//        case SAVE:goto save;
-//        case NEXT:goto next;
         case ASSIGNMENT: go_ASSIGNMENT(); break;
         case UNIMPLEMENTED:goto unimplemented;
-//        case GOSUB:goto gosub;
-//        case GOSUB_RETURN:goto gosub_return;
-//        case FORLOOP:goto forloop;
-//        case INPUT:goto input;
-//        case PRINT:goto print;
         case POKE:goto poke;
-//        case LIST:goto list;
         case GETLN:goto getln;
         case GETLN_END:goto getln_end;
         case RUN_NEXT_STATEMENT: goto run_next_statement;
+        default: break;
         }
 
 warmstart:
@@ -1038,6 +1073,10 @@ getln_end:
         txtpos = dest;
     }
 
+    if (runMode==RUN) {
+        nextStep=DIRECT;
+        return;
+    }
     // Now see if we have a line number
     linenum = testnum();
     ignore_blanks();
@@ -1194,6 +1233,7 @@ interperateAtTxtpos:
           goto warmstart;
         }
 
+        if (runMode==RUN) {go_PRINT(); return;}
     scantable(keywords);
 
     switch(table_index)
@@ -1281,6 +1321,9 @@ interperateAtTxtpos:
     case KW_NOTONE:
         goto tonestop;
 
+    case KW_RADIAN : angleMode = RADIAN; nextStep = RUN_NEXT_STATEMENT; break;
+    case KW_DEGREE : angleMode = DEGREE; nextStep = RUN_NEXT_STATEMENT; break;
+    case KW_GRAD   : angleMode = GRAD  ; nextStep = RUN_NEXT_STATEMENT; break;
     case KW_DEFAULT:
         nextStep = ASSIGNMENT;
         return;
@@ -1702,8 +1745,10 @@ int CTinyBasic::inchar()
 #else
     if (!commandBuffer.isEmpty()) {
         int got = commandBuffer.at(0);
-        commandBuffer.remove(0,1);
+
         if( got == LF ) got = CR;
+        if (got != CR) backupCommandBuffer.append(got);
+        commandBuffer.remove(0,1);
         return got;
     }
     else return 0;

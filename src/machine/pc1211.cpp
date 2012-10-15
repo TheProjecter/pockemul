@@ -72,24 +72,43 @@ bool Cpc1211::run()
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
     if (pBASIC->waitForRTN) {
-        if (pKEYB->LastKey >0) {
-            qWarning()<< "Clear buffer";
-            // Remove until CR
-            pBASIC->outputBuffer.remove(0,pBASIC->outputBuffer.indexOf('\n')+1);
-            if (pBASIC->outputBuffer.right(1).startsWith('\n')) pBASIC->outputBuffer.chop(1);
-            if (!pBASIC->outputBuffer.contains('\n')) pBASIC->waitForRTN = false;
+//        if (pKEYB->LastKey==K_SHT) pKEYB->LastKey=0; return true;
+        switch (pKEYB->LastKey) {
+        case 0:
+        case K_SHT:return true;
+        case '+':
+        case '-':
+        case '/':
+        case '*':
+            pBASIC->commandBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')));
+            pBASIC->backupCommandBuffer.clear();
+            break;
+        case K_LA:
+        case K_RA:
+            qWarning()<<"EDITOR"<< pBASIC->backupCommandBuffer;
+            pBASIC->commandBuffer.append(pBASIC->backupCommandBuffer);
+            pBASIC->backupCommandBuffer.clear();
+            break;
+        default: pBASIC->backupCommandBuffer.clear();
+
+            break;
+        }
+
+        pBASIC->outputBuffer.remove(0,pBASIC->outputBuffer.indexOf('\n')+1);
+        if (pBASIC->outputBuffer.right(1).startsWith('\n')) pBASIC->outputBuffer.chop(1);
+        if (!pBASIC->outputBuffer.contains('\n')) pBASIC->waitForRTN = false;
 //            DisplayWaitForRTN = false;
 //            pBASIC->outputBuffer.clear();
-            Refresh_Display = true;
+        Refresh_Display = true;
 //            pKEYB->LastKey = 0;
-        }
-        else
-            return true;
+
     }
 
     switch (pKEYB->LastKey) {
     case 0: break;
-    case K_SHT: break;
+    case K_SHT:
+    case K_LA:
+    case K_RA: break;
     case K_BRK: pBASIC->breakFlag = true; break;
     default:
         pBASIC->commandBuffer.append(pKEYB->LastKey);

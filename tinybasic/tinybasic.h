@@ -23,6 +23,8 @@
 #define VAR_TYPE double    //short int
 #define VAR_SIZE sizeof(VAR_TYPE) // Size of variables in bytes
 
+#define PI 3.141592653
+
 class CKeyword {
 public:
     CKeyword(QString name = QString(),quint8 code = 0);
@@ -36,7 +38,7 @@ class CTinyBasic : public CCPU
     Q_OBJECT
 public:
 
-    enum Mode{RUN,COMMAND };
+    enum Mode{RUN,PRO,RESERVE,DEF,STANDARD };
     enum Action{INITIAL,RUNNING,UP_ARROW,DOWN_ARROW,ENTER,BREAK,NO_ACTION};
     enum NEXT_STEP {
         WARMSTART,PROMPT,DIRECT,QHOW,EXECLINE,
@@ -48,6 +50,7 @@ public:
     };
 
     NEXT_STEP nextStep;
+    Mode        runMode;
 
        CTinyBasic(CPObject *parent = 0);
 
@@ -70,6 +73,7 @@ public:
        virtual void	Reset(void);
 
        QByteArray commandBuffer;
+       QByteArray backupCommandBuffer;
        QByteArray outputBuffer;
 
 
@@ -140,6 +144,10 @@ public:
            unsigned char *txtpos,*list_line;
            unsigned char expression_error;
            unsigned char *tempsp;
+
+           enum ANGLE_MODE { DEGREE,RADIAN,GRAD};
+           ANGLE_MODE angleMode;
+           double convertToRad(double angle);
 };
 
 #endif // TINYBASIC_H
