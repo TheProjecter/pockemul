@@ -434,6 +434,7 @@ bool CTinyBasic::init()
 {
     alsoWait = false;
     nextStep = WARMSTART;
+    cursorPos = 0;
 
     waitForRTN = false;
 
@@ -681,45 +682,60 @@ void CTinyBasic::printmsg(const unsigned char *msg)
 /***************************************************************************/
 void CTinyBasic::getln(char prompt)
 {
-//    outchar(prompt);
+//    if (prompt>0) outchar(prompt);
 //    txtpos = program_end+sizeof(LINENUM);
     nextStep = GETLN;
 
-//    while(1)
+    inputMode = true;
+
+    char c = inchar();
+    if (c==0) return;
+
+    switch(c)
     {
-        char c = inchar();
-        if (c==0) return;
+    case NL:
+        break;
+    case CR:
+        //                                line_terminator();
+        // Terminate all strings with a NL
+        txtpos[0] = NL;
+        nextStep = GETLN_END;
+        inputMode = false;
+        return;
+    case K_BS: // BackSpace
+        txtpos--;
 
-        switch(c)
+        break;
+    case CTRLH:
+        if(txtpos == program_end)
+            break;
+        txtpos--;
+
+        printmsgNoNL(backspacemsg);
+        break;
+    case K_LA:
+        cursorPos--;
+        if (cursorPos<0) cursorPos=0;
+
+        break;
+    case K_RA: cursorPos++; if (cursorPos>= commandBuffer.size()) cursorPos=commandBuffer.size();
+
+        break;
+    default:
+        // We need to leave at least one space to allow us to shuffle the line into order
+        if(txtpos == variables_begin-2) {
+//            outchar(BELL);
+        }
+        else
         {
-            case NL:
-                break;
-            case CR:
-//                                line_terminator();
-                // Terminate all strings with a NL
-                txtpos[0] = NL;
-                nextStep = GETLN_END;
-                return;
-            case CTRLH:
-                if(txtpos == program_end)
-                    break;
-                txtpos--;
-
-                printmsg(backspacemsg);
-                break;
-            default:
-                // We need to leave at least one space to allow us to shuffle the line into order
-                if(txtpos == variables_begin-2)
-                    outchar(BELL);
-                else
-                {
-                    txtpos[0] = c;
-                    txtpos++;
-                    outchar(c);
-                }
+            txtpos[0] = c;
+            txtpos++;
+//            outchar(c);
+            qWarning()<<"Char:"<<c;
         }
     }
 }
+
 
 /***************************************************************************/
 unsigned char *CTinyBasic::findline(void)
@@ -1734,60 +1750,18 @@ unsigned char CTinyBasic::breakcheck(void)
 /***********************************************************/
 int CTinyBasic::inchar()
 {
-#if ARDUINO
-  // 1. FILE INPUT
-#if ENABLE_FILEIO
-  if( inFromFile ) {
-    // get content from a file until it's empty
-    int v = fp.read();
-    if( v == NL ) v=CR; // file translate
-    if( !fp.available() ) {
-     inFromFile = false;
-     inhibitOutput = false;
-     fp.close();
 
-     if( runAfterLoad ) {
-       runAfterLoad = false;
-       triggerRun = true;
-     }
-    }
-    return v;
-  } else {
-#endif
-    // 2. SERIAL INPUT
-    while(1)
-    {
-      if(Serial.available())
-        return Serial.read();
-
-#if ENABLE_SECOND_SERIAL
-      if(ssSerial.available())
-        return ssSerial.read();
-#endif
-
-    }
-#if ENABLE_FILEIO
-  }
-#endif
-#else
     if (!commandBuffer.isEmpty()) {
         int got = commandBuffer.at(0);
 
         if( got == LF ) got = CR;
         if (got != CR) backupCommandBuffer.append(got);
         commandBuffer.remove(0,1);
+        qWarning()<<"READ:"<<got;
         return got;
     }
-    else return 0;
 
-    // 3. CONSOLE INPUT
-    int got = getchar();
-
-    // translation for desktop systems
-    if( got == LF ) got = CR;
-
-    return got;
-#endif
+    return 0;
 }
 
 /***********************************************************/
@@ -2222,6 +2196,51 @@ void CTinyBasic::go_INPUT() {
     ((VAR_TYPE *)variables_begin)[var-'A'] = 99;
     nextStep = RUN_NEXT_STATEMENT;
 
+    /*
+    //////////////////////////////////////////////////////
+
+    unsigned char isneg=0;
+    unsigned char *temptxtpos;
+    short int *var;
+    ignore_blanks();
+    if(*txtpos < 'A' || *txtpos > 'Z')
+        goto syntaxerror;
+    var = ((short int *)variables_table)+*txtpos-'A';
+    txtpos++;
+    if(!check_statement_end())
+        goto syntaxerror;
+again:
+    temptxtpos = txtpos;
+    if(!getln('?'))
+        goto warmstart;
+
+    // Go to where the buffer is read
+    txtpos = program_end+sizeof(LINENUM);
+    if(*txtpos == '-')
+    {
+        isneg = 1;
+        txtpos++;
+    }
+
+    *var = 0;
+    do 	{
+        *var = *var*10 + *txtpos - '0';
+        txtpos++;
+    } while(*txtpos >= '0' && *txtpos <= '9');
+    ignore_blanks();
+    if(*txtpos != NL)
+    {
+        printmsg(badinputmsg);
+        goto again;
+    }
+
+    if(isneg)
+        *var = -*var;
+
+    nextStep  = RUN_NEXT_STATEMENT;
+    goto run_next_statement;
+
+    */
 }
 
 void CTinyBasic::go_ASSIGNMENT() {
@@ -2252,6 +2271,15 @@ void CTinyBasic::go_ASSIGNMENT() {
 
     nextStep = RUN_NEXT_STATEMENT;
 
+}
+
+void CTinyBasic::switchMode() {
+    switch(runMode) {
+            case RUN: runMode = PRO;break;
+            case PRO: runMode = RESERVE;break;
+            case RESERVE: runMode = DEF;break;
+            case DEF: runMode = RUN;break;
+            }
 }
 
 /*

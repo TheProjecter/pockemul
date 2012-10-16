@@ -25,8 +25,12 @@ public:
 
     Clcdc_pc1211* pLCDC1211;
 
+    QByteArray inputBuffer;
+
     CTinyBasic *pBASIC;
     bool DisplayWaitForRTN;
+    void Editor();
+    int cursorPos;
 };
 
 #endif // PC1211_H

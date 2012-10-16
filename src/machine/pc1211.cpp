@@ -54,6 +54,8 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     pBASIC = (CTinyBasic *)pCPU;
     DisplayWaitForRTN = false;
     pLCDC1211 = (Clcdc_pc1211*)pLCDC;
+
+    cursorPos =0;
 }
 
 Cpc1211::~Cpc1211()
@@ -72,6 +74,9 @@ bool Cpc1211::run()
 {
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
+
+    if (pKEYB->LastKey==K_BRK) pBASIC->breakFlag = true;
+
 
     if (pBASIC->waitForRTN) {
 //        if (pKEYB->LastKey==K_SHT) pKEYB->LastKey=0; return true;
@@ -107,37 +112,48 @@ bool Cpc1211::run()
 
     }
 
-    switch (pKEYB->LastKey) {
-    case 0: break;
-    case K_POW_ON:break;
-    case K_MOD: switch(pBASIC->runMode) {
-        case CTinyBasic::RUN: pBASIC->runMode = CTinyBasic::PRO;break;
-        case CTinyBasic::PRO: pBASIC->runMode = CTinyBasic::RESERVE;break;
-        case CTinyBasic::RESERVE: pBASIC->runMode = CTinyBasic::DEF;break;
-        case CTinyBasic::DEF: pBASIC->runMode = CTinyBasic::RUN;break;
-        }
-        pKEYB->LastKey=0;
-        return true;
 
-    case K_SHT: break;
-    case K_LA:
-        pLCDC1211->cursorPos--;
-        if (pLCDC1211->cursorPos<0) pLCDC1211->cursorPos=0;
-        pKEYB->LastKey = 0;
-        break;
-    case K_RA: pLCDC1211->cursorPos++;
-        pKEYB->LastKey = 0;
-        break;
-    case K_BRK: pBASIC->breakFlag = true; break;
-    default:
-        pBASIC->commandBuffer.append(pKEYB->LastKey);
-        pLCDC1211->cursorPos++;
-        pKEYB->LastKey = 0;
-    }
 
+    if (pBASIC->inputMode) Editor();
+    Editor();
     CpcXXXX::run();
 
     return true;
+}
+
+void Cpc1211::Editor() {
+    switch (pKEYB->LastKey) {
+    case 0:
+    case K_SHT:
+    case K_POW_ON:
+        pKEYB->LastKey = 0;
+        break;
+    case K_MOD: pBASIC->switchMode();
+        pKEYB->LastKey=0;
+        return;
+
+    case K_LA:
+        cursorPos--;
+        if (cursorPos<0) cursorPos=0;
+        pKEYB->LastKey = 0;
+        break;
+    case K_RA: cursorPos++;
+        pKEYB->LastKey = 0;
+        break;
+    case K_BRK: pBASIC->breakFlag = true; break;
+    case K_RET: pBASIC->commandBuffer.clear();
+        pBASIC->commandBuffer.append(inputBuffer).append("\n");
+        pBASIC->inputMode = false;
+        inputBuffer.clear();
+        pKEYB->LastKey = 0;
+        break;
+    default:
+
+        inputBuffer.append(pKEYB->LastKey);
+        qWarning()<<"Input:"<<inputBuffer;
+        cursorPos++;
+        pKEYB->LastKey = 0;
+    }
 }
 
 void Cpc1211::afficheChar(quint8 c) {

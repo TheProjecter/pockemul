@@ -75,6 +75,7 @@ public:
        QByteArray commandBuffer;
        QByteArray backupCommandBuffer;
        QByteArray outputBuffer;
+       QByteArray inputBuffer;
 
 
 
@@ -149,6 +150,10 @@ public:
            ANGLE_MODE angleMode;
            double convertToRad(double angle);
            void convertLine();
+
+           int cursorPos;
+           void switchMode();
+           bool inputMode;
 };
 
 #endif // TINYBASIC_H
