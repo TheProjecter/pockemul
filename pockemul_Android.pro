@@ -282,7 +282,11 @@ HEADERS += src/core/Connect.h \
     src/cpu/rp5c01.h \
     ui/dialogvkeyboard.h \
     src/cpu/ctronics.h \
-    src/core/qcommandline.h
+    src/core/qcommandline.h \
+    src/core/version.h \
+    tinybasic/tinybasic.h \
+    src/machine/pc1211.h \
+    src/lcd/Lcdc_pc1211.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -333,7 +337,8 @@ RESOURCES += resources/ext.qrc \
     resources/g850v.qrc \
     resources/ext2.qrc \
     resources/z1.qrc \
-    resources/fp200.qrc
+    resources/fp200.qrc \
+    resources/pc1211.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -515,7 +520,10 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/rp5c01.cpp \
     ui/dialogvkeyboard.cpp \
     src/cpu/ctronics.cpp \
-    src/core/qcommandline.cpp
+    src/core/qcommandline.cpp \
+    tinybasic/tinybasic.cpp \
+    src/machine/pc1211.cpp \
+    src/lcd/Lcdc_pc1211.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -656,8 +664,8 @@ OTHER_FILES += \
     resources/keymap/g850v.map \
     resources/keymap/z1.map \
     resources/keymap/fp200.map \
-    resources/keymap/pc1260.map
-
+    resources/keymap/pc1260.map \
+    resources/keymap/pc1211.map
 
 
 

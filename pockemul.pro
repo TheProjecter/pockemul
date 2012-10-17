@@ -302,7 +302,6 @@ HEADERS += src/core/Connect.h \
     src/core/qcommandline.h \
     src/core/version.h \
     tinybasic/tinybasic.h \
-    tinybasic/tbthread.h \
     src/machine/pc1211.h \
     src/lcd/Lcdc_pc1211.h
 INCLUDEPATH += . \
@@ -630,6 +629,7 @@ OTHER_FILES += \
     resources/keymap/fp200.map \
     resources/keymap/pc1260.map \
     resources/keymap/pc1211.map
+
 
 
 
