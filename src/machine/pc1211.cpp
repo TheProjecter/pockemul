@@ -79,6 +79,7 @@ bool Cpc1211::run()
 
 
     if (pBASIC->waitForRTN) {
+
 //        if (pKEYB->LastKey==K_SHT) pKEYB->LastKey=0; return true;
         switch (pKEYB->LastKey) {
         case 0:
@@ -97,10 +98,10 @@ bool Cpc1211::run()
             pBASIC->backupCommandBuffer.clear();
             break;
         default: pBASIC->backupCommandBuffer.clear();
-
             break;
         }
 
+        pBASIC->inputMode = true;
         pBASIC->outputBuffer.remove(0,pBASIC->outputBuffer.indexOf('\n')+1);
         if (pBASIC->outputBuffer.right(1).startsWith('\n')) pBASIC->outputBuffer.chop(1);
         if (!pBASIC->outputBuffer.contains('\n')) pBASIC->waitForRTN = false;
@@ -115,7 +116,7 @@ bool Cpc1211::run()
 
 
     if (pBASIC->inputMode) Editor();
-    Editor();
+
     CpcXXXX::run();
 
     return true;

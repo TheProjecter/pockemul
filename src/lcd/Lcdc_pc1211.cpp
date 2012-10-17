@@ -166,9 +166,10 @@ void Clcdc_pc1211::disp()
     QByteArray *buf;
     if (pPC1211->pBASIC->inputMode) buf= &pPC1211->inputBuffer;
     else buf = &pPC1211->pBASIC->outputBuffer;
+//        qWarning()<< "DISP:"<<pPC1211->pBASIC->inputMode<<"**";
     if (!buf->isEmpty()) {
         line.prepend(buf->mid(0,buf->indexOf('\n')));
-        pPC1211->DisplayWaitForRTN = buf->contains('\n');
+//        pPC1211->DisplayWaitForRTN = true;//buf->contains('\n');
     }
 
 

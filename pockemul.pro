@@ -23,7 +23,7 @@ UI_DIR += build/ui
 
 
 mac {
-    debug:OBJECTS_DIR += build/o/wd
+    #debug:OBJECTS_DIR += build/o/wd
     release:OBJECTS_DIR += build/o/wr
 }
 unix {

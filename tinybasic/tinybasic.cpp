@@ -9,6 +9,7 @@
 
 
 
+
 #define TOKENCHAR(c)        QString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").contains(c)
 #define TOKENSTARTCHAR(c)   QString("ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(c)
 #define STRINGCHAR(c)       QString("\"'").contains(c)
@@ -435,6 +436,7 @@ bool CTinyBasic::init()
     alsoWait = false;
     nextStep = WARMSTART;
     cursorPos = 0;
+    inputMode = true;
 
     waitForRTN = false;
 
@@ -530,6 +532,7 @@ unsigned char CTinyBasic::popb()
 /***************************************************************************/
 void CTinyBasic::printnum(VAR_TYPE num,int size)
 {
+
     switch (size) {
     case 2: {
 
@@ -686,7 +689,7 @@ void CTinyBasic::getln(char prompt)
 //    txtpos = program_end+sizeof(LINENUM);
     nextStep = GETLN;
 
-    inputMode = true;
+
 
     char c = inchar();
     if (c==0) return;
@@ -700,7 +703,7 @@ void CTinyBasic::getln(char prompt)
         // Terminate all strings with a NL
         txtpos[0] = NL;
         nextStep = GETLN_END;
-        inputMode = false;
+//        inputMode = false;
         return;
     case K_BS: // BackSpace
         txtpos--;
@@ -780,6 +783,9 @@ void CTinyBasic::printline()
 
     line_num = *((LINENUM *)(list_line));
     list_line += sizeof(LINENUM) + sizeof(char);
+
+    waitForRTN = true;
+    qWarning()<<"Wait for RTN ";
 
     // Output the line */
     printnum(line_num,2);
@@ -1076,6 +1082,9 @@ warmstart:
 //    printmsg(okmsg);
 
 prompt:
+    inputMode = true;
+    qWarning()<<"prompt :inputMode true";
+
         if( triggerRun ){
           triggerRun = false;
           current_line = program_start;
@@ -1089,6 +1098,7 @@ getln:
     getln('>');
     return;
 getln_end:
+//    inputMode = false;
     outputBuffer.clear();
     toUppercaseBuffer();
 
@@ -1771,7 +1781,7 @@ void CTinyBasic::outchar(unsigned char c)
 
     outputChar(QByteArray(1,c).toUpper());
     if (c=='\n') {
-        waitForRTN = true;
+//        waitForRTN = true;
     }
     putchar(c);
 
@@ -1855,6 +1865,10 @@ void cmd_Files( void )
 
 //BUG extend printnum to integer
 void CTinyBasic::go_MEM() {
+    waitForRTN = true;
+    inputMode = false;
+    qWarning()<<"Wait for RTN , inputMode false";
+
     printnum(variables_begin-program_end,2);
     printmsgNoNL((unsigned char*) "STEPS ");
     printnum((variables_begin-program_end)/8,2);
@@ -1928,8 +1942,11 @@ void CTinyBasic::go_PRINT() {
                 nextStep = QWHAT;
                 return;
             }
+
             printnum(e);
         }
+
+
 
         // At this point we have three options, a comma or a new line
         if(*txtpos == ',')
@@ -1949,6 +1966,9 @@ void CTinyBasic::go_PRINT() {
             return;
         }
     }
+    waitForRTN = true;
+    qWarning()<<"Wait for RTN , inputMode false";
+    inputMode = false;
     nextStep = RUN_NEXT_STATEMENT;
 }
 
