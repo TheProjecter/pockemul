@@ -154,6 +154,9 @@ public:
            int cursorPos;
            void switchMode();
            bool inputMode;
+           qint64 waitState;
+           bool pauseFlag;
+           void go_PAUSE();
 };
 
 #endif // TINYBASIC_H

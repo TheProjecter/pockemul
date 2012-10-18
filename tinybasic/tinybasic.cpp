@@ -264,6 +264,7 @@ static unsigned char keywords[] = {
     'F','O','R'+0x80,
     'I','N','P','U','T'+0x80,
     'P','R','I','N','T'+0x80,
+    'P','A','U','S','E'+0x80,
     'P','O','K','E'+0x80,
     'S','T','O','P'+0x80,
     'B','Y','E'+0x80,
@@ -296,7 +297,7 @@ enum {
   KW_GOTO, KW_GOSUB, KW_RETURN,
   KW_REM,
   KW_FOR,
-  KW_INPUT, KW_PRINT,
+  KW_INPUT, KW_PRINT, KW_PAUSE,
   KW_POKE,
   KW_STOP, KW_BYE,
   KW_FILES,
@@ -439,6 +440,7 @@ bool CTinyBasic::init()
     inputMode = true;
 
     waitForRTN = false;
+    pauseFlag = false;
 
     memset(program,0,sizeof(program));
     program_start = program;
@@ -1082,7 +1084,7 @@ warmstart:
 //    printmsg(okmsg);
 
 prompt:
-    inputMode = true;
+    if (!waitForRTN) inputMode = true;
     qWarning()<<"prompt :inputMode true";
 
         if( triggerRun ){
@@ -1866,7 +1868,7 @@ void cmd_Files( void )
 //BUG extend printnum to integer
 void CTinyBasic::go_MEM() {
     waitForRTN = true;
-    inputMode = false;
+//    inputMode = false;
     qWarning()<<"Wait for RTN , inputMode false";
 
     printnum(variables_begin-program_end,2);
@@ -1904,6 +1906,12 @@ void CTinyBasic::go_LIST() {
     list_line = findline();
     while(list_line != program_end) printline();
     nextStep = WARMSTART;
+}
+
+void CTinyBasic::go_PAUSE() {
+    waitState = pPC->pTIMER->state;
+    pauseFlag = true;
+    go_PRINT();
 }
 
 void CTinyBasic::go_PRINT() {
@@ -1968,7 +1976,7 @@ void CTinyBasic::go_PRINT() {
     }
     waitForRTN = true;
     qWarning()<<"Wait for RTN , inputMode false";
-    inputMode = false;
+//    inputMode = false;
     nextStep = RUN_NEXT_STATEMENT;
 }
 
