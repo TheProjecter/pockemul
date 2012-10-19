@@ -33,6 +33,8 @@ public:
     quint8  Code;
 };
 
+typedef short unsigned LINENUM;
+
 class CTinyBasic : public CCPU
 {
     Q_OBJECT
@@ -45,7 +47,7 @@ public:
         EXECNEXTLINE,INTERPERATEATTXTPOS,
         FILES,LIST,CHAIN,LOAD,MEM,QWHAT,QSORRY,SAVE,NEXT,ASSIGNMENT,
         UNIMPLEMENTED,GOSUB,GOSUB_RETURN,FORLOOP,INPUT,PRINT,POKE,BYE,GETLN,GETLN_END,
-        RUN_NEXT_STATEMENT
+        RUN_NEXT_STATEMENT,LIST_NEXT,LIST_PREV
 
     };
 
@@ -129,7 +131,7 @@ public:
            void go_MEM();
            void go_NEW();
            void go_RUN();
-           void go_LIST();
+           void go_LIST(LINENUM lineNb = 0);
            void go_PRINT();
            void go_GOTO();
            void go_SAVE();
@@ -157,6 +159,11 @@ public:
            qint64 waitState;
            bool pauseFlag;
            void go_PAUSE();
+           void go_LIST_NEXT();
+           void go_LIST_PREV();
+           QMap<LINENUM,unsigned char*> lineMap;
+           void scanLines();
+           bool inLIST;
 };
 
 #endif // TINYBASIC_H

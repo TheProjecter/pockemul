@@ -236,7 +236,7 @@ static boolean triggerRun = false;
 #define CTRLS	0x13
 #define CTRLX	0x18
 
-typedef short unsigned LINENUM;
+
 #if ARDUINO
   #define ECHO_CHARS 1
 #else
@@ -741,22 +741,45 @@ void CTinyBasic::getln(char prompt)
     }
 }
 
+void CTinyBasic::scanLines(void)
+{
+    unsigned char *line = program_start;
+    lineMap.clear();
+    while(1)
+    {
+        if(line == program_end)
+            return ;
 
+        lineMap.insert(((LINENUM *)line)[0],line);
+
+        // Add the line length onto the current address, to get to the next line;
+        line += line[sizeof(LINENUM)];
+    }
+}
 /***************************************************************************/
 unsigned char *CTinyBasic::findline(void)
 {
+#if 0
+unsigned char *line = program_end;
+if (lineMap.contains(linenum))
+
+#else
+
     unsigned char *line = program_start;
     while(1)
     {
         if(line == program_end)
             return line;
 
-        if(((LINENUM *)line)[0] >= linenum)
+        if(((LINENUM *)line)[0] >= linenum) {
+            linenum = ((LINENUM *)line)[0];
             return line;
+        }
 
         // Add the line length onto the current address, to get to the next line;
         line += line[sizeof(LINENUM)];
     }
+#endif
 }
 
 /***************************************************************************/
@@ -791,7 +814,7 @@ void CTinyBasic::printline()
 
     // Output the line */
     printnum(line_num,2);
-    outchar(' ');
+    outchar(':');
     while(*list_line != NL)
     {
         outchar(*list_line);
@@ -1068,7 +1091,9 @@ void CTinyBasic::loop()
         case LOAD:goto load;
         case QWHAT:goto qwhat;
         case QSORRY:goto qsorry;
-        case ASSIGNMENT: go_ASSIGNMENT(); break;
+        case ASSIGNMENT: go_ASSIGNMENT(); return; break;
+        case LIST_NEXT: go_LIST_NEXT(); return; break;
+        case LIST_PREV: go_LIST_PREV(); return; break;
         case UNIMPLEMENTED:goto unimplemented;
         case POKE:goto poke;
         case GETLN:goto getln;
@@ -1224,6 +1249,7 @@ getln_end:
         }
         program_end = newEnd;
     }
+    go_LIST(linenum);
     nextStep = PROMPT;
     return;
 
@@ -1892,19 +1918,59 @@ void CTinyBasic::go_RUN() {
     nextStep = EXECLINE;
 }
 
-void CTinyBasic::go_LIST() {
+void CTinyBasic::go_LIST(LINENUM lineNb) {
 
-    linenum = testnum(); // Retuns 0 if no line found.
+    // Store Linenum and pointer into a Map
+    scanLines();
 
-    // Should be EOL
-    if(txtpos[0] != NL) {
-        nextStep = QWHAT;
-        return;
+
+    if (lineNb==0) {
+        linenum = testnum(); // Retuns 0 if no line found.
+
+        // Should be EOL
+        if(txtpos[0] != NL) {
+            nextStep = QWHAT;
+            return;
+        }
     }
+    else linenum = lineNb;
 
     // Find the line
     list_line = findline();
-    while(list_line != program_end) printline();
+    //    while(list_line != program_end)
+    if (list_line != program_end) {
+        inLIST = true;
+        printline();
+    }
+
+    waitForRTN = true;
+    qWarning()<< "go_LIST(): waitForRTN true";
+    nextStep = WARMSTART;
+}
+
+void CTinyBasic::go_LIST_NEXT() {
+
+    QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
+    i++;
+    if (i !=lineMap.end()){
+        qWarning()<<"go_LIST_NEXT(): "<<i.key();
+        list_line = i.value();
+        inLIST = true;
+        printline();
+    }
+    waitForRTN = true;
+    nextStep = WARMSTART;
+}
+
+void CTinyBasic::go_LIST_PREV() {
+    QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
+    i--;
+    if (i != lineMap.begin()) {
+        list_line = i.value();
+        inLIST = true;
+        printline();
+    }
+
     nextStep = WARMSTART;
 }
 

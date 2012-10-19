@@ -180,13 +180,14 @@ void Clcdc_pc1211::disp()
     }
 
 
-    if (pPC->pTIMER->msElapsed(blinkState)>500) {
-        DrawChar(0xff,cursorPos);
+    if (pPC1211->pBASIC->inputMode) {
+        if (pPC->pTIMER->msElapsed(blinkState)>500) {
+            DrawChar(0xff,cursorPos);
+        }
+        if (pPC->pTIMER->msElapsed(blinkState)>1000) {
+            blinkState = pPC->pTIMER->state;
+        }
     }
-    if (pPC->pTIMER->msElapsed(blinkState)>1000) {
-        blinkState = pPC->pTIMER->state;
-    }
-
     Refresh = true;
 }
 
