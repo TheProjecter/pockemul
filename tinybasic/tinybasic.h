@@ -35,6 +35,21 @@ public:
 
 typedef short unsigned LINENUM;
 
+struct stack_for_frame {
+    char frame_type;
+    char for_var;
+    VAR_TYPE terminal;
+    VAR_TYPE step;
+    unsigned char *current_line;
+    unsigned char *txtpos;
+};
+
+struct stack_gosub_frame {
+    char frame_type;
+    unsigned char *current_line;
+    unsigned char *txtpos;
+};
+
 class CTinyBasic : public CCPU
 {
     Q_OBJECT
@@ -60,8 +75,8 @@ public:
        virtual	bool	exit(void);						//end
        virtual void	step(void);						//step SC61860
 
-       virtual	void	Load_Internal(QXmlStreamReader *);
-       virtual	void	save_internal(QXmlStreamWriter *);
+       virtual	void	Load_Internal(QXmlStreamReader *xmlIn);
+       virtual	void	save_internal(QXmlStreamWriter *xmlOut);
        virtual	bool	Get_Xin(void){return true;}
        virtual	void	Set_Xin(bool){}
        virtual	bool	Get_Xout(void){return true;}
@@ -165,6 +180,18 @@ public:
            void scanLines();
            bool inLIST;
            LINENUM linenum;
+
+           boolean inhibitOutput;
+         boolean runAfterLoad;
+         boolean triggerRun;
+
+         unsigned char *stack_limit;
+         unsigned char *program_start;
+         unsigned char *program_end;        // Save into status
+         unsigned char *stack; // Software stack for things that should go on the CPU stack
+         unsigned char *variables_begin;
+         unsigned char *current_line;
+         unsigned char *sp;
 };
 
 #endif // TINYBASIC_H

@@ -35,12 +35,28 @@ void CTinyBasic::step()
 
 }
 
-void CTinyBasic::Load_Internal(QXmlStreamReader *)
+void CTinyBasic::Load_Internal(QXmlStreamReader *xmlIn)
 {
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "tinybasic")) {
+            program_end = program_start + xmlIn->attributes().value("program_end").toString().toInt(0,16);
+            QByteArray ba_program = QByteArray::fromBase64(xmlIn->attributes().value("memory").toString().toAscii());
+            memcpy((char *) &program,ba_program.data(),kRamSize);
+        }
+        xmlIn->skipCurrentElement();
+    }
 }
 
-void CTinyBasic::save_internal(QXmlStreamWriter *)
+void CTinyBasic::save_internal(QXmlStreamWriter *xmlOut)
 {
+    // save program and  several pointer
+    xmlOut->writeStartElement("cpu");
+     xmlOut->writeAttribute("model","tinybasic");
+     xmlOut->writeAttribute("program_end",QString("%1").arg(program_end-program_start,4,16));
+     QByteArray ba_imem((char*)program,kRamSize);
+     xmlOut->writeAttribute("memory",ba_imem.toBase64());
+     xmlOut->writeEndElement();
 }
 void CTinyBasic::clearOutput() {
     outputBuffer.clear();
@@ -216,9 +232,7 @@ char eliminateCompileErrors = 1;  // fix to suppress arduino build errors
   static boolean inFromFile = false;
 
 #endif
-  static boolean inhibitOutput = false;
-static boolean runAfterLoad = false;
-static boolean triggerRun = false;
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -313,20 +327,7 @@ enum {
   KW_DEFAULT /* always the final one*/
 };
 
-struct stack_for_frame {
-    char frame_type;
-    char for_var;
-    VAR_TYPE terminal;
-    VAR_TYPE step;
-    unsigned char *current_line;
-    unsigned char *txtpos;
-};
 
-struct stack_gosub_frame {
-    char frame_type;
-    unsigned char *current_line;
-    unsigned char *txtpos;
-};
 
 static unsigned char func_tab[] = {
     'S','I','N'+0x80,
@@ -402,13 +403,7 @@ static unsigned char inputoutput_tab[] = {
 };
 
 
-static unsigned char *stack_limit;
-static unsigned char *program_start;
-static unsigned char *program_end;
-static unsigned char *stack; // Software stack for things that should go on the CPU stack
-static unsigned char *variables_begin;
-static unsigned char *current_line;
-static unsigned char *sp;
+
 #define STACK_GOSUB_FLAG 'G'
 #define STACK_FOR_FLAG 'F'
 static unsigned char table_index;
@@ -434,6 +429,10 @@ static const unsigned char spacemsg[]         = " ";
 
 bool CTinyBasic::init()
 {
+    inhibitOutput = false;
+    runAfterLoad = false;
+    triggerRun = false;
+
     alsoWait = false;
     nextStep = WARMSTART;
     cursorPos = 0;
