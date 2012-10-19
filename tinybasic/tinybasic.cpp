@@ -412,7 +412,7 @@ static unsigned char *sp;
 #define STACK_GOSUB_FLAG 'G'
 #define STACK_FOR_FLAG 'F'
 static unsigned char table_index;
-static LINENUM linenum;
+
 
 static const unsigned char okmsg[]            = "OK";
 static const unsigned char whatmsg[]          = "What? ";
@@ -1951,26 +1951,33 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
 void CTinyBasic::go_LIST_NEXT() {
 
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
-    i++;
-    if (i !=lineMap.end()){
-        qWarning()<<"go_LIST_NEXT(): "<<i.key();
-        list_line = i.value();
-        inLIST = true;
-        printline();
+    if (i.key()==linenum) i++;
+    if (i ==lineMap.end()){
+        i--;
     }
+    qWarning()<<"go_LIST_NEXT(): "<<i.key();
+    linenum = i.key();
+    list_line = i.value();
+    inLIST = true;
+    printline();
+
     waitForRTN = true;
     nextStep = WARMSTART;
 }
 
 void CTinyBasic::go_LIST_PREV() {
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
-    i--;
-    if (i != lineMap.begin()) {
-        list_line = i.value();
-        inLIST = true;
-        printline();
-    }
 
+    if (i != lineMap.begin()) {
+        i--;
+    }
+    qWarning()<<"go_LIST_PREV(): "<<i.key();
+    list_line = i.value();
+    linenum = i.key();
+    inLIST = true;
+    printline();
+
+    waitForRTN = true;
     nextStep = WARMSTART;
 }
 

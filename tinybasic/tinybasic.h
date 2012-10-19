@@ -164,6 +164,7 @@ public:
            QMap<LINENUM,unsigned char*> lineMap;
            void scanLines();
            bool inLIST;
+           LINENUM linenum;
 };
 
 #endif // TINYBASIC_H
