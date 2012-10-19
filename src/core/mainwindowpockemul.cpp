@@ -326,6 +326,7 @@ void MainWindowPockemul::opensession(QString sessionFN)
 {
     QHash<QString, Models> objtable;
 
+    objtable["PC-1211"]=PC1211;
     objtable["PC-1245"]=PC1245;
     objtable["MC-2200"]=MC2200;
     objtable["PC-1250"]=PC1250;

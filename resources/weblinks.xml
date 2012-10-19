@@ -1,5 +1,9 @@
 <!DOCTYPE WEBLINKS>
 <weblinks version="1.0">
+    <model value="pc1211">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1211_e.html"/>
+        <url desc="Silicium (fr)" link="http://www.silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=73:pc1211&amp;catid=55:calcs"/>
+    </model>
     <model value="pc1245">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1245_e.html"/>
     </model>

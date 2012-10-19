@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
  <demolauncher>
    <demos>
+   <example idpocket="PC 1211" filename="./" name="Sharp pc-1211 SIMULATOR!!!  in progress..." image=":/pc1211/pc-1211.png"/>
     <example idpocket="PC 1245" filename="./" name="Sharp pc-1245" image=":/PC1245/pc1245/pc1245.png"/>
     <example idpocket="MC 2200" filename="./" name="Seiko MC-2200" image=":/PC1245/pc1245/mc2200.png"/>
      <example idpocket="PC 1250" filename="./" name="Sharp pc-1250" image=":/PC1250/pc1250/pc1250.png"/>

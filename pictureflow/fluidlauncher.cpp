@@ -272,6 +272,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
          // if ItemText start with a specic tag, load the corresponding xml and display the new pictureflow.
          // Esc should exit
 
+         if (ItemText == "PC 1211")	result = PC1211;
          if (ItemText == "PC 1245")	result = PC1245;
          if (ItemText == "MC 2200")	result = MC2200;
          if (ItemText == "PC 1250")	result = PC1250;
