@@ -293,37 +293,74 @@ static unsigned char keywords[] = {
     'E','N','D'+0x80,
     'R','S','E','E','D'+0x80,
     'C','H','A','I','N'+0x80,
-    'T','O','N','E','W'+0x80,
-    'T','O','N','E'+0x80,
-    'N','O','T','O','N','E'+0x80,
     'R','A','D','I','A','N'+0x80,
     'D','E','G','R','E','E'+0x80,
     'G','R','A','D'+0x80,
+    'T','O'+0x80,
+    'S','T','E','P'+0x80,
+
+    'S','I','N'+0x80,
+    'C','O','S'+0x80,
+    'T','A','N'+0x80,
+    'P','E','E','K'+0x80,
+    'A','B','S'+0x80,
+    'A','R','E','A','D'+0x80,
+    'D','R','E','A','D'+0x80,
+    'R','N','D'+0x80,
+
+
     0
 };
 
 // by moving the command list to an enum, we can easily remove sections
 // above and below simultaneously to selectively obliterate functionality.
 enum {
-  KW_LIST = 0,
-  KW_LOAD, KW_NEW, KW_RUN, KW_SAVE,
-  KW_NEXT, KW_LET, KW_IF,
-  KW_GOTO, KW_GOSUB, KW_RETURN,
-  KW_REM,
-  KW_FOR,
-  KW_INPUT, KW_PRINT, KW_PAUSE,
-  KW_POKE,
-  KW_STOP, KW_BYE,
-  KW_FILES,
-  KW_MEM,
-  KW_QMARK, KW_QUOTE,
-  KW_AWRITE, KW_DWRITE, KW_PINMODE,
-  KW_DELAY,
-  KW_END,
-  KW_RSEED,
-  KW_CHAIN,
-  KW_TONEW, KW_TONE, KW_NOTONE,
-    KW_RADIAN,KW_DEGREE,KW_GRAD,
+    KW_LIST = 0,
+    KW_LOAD,
+    KW_NEW,
+    KW_RUN,
+    KW_SAVE,
+    KW_NEXT,
+    KW_LET,
+    KW_IF,
+    KW_GOTO,
+    KW_GOSUB,
+    KW_RETURN,
+    KW_REM,
+    KW_FOR,
+    KW_INPUT,
+    KW_PRINT,
+    KW_PAUSE,
+    KW_POKE,      // 0x10
+    KW_STOP,
+    KW_BYE,
+    KW_FILES,
+    KW_MEM,
+    KW_QMARK,
+    KW_QUOTE,
+    KW_AWRITE,
+    KW_DWRITE,
+    KW_PINMODE,
+    KW_DELAY,
+    KW_END,
+    KW_RSEED,
+    KW_CHAIN,
+    KW_RADIAN,
+    KW_DEGREE,
+    KW_GRAD,        // 0x20
+    KW_TO,            // 0x21
+    KW_STEP,        // 0x22
+
+    KF_SIN,          // 0x23
+    KF_COS,
+    KF_TAN,
+    KF_PEEK,
+    KF_ABS,
+    KF_AREAD,
+    KF_DREAD,
+    KF_RND,
+
+
   KW_DEFAULT /* always the final one*/
 };
 
@@ -407,6 +444,7 @@ static unsigned char inputoutput_tab[] = {
 #define STACK_GOSUB_FLAG 'G'
 #define STACK_FOR_FLAG 'F'
 static unsigned char table_index;
+static int table_lenght;
 
 
 static const unsigned char okmsg[]            = "OK";
@@ -450,6 +488,9 @@ bool CTinyBasic::init()
 //    printmsg(initmsg);
 //    printnum(variables_begin-program_end);
 //    printmsg(memorymsg);
+
+    LoadTable(keywords);
+
     return true;
 }
 
@@ -460,25 +501,113 @@ void CTinyBasic::ignore_blanks(void)
         txtpos++;
 }
 
-// TODO convert instruction to internal code
+// TODO convert instruction to internal code until NL
+// Be aware of Strings
 void CTinyBasic::convertLine() {
 
-    return;
+//    return;
+
     int linelen=0;
 
+    unsigned char* saved_txtpos = txtpos;
     while (1) {
-        scantable(keywords);
-        if (table_index==KW_DEFAULT) linelen++;
+        if (txtpos[0]==NL) break;
+        scantable(keywords,ALL);
+        if (table_index==KW_DEFAULT) txtpos++;
+        else {
 
+            txtpos-=table_lenght;
+            qWarning()<<"found keyword:"<<txtpos[0];
+            txtpos[0]= 0x80+table_index;
+            for (int c=1;c<table_lenght;c++) {
+                txtpos++;
+                txtpos[0]=0x20;
+            }
+
+        }
+    }
+    // remove spaces
+    txtpos=saved_txtpos;
+    while(1) {
+        if (txtpos[0] == '"') { // '"' && delim != '\''
+            txtpos++;
+            while(txtpos[0] != '"')
+            {
+                if(txtpos[0] == NL) {
+                    txtpos=saved_txtpos;
+                    return;
+                }
+                txtpos++;
+            }
+        }
+        if(txtpos[0] == NL) {
+            txtpos=saved_txtpos;
+            return;
+        }
+        if (txtpos[0] == 0x20) {
+            int i=0;
+            while (txtpos[i] != NL) {
+                txtpos[i] = txtpos[i+1];
+                i++;
+            }
+            txtpos--;
+        }
+
+        txtpos++;
+    }
+
+
+    txtpos=saved_txtpos;
+}
+
+void CTinyBasic::LoadTable(unsigned char *table) {
+    table_index=0;
+    int i=0;
+    QByteArray ba;
+    while(1) {
+        // Run out of table entries?
+        if(table[0] == 0)
+            return;
+
+        // do we match the last character of keywork (with 0x80 added)? If so, return
+        if(table[0] & 0x80)
+        {
+            ba.append(table[0] &0x7F);
+            keywordsMap.insert(0x80+table_index,ba);
+            ba.clear();
+            table_index++;
+        }
+        else {
+            ba.append(table[0]);
+        }
+        table++;
     }
 }
 
+
 /***************************************************************************/
-void CTinyBasic::scantable(unsigned char *table)
+void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
 {
-    qWarning("SCANTABLE");
+    qWarning()<<"SCANTABLE"<< txtpos[0];
     int i = 0;
+    table_lenght = 0;
     table_index = 0;
+    int offset_begin = 0;
+    int offset_end = 0;
+    switch (type) {
+    case ALL:       offset_begin = 0x00; offset_end = 0x50; break;
+    case KEYWORD:   offset_begin = 0x00; offset_end = KW_TO-1; break;
+    case FOR_TO:    offset_begin = KW_TO; offset_end = KW_TO; break;
+    case FOR_STEP:  offset_begin = KW_STEP; offset_end = KW_STEP; break;
+    case FUNC:      offset_begin = 0x23; offset_end = 0x50; break;
+    }
+    if ( (txtpos[0]>=0x80+offset_begin) && (txtpos[0]<=0x80+offset_end)) {
+        table_index = txtpos[0]-0x80;
+        txtpos++;
+        //        ignore_blanks();
+        return;
+    }
+
     while(1)
     {
         // Run out of table entries?
@@ -497,7 +626,8 @@ void CTinyBasic::scantable(unsigned char *table)
             if(txtpos[i]+0x80 == table[0])
             {
                 txtpos += i+1;  // Advance the pointer to following the keyword
-                ignore_blanks();
+                table_lenght = i+1;
+//                ignore_blanks();
                 return;
             }
 
@@ -887,8 +1017,9 @@ VAR_TYPE CTinyBasic::expr4(void)
         }
 
         // Is it a function with a single parameter
-        scantable(func_tab);
-        if(table_index == FUNC_UNKNOWN)
+        scantable(keywords,FUNC);
+        ignore_blanks();
+        if(table_index == KW_DEFAULT)
             goto expr4_error;
 
         unsigned char f = table_index;
@@ -910,17 +1041,17 @@ VAR_TYPE CTinyBasic::expr4(void)
 
         switch(f)
         {
-            case FUNC_PEEK:
+            case KF_PEEK:
                 return 0;//program[a];
-            case FUNC_ABS:
+            case KF_ABS:
                 if(a < 0)
                     return -a;
                 return a;
-            case FUNC_SIN:
+            case KF_SIN:
                 return sin(convertToRad(a));
-        case FUNC_COS:
+        case KF_COS:
             return cos(convertToRad(a));
-        case FUNC_TAN:
+        case KF_TAN:
             return tan(convertToRad(a));
 //        case FUNC_AREAD:
 //            return analogRead( a );
@@ -1031,7 +1162,8 @@ VAR_TYPE CTinyBasic::expression(void)
     // Check if we have an error
     if(expression_error)	return a;
 
-    scantable(relop_tab);
+    scantable(relop_tab,OPE);
+    ignore_blanks();
     if(table_index == RELOP_UNKNOWN)
         return a;
 
@@ -1167,6 +1299,7 @@ getln_end:
 
     // Convert INSTRUCTIONS TO internal code
     convertLine();
+
 
     // Find the length of what is left, including the (yet-to-be-populated) line header
     linelen = 0;
@@ -1317,7 +1450,8 @@ interperateAtTxtpos:
         }
 
 
-    scantable(keywords);
+    scantable(keywords,KEYWORD);
+    ignore_blanks();
 
     switch(table_index)
     {
@@ -1398,12 +1532,12 @@ interperateAtTxtpos:
         //                case KW_RSEED:
         //                        goto rseed;
 
-    case KW_TONEW:
-        alsoWait = true;
-    case KW_TONE:
-        goto tonegen;
-    case KW_NOTONE:
-        goto tonestop;
+//    case KW_TONEW:
+//        alsoWait = true;
+//    case KW_TONE:
+//        goto tonegen;
+//    case KW_NOTONE:
+//        goto tonestop;
 
     case KW_RADIAN : angleMode = RADIAN; nextStep = RUN_NEXT_STATEMENT; break;
     case KW_DEGREE : angleMode = DEGREE; nextStep = RUN_NEXT_STATEMENT; break;
@@ -2230,34 +2364,36 @@ void CTinyBasic::go_GOSUB() {
 void CTinyBasic::go_FORLOOP() {
 
     ignore_blanks();
-    if(*txtpos < 'A' || *txtpos > 'Z') {nextStep=QWHAT; return;}
+    if(*txtpos < 'A' || *txtpos > 'Z') {qWarning("un");nextStep=QWHAT; return;}
     var_for = *txtpos;
     txtpos++;
     ignore_blanks();
-    if(*txtpos != '=') {nextStep=QWHAT; return;}
+    if(*txtpos != '=') {qWarning("deux");nextStep=QWHAT; return;}
     txtpos++;
     ignore_blanks();
 
     expression_error = 0;
     initial_for = expression();
-    if(expression_error) {nextStep=QWHAT; return;}
+    if(expression_error) {qWarning("trois");nextStep=QWHAT; return;}
 
-    scantable(to_tab);
-    if(table_index != 0){nextStep=QWHAT; return;}
+    scantable(keywords,FOR_TO);
+    ignore_blanks();
+    if(table_index != KW_TO){qWarning("quatres");nextStep=QWHAT; return;}
 
     terminal_for = expression();
-    if(expression_error) {nextStep=QWHAT; return;}
+    if(expression_error) {qWarning("cinq");nextStep=QWHAT; return;}
 
-    scantable(step_tab);
-    if(table_index == 0)
+    scantable(keywords,FOR_STEP);
+    ignore_blanks();
+    if(table_index == KW_STEP)
     {
         step_for = expression();
-        if(expression_error) {nextStep=QWHAT; return;}
+        if(expression_error) {qWarning("six");nextStep=QWHAT; return;}
     }
     else
         step_for = 1;
     ignore_blanks();
-    if(*txtpos != NL && *txtpos != ':') {nextStep=QWHAT; return;}
+    if(*txtpos != NL && *txtpos != ':') {qWarning("sept");nextStep=QWHAT; return;}
 
 
     if(!expression_error && *txtpos == NL)

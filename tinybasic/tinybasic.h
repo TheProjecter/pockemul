@@ -65,6 +65,9 @@ public:
         RUN_NEXT_STATEMENT,LIST_NEXT,LIST_PREV
 
     };
+    enum KEYWORD_TYPE {
+        ALL,KEYWORD,OPE,FUNC,FOR_TO,FOR_STEP
+    };
 
     NEXT_STEP nextStep;
     Mode        runMode;
@@ -105,7 +108,7 @@ public:
        QByteArray go_PI();
        void outchar(unsigned char c);
        void ignore_blanks();
-       void scantable(unsigned char *table);
+       void scantable(unsigned char *table,KEYWORD_TYPE type = KEYWORD);
        int isValidFnChar(char c);
        unsigned char *filenameWord();
        void line_terminator();
@@ -181,6 +184,8 @@ public:
            bool inLIST;
            LINENUM linenum;
 
+           QMap<unsigned short,QByteArray> keywordsMap;
+
            boolean inhibitOutput;
          boolean runAfterLoad;
          boolean triggerRun;
@@ -192,6 +197,7 @@ public:
          unsigned char *variables_begin;
          unsigned char *current_line;
          unsigned char *sp;
+         void LoadTable(unsigned char *table);
 };
 
 #endif // TINYBASIC_H
