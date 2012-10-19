@@ -1258,11 +1258,13 @@ unimplemented:
     return;
 
 qhow:
+    waitForRTN = true;
     printmsg(howmsg);
     nextStep = PROMPT;
     return;
 
 qwhat:
+    waitForRTN = true;
     printmsgNoNL(whatmsg);
     if(current_line != NULL)
     {
@@ -1279,6 +1281,7 @@ qwhat:
     goto prompt;
 
 qsorry:
+    waitForRTN = true;
     printmsg(sorrymsg);
     nextStep = WARMSTART;
     return;
@@ -1988,6 +1991,8 @@ void CTinyBasic::go_PAUSE() {
 
 void CTinyBasic::go_PRINT() {
 
+    bool leftPosition=false;
+
     // If we have an empty list then just put out a NL
     if(*txtpos == ':' )
     {
@@ -2007,7 +2012,7 @@ void CTinyBasic::go_PRINT() {
         ignore_blanks();
         if(print_quoted_string())
         {
-            ;
+            leftPosition = true;
         }
         else if(*txtpos == '"' || *txtpos == '\'') {
             nextStep = QWHAT;
@@ -2029,7 +2034,7 @@ void CTinyBasic::go_PRINT() {
 
 
         // At this point we have three options, a comma or a new line
-        if(*txtpos == ',')
+        if(*txtpos == ';')
             txtpos++;	// Skip the comma and move onto the next
         else if(txtpos[0] == ';' && (txtpos[1] == NL || txtpos[1] == ':'))
         {
@@ -2038,7 +2043,12 @@ void CTinyBasic::go_PRINT() {
         }
         else if(*txtpos == NL || *txtpos == ':')
         {
+            if (!leftPosition) {
+                outputBuffer = outputBuffer.rightJustified(24,' ');
+            }
             line_terminator();	// The end of the print statement
+            // Left or right justify ?
+
             break;
         }
         else{

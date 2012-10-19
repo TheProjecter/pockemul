@@ -98,7 +98,7 @@ Refresh_Display = true;
         case '-':
         case '/':
         case '*': inputBuffer.clear();
-            inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')));
+            inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')).trimmed());
             pBASIC->outputBuffer.clear();
 //            pBASIC->backupCommandBuffer.clear();
             pBASIC->inputMode = true;
