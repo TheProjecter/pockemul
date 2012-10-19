@@ -75,6 +75,8 @@ bool Cpc1211::run()
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
+    pTIMER->state+=1000;
+
     if (pKEYB->LastKey==K_BRK) {
         pBASIC->breakFlag = true;
         pKEYB->LastKey = 0;
@@ -82,11 +84,19 @@ bool Cpc1211::run()
 
 
     if (pBASIC->pauseFlag) {
-        if (pTIMER->msElapsed(pBASIC->waitState)<850) return true;
-
+//        qWarning()<<pTIMER->msElapsed(pBASIC->waitState);
+        if (pTIMER->msElapsed(pBASIC->waitState)<1300)
+            return true;
+        qWarning()<<"end PAUSE";
         pBASIC->pauseFlag = false;
+        pBASIC->waitForRTN = false;
+        inputBuffer.clear();
+        pBASIC->inputMode = false;
+        pBASIC->outputBuffer.clear();
     }
-Refresh_Display = true;
+
+    Refresh_Display = true;
+
     if (pBASIC->waitForRTN) {
         pBASIC->inLIST = false;
 

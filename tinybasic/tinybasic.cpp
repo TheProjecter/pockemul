@@ -1362,6 +1362,7 @@ interperateAtTxtpos:
     case KW_QUOTE: nextStep = EXECNEXTLINE; return;     // Ignore line completely
     case KW_FOR: go_FORLOOP(); return;
     case KW_INPUT: go_INPUT(); return;
+    case KW_PAUSE: go_PAUSE(); return;
     case KW_PRINT:
     case KW_QMARK: go_PRINT(); return;
     case KW_POKE:
@@ -1952,6 +1953,8 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
 
 void CTinyBasic::go_LIST_NEXT() {
 
+    scanLines();
+
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
     if (i.key()==linenum) i++;
     if (i ==lineMap.end()){
@@ -1968,6 +1971,9 @@ void CTinyBasic::go_LIST_NEXT() {
 }
 
 void CTinyBasic::go_LIST_PREV() {
+
+    scanLines();
+
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
 
     if (i != lineMap.begin()) {
@@ -1984,6 +1990,7 @@ void CTinyBasic::go_LIST_PREV() {
 }
 
 void CTinyBasic::go_PAUSE() {
+    qWarning()<<"PAUSE";
     waitState = pPC->pTIMER->state;
     pauseFlag = true;
     go_PRINT();
