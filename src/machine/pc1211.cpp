@@ -98,7 +98,7 @@ bool Cpc1211::run()
     Refresh_Display = true;
 
     if (pBASIC->waitForRTN) {
-        pBASIC->inLIST = false;
+//        pBASIC->inLIST = false;
 
 //        if (pKEYB->LastKey==K_SHT) pKEYB->LastKey=0; return true;
         switch (pKEYB->LastKey) {
@@ -107,7 +107,8 @@ bool Cpc1211::run()
         case '+':
         case '-':
         case '/':
-        case '*': inputBuffer.clear();
+        case '*':
+            inputBuffer.clear();
             inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')).trimmed());
             pBASIC->outputBuffer.clear();
 //            pBASIC->backupCommandBuffer.clear();
@@ -115,27 +116,27 @@ bool Cpc1211::run()
             break;
         case K_LA:
         case K_RA:
-            qWarning()<<"EDITOR"<< inputBuffer;
-//            pBASIC->commandBuffer.append(pBASIC->backupCommandBuffer);
-//            pBASIC->backupCommandBuffer.clear();
+            qWarning()<<"EDITOR"<< inputBuffer<<"inList:"<<pBASIC->inLIST;
+            if (pBASIC->inLIST) {
+                inputBuffer.clear();
+                inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')).trimmed());
+                pBASIC->outputBuffer.clear();
+                if (inputBuffer.indexOf(':')<4) {
+                    inputBuffer[inputBuffer.indexOf(':')]=' ';
+                }
+            }
+
             pBASIC->inputMode=true;
             pBASIC->outputBuffer.clear();
             break;
         case K_DA:
-        case K_UA: pBASIC->inLIST = true;
+        case K_UA: if (pBASIC->runMode==CTinyBasic::PRO) pBASIC->inLIST = true;
+            else {
+                inputBuffer.clear();
+                pBASIC->inputMode = true;
+                pBASIC->outputBuffer.clear();
+            }
             break;
-//        case K_DA: inputBuffer.clear();
-//            if (pBASIC->inLIST) pBASIC->nextStep = CTinyBasic::LIST_NEXT;
-//            pBASIC->inputMode = false;
-//            pBASIC->outputBuffer.clear();
-//            pKEYB->LastKey=0;
-//            break;
-//        case K_UA: inputBuffer.clear();
-//            if (pBASIC->inLIST) pBASIC->nextStep = CTinyBasic::LIST_PREV;
-//            pBASIC->inputMode = false;
-//            pBASIC->outputBuffer.clear();
-//            pKEYB->LastKey=0;
-//            break;
         default: inputBuffer.clear();
             pBASIC->inputMode = true;
             pBASIC->outputBuffer.clear();
@@ -170,18 +171,24 @@ void Cpc1211::Editor() {
     case K_CLR: inputBuffer.clear();
         pKEYB->LastKey=0;
         break;
-    case K_DA: inputBuffer.clear();
-        if (!pBASIC->inLIST) pBASIC->linenum=0;
-        pBASIC->nextStep = CTinyBasic::LIST_NEXT;
-        pBASIC->inputMode = false;
-        pBASIC->outputBuffer.clear();
+    case K_DA:
+        if (pBASIC->runMode==CTinyBasic::PRO) {
+            inputBuffer.clear();
+            if (!pBASIC->inLIST) pBASIC->linenum=0;
+            pBASIC->nextStep = CTinyBasic::LIST_NEXT;
+            pBASIC->inputMode = false;
+            pBASIC->outputBuffer.clear();
+        }
         pKEYB->LastKey=0;
         break;
-    case K_UA: inputBuffer.clear();
-        if (!pBASIC->inLIST) pBASIC->linenum=999;
-        pBASIC->nextStep = CTinyBasic::LIST_PREV;
-        pBASIC->inputMode = false;
-        pBASIC->outputBuffer.clear();
+    case K_UA:
+        if (pBASIC->runMode==CTinyBasic::PRO) {
+            inputBuffer.clear();
+            if (!pBASIC->inLIST) pBASIC->linenum=999;
+            pBASIC->nextStep = CTinyBasic::LIST_PREV;
+            pBASIC->inputMode = false;
+            pBASIC->outputBuffer.clear();
+        }
         pKEYB->LastKey=0;
         break;
     case K_LA:

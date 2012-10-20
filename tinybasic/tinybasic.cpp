@@ -1,3 +1,9 @@
+//TODO: OPERATOR conversion to internal code to have an accurate memory usage
+//TODO: Manage Editor
+//TODO: Check all instructions
+//TODO: Speed management
+
+
 #include <QDebug>
 
 #include <math.h>
@@ -471,6 +477,7 @@ bool CTinyBasic::init()
     runAfterLoad = false;
     triggerRun = false;
 
+    inLIST = false;
     alsoWait = false;
     nextStep = WARMSTART;
     cursorPos = 0;
@@ -513,7 +520,7 @@ void CTinyBasic::convertLine() {
     while (1) {
         if (txtpos[0]==NL) break;
         scantable(keywords,ALL);
-        if (table_index==KW_DEFAULT) txtpos++;
+        if (table_index==KW_DEFAULT || table_original) txtpos++;
         else {
 
             txtpos-=table_lenght;
@@ -590,6 +597,7 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
 {
     qWarning()<<"SCANTABLE"<< txtpos[0];
     int i = 0;
+    table_original = false;
     table_lenght = 0;
     table_index = 0;
     int offset_begin = 0;
@@ -604,6 +612,7 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
     if ( (txtpos[0]>=0x80+offset_begin) && (txtpos[0]<=0x80+offset_end)) {
         table_index = txtpos[0]-0x80;
         txtpos++;
+        table_original = true;
         //        ignore_blanks();
         return;
     }

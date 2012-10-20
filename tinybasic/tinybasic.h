@@ -190,6 +190,8 @@ public:
          boolean runAfterLoad;
          boolean triggerRun;
 
+         bool table_original;
+
          unsigned char *stack_limit;
          unsigned char *program_start;
          unsigned char *program_end;        // Save into status
