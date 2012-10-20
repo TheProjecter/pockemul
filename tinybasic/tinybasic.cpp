@@ -531,11 +531,23 @@ void CTinyBasic::convertLine() {
     unsigned char* saved_txtpos = txtpos;
     while (1) {
 
+        qWarning()<<QString("%1:").arg(txtpos[0])<<QString(QByteArray((char*)txtpos,20));
+        if (txtpos[0]=='"') {
+            qWarning()<<"found quotes";
+            txtpos++;
+            while(txtpos[0] != '"')
+            {
+                qWarning()<<"skip "<<txtpos[0];
+                if(txtpos[0] == NL) break;
+                txtpos++;
+            }
+        }
         if (txtpos[0]==NL) break;
         if (txtpos[0]==(0x80+KW_REM)) break;
 
         scantable(keywords,ALL);
-        if (table_index==KW_DEFAULT || table_original) txtpos++;
+        if (table_original) continue;
+        if (table_index==KW_DEFAULT ) txtpos++;
         else {
 
             txtpos-=table_lenght;
@@ -1351,7 +1363,7 @@ getln_end:
         }
         txtpos = dest;
     }
-//convertLine();
+convertLine();
     if (runMode==RUN) {
         nextStep=DIRECT;
         return;
@@ -1371,7 +1383,7 @@ getln_end:
 
     // Convert INSTRUCTIONS TO internal code
     qWarning()<<"Convert Keywords to internal code";
-    convertLine();
+//    convertLine();
 
 
     // Find the length of what is left, including the (yet-to-be-populated) line header
@@ -2134,6 +2146,11 @@ void CTinyBasic::go_NEW() {
 void CTinyBasic::go_RUN() {
     //TODO: add prog line management. Like LIST
     current_line = program_start;
+
+    linenum = testnum();
+    if (linenum!=0)
+        current_line = findline();
+
     nextStep = EXECLINE;
 }
 
