@@ -308,6 +308,12 @@ static unsigned char keywords[] = {
     'S','I','N'+0x80,
     'C','O','S'+0x80,
     'T','A','N'+0x80,
+    'A','S','N'+0x80,
+    'A','C','S'+0x80,
+    'A','T','N'+0x80,
+    'L','N'+0x80,
+    'L','O','G'+0x80,
+    'E','X','P'+0x80,
     'P','E','E','K'+0x80,
     'A','B','S'+0x80,
     'A','R','E','A','D'+0x80,
@@ -360,6 +366,12 @@ enum {
     KF_SIN,          // 0x23
     KF_COS,
     KF_TAN,
+    KF_ASN,
+    KF_ACS,
+    KF_ATN,
+    KF_LN,
+    KF_LOG,
+    KF_EXP,
     KF_PEEK,
     KF_ABS,
     KF_AREAD,
@@ -513,7 +525,7 @@ void CTinyBasic::ignore_blanks(void)
 void CTinyBasic::convertLine() {
 
 //    return;
-
+    qWarning()<<"CONVERT LINE";
     int linelen=0;
 
     unsigned char* saved_txtpos = txtpos;
@@ -634,6 +646,10 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
             // do we match the last character of keywork (with 0x80 added)? If so, return
             if(txtpos[i]+0x80 == table[0])
             {
+                if ((table_index< offset_begin)||(table_index> offset_end)) {
+                    table_index = KW_DEFAULT;
+                    return;
+                }
                 txtpos += i+1;  // Advance the pointer to following the keyword
                 table_lenght = i+1;
 //                ignore_blanks();
@@ -1050,25 +1066,37 @@ VAR_TYPE CTinyBasic::expr4(void)
 
         switch(f)
         {
-            case KF_PEEK:
-                return 0;//program[a];
-            case KF_ABS:
-                if(a < 0)
-                    return -a;
-                return a;
-            case KF_SIN:
-                return sin(convertToRad(a));
+        case KF_PEEK:
+            return 0;//program[a];
+        case KF_ABS:
+            if(a < 0)
+                return -a;
+            return a;
+        case KF_SIN:
+            return sin(convertToRad(a));
         case KF_COS:
             return cos(convertToRad(a));
         case KF_TAN:
             return tan(convertToRad(a));
-//        case FUNC_AREAD:
-//            return analogRead( a );
-//        case FUNC_DREAD:
-//            return digitalRead( a );
+        case KF_ASN:
+            return convertFromRad(asin(a));
+        case KF_ACS:
+            return convertFromRad(acos(a));
+        case KF_ATN:
+            return convertFromRad(atan(a));
+        case KF_LN:
+            return log(a);
+        case KF_LOG:
+            return log10(a);
+        case KF_EXP:
+            return exp(a);
+            //        case FUNC_AREAD:
+            //            return analogRead( a );
+            //        case FUNC_DREAD:
+            //            return digitalRead( a );
 
-//        case FUNC_RND:
-//            return( random( a ));
+            //        case FUNC_RND:
+            //            return( random( a ));
         }
     }
 
@@ -1101,7 +1129,17 @@ double CTinyBasic::convertToRad(double angle) {
 
     return angle;
 }
+double CTinyBasic::convertFromRad(double angle) {
 
+    switch (angleMode) {
+    case DEGREE: return (angle *180 /M_PI);
+    case RADIAN: return angle;
+    case GRAD:   return (angle *100 /M_PI);
+    default: return angle;
+    }
+
+    return angle;
+}
 /***************************************************************************/
 VAR_TYPE CTinyBasic::expr3(void)
 {
@@ -1289,7 +1327,7 @@ getln_end:
         }
         txtpos = dest;
     }
-
+//convertLine();
     if (runMode==RUN) {
         nextStep=DIRECT;
         return;
@@ -1555,6 +1593,8 @@ interperateAtTxtpos:
         nextStep = ASSIGNMENT;
         return;
     default:
+        nextStep = ASSIGNMENT;
+        return;
         break;
     }
 

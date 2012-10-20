@@ -200,6 +200,7 @@ public:
          unsigned char *current_line;
          unsigned char *sp;
          void LoadTable(unsigned char *table);
+         double convertFromRad(double angle);
 };
 
 #endif // TINYBASIC_H

@@ -54,7 +54,7 @@ public:
     const char	*fn_status;					//status file name
 	bool	usestatus;						//use status file(0:no,1:yes)
 	bool	halt;					//halt,off flag
-	bool	end,savesw, log,logsw;	//etc.flag
+    bool	end,savesw, cpulog,logsw;	//etc.flag
     bool    resetFlag;
     char	Regs_String[1024];
 

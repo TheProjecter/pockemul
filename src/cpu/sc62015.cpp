@@ -58,7 +58,7 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     save=0;				//end with memory save?(0:no, 1:yes)
     e6=0;				//E650 mode?(0:no, 1:yes)
     emsmode=0;			//EMS mode(0:none, 1-5:Delta 1-4 or Super)
-    log=0;				//execute log?(0:off, 1:on)
+    cpulog=0;				//execute log?(0:off, 1:on)
     logsw=0;				//log mode?(0:off, 1:on)
     usestatus=0;
     fp_status=0;
@@ -3157,7 +3157,7 @@ void Csc62015::step(void)
 			if(imem[0xd6]==2 && reg.x.i==0x26) debug.isdebug=1;
 		}*/
 		if(logsw){
-			if(log && fp_log!=0){					//check log mode
+            if(cpulog && fp_log!=0){					//check log mode
 				if(reg.x.p==0xfffe8)				//check calling IOCS
 					fprintf(fp_log,"IOCS:(cx)=%04X,i=%04X\n",imem[0xd6]+imem[0xd7]*256,reg.x.i);
 //				debug.DisAsm_1(reg.x.p,fp_log);		//write execute log

@@ -32,7 +32,7 @@ extern FILE *fp_tmp;
 Csc::Csc(CPObject *parent)	: CCPU(parent)
 {				//[constructor]
     end=0;				//program end?(0:none, 1:end)
-    log=0;				//execute log?(0:off, 1:on)
+    cpulog=0;				//execute log?(0:off, 1:on)
     logsw=false;			//log mode?(0:off, 1:on)
     usestatus=0;
     fp_status=0;
@@ -2882,7 +2882,7 @@ void Csc::step(void)
 
 	if(logsw)
 	{
-        if(log && fp_log)						//check log mode
+        if(cpulog && fp_log)						//check log mode
 		{
 //			debug.DisAsm_1(reg.d.pc,fp_log);		//write execute log
 		}
