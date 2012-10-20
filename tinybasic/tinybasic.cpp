@@ -530,24 +530,32 @@ void CTinyBasic::convertLine() {
 
     unsigned char* saved_txtpos = txtpos;
     while (1) {
+
         if (txtpos[0]==NL) break;
+        if (txtpos[0]==(0x80+KW_REM)) break;
+
         scantable(keywords,ALL);
         if (table_index==KW_DEFAULT || table_original) txtpos++;
         else {
 
             txtpos-=table_lenght;
             qWarning()<<"found keyword:"<<txtpos[0];
-            txtpos[0]= 0x80+table_index;
-            for (int c=1;c<table_lenght;c++) {
-                txtpos++;
-                txtpos[0]=0x20;
-            }
 
+            for (int c=0;c<table_lenght-1;c++) {
+                txtpos[0]=0x20;
+                txtpos++;
+            }
+            txtpos[0]= 0x80+table_index;
+            if (txtpos[0]==(0x80+KW_REM)) break;
         }
     }
     // remove spaces
     txtpos=saved_txtpos;
     while(1) {
+        if (txtpos[0]== (0x80+KW_REM)) {
+            txtpos = saved_txtpos;
+            return;
+        }
         if (txtpos[0] == '"') { // '"' && delim != '\''
             txtpos++;
             while(txtpos[0] != '"')
@@ -607,7 +615,7 @@ void CTinyBasic::LoadTable(unsigned char *table) {
 /***************************************************************************/
 void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
 {
-    qWarning()<<"SCANTABLE"<< txtpos[0];
+//    qWarning()<<"SCANTABLE"<< txtpos[0];
     int i = 0;
     table_original = false;
     table_lenght = 0;
@@ -646,6 +654,7 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
             // do we match the last character of keywork (with 0x80 added)? If so, return
             if(txtpos[i]+0x80 == table[0])
             {
+                // If we are out of the scope return NOT FOUND
                 if ((table_index< offset_begin)||(table_index> offset_end)) {
                     table_index = KW_DEFAULT;
                     return;
@@ -926,7 +935,7 @@ if (lineMap.contains(linenum))
             return line;
 
         if(((LINENUM *)line)[0] >= linenum) {
-            linenum = ((LINENUM *)line)[0];
+//            linenum = ((LINENUM *)line)[0];
             return line;
         }
 
@@ -1338,6 +1347,7 @@ getln_end:
     if(linenum == 0) {
         nextStep = DIRECT; return;
     }
+    qWarning()<<"Line number found:"<<linenum;
 
     if(linenum == 0xFFFF) {
         nextStep = QHOW; return;
@@ -1345,6 +1355,7 @@ getln_end:
     }
 
     // Convert INSTRUCTIONS TO internal code
+    qWarning()<<"Convert Keywords to internal code";
     convertLine();
 
 
@@ -1355,18 +1366,21 @@ getln_end:
     linelen++; // Include the NL in the line length
     linelen += sizeof(unsigned short)+sizeof(char); // Add space for the line number and line length
 
+    qWarning()<< "Buffer:"<<QByteArray((char *)txtpos,linelen).toHex();
     // Now we have the number, add the line header.
+    qWarning()<<"Line number found before line header:"<<linenum;
     txtpos -= 3;
     *((unsigned short *)txtpos) = linenum;
     txtpos[sizeof(LINENUM)] = linelen;
 
-
     // Merge it into the rest of the program
     start = findline();
+    qWarning()<<"Line number found after findline:"<<linenum;
 
     // If a line with that number exists, then remove it
     if(start != program_end && *((LINENUM *)start) == linenum)
     {
+        qWarning()<<"remove line nb:"<<linenum;
         unsigned char *dest, *from;
         unsigned tomove;
 
@@ -1393,6 +1407,7 @@ getln_end:
 
 
     // Make room for the new line, either all in one hit or lots of little shuffles
+    qWarning()<<"make room of "<<linelen<<" bytes for the new line";
     while(linelen > 0)
     {
         unsigned int tomove;
@@ -1410,6 +1425,7 @@ getln_end:
         // Source and destination - as these areas may overlap we need to move bottom up
         from = program_end;
         dest = newEnd;
+        qWarning()<<"move from:"<<from<<" to:"<<dest;
         while(tomove > 0)
         {
             from--;
@@ -1419,6 +1435,7 @@ getln_end:
         }
 
         // Copy over the bytes into the new space
+        qWarning()<<"copy "<<space_to_make<<" bytes to the new space";
         for(tomove = 0; tomove < space_to_make; tomove++)
         {
             *start = *txtpos;
@@ -2100,6 +2117,7 @@ void CTinyBasic::go_NEW() {
 }
 
 void CTinyBasic::go_RUN() {
+    //TODO: add prog line management. Like LIST
     current_line = program_start;
     nextStep = EXECLINE;
 }
