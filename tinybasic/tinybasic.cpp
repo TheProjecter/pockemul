@@ -1087,16 +1087,31 @@ VAR_TYPE CTinyBasic::expr4(void)
             return cos(convertToRad(a));
         case KF_TAN:
             return tan(convertToRad(a));
-        case KF_ASN:
-            return convertFromRad(asin(a));
-        case KF_ACS:
-            return convertFromRad(acos(a));
-        case KF_ATN:
-            return convertFromRad(atan(a));
-        case KF_LN:
-            return log(a);
-        case KF_LOG:
-            return log10(a);
+        case KF_ASN: {
+            double r= convertFromRad(asin(a));
+            if (errno==EDOM) goto expr4_error;
+            return r;
+        }
+        case KF_ACS:{
+            double r= convertFromRad(acos(a));
+            if (errno==EDOM) goto expr4_error;
+            return r;
+        }
+        case KF_ATN:{
+            double r= convertFromRad(atan(a));
+            if (errno==EDOM) goto expr4_error;
+            return r;
+        }
+        case KF_LN:{
+            double r= log(a);
+            if (errno==EDOM) goto expr4_error;
+            return r;
+        }
+        case KF_LOG:{
+            double r= log10(a);
+            if (errno==EDOM) goto expr4_error;
+            return r;
+        }
         case KF_EXP:
             return exp(a);
             //        case FUNC_AREAD:
