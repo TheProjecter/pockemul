@@ -2247,17 +2247,18 @@ void CTinyBasic::go_USING() {
     if(*txtpos != '"' ) {
         // Reset format
         qWarning()<<"Reset USING format";
+        usingFormat.clear();
         return;
     }
     else {
-        QByteArray ba;
+
         txtpos++;
         while ((*txtpos !='"') && (*txtpos!=NL)) {
-            ba.append(*txtpos);
+            usingFormat.append(*txtpos);
             txtpos++;
         }
         if (*txtpos!=NL) txtpos++;
-        qWarning()<<"USING FORMAT:"<<ba;
+        qWarning()<<"USING FORMAT:"<<usingFormat;
     }
 
 }
