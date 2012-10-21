@@ -151,6 +151,7 @@ public:
            void go_RUN();
            void go_LIST(LINENUM lineNb = 0);
            void go_PRINT();
+           void go_USING();
            void go_GOTO();
            void go_SAVE();
            void go_RETURN();
@@ -201,6 +202,7 @@ public:
          unsigned char *sp;
          void LoadTable(unsigned char *table);
          double convertFromRad(double angle);
+
 };
 
 #endif // TINYBASIC_H

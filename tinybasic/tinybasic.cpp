@@ -302,6 +302,8 @@ static unsigned char keywords[] = {
     'R','A','D','I','A','N'+0x80,
     'D','E','G','R','E','E'+0x80,
     'G','R','A','D'+0x80,
+    'U','S','I','N','G'+0x80,
+
     'T','O'+0x80,
     'S','T','E','P'+0x80,
 
@@ -360,6 +362,8 @@ enum {
     KW_RADIAN,
     KW_DEGREE,
     KW_GRAD,        // 0x20
+    KW_USING,
+
     KW_TO,            // 0x21
     KW_STEP,        // 0x22
 
@@ -635,11 +639,11 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
     int offset_begin = 0;
     int offset_end = 0;
     switch (type) {
-    case ALL:       offset_begin = 0x00; offset_end = 0x50; break;
+    case ALL:       offset_begin = 0x00; offset_end = KW_DEFAULT; break;
     case KEYWORD:   offset_begin = 0x00; offset_end = KW_TO-1; break;
     case FOR_TO:    offset_begin = KW_TO; offset_end = KW_TO; break;
     case FOR_STEP:  offset_begin = KW_STEP; offset_end = KW_STEP; break;
-    case FUNC:      offset_begin = 0x23; offset_end = 0x50; break;
+    case FUNC:      offset_begin = KF_SIN; offset_end = KW_DEFAULT; break;
     }
     if ( (txtpos[0]>=0x80+offset_begin) && (txtpos[0]<=0x80+offset_end)) {
         table_index = txtpos[0]-0x80;
@@ -2229,6 +2233,35 @@ void CTinyBasic::go_PAUSE() {
     go_PRINT();
 }
 
+void CTinyBasic::go_USING() {
+    qWarning()<<"USING";
+
+    // Extrac format string and parse it
+    ignore_blanks();        // Shouldn't be necessary because all lines are tokenized
+
+
+    if ( (*txtpos != '"') && (*txtpos != NL) && (*txtpos != ';') && (*txtpos != ',') && (*txtpos != ':')) {
+        nextStep = QWHAT;
+        return;
+    }
+    if(*txtpos != '"' ) {
+        // Reset format
+        qWarning()<<"Reset USING format";
+        return;
+    }
+    else {
+        QByteArray ba;
+        txtpos++;
+        while ((*txtpos !='"') && (*txtpos!=NL)) {
+            ba.append(*txtpos);
+            txtpos++;
+        }
+        if (*txtpos!=NL) txtpos++;
+        qWarning()<<"USING FORMAT:"<<ba;
+    }
+
+}
+
 void CTinyBasic::go_PRINT() {
 
     bool leftPosition=false;
@@ -2250,7 +2283,13 @@ void CTinyBasic::go_PRINT() {
     while(1)
     {
         ignore_blanks();
-        if(print_quoted_string())
+
+        if (*txtpos == 0x80+KW_USING) { // Test for USING Keyword
+            txtpos++;
+            go_USING();
+
+        }
+        else if(print_quoted_string())
         {
             leftPosition = true;
         }
