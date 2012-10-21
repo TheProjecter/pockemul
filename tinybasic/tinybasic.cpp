@@ -1061,8 +1061,13 @@ VAR_TYPE CTinyBasic::expr4(void)
         // Is it a variable reference (single alpha)
         if(txtpos[1] < 'A' || txtpos[1] > 'Z')
         {
-            a = ((VAR_TYPE *)variables_begin)[*txtpos - 'A'];
+            unsigned char var = *txtpos;
             txtpos++;
+            if  ( (var=='A') && (*txtpos=='(')) {       // A Array. the index can be an expression
+                int ind = expression();
+                var +=ind - 1;
+            }
+            a = ((VAR_TYPE *)variables_begin)[var - 'A'];
             return a;
         }
 

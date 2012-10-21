@@ -203,6 +203,7 @@ public:
          void LoadTable(unsigned char *table);
          double convertFromRad(double angle);
 
+         QByteArray usingFormat;
 };
 
 #endif // TINYBASIC_H

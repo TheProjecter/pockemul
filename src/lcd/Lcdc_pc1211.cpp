@@ -164,10 +164,13 @@ void Clcdc_pc1211::disp()
 //    qWarning()<< "DISP:"<<pPC1211->pBASIC->outputBuffer<<"**";
     line.fill(0,24);
     QByteArray *buf;
-    if (pPC1211->pBASIC->inputMode) buf= &pPC1211->inputBuffer;
-    else buf = &pPC1211->pBASIC->outputBuffer;
+    if (pPC1211->pBASIC->inputMode)
+        buf= &pPC1211->inputBuffer;
+    else
+        buf = &pPC1211->pBASIC->outputBuffer;
 //        qWarning()<< "DISP:"<<pPC1211->pBASIC->inputMode<<"**";
-    if (!buf->isEmpty()) {
+
+    if (!buf->isEmpty() && buf->at(0)!='\n') {
         line.prepend(buf->mid(0,buf->indexOf('\n')));
         for (int i=0;i<line.size();i++) {
             unsigned char c= line.at(i);
@@ -176,7 +179,9 @@ void Clcdc_pc1211::disp()
         }
 //        pPC1211->DisplayWaitForRTN = true;//buf->contains('\n');
     }
+    if (line.count((char)0)==line.count()) line.prepend(">");
 
+//    qWarning()<<line.toHex();
 
     for (int i=0;i<24;i++) {
         quint8 c =0;
@@ -185,14 +190,14 @@ void Clcdc_pc1211::disp()
     }
 
 
-    if (pPC1211->pBASIC->inputMode) {
-        if (pPC->pTIMER->msElapsed(blinkState)>500) {
-            DrawChar(0xff,cursorPos);
-        }
-        if (pPC->pTIMER->msElapsed(blinkState)>1000) {
-            blinkState = pPC->pTIMER->state;
-        }
-    }
+//    if (pPC1211->pBASIC->inputMode) {
+//        if (pPC->pTIMER->msElapsed(blinkState)>500) {
+//            DrawChar(0xff,cursorPos);
+//        }
+//        if (pPC->pTIMER->msElapsed(blinkState)>1000) {
+//            blinkState = pPC->pTIMER->state;
+//        }
+//    }
     Refresh = true;
 }
 
