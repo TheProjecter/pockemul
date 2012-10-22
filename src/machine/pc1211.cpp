@@ -75,7 +75,7 @@ bool Cpc1211::run()
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
-    pTIMER->state+=1000;
+    pTIMER->state+=10;
 
     if (pKEYB->LastKey==K_BRK) {
         pBASIC->breakFlag = true;

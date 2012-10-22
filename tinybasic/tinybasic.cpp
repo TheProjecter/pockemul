@@ -37,7 +37,7 @@ void CTinyBasic::step()
 {
 //    qWarning("step");
     loop();
-    pPC->pTIMER->state+=1000;
+    pPC->pTIMER->state+=10;
 
 }
 
@@ -292,7 +292,6 @@ static unsigned char keywords[] = {
     'M','E','M'+0x80,
     '?'+ 0x80,
     '\''+ 0x80,
-    'A','W','R','I','T','E'+0x80,
     'D','W','R','I','T','E'+0x80,
     'P','I','N','M','O','D','E'+0x80,
     'D','E','L','A','Y'+0x80,
@@ -303,6 +302,7 @@ static unsigned char keywords[] = {
     'D','E','G','R','E','E'+0x80,
     'G','R','A','D'+0x80,
     'U','S','I','N','G'+0x80,
+    'B','E','E','P'+0x80,
 
     'T','O'+0x80,
     'S','T','E','P'+0x80,
@@ -352,7 +352,6 @@ enum {
     KW_MEM,
     KW_QMARK,
     KW_QUOTE,
-    KW_AWRITE,
     KW_DWRITE,
     KW_PINMODE,
     KW_DELAY,
@@ -361,8 +360,9 @@ enum {
     KW_CHAIN,
     KW_RADIAN,
     KW_DEGREE,
-    KW_GRAD,        // 0x20
-    KW_USING,
+    KW_GRAD,
+    KW_USING,       // 0x20
+    KW_BEEP,
 
     KW_TO,            // 0x21
     KW_STEP,        // 0x22
@@ -1325,6 +1325,7 @@ void CTinyBasic::loop()
         case POKE:goto poke;
         case GETLN:goto getln;
         case GETLN_END:goto getln_end;
+        case BEEP: go_BEEP(false); return; break;
         case RUN_NEXT_STATEMENT: goto run_next_statement;
         default: break;
         }
@@ -1588,6 +1589,7 @@ interperateAtTxtpos:
         return;
         goto load;
     case KW_MEM: go_MEM(); return;
+    case KW_BEEP: go_BEEP(); return;
     case KW_NEW: go_NEW(); return;
     case KW_RUN: go_RUN(); return;
     case KW_SAVE: go_SAVE(); return;
@@ -1627,9 +1629,6 @@ interperateAtTxtpos:
 
     case KW_PINMODE:  // PINMODE <pin>, INPUT/OUTPUT
         goto pinmode;
-    case KW_AWRITE:  // AWRITE <pin>, HIGH|LOW
-        isDigital = false;
-        goto awrite;
     case KW_DWRITE:  // DWRITE <pin>, HIGH|LOW
         isDigital = true;
         goto dwrite;
@@ -2146,6 +2145,45 @@ void CTinyBasic::go_MEM() {
     printnum((variables_begin-program_end)/8,2);
     printmsg((unsigned char*) "MEMORIES");
     nextStep = RUN_NEXT_STATEMENT;
+}
+
+void CTinyBasic::go_BEEP(bool initial) {
+    static bool oldBeep=false;
+    static qint64 refstate = pPC->pTIMER->state;
+
+    if (initial) {
+        nbBeep = testnum(); // Retuns 0 if no line found.
+
+        // Should be EOL
+        if(nbBeep==0) {
+            errorNumber = 1;
+            nextStep = QWHAT;
+            return;
+        }
+        qWarning()<<"BEEP:"<<nbBeep;
+        refstate = pPC->pTIMER->state;
+
+        beepTP = pPC->pTIMER->initTP(4000);
+    }
+
+    if (pPC->pTIMER->msElapsed(refstate)<500) {
+        pPC->fillSoundBuffer(pPC->pTIMER->GetTP(beepTP)?0xFF:0x00);
+    }
+    else
+        pPC->fillSoundBuffer(0);
+
+    if (pPC->pTIMER->msElapsed(refstate)>1000) {
+        nbBeep--;
+        qWarning()<<"BEEP:"<<nbBeep;
+        if (nbBeep==0) {
+            nextStep = RUN_NEXT_STATEMENT;
+            return;
+        }
+
+        refstate = pPC->pTIMER->state;
+        nextStep = BEEP;
+    }
+        nextStep = BEEP;
 }
 
 void CTinyBasic::go_NEW() {

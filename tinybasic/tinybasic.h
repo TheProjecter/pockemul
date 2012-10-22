@@ -62,7 +62,8 @@ public:
         EXECNEXTLINE,INTERPERATEATTXTPOS,
         FILES,LIST,CHAIN,LOAD,MEM,QWHAT,QSORRY,SAVE,NEXT,ASSIGNMENT,
         UNIMPLEMENTED,GOSUB,GOSUB_RETURN,FORLOOP,INPUT,PRINT,POKE,BYE,GETLN,GETLN_END,
-        RUN_NEXT_STATEMENT,LIST_NEXT,LIST_PREV
+        RUN_NEXT_STATEMENT,LIST_NEXT,LIST_PREV,
+        BEEP
 
     };
     enum KEYWORD_TYPE {
@@ -150,6 +151,8 @@ public:
            void go_NEW();
            void go_RUN();
            void go_LIST(LINENUM lineNb = 0);
+           void go_LIST_NEXT();
+           void go_LIST_PREV();
            void go_PRINT();
            void go_USING();
            void go_GOTO();
@@ -161,6 +164,8 @@ public:
            void go_IF();
            void go_INPUT();
            void go_ASSIGNMENT();
+           void go_BEEP(bool initial = true);
+           void go_PAUSE();
 
            unsigned char program[kRamSize];
            unsigned char *txtpos,*list_line;
@@ -177,9 +182,7 @@ public:
            bool inputMode;
            qint64 waitState;
            bool pauseFlag;
-           void go_PAUSE();
-           void go_LIST_NEXT();
-           void go_LIST_PREV();
+
            QMap<LINENUM,unsigned char*> lineMap;
            void scanLines();
            bool inLIST;
@@ -205,6 +208,8 @@ public:
 
          QByteArray usingFormat;
          int errorNumber;
+         int nbBeep,beepTP;
+
 };
 
 #endif // TINYBASIC_H
