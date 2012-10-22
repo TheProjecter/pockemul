@@ -5,7 +5,7 @@
 
 
 #include <QDebug>
-
+#include <errno.h>
 #include <math.h>
 
 #include "tinybasic.h"
