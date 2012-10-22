@@ -209,6 +209,7 @@ public:
          QByteArray usingFormat;
          int errorNumber;
          int nbBeep,beepTP;
+         bool running;
 
 };
 

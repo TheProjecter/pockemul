@@ -492,6 +492,7 @@ bool CTinyBasic::init()
     inhibitOutput = false;
     runAfterLoad = false;
     triggerRun = false;
+    running = false;
 
     errorNumber = 0;
 
@@ -1665,8 +1666,10 @@ execnextline:
     current_line +=	 current_line[sizeof(LINENUM)];
 
 execline:
-    if(current_line == program_end) // Out of lines to run
+    if(current_line == program_end) {// Out of lines to run
+        running = false;
         goto warmstart;
+    }
     txtpos = current_line+sizeof(LINENUM)+sizeof(char);
     nextStep = INTERPERATEATTXTPOS;
     return;
@@ -2148,13 +2151,16 @@ void CTinyBasic::go_MEM() {
 }
 
 void CTinyBasic::go_BEEP(bool initial) {
-    static bool oldBeep=false;
     static qint64 refstate = pPC->pTIMER->state;
+
+    if (!running) {
+        nextStep = QWHAT;
+        errorNumber = 1;
+        return;
+    }
 
     if (initial) {
         nbBeep = testnum(); // Retuns 0 if no line found.
-
-        // Should be EOL
         if(nbBeep==0) {
             errorNumber = 1;
             nextStep = QWHAT;
@@ -2166,13 +2172,13 @@ void CTinyBasic::go_BEEP(bool initial) {
         beepTP = pPC->pTIMER->initTP(4000);
     }
 
-    if (pPC->pTIMER->msElapsed(refstate)<500) {
+    if (pPC->pTIMER->msElapsed(refstate)<300) {
         pPC->fillSoundBuffer(pPC->pTIMER->GetTP(beepTP)?0xFF:0x00);
     }
     else
         pPC->fillSoundBuffer(0);
 
-    if (pPC->pTIMER->msElapsed(refstate)>1000) {
+    if (pPC->pTIMER->msElapsed(refstate)>600) {
         nbBeep--;
         qWarning()<<"BEEP:"<<nbBeep;
         if (nbBeep==0) {
@@ -2201,6 +2207,7 @@ void CTinyBasic::go_RUN() {
         errorNumber = 1;
         return;
     }
+    running = true;
     //TODO: add prog line management. Like LIST
     current_line = program_start;
 
