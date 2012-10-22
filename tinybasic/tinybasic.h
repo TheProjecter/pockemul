@@ -211,6 +211,8 @@ public:
          int nbBeep,beepTP;
          bool running;
 
+         bool CheckRunnig();
+         bool CheckMode(Mode mode);
 };
 
 #endif // TINYBASIC_H

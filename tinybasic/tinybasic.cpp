@@ -269,27 +269,29 @@ char eliminateCompileErrors = 1;  // fix to suppress arduino build errors
 /***********************************************************/
 // Keyword table and constants - the last character has 0x80 added to it
 static unsigned char keywords[] = {
-    'L','I','S','T'+0x80,
-    'L','O','A','D'+0x80,
-    'N','E','W'+0x80,
-    'R','U','N'+0x80,
-    'S','A','V','E'+0x80,
-    'N','E','X','T'+0x80,
-    'L','E','T'+0x80,
+    'B','E','E','P'+0x80,
+    'B','Y','E'+0x80,
+    'I','N','P','U','T'+0x80,
     'I','F'+0x80,
+    'F','O','R'+0x80,
     'G','O','T','O'+0x80,
     'G','O','S','U','B'+0x80,
-    'R','E','T','U','R','N'+0x80,
-    'R','E','M'+0x80,
-    'F','O','R'+0x80,
-    'I','N','P','U','T'+0x80,
+    'L','I','S','T'+0x80,
+    'L','E','T'+0x80,
+    'L','O','A','D'+0x80,
+    'M','E','M'+0x80,
+    'N','E','X','T'+0x80,
+    'N','E','W'+0x80,
     'P','R','I','N','T'+0x80,
     'P','A','U','S','E'+0x80,
     'P','O','K','E'+0x80,
+    'R','U','N'+0x80,
+    'R','E','T','U','R','N'+0x80,
+    'R','E','M'+0x80,
     'S','T','O','P'+0x80,
-    'B','Y','E'+0x80,
+    'S','A','V','E'+0x80,
+    'U','S','I','N','G'+0x80,
     'F','I','L','E','S'+0x80,
-    'M','E','M'+0x80,
     '?'+ 0x80,
     '\''+ 0x80,
     'D','W','R','I','T','E'+0x80,
@@ -301,8 +303,6 @@ static unsigned char keywords[] = {
     'R','A','D','I','A','N'+0x80,
     'D','E','G','R','E','E'+0x80,
     'G','R','A','D'+0x80,
-    'U','S','I','N','G'+0x80,
-    'B','E','E','P'+0x80,
 
     'T','O'+0x80,
     'S','T','E','P'+0x80,
@@ -329,27 +329,29 @@ static unsigned char keywords[] = {
 // by moving the command list to an enum, we can easily remove sections
 // above and below simultaneously to selectively obliterate functionality.
 enum {
-    KW_LIST = 0,
-    KW_LOAD,
-    KW_NEW,
-    KW_RUN,
-    KW_SAVE,
-    KW_NEXT,
-    KW_LET,
+    KW_BEEP=0,
+    KW_BYE,
+    KW_INPUT,
     KW_IF,
+    KW_FOR,
     KW_GOTO,
     KW_GOSUB,
-    KW_RETURN,
-    KW_REM,
-    KW_FOR,
-    KW_INPUT,
+    KW_LIST,
+    KW_LET,
+    KW_LOAD,
+    KW_MEM,
+    KW_NEXT,
+    KW_NEW,
     KW_PRINT,
     KW_PAUSE,
     KW_POKE,      // 0x10
+    KW_RUN,
+    KW_RETURN,
+    KW_REM,
     KW_STOP,
-    KW_BYE,
+    KW_SAVE,
+    KW_USING,
     KW_FILES,
-    KW_MEM,
     KW_QMARK,
     KW_QUOTE,
     KW_DWRITE,
@@ -361,8 +363,6 @@ enum {
     KW_RADIAN,
     KW_DEGREE,
     KW_GRAD,
-    KW_USING,       // 0x20
-    KW_BEEP,
 
     KW_TO,            // 0x21
     KW_STEP,        // 0x22
@@ -671,7 +671,7 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
         else
         {
             // do we match the last character of keywork (with 0x80 added)? If so, return
-            if(txtpos[i]+0x80 == table[0])
+            if( (txtpos[i]+0x80 == table[0]) || (txtpos[i]=='.') )
             {
                 // If we are out of the scope return NOT FOUND
                 if ((table_index< offset_begin)||(table_index> offset_end)) {
@@ -2137,6 +2137,23 @@ void cmd_Files( void )
 #endif
 #endif
 
+bool CTinyBasic::CheckRunnig() {
+    if (running) return true;
+
+    nextStep = QWHAT;
+    errorNumber = 1;
+    return false;
+}
+
+bool CTinyBasic::CheckMode(Mode mode) {
+    if (runMode==mode) return true;
+
+    nextStep = QWHAT;
+    errorNumber = 1;
+    return false;
+
+}
+
 //BUG extend printnum to integer
 void CTinyBasic::go_MEM() {
     waitForRTN = true;
@@ -2153,11 +2170,7 @@ void CTinyBasic::go_MEM() {
 void CTinyBasic::go_BEEP(bool initial) {
     static qint64 refstate = pPC->pTIMER->state;
 
-    if (!running) {
-        nextStep = QWHAT;
-        errorNumber = 1;
-        return;
-    }
+    if (!CheckRunnig()) return;
 
     if (initial) {
         nbBeep = testnum(); // Retuns 0 if no line found.
@@ -2172,13 +2185,13 @@ void CTinyBasic::go_BEEP(bool initial) {
         beepTP = pPC->pTIMER->initTP(4000);
     }
 
-    if (pPC->pTIMER->msElapsed(refstate)<300) {
+    if (pPC->pTIMER->msElapsed(refstate)<200) {
         pPC->fillSoundBuffer(pPC->pTIMER->GetTP(beepTP)?0xFF:0x00);
     }
     else
         pPC->fillSoundBuffer(0);
 
-    if (pPC->pTIMER->msElapsed(refstate)>600) {
+    if (pPC->pTIMER->msElapsed(refstate)>400) {
         nbBeep--;
         qWarning()<<"BEEP:"<<nbBeep;
         if (nbBeep==0) {
@@ -2193,6 +2206,8 @@ void CTinyBasic::go_BEEP(bool initial) {
 }
 
 void CTinyBasic::go_NEW() {
+    if (!CheckMode(PRO)) return;
+
     if(txtpos[0] != NL) {
         nextStep = QWHAT;
         return;
@@ -2202,11 +2217,8 @@ void CTinyBasic::go_NEW() {
 }
 
 void CTinyBasic::go_RUN() {
-    if (runMode!=RUN) {
-        nextStep = QWHAT;
-        errorNumber = 1;
-        return;
-    }
+    if (!CheckMode(RUN)) return;
+
     running = true;
     //TODO: add prog line management. Like LIST
     current_line = program_start;
@@ -2220,11 +2232,8 @@ void CTinyBasic::go_RUN() {
 
 void CTinyBasic::go_LIST(LINENUM lineNb) {
 
-    if (runMode!=PRO) {
-        nextStep = QWHAT;
-        errorNumber = 1;
-        return;
-    }
+    if (!CheckMode(PRO)) return;
+
     // Store Linenum and pointer into a Map
     scanLines();
 
@@ -2292,6 +2301,8 @@ void CTinyBasic::go_LIST_PREV() {
 }
 
 void CTinyBasic::go_PAUSE() {
+    if (!CheckRunnig()) return;
+
     qWarning()<<"PAUSE";
     waitState = pPC->pTIMER->state;
     pauseFlag = true;
@@ -2299,6 +2310,8 @@ void CTinyBasic::go_PAUSE() {
 }
 
 void CTinyBasic::go_USING() {
+    if (!CheckRunnig()) return;
+
     qWarning()<<"USING";
 
     // Extrac format string and parse it
@@ -2329,6 +2342,8 @@ void CTinyBasic::go_USING() {
 }
 
 void CTinyBasic::go_PRINT() {
+
+//    if (!CheckRunnig()) return;
 
     bool leftPosition=false;
 
@@ -2410,6 +2425,8 @@ void CTinyBasic::go_PRINT() {
 
 void CTinyBasic::go_GOTO() {
 
+    if (!CheckRunnig()) return;
+
     expression_error = 0;
     linenum = expression();
     if(expression_error || *txtpos != NL) {
@@ -2466,6 +2483,8 @@ void CTinyBasic::go_SAVE() {
 
 void CTinyBasic::go_NEXT() {
 
+    if (!CheckRunnig()) return;
+
     // Fnd the variable name
     ignore_blanks();
     if(*txtpos < 'A' || *txtpos > 'Z') {
@@ -2483,6 +2502,8 @@ void CTinyBasic::go_NEXT() {
 }
 
 void CTinyBasic::go_RETURN() {
+
+    if (!CheckRunnig()) return;
 
     // Now walk up the stack frames and find the frame we want, if present
     tempsp = sp;
@@ -2544,6 +2565,8 @@ void CTinyBasic::go_RETURN() {
 
 void CTinyBasic::go_GOSUB() {
 
+    if (!CheckRunnig()) return;
+
     expression_error = 0;
     linenum = expression();
     if(!expression_error && *txtpos == NL)
@@ -2567,6 +2590,8 @@ void CTinyBasic::go_GOSUB() {
 }
 
 void CTinyBasic::go_FORLOOP() {
+
+    if (!CheckRunnig()) return;
 
     ignore_blanks();
     if(*txtpos < 'A' || *txtpos > 'Z') {qWarning("un");nextStep=QWHAT; return;}
@@ -2639,6 +2664,8 @@ void CTinyBasic::go_FORLOOP() {
 }
 
 void CTinyBasic::go_IF() {
+    if (!CheckRunnig()) return;
+
     VAR_TYPE val;
     expression_error = 0;
     val = expression();
@@ -2654,6 +2681,8 @@ void CTinyBasic::go_IF() {
 }
 
 void CTinyBasic::go_INPUT() {
+
+    if (!CheckRunnig()) return;
 
     unsigned char var;
     ignore_blanks();
@@ -2717,6 +2746,8 @@ again:
 }
 
 void CTinyBasic::go_ASSIGNMENT() {
+    if (!CheckMode(RUN)) return;
+
     qWarning("ASSIGNMENT");
     VAR_TYPE value;
     VAR_TYPE *var;
