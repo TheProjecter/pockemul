@@ -493,6 +493,8 @@ bool CTinyBasic::init()
     runAfterLoad = false;
     triggerRun = false;
 
+    errorNumber = 0;
+
     inLIST = false;
     alsoWait = false;
     nextStep = WARMSTART;
@@ -1065,6 +1067,7 @@ VAR_TYPE CTinyBasic::expr4(void)
             txtpos++;
             if  ( (var=='A') && (*txtpos=='(')) {       // A Array. the index can be an expression
                 int ind = expression();
+                if (expression_error) goto expr4_error;
                 var +=ind - 1;
             }
             a = ((VAR_TYPE *)variables_begin)[var - 'A'];
@@ -1085,7 +1088,7 @@ VAR_TYPE CTinyBasic::expr4(void)
 
             txtpos++;
             a = expression();
-            if(*txtpos != ')')
+            if(*txtpos != ')' || expression_error)
                 goto expr4_error;
             txtpos++;
 
@@ -1158,6 +1161,7 @@ VAR_TYPE CTinyBasic::expr4(void)
     }
 
 expr4_error:
+    errorNumber = 1;
     expression_error = 1;
     return 0;
 
@@ -1498,7 +1502,8 @@ qhow:
 
 qwhat:
     waitForRTN = true;
-    printmsgNoNL(whatmsg);
+
+    printmsgNoNL((unsigned char*)QString("%1................").arg(errorNumber).rightJustified(24,QChar(' ')).toAscii().data());
     if(current_line != NULL)
     {
            unsigned char tmp = *txtpos;
@@ -2153,6 +2158,11 @@ void CTinyBasic::go_NEW() {
 }
 
 void CTinyBasic::go_RUN() {
+    if (runMode!=RUN) {
+        nextStep = QWHAT;
+        errorNumber = 1;
+        return;
+    }
     //TODO: add prog line management. Like LIST
     current_line = program_start;
 
@@ -2165,6 +2175,11 @@ void CTinyBasic::go_RUN() {
 
 void CTinyBasic::go_LIST(LINENUM lineNb) {
 
+    if (runMode!=PRO) {
+        nextStep = QWHAT;
+        errorNumber = 1;
+        return;
+    }
     // Store Linenum and pointer into a Map
     scanLines();
 
@@ -2309,6 +2324,7 @@ void CTinyBasic::go_PRINT() {
             expression_error = 0;
             e = expression();
             if(expression_error){
+                errorNumber = 1;
                 nextStep = QWHAT;
                 return;
             }
@@ -2518,21 +2534,36 @@ void CTinyBasic::go_FORLOOP() {
 
     expression_error = 0;
     initial_for = expression();
-    if(expression_error) {qWarning("trois");nextStep=QWHAT; return;}
+    if(expression_error) {
+        qWarning("trois");
+        errorNumber = 1;
+        nextStep=QWHAT;
+        return;
+    }
 
     scantable(keywords,FOR_TO);
     ignore_blanks();
     if(table_index != KW_TO){qWarning("quatres");nextStep=QWHAT; return;}
 
     terminal_for = expression();
-    if(expression_error) {qWarning("cinq");nextStep=QWHAT; return;}
+    if(expression_error) {
+        qWarning("cinq");
+        errorNumber = 1;
+        nextStep=QWHAT;
+        return;
+    }
 
     scantable(keywords,FOR_STEP);
     ignore_blanks();
     if(table_index == KW_STEP)
     {
         step_for = expression();
-        if(expression_error) {qWarning("six");nextStep=QWHAT; return;}
+        if(expression_error) {
+            qWarning("six");
+            errorNumber = 1;
+            nextStep=QWHAT;
+            return;
+        }
     }
     else
         step_for = 1;
@@ -2661,7 +2692,11 @@ void CTinyBasic::go_ASSIGNMENT() {
     ignore_blanks();
     expression_error = 0;
     value = expression();
-    if(expression_error) { nextStep=QWHAT; return; }
+    if(expression_error) {
+        errorNumber = 1;
+        nextStep=QWHAT;
+        return;
+    }
     // Check that we are at the end of the statement
     if(*txtpos != NL && *txtpos != ':') { nextStep=QWHAT; return; }
     *var = value;

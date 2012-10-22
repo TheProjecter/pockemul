@@ -179,7 +179,7 @@ void Clcdc_pc1211::disp()
         }
 //        pPC1211->DisplayWaitForRTN = true;//buf->contains('\n');
     }
-    if (line.count((char)0)==line.count()) line.prepend(">");
+    if (pPC1211->pBASIC->inputMode && line.count((char)0)==line.count()) line.prepend(">");
 
 //    qWarning()<<line.toHex();
 

@@ -204,6 +204,7 @@ public:
          double convertFromRad(double angle);
 
          QByteArray usingFormat;
+         int errorNumber;
 };
 
 #endif // TINYBASIC_H
