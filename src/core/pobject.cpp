@@ -809,6 +809,9 @@ int CPObject::mapKey(QKeyEvent * event) {
 //        case K_CTRL_UP_MOD:     pKEYB->isCtrl = false;  event->accept(); break;
         case Qt::Key_Shift:		key = K_SHT;	event->accept();	break;
         case Qt::Key_Control:	key = K_CTRL;	event->accept();	break;
+        case Qt::Key_AltGr:     key = 0;        event->accept();    break;
+        case Qt::Key_Alt:       key = 0;        event->accept();    break;
+//        case Qt::Key_AsciiTilde:       key = 0;        event->accept();    break;
         case Qt::Key_Return:	key = K_RET;	event->accept();	break;
         case Qt::Key_Delete:	key = K_DEL;	event->accept();	break;
         case Qt::Key_Insert:	key = K_INS;	event->accept();	break;
@@ -845,10 +848,12 @@ int CPObject::mapKey(QKeyEvent * event) {
         case Qt::Key_F9:		key = K_DEF;		event->accept();	break;
         case Qt::Key_F11:		key = K_BRK;		event->accept();	break;
     default: key = event->key() & 0x1FFFFFF; event->accept();
+        qWarning()<<"key def:"<<key;
         }
 //    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
 //    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}
 
+    qWarning()<<"key:"<<key;
     return key;
 }
 

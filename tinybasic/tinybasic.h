@@ -55,7 +55,7 @@ class CTinyBasic : public CCPU
     Q_OBJECT
 public:
 
-    enum ExpTYP{NUMERIC,STRING};
+    enum ExpTYP{NUMERIC,STRING,UNDEFINED};
     enum Mode{RUN,PRO,RESERVE,DEF,STANDARD };
     enum Action{INITIAL,RUNNING,UP_ARROW,DOWN_ARROW,ENTER,BREAK,NO_ACTION};
     enum NEXT_STEP {
@@ -215,6 +215,9 @@ public:
          bool CheckRunnig();
          bool CheckMode(Mode mode);
          bool expAlpha;
+         ExpTYP checkType(double *var);
+         void printVar(double e);
+         bool leftPosition;
 };
 
 #endif // TINYBASIC_H

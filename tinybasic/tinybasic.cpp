@@ -1096,6 +1096,13 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
                 var +=ind - 1;
             }
             a = ((VAR_TYPE *)variables_begin)[var - 'A'];
+            // Check variable type
+            if (expAlpha && (checkType(&a)==NUMERIC) && (a!=0)) {
+                goto expr4_error;
+            }
+            if (!expAlpha && checkType(&a)==STRING) {
+                goto expr4_error;
+            }
             return a;
         }
 
@@ -2376,12 +2383,33 @@ void CTinyBasic::go_USING() {
     }
 
 }
+CTinyBasic::ExpTYP CTinyBasic::checkType(VAR_TYPE *var) {
+    if (((unsigned char*)var)[0]==0xF5) return STRING;
+
+    return NUMERIC;
+
+}
+
+void CTinyBasic::printVar(VAR_TYPE e) {
+    qWarning()<<"printVar"<<e;
+    if (checkType(&e)==STRING) {
+        QByteArray ba((const char*)&e, sizeof(e));
+        leftPosition = true;
+        printmsgNoNL((unsigned char*)ba.mid(1).data());
+    }
+    else {
+        leftPosition = false;
+        printnum(e);
+    }
+
+    waitForRTN = true;
+}
 
 void CTinyBasic::go_PRINT() {
 
 //    if (!CheckRunnig()) return;
 
-    bool leftPosition=false;
+    leftPosition=false;
 
     // If we have an empty list then just put out a NL
     if(*txtpos == ':' )
@@ -2427,13 +2455,17 @@ void CTinyBasic::go_PRINT() {
                 return;
             }
 
-            if (expAlpha) {
-                QByteArray ba((const char*)&e, sizeof(e));
-
-                printmsg((unsigned char*)ba.data());
+            if (expAlpha && (e == 0)) {
+                ((unsigned char *)&e)[0]=0xF5;
             }
-            else
-                printnum(e);
+            printVar(e);
+//            if (checkType(&e)==STRING) {
+//                QByteArray ba((const char*)&e, sizeof(e));
+//                leftPosition = true;
+//                printmsg((unsigned char*)ba.mid(1).data());
+//            }
+//            else
+//                printnum(e);
         }
 
 
@@ -2816,7 +2848,7 @@ void CTinyBasic::go_ASSIGNMENT() {
     txtpos++;
     ignore_blanks();
     expression_error = 0;
-    value = expression(alpha?STRING:NUMERIC);
+    value = expression();//alpha?STRING:NUMERIC);
     qWarning()<<"expression_error:"<<expression_error;
     if(expression_error) {
         errorNumber = 1;
@@ -2825,8 +2857,19 @@ void CTinyBasic::go_ASSIGNMENT() {
     }
     // Check that we are at the end of the statement
     if(*txtpos != NL && *txtpos != ':') { nextStep=QWHAT; return; }
-    *var = value;
 
+//    if ( (alpha && expAlpha) ||
+//         (alpha && !expAlpha && (value==0)) ||
+//         (!apha && !expAlpha) ||
+//         (!alpha && exp)
+    *var = value;
+    // Print the assigned value
+    printVar(value);
+
+    if (!leftPosition) {
+        outputBuffer = outputBuffer.rightJustified(24,' ');
+    }
+    line_terminator();	// The end of the print statement
     nextStep = RUN_NEXT_STATEMENT;
 
 }
