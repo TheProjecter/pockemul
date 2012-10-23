@@ -120,6 +120,7 @@ static const struct {
     {0,0}		// BUSY
 };
 
+//TODO: Add Shift indicator
 
 #define PRO_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::PRO)
 #define RUN_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::RUN)

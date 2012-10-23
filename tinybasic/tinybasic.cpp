@@ -15,12 +15,6 @@
 
 
 
-
-#define TOKENCHAR(c)        QString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").contains(c)
-#define TOKENSTARTCHAR(c)   QString("ABCDEFGHIJKLMNOPQRSTUVWXYZ").contains(c)
-#define STRINGCHAR(c)       QString("\"'").contains(c)
-#define NUMERIC(c)          QString("0123456789").contains(c)
-
 CTinyBasic::CTinyBasic(CPObject *parent):CCPU(parent)
 {
     angleMode = DEGREE;
@@ -387,40 +381,6 @@ enum {
 };
 
 
-
-static unsigned char func_tab[] = {
-    'S','I','N'+0x80,
-    'C','O','S'+0x80,
-    'T','A','N'+0x80,
-    'P','E','E','K'+0x80,
-    'A','B','S'+0x80,
-    'A','R','E','A','D'+0x80,
-    'D','R','E','A','D'+0x80,
-    'R','N','D'+0x80,
-    0
-};
-enum FUNCTIONS {
-    FUNC_SIN,
-    FUNC_COS,
-    FUNC_TAN,
-    FUNC_PEEK,
-    FUNC_ABS,
-    FUNC_AREAD,
-    FUNC_DREAD,
-    FUNC_RND,
-    FUNC_UNKNOWN
-};
-
-static unsigned char to_tab[] = {
-    'T','O'+0x80,
-    0
-};
-
-static unsigned char step_tab[] = {
-    'S','T','E','P'+0x80,
-    0
-};
-
 static unsigned char relop_tab[] = {
     '>','='+0x80,
     '<','>'+0x80,
@@ -440,27 +400,6 @@ static unsigned char relop_tab[] = {
 #define RELOP_LT		5
 #define RELOP_NE_BANG		6
 #define RELOP_UNKNOWN	7
-
-static unsigned char highlow_tab[] = {
-  'H','I','G','H'+0x80,
-  'H','I'+0x80,
-  'L','O','W'+0x80,
-  'L','O'+0x80,
-  0
-};
-#define HIGHLOW_HIGH    1
-#define HIGHLOW_UNKNOWN 4
-
-static unsigned char inputoutput_tab[] = {
-  'I','N','P','U','T'+0x80,
-  'I','N'+0x80,
-  'I'+0x80,
-  'O','U','T','P','U','T'+0x80,
-  'O','U','T'+0x80,
-  'O'+0x80,
-  0
-};
-
 
 
 #define STACK_GOSUB_FLAG 'G'
@@ -533,7 +472,6 @@ void CTinyBasic::convertLine() {
 
 //    return;
     qWarning()<<"CONVERT LINE";
-    int linelen=0;
 
     unsigned char* saved_txtpos = txtpos;
     while (1) {
@@ -608,7 +546,7 @@ void CTinyBasic::convertLine() {
 
 void CTinyBasic::LoadTable(unsigned char *table) {
     table_index=0;
-    int i=0;
+
     QByteArray ba;
     while(1) {
         // Run out of table entries?
@@ -647,6 +585,7 @@ void CTinyBasic::scantable(unsigned char *table,KEYWORD_TYPE type)
     case FOR_TO:    offset_begin = KW_TO; offset_end = KW_TO; break;
     case FOR_STEP:  offset_begin = KW_STEP; offset_end = KW_STEP; break;
     case FUNC:      offset_begin = KF_SIN; offset_end = KW_DEFAULT; break;
+    case OPE:       break;
     }
     if ( (txtpos[0]>=0x80+offset_begin) && (txtpos[0]<=0x80+offset_end)) {
         table_index = txtpos[0]-0x80;
@@ -875,7 +814,7 @@ void CTinyBasic::getln(char prompt)
 
 
 
-    char c = inchar();
+    unsigned char c = inchar();
     if (c==0) return;
 
     switch(c)
@@ -1881,7 +1820,6 @@ dwrite:
         goto run_next_statement;
 #else
 pinmode: // PINMODE <pin>, I/O
-awrite: // AWRITE <pin>,val
 dwrite:
         goto unimplemented;
 #endif
@@ -1940,72 +1878,6 @@ load:
         goto unimplemented;
 #endif
 
-
-
-
-#if 0
-rseed:
-      {
-        short int value;
-
-        //Get the pin number
-        expression_error = 0;
-        value = expression();
-        if(expression_error)
-          goto qwhat;
-
-        randomSeed( value );
-        goto run_next_statement;
-      }
-#endif
-tonestop:
-#if ENABLE_TONES
-      noTone( kPiezoPin );
-      goto run_next_statement;
-#else
-      goto unimplemented;
-#endif
-
-tonegen:
-#if ENABLE_TONES
-      {
-        // TONE freq, duration
-        // if either are 0, tones turned off
-        short int freq;
-        short int duration;
-
-        //Get the frequency
-        expression_error = 0;
-        freq = expression();
-        if(expression_error)
-          goto qwhat;
-
-        ignore_blanks();
-    if (*txtpos != ',')
-      goto qwhat;
-     txtpos++;
-     ignore_blanks();
-
-
-        //Get the duration
-        expression_error = 0;
-        duration = expression();
-        if(expression_error)
-          goto qwhat;
-
-        if( freq == 0 || duration == 0 )
-          goto tonestop;
-
-        tone( kPiezoPin, freq, duration );
-        if( alsoWait ) {
-          delay( duration );
-          alsoWait = false;
-        }
-        goto run_next_statement;
-      }
-#else
-      goto unimplemented;
-#endif
 
 }
 
@@ -2683,6 +2555,8 @@ void CTinyBasic::go_RETURN() {
     nextStep = QHOW;
 }
 
+
+//TODO: extend to Lables like GOTO
 void CTinyBasic::go_GOSUB() {
 
     if (!CheckRunnig()) return;
@@ -2800,6 +2674,7 @@ void CTinyBasic::go_IF() {
     nextStep = EXECNEXTLINE;
 }
 
+//TODO: INPUT data (numeric and string)
 void CTinyBasic::go_INPUT() {
 
     if (!CheckRunnig()) return;
@@ -2902,10 +2777,6 @@ void CTinyBasic::go_ASSIGNMENT() {
     // Check that we are at the end of the statement
     if(*txtpos != NL && *txtpos != ':') { nextStep=QWHAT; return; }
 
-//    if ( (alpha && expAlpha) ||
-//         (alpha && !expAlpha && (value==0)) ||
-//         (!apha && !expAlpha) ||
-//         (!alpha && exp)
     *var = value;
     // Print the assigned value
     if (!running) printVar(value);
@@ -2927,10 +2798,4 @@ void CTinyBasic::switchMode() {
             }
 }
 
-/*
 
-10 FOR I=0 TO 5
-20 PRINT I
-30 NEXT I
-
- */
