@@ -1635,6 +1635,7 @@ interperateAtTxtpos:
     scantable(keywords,KEYWORD);
     ignore_blanks();
 
+    expAlpha = false;
     switch(table_index)
     {
     case KW_DELAY:
@@ -2431,6 +2432,7 @@ CTinyBasic::ExpTYP CTinyBasic::checkType(VAR_TYPE *var) {
 void CTinyBasic::printVar(VAR_TYPE e) {
     qWarning()<<"printVar"<<e;
     if (checkType(&e)==STRING) {
+        qWarning()<<"print string:";
         QByteArray ba((const char*)&e, sizeof(e));
         leftPosition = true;
         printmsgNoNL((unsigned char*)ba.mid(1).data());
@@ -2447,6 +2449,7 @@ void CTinyBasic::go_PRINT() {
 
 //    if (!CheckRunnig()) return;
 
+    outputBuffer.clear();
     leftPosition=false;
 
     // If we have an empty list then just put out a NL
@@ -2542,6 +2545,7 @@ void CTinyBasic::go_GOTO() {
     if (!CheckRunnig()) return;
 
     expression_error = 0;
+    expAlpha = false;
     double e = expression();
     if(expression_error || *txtpos != NL) {
         nextStep = QHOW;
@@ -2903,7 +2907,7 @@ void CTinyBasic::go_ASSIGNMENT() {
 //         (!alpha && exp)
     *var = value;
     // Print the assigned value
-    printVar(value);
+    if (!running) printVar(value);
 
     if (!leftPosition) {
         outputBuffer = outputBuffer.rightJustified(24,' ');
