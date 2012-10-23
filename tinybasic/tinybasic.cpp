@@ -432,6 +432,7 @@ bool CTinyBasic::init()
     runAfterLoad = false;
     triggerRun = false;
     running = false;
+    processingInput = false;
 
     errorNumber = 0;
 
@@ -1342,6 +1343,7 @@ void CTinyBasic::loop()
         case GETLN_END:goto getln_end;
         case BEEP: go_BEEP(false); return; break;
         case RUN_NEXT_STATEMENT: goto run_next_statement;
+        case INPUT_CR: go_INPUT(); return; break;
         default: break;
         }
 
@@ -1391,6 +1393,10 @@ getln_end:
             txtpos--;
         }
         txtpos = dest;
+    }
+    if (processingInput) {
+        nextStep=INPUT_CR;
+        return;
     }
 convertLine();
     if (runMode==RUN) {
@@ -2677,20 +2683,33 @@ void CTinyBasic::go_IF() {
 //TODO: INPUT data (numeric and string)
 void CTinyBasic::go_INPUT() {
 
+    static unsigned char* programcounter;
+
     if (!CheckRunnig()) return;
 
-    unsigned char var;
-    ignore_blanks();
-    if(*txtpos < 'A' || *txtpos > 'Z'){
-        nextStep = QWHAT; return;
+    unsigned char var = 'A';
+    if (nextStep!=INPUT_CR) {
+
+        ignore_blanks();
+        if(*txtpos < 'A' || *txtpos > 'Z'){
+            nextStep = QWHAT; return;
+        }
+        var = *txtpos;
+        txtpos++;
+        ignore_blanks();
+        if(*txtpos != NL && *txtpos != ':') {
+            nextStep = QWHAT; return;
+        }
+        programcounter = txtpos;
+        processingInput=true;
+        inputMode = true;
+        nextStep=PROMPT;
+        return;
     }
-    var = *txtpos;
-    txtpos++;
-    ignore_blanks();
-    if(*txtpos != NL && *txtpos != ':') {
-        nextStep = QWHAT; return;
-    }
-    ((VAR_TYPE *)variables_begin)[var-'A'] = 99;
+    processingInput = false;
+    double e= expression();
+    ((VAR_TYPE *)variables_begin)[var-'A'] = e;
+    txtpos = programcounter;
     nextStep = RUN_NEXT_STATEMENT;
 
     /*
