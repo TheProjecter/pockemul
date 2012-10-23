@@ -1007,16 +1007,17 @@ void CTinyBasic::printline()
 }
 
 /***************************************************************************/
-VAR_TYPE CTinyBasic::expr4(void)
+VAR_TYPE CTinyBasic::expr4(ExpTYP type)
 {
-        // fix provided by J?rg Wullschleger wullschleger@gmail.com
-        // fixes whitespace and unary operations
-        ignore_blanks();
+    qWarning()<<"Exp4";
+    // fix provided by J?rg Wullschleger wullschleger@gmail.com
+    // fixes whitespace and unary operations
+    ignore_blanks();
 
-        if( *txtpos == '-' ) {
-          txtpos++;
-          return -expr4();
-        }
+    if( *txtpos == '-' ) {
+        txtpos++;
+        return -expr4();
+    }
     // end fix
 
 //    if(*txtpos == '0')
@@ -1025,6 +1026,22 @@ VAR_TYPE CTinyBasic::expr4(void)
 //        return 0;
 //    }
 
+
+    if (*txtpos=='"') {
+        if (type == NUMERIC) goto expr4_error;
+        expAlpha=true;
+        txtpos++;
+        int i=0;
+        QByteArray ba;
+        while (*txtpos!='"') {
+            ba.append(*txtpos);
+            txtpos++;
+            i++;
+        }
+        txtpos++;
+        char *pt = ba.prepend(0xF5).leftJustified(8,0).data();
+        return ((VAR_TYPE *)pt)[0];
+    }
 
     if((*txtpos >= '0' && *txtpos <= '9') || *txtpos == '.' )
     {
@@ -1065,6 +1082,13 @@ VAR_TYPE CTinyBasic::expr4(void)
         if(txtpos[1] < 'A' || txtpos[1] > 'Z')
         {
             unsigned char var = *txtpos;
+            expAlpha = false;
+            if (txtpos[1]=='$') {
+                // manage string var
+//                if (type == NUMERIC) goto expr4_error;
+                expAlpha=true;
+                txtpos++;
+            }
             txtpos++;
             if  ( (var=='A') && (*txtpos=='(')) {       // A Array. the index can be an expression
                 int ind = expression();
@@ -1191,13 +1215,15 @@ double CTinyBasic::convertFromRad(double angle) {
     return angle;
 }
 /***************************************************************************/
-VAR_TYPE CTinyBasic::expr3(void)
+VAR_TYPE CTinyBasic::expr3(ExpTYP type)
 {
     VAR_TYPE a,b;
 
-    a = expr4();
+    a = expr4(type);
 
-        ignore_blanks(); // fix for eg:  100 a = a + 1
+    ignore_blanks(); // fix for eg:  100 a = a + 1
+
+    if (type == STRING) return a;
 
     while(1)
     {
@@ -1222,14 +1248,16 @@ VAR_TYPE CTinyBasic::expr3(void)
 }
 
 /***************************************************************************/
-VAR_TYPE CTinyBasic::expr2(void)
+VAR_TYPE CTinyBasic::expr2(ExpTYP type)
 {
     VAR_TYPE a,b;
 
     if(*txtpos == '-' || *txtpos == '+')
         a = 0;
     else
-        a = expr3();
+        a = expr3(type);
+
+    if (type==STRING) return a;
 
     while(1)
     {
@@ -1250,11 +1278,13 @@ VAR_TYPE CTinyBasic::expr2(void)
     }
 }
 /***************************************************************************/
-VAR_TYPE CTinyBasic::expression(void)
+VAR_TYPE CTinyBasic::expression(ExpTYP type)
 {
     VAR_TYPE a,b;
 
-    a = expr2();
+    if (*txtpos=='"') type=STRING;
+
+    a = expr2(type);
     qWarning()<<"expression:"<<a;
     // Check if we have an error
     if(expression_error)	return a;
@@ -1263,6 +1293,12 @@ VAR_TYPE CTinyBasic::expression(void)
     ignore_blanks();
     if(table_index == RELOP_UNKNOWN)
         return a;
+
+    if ((type == STRING) && (table_index==RELOP_EQ)) {
+        b = expr2(type);
+        if(a == b) return 1;
+        else return 0;
+    }
 
     switch(table_index)
     {
@@ -1280,7 +1316,7 @@ VAR_TYPE CTinyBasic::expression(void)
         if(a > b) return 1;
         break;
     case RELOP_EQ:
-        b = expr2();
+        b = expr2(type);
         if(a == b) return 1;
         break;
     case RELOP_LE:
@@ -2382,14 +2418,22 @@ void CTinyBasic::go_PRINT() {
         {
             VAR_TYPE e;
             expression_error = 0;
+            expAlpha=false;
             e = expression();
+            qWarning()<<"exp:"<<e;
             if(expression_error){
                 errorNumber = 1;
                 nextStep = QWHAT;
                 return;
             }
 
-            printnum(e);
+            if (expAlpha) {
+                QByteArray ba((const char*)&e, sizeof(e));
+
+                printmsg((unsigned char*)ba.data());
+            }
+            else
+                printnum(e);
         }
 
 
@@ -2749,6 +2793,7 @@ void CTinyBasic::go_ASSIGNMENT() {
     if (!CheckMode(RUN)) return;
 
     qWarning("ASSIGNMENT");
+    bool alpha = false;
     VAR_TYPE value;
     VAR_TYPE *var;
 
@@ -2758,6 +2803,10 @@ void CTinyBasic::go_ASSIGNMENT() {
     var = (VAR_TYPE *)variables_begin + *txtpos - 'A';
     txtpos++;
 
+    if (*txtpos=='$') {
+        alpha = true;
+        txtpos++;
+    }
     ignore_blanks();
 
     if (*txtpos != '=') {
@@ -2767,7 +2816,8 @@ void CTinyBasic::go_ASSIGNMENT() {
     txtpos++;
     ignore_blanks();
     expression_error = 0;
-    value = expression();
+    value = expression(alpha?STRING:NUMERIC);
+    qWarning()<<"expression_error:"<<expression_error;
     if(expression_error) {
         errorNumber = 1;
         nextStep=QWHAT;
