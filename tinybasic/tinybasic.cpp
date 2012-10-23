@@ -1466,9 +1466,10 @@ convertLine();
     }
     qWarning()<<"Line number found:"<<linenum;
 
-    if(linenum == 0xFFFF) {
-        nextStep = QHOW; return;
-        goto qhow;
+    if(linenum > 999) {
+        errorNumber = 2;
+        nextStep = QWHAT;
+        return;
     }
 
     // Convert INSTRUCTIONS TO internal code
