@@ -138,7 +138,7 @@ bool Cpc1211::run()
             }
             break;
         default: inputBuffer.clear();
-            pBASIC->inputMode = true;
+            pBASIC->inputMode = false;
             pBASIC->outputBuffer.clear();
             break;
         }

@@ -2689,7 +2689,7 @@ void CTinyBasic::go_INPUT() {
 
     unsigned char var = 'A';
     if (nextStep!=INPUT_CR) {
-
+        qWarning()<<"INPUT";
         ignore_blanks();
         if(*txtpos < 'A' || *txtpos > 'Z'){
             nextStep = QWHAT; return;
@@ -2706,6 +2706,9 @@ void CTinyBasic::go_INPUT() {
         nextStep=PROMPT;
         return;
     }
+    qWarning()<<"INPUT_CR";
+    commandBuffer.clear();
+    inputMode = false;
     processingInput = false;
     double e= expression();
     ((VAR_TYPE *)variables_begin)[var-'A'] = e;
