@@ -126,7 +126,7 @@ public:
        void loop();
        VAR_TYPE expression(ExpTYP type=NUMERIC);
        unsigned char print_quoted_string();
-       unsigned char *findline();
+       unsigned char *findline(double);
        void toUppercaseBuffer();
        void printline();
        VAR_TYPE expr4(ExpTYP type=NUMERIC);
@@ -185,6 +185,7 @@ public:
            bool pauseFlag;
 
            QMap<LINENUM,unsigned char*> lineMap;
+           QMap<QByteArray,unsigned char*> lineDefMap;
            void scanLines();
            bool inLIST;
            LINENUM linenum;

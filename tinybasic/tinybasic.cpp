@@ -927,6 +927,7 @@ void CTinyBasic::scanLines(void)
 {
     unsigned char *line = program_start;
     lineMap.clear();
+    lineDefMap.clear();
     while(1)
     {
         if(line == program_end)
@@ -934,12 +935,24 @@ void CTinyBasic::scanLines(void)
 
         lineMap.insert(((LINENUM *)line)[0],line);
 
+        // Check if a label is present at the begining
+
+        if (line[3]=='"') {
+            int i=1;
+            QByteArray ba;
+            while (line[3+i]!='"') {
+                ba.append(line[3+i]);
+                i++;
+            }
+            lineDefMap.insert(ba,line);
+        }
+
         // Add the line length onto the current address, to get to the next line;
         line += line[sizeof(LINENUM)];
     }
 }
 /***************************************************************************/
-unsigned char *CTinyBasic::findline(void)
+unsigned char *CTinyBasic::findline(double e)
 {
 #if 0
 unsigned char *line = program_end;
@@ -947,13 +960,32 @@ if (lineMap.contains(linenum))
 
 #else
 
+    bool searchLbl = false;
+    if (checkType(&e)==STRING) searchLbl = true;
+    else linenum = MIN(999,floor(abs(e)));
+
     unsigned char *line = program_start;
     while(1)
     {
         if(line == program_end)
             return line;
 
-        if(((LINENUM *)line)[0] >= linenum) {
+        if (searchLbl) {
+            if (line[3]=='"') {
+                int i=1;
+                QByteArray ba;
+                while (line[3+i]!='"') {
+                    ba.append(line[3+i]);
+                    i++;
+                }
+                char *pt = ba.prepend(0xF5).leftJustified(8,0,true).data();
+                if (((VAR_TYPE *)pt)[0] == e) {
+                    return line;
+                }
+
+            }
+        }
+        else if(((LINENUM *)line)[0] >= linenum) {
 //            linenum = ((LINENUM *)line)[0];
             return line;
         }
@@ -1039,7 +1071,7 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
             i++;
         }
         txtpos++;
-        char *pt = ba.prepend(0xF5).leftJustified(8,0).data();
+        char *pt = ba.prepend(0xF5).leftJustified(8,0,true).data();
         return ((VAR_TYPE *)pt)[0];
     }
 
@@ -1459,7 +1491,7 @@ convertLine();
     txtpos[sizeof(LINENUM)] = linelen;
 
     // Merge it into the rest of the program
-    start = findline();
+    start = findline(linenum);
     qWarning()<<"Line number found after findline:"<<linenum;
 
     // If a line with that number exists, then remove it
@@ -1714,6 +1746,12 @@ execline:
         goto warmstart;
     }
     txtpos = current_line+sizeof(LINENUM)+sizeof(char);
+    // discard label
+    if (*txtpos=='"') {
+        txtpos++;
+        while (*txtpos!='"') txtpos++;
+        txtpos++;
+    }
     nextStep = INTERPERATEATTXTPOS;
     return;
 
@@ -2268,7 +2306,7 @@ void CTinyBasic::go_RUN() {
 
     linenum = testnum();
     if (linenum!=0)
-        current_line = findline();
+        current_line = findline(linenum);
 
     nextStep = EXECLINE;
 }
@@ -2293,7 +2331,7 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
     else linenum = lineNb;
 
     // Find the line
-    list_line = findline();
+    list_line = findline(linenum);
     //    while(list_line != program_end)
     if (list_line != program_end) {
         inLIST = true;
@@ -2504,12 +2542,13 @@ void CTinyBasic::go_GOTO() {
     if (!CheckRunnig()) return;
 
     expression_error = 0;
-    linenum = expression();
+    double e = expression();
     if(expression_error || *txtpos != NL) {
         nextStep = QHOW;
         return;
     }
-    current_line = findline();
+
+    current_line = findline(e);
     nextStep = EXECLINE;
 
 }
@@ -2658,7 +2697,7 @@ void CTinyBasic::go_GOSUB() {
         f->frame_type = STACK_GOSUB_FLAG;
         f->txtpos = txtpos;
         f->current_line = current_line;
-        current_line = findline();
+        current_line = findline(linenum);
         nextStep=EXECLINE;
         return;
     }
