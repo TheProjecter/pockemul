@@ -87,7 +87,7 @@ Cz1::~Cz1() {
 bool Cz1::init(void)				// initialize
 {
     if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
-
+//pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 
@@ -164,7 +164,11 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
     if(0x400 <= p && p <= 0x40f)
         printf("WRITE IP=%04x p=%04x v=%02x\n", cpu->r16.ip, p, v);
     */
+    if (*d==0x16BB) {
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nWRITE 16BB:%04X\n",data);
+        return true;
 
+    }
     if(*d < 0x10000) return true; /* RAM */
     if(*d < 0xa0000) return false;
     if(*d < 0xb0000){
@@ -183,6 +187,13 @@ bool Cz1::Chk_Adr_R(DWORD *d, DWORD data)
     if(0x400 <= p && p <= 0x40f)
         printf("READ IP=%04x p=%04x v=%02x\n", cpu->r16.ip, p, cpu->m[p]);
     */
+    if (*d==0x16BB) {
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nREAD 16BB\n");
+        return true;
+
+    }
+
+
     if( *d < 0x10000) return true;
     else if (*d < 0xa0000) { mem[*d] = *d & 0xff; return true; }
     else if (*d < 0xb0000) {
@@ -208,7 +219,7 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x003e: /* ? */
         return 0x20;
     case 0x005a: /* バッテリー容量 */
-        return 0x04;
+        return 0x04 | 0x80;
     /*
     case 0x0082:
         return 0x00;
@@ -309,13 +320,23 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         for(int i = 0x420; i <= 0x42e; i++)
             fprintf(fp_log,"%02x ", mem[i]);
         fprintf(fp_log,"\n");
-#if 0
+#if 1
         if(x == 0x99)
-            mem[0x406] = 1;
-        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
-            mem[0x400] = 0;
-        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
-            mem[0x405] = 0;
+        {
+//            mem[0x400] = 0x00;
+//            mem[0x401] = 0x00;
+//            mem[0x402] = 0x00;
+//            mem[0x403] = 0x00;
+//            mem[0x404] = 0x00;
+//            mem[0x405] = 0x00;
+//            mem[0x406] = 0x01;
+//            mem[0x407] = 0x06;
+//            mem[0x408] = 0x00;
+        }
+//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
+//            mem[0x400] = 0;
+//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
+//            mem[0x405] = 0;
 
 #endif
 #if 0
@@ -348,15 +369,19 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
             fprintf(fp_log,"%02x ", mem[i]);
         fprintf(fp_log,"\n");
 
+
 #if 1
         if(x == 0x10) {
-            for(int i = 0x400; i <= 0x40f; i++)
-                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-            for(int i = 0x410; i <= 0x41f; i++)
-                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-            for(int i = 0x420; i < 0x42f; i++)
+            for(int i = 0x400; i <= 0x408; i++)
                 i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
         }
+        if(x == 0x11) {
+            for(int i = 0x410; i <= 0x418; i++)
+                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
+        }
+//            for(int i = 0x420; i < 0x42f; i++)
+//                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
+
 #endif
 
 
@@ -375,19 +400,38 @@ UINT16 Cz1::in16(UINT16 address)
 
 UINT16 Cz1::out16(UINT16 Port, UINT16 x)
 {
-    if ((Port >=0x220)&&(Port < 0x240)) {
-        fprintf(fp_log,"OUT[%04X]=%04x  pc=%08x\n", Port,x,pCPU->get_PC());
-        AddLog(LOG_TEMP,tr("OUT[%1]=%2\t%3").arg(Port,4,16,QChar('0')).arg(x,4,16,QChar('0')).arg(pCPU->get_PC(),8,16,QChar('0')));
+    switch (Port) {
+    case 0x220:
+        fprintf(fp_log,"before OUT[%04X]=%04x  PC=%08x\n", Port,x,pCPU->get_PC());
         dumpXYW();
-
+        switch (x) {
+        case 0x0499:
+            for(int i = 0x406; i >= 0x401; i--)
+                mem[i] = mem[i-1];
+            mem[0x400]=0;
+        }
+        fprintf(fp_log,"after OUT[%04X]=%04x  PC=%08x\n", Port,x,pCPU->get_PC());
+        dumpXYW();
+        break;
+    default:
+        out8(Port + 1, x >> 8);
+        out8(Port, x & 0xff);
     }
-    out8(Port + 1, x >> 8);
-    out8(Port, x & 0xff);
+
+//    if ((Port >=0x220)&&(Port < 0x240)) {
+//        fprintf(fp_log,"OUT[%04X]=%04x  pc=%08x\n", Port,x,pCPU->get_PC());
+//        AddLog(LOG_TEMP,tr("OUT[%1]=%2\t%3").arg(Port,4,16,QChar('0')).arg(x,4,16,QChar('0')).arg(pCPU->get_PC(),8,16,QChar('0')));
+//        dumpXYW();
+
+//    }
+//    out8(Port + 1, x >> 8);
+//    out8(Port, x & 0xff);
 }
 
 void Cz1::dumpXYW(void) {
+#if 0
     QString _tmp="";
-    for(int i = 0x400; i <= 0x40f; i++)
+    for(int i = 0x400; i <= 0x40f; i++) {
         _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
     AddLog(LOG_TEMP,"X="+_tmp);
     _tmp="";
@@ -398,7 +442,21 @@ void Cz1::dumpXYW(void) {
     for(int i = 0x420; i < 0x42f; i++)
         _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
     AddLog(LOG_TEMP,"W="+_tmp);
+#else
+    fprintf(fp_log,"X=");
+    for(int i = 0x400; i <= 0x40f; i++)
+        fprintf(fp_log,"%02x ", mem[i]);
+    fprintf(fp_log,"\n");
+    fprintf(fp_log,"Y=");
+    for(int i = 0x410; i <= 0x41f; i++)
+        fprintf(fp_log,"%02x ", mem[i]);
+    fprintf(fp_log,"\n");
+    fprintf(fp_log,"W=");
+    for(int i = 0x420; i <= 0x42e; i++)
+        fprintf(fp_log,"%02x ", mem[i]);
+    fprintf(fp_log,"\n");
 
+#endif
 }
 
 void Cz1::TurnOFF(void) {

@@ -378,7 +378,13 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
               General_Info.Curseur = false;
               break;
-  case 0x27 :
+  case 0x27 : {
+     UINT16 matrix;
+     UINT8 data = 0;
+     matrix = Send_Cmd_T6834[1] | (Send_Cmd_T6834[2] << 8);
+//     qWarning()<<"matrix="<<matrix;
+     Rsp[0] = getKey(matrix);
+ }
       /*
   {
       static const char *const lines[] = {"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "BZ", "A1"};
@@ -396,6 +402,9 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
   */
       break;
   case 0x28:	//test chr
+     //TODO: TKEY Not working
+     if (Clavier.contains(toupper(Send_Cmd_T6834[1]))) Rsp[0] = 0;
+     else Rsp[0] = 0xFF;
 //      {
 //          UINT8 idx = kb_get_index(m_in.data[m_in.read++]);
 //          m_out.data[m_out.write++] = (input_port_read(machine, x07_keycodes[idx].tag) & x07_keycodes[idx].mask) ? 0x00 : 0xff;
@@ -972,7 +981,171 @@ void CT6834::TurnOFF() {
     emit TurnOFFSig();
 //    pPC->TurnOFF();
 }
+#define KEY(a) (Clavier.contains(a) || Clavier.contains(toupper(a)))
 
+quint8 CT6834::getKey(quint16 strobe) {
+    quint8 data = 0;
+
+    if (strobe & 0x01) {
+        if (KEY('a'))   data |= 0x01;
+        if (KEY('a'))   data |= 0x02;
+        if (KEY('a'))   data |= 0x04;
+        if (KEY('a'))   data |= 0x08;
+        if (KEY('a'))   data |= 0x10;
+        if (KEY('a'))   data |= 0x20;
+        if (KEY(' '))   data |= 0x40;
+    }
+
+    if (strobe & 0x02) {
+        if (KEY('z'))   data |= 0x01;
+        if (KEY('x'))   data |= 0x02;
+        if (KEY('c'))   data |= 0x04;
+        if (KEY('v'))   data |= 0x08;
+        if (KEY('b'))   data |= 0x10;
+        if (KEY('n'))   data |= 0x20;
+        if (KEY('m'))   data |= 0x40;
+        if (KEY('a'))   data |= 0x80;
+    }
+
+    if (strobe & 0x04) {
+        if (KEY('a'))   data |= 0x01;
+        if (KEY('s'))   data |= 0x02;
+        if (KEY('d'))   data |= 0x04;
+        if (KEY('f'))   data |= 0x08;
+        if (KEY('g'))   data |= 0x10;
+        if (KEY('h'))   data |= 0x20;
+        if (KEY('j'))   data |= 0x40;
+        if (KEY('k'))   data |= 0x80;
+    }
+
+    if (strobe & 0x08) {
+        if (KEY('q'))   data |= 0x01;
+        if (KEY('w'))   data |= 0x02;
+        if (KEY('e'))   data |= 0x04;
+        if (KEY('r'))   data |= 0x08;
+        if (KEY('t'))   data |= 0x10;
+        if (KEY('y'))   data |= 0x20;
+        if (KEY('u'))   data |= 0x40;
+        if (KEY('i'))   data |= 0x80;
+    }
+
+    if (strobe & 0x10) {
+        if (KEY('!'))   data |= 0x01;
+        if (KEY('"'))   data |= 0x02;
+        if (KEY('#'))   data |= 0x04;
+        if (KEY('$'))   data |= 0x08;
+        if (KEY('%'))   data |= 0x10;
+        if (KEY('&'))   data |= 0x20;
+//        if (KEY('\'))   data |= 0x40;
+        if (KEY('('))   data |= 0x80;
+    }
+
+    if (strobe & 0x20) {
+        if (KEY(Qt::Key_F1))   data |= 0x01;
+        if (KEY(Qt::Key_F2))   data |= 0x02;
+        if (KEY(Qt::Key_F3))   data |= 0x04;
+        if (KEY(Qt::Key_F4))   data |= 0x08;
+        if (KEY(Qt::Key_F5))   data |= 0x10;
+        if (KEY(Qt::Key_F6))   data |= 0x20;
+    }
+
+    if (strobe & 0x40) {
+        if (KEY('.'))   data |= 0x01;
+        if (KEY('/'))   data |= 0x02;
+        if (KEY('?'))   data |= 0x04;
+        if (KEY(K_RET))   data |= 0x08;
+        if (KEY('a'))   data |= 0x10;
+        if (KEY('a'))   data |= 0x20;
+        if (KEY('a'))   data |= 0x40;
+        if (KEY('a'))   data |= 0x80;
+    }
+
+                return data;
+}
+
+#if 0
+1246      PORT_START("S1")
+1247          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("INS")     PORT_CODE(KEYCODE_INSERT)           PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x12)
+1248          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("DEL")     PORT_CODE(KEYCODE_DEL)              PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x16)
+1249          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("RIGHT")   PORT_CODE(KEYCODE_RIGHT)            PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x1c)
+1250          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("LEFT")    PORT_CODE(KEYCODE_LEFT)             PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x1d)
+1251          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("UP")      PORT_CODE(KEYCODE_UP)               PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x1e)
+1252          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("DOWN")    PORT_CODE(KEYCODE_DOWN)             PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x1f)
+1253          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("SPC")     PORT_CODE(KEYCODE_SPACE) PORT_CHAR(' ') PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x20)
+1254      PORT_START("S2")
+1255          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_Z) PORT_CHAR('Z') PORT_CHAR('z')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x5a)
+1256          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_X) PORT_CHAR('X') PORT_CHAR('x')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x58)
+1257          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_C) PORT_CHAR('C') PORT_CHAR('c')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x43)
+1258          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_V) PORT_CHAR('V') PORT_CHAR('v')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x56)
+1259          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_B) PORT_CHAR('B') PORT_CHAR('b')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x42)
+1260          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_N) PORT_CHAR('N') PORT_CHAR('n')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x4e)
+1261          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_M) PORT_CHAR('M') PORT_CHAR('m')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x4d)
+1262          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_COMMA) PORT_CHAR(',') PORT_CHAR('<')   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x2c)
+1263      PORT_START("S3")
+1264          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_A) PORT_CHAR('A') PORT_CHAR('a')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x41)
+1265          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_S) PORT_CHAR('S') PORT_CHAR('s')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x53)
+1266          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_D) PORT_CHAR('D') PORT_CHAR('d')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x44)
+1267          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_F) PORT_CHAR('F') PORT_CHAR('f')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x46)
+1268          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_G) PORT_CHAR('G') PORT_CHAR('g')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x47)
+1269          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_H) PORT_CHAR('H') PORT_CHAR('h')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x48)
+1270          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_J) PORT_CHAR('J') PORT_CHAR('j')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x4a)
+1271          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_K) PORT_CHAR('K') PORT_CHAR('k')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x4b)
+1272      PORT_START("S4")
+1273          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_Q) PORT_CHAR('Q') PORT_CHAR('q')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x51)
+1274          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_W) PORT_CHAR('W') PORT_CHAR('w')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x57)
+1275          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_E) PORT_CHAR('E') PORT_CHAR('e')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x45)
+1276          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_R) PORT_CHAR('R') PORT_CHAR('r')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x52)
+1277          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_T) PORT_CHAR('T') PORT_CHAR('t')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x54)
+1278          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_Y) PORT_CHAR('Y') PORT_CHAR('y')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x59)
+1279          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_U) PORT_CHAR('U') PORT_CHAR('u')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x55)
+1280          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_I) PORT_CHAR('I') PORT_CHAR('i')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x49)
+1281      PORT_START("S5")
+1282          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_1) PORT_CHAR('1') PORT_CHAR('!')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x31)
+1283          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_2) PORT_CHAR('2') PORT_CHAR('"')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x32)
+1284          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_3) PORT_CHAR('3') PORT_CHAR('#')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x33)
+1285          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_4) PORT_CHAR('4') PORT_CHAR('$')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x34)
+1286          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_5) PORT_CHAR('5') PORT_CHAR('%')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x35)
+1287          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_6) PORT_CHAR('6') PORT_CHAR('&')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x36)
+1288          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_7) PORT_CHAR('7') PORT_CHAR('\'')      PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x37)
+1289          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_8) PORT_CHAR('8') PORT_CHAR('(')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x38)
+1290      PORT_START("S6")
+1291          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("F1") PORT_CODE(KEYCODE_F1)                    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_func_keys, 1)
+1292          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("F2") PORT_CODE(KEYCODE_F2)                    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_func_keys, 2)
+1293          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("F3") PORT_CODE(KEYCODE_F3)                    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_func_keys, 3)
+1294          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("F4") PORT_CODE(KEYCODE_F4)                    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_func_keys, 4)
+1295          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("F5") PORT_CODE(KEYCODE_F5)                    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_func_keys, 5)
+1296          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("F6") PORT_CODE(KEYCODE_F6)                    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_func_keys, 6)
+1297      PORT_START("S7")
+1298          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_STOP) PORT_CHAR('.') PORT_CHAR('>')    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x2e)
+1299          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_SLASH) PORT_CHAR('/') PORT_CHAR('?')   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x2f)
+1300          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_PGUP) PORT_CHAR('?')                   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x3f)
+1301          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("RETURN") PORT_CODE(KEYCODE_ENTER)  PORT_CHAR(13)  PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x0d)
+1302          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_O) PORT_CHAR('O') PORT_CHAR('o')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x4f)
+1303          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_P) PORT_CHAR('P') PORT_CHAR('p')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x50)
+1304          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_COLON) PORT_CHAR('@') PORT_CHAR('\'')  PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x40)
+1305          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_OPENBRACE) PORT_CHAR('[') PORT_CHAR('{')   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x5b)
+1306      PORT_START("S8")
+1307          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_L) PORT_CHAR('L') PORT_CHAR('l')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x4c)
+1308          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_BACKSLASH) PORT_CHAR(';') PORT_CHAR('+')   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x3b)
+1309          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_QUOTE) PORT_CHAR(':') PORT_CHAR('*')   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x3a)
+1310          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_CLOSEBRACE) PORT_CHAR(']') PORT_CHAR('}')  PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x5d)
+1311          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_9) PORT_CHAR('9') PORT_CHAR(')')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x39)
+1312          PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_0) PORT_CHAR('0') PORT_CHAR('|')       PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x30)
+1313          PORT_BIT( 0x40, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_MINUS) PORT_CHAR('-') PORT_CHAR('=')   PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x2d)
+1314          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_CODE(KEYCODE_EQUALS) PORT_CHAR('^') PORT_CHAR('`')  PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x3d)
+1315      PORT_START("BZ")
+1316          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("HOME")    PORT_CODE(KEYCODE_HOME)             PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_keys, 0x0b)
+1317          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("KANA")    PORT_CODE(KEYCODE_RALT)
+1318          PORT_BIT( 0x04, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("GRPH")    PORT_CODE(KEYCODE_RCONTROL)
+1319          PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("NUM")     PORT_CODE(KEYCODE_LALT)
+1320          PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("OFF")     PORT_CODE(KEYCODE_RSHIFT)
+1321          PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("ON/BREAK") PORT_CODE(KEYCODE_F10)             PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_break, 0)
+1322      PORT_START("A1")
+1323          PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("SHIFT") PORT_CODE(KEYCODE_LSHIFT)             PORT_CHAR(UCHAR_SHIFT_1)    PORT_CHANGED_MEMBER(DEVICE_SELF,x07_state,kb_update_udk, 0)
+1324          PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_KEYBOARD ) PORT_NAME("CTRL") PORT_CODE(KEYCODE_LCONTROL)
+1325  INPUT_PORTS_END
+
+#endif
 /*
   E1FE
             VIDEO RAM

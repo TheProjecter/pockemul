@@ -100,6 +100,7 @@ public:
     bool kana,graph,shift,ctrl;
     bool curOnOff;
 
+    quint8 getKey(quint16 strobe);
 signals:
     void TurnOFFSig();
 
