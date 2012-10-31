@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
+    <array name="bundled_libs"/>
     <array name="qt_libs">
         <item>QtCore</item>
         <item>QtFeedback</item>
@@ -8,5 +9,4 @@
         <item>QtScript</item>
         <item>QtXml</item>
     </array>
-    <array name="bundled_libs"/>
 </resources>

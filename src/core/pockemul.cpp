@@ -1,8 +1,11 @@
+
+
 #include <QApplication>
 #include <QtPlugin>
 #include <QDebug>
 #include <QDir>
 #include <QSplashScreen>
+//#include <QAndroidStyle>
 //#include <QFeedbackHapticsEffect>
 #include "launchbuttonwidget.h"
 #include "mainwindowpockemul.h"
@@ -65,7 +68,9 @@ int main(int argc, char *argv[])
     d.mkdir("/sdcard/pockemul");
     QDir::setCurrent("/sdcard/pockemul");
 
-//    QApplication::setStyle(new QAndroidStyle());
+    QWindowsStyle *s = new QWindowsStyle();//QAndroidStyle();
+
+    QApplication::setStyle(s);//new QAndroidStyle());
 
 #endif
 
