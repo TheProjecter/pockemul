@@ -216,6 +216,16 @@ void Cpc1211::Editor() {
 //        inputBuffer.clear();
         pKEYB->LastKey = 0;
         break;
+    case K_DEL:
+        if (cursorPos<inputBuffer.size()) inputBuffer.remove(cursorPos,1);
+        pKEYB->LastKey = 0;
+        break;
+    case K_INS:
+        if (cursorPos<inputBuffer.size()) {
+            inputBuffer.insert(cursorPos,0x10);
+            pKEYB->LastKey = 0;
+            break;
+        }
     default:
 
 

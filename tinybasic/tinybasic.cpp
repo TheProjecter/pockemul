@@ -1466,6 +1466,7 @@ convertLine();
 
     if(txtpos[sizeof(LINENUM)+sizeof(char)] == NL) { // If the line has no txt, it was just a delete
         nextStep = PROMPT;
+
         return;
         goto prompt;
     }
