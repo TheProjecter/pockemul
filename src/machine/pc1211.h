@@ -31,6 +31,7 @@ public:
     bool DisplayWaitForRTN;
     void Editor();
     int cursorPos;
+    bool shiftFlag;
 };
 
 #endif // PC1211_H

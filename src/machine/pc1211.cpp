@@ -67,6 +67,9 @@ bool Cpc1211::init()
 //    pCPU->init();
     CpcXXXX::init();
     CpcXXXX::TurnON();
+
+    shiftFlag = false;
+
     return true;
 }
 
@@ -165,11 +168,27 @@ bool Cpc1211::run()
 void Cpc1211::Editor() {
 
     switch (pKEYB->LastKey) {
+    case K_SHT: shiftFlag = !shiftFlag;
+        pKEYB->LastKey = 0;
+        break;
+    }
+
+    if (pKEYB->isShift || shiftFlag) {
+        switch (pKEYB->LastKey) {
+        case K_LA: pKEYB->LastKey = K_DEL; break;
+        case K_RA: pKEYB->LastKey = K_INS; break;
+        }
+    }
+
+
+    if (pKEYB->LastKey>0) shiftFlag = false;
+
+    switch (pKEYB->LastKey) {
     case 0:
-    case K_SHT:
     case K_POW_ON:
         pKEYB->LastKey = 0;
         break;
+
     case K_MOD: pBASIC->switchMode();
         pKEYB->LastKey=0;
         return;
@@ -210,11 +229,22 @@ void Cpc1211::Editor() {
         qWarning()<<"Cursor Pos:"<<cursorPos;
         break;
     case K_BRK: pBASIC->breakFlag = true; break;
-    case K_RET: pBASIC->commandBuffer.clear();
+    case K_RET: {
+        pBASIC->commandBuffer.clear();
+
+        // remove all insert char (0x10)
+        int i =0;
+        while (i<inputBuffer.size()) {
+            if (inputBuffer.at(i)==0x10)
+                inputBuffer.remove(i,1);
+            else i++;
+        }
+
         pBASIC->commandBuffer.append(inputBuffer).append("\n");
         pBASIC->inputMode = false;
 //        inputBuffer.clear();
         pKEYB->LastKey = 0;
+    }
         break;
     case K_DEL:
         if (cursorPos<inputBuffer.size()) inputBuffer.remove(cursorPos,1);
@@ -227,8 +257,6 @@ void Cpc1211::Editor() {
             break;
         }
     default:
-
-
         if (cursorPos==inputBuffer.size()) {
             inputBuffer.append(pKEYB->LastKey);
 

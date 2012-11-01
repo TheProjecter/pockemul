@@ -107,7 +107,7 @@ Clcdc_pc1211::Clcdc_pc1211(CPObject *parent)	: Clcdc(parent){						//[constructo
 static const struct {
     int x,y;
 } pc1211_pos[11]={
-    {250,0},	// SHIFT
+    {25,0},	// SHIFT
     {200, 0},	// DEF
     {280, 0},	// PRO
     {240, 0},	// RUN
@@ -121,7 +121,7 @@ static const struct {
 };
 
 //TODO: Add Shift indicator
-
+#define SHFT_LBL    (pPC1211->shiftFlag)
 #define PRO_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::PRO)
 #define RUN_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::RUN)
 #define RSV_MODE    (pPC1211->pBASIC->runMode==CTinyBasic::RESERVE)
@@ -136,14 +136,14 @@ static const struct {
 void Clcdc_pc1211::disp_symb(void)
 {
 
-//        disp_one_symb(S_SHIFT,	COLOR(SYMB2_1250&0x02),	pc1211_pos[0].x,	pc1211_pos[0].y);
-        disp_one_symb(S_DEF,		COLOR(DEF_MODE),	pc1211_pos[1].x,	pc1211_pos[1].y);
-        disp_one_symb(S_PRO,		COLOR(PRO_MODE),	pc1211_pos[2].x,	pc1211_pos[2].y);
-        disp_one_symb(S_RUN,		COLOR(RUN_MODE),	pc1211_pos[3].x,	pc1211_pos[3].y);
-        disp_one_symb(S_RESERVE,	COLOR(RSV_MODE),    pc1211_pos[4].x,	pc1211_pos[4].y);
-        disp_one_symb(S_DE,         COLOR(DEG_IND),     pc1211_pos[5].x,	pc1211_pos[5].y);
-        disp_one_symb(S_G,          COLOR(DEG_IND||GRD_IND),	pc1211_pos[6].x,	pc1211_pos[6].y);
-        disp_one_symb(S_RAD,		COLOR(RAD_IND||GRD_IND),	pc1211_pos[7].x,	pc1211_pos[7].y);
+        disp_one_symb(S_SHIFT,	COLOR(SHFT_LBL),	pc1211_pos[0].x,	pc1211_pos[0].y);
+        disp_one_symb(S_DEF,	COLOR(DEF_MODE),	pc1211_pos[1].x,	pc1211_pos[1].y);
+        disp_one_symb(S_PRO,	COLOR(PRO_MODE),	pc1211_pos[2].x,	pc1211_pos[2].y);
+        disp_one_symb(S_RUN,	COLOR(RUN_MODE),	pc1211_pos[3].x,	pc1211_pos[3].y);
+        disp_one_symb(S_RESERVE,COLOR(RSV_MODE),    pc1211_pos[4].x,	pc1211_pos[4].y);
+        disp_one_symb(S_DE,     COLOR(DEG_IND),     pc1211_pos[5].x,	pc1211_pos[5].y);
+        disp_one_symb(S_G,      COLOR(DEG_IND||GRD_IND),	pc1211_pos[6].x,	pc1211_pos[6].y);
+        disp_one_symb(S_RAD,	COLOR(RAD_IND||GRD_IND),	pc1211_pos[7].x,	pc1211_pos[7].y);
 //        disp_one_symb(S_E,          COLOR(SYMB2_1250&0x08),	pc1211_pos[8].x,	pc1211_pos[8].y);
 //        disp_one_symb(S_PRINT,      COLOR(SYMB1_1250&0x02),	pc1211_pos[9].x,	pc1211_pos[9].y);
 //        disp_one_symb(S_BUSY,       COLOR(SYMB2_1250&0x01),	pc1211_pos[10].x,	pc1211_pos[10].y);
