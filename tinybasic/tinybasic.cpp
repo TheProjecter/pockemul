@@ -388,7 +388,7 @@ static unsigned char relop_tab[] = {
     '='+0x80,
     '<','='+0x80,
     '<'+0x80,
-        '!','='+0x80,
+    '!','='+0x80,
     0
 };
 
@@ -398,7 +398,7 @@ static unsigned char relop_tab[] = {
 #define RELOP_EQ		3
 #define RELOP_LE		4
 #define RELOP_LT		5
-#define RELOP_NE_BANG		6
+#define RELOP_NE_BANG	6
 #define RELOP_UNKNOWN	7
 
 
@@ -433,7 +433,7 @@ bool CTinyBasic::init()
     triggerRun = false;
     running = false;
     processingInput = false;
-
+    breakFlag = false;
     errorNumber = 0;
 
     inLIST = false;
@@ -1669,9 +1669,9 @@ interperateAtTxtpos:
 //    case KW_NOTONE:
 //        goto tonestop;
 
-    case KW_RADIAN : angleMode = RADIAN; nextStep = RUN_NEXT_STATEMENT; break;
-    case KW_DEGREE : angleMode = DEGREE; nextStep = RUN_NEXT_STATEMENT; break;
-    case KW_GRAD   : angleMode = GRAD  ; nextStep = RUN_NEXT_STATEMENT; break;
+    case KW_RADIAN : angleMode = RADIAN; nextStep = RUN_NEXT_STATEMENT; return; break;
+    case KW_DEGREE : angleMode = DEGREE; nextStep = RUN_NEXT_STATEMENT; return; break;
+    case KW_GRAD   : angleMode = GRAD  ; nextStep = RUN_NEXT_STATEMENT; return; break;
     case KW_DEFAULT:
         nextStep = ASSIGNMENT;
         return;

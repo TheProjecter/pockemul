@@ -91,6 +91,7 @@ bool Cpc1211::run()
         pBASIC->pauseFlag = false;
         pBASIC->waitForRTN = false;
         inputBuffer.clear();
+        cursorPos=0;
         pBASIC->inputMode = false;
         pBASIC->outputBuffer.clear();
     }
@@ -110,6 +111,7 @@ bool Cpc1211::run()
         case '*':
             inputBuffer.clear();
             inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')).trimmed());
+            cursorPos=inputBuffer.size();
             pBASIC->outputBuffer.clear();
 //            pBASIC->backupCommandBuffer.clear();
             pBASIC->inputMode = true;
@@ -122,6 +124,7 @@ bool Cpc1211::run()
                 inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')).trimmed());
                 pBASIC->outputBuffer.clear();
                 if (inputBuffer.indexOf(':')<4) {
+                    cursorPos=inputBuffer.indexOf(':');
                     inputBuffer[inputBuffer.indexOf(':')]=' ';
                 }
             }
@@ -133,11 +136,13 @@ bool Cpc1211::run()
         case K_UA: if (pBASIC->runMode==CTinyBasic::PRO) pBASIC->inLIST = true;
             else {
                 inputBuffer.clear();
+                cursorPos=0;
                 pBASIC->inputMode = true;
                 pBASIC->outputBuffer.clear();
             }
             break;
         default: inputBuffer.clear();
+            cursorPos=0;
             pBASIC->inputMode = false;
             pBASIC->outputBuffer.clear();
             break;
@@ -169,11 +174,13 @@ void Cpc1211::Editor() {
         pKEYB->LastKey=0;
         return;
     case K_CLR: inputBuffer.clear();
+        cursorPos = 0;
         pKEYB->LastKey=0;
         break;
     case K_DA:
         if (pBASIC->runMode==CTinyBasic::PRO) {
             inputBuffer.clear();
+            cursorPos=0;
             if (!pBASIC->inLIST) pBASIC->linenum=0;
             pBASIC->nextStep = CTinyBasic::LIST_NEXT;
             pBASIC->inputMode = false;
@@ -184,6 +191,7 @@ void Cpc1211::Editor() {
     case K_UA:
         if (pBASIC->runMode==CTinyBasic::PRO) {
             inputBuffer.clear();
+            cursorPos=0;
             if (!pBASIC->inLIST) pBASIC->linenum=999;
             pBASIC->nextStep = CTinyBasic::LIST_PREV;
             pBASIC->inputMode = false;
@@ -194,10 +202,12 @@ void Cpc1211::Editor() {
     case K_LA:
         cursorPos--;
         if (cursorPos<0) cursorPos=0;
+        qWarning()<<"Cursor Pos:"<<cursorPos;
         pKEYB->LastKey = 0;
         break;
-    case K_RA: cursorPos++;
+    case K_RA: if (cursorPos < inputBuffer.size()) cursorPos++;
         pKEYB->LastKey = 0;
+        qWarning()<<"Cursor Pos:"<<cursorPos;
         break;
     case K_BRK: pBASIC->breakFlag = true; break;
     case K_RET: pBASIC->commandBuffer.clear();
@@ -208,7 +218,15 @@ void Cpc1211::Editor() {
         break;
     default:
 
-        inputBuffer.append(pKEYB->LastKey);
+
+        if (cursorPos==inputBuffer.size()) {
+            inputBuffer.append(pKEYB->LastKey);
+
+        }
+        else {
+            inputBuffer[cursorPos]=pKEYB->LastKey;
+        }
+
         qWarning()<<"Input:"<<inputBuffer;
         cursorPos++;
         pKEYB->LastKey = 0;

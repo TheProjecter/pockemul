@@ -21,7 +21,7 @@ public:
     QByteArray line;
     void DrawChar(quint8 c,int x);
 
-    quint8 cursorPos;
+//    quint8 cursorPos;
     bool cursorBlink;
     qint64 blinkState;
 
