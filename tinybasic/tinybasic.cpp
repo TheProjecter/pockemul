@@ -918,7 +918,7 @@ if (lineMap.contains(linenum))
                     ba.append(line[3+i]);
                     i++;
                 }
-                char *pt = ba.prepend(0xF5).leftJustified(8,0,true).data();
+                char *pt = ba.leftJustified(8,0,true).append(0xF5).data();
                 if (((VAR_TYPE *)pt)[0] == e) {
                     return line;
                 }
@@ -1011,7 +1011,7 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
             i++;
         }
         txtpos++;
-        char *pt = ba.prepend(0xF5).leftJustified(8,0,true).data();
+        char *pt = ba.leftJustified(8,0,true).append(0xF5).data();
         return ((VAR_TYPE *)pt)[0];
     }
 
@@ -2302,7 +2302,7 @@ void CTinyBasic::go_USING() {
 
 }
 CTinyBasic::ExpTYP CTinyBasic::checkType(VAR_TYPE *var) {
-    if (((unsigned char*)var)[0]==0xF5) return STRING;
+    if (((unsigned char*)var)[7]==0xF5) return STRING;
 
     return NUMERIC;
 
@@ -2314,7 +2314,7 @@ void CTinyBasic::printVar(VAR_TYPE e) {
         qWarning()<<"print string:";
         QByteArray ba((const char*)&e, sizeof(e));
         leftPosition = true;
-        printmsgNoNL((unsigned char*)ba.mid(1).data());
+        printmsgNoNL((unsigned char*)ba.left(7).data());
     }
     else {
         leftPosition = false;
@@ -2376,7 +2376,7 @@ void CTinyBasic::go_PRINT() {
             }
 
             if (expAlpha && (e == 0)) {
-                ((unsigned char *)&e)[0]=0xF5;
+                ((unsigned char *)&e)[7]=0xF5;
             }
             printVar(e);
 //            if (checkType(&e)==STRING) {
