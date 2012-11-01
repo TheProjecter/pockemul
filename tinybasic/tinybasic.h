@@ -220,6 +220,7 @@ public:
          void printVar(double e);
          bool leftPosition;
          bool processingInput;
+         LINENUM labelLineNum;
 };
 
 #endif // TINYBASIC_H

@@ -911,6 +911,7 @@ if (lineMap.contains(linenum))
             return line;
 
         if (searchLbl) {
+            labelLineNum = 0;
             if (line[3]=='"') {
                 int i=1;
                 QByteArray ba;
@@ -918,8 +919,9 @@ if (lineMap.contains(linenum))
                     ba.append(line[3+i]);
                     i++;
                 }
-                char *pt = ba.leftJustified(8,0,true).append(0xF5).data();
+                char *pt = ba.leftJustified(7,0,true).append(0xF5).data();
                 if (((VAR_TYPE *)pt)[0] == e) {
+                    labelLineNum = ((LINENUM *)line)[0];
                     return line;
                 }
 
@@ -1011,7 +1013,7 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
             i++;
         }
         txtpos++;
-        char *pt = ba.leftJustified(8,0,true).append(0xF5).data();
+        char *pt = ba.leftJustified(7,0,true).append(0xF5).data();
         return ((VAR_TYPE *)pt)[0];
     }
 
@@ -1026,7 +1028,7 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
                 txtpos++;
             } while(*txtpos >= '0' && *txtpos <= '9');
             break;
-        case 8:
+        case 8: {
             a = atof((const char*)txtpos);
             qWarning()<<"read float:"<<a;
             bool exp = false;
@@ -1038,8 +1040,9 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
                     exp = true;
                 }
             } while ( (*txtpos >= '0' && *txtpos <= '9')||
-                                   *txtpos=='.' ||
-                                   *txtpos=='E' );
+                      *txtpos=='.' ||
+                      *txtpos=='E' );
+        }
             break;
 
         }
@@ -1706,15 +1709,16 @@ execline:
 
 poke:
     {
-        short int value;
-        unsigned char *address;
+#if 0
+        quint16 value;
+        quint16 *address;
 
         // Work out where to put it
         expression_error = 0;
         value = expression();
         if(expression_error)
             goto qwhat;
-        address = (unsigned char *)value;
+        address = value;
 
         // check for a comma
         ignore_blanks();
@@ -1732,6 +1736,7 @@ poke:
         // Check that we are at the end of the statement
         if(*txtpos != NL && *txtpos != ':')
             goto qwhat;
+#endif
     }
     nextStep = RUN_NEXT_STATEMENT;
     return;
@@ -2565,10 +2570,25 @@ void CTinyBasic::go_RETURN() {
 //TODO: extend to Lables like GOTO
 void CTinyBasic::go_GOSUB() {
 
+    qWarning()<<"go_GOSUB";
     if (!CheckRunnig()) return;
 
     expression_error = 0;
-    linenum = expression();
+    expAlpha = false;
+    double e = expression();
+    if(expression_error || *txtpos != NL) {
+        nextStep = QHOW;
+        return;
+    }
+
+    if (checkType(&e)==NUMERIC) {
+        linenum = e;
+    }
+    else {
+        findline(e);
+        linenum = labelLineNum;
+    }
+
     if(!expression_error && *txtpos == NL)
     {
         struct stack_gosub_frame *f;
@@ -2772,7 +2792,10 @@ void CTinyBasic::go_ASSIGNMENT() {
 
     unsigned char* savepos = txtpos;
     if(*txtpos < 'A' || *txtpos > 'Z') {
-        go_PRINT();return;nextStep=QHOW; return; }
+        go_PRINT();
+        return;
+    }
+
     var = (VAR_TYPE *)variables_begin + *txtpos - 'A';
     txtpos++;
 
