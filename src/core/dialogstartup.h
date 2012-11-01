@@ -13,7 +13,7 @@ public:
 	
 private slots:
 //	void on_okButton_clicked();
-	void on_cancelButton_clicked();
+//	void on_cancelButton_clicked();
 	void on_listWidget_itemDoubleClicked();
 	void on_listWidget_2_itemDoubleClicked();
 	void on_listWidget_3_itemDoubleClicked();

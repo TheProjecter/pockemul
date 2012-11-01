@@ -98,7 +98,5 @@ void DialogStartup::create(QString ItemText)
 //		QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
 }
 //
-void DialogStartup::on_cancelButton_clicked()
-{
-}
+
 //
