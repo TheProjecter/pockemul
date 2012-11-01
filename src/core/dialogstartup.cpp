@@ -32,6 +32,7 @@ void DialogStartup::create(QString ItemText)
 {
     int result = EMPTY;
 
+    if (ItemText == "PC 1211")	result = PC1211;
     if (ItemText == "PC 1245")	result = PC1245;
     if (ItemText == "MC 2200")	result = MC2200;
     if (ItemText == "PC 1250")	result = PC1250;

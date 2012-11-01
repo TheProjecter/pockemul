@@ -100,6 +100,15 @@
          </property>
          <item>
           <property name="text">
+           <string>PC 1211</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1211.qrc">
+            <normaloff>:/pc1211/pc-1211.png</normaloff>:/pc1211/pc-1211.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string extracomment="le petit">PC 1245</string>
           </property>
           <property name="icon">
@@ -358,20 +367,11 @@
          </item>
          <item>
           <property name="text">
-           <string>PC-E500</string>
+           <string>Casio FP-200</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/e500.qrc">
-            <normaloff>:/e500/pc-e500.png</normaloff>:/e500/pc-e500.png</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PC-G850V</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/g850v.qrc">
-            <normaloff>:/G850V/g850v.png</normaloff>:/G850V/g850v.png</iconset>
+           <iconset resource="../resources/fp200.qrc">
+            <normaloff>:/fp200/fp200.png</normaloff>:/fp200/fp200.png</iconset>
           </property>
          </item>
          <item>
@@ -381,6 +381,33 @@
           <property name="icon">
            <iconset resource="../resources/x07.qrc">
             <normaloff>:/x07/x07.png</normaloff>:/x07/x07.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC-E500</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/e500.qrc">
+            <normaloff>:/e500/pc-e500.png</normaloff>:/e500/pc-e500.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC-E550</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/e500.qrc">
+            <normaloff>:/e500/pc-e550.png</normaloff>:/e500/pc-e550.png</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PC-G850V</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/g850v.qrc">
+            <normaloff>:/G850V/g850v.png</normaloff>:/G850V/g850v.png</iconset>
           </property>
          </item>
          <item>
@@ -408,15 +435,6 @@
           <property name="icon">
            <iconset resource="../resources/z1.qrc">
             <normaloff>:/z1/z1gr.png</normaloff>:/z1/z1gr.png</iconset>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Casio FP-200</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../resources/fp200.qrc">
-            <normaloff>:/fp200/fp200.png</normaloff>:/fp200/fp200.png</iconset>
           </property>
          </item>
         </widget>
@@ -731,6 +749,7 @@
   <include location="../resources/g850v.qrc"/>
   <include location="../resources/pb1000.qrc"/>
   <include location="../resources/pb2000.qrc"/>
+  <include location="../resources/pc1211.qrc"/>
   <include location="../resources/pc1245.qrc"/>
   <include location="../resources/pc1250.qrc"/>
   <include location="../resources/pc1251.qrc"/>
