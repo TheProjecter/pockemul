@@ -2321,6 +2321,10 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
 void CTinyBasic::go_LIST_NEXT() {
 
     scanLines();
+    if (lineMap.isEmpty()) {
+        nextStep = WARMSTART;
+        return;
+    }
     qWarning()<<"LIST_NEXT:"<<linenum;
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
     if (i.key()==linenum) i++;
@@ -2349,6 +2353,11 @@ void CTinyBasic::go_LIST_NEXT() {
 void CTinyBasic::go_LIST_PREV() {
 
     scanLines();
+
+    if (lineMap.isEmpty()) {
+        nextStep = WARMSTART;
+        return;
+    }
 
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
 
