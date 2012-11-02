@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMutex>
 
 #include "pc1211.h"
 #include "cpu.h"
@@ -93,6 +94,9 @@ bool Cpc1211::run()
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
     pTIMER->state+=10;
+
+
+
 
     if (!printerConnected()) {
         pBASIC->printMode = false;
@@ -338,6 +342,42 @@ void Cpc1211::Editor() {
     }
 }
 
+void Cpc1211::print(unsigned char c) {
+    printerBufferMutex.lock();
+
+    if (c >= 0x80) {
+        QByteArray ba = pBASIC->keywordsMap[c]+" ";
+        printerBuffer.append(ba);
+    }
+    else
+        printerBuffer.append(c);
+
+    if (c=='\n') {
+//        qWarning()<<"PRINTER:"<<printerBuffer;
+//        printerBuffer.clear();
+    }
+
+    printerBufferMutex.unlock();
+}
+
+void Cpc1211::sendToPrinter()
+{
+    printerBufferMutex.lock();
+
+    if (((pCONNECTOR->Get_values()>>1) & 0xFF)==0) {
+        // Send new char
+        if (!printerBuffer.isEmpty()) {
+            char c = printerBuffer.at(0);
+            printerBuffer.remove(0,1);
+            pCONNECTOR->Set_values(c<<1);
+        }
+    }
+
+
+    printerBufferMutex.unlock();
+}
+
+
 void Cpc1211::afficheChar(quint8 c) {
 
 }
@@ -347,4 +387,9 @@ bool Cpc1211::exit()
     CpcXXXX::exit();
 
     return true;
+}
+
+bool Cpc1211::Set_Connector()
+{
+    sendToPrinter();
 }

@@ -58,9 +58,10 @@ int ce126_Mode;
 public:
     bool    rmtSwitch;
     int     internal_device_code;
+    void	Printer(qint8 d);			//printer emulator
 
 private:
-	void	Printer(qint8 d);			//printer emulator
+
 	QImage *charTable;
 	void	pulldownsignal(void);
 	

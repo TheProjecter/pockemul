@@ -10,6 +10,7 @@
 
 #include "tinybasic.h"
 #include "pcxxxx.h"
+#include "pc1211.h"
 #include "Keyb.h"
 #include "Inter.h"
 
@@ -19,6 +20,7 @@ CTinyBasic::CTinyBasic(CPObject *parent):CCPU(parent)
 {
     angleMode = DEGREE;
     runMode = RUN;//STANDARD;
+    pPC1211 = (Cpc1211 *)parent;
 }
 
 
@@ -989,7 +991,7 @@ void CTinyBasic::printline(DEVICE output)
         list_line++;
     }
     list_line++;
-    line_terminator();
+    line_terminator(output);
 }
 
 /***************************************************************************/
@@ -1997,9 +1999,9 @@ unsigned char * CTinyBasic::filenameWord(void)
 }
 
 /***************************************************************************/
-void CTinyBasic::line_terminator(void)
+void CTinyBasic::line_terminator(DEVICE output)
 {
-    outchar(NL);
+    outchar(NL,output);
 //    outchar(CR);
 }
 
@@ -2088,7 +2090,8 @@ void CTinyBasic::outchar(unsigned char c,DEVICE output)
       putchar(c);
   }
   if (output==PRINTER) {
-      qWarning()<<"PRINTER"<<c;
+//      qWarning()<<"PRINTER"<<c;
+      pPC1211->print(c);
   }
 
 }
@@ -2297,11 +2300,13 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
 
     // Find the line
     list_line = findline(linenum);
+    linenum= ((LINENUM *)list_line)[0];
     //    while(list_line != program_end)
     if (list_line != program_end) {
         inLIST = true;
         printline(printMode?PRINTER:DISPLAY);
     }
+
 
 //    waitForRTN = true;
     qWarning()<< "go_LIST(): waitForRTN true";
@@ -2316,7 +2321,7 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
 void CTinyBasic::go_LIST_NEXT() {
 
     scanLines();
-
+    qWarning()<<"LIST_NEXT:"<<linenum;
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
     if (i.key()==linenum) i++;
     if (i ==lineMap.end()){

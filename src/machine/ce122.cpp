@@ -20,13 +20,27 @@ Cce122::Cce122()
 
     delete pKEYB; pKEYB=new Ckeyb(this,"ce122.map");
 
+    printSwitch = true;
+
 }
 
 bool Cce122::run(void)
 {
 
-    if (Power) pCONNECTOR->Set_pin(0,true);
+
+
+    char c = (pCONNECTOR->Get_values()>>1) & 0xFF;
+
+    if (c>0) {
+        if (c=='\n') c=0x0d;
+        RefreshCe126(c);
+        qWarning()<<"CE122:RECEIVED:"<<QString(c);
+        pCONNECTOR->Set_values(0);
+    }
+
+    if (Power & printSwitch) pCONNECTOR->Set_pin(0,true);
     else pCONNECTOR->Set_pin(0,false);
+
 
     return true;
 }
@@ -43,7 +57,14 @@ void Cce122::ComputeKey(void)
     if (pKEYB->LastKey == K_RMT_OFF) {
         rmtSwitch = false;
     }
-
+    if (pKEYB->LastKey == K_PRINT_ON) {
+        printSwitch = true;
+        update();
+    }
+    if (pKEYB->LastKey == K_PRINT_OFF) {
+        printSwitch = false;
+        update();
+    }
 }
 
 bool Cce122::UpdateFinalImage(void) {
@@ -55,7 +76,7 @@ bool Cce122::UpdateFinalImage(void) {
     // PRINTER SWITCH
     painter.begin(FinalImage);
     painter.drawImage(257,257,BackgroundImageBackup->copy(257,257,22,30).mirrored(false,Power));
-
+    painter.drawImage(203,257,BackgroundImageBackup->copy(203,257,22,30).mirrored(false,printSwitch));
     painter.end();
 
     Refresh_Display = true;

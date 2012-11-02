@@ -25,6 +25,8 @@
 
 #define PI 3.141592653
 
+class Cpc1211;
+
 class CKeyword {
 public:
     CKeyword(QString name = QString(),quint8 code = 0);
@@ -77,6 +79,8 @@ public:
 
        CTinyBasic(CPObject *parent = 0);
 
+       Cpc1211 *pPC1211;
+
        virtual	bool	init(void);						//initialize
        virtual	bool	exit(void);						//end
        virtual void	step(void);						//step SC61860
@@ -114,7 +118,7 @@ public:
        void scantable(unsigned char *table,KEYWORD_TYPE type = KEYWORD);
        int isValidFnChar(char c);
        unsigned char *filenameWord();
-       void line_terminator();
+       void line_terminator(DEVICE output=DISPLAY);
        void setup();
        unsigned char breakcheck();
        int inchar();

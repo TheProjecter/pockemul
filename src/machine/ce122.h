@@ -13,6 +13,8 @@ public:
     bool UpdateFinalImage();
     virtual void TurnON();
     virtual void TurnOFF();
+
+    bool printSwitch;
 };
 
 

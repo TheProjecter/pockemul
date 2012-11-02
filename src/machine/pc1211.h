@@ -1,5 +1,6 @@
 #ifndef PC1211_H
 #define PC1211_H
+#include <QMutex>
 
 #include "pcxxxx.h"
 
@@ -16,6 +17,7 @@ public:
     virtual	bool	run(void);					// emulator main
     virtual bool	exit(void);
 
+    virtual bool	Set_Connector(void);
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data) {return true;}
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data) {return true;}
@@ -26,6 +28,7 @@ public:
     Clcdc_pc1211* pLCDC1211;
 
     QByteArray inputBuffer;
+    QByteArray printerBuffer;
 
     CTinyBasic *pBASIC;
     bool DisplayWaitForRTN;
@@ -34,6 +37,10 @@ public:
     bool shiftFlag;
     bool printerConnected();
 
+    void print(unsigned char c);
+
+    QMutex printerBufferMutex;
+    void sendToPrinter();
 };
 
 #endif // PC1211_H
