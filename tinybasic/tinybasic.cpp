@@ -424,7 +424,7 @@ static const unsigned char howmsg[]           =	"How?";
 static const unsigned char sorrymsg[]         = "Sorry!";
 static const unsigned char initmsg[]          = "TinyBasic Plus " kVersion;
 static const unsigned char memorymsg[]        = " BYTES FREE.";
-static const unsigned char breakmsg[]         = "break!";
+static const unsigned char breakmsg[]         = "BREAK AT ";
 static const unsigned char unimplimentedmsg[] = "UNIMPLEMENTED";
 static const unsigned char backspacemsg[]     = "\b \b";
 static const unsigned char indentmsg[]        = "    ";
@@ -1629,8 +1629,13 @@ interperateAtTxtpos:
         if(breakcheck())
         {
             // TODO: BREAK ON LINE MSG
-          printmsg(breakmsg);
-          nextStep = WARMSTART;
+            printmsgNoNL(breakmsg);
+            printnum(*current_line,2);
+            line_terminator();
+            waitForRTN = true;
+            nextStep = WARMSTART;
+            running=false;
+//          nextStep = WARMSTART;
           return;
           goto warmstart;
         }
