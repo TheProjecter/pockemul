@@ -24,6 +24,7 @@ public:
 	
     enum ConnectorType
     {
+        Sharp_9,
         Sharp_15,
         Sharp_11,
         Sharp_60,

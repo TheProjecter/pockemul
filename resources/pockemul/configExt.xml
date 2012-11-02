@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
  <demolauncher>
    <demos>
+   <example idpocket="CE-122" filename="./" name="Sharp ce-122" image=":/EXT/ext/ce-122.png"/>
    <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/EXT/ext/ce-152.png"/>
     <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/EXT/ext/ce-125.jpg"/>
     <example idpocket="MP-220" filename="./" name="Seiko MP-220" image=":/EXT/ext/mp-220.jpg"/>

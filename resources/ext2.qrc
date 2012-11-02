@@ -5,5 +5,6 @@
         <file>ext/fp100-capot.png</file>
         <file>ext/fp100head.png</file>
         <file>ext/md-100.png</file>
+        <file>ext/ce-122.png</file>
     </qresource>
 </RCC>

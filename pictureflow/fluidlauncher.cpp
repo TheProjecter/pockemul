@@ -300,6 +300,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
          if (ItemText == "PC 1600")	result = PC1600;
          if (ItemText == "PC 2500")	result = PC2500;
 
+         if (ItemText == "CE-122")	result = CE122;
          if (ItemText == "CE-125")	result = CE125;
          if (ItemText == "MP-220")	result = MP220;
          if (ItemText == "CE-120P")	result = CE120P;

@@ -359,6 +359,7 @@ void MainWindowPockemul::opensession(QString sessionFN)
 
     objtable["PC-2500"]=PC2500;
 
+    objtable["CE-122"]=CE122;
     objtable["CE-125"]=CE125;
     objtable["MP-220"]=MP220;
     objtable["CE-120P"]=CE120P;

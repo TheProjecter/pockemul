@@ -6,6 +6,7 @@
 #include "Lcdc_pc1211.h"
 #include "tinybasic/tinybasic.h"
 #include "Inter.h"
+#include "Connect.h"
 
 Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
 {
@@ -55,6 +56,9 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     DisplayWaitForRTN = false;
     pLCDC1211 = (Clcdc_pc1211*)pLCDC;
 
+    pCONNECTOR	= new Cconnector(this,9,0,Cconnector::Sharp_9,"Connector 9 pins",false,QPoint(0,107));		publish(pCONNECTOR);
+
+
     cursorPos =0;
 }
 
@@ -101,6 +105,49 @@ bool Cpc1211::run()
 
     Refresh_Display = true;
 
+    switch (pKEYB->LastKey) {
+    case K_SHT: shiftFlag = !shiftFlag;
+        pKEYB->LastKey = 0;
+        break;
+    }
+    if (pKEYB->isShift || shiftFlag) {
+        switch (pKEYB->LastKey) {
+        case K_LA: pKEYB->LastKey = K_DEL; break;
+        case K_RA: pKEYB->LastKey = K_INS; break;
+        case K_UA: pKEYB->LastKey = 0x5C; break;
+        case K_SQR:pKEYB->LastKey = 0x5E; break;
+        case '(': pKEYB->LastKey = '<'; break;
+        case ')': pKEYB->LastKey = '>'; break;
+        case 'Q': pKEYB->LastKey = '!'; break;
+        case 'W': pKEYB->LastKey = '"'; break;
+        case 'E': pKEYB->LastKey = '#'; break;
+        case 'R': pKEYB->LastKey = '$'; break;
+        case 'T': pKEYB->LastKey = '%'; break;
+        case 'Y': pKEYB->LastKey = 0x5D; break;
+        case 'U': pKEYB->LastKey = '?'; break;
+        case 'I': pKEYB->LastKey = ':'; break;
+        case 'O': pKEYB->LastKey = ','; break;
+        case 'P': pKEYB->LastKey = ';'; break;
+
+        case 'A':
+        case 'S':
+        case 'D':
+        case 'F':
+        case 'G':
+            if (pBASIC->CheckMode(CTinyBasic::DEF)) {
+                inputBuffer.clear();
+                shiftFlag=false;
+                pBASIC->commandBuffer.clear();
+                pBASIC->commandBuffer.append("RUN\"").append(pKEYB->LastKey).append("\"\n");
+                pBASIC->inputMode = false;
+                pKEYB->LastKey = 0;
+                return true;
+            }
+            break;
+
+        }
+    }
+
     if (pBASIC->waitForRTN) {
 //        pBASIC->inLIST = false;
 
@@ -112,6 +159,7 @@ bool Cpc1211::run()
         case '-':
         case '/':
         case '*':
+        case 0x5E:
             inputBuffer.clear();
             inputBuffer.append(pBASIC->outputBuffer.left(pBASIC->outputBuffer.indexOf('\n')).trimmed());
             cursorPos=inputBuffer.size();
@@ -167,49 +215,9 @@ bool Cpc1211::run()
 
 void Cpc1211::Editor() {
 
-    switch (pKEYB->LastKey) {
-    case K_SHT: shiftFlag = !shiftFlag;
-        pKEYB->LastKey = 0;
-        break;
-    }
 
-    if (pKEYB->isShift || shiftFlag) {
-        switch (pKEYB->LastKey) {
-        case K_LA: pKEYB->LastKey = K_DEL; break;
-        case K_RA: pKEYB->LastKey = K_INS; break;
-        case K_UA: pKEYB->LastKey = 0x5C; break;
-        case K_SQR:pKEYB->LastKey = 0x5E; break;
-        case '(': pKEYB->LastKey = '<'; break;
-        case ')': pKEYB->LastKey = '>'; break;
-        case 'Q': pKEYB->LastKey = '!'; break;
-        case 'W': pKEYB->LastKey = '"'; break;
-        case 'E': pKEYB->LastKey = '#'; break;
-        case 'R': pKEYB->LastKey = '$'; break;
-        case 'T': pKEYB->LastKey = '%'; break;
-        case 'Y': pKEYB->LastKey = 0x5D; break;
-        case 'U': pKEYB->LastKey = '?'; break;
-        case 'I': pKEYB->LastKey = ':'; break;
-        case 'O': pKEYB->LastKey = ','; break;
-        case 'P': pKEYB->LastKey = ';'; break;
 
-        case 'A':
-        case 'S':
-        case 'D':
-        case 'F':
-        case 'G':
-            if (pBASIC->CheckMode(CTinyBasic::DEF)) {
-                inputBuffer.clear();
-                shiftFlag=false;
-                pBASIC->commandBuffer.clear();
-                pBASIC->commandBuffer.append("RUN\"").append(pKEYB->LastKey).append("\"\n");
-                pBASIC->inputMode = false;
-                pKEYB->LastKey = 0;
-                return;
-            }
-            break;
 
-        }
-    }
 
     if (pKEYB->LastKey==K_SQR) pKEYB->LastKey=0x5B;
 

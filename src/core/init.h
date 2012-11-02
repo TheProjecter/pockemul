@@ -140,6 +140,7 @@ enum Models {
     PC2500,
 
     CE120P,
+    CE122,
     CE125,
     MP220,
     CE126P,
