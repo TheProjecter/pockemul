@@ -179,6 +179,19 @@ void Cpc1211::Editor() {
         case K_RA: pKEYB->LastKey = K_INS; break;
         case K_UA: pKEYB->LastKey = 0x5C; break;
         case K_SQR:pKEYB->LastKey = 0x5E; break;
+        case '(': pKEYB->LastKey = '<'; break;
+        case ')': pKEYB->LastKey = '>'; break;
+        case 'Q': pKEYB->LastKey = '!'; break;
+        case 'W': pKEYB->LastKey = '"'; break;
+        case 'E': pKEYB->LastKey = '#'; break;
+        case 'R': pKEYB->LastKey = '$'; break;
+        case 'T': pKEYB->LastKey = '%'; break;
+        case 'Y': pKEYB->LastKey = 0x5D; break;
+        case 'U': pKEYB->LastKey = '?'; break;
+        case 'I': pKEYB->LastKey = ':'; break;
+        case 'O': pKEYB->LastKey = ','; break;
+        case 'P': pKEYB->LastKey = ';'; break;
+
         }
     }
 

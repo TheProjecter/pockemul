@@ -703,6 +703,7 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
         bool exp = false;
         bool decimalPt = false;
         bool out = false;
+        int expPos = -1;
         for (int digit= 0;digit < 18;digit++) {
             switch (buffer[digit]) {
             case '0':
@@ -716,13 +717,13 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
             case '8':
             case '9':
             case '-': break;
-            case 'E': exp = true; break;
+            case 'E': exp = true; expPos =digit;break;
             case '.': decimalPt = true; break;
             case '+': buffer[digit]=' ';break;
             default: out = true;break;
             }
             if (out) break;
-            if (digit == 13) digit++;   // don't print first Exp digit
+            if (exp && (digit == expPos+2)) digit++;   // don't print first Exp digit
             outchar(buffer[digit]);
         }
         if (!exp && !decimalPt) outchar('.');
