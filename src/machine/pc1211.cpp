@@ -192,6 +192,22 @@ void Cpc1211::Editor() {
         case 'O': pKEYB->LastKey = ','; break;
         case 'P': pKEYB->LastKey = ';'; break;
 
+        case 'A':
+        case 'S':
+        case 'D':
+        case 'F':
+        case 'G':
+            if (pBASIC->CheckMode(CTinyBasic::DEF)) {
+                inputBuffer.clear();
+                shiftFlag=false;
+                pBASIC->commandBuffer.clear();
+                pBASIC->commandBuffer.append("RUN\"").append(pKEYB->LastKey).append("\"\n");
+                pBASIC->inputMode = false;
+                pKEYB->LastKey = 0;
+                return;
+            }
+            break;
+
         }
     }
 

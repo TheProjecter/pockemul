@@ -1625,8 +1625,10 @@ direct:
     }
     qWarning("continue");
 interperateAtTxtpos:
+
         if(breakcheck())
         {
+            // TODO: BREAK ON LINE MSG
           printmsg(breakmsg);
           nextStep = WARMSTART;
           return;
@@ -2236,16 +2238,30 @@ void CTinyBasic::go_NEW() {
 }
 
 void CTinyBasic::go_RUN() {
-    if (!CheckMode(RUN)) return;
+    if (!(CheckMode(RUN) || CheckMode(DEF)) ) return;
 
     running = true;
-    //TODO: add prog line management. Like LIST
     current_line = program_start;
+    //TODO: add prog line management. Like LIST
+#if 0
+
 
     linenum = testnum();
     if (linenum!=0)
         current_line = findline(linenum);
+#else
+    if (*txtpos!=NL) {
+        expression_error = 0;
+        expAlpha = false;
+        double e = expression();
+        if(expression_error ) {
+            nextStep = QHOW;
+            return;
+        }
 
+        current_line = findline(e);
+    }
+#endif
     nextStep = EXECLINE;
 }
 
@@ -2836,7 +2852,7 @@ again:
 }
 
 void CTinyBasic::go_ASSIGNMENT() {
-    if (!CheckMode(RUN)) return;
+    if (!(CheckMode(RUN)||CheckMode(DEF))) return;
 
     qWarning("ASSIGNMENT");
     bool alpha = false;
