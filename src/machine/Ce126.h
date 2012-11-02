@@ -61,13 +61,14 @@ public:
     void	Printer(qint8 d);			//printer emulator
     QImage *charTable;
     int margin;
+    int		top;
 
 private:
 
 
 	void	pulldownsignal(void);
 	
-	int		top;
+
 	int		posX;
 	QByteArray	TextBuffer;
     bool	Previous_BUSY;

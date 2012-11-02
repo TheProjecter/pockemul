@@ -127,7 +127,7 @@ public:
        unsigned char popb();
        void printnum(VAR_TYPE num, int size=8, DEVICE output=DISPLAY);
        void printUnum(unsigned int num);
-       void printmsgNoNL(const unsigned char *msg);
+       void printmsgNoNL(const unsigned char *msg, DEVICE output=DISPLAY);
        void loop();
        VAR_TYPE expression(ExpTYP type=NUMERIC);
        unsigned char print_quoted_string(DEVICE output=DISPLAY);
@@ -223,7 +223,7 @@ public:
          bool CheckMode(Mode mode);
          bool expAlpha;
          ExpTYP checkType(double *var);
-         void printVar(double e);
+         void printVar(double e, DEVICE output=DISPLAY);
          bool leftPosition;
          bool processingInput;
          LINENUM labelLineNum;

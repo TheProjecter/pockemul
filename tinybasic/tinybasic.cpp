@@ -729,7 +729,7 @@ void CTinyBasic::printnum(VAR_TYPE num,int size,DEVICE output)
             if (exp && (digit == expPos+2)) digit++;   // don't print first Exp digit
             outchar(buffer[digit],output);
         }
-        if (!exp && !decimalPt) outchar('.');
+        if (!exp && !decimalPt) outchar('.',output);
 
     }
     }
@@ -775,11 +775,11 @@ unsigned short CTinyBasic::testnum(void)
 }
 
 /***************************************************************************/
-void CTinyBasic::printmsgNoNL(const unsigned char *msg)
+void CTinyBasic::printmsgNoNL(const unsigned char *msg,DEVICE output)
 {
     while(*msg)
     {
-        outchar(*msg);
+        outchar(*msg,output);
         msg++;
     }
 }
@@ -1776,6 +1776,7 @@ interperateAtTxtpos:
     case KW_DEGREE : angleMode = DEGREE; nextStep = RUN_NEXT_STATEMENT; return; break;
     case KW_GRAD   : angleMode = GRAD  ; nextStep = RUN_NEXT_STATEMENT; return; break;
     case KW_DEFAULT:
+        qWarning()<<"Default Assignment :"<<*txtpos;
         nextStep = ASSIGNMENT;
         return;
     default:
@@ -1801,10 +1802,13 @@ execline:
     txtpos = current_line+sizeof(LINENUM)+sizeof(char);
     // discard label
     if (*txtpos=='"') {
+        qWarning()<<"Skip Label";
         txtpos++;
         while (*txtpos!='"') txtpos++;
         txtpos++;
     }
+    while(*txtpos == ':') txtpos++;
+
     nextStep = INTERPERATEATTXTPOS;
     return;
 
@@ -2419,7 +2423,7 @@ void CTinyBasic::go_PAUSE() {
 
     qWarning()<<"PAUSE";
     waitState = pPC->pTIMER->state;
-    pauseFlag = true;
+    if (printMode==DISPLAY) pauseFlag = true;
     go_PRINT();
 }
 
@@ -2461,25 +2465,27 @@ CTinyBasic::ExpTYP CTinyBasic::checkType(VAR_TYPE *var) {
 
 }
 
-void CTinyBasic::printVar(VAR_TYPE e) {
+void CTinyBasic::printVar(VAR_TYPE e,DEVICE output) {
     qWarning()<<"printVar"<<e;
     if (checkType(&e)==STRING) {
         qWarning()<<"print string:";
         QByteArray ba((const char*)&e, sizeof(e));
         leftPosition = true;
-        printmsgNoNL((unsigned char*)ba.left(7).data());
+        printmsgNoNL((unsigned char*)ba.left(7).data(),output);
     }
     else {
         leftPosition = false;
-        printnum(e);
+        printnum(e,8,output);
     }
 
-    waitForRTN = true;
+    if (printMode==DISPLAY) waitForRTN = true;
 }
 
 void CTinyBasic::go_PRINT() {
 
 //    if (!CheckRunnig()) return;
+
+    DEVICE output = printMode?PRINTER:DISPLAY;
 
     outputBuffer.clear();
     leftPosition=false;
@@ -2487,7 +2493,7 @@ void CTinyBasic::go_PRINT() {
     // If we have an empty list then just put out a NL
     if(*txtpos == ':' )
     {
-        line_terminator();
+        line_terminator(output);
         txtpos++;
         nextStep = RUN_NEXT_STATEMENT;
         return;
@@ -2507,7 +2513,7 @@ void CTinyBasic::go_PRINT() {
             go_USING();
 
         }
-        else if(print_quoted_string())
+        else if(print_quoted_string(output))
         {
             leftPosition = true;
         }
@@ -2521,7 +2527,7 @@ void CTinyBasic::go_PRINT() {
             expression_error = 0;
             expAlpha=false;
             e = expression();
-            qWarning()<<"exp:"<<e;
+//            qWarning()<<"exp:"<<e;
             if(expression_error){
                 errorNumber = 1;
                 nextStep = QWHAT;
@@ -2531,7 +2537,7 @@ void CTinyBasic::go_PRINT() {
             if (expAlpha && (e == 0)) {
                 ((unsigned char *)&e)[7]=0xF5;
             }
-            printVar(e);
+            printVar(e,output);
 //            if (checkType(&e)==STRING) {
 //                QByteArray ba((const char*)&e, sizeof(e));
 //                leftPosition = true;
@@ -2556,7 +2562,7 @@ void CTinyBasic::go_PRINT() {
             if (!leftPosition) {
                 outputBuffer = outputBuffer.rightJustified(24,' ');
             }
-            line_terminator();	// The end of the print statement
+            line_terminator(output);	// The end of the print statement
             // Left or right justify ?
 
             break;
@@ -2566,7 +2572,7 @@ void CTinyBasic::go_PRINT() {
             return;
         }
     }
-    waitForRTN = true;
+    if (printMode==DISPLAY) waitForRTN = true;
     qWarning()<<"Wait for RTN , inputMode false";
 //    inputMode = false;
     nextStep = RUN_NEXT_STATEMENT;

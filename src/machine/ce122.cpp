@@ -77,9 +77,13 @@ bool Cce122::run(void)
     char c = (pCONNECTOR->Get_values()>>1) & 0xFF;
 
     if (c>0) {
-        if (c=='\n') c=0x0d;
+//        qWarning()<<"CE122:RECEIVED:"<<QString(c)<<"-"<<(int)c<<"--y="<<top;
+        if (c=='\n') {
+            c=0x0d;
+//            qWarning()<<"CR RECEIVED";
+        }
         RefreshCe126(c);
-        qWarning()<<"CE122:RECEIVED:"<<QString(c);
+
         pCONNECTOR->Set_values(0);
     }
 

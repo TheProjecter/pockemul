@@ -14,6 +14,7 @@
 #include <QSound>
 #include <QFileDialog>
 #include <QThread>
+#include <QDebug>
 
 #include "common.h"
 
@@ -130,6 +131,7 @@ void Cce126::RefreshCe126(qint8 data)
 	if (data == 0x0d){
 		top+=10; 
 		posX=0;
+//        qWarning()<<"CR PRINTED";
 	}
 	else
 	{
