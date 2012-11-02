@@ -315,6 +315,11 @@ static unsigned char keywords[] = {
     'A','R','E','A','D'+0x80,
     'D','R','E','A','D'+0x80,
     'R','N','D'+0x80,
+    'S','G','N'+0x80,
+    'I','N','T'+0x80,
+    'D','E','G'+0x80,
+    'D','M','S'+0x80,
+    0x5B+0x80,      // Square root
 
 
     0
@@ -375,6 +380,11 @@ enum {
     KF_AREAD,
     KF_DREAD,
     KF_RND,
+    KF_SGN,
+    KF_INT,
+    KF_DEG,
+    KF_DMS,
+    KF_SQR,
 
 
   KW_DEFAULT /* always the final one*/
@@ -1049,12 +1059,18 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
         return a;
     }
 
+    if (txtpos[0] == 0x5C) {
+        txtpos++;
+        return M_PI;
+    }
+
     // Is it a function or variable reference?
-    if(txtpos[0] >= 'A' && txtpos[0] <= 'Z')
+    if ((txtpos[0] >= 'A' && txtpos[0] <= 'Z') ||
+            (txtpos[0]==0x5B))// Hack for SQR Function.
     {
         VAR_TYPE a;
         // Is it a variable reference (single alpha)
-        if(txtpos[1] < 'A' || txtpos[1] > 'Z')
+        if (  (txtpos[0]!=0x5B)&&(txtpos[1] < 'A' || txtpos[1] > 'Z'))
         {
             unsigned char var = *txtpos;
             expAlpha = false;
@@ -1145,6 +1161,16 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
         }
         case KF_EXP:
             return exp(a);
+        case KF_SGN:
+            if (a<0) return -1;
+            if (a>0) return 1;
+            return 0;
+        case KF_INT:
+            return floor(a);
+        case KF_SQR:
+            double r= sqrt(a);
+            if (errno==EDOM) goto expr4_error;
+            return r;
             //        case FUNC_AREAD:
             //            return analogRead( a );
             //        case FUNC_DREAD:

@@ -1,6 +1,7 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>pc1211</model>
 <Keyboard>
+    <KEY description="Square Root" height="16" left="259" masterscancode="0x00" modifier="" scancode="0xe3" top="119" width="25"/>
     <KEY description="-" height="16" left="542" masterscancode="0x00" modifier="" scancode="0x2d" top="180" width="25"/>
     <KEY description="*" height="16" left="539" masterscancode="0x00" modifier="" scancode="0x2a" top="145" width="25"/>
     <KEY description="." height="16" left="462" masterscancode="0x00" modifier="" scancode="0x2e" top="215" width="25"/>

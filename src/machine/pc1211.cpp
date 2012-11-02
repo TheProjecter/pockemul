@@ -177,9 +177,11 @@ void Cpc1211::Editor() {
         switch (pKEYB->LastKey) {
         case K_LA: pKEYB->LastKey = K_DEL; break;
         case K_RA: pKEYB->LastKey = K_INS; break;
+        case K_UA: pKEYB->LastKey = 0x5C; break;
         }
     }
 
+    if (pKEYB->LastKey==K_SQR) pKEYB->LastKey=0x5B;
 
     if (pKEYB->LastKey>0) shiftFlag = false;
 
