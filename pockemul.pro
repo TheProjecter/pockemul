@@ -630,7 +630,8 @@ OTHER_FILES += \
     resources/keymap/z1.map \
     resources/keymap/fp200.map \
     resources/keymap/pc1260.map \
-    resources/keymap/pc1211.map
+    resources/keymap/pc1211.map \
+    resources/keymap/ce122.map
 
 
 

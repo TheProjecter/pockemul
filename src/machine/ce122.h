@@ -7,6 +7,12 @@ class Cce122:public Cce126
 {
 public:
     Cce122();
+    bool run();
+    void ComputeKey();
+
+    bool UpdateFinalImage();
+    virtual void TurnON();
+    virtual void TurnOFF();
 };
 
 

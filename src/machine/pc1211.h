@@ -32,6 +32,8 @@ public:
     void Editor();
     int cursorPos;
     bool shiftFlag;
+    bool printerConnected();
+
 };
 
 #endif // PC1211_H

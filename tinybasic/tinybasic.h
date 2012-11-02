@@ -55,6 +55,7 @@ class CTinyBasic : public CCPU
     Q_OBJECT
 public:
 
+    enum DEVICE{DISPLAY,PRINTER};
     enum ExpTYP{NUMERIC,STRING,UNDEFINED};
     enum Mode{RUN,PRO,RESERVE,DEF};
     enum Action{INITIAL,RUNNING,UP_ARROW,DOWN_ARROW,ENTER,BREAK,NO_ACTION};
@@ -108,7 +109,7 @@ public:
        void clearOutput();
        QByteArray convertToDisplay(QByteArray ba);
        QByteArray go_PI();
-       void outchar(unsigned char c);
+       void outchar(unsigned char c, DEVICE output=DISPLAY);
        void ignore_blanks();
        void scantable(unsigned char *table,KEYWORD_TYPE type = KEYWORD);
        int isValidFnChar(char c);
@@ -120,15 +121,15 @@ public:
        unsigned short testnum();
        void pushb(unsigned char b);
        unsigned char popb();
-       void printnum(VAR_TYPE num, int size=8);
+       void printnum(VAR_TYPE num, int size=8, DEVICE output=DISPLAY);
        void printUnum(unsigned int num);
        void printmsgNoNL(const unsigned char *msg);
        void loop();
        VAR_TYPE expression(ExpTYP type=NUMERIC);
-       unsigned char print_quoted_string();
+       unsigned char print_quoted_string(DEVICE output=DISPLAY);
        unsigned char *findline(double);
        void toUppercaseBuffer();
-       void printline();
+       void printline(DEVICE output=DISPLAY);
        VAR_TYPE expr5(ExpTYP type=NUMERIC);
        VAR_TYPE expr4(ExpTYP type=NUMERIC);
        VAR_TYPE expr3(ExpTYP type=NUMERIC);
@@ -222,6 +223,7 @@ public:
          bool leftPosition;
          bool processingInput;
          LINENUM labelLineNum;
+         bool printMode;
 
 };
 

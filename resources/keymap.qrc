@@ -30,5 +30,6 @@
         <file>keymap/pc1260.map</file>
         <file>keymap/x710.map</file>
         <file>keymap/pc1211.map</file>
+        <file>keymap/ce122.map</file>
     </qresource>
 </RCC>

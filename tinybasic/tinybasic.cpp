@@ -445,6 +445,7 @@ bool CTinyBasic::init()
     processingInput = false;
     breakFlag = false;
     errorNumber = 0;
+    printMode = false;
 
     inLIST = false;
     alsoWait = false;
@@ -664,7 +665,7 @@ unsigned char CTinyBasic::popb()
 }
 
 /***************************************************************************/
-void CTinyBasic::printnum(VAR_TYPE num,int size)
+void CTinyBasic::printnum(VAR_TYPE num,int size,DEVICE output)
 {
 
     switch (size) {
@@ -675,7 +676,7 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
         if(num < 0)
         {
             num = -num;
-            outchar('-');
+            outchar('-',output);
         }
         do {
             pushb(((int)num)%10+'0');
@@ -686,7 +687,7 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
 
         while(digits > 0)
         {
-            outchar(popb());
+            outchar(popb(),output);
             digits--;
         }
     }
@@ -724,7 +725,7 @@ void CTinyBasic::printnum(VAR_TYPE num,int size)
             }
             if (out) break;
             if (exp && (digit == expPos+2)) digit++;   // don't print first Exp digit
-            outchar(buffer[digit]);
+            outchar(buffer[digit],output);
         }
         if (!exp && !decimalPt) outchar('.');
 
@@ -782,7 +783,7 @@ void CTinyBasic::printmsgNoNL(const unsigned char *msg)
 }
 
 /***************************************************************************/
-unsigned char CTinyBasic::print_quoted_string(void)
+unsigned char CTinyBasic::print_quoted_string(DEVICE output)
 {
     int i=0;
     unsigned char delim = *txtpos;
@@ -801,7 +802,7 @@ unsigned char CTinyBasic::print_quoted_string(void)
     // Print the characters
     while(*txtpos != delim)
     {
-        outchar(*txtpos);
+        outchar(*txtpos,output);
         txtpos++;
     }
     txtpos++; // Skip over the last delimiter
@@ -969,22 +970,22 @@ void CTinyBasic::toUppercaseBuffer(void)
 }
 
 /***************************************************************************/
-void CTinyBasic::printline()
+void CTinyBasic::printline(DEVICE output)
 {
     LINENUM line_num;
 
     line_num = *((LINENUM *)(list_line));
     list_line += sizeof(LINENUM) + sizeof(char);
 
-    waitForRTN = true;
+    if (output == DISPLAY) waitForRTN = true;
     qWarning()<<"Wait for RTN ";
 
     // Output the line */
-    printnum(line_num,2);
-    outchar(':');
+    printnum(line_num,2,output);
+    outchar(':',output);
     while(*list_line != NL)
     {
-        outchar(*list_line);
+        outchar(*list_line,output);
         list_line++;
     }
     list_line++;
@@ -2075,15 +2076,20 @@ int CTinyBasic::inchar()
 }
 
 /***********************************************************/
-void CTinyBasic::outchar(unsigned char c)
+void CTinyBasic::outchar(unsigned char c,DEVICE output)
 {
   if( inhibitOutput ) return;
 
-    outputChar(QByteArray(1,c).toUpper());
-    if (c=='\n') {
-//        waitForRTN = true;
-    }
-    putchar(c);
+  if (output == DISPLAY) {
+      outputChar(QByteArray(1,c).toUpper());
+      if (c=='\n') {
+          //        waitForRTN = true;
+      }
+      putchar(c);
+  }
+  if (output==PRINTER) {
+      qWarning()<<"PRINTER"<<c;
+  }
 
 }
 
@@ -2294,12 +2300,17 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
     //    while(list_line != program_end)
     if (list_line != program_end) {
         inLIST = true;
-        printline();
+        printline(printMode?PRINTER:DISPLAY);
     }
 
-    waitForRTN = true;
+//    waitForRTN = true;
     qWarning()<< "go_LIST(): waitForRTN true";
-    nextStep = WARMSTART;
+    if (printMode == DISPLAY) {
+        nextStep = WARMSTART;
+    }
+    if (printMode == PRINTER) {
+        nextStep = LIST_NEXT;
+    }
 }
 
 void CTinyBasic::go_LIST_NEXT() {
@@ -2309,16 +2320,25 @@ void CTinyBasic::go_LIST_NEXT() {
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
     if (i.key()==linenum) i++;
     if (i ==lineMap.end()){
+        if (printMode) {
+            nextStep = WARMSTART;
+            return;
+        }
         i--;
     }
     qWarning()<<"go_LIST_NEXT(): "<<i.key();
     linenum = i.key();
     list_line = i.value();
     inLIST = true;
-    printline();
+    printline(printMode?PRINTER:DISPLAY);
 
-    waitForRTN = true;
-    nextStep = WARMSTART;
+//    waitForRTN = true;
+    if (printMode == DISPLAY) {
+        nextStep = WARMSTART;
+    }
+    if (printMode == PRINTER) {
+        nextStep = LIST_NEXT;
+    }
 }
 
 void CTinyBasic::go_LIST_PREV() {

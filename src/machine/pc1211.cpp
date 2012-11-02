@@ -74,18 +74,45 @@ bool Cpc1211::init()
 
     shiftFlag = false;
 
+
     return true;
+}
+
+
+bool Cpc1211::printerConnected(void) {
+    if (pCONNECTOR->Get_pin(0))
+        return true;
+    return false;
 }
 
 bool Cpc1211::run()
 {
+    qint64 lastBreakPress=0;
+
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
 
     pTIMER->state+=10;
 
+    if (!printerConnected()) {
+        pBASIC->printMode = false;
+    }
+
     if (pKEYB->LastKey==K_BRK) {
-        pBASIC->breakFlag = true;
+        if (pBASIC->CheckRunnig()) {
+            pBASIC->breakFlag = true;
+        }
+        else {
+            if (lastBreakPress==0) lastBreakPress=pTIMER->state;
+            if (pTIMER->msElapsed(lastBreakPress)<1500) {
+                // Check if Printer is connected
+                if (printerConnected()) {
+                   pBASIC->printMode = true;
+                    qWarning()<<"PRINT MODE ON";
+                }
+                else pBASIC->printMode = false;
+            }
+        }
         pKEYB->LastKey = 0;
     }
 
