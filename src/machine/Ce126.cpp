@@ -44,6 +44,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     ce126display= 0;
     bells		= 0;
     charTable = 0;
+    margin = 25;
     ToDestroy	= false;
     BackGroundFname	= ":/EXT/ext/ce-126p.png";
     setcfgfname("ce126p");
@@ -135,7 +136,7 @@ void Cce126::RefreshCe126(qint8 data)
 		painter.begin(ce126buf);
 		int x = ((data>>4) & 0x0F)*6;
 		int y = (data & 0x0F) * 8;
-		painter.drawImage(	QPointF( 25 + (7 * posX),top),
+        painter.drawImage(	QPointF( margin + (7 * posX),top),
 							*charTable,
 							QRectF( x , y , 5,7));
 		posX++;

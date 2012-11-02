@@ -15,6 +15,7 @@ public:
     virtual void TurnOFF();
 
     bool printSwitch;
+    bool init();
 };
 
 

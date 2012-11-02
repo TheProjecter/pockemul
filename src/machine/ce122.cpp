@@ -1,9 +1,13 @@
 #include <QPainter>
+#include <QImage>
 #include <QDebug>
 
 #include "ce122.h"
 #include "Connect.h"
 #include "Keyb.h"
+#include "init.h"
+#include "Log.h"
+#include "paperwidget.h"
 
 Cce122::Cce122()
 {								//[constructor]
@@ -23,6 +27,47 @@ Cce122::Cce122()
     printSwitch = true;
 
 }
+
+bool Cce122::init(void)
+{
+    CPObject::init();
+
+    setfrequency( 0);
+
+    WatchPoint.add(&pCONNECTOR_value,64,9,this,"Standard 11pins connector");
+    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
+
+    AddLog(LOG_PRINTER,tr("PRT initializing..."));
+
+    if(pKEYB)	pKEYB->init();
+    if(pTIMER)	pTIMER->init();
+
+    // Create CE-122 Paper Image
+    // The final paper image is 207 x 149 at (277,0) for the ce125
+    ce126buf	= new QImage(QSize(130, 3000),QImage::Format_ARGB32);
+    ce126display= new QImage(QSize(130, 149),QImage::Format_ARGB32);
+    margin = 5;
+
+
+
+    charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+
+//	bells	 = new QSound("ce.wav");
+
+// Create a paper widget
+
+    paperWidget = new CpaperWidget(PaperPos(),ce126buf,this);
+    paperWidget->updated = true;
+    paperWidget->show();
+
+    // Fill it blank
+    clearPaper();
+
+
+
+    return true;
+}
+
 
 bool Cce122::run(void)
 {

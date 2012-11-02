@@ -59,10 +59,12 @@ public:
     bool    rmtSwitch;
     int     internal_device_code;
     void	Printer(qint8 d);			//printer emulator
+    QImage *charTable;
+    int margin;
 
 private:
 
-	QImage *charTable;
+
 	void	pulldownsignal(void);
 	
 	int		top;

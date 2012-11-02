@@ -983,11 +983,51 @@ void CTinyBasic::printline(DEVICE output)
     qWarning()<<"Wait for RTN ";
 
     // Output the line */
+    if (output==PRINTER) {
+        if (linenum<100) outchar(0x20,output);
+        if (linenum<10) outchar(0x20,output);
+    }
     printnum(line_num,2,output);
     outchar(':',output);
+    int charNb=0;
     while(*list_line != NL)
     {
-        outchar(*list_line,output);
+
+        if (output==DISPLAY) {
+            outchar(*list_line,output);
+        }
+        if (output==PRINTER) {
+            if (*list_line >= 0x80) {
+                QByteArray ba = keywordsMap[*list_line]+" ";
+                for(int i=0;i<ba.size();i++) {
+                    outchar(ba.at(i),output);
+                    charNb++;
+                    if (charNb==12) {
+                        outchar(NL,output);
+                        outchar(' ',output);
+                        outchar(' ',output);
+                        outchar(' ',output);
+                        outchar(' ',output);
+                        charNb=0;
+                    }
+
+                }
+            }
+            else {
+                outchar(*list_line,output);
+                charNb++;
+                if (charNb==12) {
+                    outchar(NL,output);
+                    outchar(' ',output);
+                    outchar(' ',output);
+                    outchar(' ',output);
+                    outchar(' ',output);
+                    charNb=0;
+                }
+
+            }
+
+        }
         list_line++;
     }
     list_line++;
