@@ -129,6 +129,7 @@ public:
        unsigned char *findline(double);
        void toUppercaseBuffer();
        void printline();
+       VAR_TYPE expr5(ExpTYP type=NUMERIC);
        VAR_TYPE expr4(ExpTYP type=NUMERIC);
        VAR_TYPE expr3(ExpTYP type=NUMERIC);
        VAR_TYPE expr2(ExpTYP type=NUMERIC);
@@ -221,6 +222,7 @@ public:
          bool leftPosition;
          bool processingInput;
          LINENUM labelLineNum;
+
 };
 
 #endif // TINYBASIC_H

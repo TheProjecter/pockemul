@@ -178,6 +178,7 @@ void Cpc1211::Editor() {
         case K_LA: pKEYB->LastKey = K_DEL; break;
         case K_RA: pKEYB->LastKey = K_INS; break;
         case K_UA: pKEYB->LastKey = 0x5C; break;
+        case K_SQR:pKEYB->LastKey = 0x5E; break;
         }
     }
 

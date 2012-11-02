@@ -991,7 +991,7 @@ void CTinyBasic::printline()
 }
 
 /***************************************************************************/
-VAR_TYPE CTinyBasic::expr4(ExpTYP type)
+VAR_TYPE CTinyBasic::expr5(ExpTYP type)
 {
     qWarning()<<"Exp4";
     // fix provided by J?rg Wullschleger wullschleger@gmail.com
@@ -1000,7 +1000,7 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
 
     if( *txtpos == '-' ) {
         txtpos++;
-        return -expr4();
+        return -expr5();
     }
     // end fix
 
@@ -1117,7 +1117,7 @@ VAR_TYPE CTinyBasic::expr4(ExpTYP type)
 
         }
         else
-            a= expr4();
+            a= expr5();
 
 
         switch(f)
@@ -1222,6 +1222,31 @@ double CTinyBasic::convertFromRad(double angle) {
 
     return angle;
 }
+
+/***************************************************************************/
+VAR_TYPE CTinyBasic::expr4(ExpTYP type)
+{
+    VAR_TYPE a,b;
+
+    a = expr5(type);
+
+    ignore_blanks(); // fix for eg:  100 a = a + 1
+
+    if (type == STRING) return a;
+
+    while(1)
+    {
+        if(*txtpos == '^')
+        {
+            txtpos++;
+            b = expr5();
+            a = pow(a,b);
+        }
+        else
+            return a;
+    }
+}
+
 /***************************************************************************/
 VAR_TYPE CTinyBasic::expr3(ExpTYP type)
 {
