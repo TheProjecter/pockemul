@@ -50,7 +50,7 @@ bool Cce122::init(void)
 
 
 
-    charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+    charTable = new QImage(":/EXT/ext/ce122table.bmp");
 
 //	bells	 = new QSound("ce.wav");
 

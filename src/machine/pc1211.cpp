@@ -145,7 +145,7 @@ bool Cpc1211::run()
         switch (pKEYB->LastKey) {
         case K_LA: pKEYB->LastKey = K_DEL; break;
         case K_RA: pKEYB->LastKey = K_INS; break;
-        case K_UA: pKEYB->LastKey = 0x5C; break;
+        case K_UA: pKEYB->LastKey = 0x19; break;
         case K_SQR:pKEYB->LastKey = 0x5E; break;
         case '(': pKEYB->LastKey = '<'; break;
         case ')': pKEYB->LastKey = '>'; break;
@@ -154,7 +154,7 @@ bool Cpc1211::run()
         case 'E': pKEYB->LastKey = '#'; break;
         case 'R': pKEYB->LastKey = '$'; break;
         case 'T': pKEYB->LastKey = '%'; break;
-        case 'Y': pKEYB->LastKey = 0x5D; break;
+        case 'Y': pKEYB->LastKey = 0x5C; break;
         case 'U': pKEYB->LastKey = '?'; break;
         case 'I': pKEYB->LastKey = ':'; break;
         case 'O': pKEYB->LastKey = ','; break;
@@ -250,7 +250,7 @@ void Cpc1211::Editor() {
 
 
 
-    if (pKEYB->LastKey==K_SQR) pKEYB->LastKey=0x5B;
+    if (pKEYB->LastKey==K_SQR) pKEYB->LastKey=0x18;
 
     if (pKEYB->LastKey>0) shiftFlag = false;
 

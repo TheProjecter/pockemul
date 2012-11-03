@@ -321,7 +321,7 @@ static unsigned char keywords[] = {
     'I','N','T'+0x80,
     'D','E','G'+0x80,
     'D','M','S'+0x80,
-    0x5B+0x80,      // Square root
+    0x18+0x80,      // Square root
 
 
     0
@@ -1103,18 +1103,18 @@ VAR_TYPE CTinyBasic::expr5(ExpTYP type)
         return a;
     }
 
-    if (txtpos[0] == 0x5C) {
+    if (txtpos[0] == 0x19) {
         txtpos++;
         return M_PI;
     }
 
     // Is it a function or variable reference?
     if ((txtpos[0] >= 'A' && txtpos[0] <= 'Z') ||
-            (txtpos[0]==0x5B))// Hack for SQR Function.
+            (txtpos[0]==0x18))// Hack for SQR Function.
     {
         VAR_TYPE a;
         // Is it a variable reference (single alpha)
-        if (  (txtpos[0]!=0x5B)&&(txtpos[1] < 'A' || txtpos[1] > 'Z'))
+        if (  (txtpos[0]!=0x18)&&(txtpos[1] < 'A' || txtpos[1] > 'Z'))
         {
             unsigned char var = *txtpos;
             expAlpha = false;
