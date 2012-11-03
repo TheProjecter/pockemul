@@ -286,7 +286,8 @@ HEADERS += src/core/Connect.h \
     src/core/version.h \
     tinybasic/tinybasic.h \
     src/machine/pc1211.h \
-    src/lcd/Lcdc_pc1211.h
+    src/lcd/Lcdc_pc1211.h \
+    src/machine/ce122.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -523,7 +524,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/qcommandline.cpp \
     tinybasic/tinybasic.cpp \
     src/machine/pc1211.cpp \
-    src/lcd/Lcdc_pc1211.cpp
+    src/lcd/Lcdc_pc1211.cpp \
+    src/machine/ce122.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
