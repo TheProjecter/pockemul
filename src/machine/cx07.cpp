@@ -212,9 +212,12 @@ bool Cx07::run() {
 
     if ( ((CZ80*)pCPU)->z80.r.iff &0x01)
     {
-        if (!pT6834->Clavier.isEmpty()) {
-            Port_FX.R.F1 = pT6834->Clavier.at(0);
-            pT6834->Clavier.remove(0,1);
+//        if (!pT6834->Clavier.isEmpty()) {
+        if (pT6834->LastKey>0) {
+//            Port_FX.R.F1 = pT6834->Clavier.at(0);
+//            pT6834->Clavier.remove(0,1);
+            Port_FX.R.F1 = pT6834->LastKey;
+            pT6834->LastKey = 0;
             Port_FX.R.F0  = 0x00;
             Port_FX.R.F2 |= 0x01;
             IT_T6834      = 0;

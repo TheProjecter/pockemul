@@ -96,6 +96,7 @@ public:
     UINT8 *mem;
 
     QByteArray Clavier;
+    quint8 LastKey;
 
     bool kana,graph,shift,ctrl;
     bool curOnOff;

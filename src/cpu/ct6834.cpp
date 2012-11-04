@@ -4,6 +4,7 @@
 #include <QTime>
 #include <QPainter>
 #include <QKeyEvent>
+#include <QDebug>
 
 #include "ct6834.h"
 #include "Lcdc.h"
@@ -403,12 +404,19 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
       break;
   case 0x28:	//test chr
      //TODO: TKEY Not working
-     if (Clavier.contains(toupper(Send_Cmd_T6834[1]))) Rsp[0] = 0;
+ {
+     UINT8 c=toupper(Send_Cmd_T6834[1]);
+//     qWarning()<<"TKEY"<<c<<(Clavier.contains(c)?" - YES":" - NO");
+     if (Clavier.contains(toupper(Send_Cmd_T6834[1]))) {
+         Rsp[0] = 0;
+         Clavier.clear();
+     }
      else Rsp[0] = 0xFF;
 //      {
 //          UINT8 idx = kb_get_index(m_in.data[m_in.read++]);
 //          m_out.data[m_out.write++] = (input_port_read(machine, x07_keycodes[idx].tag) & x07_keycodes[idx].mask) ? 0x00 : 0xff;
 //      }
+ }
       break;
 
   case 0x29:	//init sec
@@ -843,6 +851,7 @@ void CT6834::Reset()
 void CT6834::AddKey (UINT8 Key)
 {
     Clavier.append(Key);
+    LastKey = Key;
 }
 
 void CT6834::AddFKey (UINT8 F_Key)
@@ -884,6 +893,9 @@ void CT6834::keyRelease(QKeyEvent *event)
         General_Info.Strig = 0xff;
         break;
     }
+//    while (Clavier.indexOf(event->key())>=0) {
+//        Clavier.remove(Clavier.indexOf(event->key()),1);
+//    }
     event->accept();
 }
 
