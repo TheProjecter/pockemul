@@ -43,6 +43,10 @@ int main(int argc, char *argv[])
     qWarning()<<QApplication::libraryPaths();
 #endif
 
+    QDir home = QDir::home();
+    if (!home.exists("pockemul")) {
+        home.mkpath("pockemul/documents");
+    }
 #if 0
 
     QFeedbackHapticsEffect rumble;

@@ -403,20 +403,12 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
   */
       break;
   case 0x28:	//test chr
-     //TODO: TKEY Not working
- {
-     UINT8 c=toupper(Send_Cmd_T6834[1]);
-//     qWarning()<<"TKEY"<<c<<(Clavier.contains(c)?" - YES":" - NO");
      if (Clavier.contains(toupper(Send_Cmd_T6834[1]))) {
          Rsp[0] = 0;
          Clavier.clear();
      }
      else Rsp[0] = 0xFF;
-//      {
-//          UINT8 idx = kb_get_index(m_in.data[m_in.read++]);
-//          m_out.data[m_out.write++] = (input_port_read(machine, x07_keycodes[idx].tag) & x07_keycodes[idx].mask) ? 0x00 : 0xff;
-//      }
- }
+
       break;
 
   case 0x29:	//init sec

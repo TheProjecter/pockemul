@@ -6,12 +6,14 @@
     </model>
     <model value="pc1245">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1245_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1245_OM_GB.pdf"/>
     </model>
     <model value="pc1250">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1250_e.html"/>
     </model>
     <model value="pc1251">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1251_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1251_OM_GB.pdf"/>
     </model>
     <model value="pc1255">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1255_e.html"/>
@@ -36,6 +38,8 @@
     </model>
     <model value="pc1360">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1360_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1360_OM_GB.pdf"/>
+        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1360_OM_DE.pdf"/>
         </model>
     <model value="pc1401">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1401_e.html"/>

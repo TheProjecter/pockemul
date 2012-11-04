@@ -2,6 +2,7 @@
 #include <QString>
 #include <QPainter>
 #include <iostream>
+#include <QtNetwork>
 
 
 /** \mainpage
@@ -36,6 +37,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "Lcdc.h"
 #include "clink.h"
 #include "sc61860.h"
+#include "downloadmanager.h"
 
 
 //#include "lfhex/hexGui.h"
@@ -103,6 +105,9 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
+
+    downloadManager = new DownloadManager();
+    downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
 
 qWarning("create");
 
@@ -174,6 +179,39 @@ void MainWindowPockemul::slotUnLink(QAction * action)
 void MainWindowPockemul::slotWebLink(QAction *action) {
     QString s = action->data().toString();
     QUrl url(s);
+    QDesktopServices::openUrl(url);
+}
+#define POCKEMUL_DOCUMENTS_URL "http://pockemul.free.fr/Documents/userguide/"
+
+void MainWindowPockemul::slotDocument(QAction *action) {
+    // Check if document is already downloaded
+    // if yes open it
+    // if no propose to download it : display the size ?
+
+    QString fn=QDir::homePath()+"/pockemul/documents/"+QFileInfo(action->data().toString()).fileName();
+    QFile file(fn);
+    if (!file.open(QIODevice::ReadOnly)) {
+
+        switch(QMessageBox::question(
+                   mainwindow,
+                   "PockEmul",
+                   tr("The document %1 is not available locally. Do you want do download it ?").
+                   arg(action->data().toString()),
+                   QMessageBox::Yes | QMessageBox::No )) {
+        case QMessageBox::Yes: break;
+        case QMessageBox::No: return;
+        default: return;
+        }
+        // Download it
+
+
+
+
+            QUrl url(action->data().toString());
+            downloadManager->doDownload(url);
+
+    }
+    QUrl url(fn);
     QDesktopServices::openUrl(url);
 }
 

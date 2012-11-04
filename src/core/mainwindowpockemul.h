@@ -21,6 +21,7 @@ class Cconnector;
 class WindowIDE;
 class LaunchButtonWidget;
 class QCommandLine;
+class DownloadManager;
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -37,6 +38,7 @@ public:
     DialogLog		*dialoglog;
     dialogAnalog	*dialoganalogic;
     WindowIDE       *windowide;
+    DownloadManager *downloadManager;
 
     //	CpaperWidget	*paperWidget;
 
@@ -87,6 +89,7 @@ private slots:
     void DestroySlot(CPObject *pObject);
     void slotNewLink(QAction *);
     void slotWebLink(QAction *);
+    void slotDocument(QAction *);
     void slotUnLink(QAction *);
     void slotUnLink(Cconnector *);
     void slotMsgError(QString);

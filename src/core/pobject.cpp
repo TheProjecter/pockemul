@@ -969,11 +969,16 @@ void CPObject::BuildContextMenu(QMenu * menu)
 	menu->addSeparator();
 	menu->addAction(tr("Close"),this,SLOT(slotExit()));
     computeWebLinksMenu(menu);
+
 }
+
+
 
 void CPObject::computeWebLinksMenu(QMenu * menu) {
     menuweblink = menu->addMenu(tr("Web Links"));
+    menuDocument = menu->addMenu(tr("Documents"));
     connect(menuweblink, SIGNAL(triggered( QAction *)), mainwindow, SLOT(slotWebLink( QAction *)));
+    connect(menuDocument, SIGNAL(triggered(QAction*)), mainwindow, SLOT(slotDocument(QAction*)));
 // FETCH XML FILE TO ADD MENU ACTIONS
     QFile fileRes(":/POCKEMUL/weblinks.xml");
     QXmlInputSource sourceRes(&fileRes);
@@ -985,13 +990,20 @@ void CPObject::computeWebLinksMenu(QMenu * menu) {
 
 }
 
-void CPObject::insertLinkAction(QString desc,QString link) {
-    QLabel* label = new QLabel("<a href='"+link+"'>"+desc+"</a>", this);
-    label->setOpenExternalLinks(true);
+void CPObject::insertLinkAction(LINKTYPE type,QString desc,QString link) {
 
-    QWidgetAction* a = new QWidgetAction(this);
-    a->setDefaultWidget( label );
-    menuweblink->addAction(a);
+    if (type == WEBLINK) {
+        QLabel* label = new QLabel("<a href='"+link+"'>"+desc+"</a>", this);
+        label->setOpenExternalLinks(true);
+
+        QWidgetAction* a = new QWidgetAction(this);
+        a->setDefaultWidget( label );
+        menuweblink->addAction(a);
+    }
+    if (type == DOCUMENT) {
+        QAction *a = menuDocument->addAction(desc);
+        a->setData(link);
+    }
 }
 
 void CPObject::computeLinkMenu(QMenu * menu)

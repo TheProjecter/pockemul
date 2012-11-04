@@ -304,7 +304,8 @@ HEADERS += src/core/Connect.h \
     tinybasic/tinybasic.h \
     src/machine/pc1211.h \
     src/lcd/Lcdc_pc1211.h \
-    src/machine/ce122.h
+    src/machine/ce122.h \
+    src/core/downloadmanager.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -542,7 +543,8 @@ SOURCES += src/core/Connect.cpp \
     tinybasic/tinybasic.cpp \
     src/machine/pc1211.cpp \
     src/lcd/Lcdc_pc1211.cpp \
-    src/machine/ce122.cpp
+    src/machine/ce122.cpp \
+    src/core/downloadmanager.cpp
 
 
 

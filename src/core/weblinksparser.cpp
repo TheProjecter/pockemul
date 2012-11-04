@@ -8,7 +8,14 @@ bool WebLinksParser::startElement( const QString&, const QString&, const QString
         QString desc=attrs.value("desc");
         QString link=attrs.value("link");
         if (parent->getcfgfname()==model)
-            parent->insertLinkAction(desc,link);
+            parent->insertLinkAction(CPObject::WEBLINK,desc,link);
+    }
+    if(name == "document" )
+    {
+        QString desc=attrs.value("desc");
+        QString link=attrs.value("link");
+        if (parent->getcfgfname()==model)
+            parent->insertLinkAction(CPObject::DOCUMENT,desc,link);
     }
     else if( name == "model" )
         model = attrs.value("value");

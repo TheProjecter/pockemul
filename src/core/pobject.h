@@ -130,8 +130,11 @@ public:
 
 	void BuildContextMenu(QMenu * menu);
     void computeWebLinksMenu(QMenu * menu);
-    void insertLinkAction(QString desc,QString link);
+
+    enum LINKTYPE {WEBLINK,DOCUMENT};
+    void insertLinkAction(LINKTYPE type, QString desc, QString link);
     QMenu * menuweblink;
+    QMenu * menuDocument;
 	void computeLinkMenu(QMenu * menu);
 	void computeUnLinkMenu(QMenu * menu);
 	
@@ -208,6 +211,7 @@ public:
 
     int mapKey(QKeyEvent *event);
     QRect RectWithLinked();
+
 
 signals:
     void msgError(QString);
