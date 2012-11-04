@@ -35,8 +35,8 @@
         <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/PC1260-1261_OM_FR_lite.pdf"/>
     </model>
     <model value="pc1280">
-        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1280_e.html"/
-        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1280_OM_DE.pdf"/>>
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1280_e.html"/>
+        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1280_OM_DE.pdf"/>
     </model>
     <model value="pc1350">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1350_e.html"/>

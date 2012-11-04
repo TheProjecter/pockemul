@@ -58,6 +58,9 @@ extern MainWindowPockemul *mainwindow;
      QNetworkRequest request(url);
      QNetworkReply *reply = manager.get(request);
 
+     connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(downloadProgress(qint64,qint64)));
+
+
      currentDownloads.append(reply);
  }
 
@@ -139,7 +142,12 @@ extern MainWindowPockemul *mainwindow;
 
 //     if (currentDownloads.isEmpty())
 //         // all downloads finished
-//         QCoreApplication::instance()->quit();
+     //         QCoreApplication::instance()->quit();
+ }
+
+ void DownloadManager::downloadProgress( qint64 bytesReceived, qint64 bytesTotal )
+ {
+     qWarning()<< "Transfert : "<<bytesReceived<< "/" << bytesTotal;
  }
 
 

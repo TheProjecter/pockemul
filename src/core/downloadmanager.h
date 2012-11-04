@@ -28,6 +28,7 @@ public:
 public slots:
     void execute();
     void downloadFinished(QNetworkReply *reply);
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 };
 
 #endif // DOWNLOADMANAGER_H
