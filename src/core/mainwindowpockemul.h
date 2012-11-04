@@ -38,7 +38,7 @@ public:
     DialogLog		*dialoglog;
     dialogAnalog	*dialoganalogic;
     WindowIDE       *windowide;
-    DownloadManager *downloadManager;
+
 
     //	CpaperWidget	*paperWidget;
 

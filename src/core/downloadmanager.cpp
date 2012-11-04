@@ -40,9 +40,10 @@
 
 #include <QtGui>
 
- #include <stdio.h>
+#include <stdio.h>
 #include "downloadmanager.h"
 #include "mainwindowpockemul.h"
+
 
 extern MainWindowPockemul *mainwindow;
 
@@ -51,6 +52,10 @@ extern MainWindowPockemul *mainwindow;
  {
      connect(&manager, SIGNAL(finished(QNetworkReply*)),
              SLOT(downloadFinished(QNetworkReply*)));
+     progress = new QProgressBar(mainwindow->centralwidget);
+     progress->setVisible(false);
+     progress->setGeometry(0,0,mainwindow->centralwidget->width(),15);
+
  }
 
  void DownloadManager::doDownload(const QUrl &url)
@@ -62,6 +67,10 @@ extern MainWindowPockemul *mainwindow;
 
 
      currentDownloads.append(reply);
+     bytesReceived.insert(reply,0);
+     bytesTotal.insert(reply,0);
+
+     progress->show();
  }
 
  QString DownloadManager::saveFileName(const QUrl &url)
@@ -138,6 +147,9 @@ extern MainWindowPockemul *mainwindow;
      }
 
      currentDownloads.removeAll(reply);
+     bytesReceived.remove(reply);
+     bytesTotal.remove(reply);
+     if (currentDownloads.isEmpty()) progress->hide();
      reply->deleteLater();
 
 //     if (currentDownloads.isEmpty())
@@ -145,9 +157,24 @@ extern MainWindowPockemul *mainwindow;
      //         QCoreApplication::instance()->quit();
  }
 
- void DownloadManager::downloadProgress( qint64 bytesReceived, qint64 bytesTotal )
+ void DownloadManager::downloadProgress( qint64 received, qint64 total )
  {
-     qWarning()<< "Transfert : "<<bytesReceived<< "/" << bytesTotal;
+//     qWarning()<< "Transfert : "<<received<< "/" << total;
+     bytesReceived[(QNetworkReply*)QObject::sender()] = received;
+     bytesTotal[(QNetworkReply*)QObject::sender()] = total;
+
+     qint64 Total = 0;
+     qint64 Received=0;
+     for (int i = 0;i<currentDownloads.size();i++) {
+         Total+=bytesTotal[currentDownloads[i]];
+         Received += bytesReceived[currentDownloads[i]];
+     }
+     progress->setMinimum(0);
+     progress->setMaximum(Total);
+     progress->setValue(Received);
+//     progress->text = QString("%1/%2").arg(Received).arg(Total);
+     progress->update();
+
  }
 
 

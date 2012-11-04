@@ -15,6 +15,8 @@
 #include "dialogstartup.h"
 #include "init.h"
 
+#include "downloadmanager.h"
+
 //QTM_USE_NAMESPACE
 
 #include "version.h"
@@ -22,6 +24,7 @@
 
 
 MainWindowPockemul* mainwindow;
+DownloadManager* downloadManager;
 
 
 
@@ -163,6 +166,8 @@ int main(int argc, char *argv[])
 //    CTinyBasic tb;
 //    tb.test();
 
+    downloadManager = new DownloadManager();
+    downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
 
     mainwindow->show();
 

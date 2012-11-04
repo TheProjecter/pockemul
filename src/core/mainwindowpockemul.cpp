@@ -42,7 +42,8 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 //#include "lfhex/hexGui.h"
 
-extern	MainWindowPockemul* mainwindow;
+extern MainWindowPockemul* mainwindow;
+extern DownloadManager *downloadManager;
 
 
 #define NBFRAMEPERSEC		20
@@ -106,8 +107,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
 
-    downloadManager = new DownloadManager();
-    downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
+
 
 qWarning("create");
 
@@ -864,7 +864,10 @@ void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
     event->ignore();
 }
 
-void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){}
+void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
+    downloadManager->progress->setGeometry(0,0,centralwidget->width(),15);
+
+}
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
 {
