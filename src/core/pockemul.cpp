@@ -102,19 +102,19 @@ int main(int argc, char *argv[])
 
     mainwindow->centralwidget = cw;
     mainwindow->setWindowIcon ( QIcon(":/POCKEMUL/pockemul/pockemul.bmp") );
-    mainwindow->resize(680,505);
+    mainwindow->resize(680,520);
 
 
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,
                                                 LaunchButtonWidget::PictureFlow,
-                                                ":/POCKEMUL/pockemul/config.xml",
+                                                QStringList()<<":/POCKEMUL/pockemul/config.xml",
                                                 ":/POCKEMUL/pockemul/pocket.png");
     launch1->setGeometry(0,12,48,48);
     launch1->setToolTip("Start a new Pocket Emulation.");
 
     LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwindow->centralwidget,
                                                  LaunchButtonWidget::PictureFlow,
-                                                 ":/POCKEMUL/pockemul/configExt.xml",
+                                                 QStringList()<<":/POCKEMUL/pockemul/configExt.xml",
                                                  ":/POCKEMUL/pockemul/ext.png");
     launch2->setGeometry(0,75,48,48);
     launch2->setToolTip("Start a new Extension Emulation.");
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 #ifndef Q_OS_ANDROID
     LaunchButtonWidget* dev = new LaunchButtonWidget(mainwindow->centralwidget,
                                                      LaunchButtonWidget::Action,
-                                                     "",
+                                                     QStringList(),
                                                      ":/POCKEMUL/pockemul/dev.png");
     mainwindow->connect(dev,SIGNAL(clicked()),mainwindow,SLOT(IDE()));
     dev->setGeometry(0,150,48,48);
@@ -130,37 +130,35 @@ int main(int argc, char *argv[])
 #endif
     LaunchButtonWidget* save = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::Action,
-                                                      "",
+                                                      QStringList(),
                                                       ":/POCKEMUL/pockemul/save.png");
     mainwindow->connect(save,SIGNAL(clicked()),mainwindow,SLOT(saveassession()));
     save->setGeometry(0,225,48,48);
     save->setToolTip("Save the current session.");
 
-#if 0
-    LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow->centralwidget,
-                                                      LaunchButtonWidget::Action,
-                                                      "",
-                                                      ":/POCKEMUL/pockemul/load.png");
-    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
-    load->setGeometry(0,300,48,48);
-    load->setToolTip("Load an existing session.");
-#else
     LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::FileBrowser,
-                                                      ".",
+                                                      QStringList()<<"."<<"*.pml",
                                                       ":/POCKEMUL/pockemul/load.png");
 //    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
     load->setGeometry(0,300,48,48);
     load->setToolTip("Load an existing session.");
 
-#endif
+    LaunchButtonWidget* bookcase = new LaunchButtonWidget(mainwindow->centralwidget,
+                                                      LaunchButtonWidget::FileBrowser,
+                                                          QStringList()<< (QDir::homePath()+"/pockemul/documents")<<"*.pdf",
+                                                      ":/POCKEMUL/pockemul/bookcase.png");
+//    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
+    bookcase->setGeometry(0,375,48,48);
+    bookcase->setToolTip("Browse the bookcase.");
+
 
     LaunchButtonWidget* exit = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::Action,
-                                                      "",
+                                                      QStringList(),
                                                       ":/POCKEMUL/pockemul/exit.png");
     mainwindow->connect(exit,SIGNAL(clicked()),qApp, SLOT(quit()));//closeAllWindows()));
-    exit->setGeometry(0,375,48,48);
+    exit->setGeometry(0,450,48,48);
     exit->setToolTip("Exit PockEmul.");
 
 //    CTinyBasic tb;

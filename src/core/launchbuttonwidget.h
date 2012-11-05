@@ -24,14 +24,14 @@ public:
 
 
 
-    LaunchButtonWidget(QWidget* parent,LaunchType type,QString param,QString img);
+    LaunchButtonWidget(QWidget* parent,LaunchType type,QStringList param,QString img);
     ~LaunchButtonWidget();
 
     void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *event);
     FluidLauncher* launcher;
 
-    QString config;
+    QStringList config;
     QString image;
     LaunchType type;
 

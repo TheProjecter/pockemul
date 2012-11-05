@@ -15,5 +15,7 @@
         <file>pockemul/exit.png</file>
         <file>pockemul/splash.png</file>
         <file>pockemul/folder.png</file>
+        <file>pockemul/bookcase.png</file>
+        <file>pockemul/pdfthumbnail.png</file>
     </qresource>
 </RCC>

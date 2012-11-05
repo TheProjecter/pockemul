@@ -52,11 +52,12 @@ extern MainWindowPockemul *mainwindow;
  #define SIZING_FACTOR_WIDTH 6/10
 
 
-FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):QStackedWidget(parent)
+FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType type):QStackedWidget(parent)
 {
 //    qWarning("CFL 1\n");
 
     Type = type;
+    Config = config;
 
     pictureFlowWidget = new PictureFlow();
 
@@ -82,7 +83,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
 
     if (type == PictureFlowType) {
         bool success;
-        success = loadConfig(config);
+        success = loadConfig(Config);
 
         if (success) {
             populatePictureFlow();
@@ -92,7 +93,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
     }
     else
         if (type == FileBrowserType) {
-            populateFileBrowser(config);
+            populateFileBrowser(Config);
         }
 }
 
@@ -109,8 +110,9 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
      }
  }
 
- bool FluidLauncher::loadConfig(QString configPath)
+ bool FluidLauncher::loadConfig(QStringList config)
  {
+     QString configPath = config.at(0);
 //     qWarning("loadConfig \n");
      QFile xmlFile(configPath);
 
@@ -173,38 +175,56 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
      }
  }
 
- void FluidLauncher::populateFileBrowser(QString path) {
+ QImage FluidLauncher::ExtractImage(QFileInfo fileInfo) {
+     QImage img;
+
+     if (fileInfo.completeSuffix()=="pdf") {
+         return QImage(":/POCKEMUL/pockemul/pdfthumbnail.png");
+     }
+
+     if (fileInfo.completeSuffix()=="pml") {
+         QFile file(fileInfo.fileName());
+
+         file.open(QIODevice::ReadOnly);
+         QXmlStreamReader xml;
+         xml.setDevice(&file);
+         while (!xml.atEnd()) {
+             if (xml.readNextStartElement()) {
+                 QString elt = xml.name().toString();
+                 if (elt=="snapshot")  {
+                     img.loadFromData(QByteArray::fromBase64(xml.readElementText().toAscii()),"PNG");
+                     break;
+                 }
+             }
+         }
+         file.close();
+     }
+     return img;
+ }
+
+ //TODO: add an ext filter
+ void FluidLauncher::populateFileBrowser(QStringList config) {
 //qWarning("populateFileBrowser\n");
+
+     Config = config;
+
+     QString path = Config.at(0);
+     QString filter = Config.at(1);
      dir.cd(path);
      //     QMessageBox::information(mainwindow,"new path",dir.absolutePath(),QMessageBox::Ok);
      dir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::AllDirs | QDir::NoDot);
      dir.setSorting(QDir::DirsFirst | QDir::Name | QDir::IgnoreCase);
 
-     QFileInfoList list = dir.entryInfoList(QStringList() << "*.pml");
+     QFileInfoList list = dir.entryInfoList(QStringList() << filter);
 
      pictureFlowWidget->setSlideCount(list.count());
 
      for (int i = 0; i < list.size(); ++i) {
          QFileInfo fileInfo = list.at(i);
          QImage *img = new QImage();
-
+//TODO: manage file type: if PML load screenshot, if pdf, load the first page, ...
          if (fileInfo.isFile()) {
-             QByteArray ba;
-             QFile file(fileInfo.fileName());
-             file.open(QIODevice::ReadOnly);
-             QXmlStreamReader xml;
-             xml.setDevice(&file);
-             while (!xml.atEnd()) {
-                 if (xml.readNextStartElement()) {
-                     QString elt = xml.name().toString();
-                     if (elt=="snapshot")  {
-                         ba = QByteArray::fromBase64(xml.readElementText().toAscii());
-                         break;
-                     }
-                 }
-             }
-             file.close();
-             img->loadFromData(ba,"PNG");
+             img = new QImage(ExtractImage(fileInfo));
          }
          else if (fileInfo.isDir()) {
              img->load(":/POCKEMUL/pockemul/folder.png");
@@ -349,10 +369,18 @@ FluidLauncher::FluidLauncher(QWidget * parent, QString config, LaunchType type):
              QString newpath = demoList.at(index)->getIdPocket();
 //             QMessageBox::information(mainwindow,"test",newpath,QMessageBox::Ok);
              demoList.clear();
-             populateFileBrowser(newpath);
+             Config[0]+="/"+newpath;
+             populateFileBrowser(Config);
          }
          else {
-             mainwindow->opensession(pictureFlowWidget->getSlideCaption(index));
+             if (Config.at(1)=="*.pml") {
+                 mainwindow->opensession(pictureFlowWidget->getSlideCaption(index));
+             }
+             if (Config.at(1)=="*.pdf") {
+                 qWarning()<<"open pdf:"<<Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index);
+                 QUrl url(Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index));
+                 QDesktopServices::openUrl(url);
+             }
              close();
          }
      }

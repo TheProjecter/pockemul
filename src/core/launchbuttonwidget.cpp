@@ -9,7 +9,7 @@ extern MainWindowPockemul* mainwindow;
 
 
 
-LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::LaunchType type,QString param,QString img):QWidget(parent)
+LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::LaunchType type,QStringList param,QString img):QWidget(parent)
 {
     this->type = type;
     config = param;

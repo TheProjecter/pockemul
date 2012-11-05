@@ -61,10 +61,11 @@
          FileBrowserType
      };
 
-     FluidLauncher(QWidget *,QString,LaunchType);
+     FluidLauncher(QWidget *,QStringList,LaunchType);
      ~FluidLauncher();
 
-     void populateFileBrowser(QString path);
+     void populateFileBrowser(QStringList param);
+     QImage ExtractImage(QFileInfo fileInfo);
  public slots:
      void launchApplication(int index);
      void demoFinished();
@@ -80,9 +81,11 @@
 
      LaunchType Type;
 
-     bool loadConfig(QString configPath);
+     bool loadConfig(QStringList config);
      void populatePictureFlow();
      void parseDemos(QXmlStreamReader& reader);
+
+     QStringList Config;
 
  };
 
