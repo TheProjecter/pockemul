@@ -48,12 +48,15 @@
         </model>
     <model value="pc1401">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1401_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1401_1402_OM_GB_small.pdf"/>
     </model>
     <model value="pc1402">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1402_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1401_1402_OM_GB_small.pdf"/>
     </model>
     <model value="pc1403">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1403_OM_GB.pdf"/>
     </model>
     <model value="pc1403H">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403h_e.html"/>
@@ -83,10 +86,12 @@
     </model>
     <model value="trspc2">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/tandy/pc-2_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC2_OM_GB.pdf"/>
     </model>
 
     <model value="mc2200">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/seiko/mc-2200_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1245_OM_GB.pdf"/>
     </model>
     <model value="ce120p">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/ce-120p_e.html"/>
