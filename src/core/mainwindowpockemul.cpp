@@ -865,7 +865,7 @@ void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
 }
 
 void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
-    downloadManager->progress->setGeometry(0,0,centralwidget->width(),15);
+    downloadManager->resize();
 
 }
 

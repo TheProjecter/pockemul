@@ -52,10 +52,20 @@ extern MainWindowPockemul *mainwindow;
  {
      connect(&manager, SIGNAL(finished(QNetworkReply*)),
              SLOT(downloadFinished(QNetworkReply*)));
+     abortPB = new QPushButton(tr("Cancel"),mainwindow->centralWidget());
+     abortPB->setEnabled(true);
+     abortPB->setVisible(false);
      progress = new QProgressBar(mainwindow->centralwidget);
      progress->setVisible(false);
-     progress->setGeometry(0,0,mainwindow->centralwidget->width(),15);
+     connect(abortPB,SIGNAL(clicked()),this,SLOT(abort()));
+     resize();
+ }
 
+ void DownloadManager::resize() {
+     progress->setGeometry(0,0,mainwindow->centralwidget->width()-abortPB->sizeHint().width()-5,abortPB->sizeHint().height());
+     abortPB->setGeometry(
+                 QRect(QPoint(mainwindow->centralwidget->width()-abortPB->sizeHint().width(),0),
+                       abortPB->sizeHint()));
  }
 
  void DownloadManager::doDownload(const QUrl &url)
@@ -71,6 +81,7 @@ extern MainWindowPockemul *mainwindow;
      bytesTotal.insert(reply,0);
 
      progress->show();
+     abortPB->show();
  }
 
  QString DownloadManager::saveFileName(const QUrl &url)
@@ -131,6 +142,14 @@ extern MainWindowPockemul *mainwindow;
      }
  }
 
+ void DownloadManager::abort()
+ {
+     while (!currentDownloads.isEmpty()) {
+         currentDownloads.first()->abort();
+        currentDownloads.removeAt(0);
+     }
+ }
+
  void DownloadManager::downloadFinished(QNetworkReply *reply)
  {
      QUrl url = reply->url();
@@ -149,7 +168,10 @@ extern MainWindowPockemul *mainwindow;
      currentDownloads.removeAll(reply);
      bytesReceived.remove(reply);
      bytesTotal.remove(reply);
-     if (currentDownloads.isEmpty()) progress->hide();
+     if (currentDownloads.isEmpty()) {
+         progress->hide();
+         abortPB->hide();
+     }
      reply->deleteLater();
 
 //     if (currentDownloads.isEmpty())
