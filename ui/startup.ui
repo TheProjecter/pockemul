@@ -100,7 +100,7 @@
          </property>
          <item>
           <property name="text">
-           <string>PC 1211</string>
+           <string>PC-1211</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1211.qrc">
@@ -109,7 +109,7 @@
          </item>
          <item>
           <property name="text">
-           <string extracomment="le petit">PC 1245</string>
+           <string extracomment="le petit">PC-1245</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1245.qrc">
@@ -118,7 +118,7 @@
          </item>
          <item>
           <property name="text">
-           <string>MC 2200</string>
+           <string>MC-2200</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1245.qrc">
@@ -127,7 +127,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1250</string>
+           <string>PC-1250</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1250.qrc">
@@ -154,7 +154,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1251</string>
+           <string>PC-1251</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1251.qrc">
@@ -163,7 +163,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1251H</string>
+           <string>PC-1251H</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1251.qrc">
@@ -172,7 +172,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1255</string>
+           <string>PC-1255</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1255.qrc">
@@ -181,7 +181,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1260</string>
+           <string>PC-1260</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1260.qrc">
@@ -190,7 +190,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1261</string>
+           <string>PC-1261</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1261.qrc">
@@ -199,7 +199,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1262</string>
+           <string>PC-1262</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1262.qrc">
@@ -208,7 +208,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1280</string>
+           <string>PC-1280</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1280.qrc">
@@ -217,7 +217,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1350</string>
+           <string>PC-1350</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1350.qrc">
@@ -226,7 +226,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1360</string>
+           <string>PC-1360</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1360.qrc">
@@ -235,7 +235,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1401</string>
+           <string>PC-1401</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1401.qrc">
@@ -244,7 +244,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1402</string>
+           <string>PC-1402</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1402.qrc">
@@ -253,7 +253,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1403</string>
+           <string>PC-1403</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1403.qrc">
@@ -262,7 +262,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1403H</string>
+           <string>PC-1403H</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1403.qrc">
@@ -271,7 +271,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1421</string>
+           <string>PC-1421</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1421.qrc">
@@ -280,7 +280,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1425</string>
+           <string>PC-1425</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1425.qrc">
@@ -292,7 +292,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1450</string>
+           <string>PC-1450</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1450.qrc">
@@ -301,7 +301,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1460</string>
+           <string>PC-1460</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1460.qrc">
@@ -313,7 +313,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1475</string>
+           <string>PC-1475</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1475.qrc">
@@ -322,7 +322,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1500</string>
+           <string>PC-1500</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1500.qrc">
@@ -331,7 +331,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1500A</string>
+           <string>PC-1500A</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1500.qrc">
@@ -349,7 +349,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 1600</string>
+           <string>PC-1600</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc1600.qrc">
@@ -358,7 +358,7 @@
          </item>
          <item>
           <property name="text">
-           <string>PC 2500</string>
+           <string>PC-2500</string>
           </property>
           <property name="icon">
            <iconset resource="../resources/pc2500.qrc">

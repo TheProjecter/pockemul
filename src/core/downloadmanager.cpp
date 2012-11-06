@@ -121,27 +121,6 @@ extern MainWindowPockemul *mainwindow;
      return true;
  }
 
- void DownloadManager::execute()
- {
-     QStringList args = QCoreApplication::instance()->arguments();
-     args.takeFirst();           // skip the first argument, which is the program's name
-     if (args.isEmpty()) {
-         printf("Qt Download example - downloads all URLs in parallel\n"
-                "Usage: download url1 [url2... urlN]\n"
-                "\n"
-                "Downloads the URLs passed in the command-line to the local directory\n"
-                "If the target file already exists, a .0, .1, .2, etc. is appended to\n"
-                "differentiate.\n");
-         QCoreApplication::instance()->quit();
-         return;
-     }
-
-     foreach (QString arg, args) {
-         QUrl url = QUrl::fromEncoded(arg.toLocal8Bit());
-         doDownload(url);
-     }
- }
-
  void DownloadManager::abort()
  {
      while (!currentDownloads.isEmpty()) {
@@ -174,9 +153,6 @@ extern MainWindowPockemul *mainwindow;
      }
      reply->deleteLater();
 
-//     if (currentDownloads.isEmpty())
-//         // all downloads finished
-     //         QCoreApplication::instance()->quit();
  }
 
  void DownloadManager::downloadProgress( qint64 received, qint64 total )
@@ -194,7 +170,6 @@ extern MainWindowPockemul *mainwindow;
      progress->setMinimum(0);
      progress->setMaximum(Total);
      progress->setValue(Received);
-//     progress->text = QString("%1/%2").arg(Received).arg(Total);
      progress->update();
 
  }

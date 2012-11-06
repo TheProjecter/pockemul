@@ -126,13 +126,13 @@ public:
 	Clcdc_pc1250(CPObject *parent = 0)	: Clcdc(parent)
 	{					//[constructor]
 
-		Color_Off.setRgb(	(int) ( 0x4a*contrast ),
+        Color_Off.setRgb(	(int) ( 0x4a*contrast ),
 								(int) ( 0x63*contrast ),
-								(int) ( 0x63*contrast ) );
-	};
+                                (int) ( 0x63*contrast ) );
+    }
 	virtual ~Clcdc_pc1250()
 	{						//[constructor]
-	};
+    }
 
 };
 
@@ -159,7 +159,7 @@ public:
 
 class Clcdc_pc1255:public Clcdc_pc1250{
 public:
-    const char*	GetClassName(){ return("Clcdc_pc1255");};
+    const char*	GetClassName(){ return("Clcdc_pc1255");}
 
 	Clcdc_pc1255(CPObject *parent = 0)	: Clcdc_pc1250(parent){						//[constructor]
 		Color_Off.setRgb(

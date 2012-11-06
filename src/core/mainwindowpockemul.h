@@ -8,6 +8,7 @@
 //
 #include "ui_pockemul.h"
 #include "common.h"
+#include "init.h"
 
 
 class DialogLog;
@@ -52,6 +53,7 @@ public:
 
     qint64	rawclk;
     CPObject * LoadPocket(int result);
+    CPObject *LoadPocket(QString Id);
     ASKYN saveAll;
     float	zoom;
 
@@ -65,6 +67,10 @@ public:
     void initCommandLine();
 
     QCommandLine *cmdline;
+
+    QHash<QString, Models> objtable;
+
+    void initObjectTable();
 
 public slots:
     void opensession(QString sessionFN=QString());

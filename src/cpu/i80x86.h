@@ -99,9 +99,9 @@ public:
     virtual	void	Load_Internal(QXmlStreamReader *);
     virtual	void	save_internal(QXmlStreamWriter *);
 
-    virtual bool Get_Xin(){}
+    virtual bool Get_Xin(){ return true;}
     virtual void Set_Xin(bool){}
-    virtual bool Get_Xout(){}
+    virtual bool Get_Xout(){ return true;}
     virtual void Set_Xout(bool){}
     virtual DWORD get_PC();
     virtual void Regs_Info(UINT8);

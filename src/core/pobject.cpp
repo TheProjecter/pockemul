@@ -115,19 +115,9 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
         xml->writeAttribute("x", QString("%1").arg(PosX));
         xml->writeAttribute("y", QString("%1").arg(PosY));
         xml->writeEndElement(); // position
-//            if (dynamic_cast<CpcXXXX *>(this) )
-//            {
-//                ((CpcXXXX *)this)->SaveSession_File(xml);
-//            }
         this->SaveSession_File(xml);
     xml->writeEndElement(); // object
 
-    // if power on and (CpcXXXX) class then save session
-    // TODO : save session in xml
-//    if (Power &&  dynamic_cast<CpcXXXX *>(this) )
-//    {
-//        ((CpcXXXX *)this)->Initial_Session_Save();
-//    }
 }
 
 float	CPObject::posx()
@@ -363,60 +353,6 @@ void CPObject::fillSoundBuffer(BYTE val)
 }
 
 
-void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    // Check if we clic a key
-    QPoint pts(event->x() , event->y());
-    if ((pKEYB) &&(pKEYB->KeyClick(pts))) {
-        // Send thee mouseclick event twice
-        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, pts, Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
-        QApplication::sendEvent(this, e);
-        delete e;
-        return;
-    }
-
-
-#if 0
-    bool detach = (parentWidget() != 0);
-    // Search all conected objects then compute them
-    QList<CPObject *> LinkedList;
-    LinkedList.append(this);
-    mainwindow->pdirectLink->findAllObj(this,&LinkedList);
-    for (int i=0;i<LinkedList.size();i++)
-    {
-        if (detach) {
-            LinkedList.at(i)->setParent(0);
-            LinkedList.at(i)->setWindowFlags(Qt::FramelessWindowHint);
-            LinkedList.at(i)->show();
-        }
-        else {
-            LinkedList.at(i)->setParent(mainwindow);
-            LinkedList.at(i)->show();
-        }
-    }
-#else
-    if (mainwindow->zoom <= 100) {
-        // Compute global rect
-        QRect rs = RectWithLinked();
-        int rw= 100*mainwindow->centralwidget->rect().width()/rs.width();
-        int rh= 100*mainwindow->centralwidget->rect().height()/rs.height();
-        int r = MIN(rw,rh);
-        if (r>100) {
-            mainwindow->doZoom(event->pos(),1,r-mainwindow->zoom);
-            //move to upper left
-            // Fetch all_object and move them
-            rs = RectWithLinked();
-            mainwindow->MoveAll(- rs.topLeft());
-        }
-    }
-    else {
-        mainwindow->doZoom(event->pos(),-1,mainwindow->zoom-100);
-    }
-
-#endif
-
-
-}
 
 void CPObject::SwitchFrontBack(QPoint point) {
     if (Front)
@@ -486,6 +422,63 @@ void CPObject::tapAndHold(QMouseEvent * event)
     contextMenuEvent(cme);
     startPosDrag = false;
     setCursor(Qt::ArrowCursor);
+}
+
+void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
+{
+//    qWarning()<<"Dblclick";
+    // Check if we clic a key
+    QPoint pts(event->x() , event->y());
+    if ((pKEYB) &&(pKEYB->KeyClick(pts))) {
+//        qWarning()<<"keyclick";
+        // Send thee mouseclick event twice
+        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, pts, Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(this, e);
+        delete e;
+        return;
+    }
+
+
+#if 0
+    bool detach = (parentWidget() != 0);
+    // Search all conected objects then compute them
+    QList<CPObject *> LinkedList;
+    LinkedList.append(this);
+    mainwindow->pdirectLink->findAllObj(this,&LinkedList);
+    for (int i=0;i<LinkedList.size();i++)
+    {
+        if (detach) {
+            LinkedList.at(i)->setParent(0);
+            LinkedList.at(i)->setWindowFlags(Qt::FramelessWindowHint);
+            LinkedList.at(i)->show();
+        }
+        else {
+            LinkedList.at(i)->setParent(mainwindow);
+            LinkedList.at(i)->show();
+        }
+    }
+#else
+    if (mainwindow->zoom <= 100) {
+        // Compute global rect
+        QRect rs = RectWithLinked();
+        int rw= 100*mainwindow->centralwidget->rect().width()/rs.width();
+        int rh= 100*mainwindow->centralwidget->rect().height()/rs.height();
+        int r = MIN(rw,rh);
+        if (r>100) {
+            mainwindow->doZoom(event->pos(),1,r-mainwindow->zoom);
+            //move to upper left
+            // Fetch all_object and move them
+            rs = RectWithLinked();
+            mainwindow->MoveAll(- rs.topLeft());
+        }
+    }
+    else {
+        mainwindow->doZoom(event->pos(),-1,mainwindow->zoom-100);
+    }
+
+#endif
+
+
 }
 
 void CPObject::mousePressEvent(QMouseEvent *event)
@@ -569,70 +562,25 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
     event->accept();
 }
-void CPObject::raise() {
-    QWidget::raise();
-}
 
-void CPObject::TurnCLOSE()
-{
-
-}
-
-void CPObject::manageStackPos(QList<CPObject *> *l) {
-    // fetch connectors connected
-    // for each connector
-    //      if male then stackunder and recursive
-    //
-    // Keep track of already computed objects
-    if (l->contains(this)) return;
-    l->append(this);
-
-    for (int i=0;i < ConnList.size();i++) {
-        Cconnector * conn = ConnList.at(i);
-        Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
-        if (conn2) {
-            CPObject * linkedPC = (CPObject *) (conn2->Parent);
-            if (conn->getGender() == true) {    // If Male
-                linkedPC->stackUnder(this);
-                stackUnder(linkedPC);
-                linkedPC->manageStackPos(l);
-            }
-            else {
-                linkedPC->stackUnder(this);
-                linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
-            }
-        }
-    }
-
-}
-
-bool CPObject::SaveSession_File(QXmlStreamWriter *xmlOut)
-{
-    return true;
-}
-
-bool CPObject::LoadSession_File(QXmlStreamReader *)
-{
-    return true;
-}
 
 void CPObject::mouseMoveEvent( QMouseEvent * event )
 {
     _gestureHandler->handleEvent( event );
-	if (dialogkeylist)
-	{
-		if (startKeyDrag)
-		{
-			QPoint delta(event->globalPos() - KeyDrag);
-			dialogkeylist->i->Rect.adjust(delta.x(),delta.y(),delta.x(),delta.y());
-			pKEYB->modified = true;
-			KeyDrag = event->globalPos();
+    if (dialogkeylist)
+    {
+        if (startKeyDrag)
+        {
+            QPoint delta(event->globalPos() - KeyDrag);
+            dialogkeylist->i->Rect.adjust(delta.x(),delta.y(),delta.x(),delta.y());
+            pKEYB->modified = true;
+            KeyDrag = event->globalPos();
                         update();
             event->accept();
-			return;
-		}
-	}
-	
+            return;
+        }
+    }
+
         if (startPosDrag)
         {
             // Move all conected objects
@@ -645,30 +593,30 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
                 return;
             }
         }
-	
+
 #ifndef Q_OS_ANDROID
-	if (pKEYB)
-	{
-		QPoint pts(event->x() , event->y());
-		if (pKEYB->KeyClick(pts))
-		{
-			setCursor(Qt::PointingHandCursor);
-			setToolTip(pKEYB->KeyString(pts));
+    if (pKEYB)
+    {
+        QPoint pts(event->x() , event->y());
+        if (pKEYB->KeyClick(pts))
+        {
+            setCursor(Qt::PointingHandCursor);
+            setToolTip(pKEYB->KeyString(pts));
                         event->accept();
-		}
-		else
-		{
-			setCursor(Qt::ArrowCursor);
-		}
-	}
+        }
+        else
+        {
+            setCursor(Qt::ArrowCursor);
+        }
+    }
 #endif
-	
+
     if ( (parentWidget() != mainwindow->centralwidget)
         && (parentWidget() != 0))
-	{
-		QApplication::sendEvent(parentWidget(), event);
-	}
-	
+    {
+        QApplication::sendEvent(parentWidget(), event);
+    }
+
 }
 
 #define SNAPRANGE 20
@@ -732,11 +680,11 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
         }
     }
 
-	
-	
+
+
     startKeyDrag = false;
     startPosDrag = false;
-	setCursor(Qt::ArrowCursor);
+    setCursor(Qt::ArrowCursor);
     if (pKEYB) {
         pKEYB->keyPressedList.removeAll(pKEYB->lastMousePressedKey);
         pKEYB->lastMousePressedKey = 0;
@@ -745,11 +693,59 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
 
     if ( (parentWidget() != mainwindow->centralwidget)
         && (parentWidget() != 0))
-	{
-		QApplication::sendEvent(parentWidget(), event);
-	}
+    {
+        QApplication::sendEvent(parentWidget(), event);
+    }
     event->accept();
 }
+
+void CPObject::raise() {
+    QWidget::raise();
+}
+
+void CPObject::TurnCLOSE()
+{
+
+}
+
+void CPObject::manageStackPos(QList<CPObject *> *l) {
+    // fetch connectors connected
+    // for each connector
+    //      if male then stackunder and recursive
+    //
+    // Keep track of already computed objects
+    if (l->contains(this)) return;
+    l->append(this);
+
+    for (int i=0;i < ConnList.size();i++) {
+        Cconnector * conn = ConnList.at(i);
+        Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
+        if (conn2) {
+            CPObject * linkedPC = (CPObject *) (conn2->Parent);
+            if (conn->getGender() == true) {    // If Male
+                linkedPC->stackUnder(this);
+                stackUnder(linkedPC);
+                linkedPC->manageStackPos(l);
+            }
+            else {
+                linkedPC->stackUnder(this);
+                linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
+            }
+        }
+    }
+
+}
+
+bool CPObject::SaveSession_File(QXmlStreamWriter *xmlOut)
+{
+    return true;
+}
+
+bool CPObject::LoadSession_File(QXmlStreamReader *)
+{
+    return true;
+}
+
 			
 qreal CPObject::RangeFrom(CPObject * target)
 {

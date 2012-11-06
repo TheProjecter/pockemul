@@ -32,8 +32,8 @@ public:
     QPushButton *abortPB;
 
     void resize();
+
 public slots:
-    void execute();
     void abort();
     void downloadFinished(QNetworkReply *reply);
     void downloadProgress(qint64 received, qint64 total);

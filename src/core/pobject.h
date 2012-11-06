@@ -30,10 +30,6 @@ class DialogVKeyboard;
 class TapAndHoldGesture;
 
 
-struct URL {
-    QString desc;
-    QString url;
-};
 
 #define PS_OFF	0
 #define PS_RUN	1
@@ -48,9 +44,27 @@ class CPObject:public QWidget
 public:
 
 	CPObject(CPObject *parent=0);
-	
 	virtual ~CPObject();
 	
+    virtual	bool	init();			// initialize
+    virtual bool	InitDisplay(void);
+    virtual bool	UpdateFinalImage(void);
+    virtual	bool	run(void);					// emulator main step
+    virtual bool	exit();					// exit
+    virtual bool	Set_Connector(void) { return true; }
+    virtual bool	Get_Connector(void) { return true; }
+    virtual void    keyPressEvent(QKeyEvent *event);
+    virtual void    keyReleaseEvent(QKeyEvent *event);
+    virtual void    TurnON() {}
+    virtual void    TurnOFF() {}
+    virtual int     initsound();
+    virtual int     exitsound();
+    virtual void    Reset() {}
+    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+    virtual bool	LoadSession_File(QXmlStreamReader *);
+
+    qint64  runRange(qint64);
+
 	QPoint		SnapPts;
 	qreal		RangeFrom(CPObject * target);
     virtual void ComputeKey(void){}
@@ -107,17 +121,6 @@ public:
     void    setDYmm(int v) {Pc_DY_mm = v;}
     void    setDZmm(int v) {Pc_DZ_mm = v;}
 
-
-	QRect rect();
-	virtual	bool	init();			// initialize
-	virtual bool	InitDisplay(void);
-    virtual bool	UpdateFinalImage(void);
-    virtual	bool	run(void);					// emulator main step
-            qint64     runRange(qint64);
-	virtual bool	exit();					// exit
-    virtual bool	Set_Connector(void) { return true; }
-    virtual bool	Get_Connector(void) { return true; }
-
     int		getfrequency() { return frequency; }
     void	setfrequency(int f) { frequency = f; }
 
@@ -138,7 +141,9 @@ public:
 	void computeLinkMenu(QMenu * menu);
 	void computeUnLinkMenu(QMenu * menu);
 	
+    //TODO transform Extensions to QList
 	CExtensionArray *extensionArray[5];
+
 	bool	toDestroy;
 
 	TransMap *KeyMap;
@@ -146,9 +151,6 @@ public:
 	BYTE	LastKey;
     bool	Front;
 	
-
-	virtual int initsound();
-	virtual int exitsound();
 	void fillSoundBuffer(BYTE val);
 
     QList<unsigned char> soundBuffer;
@@ -173,26 +175,23 @@ public:
     QPixmap         mask;
 
 	void setCpu(int );
-    virtual void TurnON() {}
-    virtual void TurnOFF() {}
+
 	bool	Power;
     qint8		PowerSwitch;
-    virtual void Reset() {}
+
     void    SwitchFrontBack(QPoint);
     bool    isFront() {return Front;}
     QList<Cconnector *> nearConnectors(Cconnector *refConnector,qint8 snaprange);
     void manageStackPos(QList<CPObject *> *);
 
-    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
-    virtual bool	LoadSession_File(QXmlStreamReader *);
+
 		
     QString	SessionHeader;
 
 public:
 
     void paintEvent(QPaintEvent *);
-    virtual void keyPressEvent(QKeyEvent *event);
-    virtual void keyReleaseEvent(QKeyEvent *event);
+
     void mouseDoubleClickEvent ( QMouseEvent * event );
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
@@ -200,8 +199,6 @@ public:
     void wheelEvent(QWheelEvent *event);
 	void focusInEvent ( QFocusEvent * event ); 
 	void focusOutEvent ( QFocusEvent * event ); 
-
-
 
     void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
 
@@ -242,7 +239,10 @@ public slots:
 
 	
 private:
-    float		PosX,PosY;
+    QRect rect();
+
+
+    float	PosX,PosY;
 	int		Width,Height;
 
 	bool	startKeyDrag;
@@ -266,7 +266,7 @@ private:
     bool disp_on;
     bool disp_onRaised;
 
-    quint64 resetAt,hardresetAt;
+    qint64 resetAt,hardresetAt;
 
 
     TapAndHoldGesture* _gestureHandler;

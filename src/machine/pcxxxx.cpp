@@ -791,6 +791,7 @@ bool CpcXXXX::LoadConfig(QXmlStreamReader *xmlIn)
                 RamBank = xmlIn->attributes().value("RamBank").toString().toInt(0,16);
                 ProtectMemory = xmlIn->attributes().value("ProtectMemory").toString().toInt(0,16);
                 //Japan = xml->attributes().value("ProtectMemory").toString().toInt(0,16);
+                closed = xmlIn->attributes().value("closed").toString().toInt(0,16);
                 xmlIn->skipCurrentElement();
             }
 
@@ -826,6 +827,7 @@ bool CpcXXXX::SaveConfig(QXmlStreamWriter *xmlOut)
             xmlOut->writeAttribute("RamBank",QString("%1").arg(RamBank,2,16));
             xmlOut->writeAttribute("ProtectMemory",QString("%1").arg(ProtectMemory));
             xmlOut->writeAttribute("Japan",QString("%1").arg(Japan));
+            xmlOut->writeAttribute("closed",QString("%1").arg(closed));
         xmlOut->writeEndElement();
     xmlOut->writeEndElement();
 
@@ -838,11 +840,11 @@ bool CpcXXXX::LoadExt(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         AddLog(LOG_MASTER,"Loadext name1:"+xmlIn->name().toString());
         if (xmlIn->name() == "extarray" && xmlIn->attributes().value("version") == "1.0") {
-            bool found = false;
+
             while (xmlIn->readNextStartElement()) {
                 AddLog(LOG_MASTER,"Loadext name2:"+xmlIn->name().toString());
                 if ( xmlIn->name() == "ext" ) {
-                    found = true;
+
                     int i = xmlIn->attributes().value("idarray").toString().toInt(0,10);
                     QString Id = xmlIn->attributes().value("idext").toString();
                     AddLog(LOG_MASTER,"Found : "+Id);

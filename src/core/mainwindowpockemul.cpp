@@ -107,7 +107,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
 
-
+    initObjectTable();
 
 qWarning("create");
 
@@ -121,6 +121,73 @@ MainWindowPockemul::~MainWindowPockemul() {
     delete FrameTimer;
     delete pdirectLink;
 
+}
+
+void MainWindowPockemul::initObjectTable() {
+    objtable["PC-1211"]=PC1211;
+    objtable["PC-1245"]=PC1245;
+    objtable["MC-2200"]=MC2200;
+    objtable["PC-1250"]=PC1250;
+    objtable["PC-1251"]=PC1251;
+    objtable["PC-1251H"]=PC1251H;
+    objtable["PC-1255"]=PC1255;
+    objtable["Tandy PC-3"]=TandyPC3;
+    objtable["Tandy PC-3 (4Ko)"]=TandyPC3EXT;
+
+    objtable["PC-1260"]=PC1260;
+    objtable["PC-1261"]=PC1261;
+    objtable["PC-1262"]=PC1262;
+    objtable["PC-1280"]=PC1280;
+
+    objtable["PC-1350"]=PC1350;
+    objtable["PC-1360"]=PC1360;
+    objtable["PC-1401"]=PC1401;
+    objtable["PC-1402"]=PC1402;
+    objtable["PC-1403"]=PC1403;
+    objtable["PC-1403H"]=PC1403H;
+    objtable["PC-1421"]=PC1421;
+    objtable["PC-1450"]=PC1450;
+    objtable["PC-1475"]=PC1475;
+
+    objtable["PC-1500"]=PC1500;
+    objtable["PC-1500A"]=PC1500A;
+    objtable["Tandy PC-2"]=TandyPC2;
+
+    objtable["PC-1600"]=PC1600;
+
+    objtable["PC-2500"]=PC2500;
+
+    objtable["CE-122"]=CE122;
+    objtable["CE-125"]=CE125;
+    objtable["MP-220"]=MP220;
+    objtable["CE-120P"]=CE120P;
+    objtable["CE-126P"]=CE126P;
+    objtable["CE-123P"]=CE123P;
+    objtable["CE-129P"]=CE129P;
+    objtable["CE-140P"]=CE140P;
+    objtable["CE-140F"]=CE140F;
+    objtable["CE-150"]= CE150;
+    objtable["CE-152"]= CE152;
+    objtable["26-3591"]=TANDY263591;
+
+    objtable["Serial Console"]=SerialConsole;
+    objtable["11Pins Cable"]=CABLE11Pins;
+    objtable["Potar"]=POTAR;
+    objtable["Simulator"]=Simulator;
+
+    objtable["CE-1600P"]=CE1600P;
+    objtable["Canon X-07"]=X07;
+    objtable["Canon X-710"]=X710;
+    objtable["PC-E500"]=E500;
+    objtable["PC-E550"]=E550;
+    objtable["PC-G850V"]=G850V;
+    objtable["Casio PB-1000"]=PB1000;
+    objtable["Casio PB-2000C"]=PB2000;
+    objtable["Casio MD-100"]=MD100;
+    objtable["Casio FP-100"]=FP100;
+    objtable["Casio FP-200"]=FP200;
+    objtable["Casio Z-1"]=Z1;
+    objtable["Casio Z-1GR"]=Z1GR;
 }
 
 //
@@ -238,6 +305,10 @@ int MainWindowPockemul::newsession()
     int result = dialogstartup.exec();
     LoadPocket(result);
     return 1;
+}
+
+CPObject * MainWindowPockemul::LoadPocket(QString Id) {
+    return LoadPocket(objtable.value(Id));
 }
 
 CPObject * MainWindowPockemul::LoadPocket(int result) {
@@ -362,72 +433,8 @@ void MainWindowPockemul::CheckUpdates()
 
 void MainWindowPockemul::opensession(QString sessionFN)
 {
-    QHash<QString, Models> objtable;
 
-    objtable["PC-1211"]=PC1211;
-    objtable["PC-1245"]=PC1245;
-    objtable["MC-2200"]=MC2200;
-    objtable["PC-1250"]=PC1250;
-    objtable["PC-1251"]=PC1251;
-    objtable["PC-1251H"]=PC1251H;
-    objtable["PC-1255"]=PC1255;
-    objtable["Tandy PC-3"]=TandyPC3;
-    objtable["Tandy PC-3 (4Ko)"]=TandyPC3EXT;
 
-    objtable["PC-1260"]=PC1260;
-    objtable["PC-1261"]=PC1261;
-    objtable["PC-1262"]=PC1262;
-    objtable["PC-1280"]=PC1280;
-
-    objtable["PC-1350"]=PC1350;
-    objtable["PC-1360"]=PC1360;
-    objtable["PC-1401"]=PC1401;
-    objtable["PC-1402"]=PC1402;
-    objtable["PC-1403"]=PC1403;
-    objtable["PC-1403H"]=PC1403H;
-    objtable["PC-1421"]=PC1421;
-    objtable["PC-1450"]=PC1450;
-    objtable["PC-1475"]=PC1475;
-
-    objtable["PC-1500"]=PC1500;
-    objtable["PC-1500A"]=PC1500A;
-    objtable["Tandy PC-2"]=TandyPC2;
-
-    objtable["PC-1600"]=PC1600;
-
-    objtable["PC-2500"]=PC2500;
-
-    objtable["CE-122"]=CE122;
-    objtable["CE-125"]=CE125;
-    objtable["MP-220"]=MP220;
-    objtable["CE-120P"]=CE120P;
-    objtable["CE-126P"]=CE126P;
-    objtable["CE-123P"]=CE123P;
-    objtable["CE-129P"]=CE129P;
-    objtable["CE-140P"]=CE140P;
-    objtable["CE-140F"]=CE140F;
-    objtable["CE-150"]= CE150;
-    objtable["CE-152"]= CE152;
-    objtable["26-3591"]=TANDY263591;
-
-    objtable["Serial Console"]=SerialConsole;
-    objtable["11Pins Cable"]=CABLE11Pins;
-    objtable["Potar"]=POTAR;
-    objtable["Simulator"]=Simulator;
-
-    objtable["CE-1600P"]=CE1600P;
-    objtable["Canon X-07"]=X07;
-    objtable["Canon X-710"]=X710;
-    objtable["PC-E500"]=E500;
-    objtable["PC-E550"]=E550;
-    objtable["PC-G850V"]=G850V;
-    objtable["Casio PB-1000"]=PB1000;
-    objtable["Casio PB-2000C"]=PB2000;
-    objtable["Casio MD-100"]=MD100;
-    objtable["Casio FP-100"]=FP100;
-    objtable["Casio FP-200"]=FP200;
-    objtable["Casio Z-1"]=Z1;
-    objtable["Casio Z-1GR"]=Z1GR;
 
     QMap<int,CPObject*> map;
 
@@ -634,6 +641,7 @@ void MainWindowPockemul::updateTimer()
 }
 
 void MainWindowPockemul::doZoom(QPoint point,float delta,int step) {
+//    qWarning()<<"mainwindow::doZoom";
     if (((zoom >= 20) && (delta<0)) ||
         ((zoom <300) && (delta >0))){
         int d = (delta>0) ? step : -step;
