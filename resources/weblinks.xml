@@ -73,13 +73,19 @@
     <model value="pc1500">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1500_e.html"/>
         <url desc="Silicium (fr)" link="http://silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=133:sharp-pc-1500&amp;catid=55:calcs&amp;Itemid=29"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC2_OM_GB.pdf"/>
+        <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/PC1500_OM_FR.pdf"/>
     </model>
     <model value="pc1500a">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1500a_e.html"/>
         <url desc="Silicium (fr)" link="http://silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=133:sharp-pc-1500&amp;catid=55:calcs&amp;Itemid=29"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC2_OM_GB.pdf"/>
+        <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/PC1500A_OM_FR.pdf"/>
     </model>
     <model value="pc1600">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1600_e.html"/>
+        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1600_OM_DE.pdf"/>
+        <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/PC1600_OM_FR.pdf"/>
     </model>
     <model value="pc2500">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-2500_e.html"/>

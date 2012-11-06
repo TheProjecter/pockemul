@@ -57,6 +57,7 @@ extern MainWindowPockemul *mainwindow;
      abortPB->setVisible(false);
      progress = new QProgressBar(mainwindow->centralwidget);
      progress->setVisible(false);
+     progress->setFormat("%v / %m");
      connect(abortPB,SIGNAL(clicked()),this,SLOT(abort()));
      resize();
  }
@@ -170,6 +171,10 @@ extern MainWindowPockemul *mainwindow;
      progress->setMinimum(0);
      progress->setMaximum(Total);
      progress->setValue(Received);
+     if (total >1000000) {
+         progress->setFormat(QString("%1 / %2 Mb").arg(Received/1000000.0,0,'g',2).arg(Total/1000000.0,0,'g',2));
+     }
+
      progress->update();
 
  }
