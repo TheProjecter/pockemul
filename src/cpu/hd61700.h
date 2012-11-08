@@ -104,6 +104,9 @@ public:
             void secTimer();
             virtual void execute_set_input(int inputnum, int state);
             QByteArray getimem();
+
+            UINT8          m_reg8bit[8];						// 8bit register (pe, pd, ib, ua, ia, ie, tm, tm)
+
 protected:
     // device-level overrides
     virtual void device_start();
@@ -164,7 +167,7 @@ protected:
     UINT8          m_flags;
     UINT32         m_fetch_addr;
     UINT8          m_regsir[3];							// 5bit register (sx, sy, sz)
-    UINT8          m_reg8bit[8];						// 8bit register (pe, pd, ib, ua, ia, ie, tm, tm)
+    //UINT8          m_reg8bit[8];						// 8bit register (pe, pd, ib, ua, ia, ie, tm, tm)
     UINT16         m_reg16bit[8];						// 16bit register (ix, iy, iz, us, ss, ky, ky, ky)
     UINT8          m_regmain[0x20];						// main registers
     UINT8          m_irq_status;

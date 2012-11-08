@@ -27,7 +27,7 @@ LaunchButtonWidget::LaunchButtonWidget(QWidget *parent,LaunchButtonWidget::Launc
 }
 
 LaunchButtonWidget::~LaunchButtonWidget() {
-    qWarning("test");
+//    qWarning("test");
 }
 
 

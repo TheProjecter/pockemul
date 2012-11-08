@@ -375,6 +375,7 @@ public:
   int    pixelsToMovePerSlide;
 
   QVector<QString> captions;
+  QVector<QString> descriptions;
 
 private:
   PictureFlow* widget;
@@ -443,6 +444,7 @@ void PictureFlowPrivate::setSlideCount(int count)
 {
   slideImages.resize(count);
   captions.resize(count);
+  descriptions.resize(count);
   surfaceCache.clear();
   resetSlides();
   triggerRender();
@@ -749,7 +751,10 @@ void PictureFlowPrivate::render()
     if (!captions.isEmpty())
         painter.drawText( QRect(0,0, buffer.width(), (buffer.height() - slideSize().height())/4),
         Qt::AlignCenter, captions[centerIndex]);
-
+    if (!descriptions.isEmpty())
+        painter.drawText( QRect(0,(buffer.height() - slideSize().height())/4, buffer.width(), (buffer.height() - slideSize().height())/4),
+                          Qt::AlignLeft,
+                          descriptions[centerIndex]);
     painter.end();
 
   }
@@ -1209,6 +1214,15 @@ void PictureFlow::setSlide(int index, const QImage& image)
 void PictureFlow::setSlide(int index, const QPixmap& pixmap)
 {
   d->setSlide(index, pixmap.toImage());
+}
+
+void PictureFlow::setSlideDescription(int index, QString desc)
+{
+  d->descriptions[index] = desc;
+}
+QString PictureFlow::getSlideDescription(int index)
+{
+  return d->descriptions[index];
 }
 
 void PictureFlow::setSlideCaption(int index, QString caption)

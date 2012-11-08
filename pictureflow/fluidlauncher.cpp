@@ -160,13 +160,15 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
                  QStringRef image = attrs.value("image");
                  QStringRef args = attrs.value("args");
                  QStringRef idpocket = attrs.value("idpocket");
+                 QStringRef desc = attrs.value("desc");
 
                  Launcher* newDemo = new Launcher(
                          idpocket.toString(),
                          filename.toString(),
                          name.isEmpty() ? "Unnamed Demo" : name.toString(),
                          image.toString(),
-                         args.toString().split(" "));
+                         args.toString().split(" "),
+                             desc.toString());
                  demoList.append(newDemo);
              }
          } else if(reader.isEndElement() && reader.name() == "demos") {
@@ -257,6 +259,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
          QImage *img = demoList[i]->getImage();
          pictureFlowWidget->setSlide(i, *img);
          pictureFlowWidget->setSlideCaption(i, demoList[i]->getCaption());
+         pictureFlowWidget->setSlideDescription(i,demoList[i]->getDescription());
          delete img;
      }
 

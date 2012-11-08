@@ -124,7 +124,7 @@
     <model value="x07">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/canon/x-07_e.html"/>
         <url desc="Silicium (fr)" link="http://www.silicium.org/oldskool/calc/x07/index.htm"/>
-        <document desc="BASIC reference (fr)" link="http://pockemul.free.fr/Documents/userguide/CarteReferenceBasicX-07.pdf"/>
+        <document desc="BASIC reference (fr)" link="http://pockemul.free.fr/Documents/userguide/X07/CarteReferenceBasicX-07.pdf"/>
     </model>
     <model value="pb1000">
         <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=29&amp;serie=6"/>

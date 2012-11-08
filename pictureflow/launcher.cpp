@@ -44,11 +44,12 @@
 
  #include "launcher.h"
 
- Launcher::Launcher(QString id,QString executableName, QString caption, QString imageName, QStringList args)
+ Launcher::Launcher(QString id,QString executableName, QString caption, QString imageName, QStringList args,QString description)
  {
      idPocket = id;
      imagePath = imageName;
      appCaption = caption;
+     this->description = description;
 
      if (executableName[0] == QLatin1Char('/'))
          executablePath = executableName;
@@ -92,7 +93,10 @@
  {
      return appCaption;
  }
-
+ QString Launcher::getDescription()
+ {
+     return description;
+ }
  void Launcher::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
  {
      Q_UNUSED(exitCode);

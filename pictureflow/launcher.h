@@ -54,13 +54,14 @@
    Q_OBJECT
 
  public:
-     Launcher(QString idpocket,QString executableName, QString caption, QString imageName, QStringList args);
+     Launcher(QString idpocket,QString executableName, QString caption, QString imageName, QStringList args,QString descdription=QString());
      void launch();
      QImage* getImage();
      QString getCaption();
      QString getIdPocket();
      QStringList getArguments();
 
+     QString getDescription();
  public slots:
      void processStarted();
      void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -77,6 +78,7 @@
      QString executablePath;
      QStringList arguments;
      QProcess process;
+     QString description;
  };
 
 

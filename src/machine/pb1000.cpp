@@ -109,13 +109,14 @@ bool Cpb1000::UpdateFinalImage(void) {
 
 bool Cpb1000::init(void)				// initialize
 {
-
+//pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
     CpcXXXX::init();
+//    initExtension();
 
-    ioFreq = 0;
+//    ioFreq = 8000;
 
     QHash<int,QString> lbl;
     lbl[ 4]="A0";
@@ -142,11 +143,13 @@ bool Cpb1000::init(void)				// initialize
     WatchPoint.add(&pCONNECTOR_value,64,30,this,"30 pins connector",lbl);
 
     pdi = 0xfb;
+    m_kb_matrix = 0;
 
     return true;
 }
 
 bool Cpb1000::run() {
+
     if (off) {
         pCONNECTOR->Set_pin(12	,1);
     }
@@ -159,10 +162,21 @@ CpcXXXX::run();
     }
 
 //BUG: Keyboard issue
-//    if (pKEYB->LastKey>0) {
-//        ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
-//    }
+#if 0
+#define IA ((CHD61700*)pCPU)->m_reg8bit[4]
 
+    quint16 ktab[4]= { 0x0000, 0x0080, 0x00C0, 0xF0FF };
+    if (pKEYB->LastKey>0) {
+//        if ((IA & 0x80) != 0)
+        {
+//            qWarning()<<"Key INTR";
+//            if ((getKey()))// & ktab[(IA >> 4) & 0x3]) !=0)
+            {
+                ((CHD61700*)pCPU)->execute_set_input(HD61700_KEY_INT,1);
+            }
+        }
+    }
+#endif
 
     return true;
 }
@@ -277,7 +291,8 @@ void Cpb1000::Reset()
 
     // Init I/O Port memory
     memset((char*)&mem[0x1800],0xff,0x0F);
-//    pdi = 0xdc;
+    m_kb_matrix = 0;
+    pdi = (pdi & 0x03) | 0xf8;
 
 }
 
@@ -339,23 +354,31 @@ void Cpb1000::paintEvent(QPaintEvent *event)
     }
 }
 
+#define IA ((CHD61700*)pCPU)->m_reg8bit[4]
 #define toupper( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
-UINT16 Cpb1000::getKey(void) {
+UINT16 Cpb1000::getKey() {
+
     DWORD ko = 0;
     UINT16 data = 0;
-//qWarning("getkey");
+
 //    AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-1000"));
 
-    switch (m_kb_matrix & 0x0f) {
-        case 0 : ko = 0; break;
+    m_kb_matrix &= 0x0F;
+
+    switch (m_kb_matrix) {
+        case 0: return 0;
         case 13: ko = 0xffff; break;
         case 14:
-        case 15: ko = 0; break;
+        case 15: return 0; break;
         default: ko = (1<<(m_kb_matrix-1)); break;
     }
+
+
+
+
 AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(ko,4,16,QChar('0')));
-//    if ((pKEYB->LastKey) )
+    if ((pKEYB->LastKey) )
     {
 
 //AddLog(LOG_KEYBOARD,tr("GetKEY : %1").arg(ko,4,16,QChar('0')));
@@ -496,6 +519,9 @@ AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(k
 
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"%02X\n",data);
 
+//    if ((pKEYB->LastKey) ) qWarning()<<"getkey pb1000:"<<pKEYB->LastKey<<" ko:"<<QString("%1").arg(ko,4,16,QChar('0'))<<
+//                                       " data:"<<QString("%1").arg(data,4,16,QChar('0'));
+
     return data;
 
 }
@@ -503,6 +529,7 @@ AddLog(LOG_KEYBOARD,tr("matrix=%1 ko=%2").arg(m_kb_matrix,2,16,QChar('0')).arg(k
 void Cpb1000::setKey(UINT8 data) {
 //    AddLog(LOG_KEYBOARD,tr("set matrix to %1").arg(data,2,16,QChar('0')));
     m_kb_matrix = data;
+//    if (m_kb_matrix & 0x80) qWarning()<<"INTR";
 }
 
 

@@ -154,6 +154,8 @@
    virtual void setSlideCaption(int index, QString caption);
    virtual QString getSlideCaption(int index);
 
+   virtual QString getSlideDescription(int index);
+   virtual void setSlideDescription(int index, QString desc);
    /*!
      Sets a pixmap for specified slide. If the slide already exists,
      it will be replaced.
@@ -164,6 +166,7 @@
      Returns the index of slide currently shown in the middle of the viewport.
    */
    int currentSlide() const;
+
 
  public slots:
 

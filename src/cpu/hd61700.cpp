@@ -20,6 +20,7 @@
 
 ******************************************************************************/
 
+#include <QDebug>
 
 #define CLEAR_LINE 0
 //#include "emu.h"
@@ -247,7 +248,7 @@ void CHD61700::device_reset()
     prev_ua = 0;
     REG_PE = 0;
 
-
+//    REG_KY = 0x0C00;
 }
 
 
@@ -387,10 +388,11 @@ void CHD61700::step(void) {
         execute_set_input(HD61700_ON_INT,1);
     }
     // Pulse Timer
-    if (pPC->pTIMER->msElapsedId(PULSE_TIMER) >= pulseInterval) {
+    if (pPC->pTIMER->msElapsedId(PULSE_TIMER) > pulseInterval) {
         if (fp_log) fprintf(fp_log,"PULSE TIMER\n");
 //        AddLog(LOG_KEYBOARD,"PULSE TIMER");
-        if ((REG_IA & 0x80) == 0) execute_set_input(HD61700_KEY_INT,1);
+        if ((REG_IA & 0x80) == 0)
+            execute_set_input(HD61700_KEY_INT,1);
         if ((REG_IA & 40) == 0) {
             pulseInterval = 4;
         }
@@ -401,12 +403,12 @@ void CHD61700::step(void) {
     }
 
     // Keyboard timer
-    if (pPC->pTIMER->msElapsedId(KEY_TIMER) >= 4) {
-        if (fp_log) fprintf(fp_log,"KEYBOARD TIMER\n");
-        AddLog(LOG_TEMP,"KEYBOARD TIMER");
-        pPC->pTIMER->resetTimer(KEY_TIMER);
-        execute_set_input(HD61700_KEY_INT,1);
-    }
+//    if (pPC->pTIMER->msElapsedId(KEY_TIMER) >= 4) {
+//        if (fp_log) fprintf(fp_log,"KEYBOARD TIMER\n");
+//        AddLog(LOG_TEMP,"KEYBOARD TIMER");
+//        pPC->pTIMER->resetTimer(KEY_TIMER);
+//        execute_set_input(HD61700_KEY_INT,1);
+//    }
 }
 
 //-------------------------------------------------
