@@ -161,7 +161,7 @@ CpcXXXX::run();
         pKEYB->LastKey = 0;
     }
 
-//BUG: Keyboard issue
+
 #if 0
 #define IA ((CHD61700*)pCPU)->m_reg8bit[4]
 

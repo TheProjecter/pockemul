@@ -1,4 +1,4 @@
-
+//TODO: Manage keyboard overlay
 
 
 #include <QtGui>
@@ -71,6 +71,8 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
     closed = false;
 
+    overlay = new QImage(":/pb2000/coverlay.bmp");
+
 }
 
 Cpb2000::~Cpb2000() {
@@ -88,6 +90,10 @@ bool Cpb2000::UpdateFinalImage(void) {
     // POWER SWITCH
     painter.drawImage(0,29,BackgroundImageBackup->copy(0,29,10,95).mirrored(false,!off));
 
+
+    // DRAW overlay depending of inserted module
+    painter.drawImage(55,218,overlay->copy(0,0,432,6));
+    painter.drawImage(55,251,overlay->copy(0,6,432,6));
     painter.end();
 
     return true;
@@ -103,18 +109,26 @@ void Cpb2000::TurnON(void){
     if (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) {
         SlotList[4].setFileName(":/pb2000/om51p.bin");
         SlotList[4].setLabel("PROLOG");
+        overlay = new QImage(":/pb2000/prologoverlay.png");
         Mem_Load(4);
     }
+    else
     if (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) {
         SlotList[4].setFileName(":/pb2000/om53b.bin");
         SlotList[4].setLabel("BASIC");
+        overlay = new QImage(":/pb2000/basicoverlay.bmp");
         Mem_Load(4);
     }
+    else
     if (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) {
         SlotList[4].setFileName(":/pb2000/om55l.bin");
         SlotList[4].setLabel("LISP");
+        overlay = new QImage(":/pb2000/lispoverlay.bmp");
         Mem_Load(4);
     }
+    else
+        overlay = new QImage(":/pb2000/coverlay.bmp");
+
 
 
     pCPU->init();

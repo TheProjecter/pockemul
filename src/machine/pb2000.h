@@ -36,6 +36,9 @@ public:
     virtual WORD Get_16rPC(DWORD adr);
     virtual void MemBank(DWORD *d);
 
+private:
+    QImage *overlay;
+
 };
 
 #endif // CPB2000_H
