@@ -1,4 +1,8 @@
-//TODO: Manage keyboard overlay
+/* BASED ON Piotr Piatek emulator  (http://www.pisi.com.pl/piotr433/index.htm)
+ *
+ *
+ *
+ */
 
 
 #include <QtGui>
@@ -90,7 +94,7 @@ bool Cpb2000::UpdateFinalImage(void) {
     // POWER SWITCH
     painter.drawImage(0,29,BackgroundImageBackup->copy(0,29,10,95).mirrored(false,!off));
 
-
+    //TODO: Manage keyboard overlay
     // DRAW overlay depending of inserted module
     painter.drawImage(55,218,overlay->copy(0,0,432,6));
     painter.drawImage(55,251,overlay->copy(0,6,432,6));

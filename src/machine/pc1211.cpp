@@ -165,6 +165,19 @@ bool Cpc1211::run()
         case 'D':
         case 'F':
         case 'G':
+        case 'H':
+        case 'J':
+        case 'K':
+        case 'L':
+        case '=':
+        case 'Z':
+        case 'X':
+        case 'C':
+        case 'V':
+        case 'B':
+        case 'N':
+        case 'M':
+        case ' ':
             if (pBASIC->CheckMode(CTinyBasic::DEF)) {
                 inputBuffer.clear();
                 shiftFlag=false;

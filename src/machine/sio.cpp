@@ -397,7 +397,7 @@ bool Csio::inReadBit(void)
                     Sii_wait+=Sii_LfWait*pTIMER->pPC->getfrequency()/1000;
                     AddLog(LOG_SIO,tr("LF found, wait %1 ms").arg(Sii_LfWait));
                 }
-				
+
                 baInput.remove(0,1);										// Next Char
                 Sii_ndx++;
                 if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(4);

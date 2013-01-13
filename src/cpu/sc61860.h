@@ -86,7 +86,7 @@ union {
 
 
 
-class Csc:public CCPU{
+class CSC61860:public CCPU{
 public:
 	bool	init(void);						//initialize
 	bool	exit(void);						//end
@@ -124,10 +124,10 @@ public:
     DWORD	get_PC(void){return(get_reg(REG_PC));}				//get Program Counter
 	void	Regs_Info(UINT8);
     bool    getDisp() { return disp_on;}
-    virtual const char*	GetClassName(){ return("Csc");}
+    virtual const char*	GetClassName(){ return("CSC61860");}
 
-    Csc(CPObject *parent);
-    virtual ~Csc();
+    CSC61860(CPObject *parent);
+    virtual ~CSC61860();
 
 private:
     bool	div500;
@@ -320,11 +320,6 @@ private:
     bool first_pass;
 };
 
-class CSC61860:public Csc{
-public:
-    const char*	GetClassName(){ return("CSC61860");}
-    CSC61860(CPObject *parent );
-};
 
 
 #endif

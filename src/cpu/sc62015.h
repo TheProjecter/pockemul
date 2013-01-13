@@ -159,18 +159,25 @@ public:
 
 
 
+    void compute_xout();
 private:
     bool Mem_Load(BYTE s);
     bool EMS_Load(void);
 	void Mem_Save(BYTE s);
 	void EMS_Save(void);
+
+    bool	div500;
+    bool	div2;
+    bool	Xin,Xout;
+    qint64	start2khz;
+    qint64	start4khz;
     //FILE *fp_log;			// file pointer to log file
 	FILE *fp_status;		//pointer to status file
 
     BYTE	pre_1,pre_2;		/* pre byte mode */
     SCREG	reg;				/* register structure */
-    bool div500;
-    bool div2;
+
+
     qint64 ticks;
     qint64 ticks2;
 	

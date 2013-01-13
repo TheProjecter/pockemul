@@ -115,7 +115,8 @@ inline void Csc62015::AddState(BYTE n)
 #endif
 
 
-//    backgroundTasks();
+    compute_xout();
+    pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
 
 }
 
@@ -168,8 +169,8 @@ inline void Csc62015::Chk_imemAdr_Read(BYTE d,BYTE len)
         case IMEM_EIH:
         case IMEM_EIL:
         case IMEM_EOH:
-        case IMEM_EOL: if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
-                        AddLog(LOG_PRINTER,tr("READ [%1]").arg(d,2,16,QChar('0')));
+        case IMEM_EOL: //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
+//                        AddLog(LOG_PRINTER,tr("READ [%1]").arg(d,2,16,QChar('0')));
                         break;
         }
         d++;
@@ -193,11 +194,12 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
         case IMEM_EIH:
         case IMEM_EIL:
         case IMEM_EOH:
-        case IMEM_EOL: if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
+        case IMEM_EOL: //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(data &0xff);
                 AddLog(LOG_PRINTER,tr("WRITE [%1] = %2").arg(d,2,16,QChar('0')).arg(data,6,16,QChar('0')));
                 break;
         }
         d++;
+        data>>=8;
     }
 }
 
@@ -3105,6 +3107,10 @@ void Csc62015::Reset(void) {
     imem[IMEM_SCR] = 0;
     imem[IMEM_SSR] &= 0xFB;
     imem[IMEM_USR] |= 0x18;
+    imem[IMEM_EIH] = 0;
+    imem[IMEM_EIL] = 0;
+    imem[IMEM_EOH] = 0;
+    imem[IMEM_EOL] = 0;
     reg.x.p=pPC->Get_20(VECT_RESET);
 
 }
@@ -3560,10 +3566,10 @@ void Csc62015::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "sc62015")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
-            memcpy((char *) &reg,ba_reg.data(),REG_LEN);
-            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
-            memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
+//            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+//            memcpy((char *) &reg,ba_reg.data(),REG_LEN);
+//            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+//            memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
         }
         xmlIn->skipCurrentElement();
     }
@@ -3662,24 +3668,108 @@ void Csc62015::Regs_Info(UINT8 Type)
 
 bool	Csc62015::Get_Xin(void)
 {
-//	return(Xin);
+    Xin = (imem[IMEM_SSR] >> 1) & 0x01;
+    return(Xin);
 }
 
 void Csc62015::Set_Xin(bool data)
 {
 
-//	Xin = data;
+    Xin = data;
+    setImemBit(IMEM_SSR,2,data);
 }
 
 bool Csc62015::Get_Xout(void)
 {
-//	return(Xout);
+    return(Xout);
 }
 
 void Csc62015::Set_Xout(bool data)
 {
-//	Xout = data;
+    Xout = data;
 }
+
+INLINE void Csc62015::compute_xout(void)
+{
+    qint64 delta;
+    qint64 wait2khz = pPC->getfrequency()/1000/4;
+    qint64 wait4khz = pPC->getfrequency()/1000/8;
+
+    switch (imem[IMEM_SCR]>>4)
+    {
+        case 0x00 : Xout = false;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT LOW\n");
+                    break;
+
+        case 0x01 : Xout = true;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT HIGH\n");
+                    break;
+
+        case 0x02 : // 2khz
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT 2Khz\n");
+                    if (start2khz == 0){
+                        start2khz = pPC->pTIMER->state;
+                        if (fp_log) fprintf(fp_log,"XOUT 2Khz INIT\n");
+                        Xout = true;
+                    }
+                    delta = pPC->pTIMER->state - start2khz;
+                    //while
+                    if ((pPC->pTIMER->state - start2khz) >= wait2khz){
+                        Xout = !Xout;
+                        start2khz += wait2khz;
+                        if (fp_log) fprintf(fp_log,"XOUT 2Khz switch\n");
+                    }
+                    break;
+
+        case 0x03 : // 4khz
+                    start2khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT 4Khz\n");
+                    if (start4khz==0)
+                    {
+                        start4khz = pPC->pTIMER->state;
+                        if (fp_log) fprintf(fp_log,"XOUT 4Khz INIT\n");
+                        Xout = true;
+                    }
+                    delta = pPC->pTIMER->state - start4khz;
+                    //while
+                    if (( pPC->pTIMER->state - start4khz) >= wait4khz)
+                    {
+                        Xout = !Xout;
+                        start4khz += wait4khz;
+//                        if (fp_tmp) fprintf(fp_tmp,"%s\n",tr("switch XOUT to %1 : wait = %2  -  delta=%3  new:%4 - old:%5 ").arg(Xout).arg(wait4khz).arg(pPC->pTIMER->state - start4khz).arg(pPC->pTIMER->state).arg(start4khz).toLocal8Bit().data());
+
+
+                        if (fp_log) fprintf(fp_log,"XOUT 4Khz switch\n");
+                    }
+                    break;
+
+        case 0x04 : Xout = false;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT LOW");
+                    break;
+
+        case 0x05 : Xout = true;
+                    start2khz = 0;
+                    start4khz = 0;
+                    //if (fp_log) fprintf(fp_log,"XOUT HIGH\n");
+                    break;
+
+        case 0x06 :
+        case 0x07 : // Xin -> Xout
+                    Xout = Xin;
+                    start2khz = 0;
+                    start4khz = 0;
+                    break;
+    }
+
+}
+
 
 DWORD Csc62015::get_PC(void)
 {

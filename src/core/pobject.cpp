@@ -850,7 +850,7 @@ int CPObject::mapKey(QKeyEvent * event) {
 //    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
 //    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}
 
-    qWarning()<<"key:"<<key;
+//    qWarning()<<"key:"<<key;
     return key;
 }
 

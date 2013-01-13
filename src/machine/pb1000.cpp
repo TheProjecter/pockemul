@@ -1,4 +1,8 @@
-
+/* BASED ON Piotr Piatek emulator  (http://www.pisi.com.pl/piotr433/index.htm)
+ *
+ *
+ *
+ */
 
 #include <QtGui>
 

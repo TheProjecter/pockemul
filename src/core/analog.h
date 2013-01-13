@@ -7,7 +7,7 @@ typedef	struct
 {
 	qint64	values;
 	qint64	state;
-	qint8	marker;
+    quint8	marker;
 } TAnalog_Data;
 
 
@@ -39,7 +39,7 @@ class CData:public QObject
     	int maxSize;
     	float				timeUnit;
 private:
-    	qint8				Marker;
+        quint8				Marker;
 public:
         QList<TAnalog_Data> dataset;
 		

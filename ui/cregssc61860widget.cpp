@@ -20,7 +20,7 @@ void Cregssc61860Widget::refresh()
 {
     if (!pCPU) return;
 
-    Csc *cpu = (Csc *) pCPU;
+    CSC61860 *cpu = (CSC61860 *) pCPU;
     ui->reg00->setText(QString("%1").arg(cpu->imem[0],2,16,QChar('0')));
     ui->reg01->setText(QString("%1").arg(cpu->imem[1],2,16,QChar('0')));
     ui->reg02->setText(QString("%1").arg(cpu->imem[2],2,16,QChar('0')));

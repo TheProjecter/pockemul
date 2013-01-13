@@ -326,6 +326,8 @@ bool Cce126::Set_Connector(void) {
 #define BASIC_MODE  10
 
 #define CE126LATENCY (pTIMER->pPC->getfrequency()/3200)
+#define RAISE_MT_OUT1   ((Previous_MT_OUT1 == DOWN) && (MT_OUT1 == UP ))
+
 //#define CE126LATENCY (getfrequency()/3200)
 bool Cce126::run(void)
 {
@@ -356,13 +358,19 @@ bool Cce126::run(void)
     //FIXME: Still not working with old generation pockets
 #if 0
 
-    if ((code_transfer_step == BASIC_MODE) || (code_transfer_step == INIT_MODE)) {
-                if ( (Previous_MT_OUT1 == DOWN) && (MT_OUT1 == UP ) && (D_OUT==DOWN))
-                {
-                    code_transfer_step = 10;
-                    pTIMER->resetTimer(0);
+    if ( RAISE_MT_OUT1 && (D_OUT==DOWN))
+    {
+        code_transfer_step = BASIC_MODE;
+        pTIMER->resetTimer(0);
 //                    AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(50);
+    }
+
+    if (code_transfer_step == BASIC_MODE) {
+
+                if (D_OUT==UP) {
+                    code_transfer_step=INIT_MODE;
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(51);
                 }
                 else if ( (Previous_MT_OUT1 == UP) && (MT_OUT1 == UP ) && (pTIMER->msElapsedId(0)>2))
                 {
@@ -399,6 +407,7 @@ bool Cce126::run(void)
                         // Code transfer sequence started
                         // Raise ACK
                         code_transfer_step = 2;
+                        AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                         ACK = UP;
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(9);
                     }
@@ -421,7 +430,7 @@ bool Cce126::run(void)
                     if (bit) t|=0x80;
                     if((c=(++c)&7)==0)
                     {
-                        AddLog(LOG_PRINTER,tr("device code printer : %1").arg(t,2,16) );
+                        AddLog(LOG_CONSOLE,tr("device code printer : %1\n").arg(t,2,16) );
 
                         //Printer(t);
                         ACK = DOWN;
@@ -429,9 +438,11 @@ bool Cce126::run(void)
                         if ((t == internal_device_code)) {
                             device_code = t;
                             code_transfer_step=4;
+                            AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                         }
                         else {
                             code_transfer_step = 6;
+                            AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                             pTIMER->resetTimer(1);
                             //lastState = pTIMER->state;
                         }
@@ -441,6 +452,7 @@ bool Cce126::run(void)
                     else {
                         ACK = DOWN;
                         code_transfer_step=3;
+                        AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                         pTIMER->resetTimer(1);//lastState=pTIMER->state;
                         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(18);
                     }
@@ -448,14 +460,16 @@ bool Cce126::run(void)
                 break;
     case 3:     if (pTIMER->msElapsedId(1)>2) {
                     code_transfer_step=2;
+                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                     // wait 2 ms and raise ACK
                     ACK = UP;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(16);
                 }
                 break;
-    case 4:     if ((BUSY == DOWN)&&(MT_OUT1 == DOWN)) {
+    case 4:     if ((BUSY == DOWN)){//&&(MT_OUT1 == DOWN)) {
                     ACK = UP;
                     code_transfer_step=5;
+                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                     pTIMER->resetTimer(1);//lastState=pTIMER->state;//time.restart();
                     t=0; c=0;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(15);
@@ -464,6 +478,7 @@ bool Cce126::run(void)
     case 5:     if (pTIMER->msElapsedId(1)>9) {
                     ACK = DOWN;
                     code_transfer_step=INIT_MODE;
+                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
                     pTIMER->resetTimer(1);//lastState=pTIMER->state;
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(14);
                 }
@@ -471,6 +486,7 @@ bool Cce126::run(void)
     case 6:     if ((pTIMER->msElapsedId(1)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
                     ACK = DOWN;
                     code_transfer_step=INIT_MODE;
+                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
 //                    pTIMER->resetTimer(1);
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(19);
 
@@ -506,7 +522,7 @@ bool Cce126::run(void)
                 {
                     t=0;
                     c=0;
-                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
+                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
                 }
 
                 if (BUSY != Previous_BUSY )	//check for BUSY  - F03
@@ -539,7 +555,7 @@ bool Cce126::run(void)
 						if (bit) t|=0x80;
 						if((c=(++c)&7)==0)
 						{
-							AddLog(LOG_PRINTER,tr("send char to printer : %1").arg(t,2,16) );
+                            AddLog(LOG_CONSOLE,tr("send char to printer : %1").arg(t,2,16) );
 							Printer(t);
 							t=0; c=0;
                             if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(5);

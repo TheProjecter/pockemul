@@ -99,6 +99,7 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     start2khz = 0;
     start4khz = 0;
     Xin=Xout=false;
+    tmp_state=0;
 
 }
 
@@ -133,14 +134,42 @@ bool Ce500::init(void) {
 //    pRP5C01->init();
 
     WatchPoint.remove(this);
-    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
+    QHash<int,QString> lbl;
+    lbl[1]="MT_OUT2";
+    lbl[2]="GND";
+    lbl[3]="VGG";
+    lbl[4]="BUSY";
+    lbl[5]="D_OUT";
+    lbl[6]="MT_IN";
+    lbl[7]="MT_OUT1";
+    lbl[8]="D_IN";
+    lbl[9]="ACK";
+    lbl[10]="SEL2";
+    lbl[11]="SEL1";
+    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector",lbl);
 
 //	if(emsmode!=0) EMS_Load();
 
     return true;
 }
 
+#define GET_IMEM_BIT(adr,Bit) ((pCPU->imem[adr] & (1<<((Bit)-1))) ? 1:0)
+
 bool Ce500::run(void) {
+
+#if 0
+    //HACK : puul down D_OUT after 5ms
+
+    if (pCPU->imem[IMEM_EOL]&0x10) {
+        if (tmp_state==0) tmp_state = pTIMER->state;
+        if (pTIMER->msElapsed(tmp_state)>5) {
+            AddLog(LOG_PRINTER,"init");
+            pCPU->setImemBit(IMEM_EOL,5,0);
+            tmp_state=0;
+        }
+    }
+#endif
+
     CpcXXXX::run();
 
 
@@ -251,26 +280,28 @@ INLINE void Ce500::computeSound(void)
 }
 
 
-#define GET_IMEM_BIT(adr,Bit) ((pCPU->imem[adr] & (1<<((Bit)-1))) ? 1:0)
+
 
 bool Ce500::Set_Connector(void)
 {
-    for (int i=1;i<=8;i++) {
-        pCONNECTOR->Set_pin(i	,GET_IMEM_BIT(IMEM_EOL,i));
-    }
-    for (int i=1;i<=3;i++) {
-        pCONNECTOR->Set_pin(8+i	,GET_IMEM_BIT(IMEM_EOH,i));
-    }
+
+    SET_PIN(PIN_VGG		,1);
+    SET_PIN(PIN_BUSY,   GET_IMEM_BIT(IMEM_EOL,7));
+    SET_PIN(PIN_D_OUT,  GET_IMEM_BIT(IMEM_EOH,3));
+    SET_PIN(PIN_SEL2,   GET_IMEM_BIT(IMEM_EOL,5));
+    SET_PIN(PIN_MT_OUT1,pCPU->Get_Xout());
+
 
     return(1);
 }
 
 bool Ce500::Get_Connector(void)
 {
-//	Set_Port_Bit(PORT_B,8,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB7
+
+
 //    pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_D_IN));
     pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_ACK));
-//	pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+    pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
 
     return(1);
 }
@@ -818,7 +849,7 @@ BYTE Ce500::getKey()
     }
 
     if (KEY(K_BRK)) {
-//        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_ONKEY);
+        ((Csc62015*)pCPU)->opr_imem(IMEM_ISR,OPR_OR,INT_ONKEY);
         pCPU->setImemBit(IMEM_SSR,4,1);
     }
     else

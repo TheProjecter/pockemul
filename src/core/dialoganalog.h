@@ -33,8 +33,8 @@ public:
 	int		getRightMarker() ;
 	void	setRightMarker(int markerPosition);
 
-    void    setMarker(qint8);
-    qint8   getMarker(void);
+    void    setMarker(quint8);
+    quint8   getMarker(void);
 
 	void	drawMarkers(QPainter* painter);
 	void	drawLeftMarker(QPainter* painter);

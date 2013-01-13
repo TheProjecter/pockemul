@@ -92,11 +92,11 @@ void dialogAnalog::slotMarker(void)
 	dataplot.Marker = 1;
 }
 
-void    dialogAnalog::setMarker(qint8 val) {
+void    dialogAnalog::setMarker(quint8 val) {
     dataplot.Marker = val;
 }
 
-qint8   dialogAnalog::getMarker(void) {
+quint8 dialogAnalog::getMarker(void) {
     return dataplot.Marker;
 }
 
@@ -325,7 +325,7 @@ void dialogAnalog::fillPixmap(CData *data, QPen *dataPen)
                 QFont textFont;
                 textFont.setPixelSize(10);
                 painter.setFont(textFont);
-                painter.drawText(X1, 11, QString::number(plot.marker));
+                painter.drawText(X1, 11, QString::number(plot.marker,10));
                 painter.setPen(*dataPen);
             }
         }

@@ -58,6 +58,7 @@ protected:
 
 private:
     bool Xin,Xout,start2khz,start4khz;
+    qint64 tmp_state;
 
 
 };

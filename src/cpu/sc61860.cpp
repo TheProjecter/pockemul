@@ -29,7 +29,7 @@ extern FILE *fp_tmp;
 #define		XTICK2      ( pPC->getfrequency() / 1000 * 2)       // 2ms counter
 #define		XTICKRESET  ( pPC->getfrequency() / 2)              // Reset laptime (0.5s)
 
-Csc::Csc(CPObject *parent)	: CCPU(parent)
+CSC61860::CSC61860(CPObject *parent)	: CCPU(parent)
 {				//[constructor]
     end=0;				//program end?(0:none, 1:end)
     cpulog=0;				//execute log?(0:off, 1:on)
@@ -50,18 +50,20 @@ Csc::Csc(CPObject *parent)	: CCPU(parent)
     DASMLOG=0;
     first_pass = true;
     pDEBUG	= new Cdebug_sc61860(parent);
-
+    imemsize = 0x60;
+    regwidget = (CregCPU*) new Cregssc61860Widget(parent,this);
+    regwidget->hide();
     start2khz = 0;
     start4khz = 0;
     wait_loop_running = cup_loop_running = cdn_loop_running = false;
     op_local_counter = 0;
 }
 
-Csc::~Csc() {
+CSC61860::~CSC61860() {
 
 }
 
-INLINE void Csc::AddState(BYTE n)
+INLINE void CSC61860::AddState(BYTE n)
 {
 	pPC->pTIMER->state+=(n);
 
@@ -103,32 +105,32 @@ INLINE void Csc::AddState(BYTE n)
 /*  RETURN:none																 */
 /*****************************************************************************/
 
-INLINE void Csc::Chk_imemAdr(BYTE d,BYTE len)
+INLINE void CSC61860::Chk_imemAdr(BYTE d,BYTE len)
 {
 }
 
-bool	Csc::Get_Xin(void)
+bool	CSC61860::Get_Xin(void)
 {
 	return(Xin);
 }
 
-void Csc::Set_Xin(bool data)
+void CSC61860::Set_Xin(bool data)
 {
 
 	Xin = data;
 }
 
-INLINE bool Csc::Get_Xout(void)
+INLINE bool CSC61860::Get_Xout(void)
 {
 	return(Xout);
 }
 
-void Csc::Set_Xout(bool data)
+void CSC61860::Set_Xout(bool data)
 {
 	Xout = data;
 }
 extern FILE	*fp_tmp;
-INLINE void Csc::compute_xout(void)
+INLINE void CSC61860::compute_xout(void)
 {
 	qint64 delta;
 	qint64 wait2khz = pPC->getfrequency()/1000/4;
@@ -215,12 +217,12 @@ INLINE void Csc::compute_xout(void)
 /*  ENTRY :BYTE a=internal RAM address										 */
 /*  RETURN:(BYTE(8),WORD(16),DWORD(20,24) data)								 */
 /*****************************************************************************/
-INLINE BYTE Csc::Get_i8(BYTE adr)
+INLINE BYTE CSC61860::Get_i8(BYTE adr)
 {
     if (fp_log) fprintf(fp_log,"LECTURE INT [%02x]=%02x (%c)\n",adr,imem[adr],imem[adr]);
 	return(imem[adr]);
 }
-INLINE WORD Csc::Get_i16(BYTE adr)
+INLINE WORD CSC61860::Get_i16(BYTE adr)
 {
     //if (fp_log) fprintf(fp_log,"LECTURE INT [%02x]=%04x (%c)(%c)\n",adr,imem[adr]+(imem[adr+1]<<8),imem[adr],(imem[adr+1]<<8));
     return(imem[adr]+(imem[adr+1]<<8));
@@ -230,12 +232,12 @@ INLINE WORD Csc::Get_i16(BYTE adr)
 /* Set data to imem[]														 */
 /*  ENTRY :BYTE a=internal RAM address, BYTE(8),WORD(16),DWORD(20,24) d=data */
 /*****************************************************************************/
-INLINE void Csc::Set_i8(BYTE adr,BYTE d)
+INLINE void CSC61860::Set_i8(BYTE adr,BYTE d)
 {
     if (fp_log) fprintf(fp_log,"ECRITURE INT [%02x]=%02x (%c)\n",adr,d,d);
 	imem[adr] = d;
 }
-INLINE void Csc::Set_i16(BYTE adr,WORD d)
+INLINE void CSC61860::Set_i16(BYTE adr,WORD d)
 {
     //if (fp_log) fprintf(fp_log,"ECRITURE INT [%04x]=%04x (%c)(%c)\n",adr,d,(BYTE) d),(BYTE) (d>>8);
 	imem[adr  ]	=(BYTE) d;
@@ -247,7 +249,7 @@ INLINE void Csc::Set_i16(BYTE adr,WORD d)
 /*  ENTRY :BYTE r=register No.(0-7)											 */
 /*  RETURN:(BYTE(8),WORD(16),DWORD(20) data)								 */
 /*****************************************************************************/
-INLINE  DWORD Csc::Get_r(BYTE r)
+INLINE  DWORD CSC61860::Get_r(BYTE r)
 {
 	switch(r & 7)
 	{
@@ -268,7 +270,7 @@ INLINE  DWORD Csc::Get_r(BYTE r)
 /* Set register data														 */
 /*  ENTRY :BYTE r=register No.(0-7), BYTE(8),WORD(16),DWORD(20) d=data		 */
 /*****************************************************************************/
-INLINE  void Csc::Set_r(BYTE r,DWORD d)
+INLINE  void CSC61860::Set_r(BYTE r,DWORD d)
 {
 	switch(r&7)
 	{
@@ -290,14 +292,14 @@ INLINE  void Csc::Set_r(BYTE r,DWORD d)
 DWORD	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
 DWORD	mask_c[]={0,MASK_8+1,MASK_16+1,MASK_20+1,MASK_24+1};
 
-INLINE void Csc::Chk_Flag(DWORD d,BYTE len)
+INLINE void CSC61860::Chk_Flag(DWORD d,BYTE len)
 {
 
 	reg.r.z = ( (d & mask_z[len])==0 ) ? 1 : 0;
 	reg.r.c = ( (d & mask_c[len])==0 ) ? 0 : 1;
 }
 
-INLINE void Csc::Chk_Zero(DWORD d,BYTE len)
+INLINE void CSC61860::Chk_Zero(DWORD d,BYTE len)
 {
 	reg.r.z = ( (d & mask_z[len])==0 ) ? 1 : 0;
 }
@@ -334,7 +336,7 @@ INLINE WORD hex2bcd(BYTE d)
 //--------------------------
 //	LII n		n -> I
 //--------------------------
-INLINE void Csc::Op_00(void)
+INLINE void CSC61860::Op_00(void)
 {
     I_REG_I = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LII %1").ARG2x(I_REG_I));
@@ -344,7 +346,7 @@ INLINE void Csc::Op_00(void)
 //--------------------------
 //	LIJ n		n -> J
 //--------------------------
-INLINE void Csc::Op_01(void)
+INLINE void CSC61860::Op_01(void)
 {
     I_REG_J = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIJ %1").ARG2x(I_REG_J));
@@ -354,7 +356,7 @@ INLINE void Csc::Op_01(void)
 //--------------------------
 //	LIA n		n -> A
 //--------------------------
-INLINE void Csc::Op_02(void)
+INLINE void CSC61860::Op_02(void)
 {
     I_REG_A = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIA %1").ARG2x(I_REG_A));
@@ -364,7 +366,7 @@ INLINE void Csc::Op_02(void)
 //--------------------------
 //	LIB n		n -> B
 //--------------------------
-INLINE void Csc::Op_03(void)
+INLINE void CSC61860::Op_03(void)
 {
     I_REG_B = pPC->Get_PC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIB %1").ARG2x(I_REG_B));
@@ -374,7 +376,7 @@ INLINE void Csc::Op_03(void)
 //--------------------------
 //	IX
 //--------------------------
-INLINE void Csc::Op_04(void)
+INLINE void CSC61860::Op_04(void)
 {
     reg.r.q=I_REG_Xh;
 	if (++I_REG_Xl==0) I_REG_Xh++;
@@ -385,7 +387,7 @@ INLINE void Csc::Op_04(void)
 //--------------------------
 //	DX
 //--------------------------
-INLINE void Csc::Op_05(void)
+INLINE void CSC61860::Op_05(void)
 {
     reg.r.q=I_REG_Xh;
 	if (--I_REG_Xl==0xff) I_REG_Xh--;
@@ -396,7 +398,7 @@ INLINE void Csc::Op_05(void)
 //--------------------------
 //	IY
 //--------------------------
-INLINE void Csc::Op_06(void)
+INLINE void CSC61860::Op_06(void)
 {
     reg.r.q=I_REG_Yh;
 	if (++I_REG_Yl==0) I_REG_Yh++;
@@ -408,7 +410,7 @@ INLINE void Csc::Op_06(void)
 //--------------------------
 //	DY
 //--------------------------
-INLINE void Csc::Op_07(void)
+INLINE void CSC61860::Op_07(void)
 {
     reg.r.q=I_REG_Yh;
 	if (--I_REG_Yl==0xff) I_REG_Yh--;
@@ -421,7 +423,7 @@ INLINE void Csc::Op_07(void)
 //--------------------------
 //	MVW
 //--------------------------
-INLINE void Csc::Op_08(void)
+INLINE void CSC61860::Op_08(void)
 {
 	BYTE l;
 	l = I_REG_I;
@@ -441,7 +443,7 @@ INLINE void Csc::Op_08(void)
 //--------------------------
 //	MVB
 //--------------------------
-INLINE void Csc::Op_0a(void)
+INLINE void CSC61860::Op_0a(void)
 {
 	BYTE l;
 	l = I_REG_J;
@@ -460,7 +462,7 @@ INLINE void Csc::Op_0a(void)
 //--------------------------
 //	EXW
 //--------------------------
-INLINE void Csc::Op_09(void)
+INLINE void CSC61860::Op_09(void)
 {
 	BYTE t;
 	BYTE l;
@@ -483,7 +485,7 @@ INLINE void Csc::Op_09(void)
 //--------------------------
 //	EXB
 //--------------------------
-INLINE void Csc::Op_0b(void)
+INLINE void CSC61860::Op_0b(void)
 {
 	BYTE t;
 	BYTE l;
@@ -505,7 +507,7 @@ INLINE void Csc::Op_0b(void)
 //--------------------------
 // ADN
 //--------------------------
-INLINE void Csc::Op_0c(void)
+INLINE void CSC61860::Op_0c(void)
 {
 	BYTE	d,b;
 	WORD	w;
@@ -540,7 +542,7 @@ INLINE void Csc::Op_0c(void)
 //--------------------------
 // SBN
 //--------------------------
-INLINE void Csc::Op_0d(void)
+INLINE void CSC61860::Op_0d(void)
 {
 	BYTE	b;
 	WORD	w;
@@ -570,7 +572,7 @@ INLINE void Csc::Op_0d(void)
 //--------------------------
 // ADW
 //--------------------------
-INLINE void Csc::Op_0e(void)
+INLINE void CSC61860::Op_0e(void)
 {
 	BYTE	b;
 	WORD	w;
@@ -607,7 +609,7 @@ INLINE void Csc::Op_0e(void)
 //--------------------------
 // SBW
 //--------------------------
-INLINE void Csc::Op_0f(void)
+INLINE void CSC61860::Op_0f(void)
 {
 	BYTE	b;
 	WORD	w;
@@ -643,7 +645,7 @@ INLINE void Csc::Op_0f(void)
 //--------------------------
 //	LIDP nm		nm -> DP
 //--------------------------
-INLINE void Csc::Op_10(void)
+INLINE void CSC61860::Op_10(void)
 {
     reg.d.dp=pPC->Get_16rPC(reg.d.pc);
 	AddLog(LOG_CPU,tr("LIDP    %1").ARG4x(reg.d.dp));
@@ -654,7 +656,7 @@ INLINE void Csc::Op_10(void)
 //--------------------------
 //	LIDL n		n -> DPl
 //--------------------------
-INLINE void Csc::Op_11(void)
+INLINE void CSC61860::Op_11(void)
 {
     reg.d.dp = (reg.d.dp & 0xFF00) | pPC->Get_PC(reg.d.pc);
     //reg.r.dpl=pPC->Get_PC(reg.d.pc);
@@ -666,7 +668,7 @@ INLINE void Csc::Op_11(void)
 //--------------------------
 //	LIP n		n -> P
 //--------------------------
-INLINE void Csc::Op_12(void)
+INLINE void CSC61860::Op_12(void)
 {
     reg.r.p=pPC->Get_PC(reg.d.pc);	reg.r.p &=0x7F;
 
@@ -677,7 +679,7 @@ INLINE void Csc::Op_12(void)
 //--------------------------
 //	LIQ n		n -> Q
 //--------------------------
-INLINE void Csc::Op_13(void)
+INLINE void CSC61860::Op_13(void)
 {
     reg.r.q=pPC->Get_PC(reg.d.pc);
 	reg.r.q &=0x7F;
@@ -690,7 +692,7 @@ INLINE void Csc::Op_13(void)
 //--------------------------
 //	ADB
 //--------------------------
-INLINE void Csc::Op_14(void)
+INLINE void CSC61860::Op_14(void)
 {	
 	DWORD t;
 
@@ -706,7 +708,7 @@ INLINE void Csc::Op_14(void)
 //--------------------------
 //	SBB
 //--------------------------
-INLINE void Csc::Op_15(void)
+INLINE void CSC61860::Op_15(void)
 {	
 	DWORD t;
 
@@ -723,7 +725,7 @@ INLINE void Csc::Op_15(void)
 //--------------------------
 //	DATA
 //--------------------------
-INLINE void Csc::Op_35(void)	//ok
+INLINE void CSC61860::Op_35(void)	//ok
 {
 	BYTE l;
 	WORD ba;
@@ -749,7 +751,7 @@ INLINE void Csc::Op_35(void)	//ok
 //--------------------------
 //	MVWD
 //--------------------------
-INLINE void Csc::Op_18(void)
+INLINE void CSC61860::Op_18(void)
 {
 	BYTE l;
 	l = I_REG_I;
@@ -769,7 +771,7 @@ INLINE void Csc::Op_18(void)
 //--------------------------
 //	MVBD
 //--------------------------
-INLINE void Csc::Op_1a(void)
+INLINE void CSC61860::Op_1a(void)
 {
 	BYTE l;
 	l = I_REG_J;
@@ -789,7 +791,7 @@ INLINE void Csc::Op_1a(void)
 //--------------------------
 //	EXWD
 //--------------------------
-INLINE void Csc::Op_19(void)
+INLINE void CSC61860::Op_19(void)
 {
 	BYTE t;
 	BYTE l;
@@ -812,7 +814,7 @@ INLINE void Csc::Op_19(void)
 //--------------------------
 //	EXBD
 //--------------------------
-INLINE void Csc::Op_1b(void)
+INLINE void CSC61860::Op_1b(void)
 {
 	BYTE t;
 	BYTE l;
@@ -835,7 +837,7 @@ INLINE void Csc::Op_1b(void)
 //--------------------------
 // SRW
 //--------------------------
-INLINE void Csc::Op_1c(void)
+INLINE void CSC61860::Op_1c(void)
 {
 	
 	BYTE l,bp,a,b,t;
@@ -864,7 +866,7 @@ INLINE void Csc::Op_1c(void)
 //--------------------------
 // SLW
 //--------------------------
-INLINE void Csc::Op_1d(void)
+INLINE void CSC61860::Op_1d(void)
 {
 	BYTE l,a,t,b,ap;
 	AddLog(LOG_CPU,"SLW");
@@ -890,7 +892,7 @@ INLINE void Csc::Op_1d(void)
 //--------------------------
 //	FILM
 //--------------------------
-INLINE void Csc::Op_1e(void)
+INLINE void CSC61860::Op_1e(void)
 {
 	BYTE l;
 	l = I_REG_I;
@@ -910,7 +912,7 @@ INLINE void Csc::Op_1e(void)
 //--------------------------
 //	FILD
 //--------------------------
-INLINE void Csc::Op_1f(void)
+INLINE void CSC61860::Op_1f(void)
 {
 	BYTE l;
 	l = I_REG_I;
@@ -930,7 +932,7 @@ INLINE void Csc::Op_1f(void)
 //--------------------------
 //	LDP		P -> A
 //--------------------------
-INLINE void Csc::Op_20(void)
+INLINE void CSC61860::Op_20(void)
 {
 	I_REG_A=reg.r.p;
 	AddLog(LOG_CPU,"LDP");
@@ -939,7 +941,7 @@ INLINE void Csc::Op_20(void)
 //--------------------------
 //	LDQ		Q -> A
 //--------------------------
-INLINE void Csc::Op_21(void)
+INLINE void CSC61860::Op_21(void)
 {
 	I_REG_A=reg.r.q;
 	AddLog(LOG_CPU,"LDQ");
@@ -948,7 +950,7 @@ INLINE void Csc::Op_21(void)
 //--------------------------
 //	LDR		R -> A
 //--------------------------
-INLINE void Csc::Op_22(void)
+INLINE void CSC61860::Op_22(void)
 {
 	I_REG_A=reg.r.r;
 	AddLog(LOG_CPU,"LDR");
@@ -958,7 +960,7 @@ INLINE void Csc::Op_22(void)
 //--------------------------
 //	IXL
 //--------------------------
-INLINE void Csc::Op_24(void)
+INLINE void CSC61860::Op_24(void)
 {
     reg.r.q=I_REG_Xh;
 	if (++I_REG_Xl==0) I_REG_Xh++;
@@ -972,7 +974,7 @@ INLINE void Csc::Op_24(void)
 //--------------------------
 //	DXL
 //--------------------------
-INLINE void Csc::Op_25(void)
+INLINE void CSC61860::Op_25(void)
 {
     reg.r.q=I_REG_Xh;
 	if (--I_REG_Xl==0xff) I_REG_Xh--;
@@ -985,7 +987,7 @@ INLINE void Csc::Op_25(void)
 //--------------------------
 //	IYS
 //--------------------------
-INLINE void Csc::Op_26(void)
+INLINE void CSC61860::Op_26(void)
 {
     reg.r.q=I_REG_Yh;
 	if (++I_REG_Yl==0) I_REG_Yh++;
@@ -998,7 +1000,7 @@ INLINE void Csc::Op_26(void)
 //--------------------------
 //	DYS
 //--------------------------
-INLINE void Csc::Op_27(void)
+INLINE void CSC61860::Op_27(void)
 {
     reg.r.q=I_REG_Yh;
 	if (--I_REG_Yl==0xff) I_REG_Yh--;
@@ -1010,7 +1012,7 @@ INLINE void Csc::Op_27(void)
 //----------------------------
 // JRNZP n
 //----------------------------
-INLINE void Csc::Op_28(void)
+INLINE void CSC61860::Op_28(void)
 {
 	BYTE	t;
     t=pPC->Get_PC(reg.d.pc);
@@ -1026,7 +1028,7 @@ INLINE void Csc::Op_28(void)
 //----------------------------
 // JRNZM  n
 //----------------------------
-INLINE void Csc::Op_29(void)
+INLINE void CSC61860::Op_29(void)
 {
 	BYTE	t;
     t=pPC->Get_PC(reg.d.pc);
@@ -1042,7 +1044,7 @@ INLINE void Csc::Op_29(void)
 //----------------------------
 // JRNCP n 
 //----------------------------
-INLINE void Csc::Op_2a(void)
+INLINE void CSC61860::Op_2a(void)
 {
 	BYTE	t;
     t=pPC->Get_PC(reg.d.pc);
@@ -1058,7 +1060,7 @@ INLINE void Csc::Op_2a(void)
 //----------------------------
 // JRNCM n
 //----------------------------
-INLINE void Csc::Op_2b(void)
+INLINE void CSC61860::Op_2b(void)
 {
 	BYTE	t;
     t=pPC->Get_PC(reg.d.pc++);
@@ -1074,7 +1076,7 @@ INLINE void Csc::Op_2b(void)
 //----------------------------
 // JRP n
 //----------------------------
-INLINE void Csc::Op_2c(void)
+INLINE void CSC61860::Op_2c(void)
 {
 	BYTE	t;
     t=pPC->Get_PC(reg.d.pc++);
@@ -1086,7 +1088,7 @@ INLINE void Csc::Op_2c(void)
 //----------------------------
 // JRM n
 //----------------------------
-INLINE void Csc::Op_2d(void)
+INLINE void CSC61860::Op_2d(void)
 {
 	BYTE t;
     t = pPC->Get_PC(reg.d.pc++);
@@ -1097,7 +1099,7 @@ INLINE void Csc::Op_2d(void)
 //--------------------------
 //	STP		A -> P
 //--------------------------
-INLINE void Csc::Op_30(void)
+INLINE void CSC61860::Op_30(void)
 {
 	reg.r.p=I_REG_A;	reg.r.p &=0x7F;
 	AddLog(LOG_CPU,"STP");
@@ -1106,7 +1108,7 @@ INLINE void Csc::Op_30(void)
 //--------------------------
 //	STQ		A -> Q
 //--------------------------
-INLINE void Csc::Op_31(void)
+INLINE void CSC61860::Op_31(void)
 {
 	reg.r.q=I_REG_A;
 	AddLog(LOG_CPU,"STQ");
@@ -1115,7 +1117,7 @@ INLINE void Csc::Op_31(void)
 //--------------------------
 //	STR		A -> R
 //--------------------------
-INLINE void Csc::Op_32(void)
+INLINE void CSC61860::Op_32(void)
 {
 	reg.r.r=I_REG_A;
 	AddLog(LOG_CPU,"STR");
@@ -1125,7 +1127,7 @@ INLINE void Csc::Op_32(void)
 //--------------------------
 //	PUSH
 //--------------------------
-INLINE void Csc::Op_34(void)
+INLINE void CSC61860::Op_34(void)
 {
 	reg.r.r--;
 	Set_i8(reg.r.r,I_REG_A);
@@ -1141,7 +1143,7 @@ INLINE void Csc::Op_34(void)
 //----------------------------
 // JRZP n 
 //----------------------------
-INLINE void Csc::Op_38(void)
+INLINE void CSC61860::Op_38(void)
 {
 	register BYTE	t;
     t=pPC->Get_PC(reg.d.pc++);
@@ -1157,7 +1159,7 @@ INLINE void Csc::Op_38(void)
 //----------------------------
 // JRZM n 
 //----------------------------
-INLINE void Csc::Op_39(void)
+INLINE void CSC61860::Op_39(void)
 {
     // Due to synhronization issue (mainly about tape) 7 cycles in one shot is not acceptable
     // I split this instruction in 2 steps
@@ -1198,7 +1200,7 @@ INLINE void Csc::Op_39(void)
 //----------------------------
 // JRCP n
 //----------------------------
-INLINE void Csc::Op_3a(void)
+INLINE void CSC61860::Op_3a(void)
 {
 	register BYTE	t;
     t=pPC->Get_PC(reg.d.pc++);
@@ -1214,7 +1216,7 @@ INLINE void Csc::Op_3a(void)
 //----------------------------
 // JRCM n
 //----------------------------
-INLINE void Csc::Op_3b(void)
+INLINE void CSC61860::Op_3b(void)
 {
 	register BYTE	t;
     t=pPC->Get_PC(reg.d.pc++);
@@ -1231,7 +1233,7 @@ INLINE void Csc::Op_3b(void)
 //----------------------------
 // RTN
 //----------------------------
-INLINE void Csc::Op_37(void)
+INLINE void CSC61860::Op_37(void)
 {
 
 	reg.d.pc=Get_i16(reg.r.r);
@@ -1245,7 +1247,7 @@ INLINE void Csc::Op_37(void)
 //----------------------------
 // INCr
 //----------------------------
-INLINE void Csc::Op_40(BYTE ind)
+INLINE void CSC61860::Op_40(BYTE ind)
 {
 	DWORD d;
 
@@ -1277,7 +1279,7 @@ INLINE void Csc::Op_40(BYTE ind)
 //----------------------------
 // DECr
 //----------------------------
-INLINE void Csc::Op_41(BYTE ind)
+INLINE void CSC61860::Op_41(BYTE ind)
 {
 	DWORD d;
 
@@ -1309,7 +1311,7 @@ INLINE void Csc::Op_41(BYTE ind)
 //----------------------------
 // ADM		(P) + A -> (P)	C,Z 
 //----------------------------
-INLINE void Csc::Op_44(void)
+INLINE void CSC61860::Op_44(void)
 {
 	DWORD t;
 
@@ -1323,7 +1325,7 @@ INLINE void Csc::Op_44(void)
 //----------------------------
 // SBM		(P) - A -> (P)	C,Z 
 //----------------------------
-INLINE void Csc::Op_45(void)
+INLINE void CSC61860::Op_45(void)
 {
 	DWORD t;
 
@@ -1337,7 +1339,7 @@ INLINE void Csc::Op_45(void)
 //----------------------------
 // ADCM		(P) + A + C -> (P)	C,Z 
 //----------------------------
-INLINE void Csc::Op_c4(void)
+INLINE void CSC61860::Op_c4(void)
 {
 	DWORD t;
 
@@ -1351,7 +1353,7 @@ INLINE void Csc::Op_c4(void)
 //----------------------------
 // SBCM		(P) - A - C -> (P)	C,Z 
 //----------------------------
-INLINE void Csc::Op_c5(void)
+INLINE void CSC61860::Op_c5(void)
 {
 	DWORD t;
 
@@ -1367,7 +1369,7 @@ INLINE void Csc::Op_c5(void)
 //----------------------------
 // NOPW 
 //----------------------------
-INLINE void Csc::Op_4d(void)
+INLINE void CSC61860::Op_4d(void)
 {
 	AddLog(LOG_CPU,"NOPW");
 	AddState(2);
@@ -1380,7 +1382,7 @@ INLINE void Csc::Op_4d(void)
 // One by One STEP slow down the emulator speed
 // BUT IT IS NEEDED FOR XIN XOUT ACCURACY
 // TRY TO EMULATE 10 by 10 STEP
-INLINE void Csc::Op_4e(void)
+INLINE void CSC61860::Op_4e(void)
 {
 #if 1
 	
@@ -1421,7 +1423,7 @@ INLINE void Csc::Op_4e(void)
 //----------------------------
 // INCP
 //----------------------------
-INLINE void Csc::Op_50(void)
+INLINE void CSC61860::Op_50(void)
 {
 	reg.r.p++;	reg.r.p &= 0x7f;
 	AddLog(LOG_CPU,"INCP");
@@ -1430,7 +1432,7 @@ INLINE void Csc::Op_50(void)
 //----------------------------
 // DECP
 //----------------------------
-INLINE void Csc::Op_51(void)
+INLINE void CSC61860::Op_51(void)
 {
 	reg.r.p--;	reg.r.p &=0x7F;
 	AddLog(LOG_CPU,"DECP");
@@ -1440,7 +1442,7 @@ INLINE void Csc::Op_51(void)
 //----------------------------
 // STD		A -> (DP)
 //----------------------------
-INLINE void Csc::Op_52(void)
+INLINE void CSC61860::Op_52(void)
 {
 	pPC->Set_8(reg.d.dp,I_REG_A);
 	AddLog(LOG_CPU,"STD");
@@ -1451,7 +1453,7 @@ INLINE void Csc::Op_52(void)
 //----------------------------
 // LDD		(DP) -> A
 //----------------------------
-INLINE void Csc::Op_57(void)
+INLINE void CSC61860::Op_57(void)
 {
 	I_REG_A =  pPC->Get_8(reg.d.dp);
 	AddLog(LOG_CPU,"LDP");
@@ -1461,7 +1463,7 @@ INLINE void Csc::Op_57(void)
 //----------------------------
 // SWP (Swap A)
 //----------------------------
-INLINE void Csc::Op_58(void)
+INLINE void CSC61860::Op_58(void)
 {
 	I_REG_A=(I_REG_A>>4)+(I_REG_A<<4);
 	AddLog(LOG_CPU,"SWP");
@@ -1470,7 +1472,7 @@ INLINE void Csc::Op_58(void)
 //----------------------------
 // LDM		(P) -> A
 //----------------------------
-INLINE void Csc::Op_59(void)
+INLINE void CSC61860::Op_59(void)
 {
 	I_REG_A = Get_i8(reg.r.p);
 	AddLog(LOG_CPU,"LDM");
@@ -1479,7 +1481,7 @@ INLINE void Csc::Op_59(void)
 //--------------------------
 //	POP
 //--------------------------
-INLINE void Csc::Op_5b(void)
+INLINE void CSC61860::Op_5b(void)
 {
 	I_REG_A=Get_i8(reg.r.r++);
 	AddLog(LOG_CPU,"POP");
@@ -1494,7 +1496,7 @@ INLINE void Csc::Op_5b(void)
 //----------------------------
 // ORIA		A V n -> A,Z 
 //----------------------------
-INLINE void Csc::Op_65(void)
+INLINE void CSC61860::Op_65(void)
 {
 	BYTE t,d,r ;
 
@@ -1516,7 +1518,7 @@ INLINE void Csc::Op_65(void)
 //----------------------------
 // ORIM		(P) V n -> (P),Z 
 //----------------------------
-INLINE void Csc::Op_61(void)
+INLINE void CSC61860::Op_61(void)
 {
 	BYTE t,d,r ;
 
@@ -1537,7 +1539,7 @@ INLINE void Csc::Op_61(void)
 //----------------------------
 // ORID		(DP) V n -> (DP),Z 
 //----------------------------
-INLINE void Csc::Op_d5(void)
+INLINE void CSC61860::Op_d5(void)
 {
 	BYTE t,d,r ;
 
@@ -1559,7 +1561,7 @@ INLINE void Csc::Op_d5(void)
 //----------------------------
 // ORMA		(P) V A -> (P),Z 
 //----------------------------
-INLINE void Csc::Op_47(void)
+INLINE void CSC61860::Op_47(void)
 {
 	BYTE t,d,r ;
 
@@ -1582,7 +1584,7 @@ INLINE void Csc::Op_47(void)
 //----------------------------
 // ANIA		A ^ n -> A,Z 
 //----------------------------
-INLINE void Csc::Op_64(void)
+INLINE void CSC61860::Op_64(void)
 {
 	BYTE t,d,r ;
 
@@ -1604,7 +1606,7 @@ INLINE void Csc::Op_64(void)
 //----------------------------
 // ANIM		(P) ^ n -> (P),Z 
 //----------------------------
-INLINE void Csc::Op_60(void)
+INLINE void CSC61860::Op_60(void)
 {
 	BYTE t,d,r ;
 
@@ -1625,7 +1627,7 @@ INLINE void Csc::Op_60(void)
 //----------------------------
 // ANID		(DP) ^ n -> (DP),Z 
 //----------------------------
-INLINE void Csc::Op_d4(void)
+INLINE void CSC61860::Op_d4(void)
 {
 	BYTE t,d,r ;
 
@@ -1647,7 +1649,7 @@ INLINE void Csc::Op_d4(void)
 //----------------------------
 // ANMA		(P) ^ A -> (P),Z 
 //----------------------------
-INLINE void Csc::Op_46(void)
+INLINE void CSC61860::Op_46(void)
 {
 	BYTE t,d,r ;
 
@@ -1669,7 +1671,7 @@ INLINE void Csc::Op_46(void)
 //----------------------------
 // TSIA		A ^ n -> Z 
 //----------------------------
-INLINE void Csc::Op_66(void)
+INLINE void CSC61860::Op_66(void)
 {
 	BYTE t,d,r ;
 
@@ -1689,7 +1691,7 @@ INLINE void Csc::Op_66(void)
 //----------------------------
 // TSIM		(P) ^ n -> Z 
 //----------------------------
-INLINE void Csc::Op_62(void)
+INLINE void CSC61860::Op_62(void)
 {
 	BYTE t,d,r ;
 
@@ -1709,7 +1711,7 @@ INLINE void Csc::Op_62(void)
 //----------------------------
 // TSID		(DP) ^ n -> Z 
 //----------------------------
-INLINE void Csc::Op_d6(void)
+INLINE void CSC61860::Op_d6(void)
 {
 	BYTE t,d,r ;
 
@@ -1733,7 +1735,7 @@ INLINE void Csc::Op_d6(void)
 //----------------------------
 // CPIM		(P) - n   C,Z 
 //----------------------------
-INLINE void Csc::Op_63(void)
+INLINE void CSC61860::Op_63(void)
 {
 	BYTE t,d ;
 
@@ -1752,7 +1754,7 @@ INLINE void Csc::Op_63(void)
 //----------------------------
 // CPIA		A - n   C,Z
 //----------------------------
-INLINE void Csc::Op_67(void)
+INLINE void CSC61860::Op_67(void)
 {
 	BYTE t,d ;
 
@@ -1770,7 +1772,7 @@ INLINE void Csc::Op_67(void)
 //----------------------------
 // TEST		n -> TEST 
 //----------------------------
-INLINE void Csc::Op_6b(void)
+INLINE void CSC61860::Op_6b(void)
 {
 	BYTE	t;
     t = pPC->Get_PC(reg.d.pc++);
@@ -1829,7 +1831,7 @@ INLINE void Csc::Op_6b(void)
 //----------------------------
 // ADIM		(P) + n -> (P)	C,Z 
 //----------------------------
-INLINE void Csc::Op_70(void)
+INLINE void CSC61860::Op_70(void)
 {
 	DWORD t;
 	BYTE n;
@@ -1847,7 +1849,7 @@ INLINE void Csc::Op_70(void)
 //----------------------------
 // SBIM		(P) - n -> (P)	C,Z 
 //----------------------------
-INLINE void Csc::Op_71(void)
+INLINE void CSC61860::Op_71(void)
 {
 	DWORD t;
 	BYTE n;
@@ -1864,7 +1866,7 @@ INLINE void Csc::Op_71(void)
 //----------------------------
 // ADIA		A+n -> A 
 //----------------------------
-INLINE void Csc::Op_74(void)
+INLINE void CSC61860::Op_74(void)
 {
 	DWORD	t;
 	BYTE d;
@@ -1881,7 +1883,7 @@ INLINE void Csc::Op_74(void)
 //----------------------------
 // SBIA		A-n -> A 
 //----------------------------
-INLINE void Csc::Op_75(void)
+INLINE void CSC61860::Op_75(void)
 {
 	DWORD	t;
 	BYTE	d;
@@ -1897,7 +1899,7 @@ INLINE void Csc::Op_75(void)
 //----------------------------
 // CALL nm
 //----------------------------
-INLINE void Csc::Op_78(void)
+INLINE void CSC61860::Op_78(void)
 {
 	WORD	t;
     t=pPC->Get_16rPC(reg.d.pc);
@@ -1914,7 +1916,7 @@ INLINE void Csc::Op_78(void)
 //----------------------------
 // JP nm
 //----------------------------
-INLINE void Csc::Op_79(void)
+INLINE void CSC61860::Op_79(void)
 {
 	register WORD	t;
     t=pPC->Get_16rPC(reg.d.pc);
@@ -1927,7 +1929,7 @@ INLINE void Csc::Op_79(void)
 //----------------------------
 // JPNZ mn
 //----------------------------
-INLINE void Csc::Op_7c(void)
+INLINE void CSC61860::Op_7c(void)
 {
 	register WORD	t;
     t=pPC->Get_16rPC(reg.d.pc);
@@ -1942,7 +1944,7 @@ INLINE void Csc::Op_7c(void)
 //----------------------------
 // JPNC mn 
 //----------------------------
-INLINE void Csc::Op_7d(void)
+INLINE void CSC61860::Op_7d(void)
 {
 	register WORD	t;
     t=pPC->Get_16rPC(reg.d.pc);
@@ -1957,7 +1959,7 @@ INLINE void Csc::Op_7d(void)
 //----------------------------
 // JPZ mn
 //----------------------------
-INLINE void Csc::Op_7e(void)
+INLINE void CSC61860::Op_7e(void)
 {
 	register WORD	t;
     t=pPC->Get_16rPC(reg.d.pc);
@@ -1972,7 +1974,7 @@ INLINE void Csc::Op_7e(void)
 //----------------------------
 // JPC mn 
 //----------------------------
-INLINE void Csc::Op_7f(void)
+INLINE void CSC61860::Op_7f(void)
 {
 	register WORD	t;
     t=pPC->Get_16rPC(reg.d.pc);
@@ -1987,7 +1989,7 @@ INLINE void Csc::Op_7f(void)
 //--------------------------
 //	LP l		l -> P
 //--------------------------
-INLINE void Csc::Op_80(BYTE Op)
+INLINE void CSC61860::Op_80(BYTE Op)
 {
 	reg.r.p = (Op & 0x3f);
 
@@ -1997,7 +1999,7 @@ INLINE void Csc::Op_80(BYTE Op)
 //----------------------------
 // SR
 //----------------------------
-INLINE void Csc::Op_d2(void)
+INLINE void CSC61860::Op_d2(void)
 {
 	BYTE	a,c;
 	a=I_REG_A;
@@ -2013,7 +2015,7 @@ INLINE void Csc::Op_d2(void)
 //----------------------------
 // SL
 //----------------------------
-INLINE void Csc::Op_5a(void)
+INLINE void CSC61860::Op_5a(void)
 {
 	BYTE	a,c;
 	a=I_REG_A;
@@ -2029,7 +2031,7 @@ INLINE void Csc::Op_5a(void)
 //----------------------------
 // SC 
 //----------------------------
-INLINE void Csc::Op_d0(void)
+INLINE void CSC61860::Op_d0(void)
 {
 	reg.r.c=1;
 	reg.r.z=1;
@@ -2039,7 +2041,7 @@ INLINE void Csc::Op_d0(void)
 //----------------------------
 // RC
 //----------------------------
-INLINE void Csc::Op_d1(void)
+INLINE void CSC61860::Op_d1(void)
 {
 	reg.r.c=0;
 	reg.r.z=1;
@@ -2050,7 +2052,7 @@ INLINE void Csc::Op_d1(void)
 //----------------------------
 // RZ
 //----------------------------
-INLINE void Csc::Op_77(void)
+INLINE void CSC61860::Op_77(void)
 {
 	reg.r.z=0;
 	AddLog(LOG_CPU,"RZ");
@@ -2059,7 +2061,7 @@ INLINE void Csc::Op_77(void)
 //----------------------------
 // LOOP n
 //----------------------------
-INLINE void Csc::Op_2f(void)
+INLINE void CSC61860::Op_2f(void)
 {
 	BYTE	n;
 	WORD	t;
@@ -2084,7 +2086,7 @@ INLINE void Csc::Op_2f(void)
 //----------------------------
 // LEAVE
 //----------------------------
-INLINE void Csc::Op_d8(void)
+INLINE void CSC61860::Op_d8(void)
 {
 	Set_i8(reg.r.r,0);
 
@@ -2096,7 +2098,7 @@ INLINE void Csc::Op_d8(void)
 //----------------------------
 // EXAB		A<->B
 //----------------------------
-INLINE void Csc::Op_da(void)
+INLINE void CSC61860::Op_da(void)
 {
 	BYTE	t;
 
@@ -2109,7 +2111,7 @@ INLINE void Csc::Op_da(void)
 //----------------------------
 // EXAM		A<->(P)
 //----------------------------
-INLINE void Csc::Op_db(void)
+INLINE void CSC61860::Op_db(void)
 {
 	BYTE t;
 
@@ -2123,7 +2125,7 @@ INLINE void Csc::Op_db(void)
 //----------------------------
 // MVMD		(DP) -> (P)
 //----------------------------
-INLINE void Csc::Op_55(void)
+INLINE void CSC61860::Op_55(void)
 {
 	Set_i8(reg.r.p,pPC->Get_8(reg.d.dp));
 
@@ -2133,7 +2135,7 @@ INLINE void Csc::Op_55(void)
 //----------------------------
 // MVDM		(P) -> (DP)
 //----------------------------
-INLINE void Csc::Op_53(void)
+INLINE void CSC61860::Op_53(void)
 {
 	pPC->Set_8(reg.d.dp,Get_i8(reg.r.p));
 
@@ -2143,7 +2145,7 @@ INLINE void Csc::Op_53(void)
 //----------------------------
 // READM	(PC) -> (P)
 //----------------------------
-INLINE void Csc::Op_54(void)
+INLINE void CSC61860::Op_54(void)
 {
     Set_i8(reg.r.p,pPC->Get_PC(reg.d.pc++));
 	AddLog(LOG_CPU,"READM");
@@ -2152,7 +2154,7 @@ INLINE void Csc::Op_54(void)
 //----------------------------
 // READ		(PC) -> A
 //----------------------------
-INLINE void Csc::Op_56(void)
+INLINE void CSC61860::Op_56(void)
 {
 
     I_REG_A = pPC->Get_PC(reg.d.pc++);
@@ -2163,7 +2165,7 @@ INLINE void Csc::Op_56(void)
 //----------------------------
 // TSCM		(P) ^ A   Z 
 //----------------------------
-INLINE void Csc::Op_c6(void)
+INLINE void CSC61860::Op_c6(void)
 {
 	AddLog(LOG_CPU,"TSCM");
 	AddState(4);
@@ -2173,7 +2175,7 @@ INLINE void Csc::Op_c6(void)
 //----------------------------
 // CPMA		(P) - A   C,Z 
 //----------------------------
-INLINE void Csc::Op_c7(void)
+INLINE void CSC61860::Op_c7(void)
 {
 	BYTE t,d ;
 
@@ -2192,7 +2194,7 @@ INLINE void Csc::Op_c7(void)
 //----------------------------
 // NOPT 
 //----------------------------
-INLINE void Csc::Op_ce(void)
+INLINE void CSC61860::Op_ce(void)
 {
 	AddLog(LOG_CPU,"NOPT");
 	AddState(3);
@@ -2202,7 +2204,7 @@ INLINE void Csc::Op_ce(void)
 //----------------------------
 // OUTC 
 //----------------------------
-INLINE void Csc::Op_df(void)
+INLINE void CSC61860::Op_df(void)
 {
 	pPC->Set_Port(PORT_C , Get_i8(IMEM_IC) );
 	reg.r.q = IMEM_IC;
@@ -2227,7 +2229,7 @@ INLINE void Csc::Op_df(void)
 //----------------------------
 // OUTA
 //----------------------------
-INLINE void Csc::Op_5d(void)
+INLINE void CSC61860::Op_5d(void)
 {
 	pPC->Set_Port(PORT_A , Get_i8(IMEM_IA));
 	reg.r.q = IMEM_IA;
@@ -2238,7 +2240,7 @@ INLINE void Csc::Op_5d(void)
 //----------------------------
 // OUTB 
 //----------------------------
-INLINE void Csc::Op_dd(void)
+INLINE void CSC61860::Op_dd(void)
 {
 	pPC->Set_Port(PORT_B , Get_i8(IMEM_IB));
 	reg.r.q = IMEM_IB;
@@ -2249,7 +2251,7 @@ INLINE void Csc::Op_dd(void)
 //----------------------------
 // OUTF
 //----------------------------
-INLINE void Csc::Op_5f(void)
+INLINE void CSC61860::Op_5f(void)
 {
 //	g_DasmStep=1;
 	pPC->Set_Port(PORT_F , Get_i8(IMEM_FO));
@@ -2262,7 +2264,7 @@ INLINE void Csc::Op_5f(void)
 //----------------------------
 // INA
 //----------------------------
-INLINE void Csc::Op_4c(void)
+INLINE void CSC61860::Op_4c(void)
 {
 	I_REG_A = pPC->Get_Port(PORT_A);
 	Chk_Zero(I_REG_A,SIZE_8);
@@ -2272,7 +2274,7 @@ INLINE void Csc::Op_4c(void)
 //----------------------------
 // INB
 //----------------------------
-INLINE void Csc::Op_cc(void)
+INLINE void CSC61860::Op_cc(void)
 {
 
 	I_REG_A = pPC->Get_Port(PORT_B);
@@ -2285,7 +2287,7 @@ INLINE void Csc::Op_cc(void)
 //----------------------------
 // CALl n
 //----------------------------
-INLINE void Csc::Op_e0(BYTE Op)
+INLINE void CSC61860::Op_e0(BYTE Op)
 {
 
 	BYTE h,l;
@@ -2307,7 +2309,7 @@ INLINE void Csc::Op_e0(BYTE Op)
 //--------------------------
 //	CDN		tmp:=I;Z=1;{if(!Xin){Z=0;break;}}while(tmp--)
 //--------------------------
-INLINE void Csc::Op_6f(void)
+INLINE void CSC61860::Op_6f(void)
 {
     if (! cdn_loop_running) {
         cdn_loop_running = true;
@@ -2334,7 +2336,7 @@ INLINE void Csc::Op_6f(void)
 //	CUP		tmp:=I;Z:=1;{if(Xin){Z:=0;break;}}while(tmp--)
 // Transform to a reentrent function with static loop pointer
 //--------------------------
-INLINE void Csc::Op_4f(void)
+INLINE void CSC61860::Op_4f(void)
 {	
     if (! cup_loop_running) {
         cup_loop_running = true;
@@ -2358,7 +2360,7 @@ INLINE void Csc::Op_4f(void)
 //--------------------------
 //	CLRA
 //--------------------------
-INLINE void Csc::Op_23(void)
+INLINE void CSC61860::Op_23(void)
 {
 	I_REG_A = 0;
 	AddState(2);
@@ -2369,7 +2371,7 @@ INLINE void Csc::Op_23(void)
 //----------------------------
 // CASE 1 lnm
 //----------------------------
-INLINE void Csc::Op_7a(void)
+INLINE void CSC61860::Op_7a(void)
 {
 	BYTE ind,d,op,r,n,m;
     //WORD	t;
@@ -2423,7 +2425,7 @@ INLINE void Csc::Op_7a(void)
 
 
 
-INLINE void Csc::OpExec(BYTE Op)
+INLINE void CSC61860::OpExec(BYTE Op)
 {
     //pPC->pTIMER->state+=(1);
 //    AddState(1);
@@ -2743,7 +2745,7 @@ INLINE void Csc::OpExec(BYTE Op)
 /*****************************************************************************/
 												
 
-bool Csc::init(void)
+bool CSC61860::init(void)
 {
     Check_Log();
 	AddLog(0x01,"MEMORY initializing...");
@@ -2790,7 +2792,7 @@ bool Csc::init(void)
 	return(1);
 }
 
-void Csc::Reset(void)
+void CSC61860::Reset(void)
 {
     resetFlag = true;
 	memset(imem,0,MAX_IMEM);
@@ -2805,7 +2807,7 @@ void Csc::Reset(void)
 /************************************************/
 /* Load memory and register of the sc61860 CPU	*/
 /************************************************/
-void Csc::Load_Internal(QFile *file)
+void CSC61860::Load_Internal(QFile *file)
 {
 	QDataStream in(file);	
 
@@ -2817,7 +2819,7 @@ void Csc::Load_Internal(QFile *file)
 /************************************************/
 /* Save memory and register of the sc61860 CPU	*/
 /************************************************/
-void Csc::save_internal(QFile *file)
+void CSC61860::save_internal(QFile *file)
 {
 	QDataStream out(file);	
 	
@@ -2829,7 +2831,7 @@ void Csc::save_internal(QFile *file)
 /************************************************/
 /* Load memory and register of the sc61860 CPU	*/
 /************************************************/
-void Csc::Load_Internal(QXmlStreamReader *xmlIn)
+void CSC61860::Load_Internal(QXmlStreamReader *xmlIn)
 {
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
@@ -2846,7 +2848,7 @@ void Csc::Load_Internal(QXmlStreamReader *xmlIn)
 /************************************************/
 /* Save memory and register of the sc61860 CPU	*/
 /************************************************/
-void Csc::save_internal(QXmlStreamWriter *xmlOut)
+void CSC61860::save_internal(QXmlStreamWriter *xmlOut)
 {
     xmlOut->writeStartElement("cpu");
         xmlOut->writeAttribute("model","sc61860");
@@ -2860,7 +2862,7 @@ void Csc::save_internal(QXmlStreamWriter *xmlOut)
 /*****************************************************************************/
 /* Exitting sc61860 CPU emulator (save memory, register)					 */
 /*****************************************************************************/
-bool Csc::exit(void)
+bool CSC61860::exit(void)
 {
     if(fp_log) fclose(fp_log);							//close log file
 
@@ -2876,7 +2878,7 @@ bool Csc::exit(void)
 /*****************************************************************************/
 /* execute one operation code												 */
 /*****************************************************************************/
-void Csc::step(void)
+void CSC61860::step(void)
 {
 	DWORD t;
 
@@ -2895,7 +2897,7 @@ void Csc::step(void)
 
 }
 
-INLINE void Csc::backgroundTasks(void) {
+INLINE void CSC61860::backgroundTasks(void) {
     compute_xout();
     pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
 }
@@ -2906,7 +2908,7 @@ INLINE void Csc::backgroundTasks(void) {
 /*  ENTRY :REGNAME regname=REG_xx											 */
 /*  RETURN:DWORD value														 */
 /*****************************************************************************/
-DWORD Csc::get_reg(REGNAME regname)
+DWORD CSC61860::get_reg(REGNAME regname)
 {
 	switch(regname)
 	{
@@ -2936,7 +2938,7 @@ DWORD Csc::get_reg(REGNAME regname)
  \param regname REG_xx
  \param data    value
 */
-void Csc::set_reg(REGNAME regname,DWORD data)
+void CSC61860::set_reg(REGNAME regname,DWORD data)
 {
 	switch(regname)
 	{
@@ -2969,7 +2971,7 @@ void Csc::set_reg(REGNAME regname,DWORD data)
  \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
  \return DWORD  value
 */
-DWORD Csc::get_mem(DWORD adr,int size)
+DWORD CSC61860::get_mem(DWORD adr,int size)
 {
 	switch(size)
 	{
@@ -2985,7 +2987,7 @@ DWORD Csc::get_mem(DWORD adr,int size)
 /*  ENTRY :DOWRD adr=address, int size=SIZE_xx, DWORD data=value			 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-void Csc::set_mem(DWORD adr,int size,DWORD data)
+void CSC61860::set_mem(DWORD adr,int size,DWORD data)
 {
 	switch(size)
 	{
@@ -3011,7 +3013,7 @@ void Csc::set_mem(DWORD adr,int size,DWORD data)
 
 
 
-void Csc::Regs_Info(UINT8 Type)
+void CSC61860::Regs_Info(UINT8 Type)
 {
 	switch(Type)
 	{
@@ -3037,8 +3039,3 @@ void Csc::Regs_Info(UINT8 Type)
 
 }
 
-CSC61860::CSC61860(CPObject *parent )	: Csc(parent) {
-    imemsize = 0x60;
-    regwidget = (CregCPU*) new Cregssc61860Widget(parent,this);
-    regwidget->hide();
-}
