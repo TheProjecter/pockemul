@@ -63,7 +63,7 @@ bool Cce140p::init(void) {
     if (pSIO) pSIO->dialogconsole->hide();
 
 
-    connect(pSIO,SIGNAL(newData(qint8)),this,SLOT(CommandSlot(qint8)));
+    connect(pSIO,SIGNAL(newByteRecv(qint8)),this,SLOT(CommandSlot(qint8)));
 
     return true;
 }
