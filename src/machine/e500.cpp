@@ -100,6 +100,7 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     start4khz = 0;
     Xin=Xout=false;
     tmp_state=0;
+    //ioFreq=0;
 
 }
 
@@ -279,30 +280,77 @@ INLINE void Ce500::computeSound(void)
     fillSoundBuffer((Xout?0xff:0x00));
 }
 
+//********************************************************/
+//* Check for E-PORT and Get data						 */
+//********************************************************/
+// PIN_MT_OUT2	1
+// PIN_GND		2
+// PIN_VGG		3
+// PIN_BUSY		4
+// PIN_D_OUT	5
+// PIN_MT_IN	6           F4  0x10
+// PIN_MT_OUT1	7
+// PIN_D_IN		8
+// PIN_ACK		9
+// PIN_SEL2		10
+// PIN_SEL1		11
+//********************************************************/
 
 
 
 bool Ce500::Set_Connector(void)
 {
-
+#if 0
     SET_PIN(PIN_VGG		,1);
     SET_PIN(PIN_BUSY,   GET_IMEM_BIT(IMEM_EOL,7));
     SET_PIN(PIN_D_OUT,  GET_IMEM_BIT(IMEM_EOH,3));
     SET_PIN(PIN_SEL2,   GET_IMEM_BIT(IMEM_EOL,5));
+    SET_PIN(PIN_SEL1,   GET_IMEM_BIT(IMEM_EOL,4));
     SET_PIN(PIN_MT_OUT1,pCPU->Get_Xout());
 
+#else
+
+    int port1 = pCPU->imem[IMEM_EOL];
+    int port2 = pCPU->imem[IMEM_EOH];
+
+    pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
+    pCONNECTOR->Set_pin(PIN_VGG		,1);
+    pCONNECTOR->Set_pin(PIN_BUSY	,READ_BIT(port1,6));
+
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_OUT,READ_BIT(port2,2));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port2,3));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
+    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));
+
+    pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
+
+#endif
 
     return(1);
 }
 
 bool Ce500::Get_Connector(void)
 {
+#if 1
 
+    pCPU->setImemBit(IMEM_EIH,1,pCONNECTOR->Get_pin(PIN_SEL1));
+    pCPU->setImemBit(IMEM_EIH,2,pCONNECTOR->Get_pin(PIN_SEL2));
+    pCPU->setImemBit(IMEM_EIH,3,pCONNECTOR->Get_pin(PIN_D_OUT));
+    pCPU->setImemBit(IMEM_EIH,4,pCONNECTOR->Get_pin(PIN_D_IN));
 
-//    pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_D_IN));
     pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_ACK));
     pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
 
+#else
+    Set_Port_Bit(PORT_B,1,pCONNECTOR->Get_pin(PIN_SEL1));	// DIN	:	IB1
+    Set_Port_Bit(PORT_B,2,pCONNECTOR->Get_pin(PIN_SEL2));	// DIN	:	IB2
+    Set_Port_Bit(PORT_B,3,pCONNECTOR->Get_pin(PIN_D_OUT));	// DIN	:	IB2
+
+
+    Set_Port_Bit(PORT_B,4,pCONNECTOR->Get_pin(PIN_D_IN));	// DIN	:	IB8
+    Set_Port_Bit(PORT_B,5,pCONNECTOR->Get_pin(PIN_ACK));	// ACK	:	IB7
+    pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
+#endif
     return(1);
 }
 

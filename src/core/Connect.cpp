@@ -49,26 +49,6 @@ void Cconnector::Dump_pin(void)
 
 }
 
-qint64 Cconnector::Get_values(void)
-{
-	return values;
-}
-void Cconnector::Set_values(qint64 val)
-{
-    values = val;
-}
-// Return Pin value : pin number from 1 to N
-bool Cconnector::Get_pin(qint8 PinId)
-{
-	return ((values >>(PinId-1)) & 0x01);
-}
-
-// Set Pin value : pin from 1 to N
-void Cconnector::Set_pin(qint8 PinId,bool Value)
-{
-	PUT_BIT(values, (PinId-1), Value);
-}
-
 bool Cconnector::getGender()
 {
 	return gender;

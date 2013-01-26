@@ -19,7 +19,7 @@
 #include "Log.h"
 
 // TODO: MultiTouch Events
-// TODO: Timer chip
+
 
 #define STROBE_TIMER 5
 

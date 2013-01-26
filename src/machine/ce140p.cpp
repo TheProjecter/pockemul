@@ -142,8 +142,8 @@ void Cce140p::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addSeparator();
 
-    menu.addAction(tr("Show console"),pSIO,SLOT(ShowConsole()));
-    menu.addAction(tr("Hide console"),pSIO,SLOT(HideConsole()));
+    menu.addAction(tr("Show serial console"),pSIO,SLOT(ShowConsole()));
+    menu.addAction(tr("Hide serial console"),pSIO,SLOT(HideConsole()));
 
     menu.exec(event->globalPos () );
 }

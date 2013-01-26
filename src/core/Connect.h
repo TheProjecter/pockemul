@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QPoint>
 
+#include "common.h"
+
 #define GET_PIN(n)		(pCONNECTOR->Get_pin(n))
 #define SET_PIN(n,v)	(pCONNECTOR->Set_pin(n,v))
 
@@ -48,10 +50,24 @@ public:
 	
     virtual bool init(void){return true;}
     virtual bool exit(void){return true;}
-    Q_INVOKABLE qint64	Get_values(void);
-    Q_INVOKABLE void	Set_values(qint64 val);
-    Q_INVOKABLE bool	Get_pin(qint8);
-    Q_INVOKABLE void	Set_pin(qint8 , bool);
+    Q_INVOKABLE qint64 Get_values(void)
+    {
+        return values;
+    }
+    Q_INVOKABLE void Set_values(qint64 val)
+    {
+        values = val;
+    }
+     // Return Pin value : pin number from 1 to N
+    Q_INVOKABLE bool Get_pin(qint8 PinId)
+    {
+        return ((values >>(PinId-1)) & 0x01);
+    }
+     // Set Pin value : pin from 1 to N
+    Q_INVOKABLE void Set_pin(qint8 PinId,bool Value)
+    {
+        PUT_BIT(values, (PinId-1), Value);
+    }
 	void	Dump_pin(void);
 	char	dump[100];
 

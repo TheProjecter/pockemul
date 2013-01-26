@@ -608,6 +608,8 @@ void Cce140f::process_FILES(void) {
     for (int i =3;i< 15;i++) {
         s.append(QChar(data.at(i)));
     }
+    s="*.*";
+    AddLog(LOG_PRINTER,s.replace(" ",""));
     fileList = directory.entryList( QStringList() << s.replace(" ",""),QDir::Files);
     data_out.append(CheckSum(fileList.size()));
     fileCount = -1;
