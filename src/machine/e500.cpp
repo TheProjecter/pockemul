@@ -100,7 +100,7 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     start4khz = 0;
     Xin=Xout=false;
     tmp_state=0;
-    //ioFreq=0;
+    ioFreq=0;
 
 }
 
@@ -317,11 +317,13 @@ bool Ce500::Set_Connector(void)
     pCONNECTOR->Set_pin(PIN_VGG		,1);
     pCONNECTOR->Set_pin(PIN_BUSY	,READ_BIT(port1,6));
 
-    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_OUT,READ_BIT(port2,2));
-    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port2,3));
-    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
-    if (!pCONNECTOR->Get_pin(PIN_ACK)) pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));
-
+    if (!pCONNECTOR->Get_pin(PIN_ACK))
+    {
+        pCONNECTOR->Set_pin(PIN_D_OUT   ,READ_BIT(port2,2));
+        pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port2,3));
+        pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
+        pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));
+    }
     pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
 
 #endif
@@ -332,13 +334,16 @@ bool Ce500::Set_Connector(void)
 bool Ce500::Get_Connector(void)
 {
 #if 1
-
-    pCPU->setImemBit(IMEM_EIH,1,pCONNECTOR->Get_pin(PIN_SEL1));
-    pCPU->setImemBit(IMEM_EIH,2,pCONNECTOR->Get_pin(PIN_SEL2));
-    pCPU->setImemBit(IMEM_EIH,3,pCONNECTOR->Get_pin(PIN_D_OUT));
-    pCPU->setImemBit(IMEM_EIH,4,pCONNECTOR->Get_pin(PIN_D_IN));
-
     pCPU->setImemBit(IMEM_EIL,8,pCONNECTOR->Get_pin(PIN_ACK));
+
+    if (pCONNECTOR->Get_pin(PIN_ACK))
+    {
+        pCPU->setImemBit(IMEM_EIH,5,pCONNECTOR->Get_pin(PIN_SEL1));
+        pCPU->setImemBit(IMEM_EIH,6,pCONNECTOR->Get_pin(PIN_SEL2));
+        pCPU->setImemBit(IMEM_EIH,7,pCONNECTOR->Get_pin(PIN_D_OUT));
+        pCPU->setImemBit(IMEM_EIH,8,pCONNECTOR->Get_pin(PIN_D_IN));
+    }
+
     pCPU->Set_Xin(pCONNECTOR->Get_pin(PIN_MT_IN));
 
 #else

@@ -85,11 +85,9 @@ inline void Csc62015::AddState(BYTE n)
 {
     pPC->pTIMER->state+=(n);
 
-
     ticks+=(n);
     ticks2+=(n);
 
-#if 1
     div500  = (ticks >= XTICKS);
     div2    = (ticks2>= XTICK2);
     if (div500) {
@@ -100,20 +98,6 @@ inline void Csc62015::AddState(BYTE n)
         Set_ISR(INT_FAST);
         ticks2=0;
     }
-
-#else
-    if (ticks >= XTICKS)
-    {
-        div500 = true;
-        ticks =0;
-    }
-    if (ticks2 >= XTICK2)
-    {
-        div2 = true;
-        ticks2 =0;
-    }
-#endif
-
 
     compute_xout();
     pPC->fillSoundBuffer((Get_Xout()?0xff:0x00));
@@ -166,11 +150,11 @@ inline void Csc62015::Chk_imemAdr_Read(BYTE d,BYTE len)
 //		case	IMEM_SCR:snd.scr=1; break;		// sound
 //		case	IMEM_EOL:opt11.eio=IMEM_EOL; break;
 //		case	IMEM_EIL:opt11.eio=IMEM_EIL; break;
-        case IMEM_EIH:
-        case IMEM_EIL:
         case IMEM_EOH:
-        case IMEM_EOL: //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
-//                        AddLog(LOG_PRINTER,tr("READ [%1]").arg(d,2,16,QChar('0')));
+        case IMEM_EOL:break;
+        case IMEM_EIH:
+        case IMEM_EIL: //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(d);
+                        AddLog(LOG_PRINTER,tr("READ [%1]").arg(d,2,16,QChar('0')));
                         break;
         }
         d++;
@@ -195,7 +179,7 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
         case IMEM_EIL:
         case IMEM_EOH:
         case IMEM_EOL: //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(data &0xff);
-                AddLog(LOG_PRINTER,tr("WRITE [%1] = %2").arg(d,2,16,QChar('0')).arg(data,6,16,QChar('0')));
+                //AddLog(LOG_PRINTER,tr("WRITE [%1] = %2").arg(d,2,16,QChar('0')).arg(data,6,16,QChar('0')));
                 break;
         }
         d++;
@@ -1214,7 +1198,7 @@ inline void Csc62015::Op_54(void)
 {
 	register BYTE	m,n;
 	register DWORD	t,b;
-	AddState(5+2*reg.x.i);
+    AddState(5);
     m=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     n=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
@@ -1224,6 +1208,7 @@ inline void Csc62015::Op_54(void)
 	Set_i8d(m++,t);
 	b=t;
 	while(--reg.x.i!=0){
+        AddState(2);
 		t=Get_i8d(m)+Get_i8d(n++)+reg.r.c;
 		Chk_Flag(t,SIZE_8);
 		Set_i8d(m++,t);
@@ -1236,7 +1221,7 @@ inline void Csc62015::Op_55(void)
 {
 	register BYTE	a;
 	register DWORD	t,b;
-	AddState(4+reg.x.i);
+    AddState(4);
     a=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	t=Get_i8d(a)+reg.r.a;
@@ -1244,6 +1229,7 @@ inline void Csc62015::Op_55(void)
 	Set_i8d(a++,t);
 	b=t;
 	while(--reg.x.i!=0){
+        AddState(1);
 		t=Get_i8d(a)+reg.r.c;
 		Chk_Flag(t,SIZE_8);
 		Set_i8d(a++,t);
@@ -1256,10 +1242,13 @@ inline void Csc62015::Op_56(void)
 {
 	register BYTE	d;
 	register DWORD	s;
-	AddState(5+2*reg.x.i);
+    AddState(5);
 	s=Get_d2(SIZE_8,&d);
 	d=Conv_imemAdr(d,OPR1);
-    while(--reg.x.i!=0) Set_i8d(d++,pPC->Get_8(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        Set_i8d(d++,pPC->Get_8(s++));
+    }
     Set_i8d(d,pPC->Get_8(s));
 }
 /* PMDF (n),A */
@@ -1321,7 +1310,7 @@ inline void Csc62015::Op_5c(void)
 {
 	register BYTE	m,n;
 	register DWORD	t,b;
-	AddState(5+2*reg.x.i);
+    AddState(5);
     m=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     n=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
@@ -1331,6 +1320,7 @@ inline void Csc62015::Op_5c(void)
 	Set_i8d(m++,t);
 	b=t;
 	while(--reg.x.i!=0){
+        AddState(2);
 		t=Get_i8d(m)-Get_i8d(n++)-reg.r.c;
 		Chk_Flag(t,SIZE_8);
 		Set_i8d(m++,t);
@@ -1343,7 +1333,7 @@ inline void Csc62015::Op_5d(void)
 {
 	register BYTE	a;
 	register DWORD	t,b;
-	AddState(4+reg.x.i);
+    AddState(4);
     a=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	t=Get_i8d(a)-reg.r.a;
@@ -1351,6 +1341,7 @@ inline void Csc62015::Op_5d(void)
 	Set_i8d(a++,t);
 	b=t;
 	while(--reg.x.i!=0){
+        AddState(1);
 		t=Get_i8d(a)-reg.r.c;
 		Chk_Flag(t,SIZE_8);
 		Set_i8d(a++,t);
@@ -1363,10 +1354,13 @@ inline void Csc62015::Op_5e(void)
 {
 	register BYTE	s;
 	register DWORD	d;
-	AddState(5+2*reg.x.i);
+    AddState(5);
 	d=Get_d2(SIZE_8,&s);
 	s=Conv_imemAdr(s,OPR1);
-    while(--reg.x.i!=0) pPC->Set_8(d++,Get_i8d(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        pPC->Set_8(d++,Get_i8d(s++));
+    }
     pPC->Set_8(d,Get_i8d(s));
 }
 /* POPS F */
@@ -2202,12 +2196,13 @@ inline void Csc62015::Op_c2(void)
 inline void Csc62015::Op_c3(void)
 {
 	register BYTE	d,s,w;
-	AddState(5+3*reg.x.i);
+    AddState(5);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
 	reg.r.pc++;
 	while(--reg.x.i!=0){
+        AddState(3);
 		w=Get_i8d(d); Set_i8d(d,Get_i8d(s)); Set_i8d(s,w);
 		s++; d++;
 	}
@@ -2218,7 +2213,7 @@ inline void Csc62015::Op_c4(void)
 {
 	register BYTE	d,s,b;
 	register WORD	w;
-	AddState(5+2*reg.x.i);
+    AddState(5);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
@@ -2228,6 +2223,7 @@ inline void Csc62015::Op_c4(void)
 	Set_i8d(d--,w);
 	b=w;
 	while(--reg.x.i!=0){
+        AddState(2);
 		w=hex2bcd(bcd2hex(Get_i8d(d))+bcd2hex(Get_i8d(s--))+reg.r.c);
 		Chk_Flag(w,SIZE_8);
 		Set_i8d(d--,w);
@@ -2241,7 +2237,7 @@ inline void Csc62015::Op_c5(void)
 {
 	register BYTE	d,b;
 	register WORD	w;
-	AddState(4+reg.x.i);
+    AddState(4);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	w=hex2bcd(bcd2hex(Get_i8d(d))+bcd2hex(reg.r.a));
@@ -2249,6 +2245,7 @@ inline void Csc62015::Op_c5(void)
 	Set_i8d(d--,w);
 	b=w;
 	while(--reg.x.i!=0){
+        AddState(1);
 		w=hex2bcd(bcd2hex(Get_i8d(d))+reg.r.c);
 		Chk_Flag(w,SIZE_8);
 		Set_i8d(d--,w);
@@ -2313,12 +2310,15 @@ inline void Csc62015::Op_ca(void)
 inline void Csc62015::Op_cb(void)
 {
 	register BYTE	d,s;
-	AddState(5+2*reg.x.i);
+    AddState(5);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
 	reg.r.pc++;
-	while(--reg.x.i!=0) Set_i8d(d++,Get_i8d(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        Set_i8d(d++,Get_i8d(s++));
+    }
 	Set_i8d(d,Get_i8d(s));
 }
 /* MV (m),n */
@@ -2345,18 +2345,21 @@ inline void Csc62015::Op_cd(void)
 inline void Csc62015::Op_ce(void)
 {
 //UN_DEFINE
-	AddState(1);
+    AddState(1);
 }
 /* MVLD (m),(n) */
 inline void Csc62015::Op_cf(void)
 {
 	register BYTE	d,s;
-	AddState(5+2*reg.x.i);
+    AddState(5);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
 	reg.r.pc++;
-	while(--reg.x.i!=0) Set_i8d(d--,Get_i8d(s--));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        Set_i8d(d--,Get_i8d(s--));
+    }
 	Set_i8d(d,Get_i8d(s));
 }
 /* MV (k),[lmn] */
@@ -2394,12 +2397,15 @@ inline void Csc62015::Op_d3(void)
 {
 	register BYTE	d;
 	register DWORD	s;
-	AddState(6+2*reg.x.i);
+    AddState(6);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     s=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
-    while(--reg.x.i!=0) Set_i8d(d++,pPC->Get_8(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        Set_i8d(d++,pPC->Get_8(s++));
+    }
     Set_i8d(d,pPC->Get_8(s));
 }
 /* DSBL (m),(n) */
@@ -2407,7 +2413,7 @@ inline void Csc62015::Op_d4(void)
 {
 	register BYTE	d,s,b;
 	register WORD	w;
-	AddState(5+2*reg.x.i);
+    AddState(5);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR2);
@@ -2417,6 +2423,7 @@ inline void Csc62015::Op_d4(void)
 	Set_i8d(d--,w);
 	b=w;
 	while(--reg.x.i!=0){
+        AddState(2);
 		w=hex2bcd(100+bcd2hex(Get_i8d(d))-bcd2hex(Get_i8d(s--))-reg.r.c);
 		reg.r.c=1-(w>>8);
 		Set_i8d(d--,w);
@@ -2430,7 +2437,7 @@ inline void Csc62015::Op_d5(void)
 {
 	register BYTE	d,b;
 	register WORD	w;
-	AddState(4+reg.x.i);
+    AddState(4);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	w=hex2bcd(100+bcd2hex(Get_i8d(d))-bcd2hex(reg.r.a));
@@ -2438,6 +2445,7 @@ inline void Csc62015::Op_d5(void)
 	Set_i8d(d--,w);
 	b=w;
 	while(--reg.x.i!=0){
+        AddState(1);
 		w=hex2bcd(100+bcd2hex(Get_i8d(d))-reg.r.c);
 		reg.r.c=1-(w>>8);
 		Set_i8d(d--,w);
@@ -2505,12 +2513,15 @@ inline void Csc62015::Op_db(void)
 {
 	register BYTE	s;
 	register DWORD	d;
-	AddState(6+2*reg.x.i);
+    AddState(6);
     d=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
-    while(--reg.x.i!=0) pPC->Set_8(d++,Get_i8d(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        pPC->Set_8(d++,Get_i8d(s++));
+    }
     pPC->Set_8(d,Get_i8d(s));
 }
 /* MVP (k),lmn */
@@ -2580,13 +2591,16 @@ inline void Csc62015::Op_e3(void)
 {
 	register BYTE	d,t;
 	register DWORD	s;
-	AddState(10+2*reg.x.i);
+    AddState(10);
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	s=Get_r(t);
-    while(--reg.x.i!=0) Set_i8d(((t&0x10)==0?d++:d--),pPC->Get_8(((t&0x10)==0?s++:--s)));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        Set_i8d(((t&0x10)==0?d++:d--),pPC->Get_8(((t&0x10)==0?s++:--s)));
+    }
     Set_i8d(d,pPC->Get_8(((t&0x10)==0?s++:--s)));
 	Set_r(t,s);
 }
@@ -2674,13 +2688,16 @@ inline void Csc62015::Op_eb(void)
 {
 	register BYTE	s,t;
 	register DWORD	d;
-	AddState(10+2*reg.x.i);
+    AddState(10);
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     s=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	d=Get_r(t);
-    while(--reg.x.i!=0) pPC->Set_8(((t&0x10)==0?d++:--d),Get_i8d(((t&0x10)==0?s++:s--)));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        pPC->Set_8(((t&0x10)==0?d++:--d),Get_i8d(((t&0x10)==0?s++:s--)));
+    }
     pPC->Set_8(((t&0x10)==0?d++:--d),Get_i8d(s));
 	Set_r(t,d);
 }
@@ -2689,7 +2706,7 @@ inline void Csc62015::Op_ec(void)
 {
 	register BYTE	n;
 	register DWORD	s,t,u,b;
-	AddState(4+reg.x.i);
+    AddState(4);
     n=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	t=Get_i8d(n);
@@ -2698,6 +2715,7 @@ inline void Csc62015::Op_ec(void)
 	u=t>>4;
 	b=s;
 	while(--reg.x.i!=0){
+        AddState(1);
 		t=Get_i8d(n);
 		s=t<<4|u;
 		Set_i8d(n--,s);
@@ -2726,8 +2744,8 @@ inline void Csc62015::Op_ee(void)
 /* WAIT */
 inline void Csc62015::Op_ef(void)
 {
-	AddState(1+reg.x.i);
-	while(--reg.x.i!=0);				/* dummy !!! */
+    AddState(1);
+    while(--reg.x.i!=0) {AddState(1);}				/* dummy !!! */
 //	reg.x.i=0;							// for a little speed up!!
 }
 /* MV (m),[(n)] */
@@ -2762,10 +2780,13 @@ inline void Csc62015::Op_f3(void)
 {
 	register BYTE	d=0;
 	register DWORD	s;
-	AddState(10+2*reg.x.i);
+    AddState(10);
 	s=Get_i2(&d);
 	d=Conv_imemAdr(d,OPR1);
-    while(--reg.x.i!=0) Set_i8d(d++,pPC->Get_8(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        Set_i8d(d++,pPC->Get_8(s++));
+    }
     Set_i8d(d,pPC->Get_8(s));
 }
 /* SHR A */
@@ -2852,10 +2873,13 @@ inline void Csc62015::Op_fb(void)
 {
 	register BYTE	s=1;
 	register DWORD	d;
-	AddState(10+2*reg.x.i);
+    AddState(10);
 	d=Get_i2(&s);
 	s=Conv_imemAdr(s,OPR2);
-    while(--reg.x.i!=0) pPC->Set_8(d++,Get_i8d(s++));
+    while(--reg.x.i!=0) {
+        AddState(2);
+        pPC->Set_8(d++,Get_i8d(s++));
+    }
     pPC->Set_8(d,Get_i8d(s));
 }
 /* DSRL (n) */
@@ -2863,7 +2887,7 @@ inline void Csc62015::Op_fc(void)
 {
 	register BYTE	n;
 	register DWORD	s,t,u,b;
-	AddState(4+reg.x.i);
+    AddState(4);
     n=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	t=Get_i8d(n);
@@ -2872,6 +2896,7 @@ inline void Csc62015::Op_fc(void)
 	u=t&MASK_4;
 	b=s;
 	while(--reg.x.i!=0){
+        AddState(1);
 		t=Get_i8d(n);
 		s=t>>4|u<<4;
 		Set_i8d(n++,s);

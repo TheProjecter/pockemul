@@ -353,7 +353,7 @@ bool Cce140f::run(void)
     //pCONNECTOR->Set_pin(PIN_ACK,pCONNECTOR->Get_pin(PIN_ACK) || pCONNECTOR_Ext->Get_pin(PIN_ACK));
 
 
-#if 1
+#if 0
 // Try to introduce a latency
     qint64			deltastate = 0;
 
@@ -608,7 +608,7 @@ void Cce140f::process_FILES(void) {
     for (int i =3;i< 15;i++) {
         s.append(QChar(data.at(i)));
     }
-    s="*.*";
+//    s="*.BAS";
     AddLog(LOG_PRINTER,s.replace(" ",""));
     fileList = directory.entryList( QStringList() << s.replace(" ",""),QDir::Files);
     data_out.append(CheckSum(fileList.size()));
