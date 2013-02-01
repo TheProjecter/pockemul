@@ -37,5 +37,6 @@
      <example idpocket="Casio PB-1000" filename="./" name="Casio PB-1000" image=":/pb1000/pb-1000.png"/>
      <example idpocket="Casio PB-2000C" filename="./" name="Casio PB-2000C" image=":/pb2000/pb-2000.png"/>
     <example idpocket="Casio Z-1GR" filename="./" name="Casio Z-1GR" image=":/z1/z1gr.png"/>
+    <example idpocket="Nec PC-2001" filename="./" name="Nec PC-2001" image=":/pc2001/pc-2001.png"/>
    </demos>
  </demolauncher>

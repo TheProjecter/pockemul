@@ -319,7 +319,7 @@ bool Ce500::Set_Connector(void)
 
     if (!pCONNECTOR->Get_pin(PIN_ACK))
     {
-        pCONNECTOR->Set_pin(PIN_D_OUT   ,READ_BIT(port2,2));
+        pCONNECTOR->Set_pin(PIN_D_OUT   ,READ_BIT(port2,2));// | READ_BIT(port1,4));
         pCONNECTOR->Set_pin(PIN_D_IN	,READ_BIT(port2,3));
         pCONNECTOR->Set_pin(PIN_SEL2	,READ_BIT(port2,1));
         pCONNECTOR->Set_pin(PIN_SEL1	,READ_BIT(port2,0));

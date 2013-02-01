@@ -178,8 +178,8 @@ inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
         case IMEM_EIH:
         case IMEM_EIL:
         case IMEM_EOH:
-        case IMEM_EOL: //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(data &0xff);
-                //AddLog(LOG_PRINTER,tr("WRITE [%1] = %2").arg(d,2,16,QChar('0')).arg(data,6,16,QChar('0')));
+        case IMEM_EOL: if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(data &0xff);
+                AddLog(LOG_PRINTER,tr("WRITE [%1] = %2").arg(d,2,16,QChar('0')).arg(data,6,16,QChar('0')));
                 break;
         }
         d++;

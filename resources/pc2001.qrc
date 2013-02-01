@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pc2001/pc-2001.png</file>
+        <file>pc2001/rom-0000-0FFF.bin</file>
+        <file>pc2001/rom-2000-5FFF.bin</file>
+    </qresource>
+</RCC>
