@@ -23,6 +23,37 @@ class CregCPU;
 #define		SIZE_24		SIZE_20+1		/* 24bit dummy data size */
 
 
+typedef union {
+#ifdef POCKEMUL_BIG_ENDIAN
+    struct {
+        quint8 h3, h2, h, l;
+    } b;
+    struct {
+        qint8 h3, h2, h, l;
+    } sb;
+    struct {
+        quint16 h, l;
+    } w;
+    struct {
+        qint16 h, l;
+    } sw;
+#else
+    struct {
+        quint8 l, h, h2, h3;
+    } b;
+    struct {
+        quint16 l, h;
+    } w;
+    struct {
+        qint8 l, h, h2, h3;
+    } sb;
+    struct {
+        qint16 l, h;
+    } sw;
+#endif
+    quint32 d;
+    qint32 sd;
+} DPAIR;
 
 class CCPU:public QObject{
 Q_OBJECT

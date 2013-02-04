@@ -13,37 +13,8 @@
 
 #include "cpu.h"
 
-typedef union {
-#ifdef POCKEMUL_BIG_ENDIAN
-    struct {
-        quint8 h3, h2, h, l;
-    } b;
-    struct {
-        qint8 h3, h2, h, l;
-    } sb;
-    struct {
-        quint16 h, l;
-    } w;
-    struct {
-        qint16 h, l;
-    } sw;
-#else
-    struct {
-        quint8 l, h, h2, h3;
-    } b;
-    struct {
-        quint16 l, h;
-    } w;
-    struct {
-        qint8 l, h, h2, h3;
-    } sb;
-    struct {
-        qint16 l, h;
-    } sw;
-#endif
-    quint32 d;
-    qint32 sd;
-} PAIR;
+
+
 
 #define SIG_UPD7801_INTF0	0
 #define SIG_UPD7801_INTF1	1
@@ -57,7 +28,7 @@ typedef union {
 #define P_SI	3
 #define P_SO	4
 
-class UPD7801 : public CCPU
+class Cupd7801 : public CCPU
 {
 private:
 
@@ -69,12 +40,20 @@ private:
 	int count, period, scount, tcount;
 	bool wait;
 	
-    PAIR regs[4];
+    DPAIR regs[4];
     quint16 SP, PC, prevPC, altVA, altBC, altDE, altHL;
     quint8 PSW, IRR, IFF, SIRQ, HALT, MK, MB, MC, TM0, TM1, SR;
 	// for port c
     quint8 SAK, TO, PORTC;
 	
+    virtual	bool	Get_Xin(void) {}
+    virtual	void	Set_Xin(bool) {}
+    virtual	bool	Get_Xout(void) {}
+    virtual	void	Set_Xout(bool) {}
+
+    virtual	DWORD	get_PC(void);				//get Program Counter
+    virtual void	Regs_Info(UINT8);
+
 	/* ---------------------------------------------------------------------------
 	virtual machine interface
 	--------------------------------------------------------------------------- */
@@ -112,16 +91,14 @@ private:
 	void OP74();
 	
 public:
-    UPD7801(CPObject *parent);
-    ~UPD7801();
+    Cupd7801(CPObject *parent);
+    ~Cupd7801();
 
     bool	init(void);						//initialize
     bool	exit(void);						//end
     void	step(void);						//step SC61860
     void	Reset(void);
 
-    void	Load_Internal(QFile *file);
-    void	save_internal(QFile *file);
     void	Load_Internal(QXmlStreamReader *);
     void	save_internal(QXmlStreamWriter *);
 //	void	save_internal(void);

@@ -23,16 +23,7 @@ enum {
 #define I8085_SID       0x10
 #define I8085_INTR      0xff
 
-typedef union {
-#ifdef POCKEMUL_BIG_ENDIAN
-    struct { quint8 h3,h2,h,l; } b;
-    struct { quint16 h,l; } w;
-#else
-    struct { quint8 l,h,h2,h3; } b;
-    struct { quint16 l,h; } w;
-#endif
-    quint32 d;
-}	DPAIR;
+
 
 
 

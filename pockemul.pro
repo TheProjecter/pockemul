@@ -306,8 +306,8 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_pc1211.h \
     src/machine/ce122.h \
     src/core/downloadmanager.h \
-    src/cpu/upd7801.h \
-    src/machine/pc2001.h
+    src/machine/pc2001.h \
+    src/cpu/upd7810/upd7810.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -548,8 +548,10 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_pc1211.cpp \
     src/machine/ce122.cpp \
     src/core/downloadmanager.cpp \
-    src/cpu/upd7801.cpp \
-    src/machine/pc2001.cpp
+    src/machine/pc2001.cpp \
+    src/cpu/upd7810/upd7810.cpp \
+    src/cpu/upd7810/7810tbl.cpp \
+    src/cpu/upd7810/upd7810d.cpp
 
 
 

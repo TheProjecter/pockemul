@@ -85,6 +85,24 @@ public:
 
 };
 
+class Cdebug_upd7810:public Cdebug{
+    Q_OBJECT
+public:
+    struct dasm_s {
+        UINT8 token;
+        const void *args;
+    };
+
+    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+
+        Cdebug_upd7810(CPObject *parent)	: Cdebug(parent)
+        {
+            AsmTbl = AsmTbl_sc61860;
+        }
+
+        quint16 Dasm_upd7810(char *buffer, quint16 pc, const dasm_s *dasmXX, const UINT8 *oprom, const UINT8 *opram, int is_7810);
+};
+
 class Cdebug_z80:public Cdebug{
     Q_OBJECT
 public:

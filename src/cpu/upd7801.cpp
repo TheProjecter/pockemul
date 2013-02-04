@@ -10,6 +10,9 @@
 
 #include "upd7801.h"
 #include "pcxxxx.h"
+#include "Inter.h"
+#include "Debug.h"
+#include "ui/cregsz80widget.h"
 
 #define PRESCALER	16
 
@@ -278,7 +281,9 @@ static const op_t op74[256] = {
 
 // memory
 
-inline quint8 UPD7801::RM8(quint16 addr)
+
+
+inline quint8 Cupd7801::RM8(quint16 addr)
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -291,7 +296,7 @@ inline quint8 UPD7801::RM8(quint16 addr)
 #endif
 }
 
-inline void UPD7801::WM8(quint16 addr, quint8 val)
+inline void Cupd7801::WM8(quint16 addr, quint8 val)
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -302,7 +307,7 @@ inline void UPD7801::WM8(quint16 addr, quint8 val)
 #endif
 }
 
-inline quint16 UPD7801::RM16(quint16 addr)
+inline quint16 Cupd7801::RM16(quint16 addr)
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -315,7 +320,7 @@ inline quint16 UPD7801::RM16(quint16 addr)
 #endif
 }
 
-inline void UPD7801::WM16(quint16 addr, quint16 val)
+inline void Cupd7801::WM16(quint16 addr, quint16 val)
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -326,7 +331,7 @@ inline void UPD7801::WM16(quint16 addr, quint16 val)
 #endif
 }
 
-inline quint8 UPD7801::FETCH8()
+inline quint8 Cupd7801::FETCH8()
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -338,7 +343,7 @@ inline quint8 UPD7801::FETCH8()
 #endif
 }
 
-inline quint16 UPD7801::FETCH16()
+inline quint16 Cupd7801::FETCH16()
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -351,7 +356,7 @@ inline quint16 UPD7801::FETCH16()
 	return val;
 }
 
-inline quint16 UPD7801::FETCHWA()
+inline quint16 Cupd7801::FETCHWA()
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -363,7 +368,7 @@ inline quint16 UPD7801::FETCHWA()
 #endif
 }
 
-inline quint8 UPD7801::POP8()
+inline quint8 Cupd7801::POP8()
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -375,7 +380,7 @@ inline quint8 UPD7801::POP8()
 #endif
 }
 
-inline void UPD7801::PUSH8(quint8 val)
+inline void Cupd7801::PUSH8(quint8 val)
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -386,7 +391,7 @@ inline void UPD7801::PUSH8(quint8 val)
 #endif
 }
 
-inline quint16 UPD7801::POP16()
+inline quint16 Cupd7801::POP16()
 {
 #ifdef UPD7801_MEMORY_WAIT
 	int wait;
@@ -399,7 +404,7 @@ inline quint16 UPD7801::POP16()
 	return val;
 }
 
-inline void UPD7801::PUSH16(quint16 val)
+inline void Cupd7801::PUSH16(quint16 val)
 {
 	SP -= 2;
 #ifdef UPD7801_MEMORY_WAIT
@@ -413,7 +418,7 @@ inline void UPD7801::PUSH16(quint16 val)
 
 // io
 
-inline quint8 UPD7801::IN8(int port)
+inline quint8 Cupd7801::IN8(int port)
 {
 	if(port == P_C) {
         return (pPC->in(P_C) & 0x87) | (PORTC & 0x78);
@@ -422,7 +427,7 @@ inline quint8 UPD7801::IN8(int port)
     return pPC->in(port);
 }
 
-inline void UPD7801::OUT8(int port, quint8 val)
+inline void Cupd7801::OUT8(int port, quint8 val)
 {
 	if(port == P_C) {
 		PORTC = val;
@@ -431,7 +436,7 @@ inline void UPD7801::OUT8(int port, quint8 val)
 }
 
 // IOM : 0x20 = I/O, 0 = MEMORY
-inline void UPD7801::UPDATE_PORTC(quint8 IOM)
+inline void Cupd7801::UPDATE_PORTC(quint8 IOM)
 {
     pPC->out(P_C, (PORTC & MC) | ((SAK | TO | IOM) & ~MC));
 }
@@ -1090,21 +1095,8 @@ inline void UPD7801::UPDATE_PORTC(quint8 IOM)
 	SET_Z(tmp); \
 }
 
-void UPD7801::reset()
-{
-	PC = SP = 0;
-//	VA = BC = DE = HL = altVA = altBC = altDE = altHL = 0;
-	PSW = IRR = IFF = SIRQ = HALT = 0;
-	_V = MB = MC = TM0 = TM1 = SR = 0xff;
-	altVA = VA;
-	MK = 0x1f;
-	PORTC = TO = SAK = 0;
-	count = 0;
-	scount = tcount = 0;
-	wait = false;
-}
 
-int UPD7801::run(int clock)
+int Cupd7801::run(int clock)
 {
 	// run cpu
 	if(clock == -1) {
@@ -1125,7 +1117,7 @@ int UPD7801::run(int clock)
 	}
 }
 
-void UPD7801::run_one_opecode()
+void Cupd7801::run_one_opecode()
 {
 	if(wait) {
 		period = 1;
@@ -1186,7 +1178,7 @@ void UPD7801::run_one_opecode()
 	}
 }
 
-void UPD7801::write_signal(int id, quint32 data, quint32 mask)
+void Cupd7801::write_signal(int id, quint32 data, quint32 mask)
 {
 	if(id == SIG_UPD7801_INTF0) {
 		if(data & mask) {
@@ -1218,7 +1210,7 @@ void UPD7801::write_signal(int id, quint32 data, quint32 mask)
 	}
 }
 
-void UPD7801::OP()
+void Cupd7801::OP()
 {
     quint8 ope = FETCH8();
 	
@@ -1531,7 +1523,7 @@ void UPD7801::OP()
 	PSW &= ~(F_L0 | F_L1);
 }
 
-void UPD7801::OP48()
+void Cupd7801::OP48()
 {
     quint8 ope = FETCH8();
 	period += op48[ope].clock;
@@ -1621,7 +1613,7 @@ void UPD7801::OP48()
 	}
 }
 
-void UPD7801::OP4C()
+void Cupd7801::OP4C()
 {
     quint8 ope = FETCH8();
 	period += op4c[ope].clock;
@@ -1662,7 +1654,7 @@ void UPD7801::OP4C()
 	}
 }
 
-void UPD7801::OP4D()
+void Cupd7801::OP4D()
 {
     quint8 ope = FETCH8();
 	period += op4d[ope].clock;
@@ -1706,7 +1698,7 @@ void UPD7801::OP4D()
 	}
 }
 
-void UPD7801::OP60()
+void Cupd7801::OP60()
 {
     quint8 ope = FETCH8();
 	period += op60[ope].clock;
@@ -2166,7 +2158,7 @@ void UPD7801::OP60()
 	}
 }
 
-void UPD7801::OP64()
+void Cupd7801::OP64()
 {
     quint8 ope = FETCH8();
 	period += op64[ope].clock;
@@ -2538,7 +2530,7 @@ void UPD7801::OP64()
 	}
 }
 
-void UPD7801::OP70()
+void Cupd7801::OP70()
 {
     quint8 ope = FETCH8();
 	period += op70[ope].clock;
@@ -2809,7 +2801,7 @@ void UPD7801::OP70()
 	}
 }
 
-void UPD7801::OP74()
+void Cupd7801::OP74()
 {
     quint8 ope = FETCH8();
 	period += op74[ope].clock;
@@ -2848,6 +2840,116 @@ void UPD7801::OP74()
 	default:
 //		emu->out_debug(_T("PC=%4x\tCPU\tUNKNOWN OP : 74 %2x\n"), prevPC, ope);
         break;
-	}
+    }
 }
 
+Cupd7801::Cupd7801(CPObject *parent) : CCPU(parent)
+{
+    pDEBUG = new Cdebug_upd7810(parent);
+    fn_status="upd7801.sta";
+    fn_log="upd7801.log";
+
+
+    //step_Previous_State = 0;
+
+    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
+}
+
+Cupd7801::~Cupd7801()
+{
+}
+
+bool Cupd7801::init()
+{
+    Check_Log();
+    pDEBUG->init();
+    Reset();
+
+    return true;
+}
+
+bool Cupd7801::exit()
+{
+    return true;
+}
+
+void Cupd7801::step()
+{
+    pPC->pTIMER->state += run(-1);
+}
+
+void Cupd7801::Reset()
+{
+    PC = SP = 0;
+
+    VA = BC = DE = HL = altVA = altBC = altDE = altHL = 0;
+    PSW = IRR = IFF = SIRQ = HALT = 0;
+    _V = MB = MC = TM0 = TM1 = SR = 0xff;
+    altVA = VA;
+    MK = 0x1f;
+    PORTC = TO = SAK = 0;
+    count = 0;
+    scount = tcount = 0;
+    wait = false;
+}
+
+
+
+void Cupd7801::Load_Internal(QXmlStreamReader *)
+{
+}
+
+void Cupd7801::save_internal(QXmlStreamWriter *)
+{
+}
+
+DWORD Cupd7801::get_mem(DWORD adr, int size)
+{
+}
+
+void Cupd7801::set_mem(DWORD adr, int size, DWORD data)
+{
+}
+
+DWORD Cupd7801::get_PC()
+{
+    return PC;
+}
+
+void Cupd7801::Regs_Info(UINT8)
+{
+    sprintf(Regs_String,"EMPTY");
+
+#if 1
+    char buf[32];
+
+    sprintf(
+    Regs_String,
+    "AF=%04x\nBC=%04x\nDE=%04x\nHL=%04x\nSP=%04x\nPC=%04x\n"
+    "%c%c%c%c%c%c(%02x)",
+//    imem[0x31],imem[0x32],imem[0x33],imem[0x35],
+                VA,BC,DE,HL,SP,PC,
+                (PSW & F_Z ? 'Z': '-'),
+                (PSW & F_SK ? 'S': '-'),
+                (PSW & F_HC ? 'H': '-'),
+                (PSW & F_L1 ? '1': '-'),
+                (PSW & F_L0 ? '0': '-'),
+                (PSW & F_CY ? 'C': '-'),
+                PSW
+    );
+//    char linebuf[100];
+//    strcat(Regs_String," ,");
+//    for (int i=0;i < 0x05;i++)
+//    {
+//        sprintf(linebuf,"%02x:[",i*0x10);
+//        strcat(Regs_String,linebuf);
+//        for (int j=0;j<0x10;j++)
+//        {
+//            sprintf(linebuf,"%02X ",imem[i*0x10 + j]);
+//            strcat(Regs_String,linebuf);
+//        }
+//
+//        strcat(Regs_String,"],");
+//    }
+#endif
+}
