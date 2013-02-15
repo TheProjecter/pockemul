@@ -4,7 +4,7 @@
 #include "Log.h"
 #include "Keyb.h"
 #include "Inter.h"
-#include "Lcdc.h"
+#include "Lcdc_pc2001.h"
 
 
 Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
@@ -16,7 +16,7 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     Initial_Session_Fname ="pc2001.pkm";
 
     BackGroundFname	= ":/pc2001/pc-2001.png";
-    LcdFname		= ":/pc2001/pc2001lcd.png";
+    LcdFname		= ":/pc2001/pc-2001lcd.png";
     SymbFname		= "";
 
     memsize		= 0xFFFF;
@@ -43,7 +43,7 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
 
     Lcd_X		= 77;
     Lcd_Y		= 44;
-    Lcd_DX		= 192;//168;//144 ;
+    Lcd_DX		= 240;//168;//144 ;
     Lcd_DY		= 32;
     Lcd_ratio_X	= 2;// * 1.18;
     Lcd_ratio_Y	= 2;// * 1.18;
@@ -56,9 +56,9 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
 
     PowerSwitch = 0;
 
-    pLCDC		= new Clcdc_pc1260(this);
-    pCPU		= new Cupd7810(this);
-    upd16434    = new CUPD16434(this);
+    pLCDC		= new Clcdc_pc2001(this);
+    pCPU		= new Cupd7810(this);    upd7810 = (Cupd7810*)pCPU;
+    for (int i=0;i<4;i++) upd16434[i]  = new CUPD16434(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"z1.map");
 
@@ -68,13 +68,13 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
 }
 
 Cpc2001::~Cpc2001() {
-
+    for (int i=0;i<4;i++) delete(upd16434[i]);
 }
 
 bool Cpc2001::init(void)				// initialize
 {
     if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
-pCPU->logsw = true;
+//pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 
@@ -98,6 +98,21 @@ bool Cpc2001::run() {
         pTIMER->resetTimer(1);
     }
 
+    // LCD transmission
+    quint8 data = upd7810->upd7810stat.imem[0x08];
+    if ( (data > 0) && (data != 0xff))
+    {
+        quint8 currentLCDctrl = upd7810->upd7810stat.imem[0] & 0x03;
+        quint8 cmddata = (upd7810->upd7810stat.imem[0] >> 2) & 0x01;
+        switch(cmddata) {
+        case 0x01: upd16434[currentLCDctrl]->instruction(data);
+            break;
+        case 0x00: upd16434[currentLCDctrl]->data(data);
+            break;
+        }
+        upd7810->upd7810stat.imem[0x08] = 0;
+    }
+
     return true;
 }
 
@@ -117,6 +132,10 @@ bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD data)
 
 UINT8 Cpc2001::in(UINT8 Port)
 {
+    switch (Port) {
+    case 0x01 : return 0x02;
+    }
+
     return 0;
 }
 

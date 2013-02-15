@@ -591,11 +591,13 @@ void logerror(const char *format, ...) {
 UINT8 Cupd7810::read_port_byte(upd7810_state *cpustate,offs_t port) {
 
     if (cpustate->pPC->pCPU->fp_log) fprintf(cpustate->pPC->pCPU->fp_log,"\nREAD PORT[%02X]=%02X\n",port, cpustate->imem[port]);
-    return cpustate->imem[port];
+    return cpustate->pPC->in(port);
+//    return cpustate->imem[port];
 }
 
 void Cupd7810::write_port_byte(upd7810_state *cpustate,offs_t port,UINT8 data) {
     if (cpustate->pPC->pCPU->fp_log) fprintf(cpustate->pPC->pCPU->fp_log,"\nWRITE PORT[%02X]=%02X\n",port, data);
+    cpustate->pPC->out(port,data);
     cpustate->imem[port]=data;
 }
 
@@ -605,9 +607,10 @@ UINT8 Cupd7810::RP(upd7810_state *cpustate, offs_t port)
 	switch (port)
 	{
 	case UPD7810_PORTA:
-        if (MA)	// NS20031301 no need to read if the port is set as output
-            cpustate->pa_in = read_port_byte(cpustate,port);
-        data = (cpustate->pa_in & MA) | (cpustate->pa_out & ~MA);
+//        if (MA)	// NS20031301 no need to read if the port is set as output
+//            cpustate->pa_in = read_port_byte(cpustate,port);
+//        data = (cpustate->pa_in & MA) | (cpustate->pa_out & ~MA);
+        data = cpustate->pa_out;
 		break;
 	case UPD7810_PORTB:
         if (MB)	// NS20031301 no need to read if the port is set as output
@@ -687,8 +690,8 @@ void Cupd7810::WP(upd7810_state *cpustate, offs_t port, UINT8 data)
 	{
 	case UPD7810_PORTA:
 		cpustate->pa_out = data;
-//      data = (data & ~cpustate->ma) | (cpustate->pa_in & cpustate->ma);
-        data = (data & ~MA) | (MA);	// NS20031401
+//      data = (data & ~MA) | (cpustate->pa_in & MA);
+//        data = (data & ~MA) | (MA);	// NS20031401
         write_port_byte(cpustate,port, data);
 		break;
 	case UPD7810_PORTB:
@@ -699,8 +702,8 @@ void Cupd7810::WP(upd7810_state *cpustate, offs_t port, UINT8 data)
 		break;
 	case UPD7810_PORTC:
 		cpustate->pc_out = data;
-//      data = (data & ~cpustate->mc) | (cpustate->pc_in & cpustate->mc);
-        data = (data & ~MC) | (MC);	// NS20031401
+      data = (data & ~cpustate->mc) | (cpustate->pc_in & cpustate->mc);
+//        data = (data & ~MC) | (MC);	// NS20031401
 		if (cpustate->mcc & 0x01)	/* PC0 = TxD output */
 			data = (data & ~0x01) | (cpustate->txd & 1 ? 0x01 : 0x00);
 		if (cpustate->mcc & 0x02)	/* PC1 = RxD input */
@@ -11803,8 +11806,11 @@ void Cupd7810::Regs_Info(UINT8 Type)
                     (PSW & CY ? 'C': '-'),
                     PSW
                     );
-        for (int i=0;i<0x10;i++)
+        for (int i=0;i<0x08;i++)
             sprintf(Regs_String,"%s%02X",Regs_String,cpustate->imem[i]);
+        sprintf(Regs_String,"%s ",Regs_String);
+        for (int i=0;i<0x08;i++)
+            sprintf(Regs_String,"%s%02X",Regs_String,cpustate->imem[i+0x08]);
         break;
     }
 

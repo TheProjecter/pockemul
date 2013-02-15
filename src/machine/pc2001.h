@@ -2,7 +2,7 @@
 #define PC2001_H
 
 class CPObject;
-class Cupd7801;
+class Cupd7810;
 class CUPD16434;
 
 #include "pcxxxx.h"
@@ -34,8 +34,8 @@ public:
 
     UINT16 getKey();
 
-    CUPD16434 *upd16434;
-
+    Cupd7810 *upd7810;
+    CUPD16434 *upd16434[4];
 
 private:
 

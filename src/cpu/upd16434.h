@@ -7,8 +7,7 @@
 typedef struct {
     BYTE    on_off;
     BYTE    dataPointer;
-    BYTE    Xadr;
-    BYTE    Yadr;
+    BYTE    mode;
     BYTE    status;
     BYTE    imem[0x80];
 } UPD16434info;
@@ -31,12 +30,7 @@ public:
     BYTE    cmd_LDPI(quint8 cmd);
     BYTE    cmd_WRCURS(quint8 cmd);
     BYTE    cmd_CLCURS(quint8 cmd);
-    BYTE    cmd_SCMR(quint8 cmd);
-    BYTE    cmd_SCML(quint8 cmd);
-    BYTE    cmd_SANDM(quint8 cmd);
-    BYTE    cmd_SORM(quint8 cmd);
-    BYTE    cmd_SWM(quint8 cmd);
-    BYTE    cmd_SRM(quint8 cmd);
+    BYTE    cmd_MODE(quint8 cmd);
     BYTE    cmd_BSET(quint8 cmd);
     BYTE    cmd_BRESET(quint8 cmd);
     BYTE    cmd_SMM(quint8 cmd);
@@ -59,6 +53,7 @@ public:
     void	addretrace (void);
 
 
+    void addChar(quint8 c, bool right);
 };
 
 #endif // UPD16434_H
