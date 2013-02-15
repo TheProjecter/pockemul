@@ -573,8 +573,10 @@ bool CpcXXXX::run(void)
 
             fflush(pCPU->fp_log);
         }
-        else
+        else {
             pCPU->step();
+            Regs_Info(0);
+        }
 
 
 
