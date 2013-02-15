@@ -53,22 +53,22 @@ void Clcdc_pc2001::disp(void)
 //        if (!pc2001->upd16434[i]->updated) break;
     //AddLog(LOG_DISPLAY,"DISP");
         pc2001->upd16434[i]->updated = false;
-        for (int j = 0; j< 0x31;j++)
+        for (int j = 0; j< 0x32;j++)
         {
-            BYTE data = pc2001->upd16434[i]->info.imem[j];
+            BYTE data = pc2001->upd16434[i]->info.imem[0x31 - j];
             for (b=0;b<8;b++)
             {
                 painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
-                painter.drawPoint(j + j/5 + i*40,b);
+                painter.drawPoint(j + j/5 + i*60,b + (b==7));
             }
         }
-        for (int j = 0; j< 0x31;j++)
+        for (int j = 0; j< 0x32;j++)
         {
-            BYTE data = pc2001->upd16434[i]->info.imem[0x40+j];
+            BYTE data = pc2001->upd16434[i]->info.imem[0x71-j];
             for (b=0;b<8;b++)
             {
                 painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
-                painter.drawPoint(j + j/5 + i*40,b + 10);
+                painter.drawPoint(j + j/5 + i*60,b + (b==7)+12);
             }
         }
     }

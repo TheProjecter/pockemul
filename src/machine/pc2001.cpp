@@ -41,12 +41,12 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     setDX(804);//Pc_DX		= 483;//409;
     setDY(462);//Pc_DY		= 252;//213;
 
-    Lcd_X		= 77;
-    Lcd_Y		= 44;
+    Lcd_X		= 89;
+    Lcd_Y		= 70;
     Lcd_DX		= 240;//168;//144 ;
-    Lcd_DY		= 32;
-    Lcd_ratio_X	= 2;// * 1.18;
-    Lcd_ratio_Y	= 2;// * 1.18;
+    Lcd_DY		= 21;
+    Lcd_ratio_X	= 2.15;// * 1.18;
+    Lcd_ratio_Y	= 2.75;// * 1.18;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);

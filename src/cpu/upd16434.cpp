@@ -279,7 +279,7 @@ bool CUPD16434::step()
 void CUPD16434::addChar(quint8 c,bool right) {
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 ADD CHAR at %i: %02x=(%c)\n",info.dataPointer,c,c);
     for (int i = 0;i<5;i++) {
-        info.imem[info.dataPointer] = upd16434charfont5x7[(c-0x20)*5+i];
+        info.imem[info.dataPointer] = upd16434charfont5x7[(c-0x20)*5+4-i];
         info.dataPointer = info.dataPointer + (right ? 1 : -1);
     }
 }
