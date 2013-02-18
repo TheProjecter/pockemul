@@ -322,9 +322,9 @@ BYTE CUPD16434::instruction(quint8 cmd)
     else
     if ((cmd & MASK_SRM) == MASK_SRM ) { return cmd_MODE(cmd); }
     else
-    if ((cmd & MASK_BSET) == MASK_BSET ) { return cmd_BSET(cmd); }
+    if ((cmd & MASK_BSET) == MASK_BSET ) { return cmd_BSET(cmd,true); }
     else
-    if ((cmd & MASK_BRESET) == MASK_BRESET ) { return cmd_BRESET(cmd); }
+    if ((cmd & MASK_BRESET) == MASK_BRESET ) { return cmd_BSET(cmd,false); }
     else
     if ((cmd & MASK_SMM) == MASK_SMM ) { return cmd_SMM(cmd); }
     else
@@ -362,12 +362,23 @@ BYTE CUPD16434::cmd_MODE(quint8 cmd)
 
 
 
-BYTE CUPD16434::cmd_BSET(quint8 cmd)
+BYTE CUPD16434::cmd_BSET(quint8 cmd,bool set)
 {
-}
+    quint8 bit = (cmd >> 2) & 0x07;
+    quint8 mode= cmd & 0x03;
+    if (set){
+        if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 PSET(%i,%i)\n",info.dataPointer,bit);
+        info.imem[info.dataPointer] |= (0x01 << bit);
+    }
+    else {
+        if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 PRESET(%i,%i)\n",info.dataPointer,bit);
 
-BYTE CUPD16434::cmd_BRESET(quint8 cmd)
-{
+        info.imem[info.dataPointer] &= ~(0x01 << bit);
+    }
+    if (mode == 0) info.dataPointer++;
+    if (mode == 1) info.dataPointer--;
+
+    return 0;
 }
 
 BYTE CUPD16434::cmd_SMM(quint8 cmd)

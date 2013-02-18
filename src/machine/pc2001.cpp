@@ -9,8 +9,8 @@
 
 Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3865000);
-    setcfgfname(QString("z1"));
+    setfrequency( (int) 3865000/8);
+    setcfgfname(QString("pc2001"));
 
     SessionHeader	= "PC2001PKM";
     Initial_Session_Fname ="pc2001.pkm";
@@ -57,7 +57,7 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch = 0;
 
     pLCDC		= new Clcdc_pc2001(this);
-    pCPU		= new Cupd7810(this);    upd7810 = (Cupd7810*)pCPU;
+    pCPU		= new Cupd7907(this);    upd7810 = (Cupd7907*)pCPU;
     for (int i=0;i<4;i++) upd16434[i]  = new CUPD16434(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"z1.map");
@@ -93,7 +93,7 @@ bool Cpc2001::run() {
     CpcXXXX::run();
 
     if (pTIMER->msElapsedId(1)>20) {
-        Cupd7810 *upd7810 = (Cupd7810 *)pCPU;
+        Cupd7907 *upd7810 = (Cupd7907 *)pCPU;
         upd7810->upd7810stat.irr |= 0x10;
         pTIMER->resetTimer(1);
     }
@@ -134,6 +134,7 @@ UINT8 Cpc2001::in(UINT8 Port)
 {
     switch (Port) {
     case 0x01 : return 0x02;
+    case 0x02 : return getKey();
     }
 
     return 0;
@@ -144,6 +145,13 @@ UINT8 Cpc2001::in(UINT8 Port)
 UINT8 Cpc2001::out(UINT8 Port, UINT8 x)
 {
     return 0;
+}
+
+UINT16 Cpc2001::out16(UINT16 address, UINT16 value)
+{
+    if (address == UPD7907_PORTE) {
+        kstrobe = value;
+    }
 }
 
 
@@ -179,145 +187,157 @@ bool Cpc2001::SaveConfig(QXmlStreamWriter *xmlOut)
     return true;
 }
 
-/*
-    KO0     KO1     KO2     KO3     KO4     KO5     KO6     KO7     KO8     KO9     KO10	KOS
-Ki0	BRK
-KI1         TAB     W       R       Y       I       P       MENU	CAL     DEGR	SQR
-KI2         Q       E       T       U       O       2nd     log     ln      sin     X2
-KI3         RESET   S       F       H       K       ;       MR      M +     (       ENG
-KI4         A       D       G       J       L       :       7       8       )       CLS
-KI5         CAPS	X       V       N       ,       ?       4       5       9       cos
-KI6         Z       C       B       M       INS     DEL     1       2       6       ^
-KI7                 SRCH	OUT     SPACE	LA      RA      .       3       *       ANS
-KI8                 IN      CALC	=       DA      0       E       +       /
-KI9                                                         ENTER   -       BS      tan
-KIS                                                                                         SHFT
 
-*/
 
 #define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
 
 UINT16 Cpc2001::getKey()
 {
 
-    UINT16 ks;
+    UINT16 ks = kstrobe^0xFFFF;
     UINT16 data=0;
 
     if ((pKEYB->LastKey) && ks )
     {
-        if (ks&1) {
-            if (KEY(K_BRK))			data|=0x01;
-        }
-        if (ks&2) {
+        if (fp_log) fprintf(fp_log,"KSTROBE=%04X\n",ks);
 
-            if (KEY(K_TAB))			data|=0x02;
-            if (KEY('Q'))			data|=0x04;
-            if (KEY(K_RESET))		data|=0x08;
-            if (KEY('A'))			data|=0x10;
-            if (KEY(K_SML))			data|=0x20;
-            if (KEY('Z'))			data|=0x40;
+        if (ks&0x01) {
+//            if (KEY(K_F1))			data|=0x01;
+//            if (KEY(K_F2))			data|=0x02;
+            if (KEY(K_SHT))			data|=0x04;
+//            if (KEY(K_F4))			data|=0x08;
+//            if (KEY(K_F5))			data|=0x10;
+//            if (KEY(K_F6))			data|=0x20;
         }
-        if (ks&4) {
-            if (KEY('W'))			data|=0x02;
-            if (KEY('E'))			data|=0x04;
-            if (KEY('S'))			data|=0x08;
-            if (KEY('D'))			data|=0x10;
-            if (KEY('X'))			data|=0x20;
-            if (KEY('C'))			data|=0x40;
-//            if (KEY(K_SEARCH))			data|=0x80;
-            if (KEY(K_IN))			data|=0x100;
+
+        if (ks&0x02) {
+            if (KEY('Q'))			data|=0x01;
+            if (KEY('A'))			data|=0x02;
+//            if (KEY(K_F3))			data|=0x04;
+//            if (KEY('0'))			data|=0x08;
+            if (KEY('1'))			data|=0x10;
+            if (KEY('Z'))			data|=0x20;
         }
-        if (ks&8) {
-            if (KEY('R'))			data|=0x02;
-            if (KEY('T'))			data|=0x04;
-            if (KEY('F'))           data|=0x08;
-            if (KEY('G'))			data|=0x10;
-            if (KEY('V'))			data|=0x20;
-            if (KEY('B'))			data|=0x40;
-            if (KEY(K_OUT))			data|=0x80;
-            if (KEY(K_CALC))		data|=0x100;
+        if (ks&0x04) {
+            if (KEY('W'))			data|=0x01;
+            if (KEY('S'))			data|=0x02;
+            if (KEY('X'))			data|=0x04;
+//            if (KEY('1'))			data|=0x08;
+            if (KEY('2'))			data|=0x10;
+//            if (KEY(K_F1))			data|=0x20; // F1
         }
+
+        if (ks&0x08) {
+            if (KEY(','))			data|=0x01;
+            if (KEY('D'))			data|=0x02;
+            if (KEY('C'))			data|=0x04;
+//            if (KEY('2'))			data|=0x08;
+            if (KEY('3'))			data|=0x10;
+//            if (KEY(K_F2))			data|=0x20;     //F2
+        }
+
         if (ks&0x10) {
-            if (KEY('Y'))			data|=0x02;
-            if (KEY('U'))			data|=0x04;
-            if (KEY('H'))			data|=0x08;
-            if (KEY('J'))			data|=0x10;
-            if (KEY('N'))			data|=0x20;
-            if (KEY('M'))			data|=0x40;
-            if (KEY(' '))			data|=0x80;
-            if (KEY('='))			data|=0x100;
+            if (KEY('R'))			data|=0x01;
+            if (KEY('F'))			data|=0x02;
+            if (KEY('V'))			data|=0x04;
+//            if (KEY('3'))			data|=0x08;
+            if (KEY('4'))			data|=0x10;
+//            if (KEY(K_F3))			data|=0x20;     //F3
         }
         if (ks&0x20) {
-            if (KEY('I'))			data|=0x02;
-            if (KEY('O'))			data|=0x04;
-            if (KEY('K'))			data|=0x08;
-            if (KEY('L'))			data|=0x10;
-            if (KEY(','))			data|=0x20;
-            if (KEY(K_INS))			data|=0x40;
-            if (KEY(K_LA))   		data|=0x80;
-            if (KEY(K_DA))			data|=0x100;
+            if (KEY('T'))			data|=0x01;
+            if (KEY('G'))			data|=0x02;
+            if (KEY('B'))			data|=0x04;
+//            if (KEY('4'))			data|=0x08;
+            if (KEY('5'))			data|=0x10;
+//            if (KEY(K_F4))			data|=0x20;     //F4
         }
         if (ks&0x40) {
-            if (KEY('P'))			data|=0x02;
-            if (KEY(K_SHT))         data|=0x04;
-            if (KEY(';'))			data|=0x08;
-            if (KEY(':'))			data|=0x10;
-            if (KEY(K_UA))			data|=0x20;
-            if (KEY(K_DEL))			data|=0x40;
-            if (KEY(K_RA))			data|=0x80;
-            if (KEY('0'))			data|=0x100;
+            if (KEY('Y'))			data|=0x01;
+            if (KEY('H'))			data|=0x02;
+            if (KEY('N'))			data|=0x04;
+//            if (KEY('5'))			data|=0x08;
+            if (KEY('6'))			data|=0x10;
+            if (KEY(','))			data|=0x20;
         }
         if (ks&0x80) {
-            if (KEY(K_MENU))		data|=0x02;
-            if (KEY(K_LOG))			data|=0x04;
-//            if (KEY(K_M))			data|=0x08;
+            if (KEY('U'))			data|=0x01;
+            if (KEY('J'))			data|=0x02;
+            if (KEY('M'))			data|=0x04;
+//            if (KEY('6'))			data|=0x08;
             if (KEY('7'))			data|=0x10;
-            if (KEY('4'))			data|=0x20;
-            if (KEY('1'))			data|=0x40;
-            if (KEY('.'))			data|=0x80;
-            if (KEY(K_EXP))			data|=0x100;
-            if (KEY(K_RET))			data|=0x200;
+            if (KEY('.'))			data|=0x20;
         }
         if (ks&0x100) {
-            if (KEY(K_CAL))			data|=0x02;
-            if (KEY(K_LN))  		data|=0x04;
-            if (KEY(K_MPLUS))		data|=0x08;
+            if (KEY('I'))			data|=0x01;
+            if (KEY('K'))			data|=0x02;
+            if (KEY('/'))			data|=0x04;
+//            if (KEY('7'))			data|=0x08;
             if (KEY('8'))			data|=0x10;
-            if (KEY('5'))			data|=0x20;
-            if (KEY('2'))			data|=0x40;
-            if (KEY('3'))			data|=0x80;
-            if (KEY('+'))			data|=0x100;
-            if (KEY('-'))			data|=0x200;
+            if (KEY('/'))			data|=0x20;
         }
-
         if (ks&0x200) {
-            if (KEY(K_DEG))			data|=0x02;
-            if (KEY(K_SIN))			data|=0x04;
-            if (KEY('('))			data|=0x08;
-            if (KEY(')'))			data|=0x10;
-            if (KEY('9'))			data|=0x20;
-            if (KEY('6'))			data|=0x40;
-            if (KEY('*'))			data|=0x80;
-            if (KEY('/'))			data|=0x100;
-            if (KEY(K_BS))			data|=0x200;
+            if (KEY('O'))			data|=0x01;
+            if (KEY('L'))			data|=0x02;
+            if (KEY('*'))			data|=0x04;
+//            if (KEY('8'))			data|=0x08;
+            if (KEY('9'))			data|=0x10;
+            if (KEY(';'))			data|=0x20;
         }
         if (ks&0x400) {
-            if (KEY(K_ROOT))			data|=0x02;
-            if (KEY(K_SQR))			data|=0x04;
-//            if (KEY(K_ENG)			data|=0x08;
-            if (KEY(K_CLR))			data|=0x10;
-            if (KEY(K_COS))			data|=0x20;
-            if (KEY(K_POT))			data|=0x40;
-            if (KEY(K_ANS))			data|=0x80;
-            if (KEY(K_TAN))			data|=0x200;
+            if (KEY('P'))			data|=0x01;
+//            if (KEY(K_F2))			data|=0x02;
+            if (KEY('-'))			data|=0x04;
+//            if (KEY('9'))			data|=0x08;
+            if (KEY('0'))			data|=0x10;
+            if (KEY(':'))			data|=0x20;
         }
         if (ks&0x800) {
-            if (KEY(K_SHT2))			data|=0x400;
+            if (KEY('@'))			data|=0x01;
+//            if (KEY(K_F2))			data|=0x02;
+            if (KEY('+'))			data|=0x04;
+            if (KEY('E'))			data|=0x08;
+            if (KEY('-'))			data|=0x10;
+            if (KEY(']'))			data|=0x20;
         }
+        if (ks&0x1000) {
+            if (KEY('^'))			data|=0x01;
+            if (KEY(' '))			data|=0x02; //???
+            if (KEY('.'))			data|=0x04;
+//            if (KEY(K_F2))			data|=0x08;
+            if (KEY('['))			data|=0x10;
+//            if (KEY(K_F6))			data|=0x20;
+        }
+        if (ks&0x2000) {
+            if (KEY(K_DEL))			data|=0x01;
+            if (KEY(K_INS))			data|=0x02;
+//            if (KEY(K_F3))			data|=0x04;
+            if (KEY(K_CLR))			data|=0x08;
+            if (KEY(K_LA))			data|=0x10;
+            if (KEY(K_RA))			data|=0x20;
+        }
+        if (ks&0x4000) {
+//            if (KEY(K_F1))			data|=0x01;
+            if (KEY(K_RET))			data|=0x02;
+//            if (KEY(K_F3))			data|=0x04;
+//            if (KEY(K_F4))			data|=0x08;
+//            if (KEY(K_F5))			data|=0x10;
+//            if (KEY(K_F6))			data|=0x20;
+        }
+//        if (ks&0x8000) {
+//            if (KEY(K_F1))			data|=0x01;
+//            if (KEY(K_F2))			data|=0x02;
+//            if (KEY(K_F3))			data|=0x04;
+//            if (KEY(K_F4))			data|=0x08;
+//            if (KEY(K_F5))			data|=0x10;
+//            if (KEY(K_F6))			data|=0x20;
+//        }
+
+
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
 
     }
-    return data;
+    return (data^0xff) & 0x3F;
 
 }
 

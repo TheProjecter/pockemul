@@ -31,8 +31,7 @@ public:
     BYTE    cmd_WRCURS(quint8 cmd);
     BYTE    cmd_CLCURS(quint8 cmd);
     BYTE    cmd_MODE(quint8 cmd);
-    BYTE    cmd_BSET(quint8 cmd);
-    BYTE    cmd_BRESET(quint8 cmd);
+    BYTE    cmd_BSET(quint8 cmd, bool set);
     BYTE    cmd_SMM(quint8 cmd);
     BYTE    cmd_SFF(quint8 cmd);
     BYTE    cmd_DISPON(quint8 cmd);

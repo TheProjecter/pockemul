@@ -2,7 +2,7 @@
 #define PC2001_H
 
 class CPObject;
-class Cupd7810;
+class Cupd7907;
 class CUPD16434;
 
 #include "pcxxxx.h"
@@ -20,6 +20,9 @@ public:
     virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
+    virtual UINT16 out16(UINT16 address,UINT16 value);
+
+    quint16 kstrobe;
 
     bool init();
 
@@ -34,7 +37,7 @@ public:
 
     UINT16 getKey();
 
-    Cupd7810 *upd7810;
+    Cupd7907 *upd7810;
     CUPD16434 *upd16434[4];
 
 private:

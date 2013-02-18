@@ -10,7 +10,7 @@
 #include "upd7810.h"
 
 
-const opcode_s Cupd7810::op48_7810[256] =
+const opcode_s Cupd7907::op48_7810[256] =
 {
     {illegal,		2, 8, 8,L0|L1}, /* 00: 0100 1000 0000 0000                      */
     {SLRC_A,		2, 8, 8,L0|L1}, /* 01: 0100 1000 0000 0001                      */
@@ -290,7 +290,7 @@ const opcode_s Cupd7810::op48_7810[256] =
 };
 
 /* prefix 4C */
-const struct opcode_s Cupd7810::op4C_7810[256] =
+const struct opcode_s Cupd7907::op4C_7810[256] =
 {
 	{illegal2,		2, 8, 8,L0|L1}, /* 00: 0100 1100 0000 0000                      */
 	{illegal2,		2, 8, 8,L0|L1}, /* 01: 0100 1100 0000 0001                      */
@@ -567,7 +567,7 @@ const struct opcode_s Cupd7810::op4C_7810[256] =
 };
 
 /* prefix 4D */
-const struct opcode_s Cupd7810::op4D_7810[256] =
+const struct opcode_s Cupd7907::op4D_7810[256] =
 {
 	{illegal2,		2, 8, 8,L0|L1}, /* 00: 0100 1101 0000 0000                      */
 	{illegal2,		2, 8, 8,L0|L1}, /* 01: 0100 1101 0000 0001                      */
@@ -843,7 +843,7 @@ const struct opcode_s Cupd7810::op4D_7810[256] =
 };
 
 /* prefix 60 */
-const struct opcode_s Cupd7810::op60_7810[256] =
+const struct opcode_s Cupd7907::op60_7810[256] =
 {
 	{illegal2,		2, 8, 8,L0|L1}, /* 00: 0110 0000 0000 0000                      */
 	{illegal2,		2, 8, 8,L0|L1}, /* 01: 0110 0000 0000 0001                      */
@@ -1119,7 +1119,7 @@ const struct opcode_s Cupd7810::op60_7810[256] =
 };
 
 /* prefix 64 */
-const struct opcode_s Cupd7810::op64_7810[256] =
+const struct opcode_s Cupd7907::op64_7810[256] =
 {
 	{MVI_PA_xx, 	3,14,11,L0|L1}, /* 00: 0110 0100 0000 0000 xxxx xxxx            */
 	{MVI_PB_xx, 	3,14,11,L0|L1}, /* 01: 0110 0100 0000 0001 xxxx xxxx            */
@@ -1395,7 +1395,7 @@ const struct opcode_s Cupd7810::op64_7810[256] =
 };
 
 /* prefix 70 */
-const struct opcode_s Cupd7810::op70_7810[256] =
+const struct opcode_s Cupd7907::op70_7810[256] =
 {
 	{illegal2,		2, 8, 8,L0|L1}, /* 00: 0111 0000 0000 0000                      */
 	{illegal2,		2, 8, 8,L0|L1}, /* 01: 0111 0000 0000 0001                      */
@@ -1672,7 +1672,7 @@ const struct opcode_s Cupd7810::op70_7810[256] =
 };
 
 /* prefix 74 */
-const struct opcode_s Cupd7810::op74_7810[256] =
+const struct opcode_s Cupd7907::op74_7810[256] =
 {
 	{illegal2,		2, 8, 8,L0|L1}, /* 00: 0111 0100 0000 0000                      */
 	{illegal2,		2, 8, 8,L0|L1}, /* 01: 0111 0100 0000 0001                      */
@@ -1948,7 +1948,7 @@ const struct opcode_s Cupd7810::op74_7810[256] =
 };
 
 /* main opcodes */
-const struct opcode_s Cupd7810::opXX_7810[256] =
+const struct opcode_s Cupd7907::opXX_7810[256] =
 {
 	{NOP,			1, 4, 4,L0|L1}, /* 00: 0000 0000                                */
 	{LDAW_wa,		2,10,10,L0|L1}, /* 01: 0000 0001 oooo oooo                      */
@@ -2224,7 +2224,7 @@ const struct opcode_s Cupd7810::opXX_7810[256] =
 };
 
 
-const struct opcode_s Cupd7810::opXX_7807[256] =
+const struct opcode_s Cupd7907::opXX_7807[256] =
 {
 	{NOP,			1, 4, 4,L0|L1}, /* 00: 0000 0000                                */
 	{LDAW_wa,		2,10,10,L0|L1}, /* 01: 0000 0001 oooo oooo                      */
@@ -2506,7 +2506,7 @@ const struct opcode_s Cupd7810::opXX_7807[256] =
  *
  **********************************************************************/
 
-const struct opcode_s Cupd7810::op48_7801[256] =
+const struct opcode_s Cupd7907::op48_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{SKIT_F0,		2, 8, 8,L0|L1},	{SKIT_FT0,		2, 8, 8,L0|L1},
@@ -2661,7 +2661,7 @@ const struct opcode_s Cupd7810::op48_7801[256] =
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1}
 };
 
-const struct opcode_s Cupd7810::op4C_7801[256] =
+const struct opcode_s Cupd7907::op4C_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{IN,			2,10,10,L0|L1},	{IN,			2,10,10,L0|L1},
@@ -2817,7 +2817,7 @@ const struct opcode_s Cupd7810::op4C_7801[256] =
 };
 
 /* prefix 4D */
-const struct opcode_s Cupd7810::op4D_7801[256] =
+const struct opcode_s Cupd7907::op4D_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{OUT,			2,10,10,L0|L1},	{OUT,			2,10,10,L0|L1},
@@ -2972,7 +2972,7 @@ const struct opcode_s Cupd7810::op4D_7801[256] =
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1}
 };
 
-const struct opcode_s Cupd7810::op60_7801[256] =
+const struct opcode_s Cupd7907::op60_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -3127,7 +3127,7 @@ const struct opcode_s Cupd7810::op60_7801[256] =
 	{EQA_A_H,		2, 8, 8,L0|L1},	{EQA_A_L,		2, 8, 8,L0|L1}
 };
 
-const struct opcode_s Cupd7810::op64_7801[256] =
+const struct opcode_s Cupd7907::op64_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -3283,7 +3283,7 @@ const struct opcode_s Cupd7810::op64_7801[256] =
 };
 
 /* prefix 70 */
-const struct opcode_s Cupd7810::op70_7801[256] =
+const struct opcode_s Cupd7907::op70_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -3439,7 +3439,7 @@ const struct opcode_s Cupd7810::op70_7801[256] =
 };
 
 /* prefix 74 */
-const struct opcode_s Cupd7810::op74_7801[256] =
+const struct opcode_s Cupd7907::op74_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -3594,7 +3594,7 @@ const struct opcode_s Cupd7810::op74_7801[256] =
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1}
 };
 
-const struct opcode_s Cupd7810::opXX_7801[256] =
+const struct opcode_s Cupd7907::opXX_7801[256] =
 {
 	/* 0x00 - 0x1F */
 	{NOP,			1, 4, 4,L0|L1},	{HALT,			1, 6, 6,L0|L1},
@@ -3755,7 +3755,7 @@ const struct opcode_s Cupd7810::opXX_7801[256] =
  *
  **********************************************************************/
 
-const struct opcode_s Cupd7810::op48_78c05[256] =
+const struct opcode_s Cupd7907::op48_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{SKIT_F0,		2, 8, 8,L0|L1},	{SKIT_FT0,		2, 8, 8,L0|L1},
@@ -3910,7 +3910,7 @@ const struct opcode_s Cupd7810::op48_78c05[256] =
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1}
 };
 
-const struct opcode_s Cupd7810::op4C_78c05[256] =
+const struct opcode_s Cupd7907::op4C_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -4066,7 +4066,7 @@ const struct opcode_s Cupd7810::op4C_78c05[256] =
 };
 
 /* prefix 4D */
-const struct opcode_s Cupd7810::op4D_78c05[256] =
+const struct opcode_s Cupd7907::op4D_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -4222,7 +4222,7 @@ const struct opcode_s Cupd7810::op4D_78c05[256] =
 };
 
 /* prefix 60 */
-const struct opcode_s Cupd7810::op60_78c05[256] =
+const struct opcode_s Cupd7907::op60_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -4377,7 +4377,7 @@ const struct opcode_s Cupd7810::op60_78c05[256] =
 };
 
 /* prefix 64 */
-const struct opcode_s Cupd7810::op64_78c05[256] =
+const struct opcode_s Cupd7907::op64_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -4533,7 +4533,7 @@ const struct opcode_s Cupd7810::op64_78c05[256] =
 };
 
 /* prefix 70 */
-const struct opcode_s Cupd7810::op70_78c05[256] =
+const struct opcode_s Cupd7907::op70_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -4689,7 +4689,7 @@ const struct opcode_s Cupd7810::op70_78c05[256] =
 };
 
 /* prefix 74 */
-const struct opcode_s Cupd7810::op74_78c05[256] =
+const struct opcode_s Cupd7907::op74_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1},
@@ -4844,7 +4844,7 @@ const struct opcode_s Cupd7810::op74_78c05[256] =
 	{illegal2,		2, 8, 8,L0|L1},	{illegal2,		2, 8, 8,L0|L1}
 };
 
-const struct opcode_s Cupd7810::opXX_78c05[256] =
+const struct opcode_s Cupd7907::opXX_78c05[256] =
 {
 	/* 0x00 - 0x1F */
 	{NOP,			1, 4, 4,L0|L1},	{HALT,			1, 6, 6,L0|L1},
@@ -5005,7 +5005,7 @@ const struct opcode_s Cupd7810::opXX_78c05[256] =
  *
  **********************************************************************/
 
-const struct opcode_s Cupd7810::op48_78c06[256] =
+const struct opcode_s Cupd7907::op48_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{SKIT_F0,		2,12,12,L0|L1},	{SKIT_FT0,		2,12,12,L0|L1},
@@ -5160,7 +5160,7 @@ const struct opcode_s Cupd7810::op48_78c06[256] =
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1}
 };
 
-const struct opcode_s Cupd7810::op4C_78c06[256] =
+const struct opcode_s Cupd7907::op4C_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -5316,7 +5316,7 @@ const struct opcode_s Cupd7810::op4C_78c06[256] =
 };
 
 /* prefix 4D */
-const struct opcode_s Cupd7810::op4D_78c06[256] =
+const struct opcode_s Cupd7907::op4D_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -5472,7 +5472,7 @@ const struct opcode_s Cupd7810::op4D_78c06[256] =
 };
 
 /* prefix 60 */
-const struct opcode_s Cupd7810::op60_78c06[256] =
+const struct opcode_s Cupd7907::op60_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -5628,7 +5628,7 @@ const struct opcode_s Cupd7810::op60_78c06[256] =
 };
 
 /* prefix 64 */
-const struct opcode_s Cupd7810::op64_78c06[256] =
+const struct opcode_s Cupd7907::op64_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -5784,7 +5784,7 @@ const struct opcode_s Cupd7810::op64_78c06[256] =
 };
 
 /* prefix 70 */
-const struct opcode_s Cupd7810::op70_78c06[256] =
+const struct opcode_s Cupd7907::op70_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -5940,7 +5940,7 @@ const struct opcode_s Cupd7810::op70_78c06[256] =
 };
 
 /* prefix 74 */
-const struct opcode_s Cupd7810::op74_78c06[256] =
+const struct opcode_s Cupd7907::op74_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -6095,7 +6095,7 @@ const struct opcode_s Cupd7810::op74_78c06[256] =
 	{illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1}
 };
 
-const struct opcode_s Cupd7810::opXX_78c06[256] =
+const struct opcode_s Cupd7907::opXX_78c06[256] =
 {
 	/* 0x00 - 0x1F */
 	{NOP,			1, 6, 6,L0|L1},	{HALT,			1, 6, 6,L0|L1},
@@ -6250,7 +6250,7 @@ const struct opcode_s Cupd7810::opXX_78c06[256] =
 	{JR,			1,12,12,L0|L1},	{JR,			1,12,12,L0|L1}
 };
 
-const struct opcode_s Cupd7810::opXX_7907[256] =
+const struct opcode_s Cupd7907::opXX_7907[256] =
 {
     /* 0x00 - 0x1F */
     {NOP,			1, 6, 6,L0|L1},	{HALT,			1, 6, 6,L0|L1},
@@ -6406,7 +6406,7 @@ const struct opcode_s Cupd7810::opXX_7907[256] =
 };
 
 
-const struct opcode_s Cupd7810::op48_7907[256] =
+const struct opcode_s Cupd7907::op48_7907[256] =
 {
     /* 0x00 - 0x1F */
     {SKIT_F0,		2,12,12,L0|L1},	{SKIT_FT0,		2,12,12,L0|L1},
@@ -6561,7 +6561,7 @@ const struct opcode_s Cupd7810::op48_7907[256] =
     {illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1}
 };
 
-const struct opcode_s Cupd7810::op4C_7907[256] =
+const struct opcode_s Cupd7907::op4C_7907[256] =
 {
     {illegal2,		2, 8, 8,L0|L1}, /* 00: 0100 1100 0000 0000                      */
     {illegal2,		2, 8, 8,L0|L1}, /* 01: 0100 1100 0000 0001                      */
@@ -6837,7 +6837,7 @@ const struct opcode_s Cupd7810::op4C_7907[256] =
     {illegal2,		2,10,10,L0|L1}, /* ff: 0100 1100 1111 1111                      */
 };
 
-const struct opcode_s Cupd7810::op4D_7907[256] =
+const struct opcode_s Cupd7907::op4D_7907[256] =
 {
     {illegal2,		2, 8, 8,L0|L1}, /* 00: 0100 1101 0000 0000                      */
     {illegal2,		2, 8, 8,L0|L1}, /* 01: 0100 1101 0000 0001                      */
@@ -7113,7 +7113,7 @@ const struct opcode_s Cupd7810::op4D_7907[256] =
 };
 
 /* prefix 60 */
-const struct opcode_s Cupd7810::op60_7907[256] =
+const struct opcode_s Cupd7907::op60_7907[256] =
 {
     /* 0x00 - 0x1F */
     {illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -7269,7 +7269,7 @@ const struct opcode_s Cupd7810::op60_7907[256] =
 };
 
 /* prefix 64 */
-const struct opcode_s Cupd7810::op64_7907[256] =
+const struct opcode_s Cupd7907::op64_7907[256] =
 {
     /* 0x00 - 0x1F */
     {illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -7425,7 +7425,7 @@ const struct opcode_s Cupd7810::op64_7907[256] =
 };
 
 /* prefix 70 */
-const struct opcode_s Cupd7810::op70_7907[256] =
+const struct opcode_s Cupd7907::op70_7907[256] =
 {
     /* 0x00 - 0x1F */
     {illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
@@ -7581,7 +7581,7 @@ const struct opcode_s Cupd7810::op70_7907[256] =
 };
 
 /* prefix 74 */
-const struct opcode_s Cupd7810::op74_7907[256] =
+const struct opcode_s Cupd7907::op74_7907[256] =
 {
     /* 0x00 - 0x1F */
     {illegal2,		2,12,12,L0|L1},	{illegal2,		2,12,12,L0|L1},
