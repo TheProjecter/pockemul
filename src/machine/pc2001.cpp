@@ -199,7 +199,7 @@ UINT16 Cpc2001::getKey()
 
     if ((pKEYB->LastKey) && ks )
     {
-        if (fp_log) fprintf(fp_log,"KSTROBE=%04X\n",ks);
+//        if (fp_log) fprintf(fp_log,"KSTROBE=%04X\n",ks);
 
         if (ks&0x01) {
 //            if (KEY(K_F1))			data|=0x01;
@@ -213,8 +213,8 @@ UINT16 Cpc2001::getKey()
         if (ks&0x02) {
             if (KEY('Q'))			data|=0x01;
             if (KEY('A'))			data|=0x02;
-//            if (KEY(K_F3))			data|=0x04;
-//            if (KEY('0'))			data|=0x08;
+            if (KEY(K_F1))			data|=0x04;
+            if (KEY(K_F2))			data|=0x08;
             if (KEY('1'))			data|=0x10;
             if (KEY('Z'))			data|=0x20;
         }
@@ -304,15 +304,15 @@ UINT16 Cpc2001::getKey()
             if (KEY('^'))			data|=0x01;
             if (KEY(' '))			data|=0x02; //???
             if (KEY('.'))			data|=0x04;
-//            if (KEY(K_F2))			data|=0x08;
+            if (KEY(K_UA))			data|=0x08;
             if (KEY('['))			data|=0x10;
 //            if (KEY(K_F6))			data|=0x20;
         }
         if (ks&0x2000) {
             if (KEY(K_DEL))			data|=0x01;
             if (KEY(K_INS))			data|=0x02;
-//            if (KEY(K_F3))			data|=0x04;
-            if (KEY(K_CLR))			data|=0x08;
+//            if (KEY(K_UA))			data|=0x04;
+            if (KEY(K_DA))			data|=0x08;
             if (KEY(K_LA))			data|=0x10;
             if (KEY(K_RA))			data|=0x20;
         }
@@ -320,8 +320,8 @@ UINT16 Cpc2001::getKey()
 //            if (KEY(K_F1))			data|=0x01;
             if (KEY(K_RET))			data|=0x02;
 //            if (KEY(K_F3))			data|=0x04;
-//            if (KEY(K_F4))			data|=0x08;
-//            if (KEY(K_F5))			data|=0x10;
+//            if (KEY(K_F4))			data|=0x08;  // KANA ???
+//            if (KEY(K_F5))			data|=0x10; :: CLR ???
 //            if (KEY(K_F6))			data|=0x20;
         }
 //        if (ks&0x8000) {
