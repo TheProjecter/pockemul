@@ -405,7 +405,7 @@ STOP            01001000  10111011          12  stop
 */
 
 
-#include "upd7810.h"
+#include "upd7907.h"
 #include "pcxxxx.h"
 #include "Log.h"
 #include "Inter.h"
@@ -1626,7 +1626,7 @@ void Cupd7907::upd78c05_timers(upd7907_state *cpustate, int cycles)
 
 
 
-#include "7810tbl.cpp"
+#include "7907tbl.cpp"
 
 void Cupd7907::illegal(upd7907_state *cpustate)
 {

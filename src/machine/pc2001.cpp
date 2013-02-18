@@ -1,5 +1,5 @@
 #include "pc2001.h"
-#include "upd7810/upd7810.h"
+#include "upd7907/upd7907.h"
 #include "upd16434.h"
 #include "Log.h"
 #include "Keyb.h"
