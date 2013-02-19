@@ -4,6 +4,7 @@
 class CPObject;
 class Cupd7907;
 class CUPD16434;
+class Cconnector;
 
 #include "pcxxxx.h"
 
@@ -22,6 +23,9 @@ public:
     virtual UINT8 out(UINT8 address,UINT8 value);
     virtual UINT16 out16(UINT16 address,UINT16 value);
 
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+
     quint16 kstrobe;
 
     bool init();
@@ -37,9 +41,9 @@ public:
 
     UINT16 getKey();
 
-    Cupd7907 *upd7810;
+    Cupd7907 *upd7907;
     CUPD16434 *upd16434[4];
-
+    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
 private:
 
 

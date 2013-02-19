@@ -5,6 +5,7 @@
 #include "Keyb.h"
 #include "Inter.h"
 #include "Lcdc_pc2001.h"
+#include "Connect.h"
 
 
 Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
@@ -57,12 +58,13 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch = 0;
 
     pLCDC		= new Clcdc_pc2001(this);
-    pCPU		= new Cupd7907(this);    upd7810 = (Cupd7907*)pCPU;
+    pCPU		= new Cupd7907(this);    upd7907 = (Cupd7907*)pCPU;
     for (int i=0;i<4;i++) upd16434[i]  = new CUPD16434(this);
     pTIMER		= new Ctimer(this);
-    pKEYB		= new Ckeyb(this,"z1.map");
+    pKEYB		= new Ckeyb(this,"pc2001.map");
 
-
+pTAPECONNECTOR	= new Cconnector(this,3,1,Cconnector::Jack,"Line in / Rec / Rmt",false);
+publish(pTAPECONNECTOR);
 
 //    i86cpu = (Ci80x86*)pCPU;
 }
@@ -82,6 +84,9 @@ bool Cpc2001::init(void)				// initialize
     CpcXXXX::init();
 
     pTIMER->resetTimer(1);
+
+    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
+
     return true;
 }
 
@@ -99,20 +104,21 @@ bool Cpc2001::run() {
     }
 
     // LCD transmission
-    quint8 data = upd7810->upd7810stat.imem[0x08];
+    quint8 data = upd7907->upd7810stat.imem[0x08];
     if ( (data > 0) && (data != 0xff))
     {
-        quint8 currentLCDctrl = upd7810->upd7810stat.imem[0] & 0x03;
-        quint8 cmddata = (upd7810->upd7810stat.imem[0] >> 2) & 0x01;
+        quint8 currentLCDctrl = upd7907->upd7810stat.imem[0] & 0x03;
+        quint8 cmddata = (upd7907->upd7810stat.imem[0] >> 2) & 0x01;
         switch(cmddata) {
         case 0x01: upd16434[currentLCDctrl]->instruction(data);
             break;
         case 0x00: upd16434[currentLCDctrl]->data(data);
             break;
         }
-        upd7810->upd7810stat.imem[0x08] = 0;
+        upd7907->upd7810stat.imem[0x08] = 0;
     }
 
+     fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
     return true;
 }
 
@@ -133,8 +139,8 @@ bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Cpc2001::in(UINT8 Port)
 {
     switch (Port) {
-    case 0x01 : return 0x02;
-    case 0x02 : return getKey();
+    case 0x01 : return 0x02  | (pTAPECONNECTOR->Get_pin(1) ? 0x80 : 0x00);
+    case 0x02 : return (getKey() & 0x3F);
     }
 
     return 0;
@@ -152,6 +158,21 @@ UINT16 Cpc2001::out16(UINT16 address, UINT16 value)
     if (address == UPD7907_PORTE) {
         kstrobe = value;
     }
+
+    return 0;
+}
+
+bool Cpc2001::Set_Connector()
+{
+    pTAPECONNECTOR->Set_pin(3,true);       // RMT
+    pTAPECONNECTOR->Set_pin(2,upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
+
+    return true;
+}
+
+bool Cpc2001::Get_Connector()
+{
+    return true;
 }
 
 
@@ -204,7 +225,8 @@ UINT16 Cpc2001::getKey()
         if (ks&0x01) {
 //            if (KEY(K_F1))			data|=0x01;
 //            if (KEY(K_F2))			data|=0x02;
-            if (KEY(K_SHT))			data|=0x04;
+//            if (KEY(K_SHT))			data|=0x04;
+            if (pKEYB->isShift) data|=0x04;
 //            if (KEY(K_F4))			data|=0x08;
 //            if (KEY(K_F5))			data|=0x10;
 //            if (KEY(K_F6))			data|=0x20;
@@ -213,8 +235,8 @@ UINT16 Cpc2001::getKey()
         if (ks&0x02) {
             if (KEY('Q'))			data|=0x01;
             if (KEY('A'))			data|=0x02;
-            if (KEY(K_F1))			data|=0x04;
-            if (KEY(K_F2))			data|=0x08;
+//            if (KEY(K_F1))			data|=0x04;
+            if (KEY(K_0))			data|=0x08;
             if (KEY('1'))			data|=0x10;
             if (KEY('Z'))			data|=0x20;
         }
@@ -222,7 +244,7 @@ UINT16 Cpc2001::getKey()
             if (KEY('W'))			data|=0x01;
             if (KEY('S'))			data|=0x02;
             if (KEY('X'))			data|=0x04;
-//            if (KEY('1'))			data|=0x08;
+            if (KEY(K_1))			data|=0x08;
             if (KEY('2'))			data|=0x10;
 //            if (KEY(K_F1))			data|=0x20; // F1
         }
@@ -231,7 +253,7 @@ UINT16 Cpc2001::getKey()
             if (KEY(','))			data|=0x01;
             if (KEY('D'))			data|=0x02;
             if (KEY('C'))			data|=0x04;
-//            if (KEY('2'))			data|=0x08;
+            if (KEY(K_2))			data|=0x08;
             if (KEY('3'))			data|=0x10;
 //            if (KEY(K_F2))			data|=0x20;     //F2
         }
@@ -240,7 +262,7 @@ UINT16 Cpc2001::getKey()
             if (KEY('R'))			data|=0x01;
             if (KEY('F'))			data|=0x02;
             if (KEY('V'))			data|=0x04;
-//            if (KEY('3'))			data|=0x08;
+            if (KEY(K_3))			data|=0x08;
             if (KEY('4'))			data|=0x10;
 //            if (KEY(K_F3))			data|=0x20;     //F3
         }
@@ -248,7 +270,7 @@ UINT16 Cpc2001::getKey()
             if (KEY('T'))			data|=0x01;
             if (KEY('G'))			data|=0x02;
             if (KEY('B'))			data|=0x04;
-//            if (KEY('4'))			data|=0x08;
+            if (KEY(K_4))			data|=0x08;
             if (KEY('5'))			data|=0x10;
 //            if (KEY(K_F4))			data|=0x20;     //F4
         }
@@ -256,7 +278,7 @@ UINT16 Cpc2001::getKey()
             if (KEY('Y'))			data|=0x01;
             if (KEY('H'))			data|=0x02;
             if (KEY('N'))			data|=0x04;
-//            if (KEY('5'))			data|=0x08;
+            if (KEY(K_5))			data|=0x08;
             if (KEY('6'))			data|=0x10;
             if (KEY(','))			data|=0x20;
         }
@@ -264,7 +286,7 @@ UINT16 Cpc2001::getKey()
             if (KEY('U'))			data|=0x01;
             if (KEY('J'))			data|=0x02;
             if (KEY('M'))			data|=0x04;
-//            if (KEY('6'))			data|=0x08;
+            if (KEY(K_6))			data|=0x08;
             if (KEY('7'))			data|=0x10;
             if (KEY('.'))			data|=0x20;
         }
@@ -272,7 +294,7 @@ UINT16 Cpc2001::getKey()
             if (KEY('I'))			data|=0x01;
             if (KEY('K'))			data|=0x02;
             if (KEY('/'))			data|=0x04;
-//            if (KEY('7'))			data|=0x08;
+            if (KEY(K_7))			data|=0x08;
             if (KEY('8'))			data|=0x10;
             if (KEY('/'))			data|=0x20;
         }
@@ -280,15 +302,15 @@ UINT16 Cpc2001::getKey()
             if (KEY('O'))			data|=0x01;
             if (KEY('L'))			data|=0x02;
             if (KEY('*'))			data|=0x04;
-//            if (KEY('8'))			data|=0x08;
+            if (KEY(K_8))			data|=0x08;
             if (KEY('9'))			data|=0x10;
             if (KEY(';'))			data|=0x20;
         }
         if (ks&0x400) {
             if (KEY('P'))			data|=0x01;
 //            if (KEY(K_F2))			data|=0x02;
-            if (KEY('-'))			data|=0x04;
-//            if (KEY('9'))			data|=0x08;
+//            if (KEY('-'))			data|=0x04;     // numpad -
+            if (KEY(K_9))			data|=0x08;
             if (KEY('0'))			data|=0x10;
             if (KEY(':'))			data|=0x20;
         }
@@ -303,7 +325,7 @@ UINT16 Cpc2001::getKey()
         if (ks&0x1000) {
             if (KEY('^'))			data|=0x01;
             if (KEY(' '))			data|=0x02; //???
-            if (KEY('.'))			data|=0x04;
+//            if (KEY('.'))			data|=0x04; // Numpad .
             if (KEY(K_UA))			data|=0x08;
             if (KEY('['))			data|=0x10;
 //            if (KEY(K_F6))			data|=0x20;
@@ -320,8 +342,8 @@ UINT16 Cpc2001::getKey()
 //            if (KEY(K_F1))			data|=0x01;
             if (KEY(K_RET))			data|=0x02;
 //            if (KEY(K_F3))			data|=0x04;
-//            if (KEY(K_F4))			data|=0x08;  // KANA ???
-//            if (KEY(K_F5))			data|=0x10; :: CLR ???
+            if (KEY(K_SML))			data|=0x08;  // KANA ???
+            if (KEY(K_CLR))			data|=0x10; // CLR ???
 //            if (KEY(K_F6))			data|=0x20;
         }
 //        if (ks&0x8000) {
@@ -341,3 +363,25 @@ UINT16 Cpc2001::getKey()
 
 }
 
+/*
+
+
+  SAMPLE BASIC CODE
+
+10 INPUTX
+20 G=1
+30 IFX>5THEN70
+40 G=G*X
+50 X=X+1
+60 GOTO30
+70 PRINTX*LOG(X)-X+LOG(6.28319/X)/2+((1/99/X/X-1/30)/X/X+1)/12-LOG(G)
+
+
+
+
+
+
+
+
+
+ **/
