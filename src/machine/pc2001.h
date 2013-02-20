@@ -44,8 +44,9 @@ public:
     Cupd7907 *upd7907;
     CUPD16434 *upd16434[4];
     Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
+    Cconnector	*pPRINTERCONNECTOR;	qint64 pPRINTERCONNECTOR_value;
 private:
-
+    quint8 portB;
 
 };
 #endif // PC2001_H

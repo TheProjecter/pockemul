@@ -170,7 +170,8 @@ enum Models {
     FP200,
     Z1,
     Z1GR,
-    PC2001
+    PC2001,
+    PC2021
 };
 
 #endif

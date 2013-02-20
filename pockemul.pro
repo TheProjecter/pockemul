@@ -309,7 +309,8 @@ HEADERS += src/core/Connect.h \
     src/machine/pc2001.h \
     src/cpu/upd16434.h \
     src/lcd/Lcdc_pc2001.h \
-    src/cpu/upd7907/upd7907.h
+    src/cpu/upd7907/upd7907.h \
+    src/machine/pc2021.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -554,7 +555,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/upd16434.cpp \
     src/lcd/Lcdc_pc2001.cpp \
     src/cpu/upd7907/upd7907d.cpp \
-    src/cpu/upd7907/upd7907.cpp
+    src/cpu/upd7907/upd7907.cpp \
+    src/machine/pc2021.cpp
 
 
 

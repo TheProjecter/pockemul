@@ -21,5 +21,6 @@
      <example idpocket="11Pins Cable" filename="./" name="Sharp EA-129C" image=":/EXT/ext/cable.png"/>
      <example idpocket="Casio MD-100" filename="./" name="Casio MD-100" image=":/EXT/ext/md-100.png"/>
      <example idpocket="Casio FP-100" filename="./" name="Casio FP-100" image=":/EXT/ext/fp100.png"/>
+     <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/EXT/ext/pc-2021.png"/>
    </demos>
  </demolauncher>
