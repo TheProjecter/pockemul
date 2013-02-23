@@ -7,6 +7,26 @@
 #include "Lcdc_pc2001.h"
 #include "Connect.h"
 
+/*
+
+ PA bit 0-1:
+        0   LCD controller 0
+        1   LCD controller 1
+        2   LCD controller 2
+        3   LCD controller 3
+     bit 2: LCDCommand if 1 or LCDData
+     bit 3 : PRINTER PORT SELECTED ?????
+
+
+
+
+ PB 0x00 : output to Printer
+    0x01 : SERIAL ???? perhaps the BUSY
+    0x02 : output to LCD
+
+
+ */
+
 
 Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -63,11 +83,13 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pc2001.map");
 
-pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",false);
-publish(pTAPECONNECTOR);
-pPRINTERCONNECTOR	= new Cconnector(this,9,1,Cconnector::DIN_8,"Printer",false);
-publish(pPRINTERCONNECTOR);
-//    i86cpu = (Ci80x86*)pCPU;
+    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",false);
+    publish(pTAPECONNECTOR);
+    pPRINTERCONNECTOR	= new Cconnector(this,9,1,Cconnector::DIN_8,"Printer",false);
+    publish(pPRINTERCONNECTOR);
+    //    i86cpu = (Ci80x86*)pCPU;
+
+    ioFreq = 0;
 }
 
 Cpc2001::~Cpc2001() {
@@ -107,19 +129,41 @@ bool Cpc2001::run() {
         pTIMER->resetTimer(1);
     }
 
-    // LCD transmission
+//    if (pTIMER->msElapsedId(2)>3)
+    if (upd7907->upd7810stat.imem[0x00] &0x40)
+    {
+        UNSET_BIT(portB,1);
+    }
+    else {
+        SET_BIT(portB,1);
+    }
+
     quint8 data = upd7907->upd7810stat.imem[0x08];
     if ( (data > 0) && (data != 0xff))
     {
-        quint8 currentLCDctrl = upd7907->upd7810stat.imem[0] & 0x03;
-        quint8 cmddata = (upd7907->upd7810stat.imem[0] >> 2) & 0x01;
-        switch(cmddata) {
-        case 0x01: upd16434[currentLCDctrl]->instruction(data);
+
+        switch (upd7907->upd7810stat.imem[0x00]>>6) {
+        case 0x00:   // LCD transmission
+        {
+            // flip flop PB1 0-2-0
+            //        SET_BIT(portB,1);
+            pTIMER->resetTimer(2);
+            quint8 currentLCDctrl = upd7907->upd7810stat.imem[0] & 0x03;
+            quint8 cmddata = (upd7907->upd7810stat.imem[0] >> 2) & 0x01;
+            switch(cmddata) {
+            case 0x01: upd16434[currentLCDctrl]->instruction(data);
+                break;
+            case 0x00: upd16434[currentLCDctrl]->data(data);
+                break;
+            }
+            upd7907->upd7810stat.imem[0x08] = 0;
+        }
             break;
-        case 0x00: upd16434[currentLCDctrl]->data(data);
+        case 0x01:  // PRINTER PORT
+            sendToPrinter = data;
+            upd7907->upd7810stat.imem[0x08] = 0;
             break;
         }
-        upd7907->upd7810stat.imem[0x08] = 0;
     }
 
      fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
@@ -144,7 +188,7 @@ bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Cpc2001::in(UINT8 Port)
 {
     switch (Port) {
-    case 0x01 : return portB  | (pTAPECONNECTOR->Get_pin(1) ? 0x80 : 0x00); break;
+    case 0x01 : return portB  | (pTAPECONNECTOR->Get_pin(9) ? 0x80 : 0x00); break;
     case 0x02 : return (getKey() & 0x3F); break;
     }
 
@@ -176,18 +220,23 @@ bool Cpc2001::Set_Connector()
     pTAPECONNECTOR->Set_pin(3,true);       // RMT
     pTAPECONNECTOR->Set_pin(2,upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
 
+    if (sendToPrinter>0) {
+        pPRINTERCONNECTOR->Set_values(sendToPrinter);
+        AddLog(LOG_PRINTER,QString("Send Char:%1").arg(sendToPrinter,2,16,QChar('0')));
+    }
+    else
+        pPRINTERCONNECTOR->Set_values(0);
+
     return true;
 }
 
 bool Cpc2001::Get_Connector()
 {
 
-    if (pPRINTERCONNECTOR->Get_pin(0)) {
-        UNSET_BIT(portB,1);
+    if (pPRINTERCONNECTOR->Get_pin(9)) {
+        sendToPrinter = 0;
     }
-    else {
-        SET_BIT(portB,1);
-    }
+
     return true;
 }
 
@@ -209,6 +258,7 @@ void Cpc2001::TurnON(void){
 void Cpc2001::Reset()
 {
     CpcXXXX::Reset();
+    sendToPrinter=0;
 
 }
 

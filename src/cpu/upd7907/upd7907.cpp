@@ -11783,7 +11783,7 @@ void Cupd7907::Regs_Info(UINT8 Type)
                     Regs_String,
                     "VA=%04x\nBC=%04x\nDE=%04x\nHL=%04x\nSP=%04x\nPC=%04x\nMKL=02X\n"
                     "%c%c%c%c%c%c(%02x)",
-                    //    imem[0x31],imem[0x32],imem[0x33],imem[0x35],
+                    //imem[0x31],imem[0x32],imem[0x33],imem[0x35],
                     VA,BC,DE,HL,SP,PC,MKL,
                     (PSW & Z ? 'Z': '-'),
                     (PSW & SK ? 'S': '-'),
@@ -11797,9 +11797,9 @@ void Cupd7907::Regs_Info(UINT8 Type)
     case 1:			// Log File
         sprintf(
                     Regs_String,
-                    "AF=%02x%02x BC=%04x DE=%04x HL=%04x SP=%04x PC=%04x V=%02x EOM=%02X "
+                    "[VV98]=%02X AF=%02x%02x BC=%04x DE=%04x HL=%04x SP=%04x PC=%04x V=%02x EOM=%02X "
                     "%c%c%c%c%c%c(%02x) ",
-                    //    imem[0x31],imem[0x32],imem[0x33],imem[0x35],
+                    pPC->mem[0xff98],
                     A,PSW,BC,DE,HL,SP,PC,V,EOM,
                     (PSW & Z ? 'Z': '-'),
                     (PSW & SK ? 'S': '-'),

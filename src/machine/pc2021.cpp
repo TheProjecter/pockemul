@@ -57,7 +57,7 @@ Cpc2021::Cpc2021(CPObject *parent):Cprinter(this)
     setDY(464);//Pc_DY	= 488;
     SnapPts = QPoint(594,145);
 
-    setPaperPos(QRect(150,-3,207,149));
+    setPaperPos(QRect(70,-3,275,149));
 
     ctrl_char = false;
     t = 0;
@@ -120,6 +120,8 @@ void Cpc2021::Refreshpc2021(qint8 data)
 // The final paper image is 207 x 149 at (277,0) for the ce125
 
 // grab data char to byteArray
+    if (data==0x0a) return;
+
     TextBuffer += data;
 
     if (data == 0x0d){
@@ -139,14 +141,18 @@ void Cpc2021::Refreshpc2021(qint8 data)
         painter.end();
     }
 
+    if (posX >= 20) {
+        posX=0;
+        top+=10;
+    }
 
     painter.begin(pc2021display);
 
-    painter.drawImage(QRectF(0,MAX(149-top,0),207,MIN(top,149)),*pc2021buf,QRectF(0,MAX(0,top-149),207,MIN(top,149)));
+    painter.drawImage(QRectF(0,MAX(149-top,0),165,MIN(top,149)),*pc2021buf,QRectF(0,MAX(0,top-149),170,MIN(top,149)));
 
 // Draw printer head
-    painter.fillRect(QRect(0 , 147,207,2),QBrush(QColor(0,0,0)));
-    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
+//    painter.fillRect(QRect(0 , 147,407,2),QBrush(QColor(0,0,0)));
+//    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
 
     painter.end();
 
@@ -188,11 +194,11 @@ bool Cpc2021::init(void)
 
     // Create CE-126 Paper Image
     // The final paper image is 207 x 149 at (277,0) for the ce125
-    pc2021buf	= new QImage(QSize(207, 3000),QImage::Format_ARGB32);
-    pc2021display= new QImage(QSize(207, 149),QImage::Format_ARGB32);
+    pc2021buf	= new QImage(QSize(170, 3000),QImage::Format_ARGB32);
+    pc2021display= new QImage(QSize(170, 149),QImage::Format_ARGB32);
 
 
-
+//TODO Update the chartable with upd16343 char table
     charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
 
 //	bells	 = new QSound("ce.wav");
@@ -296,18 +302,15 @@ void Cpc2021::pulldownsignal(void)
 }
 
 bool Cpc2021::Get_Connector(void) {
-//    MT_OUT2	= GET_PIN(PIN_MT_OUT2);
-//    BUSY    = GET_PIN(PIN_BUSY);
-//    D_OUT	= GET_PIN(PIN_D_OUT);
-//    MT_OUT1	= GET_PIN(PIN_MT_OUT1);
-//    SEL2	= GET_PIN(PIN_SEL2);
-//    SEL1	= GET_PIN(PIN_SEL1);
+
+
+
 
     return true;
 }
 
 bool Cpc2021::Set_Connector(void) {
-    SET_PIN(0,1);
+
 //    SET_PIN(PIN_MT_IN,MT_IN);
 //    SET_PIN(PIN_D_IN,D_IN);
 //    SET_PIN(PIN_ACK,ACK);
@@ -327,11 +330,15 @@ bool Cpc2021::run(void)
 
     Get_Connector();
 
-    bool bit = false;
-    pc2021_Mode=0;//=RECEIVE_MODE;
+    quint8 c = pCONNECTOR->Get_values();
 
+    if (c>0)
+    {
+        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
+        SET_PIN(9,1);
+        Printer(c);
+    }
 
-    pCONNECTOR_value = pCONNECTOR->Get_values();
 
 #if 1
 // Try to introduce a latency
@@ -344,226 +351,7 @@ bool Cpc2021::run(void)
 #endif
 
 
-    //FIXME: Still not working with old generation pockets
-#if 0
 
-    if ( RAISE_MT_OUT1 && (D_OUT==DOWN))
-    {
-        code_transfer_step = BASIC_MODE;
-        pTIMER->resetTimer(0);
-//                    AddLog(LOG_PRINTER,tr("XIN from low to HIGHT"));
-        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(50);
-    }
-
-    if (code_transfer_step == BASIC_MODE) {
-
-                if (D_OUT==UP) {
-                    code_transfer_step=INIT_MODE;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(51);
-                }
-                else if ( (Previous_MT_OUT1 == UP) && (MT_OUT1 == UP ) && (pTIMER->msElapsedId(0)>2))
-                {
-                    t=0;
-                    c=0;
-                    if (BUSY == DOWN )
-                    {
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(2);
-                        ACK = UP;
-//                        AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
-//                        Previous_BUSY = GET_PIN(PIN_BUSY);
-//						return;
-                    }
-                    else {
-                        // Works for 1350 but fail with others
-                        ACK = DOWN;
-                    }
-                }
-    }
-#endif
-
-    switch (code_transfer_step) {
-    case INIT_MODE :    if ((MT_OUT1 == UP) && (D_OUT==UP))
-                {
-                    pTIMER->resetTimer(1);//lastState = pTIMER->state; //time.restart();
-                    code_transfer_step=1;
-                    t=0; c=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
-                }
-                break;
-    case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP))
-                {
-                    if (pTIMER->msElapsedId(1) > 30) {
-                        // Code transfer sequence started
-                        // Raise ACK
-                        code_transfer_step = 2;
-                        AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                        ACK = UP;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(9);
-                    }
-                }
-                else {
-                    code_transfer_step=INIT_MODE;
-                    //if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(7);
-                }
-                break;
-    case 2:     if (BUSY == UP )	//check for BUSY
-                {
-                    if(D_OUT == UP)
-                    {
-                        bit = true;;
-                    } else
-                    {
-                        bit = false;
-                    }
-                    t>>=1;
-                    if (bit) t|=0x80;
-                    if((c=(++c)&7)==0)
-                    {
-                        AddLog(LOG_CONSOLE,tr("device code printer : %1\n").arg(t,2,16) );
-
-                        //Printer(t);
-                        ACK = DOWN;
-                        device_code = t;
-                        if ((t == internal_device_code)) {
-                            device_code = t;
-                            code_transfer_step=4;
-                            AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                        }
-                        else {
-                            code_transfer_step = 6;
-                            AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                            pTIMER->resetTimer(1);
-                            //lastState = pTIMER->state;
-                        }
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(17);
-                        t=0; c=0;
-                    }
-                    else {
-                        ACK = DOWN;
-                        code_transfer_step=3;
-                        AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                        pTIMER->resetTimer(1);//lastState=pTIMER->state;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(18);
-                    }
-                }
-                break;
-    case 3:     if (pTIMER->msElapsedId(1)>2) {
-                    code_transfer_step=2;
-                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                    // wait 2 ms and raise ACK
-                    ACK = UP;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(16);
-                }
-                break;
-    case 4:     if ((BUSY == DOWN)){//&&(MT_OUT1 == DOWN)) {
-                    ACK = UP;
-                    code_transfer_step=5;
-                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                    pTIMER->resetTimer(1);//lastState=pTIMER->state;//time.restart();
-                    t=0; c=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(15);
-                }
-                break;
-    case 5:     if (pTIMER->msElapsedId(1)>9) {
-                    ACK = DOWN;
-                    code_transfer_step=INIT_MODE;
-                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-                    pTIMER->resetTimer(1);//lastState=pTIMER->state;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(14);
-                }
-                break;
-    case 6:     if ((pTIMER->msElapsedId(1)>2) && (GET_PIN(PIN_BUSY) == UP ) ){
-                    ACK = DOWN;
-                    code_transfer_step=INIT_MODE;
-                    AddLog(LOG_CONSOLE,tr("step : %1\n").arg(code_transfer_step,2,10) );
-//                    pTIMER->resetTimer(1);
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(19);
-
-
-                }
-                break;
-            }
-
-
-
-   if ((code_transfer_step==BASIC_MODE) || (code_transfer_step == INIT_MODE)) {
-
-        switch (device_code)
-        {
-            case 0x00:  // only ce-125 et ce-126p specific mode
-            case 0xff:
-            case 0x0f:
-            case 0x21:
-            case 0x45:
-
-                if ( (BUSY == Previous_BUSY ) && (Previous_BUSY == DOWN) &&
-                     (MT_OUT1 == Previous_MT_OUT1) &&	(Previous_MT_OUT1 == DOWN) &&
-                     (ACK == UP) &&
-                     (pTIMER->msElapsedId(1) > 2 ) )
-                {
-                    AddLog(LOG_PRINTER,tr("ACK timeout"));
-                    pTIMER->resetTimer(1);//lastState=pTIMER->state;//time.restart();
-                    ACK = DOWN;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
-                }
-
-                if (SEL1 == UP )
-                {
-                    t=0;
-                    c=0;
-                    if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
-                }
-
-                if (BUSY != Previous_BUSY )	//check for BUSY  - F03
-                {
-                    //AddLog(LOG_PRINTER,tr("PIN_BUSY CHANGE from %1 TO %2").arg(Previous_PIN_BUSY?"1":"0").arg(GET_PIN(PIN_BUSY)?"1":"0"));
-                    Previous_BUSY = BUSY;
-                    if (ACK == UP) //check for ACK  - F03
-                    {
-                        ACK = DOWN;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(3);
-                    }
-                    else
-                    {
-                        ACK = UP;
-                        pTIMER->resetTimer(1);//lastState=pTIMER->state;
-                        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(4);
-                    }
-                    //AddLog(LOG_PRINTER,tr("CHANGE ACK TO %1").arg(GET_PIN(PIN_ACK)?"1":"0"));
-
-                    if (BUSY == UP )	//check for BUSY  - F03
-                    {
-                        if(D_OUT == UP)
-                        {
-                            bit = true;;
-                        } else
-                        {
-                            bit = false;
-                        }
-                        t>>=1;
-                        if (bit) t|=0x80;
-                        if((c=(++c)&7)==0)
-                        {
-                            AddLog(LOG_CONSOLE,tr("send char to printer : %1").arg(t,2,16) );
-                            Printer(t);
-                            t=0; c=0;
-                            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(5);
-                        }
-                        else {
-                            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(6);
-                        }
-
-
-                    }
-                }
-                Previous_BUSY = BUSY;
-                Previous_MT_OUT1 = MT_OUT1;
-                pulldownsignal();
-
-
-        }
-
-    }
 
 
     pCONNECTOR_value = pCONNECTOR->Get_values();

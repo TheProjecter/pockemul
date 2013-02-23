@@ -47,6 +47,7 @@ public:
     Cconnector	*pPRINTERCONNECTOR;	qint64 pPRINTERCONNECTOR_value;
 private:
     quint8 portB;
+    quint8 sendToPrinter;
 
 };
 #endif // PC2001_H
