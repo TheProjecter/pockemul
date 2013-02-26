@@ -10616,6 +10616,7 @@ void Cupd7907::SOFTI(upd7907_state *cpustate)
     WM( SPD, PCL );
 
     PC = 0x0060;
+    cpustate->pPC->pCPU->CallSubLevel++;
 }
 
 /* 74: prefix */
@@ -11172,7 +11173,7 @@ void Cupd7907::Reset()
 	// gamemaster falling block "and"s to enable interrupts
 	MKL = 0xff;
 	MKH = 0xff; //?
-    cpustate->handle_timers = upd78c05_timers;
+    //cpustate->handle_timers = upd7907_timers;
 
     MA = 0;		/* All outputs */
     MB = 0;

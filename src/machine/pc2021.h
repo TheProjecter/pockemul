@@ -58,32 +58,17 @@ public:
 private:
 
 
-    void	pulldownsignal(void);
 
 
     int		posX;
     QByteArray	TextBuffer;
-    bool	Previous_BUSY;
-    bool	Previous_MT_OUT1;
-    QTime	time;
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;
-    int     code_transfer_step;
-    int     device_code;
     qint64  lastState;
 
 
 public:
-    bool MT_OUT2;
-    bool BUSY;
-    bool D_OUT;
-    bool MT_IN;
-    bool MT_OUT1;
-    bool D_IN;
-    bool ACK;
-    bool SEL2;
-    bool SEL1;
 
 };
 

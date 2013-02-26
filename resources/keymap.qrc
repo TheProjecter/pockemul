@@ -32,5 +32,6 @@
         <file>keymap/pc1211.map</file>
         <file>keymap/ce122.map</file>
         <file>keymap/pc2001.map</file>
+        <file>keymap/pc2021.map</file>
     </qresource>
 </RCC>

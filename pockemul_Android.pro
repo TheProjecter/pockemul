@@ -287,7 +287,13 @@ HEADERS += src/core/Connect.h \
     tinybasic/tinybasic.h \
     src/machine/pc1211.h \
     src/lcd/Lcdc_pc1211.h \
-    src/machine/ce122.h
+    src/machine/ce122.h \
+    src/core/downloadmanager.h \
+    src/machine/pc2001.h \
+    src/cpu/upd16434.h \
+    src/lcd/Lcdc_pc2001.h \
+    src/cpu/upd7907/upd7907.h \
+    src/machine/pc2021.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -339,7 +345,8 @@ RESOURCES += resources/ext.qrc \
     resources/ext2.qrc \
     resources/z1.qrc \
     resources/fp200.qrc \
-    resources/pc1211.qrc
+    resources/pc1211.qrc \
+    resources/pc2001.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -525,7 +532,14 @@ SOURCES += src/core/Connect.cpp \
     tinybasic/tinybasic.cpp \
     src/machine/pc1211.cpp \
     src/lcd/Lcdc_pc1211.cpp \
-    src/machine/ce122.cpp
+    src/machine/ce122.cpp \
+    src/core/downloadmanager.cpp \
+    src/machine/pc2001.cpp \
+    src/cpu/upd16434.cpp \
+    src/lcd/Lcdc_pc2001.cpp \
+    src/cpu/upd7907/upd7907d.cpp \
+    src/cpu/upd7907/upd7907.cpp \
+    src/machine/pc2021.cpp
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -667,10 +681,10 @@ OTHER_FILES += \
     resources/keymap/z1.map \
     resources/keymap/fp200.map \
     resources/keymap/pc1260.map \
-    resources/keymap/pc1211.map
-
-
-
+    resources/keymap/pc1211.map \
+    resources/keymap/ce122.map \
+    resources/keymap/pc2001.map \
+    resources/keymap/pc2021.map
 
 
 

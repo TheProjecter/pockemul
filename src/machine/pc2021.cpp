@@ -23,12 +23,10 @@
 
 TransMap KeyMappc2021[]={
     {1,	"FEED  ",	K_PFEED,34,234,	9},
-    {2,	"RMT ON",	K_RMT_ON,34,234,9},
-    {3,	"RMT OFF",	K_RMT_OFF,34,234,9},
-    {4,	"POWER ON",	K_POW_ON,34,234,	9},
-    {5,	"POWER OFF",K_POW_OFF,34,234,	9}
+    {2,	"POWER ON",	K_POW_ON,34,234,	9},
+    {3,	"POWER OFF",K_POW_OFF,34,234,	9}
 };
-int KeyMappc2021Lenght = 5;
+int KeyMappc2021Lenght = 3;
 
 Cpc2021::Cpc2021(CPObject *parent):Cprinter(this)
 {								//[constructor]
@@ -79,12 +77,6 @@ void Cpc2021::ComputeKey(void)
 {
     if (pKEYB->LastKey == K_PFEED) {
         Refreshpc2021(0x0d);
-    }
-    if (pKEYB->LastKey == K_RMT_ON) {
-        rmtSwitch = true;
-    }
-    if (pKEYB->LastKey == K_RMT_OFF) {
-        rmtSwitch = false;
     }
 }
 
@@ -212,25 +204,6 @@ bool Cpc2021::init(void)
     // Fill it blank
     clearPaper();
 
-    Previous_BUSY = GET_PIN(PIN_BUSY);
-    Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
-    time.start();
-
-    run_oldstate = -1;
-
-    code_transfer_step = 0;
-    device_code = 0;
-
-    MT_OUT2	= false;
-    BUSY    = false;
-    D_OUT	= false;
-    MT_IN	= false;
-    MT_OUT1	= false;
-    D_IN	= false;
-    ACK		= false;
-    SEL2	= false;
-    SEL1	= false;
-
     return true;
 }
 
@@ -269,23 +242,6 @@ void Cpc2021::Printer(qint8 d)
     }
 }
 
-//********************************************************/
-//* Check for E-PORT and Get data						 */
-//********************************************************/
-// PIN_MT_OUT2	1
-// PIN_GND		2
-// PIN_VGG		3
-// PIN_BUSY		4
-// PIN_D_OUT	5
-// PIN_MT_IN	6
-// PIN_MT_OUT1	7
-// PIN_D_IN		8
-// PIN_ACK		9
-// PIN_SEL2		10
-// PIN_SEL1		11
-//********************************************************/
-
-
 
 #define		WAIT ( pPC->frequency / 10000*6)
 
@@ -293,38 +249,19 @@ void Cpc2021::Printer(qint8 d)
 #define SEND_MODE		2
 #define TEST_MODE		3
 
-extern int LogLevel;
-//
-// no bit start
-// no bit stop
-void Cpc2021::pulldownsignal(void)
-{
-}
+
 
 bool Cpc2021::Get_Connector(void) {
-
-
-
-
     return true;
 }
 
 bool Cpc2021::Set_Connector(void) {
-
-//    SET_PIN(PIN_MT_IN,MT_IN);
-//    SET_PIN(PIN_D_IN,D_IN);
-//    SET_PIN(PIN_ACK,ACK);
-
     return true;
 }
 
-#define INIT_MODE   0
-#define BASIC_MODE  10
 
 #define PC2021LATENCY (pTIMER->pPC->getfrequency()/3200)
-#define RAISE_MT_OUT1   ((Previous_MT_OUT1 == DOWN) && (MT_OUT1 == UP ))
 
-//#define CE126LATENCY (getfrequency()/3200)
 bool Cpc2021::run(void)
 {
 
@@ -349,10 +286,6 @@ bool Cpc2021::run(void)
     if (deltastate < PC2021LATENCY ) return true;
     run_oldstate	= pTIMER->state;
 #endif
-
-
-
-
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
 

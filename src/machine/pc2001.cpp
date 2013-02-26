@@ -166,7 +166,8 @@ bool Cpc2001::run() {
         }
     }
 
-     fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
+//     fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
+     fillSoundBuffer(upd7907->upd7810stat.to? 0xff : 0x00);
     return true;
 }
 
