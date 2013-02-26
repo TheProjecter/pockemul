@@ -98,11 +98,11 @@ Cpc2001::~Cpc2001() {
 
 bool Cpc2001::init(void)				// initialize
 {
-    if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
+
 //pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
-
+    if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
 #endif
     CpcXXXX::init();
 
