@@ -39,6 +39,7 @@ LDPI        Load Data Pointer with Immediate    80 to B1, C0 to F1
 #define MASK_WRCURS     0x7D
 #define MASK_LDPI       0x80
 
+#define SWM  0x64
 #define SCMR 0x72
 #define SCML 0x71
 
@@ -243,15 +244,7 @@ CUPD16434::CUPD16434(CpcXXXX *parent)
 {
     pPC = parent;
 
-    for (int i = 0 ; i < 0x80 ; i++)
-    {
-        info.imem[i] = 0;
-    }
 
-    info.on_off = 0;
-    info.dataPointer = 0;
-    info.status = 0;
-    updated = false;
 }
 
 CUPD16434::~CUPD16434() {
@@ -262,6 +255,17 @@ CUPD16434::~CUPD16434() {
 
 bool CUPD16434::init()
 {
+    for (int i = 0 ; i < 0x80 ; i++)
+    {
+        info.imem[i] = 0;
+    }
+
+    info.on_off = 0;
+    info.dataPointer = 0;
+    info.status = 0;
+    updated = false;
+
+    return true;
 }
 
 bool CUPD16434::exit()
@@ -292,6 +296,18 @@ BYTE CUPD16434::data(quint8 cmd)
         break;
     case SCML: addChar(cmd,false);
         break;
+    default:
+        switch (info.mode & 0xfc) {
+        case SWM: info.imem[info.dataPointer] = cmd;
+            if ((info.mode & 0x03)==0) info.dataPointer++;
+            if ((info.mode & 0x03)==1) info.dataPointer--;
+            break;
+
+        default:
+            if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 Unknown mode %i\n",info.mode);
+            AddLog(LOG_DISPLAY,tr("mode:%1").arg(info.mode));
+            break;
+        }
 
     }
     updated = true;
@@ -302,7 +318,7 @@ BYTE CUPD16434::instruction(quint8 cmd)
 {
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 CMD: %02x\n",cmd);
 
-    AddLog(LOG_DISPLAY,tr("UPD16434 CMD:%1").arg(cmd,4,16,QChar('0')));
+//    AddLog(LOG_DISPLAY,tr("UPD16434 CMD:%1").arg(cmd,4,16,QChar('0')));
 
     if ((cmd & MASK_LDPI) == MASK_LDPI ) { return cmd_LDPI(cmd); }
     else
@@ -399,5 +415,26 @@ BYTE CUPD16434::cmd_DISPOFF(quint8 cmd)
 
 BYTE CUPD16434::cmd_STOP(quint8 cmd)
 {
+}
+
+void CUPD16434::Load_Internal(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "upd16434")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &info,ba_reg.data(),sizeof(info));
+        }
+        xmlIn->skipCurrentElement();
+    }
+}
+
+void CUPD16434::save_internal(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","upd16434");
+        QByteArray ba_reg((char*)&info,sizeof(info));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+    xmlOut->writeEndElement();
 }
 

@@ -255,7 +255,7 @@ public:
     virtual DWORD get_PC();
     virtual void Regs_Info(UINT8);
 
-    upd7907_state upd7810stat;
+    upd7907_state upd7907stat;
 
     static UINT8 RP(upd7907_state *cpustate, offs_t port);
     static void WP(upd7907_state *cpustate, offs_t port, UINT8 data);

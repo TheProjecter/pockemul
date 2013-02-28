@@ -11128,7 +11128,7 @@ void Cupd7907::MOV_MC_A_7801(upd7907_state *cpustate)
 
 void Cupd7907::Reset()
 {
-    upd7907_state *cpustate = &upd7810stat;
+    upd7907_state *cpustate = &upd7907stat;
 //	UPD7907_CONFIG save_config;
 //	device_irq_acknowledge_callback save_irqcallback;
 
@@ -11144,6 +11144,7 @@ void Cupd7907::Reset()
 //	cpustate->direct = &cpustate->program->direct();
 //	cpustate->io = device->space(AS_IO);
 
+    cpustate->pPC  = pPC;
     cpustate->opXX = opXX_7907;
     cpustate->op48 = op48_7907;
     cpustate->op4C = op4C_7907;
@@ -11184,12 +11185,39 @@ void Cupd7907::Reset()
     cpustate->ovc0 = ( ( TMM & 0x04 ) ? 16 * 8 : 8 ) * TM0;
 }
 
-void Cupd7907::Load_Internal(QXmlStreamReader *)
+void Cupd7907::Load_Internal(QXmlStreamReader *xmlIn)
 {
+    if (xmlIn->readNextStartElement()) {
+        if ( (xmlIn->name()=="cpu") &&
+             (xmlIn->attributes().value("model").toString() == "upd7907")) {
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &upd7907stat,ba_reg.data(),sizeof(upd7907stat));
+            upd7907stat.pPC = pPC;
+            upd7907stat.opXX = opXX_7907;
+            upd7907stat.op48 = op48_7907;
+            upd7907stat.op4C = op4C_7907;
+            upd7907stat.op4D = op4D_7907;
+            upd7907stat.op60 = op60_7907;
+            upd7907stat.op64 = op64_7907;
+            upd7907stat.op70 = op70_7907;
+            upd7907stat.op74 = op74_7907;
+            upd7907stat.handle_timers = upd78c05_timers;
+//            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+//            memcpy((char *) &(upd7907stat.imem),ba_imem.data(),IMEM_LEN);
+
+        }
+        xmlIn->skipCurrentElement();
+    }
 }
 
-void Cupd7907::save_internal(QXmlStreamWriter *)
+void Cupd7907::save_internal(QXmlStreamWriter *xmlOut)
 {
+
+    xmlOut->writeStartElement("cpu");
+        xmlOut->writeAttribute("model","upd7907");
+        QByteArray ba_reg((char*)&upd7907stat,sizeof(upd7907stat));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+    xmlOut->writeEndElement();
 }
 #if 0
 static CPU_RESET( upd7807 )
@@ -11766,7 +11794,7 @@ DEFINE_LEGACY_CPU_DEVICE(UPD78C06, upd78c06);
 
 DWORD Cupd7907::get_PC()
 {
-    upd7907_state *cpustate = &upd7810stat;
+    upd7907_state *cpustate = &upd7907stat;
     return PC;
 }
 
@@ -11775,7 +11803,7 @@ void Cupd7907::Regs_Info(UINT8 Type)
     sprintf(Regs_String,"EMPTY");
 
 #if 1
-    upd7907_state *cpustate = &upd7810stat;
+    upd7907_state *cpustate = &upd7907stat;
     char buf[32];
     switch(Type)
     {
@@ -11841,7 +11869,7 @@ bool Cupd7907::init()
     pDEBUG->init();
     Reset();
 
-    upd7810stat.pPC = pPC;
+    upd7907stat.pPC = pPC;
     return true;
 
 }
@@ -11852,7 +11880,7 @@ bool Cupd7907::exit()
 
 void Cupd7907::step()
 {
-    execute(&upd7810stat);
+    execute(&upd7907stat);
 
 
 }

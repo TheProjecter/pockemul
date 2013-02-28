@@ -101,7 +101,7 @@ bool Cpc2001::init(void)				// initialize
 
 //pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+//    pCPU->logsw = true;
     if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
 #endif
     CpcXXXX::init();
@@ -125,12 +125,12 @@ bool Cpc2001::run() {
 
     if (pTIMER->msElapsedId(1)>20) {
         Cupd7907 *upd7810 = (Cupd7907 *)pCPU;
-        upd7810->upd7810stat.irr |= 0x10;
+        upd7810->upd7907stat.irr |= 0x10;
         pTIMER->resetTimer(1);
     }
 
 //    if (pTIMER->msElapsedId(2)>3)
-    if (upd7907->upd7810stat.imem[0x00] &0x40)
+    if (upd7907->upd7907stat.imem[0x00] &0x40)
     {
         UNSET_BIT(portB,1);
     }
@@ -138,36 +138,36 @@ bool Cpc2001::run() {
         SET_BIT(portB,1);
     }
 
-    quint8 data = upd7907->upd7810stat.imem[0x08];
+    quint8 data = upd7907->upd7907stat.imem[0x08];
     if ( (data > 0) && (data != 0xff))
     {
 
-        switch (upd7907->upd7810stat.imem[0x00]>>6) {
+        switch (upd7907->upd7907stat.imem[0x00]>>6) {
         case 0x00:   // LCD transmission
         {
             // flip flop PB1 0-2-0
             //        SET_BIT(portB,1);
             pTIMER->resetTimer(2);
-            quint8 currentLCDctrl = upd7907->upd7810stat.imem[0] & 0x03;
-            quint8 cmddata = (upd7907->upd7810stat.imem[0] >> 2) & 0x01;
+            quint8 currentLCDctrl = upd7907->upd7907stat.imem[0] & 0x03;
+            quint8 cmddata = (upd7907->upd7907stat.imem[0] >> 2) & 0x01;
             switch(cmddata) {
             case 0x01: upd16434[currentLCDctrl]->instruction(data);
                 break;
             case 0x00: upd16434[currentLCDctrl]->data(data);
                 break;
             }
-            upd7907->upd7810stat.imem[0x08] = 0;
+            upd7907->upd7907stat.imem[0x08] = 0;
         }
             break;
         case 0x01:  // PRINTER PORT
             sendToPrinter = data;
-            upd7907->upd7810stat.imem[0x08] = 0;
+            upd7907->upd7907stat.imem[0x08] = 0;
             break;
         }
     }
 
 //     fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
-     fillSoundBuffer(upd7907->upd7810stat.to? 0xff : 0x00);
+     fillSoundBuffer(upd7907->upd7907stat.to? 0xff : 0x00);
     return true;
 }
 
@@ -219,7 +219,7 @@ UINT16 Cpc2001::out16(UINT16 address, UINT16 value)
 bool Cpc2001::Set_Connector()
 {
     pTAPECONNECTOR->Set_pin(3,true);       // RMT
-    pTAPECONNECTOR->Set_pin(2,upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
+    pTAPECONNECTOR->Set_pin(2,upd7907->upd7907stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
 
     if (sendToPrinter>0) {
         pPRINTERCONNECTOR->Set_values(sendToPrinter);
@@ -252,6 +252,7 @@ void Cpc2001::TurnOFF(void) {
 
 void Cpc2001::TurnON(void){
     CpcXXXX::TurnON();
+    upd7907->upd7907stat.pc.w.l=0;
 
 }
 
@@ -259,19 +260,20 @@ void Cpc2001::TurnON(void){
 void Cpc2001::Reset()
 {
     CpcXXXX::Reset();
+    pLCDC->init();
     sendToPrinter=0;
 
 }
 
 bool Cpc2001::LoadConfig(QXmlStreamReader *xmlIn)
 {
-
+    for (int i=0;i<4;i++) upd16434[i]->Load_Internal(xmlIn);
     return true;
 }
 
 bool Cpc2001::SaveConfig(QXmlStreamWriter *xmlOut)
 {
-
+    for (int i=0;i<4;i++) upd16434[i]->save_internal(xmlOut);
     return true;
 }
 
