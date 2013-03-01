@@ -10478,6 +10478,10 @@ void Cupd7907::DAA(upd7907_state *cpustate)
 /* 62: 0110 0010 */
 void Cupd7907::RETI(upd7907_state *cpustate)
 {
+    if (((Cupd7907*)(cpustate->pPC->pCPU))->softi) {
+        IFF=1;
+        ((Cupd7907*)(cpustate->pPC->pCPU))->softi = false;
+    }
     PCL = RM( SPD );
     SP++;
     PCH = RM( SPD );
@@ -10618,6 +10622,7 @@ void Cupd7907::SOFTI(upd7907_state *cpustate)
     PC = 0x0060;
     cpustate->pPC->pCPU->CallSubLevel++;
     IFF = 0;
+    ((Cupd7907*)(cpustate->pPC->pCPU))->softi = true;
 }
 
 /* 74: prefix */
@@ -11184,6 +11189,8 @@ void Cupd7907::Reset()
     cpustate->handle_timers = upd78c05_timers;
     TM0 = 0xFF;	/* Timer seems to be running from boot */
     cpustate->ovc0 = ( ( TMM & 0x04 ) ? 16 * 8 : 8 ) * TM0;
+
+    softi=false;
 }
 
 void Cupd7907::Load_Internal(QXmlStreamReader *xmlIn)
@@ -11827,8 +11834,10 @@ void Cupd7907::Regs_Info(UINT8 Type)
     case 1:			// Log File
         sprintf(
                     Regs_String,
-                    "[VV98]=%02X AF=%02x%02x BC=%04x DE=%04x HL=%04x SP=%04x PC=%04x V=%02x EOM=%02X "
+                    "IFF=%02X [f6ba]=%02X%02X%02X%02X [VV98]=%02X AF=%02x%02x BC=%04x DE=%04x HL=%04x SP=%04x PC=%04x V=%02x EOM=%02X "
                     "%c%c%c%c%c%c(%02x) ",
+                    IFF,
+                    pPC->mem[0xf6ba],pPC->mem[0xf6bb],pPC->mem[0xf6bc],pPC->mem[0xf6bd],
                     pPC->mem[0xff98],
                     A,PSW,BC,DE,HL,SP,PC,V,EOM,
                     (PSW & Z ? 'Z': '-'),

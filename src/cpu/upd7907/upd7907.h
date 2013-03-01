@@ -256,7 +256,7 @@ public:
     virtual void Regs_Info(UINT8);
 
     upd7907_state upd7907stat;
-
+    bool softi;
     static UINT8 RP(upd7907_state *cpustate, offs_t port);
     static void WP(upd7907_state *cpustate, offs_t port, UINT8 data);
     static void upd7907_take_irq(upd7907_state *cpustate);
@@ -1329,6 +1329,8 @@ public:
     static void MOV_MC_A_7801(upd7907_state *cpustate);
     static UINT8 read_port_byte(upd7907_state *cpustate, offs_t port);
     static void write_port_byte(upd7907_state *cpustate, offs_t port, UINT8 data);
+
+
 
 };
 
