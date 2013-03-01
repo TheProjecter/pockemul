@@ -101,7 +101,7 @@ bool Cpc2001::init(void)				// initialize
 
 //pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-//    pCPU->logsw = true;
+    pCPU->logsw = true;
     if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
 #endif
     CpcXXXX::init();
@@ -125,7 +125,7 @@ bool Cpc2001::run() {
 
     if (pTIMER->msElapsedId(1)>20) {
         Cupd7907 *upd7810 = (Cupd7907 *)pCPU;
-        upd7810->upd7907stat.irr |= 0x10;
+        upd7810->upd7907stat.irr |= 0x08;
         pTIMER->resetTimer(1);
     }
 

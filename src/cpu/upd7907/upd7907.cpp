@@ -10617,6 +10617,7 @@ void Cupd7907::SOFTI(upd7907_state *cpustate)
 
     PC = 0x0060;
     cpustate->pPC->pCPU->CallSubLevel++;
+    IFF = 0;
 }
 
 /* 74: prefix */
