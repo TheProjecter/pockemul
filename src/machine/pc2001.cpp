@@ -1,6 +1,7 @@
 #include "pc2001.h"
 #include "upd7907/upd7907.h"
 #include "upd16434.h"
+#include "pd1990ac.h"
 #include "Log.h"
 #include "Keyb.h"
 #include "Inter.h"
@@ -15,7 +16,8 @@
         2   LCD controller 2
         3   LCD controller 3
      bit 2: LCDCommand if 1 or LCDData
-     bit 3 : PRINTER PORT SELECTED ?????
+     bit 3: TIMER
+     bit 6: PRINTER PORT SELECTED ????? 0x40
 
 
 
@@ -23,7 +25,12 @@
  PB 0x00 : output to Printer
     0x01 : SERIAL ???? perhaps the BUSY
     0x02 : output to LCD
+    0x04 : read timer chip bit
 
+    0x20 : write cmd to timer chip
+    0x40 : write cmd to timer chip
+
+    0x80 : TAPE rmt
 
  */
 
@@ -80,6 +87,7 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     pLCDC		= new Clcdc_pc2001(this);
     pCPU		= new Cupd7907(this);    upd7907 = (Cupd7907*)pCPU;
     for (int i=0;i<4;i++) upd16434[i]  = new CUPD16434(this);
+    pd1990ac    = new CPD1990AC(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pc2001.map");
 

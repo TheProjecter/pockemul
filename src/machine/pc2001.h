@@ -4,6 +4,7 @@
 class CPObject;
 class Cupd7907;
 class CUPD16434;
+class CPD1990AC;
 class Cconnector;
 
 #include "pcxxxx.h"
@@ -43,6 +44,8 @@ public:
 
     Cupd7907 *upd7907;
     CUPD16434 *upd16434[4];
+    CPD1990AC *pd1990ac;
+
     Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
     Cconnector	*pPRINTERCONNECTOR;	qint64 pPRINTERCONNECTOR_value;
 private:
