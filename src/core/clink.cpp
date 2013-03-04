@@ -2,9 +2,37 @@
 #include "clink.h"
 #include "Connect.h"
 #include "Log.h"
+#include "ccable.h"
 
 CDirectLink::CDirectLink(void) {
 
+}
+
+void CDirectLink::addLink(Cconnector *A, Cconnector *B, bool close)
+{
+    if (close) {
+        AConnList.append(A);
+        BConnList.append(B);
+        closeList.append(close);
+    }
+    else {  // Create a link object
+        // 1 - create the CCable object
+         Ccable *pPC = (Ccable*)mainwindow->LoadPocket(CABLE11Pins);
+        // 2 - define its size and position
+         bool reverse = pPC->Adapt(A,B);
+         pPC->standard = true;
+         addLink(A,pPC->ConnList.at(reverse?1:0),true);
+         pPC->ConnList.at(reverse?1:0)->setOppDir(A->getDir());
+         addLink(pPC->ConnList.at(reverse?0:1),B,true);
+         pPC->ConnList.at(reverse?0:1)->setOppDir(B->getDir());
+    }
+}
+
+void CDirectLink::removeLink(int ind)
+{
+    AConnList.removeAt(ind);
+    BConnList.removeAt(ind);
+    closeList.removeAt(ind);
 }
 
 // Return the first connected object found

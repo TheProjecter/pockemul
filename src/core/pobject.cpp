@@ -668,8 +668,9 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                             // Connect
 
                             MoveWithLinked(listpPObject.at(k)->pos() + listpPObject.at(k)->ConnList.at(c)->getSnap()*mainwindow->zoom/100 - pos() - nearList.at(r)->getSnap()*mainwindow->zoom/100);
-                            mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
-                            mainwindow->pdirectLink->BConnList.append(nearList.at(r));
+//                            mainwindow->pdirectLink->AConnList.append(listpPObject.at(k)->ConnList.at(c));
+//                            mainwindow->pdirectLink->BConnList.append(nearList.at(r));
+                            mainwindow->pdirectLink->addLink(listpPObject.at(k)->ConnList.at(c),nearList.at(r),true);
                             QList<CPObject *> list;
                             listpPObject.at(k)->manageStackPos(&list);
                         }
@@ -1209,6 +1210,7 @@ bool CPObject::getDisp_on()
 void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight) {
     setPosX(newposx);
     setPosY(newposy);
+
     setGeometry(newposx,newposy,newwidth,newheight);
     setMask(mask.scaled(newwidth,newheight).mask());
 

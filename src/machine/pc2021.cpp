@@ -42,7 +42,14 @@ Cpc2021::Cpc2021(CPObject *parent):Cprinter(this)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	= new Cconnector(this,9,0,Cconnector::DIN_8,"Printer connector",true,QPoint(594,238));	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,
+                                 9,
+                                 0,
+                                 Cconnector::DIN_8,
+                                 "Printer connector",
+                                 true,
+                                 QPoint(386,238),
+                                 Cconnector::EAST);	publish(pCONNECTOR);
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMappc2021;
     KeyMapLenght= KeyMappc2021Lenght;
@@ -204,6 +211,8 @@ bool Cpc2021::init(void)
     // Fill it blank
     clearPaper();
 
+    run_oldstate = -1;
+
     return true;
 }
 
@@ -267,16 +276,6 @@ bool Cpc2021::run(void)
 
     Get_Connector();
 
-    quint8 c = pCONNECTOR->Get_values();
-
-    if (c>0)
-    {
-        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
-        SET_PIN(9,1);
-        Printer(c);
-    }
-
-
 #if 1
 // Try to introduce a latency
     qint64	deltastate = 0;
@@ -287,7 +286,19 @@ bool Cpc2021::run(void)
     run_oldstate	= pTIMER->state;
 #endif
 
+    quint8 c = pCONNECTOR->Get_values();
+
+    if (c>0)
+    {
+        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
+        SET_PIN(9,1);
+        Printer(c);
+    }
+
     pCONNECTOR_value = pCONNECTOR->Get_values();
+
+
+
 
     Set_Connector();
 

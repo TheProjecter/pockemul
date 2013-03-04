@@ -17,15 +17,17 @@ public:
 	bool run(void);
 	bool init(void);				//initialize
 	bool exit(void);				//end
-	
+    bool Adapt(Cconnector *A,Cconnector *B);
     Ccable(CPObject *parent = 0);
  
+    bool standard;
 	
 	virtual ~Ccable(){
 		delete(pCONNECTOR_A);
 		delete(pCONNECTOR_B);
     }
 
+    bool UpdateFinalImage();
 private:
 
 };

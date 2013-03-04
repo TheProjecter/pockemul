@@ -17,7 +17,6 @@
 class CPObject;
 
 
-
 class Cconnector:public QObject
 {
     Q_OBJECT
@@ -40,6 +39,14 @@ public:
         Centronics_36,
         DB_25,
         DIN_8
+    };
+
+    enum ConnectorDir
+    {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
     };
 
 	bool	refresh;
@@ -79,6 +86,17 @@ public:
 
 	void	ConnectTo(Cconnector *);
 
+    void    setDir(ConnectorDir d) { dir = d; }
+    ConnectorDir getDir() { return dir;}
+    void  setOppDir(ConnectorDir d) {
+        switch (d) {
+        case NORTH : dir = SOUTH; break;
+        case EAST  : dir = WEST; break;
+        case SOUTH : dir = NORTH;break;
+        case WEST : dir = EAST;break;
+        }
+    }
+
     void    setSnap(QPoint p) {snap = p;}
     QPoint  getSnap(void) {return snap;}
     int    getNbpins(void) {return nbpins;}
@@ -87,16 +105,25 @@ public:
     static bool arePluggable(Cconnector *a,Cconnector *b);
 	
     Cconnector(CPObject *parent , QString desc, bool newGender = false);
-    Cconnector(CPObject *parent , int nbpins, int Id, ConnectorType type, QString desc,bool newGender = false,QPoint snap=QPoint(0,0));
+    Cconnector(CPObject *parent ,
+               int nbpins,
+               int Id,
+               ConnectorType type,
+               QString desc,
+               bool newGender = false,
+               QPoint snap=QPoint(0,0),
+               ConnectorDir dir = WEST);
 
     virtual ~Cconnector(){}
 
+    QPoint pos();
 private:
 	bool	gender;		// Male = true   Female = false  :-)
     ConnectorType Type;
     int		nbpins;
     qint64	values;
     QPoint  snap;
+    ConnectorDir dir;
 };
 
 #endif		// _CONNECT_H

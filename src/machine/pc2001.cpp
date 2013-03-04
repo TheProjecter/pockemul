@@ -91,9 +91,11 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pc2001.map");
 
-    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",false);
+    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",false,
+                                     QPoint(804,230),Cconnector::EAST);
     publish(pTAPECONNECTOR);
-    pPRINTERCONNECTOR	= new Cconnector(this,9,1,Cconnector::DIN_8,"Printer",false);
+    pPRINTERCONNECTOR	= new Cconnector(this,9,1,Cconnector::DIN_8,"Printer",false,
+                                         QPoint(490,0),Cconnector::NORTH);
     publish(pPRINTERCONNECTOR);
     //    i86cpu = (Ci80x86*)pCPU;
 
@@ -117,7 +119,7 @@ bool Cpc2001::init(void)				// initialize
     pTIMER->resetTimer(1);
 
     WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
-    WatchPoint.add(&pPRINTERCONNECTOR_value,64,2,this,"Printer");
+    WatchPoint.add(&pPRINTERCONNECTOR_value,64,9,this,"Printer");
 
     portB = 0;
 
@@ -175,7 +177,10 @@ bool Cpc2001::run() {
     }
 
 //     fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
-     fillSoundBuffer(upd7907->upd7907stat.to? 0xff : 0x00);
+     fillSoundBuffer(upd7907->upd7907stat.to ? 0xff : 0x00);
+
+     pTAPECONNECTOR_value   = pTAPECONNECTOR->Get_values();
+     pPRINTERCONNECTOR_value = pPRINTERCONNECTOR->Get_values();
     return true;
 }
 
@@ -197,7 +202,7 @@ bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Cpc2001::in(UINT8 Port)
 {
     switch (Port) {
-    case 0x01 : return portB  | (pTAPECONNECTOR->Get_pin(9) ? 0x80 : 0x00); break;
+    case 0x01 : return portB  | (pTAPECONNECTOR->Get_pin(1) ? 0x80 : 0x00); break;
     case 0x02 : return (getKey() & 0x3F); break;
     }
 

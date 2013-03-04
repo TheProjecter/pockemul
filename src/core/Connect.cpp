@@ -4,8 +4,10 @@
 
 #include "common.h"
 #include "Connect.h"
+#include "mainwindowpockemul.h"
+#include "pobject.h"
 
-class CPObject;
+extern MainWindowPockemul* mainwindow;
 
 Cconnector::Cconnector(CPObject *parent , QString desc, bool newGender)
 {
@@ -15,7 +17,7 @@ Cconnector::Cconnector(CPObject *parent , QString desc, bool newGender)
     values = 0;
 }
 
-Cconnector::Cconnector(CPObject *parent , int nb, int id,ConnectorType type,QString desc, bool newGender,QPoint snap)
+Cconnector::Cconnector(CPObject *parent , int nb, int id, ConnectorType type, QString desc, bool newGender, QPoint snap, ConnectorDir dir)
 {
     this->Parent = parent;
     this->Desc   = desc;
@@ -25,6 +27,7 @@ Cconnector::Cconnector(CPObject *parent , int nb, int id,ConnectorType type,QStr
     this->Id     = id;
     this->Type   = type;
     this->snap   = snap;
+    this->dir    = dir;
 }
 
 bool Cconnector::arePluggable(Cconnector *a,Cconnector *b) {
@@ -69,4 +72,6 @@ void Cconnector::setType(Cconnector::ConnectorType type)
     this->Type = type;
 }
 
-
+QPoint Cconnector::pos() {
+    return Parent->pos() + snap*mainwindow->zoom/100;
+}

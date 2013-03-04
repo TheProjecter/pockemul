@@ -75,7 +75,8 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     mode		= EJECT;
     SoundOn		= FALSE;
     info.ptrFd	= 0;
-    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",true);	publish(pTAPECONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",true,
+                                     QPoint(0,150),Cconnector::WEST);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     setDX(200);//Pc_DX		= 200;
     setDY(320);//Pc_DY		= 320;
@@ -173,7 +174,10 @@ bool Cce152::GetWav(void)
     //qint64 delta = (pTIMER->state - first_state);
     while ((pTIMER->state - first_state) >= wait) {
 		GetWav_Val = myfgetc(&info);
-        fprintf(fp_tape,"delta=%lld val=%s c=%lld\n",(pTIMER->state - first_state),(GetWav_Val>0x10)?"1":"0",counter);
+        fprintf(fp_tape,
+                "delta=%lld val=%s c=%i c=%lld\n",
+                (pTIMER->state - first_state),
+                (GetWav_Val>0x10)?"1":"0",GetWav_Val,counter);
 		counter++;
         first_state +=wait;
 	}

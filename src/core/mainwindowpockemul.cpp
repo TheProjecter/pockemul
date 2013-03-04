@@ -207,8 +207,9 @@ void MainWindowPockemul::slotUnLink(Cconnector * conn) {
     {
         if (mainwindow->pdirectLink->AConnList.at(i) == conn)
         {
-            mainwindow->pdirectLink->AConnList.removeAt(i);
-            mainwindow->pdirectLink->BConnList.removeAt(i);
+            mainwindow->pdirectLink->removeLink(i);
+//            mainwindow->pdirectLink->AConnList.removeAt(i);
+//            mainwindow->pdirectLink->BConnList.removeAt(i);
             i--;
         }
     }
@@ -216,8 +217,9 @@ void MainWindowPockemul::slotUnLink(Cconnector * conn) {
     {
         if (mainwindow->pdirectLink->BConnList.at(i) == conn)
         {
-            mainwindow->pdirectLink->AConnList.removeAt(i);
-            mainwindow->pdirectLink->BConnList.removeAt(i);
+            mainwindow->pdirectLink->removeLink(i);
+//            mainwindow->pdirectLink->AConnList.removeAt(i);
+//            mainwindow->pdirectLink->BConnList.removeAt(i);
             i--;
         }
     }
@@ -295,8 +297,7 @@ void MainWindowPockemul::slotNewLink(QAction * action)
     Cconnector * p1 = (Cconnector*)l1;
     Cconnector * p2 = (Cconnector*)l2;
 
-    mainwindow->pdirectLink->AConnList.append(p1);
-    mainwindow->pdirectLink->BConnList.append(p2);
+    mainwindow->pdirectLink->addLink(p1,p2,true);//false);
 
     AddLog(LOG_MASTER,tr("DirectLink Iinsert (%1,%2)").arg((qint64)p1).arg((qint64)p2));
 }
@@ -518,12 +519,15 @@ void MainWindowPockemul::opensession(QString sessionFN)
                         int idco1 = xml.attributes().value("idcoFrom").toString().toInt();
                         int idpc2 = xml.attributes().value("idpcTo").toString().toInt();
                         int idco2 = xml.attributes().value("idcoTo").toString().toInt();
+                        bool close= (xml.attributes().value("close")=="false") ?false:true;
+
                         CPObject * locpc1 = map.value(idpc1);
                         CPObject * locpc2 = map.value(idpc2);
                         Cconnector * locco1 = locpc1->ConnList.value(idco1);
                         Cconnector * locco2 = locpc2->ConnList.value(idco2);
-                        mainwindow->pdirectLink->AConnList.append(locco1);
-                        mainwindow->pdirectLink->BConnList.append(locco2);
+                        mainwindow->pdirectLink->addLink(locco1,locco2,close);
+//                        mainwindow->pdirectLink->AConnList.append(locco1);
+//                        mainwindow->pdirectLink->BConnList.append(locco2);
 
                     }
                     else
@@ -585,12 +589,14 @@ void MainWindowPockemul::saveassession()
         int idpc2 = map.value(mainwindow->pdirectLink->BConnList.at(j)->Parent);
         //int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Id;
         int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Parent->ConnList.indexOf(mainwindow->pdirectLink->BConnList.at(j));
+        bool close = mainwindow->pdirectLink->closeList.at(j);
 
         xml->writeStartElement("link");
         xml->writeAttribute("idpcFrom",QString("%1").arg(idpc1));
         xml->writeAttribute("idcoFrom",QString("%1").arg(idco1));
         xml->writeAttribute("idpcTo",QString("%1").arg(idpc2));
         xml->writeAttribute("idcoTo",QString("%1").arg(idco2));
+        xml->writeAttribute("close",QString("%1").arg(close?"true":"false"));
         xml->writeEndElement();
     }
 
