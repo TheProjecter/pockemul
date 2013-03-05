@@ -168,6 +168,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["CE-140F"]=CE140F;
     objtable["CE-150"]= CE150;
     objtable["CE-152"]= CE152;
+    objtable["CE-127R"]= CE127R;
     objtable["26-3591"]=TANDY263591;
 
     objtable["Serial Console"]=SerialConsole;
@@ -190,6 +191,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["Casio Z-1GR"]=Z1GR;
     objtable["Nec PC-2001"]=PC2001;
     objtable["Nec PC-2021"]=PC2021;
+    objtable["Nec PC-2081"]=PC2081;
 }
 
 //
@@ -526,8 +528,6 @@ void MainWindowPockemul::opensession(QString sessionFN)
                         Cconnector * locco1 = locpc1->ConnList.value(idco1);
                         Cconnector * locco2 = locpc2->ConnList.value(idco2);
                         mainwindow->pdirectLink->addLink(locco1,locco2,close);
-//                        mainwindow->pdirectLink->AConnList.append(locco1);
-//                        mainwindow->pdirectLink->BConnList.append(locco2);
 
                     }
                     else

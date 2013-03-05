@@ -3,6 +3,7 @@
    <demos>
    <example idpocket="CE-122" filename="./" name="Sharp ce-122" image=":/EXT/ext/ce-122.png"/>
    <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/EXT/ext/ce-152.png"/>
+   <example idpocket="CE-127R" filename="./" name="Sharp ce-127r" image=":/EXT/ext/ce-127r.png"/>
     <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/EXT/ext/ce-125.jpg"/>
     <example idpocket="MP-220" filename="./" name="Seiko MP-220" image=":/EXT/ext/mp-220.jpg"/>
      <example idpocket="26-3591" filename="./" name="Tandy 26-3591" image=":/EXT/ext/26-3591.jpg"/>
@@ -22,5 +23,6 @@
      <example idpocket="Casio MD-100" filename="./" name="Casio MD-100" image=":/EXT/ext/md-100.png"/>
      <example idpocket="Casio FP-100" filename="./" name="Casio FP-100" image=":/EXT/ext/fp100.png"/>
      <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/EXT/ext/pc-2021.png"/>
+     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/EXT/ext/pc-2081.png"/>
    </demos>
  </demolauncher>

@@ -150,6 +150,7 @@ enum Models {
     CE140F,
     CE150,
     CE152,
+    CE127R,
     TANDY263591,
 
     SerialConsole,
@@ -171,7 +172,8 @@ enum Models {
     Z1,
     Z1GR,
     PC2001,
-    PC2021
+    PC2021,
+    PC2081
 };
 
 #endif

@@ -114,6 +114,19 @@ protected:
     qint64  previous_state_setwav;
 };
 
+class Cce127r:public Cce152{
+Q_OBJECT
+
+public:
+    Cce127r(CPObject *parent = 0);
+};
+
+class Cpc2081:public Cce152{
+Q_OBJECT
+
+public:
+    Cpc2081(CPObject *parent = 0);
+};
 
 class Cce152_PC15XX:public Cce152{
 
@@ -149,7 +162,7 @@ public:
 	
 	Cce152_PC15XX(CPObject *parent = 0)	: Cce152(parent)
 	{
-	};
+    }
 
 
 

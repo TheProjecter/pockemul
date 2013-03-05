@@ -647,7 +647,10 @@ OTHER_FILES += \
     resources/keymap/pc1211.map \
     resources/keymap/ce122.map \
     resources/keymap/pc2001.map \
-    resources/keymap/pc2021.map
+    resources/keymap/pc2021.map \
+    resources/keymap/ce127r.map \
+    resources/keymap/ce152.map \
+    resources/keymap/pc2081.map
 
 
 

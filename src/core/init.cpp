@@ -136,6 +136,7 @@ CPObject *pPC=0;
         case CE140F : pPC = new Cce140f;	pPC->setName("CE-140F");break;
         case CE150  : pPC = new Cce150;		pPC->setName("CE-150");break;
         case CE152  : pPC = new Cce152;		pPC->setName("CE-152");break;
+        case CE127R : pPC = new Cce127r;	pPC->setName("CE-127R");break;
         case TANDY263591: pPC = new C263591;pPC->setName("26-3591");break;
 
         case SerialConsole: pPC = new Csio;	pPC->setName("Serial Console");break;
@@ -160,6 +161,7 @@ CPObject *pPC=0;
 
         case PC2001   : pPC = new Cpc2001;      pPC->setName("Nec PC-2001"); break;
         case PC2021   : pPC = new Cpc2021;      pPC->setName("Nec PC-2021"); break;
+        case PC2081   : pPC = new Cpc2081;      pPC->setName("Nec PC-2081"); break;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");
