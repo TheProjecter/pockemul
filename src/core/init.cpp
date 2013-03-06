@@ -166,6 +166,11 @@ CPObject *pPC=0;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");
+    int dx = pPC->getDX()*mainwindow->zoom/100;
+    int dy = pPC->getDY()*mainwindow->zoom/100;
+    Avoid::Rectangle rectangle(Avoid::Point(-10.0, -10.0), Avoid::Point(dx+20, dy+20));
+    mainwindow->shapeRefList[pPC] = new Avoid::ShapeRef(mainwindow->router, rectangle);
+    mainwindow->router->addShape(mainwindow->shapeRefList[pPC]);
 	if (!pPC->init()) return 0;
 
 //	int l = mainwindow->menuBar()->height();
@@ -180,11 +185,9 @@ CPObject *pPC=0;
 
 	pPC->InitDisplay();
 
-    int dx = pPC->getDX()*mainwindow->zoom/100;
-    int dy = pPC->getDY()*mainwindow->zoom/100;
 
-    Avoid::Rectangle rectangle(Avoid::Point(0.0, 0.0), Avoid::Point(dx, dy));
-    mainwindow->shapeRefList[pPC] = new Avoid::ShapeRef(mainwindow->router, rectangle);
+
+
 
     pPC->Move(QPoint(0,0));
     pPC->setGeometry(0,0,dx,dy);

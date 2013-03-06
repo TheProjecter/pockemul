@@ -24,7 +24,7 @@ public:
     void updateConnectors(CPObject* pPC);
 	
     CPObject * findObj(CPObject *);
-    void findAllObj(CPObject *, QList<CPObject *> *);
+    void findAllObj(CPObject *, QList<CPObject *> *, bool onlyclosed = true);
     bool isLinked(CPObject *);
     bool isLinked(Cconnector *);
     Cconnector * Linked(Cconnector * search);

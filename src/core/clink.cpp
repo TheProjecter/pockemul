@@ -3,6 +3,7 @@
 #include "Connect.h"
 #include "Log.h"
 #include "ccable.h"
+#include "libavoid.h"
 
 CDirectLink::CDirectLink(void) {
 
@@ -16,6 +17,17 @@ void CDirectLink::addLink(Cconnector *A, Cconnector *B, bool close)
         closeList.append(close);
     }
     else {  // Create a link object
+#if 1
+        AConnList.append(A);
+        BConnList.append(B);
+        closeList.append(close);
+
+        Avoid::ConnEnd srcEnd(mainwindow->shapeRefList[A->Parent],A->Id+1);
+        Avoid::ConnEnd dstEnd(mainwindow->shapeRefList[B->Parent],B->Id+1);
+        new Avoid::ConnRef(mainwindow->router, srcEnd, dstEnd);
+        mainwindow->router->processTransaction();
+        mainwindow->router->outputInstanceToSVG("test-connectionpin01");
+#else
         // 1 - create the CCable object
          Ccable *pPC = (Ccable*)mainwindow->LoadPocket(CABLE11Pins);
         // 2 - define its size and position
@@ -25,6 +37,7 @@ void CDirectLink::addLink(Cconnector *A, Cconnector *B, bool close)
          pPC->ConnList.at(reverse?1:0)->setOppDir(A->getDir());
          addLink(pPC->ConnList.at(reverse?0:1),B,true);
          pPC->ConnList.at(reverse?0:1)->setOppDir(B->getDir());
+#endif
     }
 }
 
@@ -50,7 +63,7 @@ CPObject * CDirectLink::findObj(CPObject * search)
 }
 
 // return a list of all connected  objects
-void CDirectLink::findAllObj(CPObject * search, QList<CPObject *> * liste)
+void CDirectLink::findAllObj(CPObject * search, QList<CPObject *> * liste, bool onlyclosed)
 {
 	int i,j;
 	
@@ -59,7 +72,14 @@ void CDirectLink::findAllObj(CPObject * search, QList<CPObject *> * liste)
  		
 		for (j = 0;j < AConnList.size(); j++)
 	 	{
-	 		if ( search->ConnList.at(i) == AConnList.at(j) ) 
+            bool closed;
+            if (onlyclosed) {
+                closed = true;
+            }
+            else
+                closed = closeList.at(j)
+;
+            if ( (closeList.at(j)==closed) && ( search->ConnList.at(i) == AConnList.at(j) ))
 	 		{
 	 			if (liste->indexOf(BConnList.at(j)->Parent) == -1)
 	 			{
@@ -70,7 +90,14 @@ void CDirectLink::findAllObj(CPObject * search, QList<CPObject *> * liste)
 		}
 		for ( j = 0;j < BConnList.size(); j++)
 	 	{
-	 		if ( search->ConnList.at(i) == BConnList.at(j) ) 
+            bool closed;
+            if (onlyclosed) {
+                closed = true;
+            }
+            else
+                closed = closeList.at(j);
+
+            if ((closeList.at(j)==closed) &&( search->ConnList.at(i) == BConnList.at(j) ))
 	 		{
 	 			if (liste->indexOf(AConnList.at(j)->Parent) == -1)
 	 			{

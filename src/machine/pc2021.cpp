@@ -42,14 +42,7 @@ Cpc2021::Cpc2021(CPObject *parent):Cprinter(this)
 
     settop(10);
     setposX(0);
-    pCONNECTOR	= new Cconnector(this,
-                                 9,
-                                 0,
-                                 Cconnector::DIN_8,
-                                 "Printer connector",
-                                 true,
-                                 QPoint(386,238),
-                                 Cconnector::EAST);	publish(pCONNECTOR);
+
     pTIMER		= new Ctimer(this);
     KeyMap      = KeyMappc2021;
     KeyMapLenght= KeyMappc2021Lenght;
@@ -185,6 +178,14 @@ bool Cpc2021::init(void)
 
     setfrequency( 0);
 
+    pCONNECTOR	= new Cconnector(this,
+                                 9,
+                                 0,
+                                 Cconnector::DIN_8,
+                                 "Printer connector",
+                                 true,
+                                 QPoint(386,238),
+                                 Cconnector::EAST);	publish(pCONNECTOR);
     WatchPoint.add(&pCONNECTOR_value,64,11,this,"Printer connector");
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
 

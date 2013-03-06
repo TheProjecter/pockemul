@@ -91,12 +91,7 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pc2001.map");
 
-    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",false,
-                                     QPoint(804,230),Cconnector::EAST);
-    publish(pTAPECONNECTOR);
-    pPRINTERCONNECTOR	= new Cconnector(this,9,1,Cconnector::DIN_8,"Printer",false,
-                                         QPoint(490,0),Cconnector::NORTH);
-    publish(pPRINTERCONNECTOR);
+
     //    i86cpu = (Ci80x86*)pCPU;
 
     ioFreq = 0;
@@ -118,6 +113,12 @@ bool Cpc2001::init(void)				// initialize
 
     pTIMER->resetTimer(1);
 
+    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",false,
+                                     QPoint(804,231),Cconnector::EAST);
+    publish(pTAPECONNECTOR);
+    pPRINTERCONNECTOR	= new Cconnector(this,9,1,Cconnector::DIN_8,"Printer",false,
+                                         QPoint(402,0),Cconnector::NORTH);
+    publish(pPRINTERCONNECTOR);
     WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
     WatchPoint.add(&pPRINTERCONNECTOR_value,64,9,this,"Printer");
 

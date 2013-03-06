@@ -15,6 +15,7 @@
 #define SET_PIN(n,v)	(pCONNECTOR->Set_pin(n,v))
 
 class CPObject;
+namespace Avoid { class ShapeConnectionPin; }
 
 
 class Cconnector:public QObject
@@ -55,6 +56,8 @@ public:
 	
 	QString	Desc;
 	
+    Avoid::ShapeConnectionPin *shapeconnectionpin;
+
     virtual bool init(void){return true;}
     virtual bool exit(void){return true;}
     Q_INVOKABLE qint64 Get_values(void)
@@ -97,7 +100,7 @@ public:
         }
     }
 
-    void    setSnap(QPoint p) {snap = p;}
+    void    setSnap(QPoint p);
     QPoint  getSnap(void) {return snap;}
     int    getNbpins(void) {return nbpins;}
     void   setNbpins(int nb) { nbpins = nb;}

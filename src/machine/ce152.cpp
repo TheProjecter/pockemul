@@ -76,8 +76,6 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     mode		= EJECT;
     SoundOn		= FALSE;
     info.ptrFd	= 0;
-    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",true,
-                                     QPoint(0,150),Cconnector::WEST);	publish(pTAPECONNECTOR);
     pTIMER		= new Ctimer(this);
     setDX(200);//Pc_DX		= 200;
     setDY(320);//Pc_DY		= 320;
@@ -99,8 +97,6 @@ Cce127r::Cce127r(CPObject *parent) : Cce152(parent)
     setDX(472);//Pc_DX		= 483;//409;
     setDY(266);//Pc_DY		= 252;//213;
     pKEYB->fn_KeyMap = "ce127r.map";
-    pTAPECONNECTOR->setSnap(QPoint(472,130));
-    pTAPECONNECTOR->setDir(Cconnector::EAST);
 
 }
 
@@ -114,14 +110,29 @@ Cpc2081::Cpc2081(CPObject *parent) : Cce152(parent)
     setDX(658);//Pc_DX		= 483;//409;
     setDY(410);//Pc_DY		= 252;//213;
     pKEYB->fn_KeyMap = "pc2081.map";
-    pTAPECONNECTOR->setSnap(QPoint(0,300));
-    pTAPECONNECTOR->setDir(Cconnector::WEST);
+
 
 }
 
 /*********************************/
 /* Initialize Tape				 */
 /*********************************/
+
+bool Cpc2081::init(void) {
+    Cce152::init();
+    pTAPECONNECTOR->setSnap(QPoint(0,300));
+    pTAPECONNECTOR->setDir(Cconnector::WEST);
+    return true;
+}
+
+bool Cce127r::init(void) {
+    Cce152::init();
+
+    pTAPECONNECTOR->setSnap(QPoint(472,130));
+    pTAPECONNECTOR->setDir(Cconnector::EAST);
+    return true;
+}
+
 bool Cce152::init(void)
 {
     AddLog(LOG_TAPE,"Tape initializing...")
@@ -132,6 +143,9 @@ bool Cce152::init(void)
     CPObject::init();
 
     setfrequency( 0);
+
+    pTAPECONNECTOR	= new Cconnector(this,3,0,Cconnector::Jack,"Line in / Rec / Rmt",true,
+                                     QPoint(0,150),Cconnector::WEST);	publish(pTAPECONNECTOR);
 
     WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
 

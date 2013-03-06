@@ -6,6 +6,7 @@
 #include "Connect.h"
 #include "mainwindowpockemul.h"
 #include "pobject.h"
+#include "libavoid.h"
 
 extern MainWindowPockemul* mainwindow;
 
@@ -26,8 +27,9 @@ Cconnector::Cconnector(CPObject *parent , int nb, int id, ConnectorType type, QS
     this->nbpins = nb;
     this->Id     = id;
     this->Type   = type;
-    this->snap   = snap;
+    setSnap(snap);
     this->dir    = dir;
+
 }
 
 bool Cconnector::arePluggable(Cconnector *a,Cconnector *b) {
@@ -38,7 +40,20 @@ bool Cconnector::arePluggable(Cconnector *a,Cconnector *b) {
 void Cconnector::ConnectTo(Cconnector * source)
 {
 	if (!source) return;
-	values = source->values;
+    values = source->values;
+}
+
+void Cconnector::setSnap(QPoint p)
+{
+    snap = p;
+
+    double x = (double)p.x()/Parent->getDX();
+    double y = (double)p.y()/Parent->getDY();
+    shapeconnectionpin = new Avoid::ShapeConnectionPin(mainwindow->shapeRefList[Parent],
+                                                       Id+1,
+                                                       x,y,
+                                                       1);
+
 }
 
 void Cconnector::Dump_pin(void)

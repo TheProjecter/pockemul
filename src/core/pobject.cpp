@@ -146,6 +146,8 @@ void CPObject::Move(QPoint p)
 	QWidget::move(QPoint(PosX,PosY));
 
     mainwindow->router->moveShape(mainwindow->shapeRefList[this],p.x(),p.y());
+    mainwindow->router->processTransaction();
+    mainwindow->router->outputInstanceToSVG("test-connectionpin01");
 }
 
 QRect CPObject::RectWithLinked(void) {
@@ -1068,6 +1070,7 @@ QImage * CPObject::LoadImage(QSize size,QString fname)
 void CPObject::publish(Cconnector* newConn)
 {
 	ConnList.append(newConn);
+
 }
 void CPObject::remove(Cconnector* newConn)
 {
@@ -1217,8 +1220,8 @@ void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight
     setGeometry(newposx,newposy,newwidth,newheight);
     setMask(mask.scaled(newwidth,newheight).mask());
 
-    Avoid::Rectangle rectangle(Avoid::Point(newposx, newposy),
-                               Avoid::Point(newposx+newwidth, newposy+newheight));
+    Avoid::Rectangle rectangle(Avoid::Point(newposx-10, newposy-10),
+                               Avoid::Point(newposx+newwidth+20, newposy+newheight+20));
     mainwindow->router->moveShape(mainwindow->shapeRefList[this], rectangle);
 
 }

@@ -108,7 +108,9 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 
     initObjectTable();
 
-    router = new Avoid::Router(Avoid::PolyLineRouting);
+    router = new Avoid::Router(Avoid::OrthogonalRouting);
+    router->setRoutingPenalty((Avoid::PenaltyType)0, 50);
+    router->setOrthogonalNudgeDistance(15);
 
 qWarning("create");
 
@@ -300,7 +302,7 @@ void MainWindowPockemul::slotNewLink(QAction * action)
     Cconnector * p1 = (Cconnector*)l1;
     Cconnector * p2 = (Cconnector*)l2;
 
-    mainwindow->pdirectLink->addLink(p1,p2,true);//false);
+    mainwindow->pdirectLink->addLink(p1,p2,false);
 
     AddLog(LOG_MASTER,tr("DirectLink Iinsert (%1,%2)").arg((qint64)p1).arg((qint64)p2));
 }
@@ -495,8 +497,9 @@ void MainWindowPockemul::opensession(QString sessionFN)
                                 locPC->setPosX(posX.toFloat());
                                 locPC->setPosY(posY.toFloat());
                                 if (locPC->Front) {
-                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
-                                    locPC->setMask(locPC->mask.scaled(locPC->getDX()*zoom/100,locPC->getDY()*zoom/100).mask());
+//                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
+//                                    locPC->setMask(locPC->mask.scaled(locPC->getDX()*zoom/100,locPC->getDY()*zoom/100).mask());
+                                    locPC->changeGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
                                 }
                                 else {
                                     locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);

@@ -119,6 +119,7 @@ Q_OBJECT
 
 public:
     Cce127r(CPObject *parent = 0);
+    virtual bool	init(void);
 };
 
 class Cpc2081:public Cce152{
@@ -126,6 +127,7 @@ Q_OBJECT
 
 public:
     Cpc2081(CPObject *parent = 0);
+    virtual bool	init(void);
 };
 
 class Cce152_PC15XX:public Cce152{

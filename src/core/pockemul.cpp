@@ -14,6 +14,7 @@
 #include "pobject.h"
 #include "dialogstartup.h"
 #include "init.h"
+#include "libavoid.h"
 
 #include "downloadmanager.h"
 
@@ -25,7 +26,6 @@
 
 MainWindowPockemul* mainwindow;
 DownloadManager* downloadManager;
-
 
 
 int main(int argc, char *argv[])
