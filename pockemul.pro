@@ -310,7 +310,27 @@ HEADERS += src/core/Connect.h \
     src/cpu/upd16434.h \
     src/lcd/Lcdc_pc2001.h \
     src/cpu/upd7907/upd7907.h \
-    src/machine/pc2021.h
+    src/machine/pc2021.h \
+    libavoid/vpsc.h \
+    libavoid/visibility.h \
+    libavoid/viscluster.h \
+    libavoid/vertices.h \
+    libavoid/timer.h \
+    libavoid/shape.h \
+    libavoid/router.h \
+    libavoid/orthogonal.h \
+    libavoid/obstacle.h \
+    libavoid/makepath.h \
+    libavoid/libavoid.h \
+    libavoid/junction.h \
+    libavoid/graph.h \
+    libavoid/geomtypes.h \
+    libavoid/geometry.h \
+    libavoid/debug.h \
+    libavoid/connend.h \
+    libavoid/connector.h \
+    libavoid/connectionpin.h \
+    libavoid/assertions.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -319,7 +339,8 @@ INCLUDEPATH += . \
     src/qmdilib \
     pictureflow
 
-INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa
+INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa \
+                libavoid
 LANGUAGE += C++
 LICENSE += GPL
 MOC_DIR += build/moc
@@ -556,7 +577,24 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_pc2001.cpp \
     src/cpu/upd7907/upd7907d.cpp \
     src/cpu/upd7907/upd7907.cpp \
-    src/machine/pc2021.cpp
+    src/machine/pc2021.cpp \
+    libavoid/vpsc.cpp \
+    libavoid/visibility.cpp \
+    libavoid/viscluster.cpp \
+    libavoid/vertices.cpp \
+    libavoid/timer.cpp \
+    libavoid/shape.cpp \
+    libavoid/router.cpp \
+    libavoid/orthogonal.cpp \
+    libavoid/obstacle.cpp \
+    libavoid/makepath.cpp \
+    libavoid/junction.cpp \
+    libavoid/graph.cpp \
+    libavoid/geomtypes.cpp \
+    libavoid/geometry.cpp \
+    libavoid/connend.cpp \
+    libavoid/connector.cpp \
+    libavoid/connectionpin.cpp
 
 
 

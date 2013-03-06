@@ -12,6 +12,7 @@
 
 #include "init.h"
 #include "mainwindowpockemul.h"
+#include "libavoid.h"
 #include "common.h"
 
 #include "dialoganalog.h"
@@ -179,9 +180,17 @@ CPObject *pPC=0;
 
 	pPC->InitDisplay();
 
+    int dx = pPC->getDX()*mainwindow->zoom/100;
+    int dy = pPC->getDY()*mainwindow->zoom/100;
+
+    Avoid::Rectangle rectangle(Avoid::Point(0.0, 0.0), Avoid::Point(dx, dy));
+    mainwindow->shapeRefList[pPC] = new Avoid::ShapeRef(mainwindow->router, rectangle);
+
     pPC->Move(QPoint(0,0));
-    pPC->setGeometry(0,0,pPC->getDX()*mainwindow->zoom/100,pPC->getDY()*mainwindow->zoom/100);
+    pPC->setGeometry(0,0,dx,dy);
 	pPC->show();
+
+
 
     return pPC;
 }

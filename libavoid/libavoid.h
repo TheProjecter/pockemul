@@ -32,6 +32,7 @@
 #ifndef AVOID_LIBAVOID_H
 #define AVOID_LIBAVOID_H
 
+
 #include "libavoid/geomtypes.h"
 #include "libavoid/shape.h"
 #include "libavoid/connector.h"

@@ -1,6 +1,7 @@
 #include <QtGui>
 #include <QMutex>
 
+#include "libavoid.h"
 #include "common.h"
 #include "pobject.h"
 #include "Inter.h"
@@ -143,6 +144,8 @@ void CPObject::Move(QPoint p)
 	PosX += p.x();
 	PosY += p.y();
 	QWidget::move(QPoint(PosX,PosY));
+
+    mainwindow->router->moveShape(mainwindow->shapeRefList[this],p.x(),p.y());
 }
 
 QRect CPObject::RectWithLinked(void) {
@@ -1213,5 +1216,9 @@ void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight
 
     setGeometry(newposx,newposy,newwidth,newheight);
     setMask(mask.scaled(newwidth,newheight).mask());
+
+    Avoid::Rectangle rectangle(Avoid::Point(newposx, newposy),
+                               Avoid::Point(newposx+newwidth, newposy+newheight));
+    mainwindow->router->moveShape(mainwindow->shapeRefList[this], rectangle);
 
 }

@@ -19,7 +19,8 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 #include "mainwindowpockemul.h"
 
-//#include "fluidlauncher.h"
+#include "libavoid.h"
+
 #include "launchbuttonwidget.h"
 #include "dialoganalog.h"
 #include "dialogabout.h"
@@ -39,8 +40,6 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "sc61860.h"
 #include "downloadmanager.h"
 
-
-//#include "lfhex/hexGui.h"
 
 extern MainWindowPockemul* mainwindow;
 extern DownloadManager *downloadManager;
@@ -108,6 +107,8 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     grabGesture(Qt::PinchGesture);
 
     initObjectTable();
+
+    router = new Avoid::Router(Avoid::PolyLineRouting);
 
 qWarning("create");
 

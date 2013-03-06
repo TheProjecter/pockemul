@@ -23,6 +23,10 @@ class WindowIDE;
 class LaunchButtonWidget;
 class QCommandLine;
 class DownloadManager;
+namespace Avoid {
+        class Router;
+        class ShapeRef;
+}
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -32,6 +36,9 @@ public:
 
     MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindowPockemul();
+
+    Avoid::Router *router;
+    QHash<CPObject *,Avoid::ShapeRef *> shapeRefList;
 
     void setZoom(int );
     void setCpu(int );
