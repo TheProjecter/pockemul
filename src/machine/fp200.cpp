@@ -75,10 +75,6 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     pCENT       = new Cctronics(this);
     pRP5C01     = new CRP5C01(this);
 
-    pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
-    publish(pCENTCONNECTOR);
-    pSIOCONNECTOR = new Cconnector(this,9,1,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
-    publish(pSIOCONNECTOR);
 
     lastKeyBufSize = 0;
     newKey = false;
@@ -262,6 +258,11 @@ bool Cfp200::init()
     Reset();
     Cetl = false;
     sid = 0;
+
+    pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
+    publish(pCENTCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,9,1,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
+    publish(pSIOCONNECTOR);
 
 //    pUART->init();
 //    pUART->pTIMER = pTIMER;

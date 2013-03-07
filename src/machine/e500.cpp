@@ -89,7 +89,6 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     pLCDC		= new Clcdc_e500(this);
     pCPU		= new Csc62015(this);
     pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"e500.map");
 
     pHD61102_1  = new CHD61102(this);
@@ -133,6 +132,7 @@ bool Ce500::init(void) {
     CpcXXXX::init();
 
 //    pRP5C01->init();
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
 
     WatchPoint.remove(this);
     QHash<int,QString> lbl;

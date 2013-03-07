@@ -196,7 +196,6 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     Sii_Bit_Nb			= 0;
     Sii_LfWait			= 500;
 
-    pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Sharp 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
     setfrequency( 0 );
     BackGroundFname	= ":/EXT/ext/serial.png";
 
@@ -205,7 +204,7 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     setDY(145);
 
     dialogconsole = new DialogConsole(this);
-    initSignalMap(Cconnector::Sharp_15);
+
 }
 
 void Csio::Set_Sii_bit(qint8 bit)	{ Sii_bit = bit;				}
@@ -562,13 +561,11 @@ bool Csio::init(void)
     setDY(145);//Pc_DY	= 145;
 
 	CPObject::init();
+    pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Sharp 15 pins",true,QPoint(23,28)); publish(pSIOCONNECTOR);
 
-
+    initSignalMap(Cconnector::Sharp_15);
     dialogconsole->show();
     connect(this,SIGNAL(valueChanged(int)),dialogconsole->inputProgressBar,SLOT(setValue(int)));
-
-
-
 
 	return true;
 }

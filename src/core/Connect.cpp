@@ -49,13 +49,14 @@ void Cconnector::setSnap(QPoint p)
 
     double x = (double)p.x()/Parent->getDX();
     double y = (double)p.y()/Parent->getDY();
-    shapeconnectionpin = new Avoid::ShapeConnectionPin(mainwindow->shapeRefList[Parent],
-                                                       Id+1,
-                                                       x,y,
-                                                       1);
+    if (mainwindow->shapeRefList.contains(Parent)) {
+        shapeconnectionpin = new Avoid::ShapeConnectionPin(mainwindow->shapeRefList[Parent],
+                                                           Id+1,
+                                                           x,y,
+                                                           10);
 
+    }
 }
-
 void Cconnector::Dump_pin(void)
 {
 	for (int i=0;i<nbpins;i++)

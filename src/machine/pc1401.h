@@ -14,6 +14,7 @@ public:
 
 	void	TurnON(void);
 
+    virtual bool    init(void);
 	virtual bool	Set_Connector(void);
 	virtual bool	Get_Connector(void);
     virtual BYTE	Get_PortA(void);

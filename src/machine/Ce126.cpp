@@ -51,16 +51,13 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     setcfgfname("ce126p");
 
     settop(10);
-    setposX(0);
-    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
-    pTAPECONNECTOR	= new Cconnector(this,3,1,Cconnector::Jack,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
-    pTIMER		= new Ctimer(this);
+    setposX(0);    pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce126;
     KeyMapLenght= KeyMapce126Lenght;
     pKEYB		= new Ckeyb(this,"ce126.map");
     setDX(620);//Pc_DX	= 620;
     setDY(488);//Pc_DY	= 488;
-    SnapPts = QPoint(594,145);
+//    SnapPts = QPoint(594,145);
 
     setPaperPos(QRect(150,-3,207,149));
 
@@ -185,6 +182,9 @@ bool Cce126::init(void)
 	CPObject::init();
 	
 	setfrequency( 0);
+
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(594,238));	publish(pCONNECTOR);
+    pTAPECONNECTOR	= new Cconnector(this,3,1,Cconnector::Jack,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
 
 	WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
 	WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
@@ -593,10 +593,14 @@ Cce123::Cce123()
     setDX(708);//Pc_DX	= 708;
     setDY(566);//Pc_DY	= 566;
     SnapPts = QPoint(215,307);
-    pCONNECTOR->setSnap(QPoint(215,397));
     setPaperPos(QRect(89,185-149,207,149));
 
     delete pKEYB; pKEYB=new Ckeyb(this,"ce123.map");
+}
+bool Cce123::init(void) {
+    Cce126::init();
+    pCONNECTOR->setSnap(QPoint(215,397));
+    return true;
 }
 
 Cce129::Cce129()
@@ -606,12 +610,16 @@ Cce129::Cce129()
     setDX(708);//Pc_DX	= 708;
     setDY(566);//Pc_DY	= 566;
     SnapPts = QPoint(88,288);
-    pCONNECTOR->setSnap(QPoint(88,378));
+
     setPaperPos(QRect(89,185-149,207,149));
     delete pKEYB; pKEYB=new Ckeyb(this,"ce129.map");
 
 }
-
+bool Cce129::init(void) {
+    Cce126::init();
+    pCONNECTOR->setSnap(QPoint(88,378));
+    return true;
+}
 C263591::C263591()
 {								//[constructor]
     BackGroundFname	= ":/EXT/ext/26-3591.jpg";
@@ -619,8 +627,13 @@ C263591::C263591()
     setDX(854);//Pc_DX	= 854;
     setDY(349);//Pc_DY	= 349;
     SnapPts = QPoint(373,0);
-    pCONNECTOR->setSnap(QPoint(373,90));
+
     setPaperPos(QRect(78,0,207,149));
 
     delete pKEYB; pKEYB=new Ckeyb(this,"263591.map");
+}
+bool C263591::init(void) {
+    Cce126::init();
+    pCONNECTOR->setSnap(QPoint(373,90));
+    return true;
 }

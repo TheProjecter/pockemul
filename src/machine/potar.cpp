@@ -12,7 +12,6 @@ Cpotar::Cpotar(CPObject *parent )	: CPObject(this)
 {							//[constructor]
 
 
-    pADCONNECTOR = new Cconnector(this,8,0,Cconnector::Jack,"Digital connector 2 pins",true,QPoint(20,0)); publish(pADCONNECTOR);
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/jack.png";
 
@@ -51,6 +50,8 @@ bool Cpotar::init(void)
     AddLog(LOG_MASTER,"Potar initializing...");
 
     CPObject::init();
+
+    pADCONNECTOR = new Cconnector(this,8,0,Cconnector::Jack,"Digital connector 2 pins",true,QPoint(20,0)); publish(pADCONNECTOR);
 
     dialogpotar = new DialogPotar(this);
     dialogpotar->show();

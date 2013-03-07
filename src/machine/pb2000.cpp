@@ -71,7 +71,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
     pKEYB->fn_KeyMap = "pb2000.map";
 
-    pCONNECTOR->setSnap(QPoint(668,77));
+
 
     closed = false;
 
@@ -162,6 +162,7 @@ bool Cpb2000::init(void)				// initialize
     pCPU->logsw = true;
 #endif
     Cpb1000::init();
+    pCONNECTOR->setSnap(QPoint(668,77));
     initExtension();
     pdi = 0xfb;
     return true;

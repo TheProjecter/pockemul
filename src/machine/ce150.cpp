@@ -72,7 +72,6 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     setDX(1146);//Pc_DX	= 960;
     setDY(382);//Pc_DY	= 320;
 
-    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(465,72));	publish(pCONNECTOR);
     pTIMER		= new Ctimer(this);
     pLH5810		= new CLH5810(this);
     KeyMap		= KeyMapce150;
@@ -114,6 +113,7 @@ bool Cce150::init(void)
     CPObject::init();
 
     setfrequency( 0);
+    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(465,72));	publish(pCONNECTOR);
 
     WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");

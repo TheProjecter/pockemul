@@ -75,9 +75,6 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     pKEYB		= new Ckeyb(this,"pb1000.map");
     pHD44352    = new CHD44352(":/pb1000/chr.bin");
 
-    pCONNECTOR	= new Cconnector(this,30,0,Cconnector::Casio_30,"Connector 30 pins",false,QPoint(668,415));	publish(pCONNECTOR);
-
-
     m_kb_matrix = 0;
 //    shift=fct = false;
 
@@ -121,6 +118,8 @@ bool Cpb1000::init(void)				// initialize
 //    initExtension();
 
 //    ioFreq = 8000;
+
+    pCONNECTOR	= new Cconnector(this,30,0,Cconnector::Casio_30,"Connector 30 pins",false,QPoint(668,415));	publish(pCONNECTOR);
 
     QHash<int,QString> lbl;
     lbl[ 4]="A0";

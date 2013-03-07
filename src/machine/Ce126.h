@@ -101,12 +101,14 @@ class Cce123:public Cce126
 {
 public:
     Cce123();
+    virtual bool init();
 };
 
 class Cce129:public Cce126
 {
 public:
     Cce129();
+    virtual bool init();
 };
 
 class C263591:public Cce126
@@ -114,6 +116,7 @@ class C263591:public Cce126
 public:
 
     C263591();
+    virtual bool init();
 
 private:
 };

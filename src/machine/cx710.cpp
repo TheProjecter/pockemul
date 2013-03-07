@@ -25,8 +25,6 @@ Cx710::Cx710(CPObject *parent):Cce515p(this) {
     setcfgfname(QString("x710"));
     BackGroundFname	= ":/x07/x710.png";
 
-    pCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",true,QPoint(631,468)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
 
 //    KeyMap      = KeyMapx710;
 //    KeyMapLenght= KeyMapce140pLenght;
@@ -55,6 +53,8 @@ bool Cx710::init(void) {
 
     Cce515p::init();
 
+    pCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",true,QPoint(631,468)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,15,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
 
     WatchPoint.add(&pCONNECTOR_value,64,15,this,"// 15pins connector");
 

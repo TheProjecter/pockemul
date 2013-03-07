@@ -35,7 +35,6 @@ Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce1600p"));
     //SnapPts = QPoint(375,404);
-    pCONNECTOR->setSnap(QPoint(424,536));
 
     setDXmm(317);//Pc_DX_mm = 317;
     setDYmm(222);//Pc_DY_mm = 222;
@@ -63,6 +62,9 @@ bool Cce1600p::init(void)
     #endif
 
         setfrequency( 0);
+
+        pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(424,536));	publish(pCONNECTOR);
+
 
         WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
 

@@ -67,7 +67,6 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 	pLCDC		= new Clcdc_pc1250(this);
 	pCPU		= new CSC61860(this);
 	pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"pc1250.map",scandef_pc1250);
 
 }
@@ -135,7 +134,14 @@ bool Cpc1250::InitDisplay(void)
 
 void Cpc1250::TurnON(void)
 {
-	CpcXXXX::TurnON();
+    CpcXXXX::TurnON();
+}
+
+bool Cpc1250::init()
+{
+    CpcXXXX::init();
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
+    return true;
 }
 
 bool Cpc1250::Set_Connector(void)

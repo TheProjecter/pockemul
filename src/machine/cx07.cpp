@@ -124,13 +124,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     //pCONNECTOR	= new Cconnector(this,11,0,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
 
-
-    pPARConnector = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",false,QPoint(715,50));
-    publish(pPARConnector);
-    pSERConnector = new Cconnector(this,9,1,Cconnector::Canon_9,"Serial Connector",false,QPoint(0,50));
-    publish(pSERConnector);
     pKEYB		= new Ckeyb(this,"x07.map");
-
 
     Cpt = 0;
     Nb=0;
@@ -165,7 +159,10 @@ bool Cx07::init(void)				// initialize
     pUART->init();
     pUART->pTIMER = pTIMER;
 
-
+    pPARConnector = new Cconnector(this,15,0,Cconnector::Canon_15,"Parrallel Connector",false,QPoint(715,50));
+    publish(pPARConnector);
+    pSERConnector = new Cconnector(this,9,1,Cconnector::Canon_9,"Serial Connector",false,QPoint(0,50));
+    publish(pSERConnector);
 
     WatchPoint.remove(this);
     WatchPoint.add(&pPARConnector_value,64,15,this,"Parallel Connector");
@@ -808,7 +805,10 @@ void Cx07::Receive_from_K7 (PorT_FX *Port)
 //        {
 //            Fichier_k7.seek(0);
 //        }
-        Fichier_k7.getChar((char*)&Port->R.F7);//fgetc (Fichier_k7);
+        char c;
+        Fichier_k7.getChar(&c);//fgetc (Fichier_k7);
+        Port->R.F7 = c;
+        AddLog(LOG_TAPE,tr("read char %1 ").arg((quint8)c,2,16,QChar('0')));
         Port->R.F6 |= 0x02;
         IT_T6834 = 3;
     }

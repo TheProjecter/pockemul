@@ -65,7 +65,6 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
     pLCDC		= new Clcdc_g850(this);
     pCPU        = new CZ80(this);
     pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
     pKEYB		= new Ckeyb(this,"g850v.map");
     pSED1560    = new CSED1560(this);
 
@@ -122,6 +121,8 @@ bool Cg850v::init()
     pCPU->logsw = true;
 #endif
     CpcXXXX::init();
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
+
     pCPU->init();
     ks1=ks2=romBank = exBank = ramBank = 0;
     return true;

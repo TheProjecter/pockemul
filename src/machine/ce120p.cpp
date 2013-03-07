@@ -11,10 +11,7 @@ Cce120p::Cce120p()
     setcfgfname("ce120p");
     setDX(883);//Pc_DX	= 883;
     setDY(568);//Pc_DY	= 568;
-    SnapPts = QPoint(402,43);
-    pCONNECTOR->setSnap(QPoint(400,131));
-
-    pCONNECTOR_Ext = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins Ext.",false,QPoint(0,370));	publish(pCONNECTOR_Ext);
+//    SnapPts = QPoint(402,43);
 
     setPaperPos(QRect(89,185-149,207,149));
 
@@ -30,6 +27,10 @@ Cce120p::~Cce120p() {
 bool Cce120p::init(void) {
 
     bool res = Cce126::init();
+    pCONNECTOR->setSnap(QPoint(400,131));
+
+    pCONNECTOR_Ext = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins Ext.",false,QPoint(0,370));	publish(pCONNECTOR_Ext);
+
     WatchPoint.add(&pCONNECTOR_Ext_value,64,11,this,"Ext. 11pins connector");
 
     ACK = false;

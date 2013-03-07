@@ -27,8 +27,6 @@ Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     BackGroundFname	= ":/EXT/ext/ce-140p.png";
     printerSwitch =true;
 
-    pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Connector 15 pins (Input)",true,QPoint(631,468)); publish(pSIOCONNECTOR);
-    pSIOCONNECTOR_OUT = new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins (Output)",false,QPoint(885,468)); publish(pSIOCONNECTOR_OUT);
     //pTIMER		= new Ctimer(this);
     KeyMap      = KeyMapce140p;
     KeyMapLenght= KeyMapce140pLenght;
@@ -55,6 +53,8 @@ bool Cce140p::init(void) {
 
     Cce515p::init();
 
+    pSIOCONNECTOR = new Cconnector(this,15,0,Cconnector::Sharp_15,"Connector 15 pins (Input)",true,QPoint(631,468)); publish(pSIOCONNECTOR);
+    pSIOCONNECTOR_OUT = new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins (Output)",false,QPoint(885,468)); publish(pSIOCONNECTOR_OUT);
 
     WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
     pSIO = new Csio(this);

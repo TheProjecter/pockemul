@@ -91,9 +91,6 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     pLH5810		= new CLH5810_PC1600(this);
 
     pTIMER		= new Ctimer(this);
-    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
-    pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
-    pADCONNECTOR= new Cconnector(this,8,2,Cconnector::Jack,"Digital connector 2 pins",false,QPoint(679,20));	publish(pADCONNECTOR);
 
 
     pKEYB		= new Ckeyb(this,"pc1600.map",scandef_pc1600);
@@ -399,6 +396,10 @@ bool Cpc1600::init(void)				// initialize
 
     pLU57813P->init();
     pLH5810->init();
+
+    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
+    pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
+    pADCONNECTOR= new Cconnector(this,8,2,Cconnector::Jack,"Digital connector 2 pins",false,QPoint(679,20));	publish(pADCONNECTOR);
 
     WatchPoint.remove(this);
 

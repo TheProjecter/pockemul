@@ -41,10 +41,6 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     pKEYB		= new Ckeyb(this,"pc2500.map",scandef_pc2500);
     pCPU		= new CSC61860(this);
 
-    pTAPECONNECTOR	= new Cconnector(this,2,2,Cconnector::Jack,"Line in / Rec",false);	publish(pTAPECONNECTOR);
-    pSIOCONNECTOR->setSnap(QPoint(960,480));
-
-    remove(pCONNECTOR); // delete pCONNECTOR;
 
     pTIMER		= new Ctimer(this);
     pce515p     = new Cce515p(this);
@@ -203,6 +199,11 @@ bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
 bool Cpc2500::init(void) {
     Cpc1350::init();
     pce515p->init();
+    pTAPECONNECTOR	= new Cconnector(this,2,2,Cconnector::Jack,"Line in / Rec",false);	publish(pTAPECONNECTOR);
+    pSIOCONNECTOR->setSnap(QPoint(960,480));
+
+    remove(pCONNECTOR); // delete pCONNECTOR;
+
     WatchPoint.remove(&pCONNECTOR_value);    // Remove the pc130 11pins connector from the analogic monitor
     WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
     return true;

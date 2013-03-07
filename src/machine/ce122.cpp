@@ -18,8 +18,6 @@ Cce122::Cce122()
     setDXmm(282);
     setDYmm(95);
     SnapPts = QPoint(372,107);
-    remove(pCONNECTOR); delete pCONNECTOR;
-    pCONNECTOR	= new Cconnector(this,9,0,Cconnector::Sharp_9,"Connector 9 pins",true,QPoint(372,107));	publish(pCONNECTOR);
     setPaperPos(QRect(90,0,158,151));
 
     delete pKEYB; pKEYB=new Ckeyb(this,"ce122.map");
@@ -33,6 +31,8 @@ bool Cce122::init(void)
     CPObject::init();
 
     setfrequency( 0);
+    remove(pCONNECTOR); delete pCONNECTOR;
+    pCONNECTOR	= new Cconnector(this,9,0,Cconnector::Sharp_9,"Connector 9 pins",true,QPoint(372,107));	publish(pCONNECTOR);
 
     WatchPoint.add(&pCONNECTOR_value,64,9,this,"Standard 11pins connector");
     WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");

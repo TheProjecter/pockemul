@@ -16,8 +16,6 @@ Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
 
     //ToDestroy = false;
 
-    pCONNECTOR = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(130,7)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,11,0,Cconnector::Sharp_11,"Saved Connector 11 pins",true,QPoint(130,7));
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/simu.png";
 
@@ -74,6 +72,9 @@ void Ccesimu::HelpDialog(void) {
 }
 
 bool Ccesimu::init(void){
+    pCONNECTOR = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(130,7)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,11,0,Cconnector::Sharp_11,"Saved Connector 11 pins",true,QPoint(130,7));
+
     WatchPoint.add(&pCONNECTOR_value,64,15,this,"Connector 11 pins");
     dialogconsole = new DialogSimulator(this);
     dialogconsole->setWindowTitle("Simulator Script Editor");

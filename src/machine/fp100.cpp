@@ -28,8 +28,6 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     setcfgfname(QString("fp100"));
     BackGroundFname	= ":/EXT/ext/fp100.png";
 
-    pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(631,468)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,36,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
 
 
     delete pKEYB; pKEYB		= new Ckeyb(this,"x710.map");
@@ -67,6 +65,9 @@ Cfp100::~Cfp100() {
 bool Cfp100::init(void) {
 
     Cce515p::init();
+
+    pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(631,468)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,36,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
 
     QHash<int,QString> lbl;
     lbl[1] = "STROBE";

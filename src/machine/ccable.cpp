@@ -14,8 +14,6 @@ extern MainWindowPockemul *mainwindow;
 Ccable::Ccable(CPObject *parent)	: CPObject(this)
 {							//[constructor]
 
-    pCONNECTOR_A = new Cconnector(this,11,0,Cconnector::Sharp_11,"11 pins Connector A",true,QPoint(135,6)); publish(pCONNECTOR_A);
-    pCONNECTOR_B = new Cconnector(this,11,1,Cconnector::Sharp_11,"11 pins Connector B",true,QPoint(135,300)); publish(pCONNECTOR_B);
     setfrequency( 0);
     BackGroundFname	= ":/EXT/ext/cable_blank.png";
 
@@ -30,6 +28,9 @@ bool Ccable::init(void) {
     CPObject::init();
 
     clearMask();
+
+    pCONNECTOR_A = new Cconnector(this,11,0,Cconnector::Sharp_11,"11 pins Connector A",true,QPoint(135,6)); publish(pCONNECTOR_A);
+    pCONNECTOR_B = new Cconnector(this,11,1,Cconnector::Sharp_11,"11 pins Connector B",true,QPoint(135,300)); publish(pCONNECTOR_B);
 
     WatchPoint.add(&pCONNECTOR_A_value,64,11,this,"11pins connector A");
     WatchPoint.add(&pCONNECTOR_B_value,64,11,this,"11pins connector B");

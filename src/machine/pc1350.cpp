@@ -45,8 +45,6 @@ Cpc13XX::Cpc13XX(CPObject *parent)	: CpcXXXX(parent)
 
     cnt=0;
 
-    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
-    pSIOCONNECTOR	= new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(633,105));	publish(pSIOCONNECTOR);
 
 }
 
@@ -57,6 +55,9 @@ bool Cpc13XX::init(void)
 #endif
 	CpcXXXX::init();
     initExtension();
+    pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(0,90));	publish(pCONNECTOR);
+    pSIOCONNECTOR	= new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(633,105));	publish(pSIOCONNECTOR);
+
 	WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,"Serial 15pins connector");
 	
 	return true;

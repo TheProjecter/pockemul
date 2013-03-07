@@ -57,7 +57,6 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     DisplayWaitForRTN = false;
     pLCDC1211 = (Clcdc_pc1211*)pLCDC;
 
-    pCONNECTOR	= new Cconnector(this,9,0,Cconnector::Sharp_9,"Connector 9 pins",false,QPoint(0,107));		publish(pCONNECTOR);
 
 
     cursorPos =0;
@@ -72,6 +71,8 @@ bool Cpc1211::init()
 //    pCPU->init();
     CpcXXXX::init();
     CpcXXXX::TurnON();
+
+    pCONNECTOR	= new Cconnector(this,9,0,Cconnector::Sharp_9,"Connector 9 pins",false,QPoint(0,107));		publish(pCONNECTOR);
 
     shiftFlag = false;
 
