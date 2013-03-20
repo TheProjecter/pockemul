@@ -575,7 +575,9 @@ bool CpcXXXX::run(void)
         }
         else {
             pCPU->step();
+#ifndef QT_NO_DEBUG
             Regs_Info(0);
+#endif
         }
 
 

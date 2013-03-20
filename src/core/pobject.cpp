@@ -171,7 +171,15 @@ void CPObject::MoveWithLinked(QPoint p) {
     for (int i=0;i<ConList.size();i++)
     {
         ConList.at(i)->Move(p);
+
     }
+
+    // YES, but how to connect closely extendions ?
+//    for (int i=0;i<listpPObject.size();i++) {
+//        CPObject * locpc = listpPObject.at(i);
+
+//        if ((locpc != this) && !locpc->geometry().intersect(this->geometry()).isNull()) locpc->MoveWithLinked(p);
+//    }
 }
 
 QPoint CPObject::pos()

@@ -97,7 +97,7 @@ public:
     int Lng_Cmd;
     int Lng_Rsp;
 
-    UINT8 Rsp[80];
+    UINT8 Rsp[0x80];
     int  pt;
     int  lng_rsp;
     UINT8 Ordre;

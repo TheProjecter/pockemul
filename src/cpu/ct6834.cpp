@@ -241,16 +241,33 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
               break;
   case 0x0d:
   case 0x0e:
-  case 0x0f:/*
+  case 0x0f:
   {
-      UINT8 line = m_in.data[m_in.read++];
-      for(int i = 0; i < 120; i++)
-          m_out.data[m_out.write++] = (line < 32) ? m_lcd_map[line][i] : 0;
-  } */
+     // TrfLine
+             int sy = Send_Cmd_T6834[1];
+             for(i = 0; i < 120; i++) {
+                 if(sy < 32) {
+                     Rsp[i] = Ram_Video[i][sy];
+                 }
+                 else {
+                     Rsp[i] = 0;
+                 }
+             }
+  }
       break;
 
   case 0x10:    //POINT
-            return (Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]] ? 0: 0xff);
+     {
+         int sx = Send_Cmd_T6834[1];
+         int sy = Send_Cmd_T6834[2];
+         if(sx < 120 && sy < 32) {
+             Rsp[0] = Ram_Video[sx][sy] ? 0x00 : 0xff;
+
+         }
+         else {
+             Rsp[0] = 0;
+         }
+     }
             break;
 
    case 0x11: pPC->pLCDC->redraw = true;
@@ -471,15 +488,16 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
   case 0x42: //char read
       {
-//          for(int cy = 0; cy < 8; cy++)
-//          {
+          for(int cy = 0; cy < 8; cy++)
+          {
+              Rsp[cy] = 0;
 //              UINT8 cl = 0x00;
 
 //              for(int cx = 0; cx < 6; cx++)
 //                  cl |= (m_lcd_map[m_cursor.y * 8 + cy][m_cursor.x * 6 + cx] != 0) ? (1<<(7-cx)) : 0;
 
 //              m_out.data[m_out.write++] = cl;
-//          }
+          }
       }
       break;
   case 0x43:	// ScanR
@@ -548,6 +566,7 @@ void CT6834::RefreshVideo (void)
         cursorTimer.restart();
     }
     if (!pPC->pLCDC->redraw) return;
+    pPC->pLCDC->redraw = false;
     if (!pPC->LcdImage) return;
     QPainter painter;
     painter.begin(pPC->LcdImage);
@@ -591,7 +610,7 @@ void CT6834::AffCurseur (void)
             UINT8 x =   Loc_X    * General_Info.size_point_x * NB_POINT_CAR_X;
 
             for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-                Ram_Video[x+i][y-1] = 1;
+                Ram_Video[x+i][y-1] = 0xff;
 
         }
     }
@@ -604,7 +623,7 @@ void CT6834::AffCurseur (void)
         UINT8 y = ((Loc_Y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) - General_Info.size_point_y;
         UINT8 x =   Loc_X    * General_Info.size_point_x * NB_POINT_CAR_X;
         for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-            Ram_Video[x+i][y-1] = 1;
+            Ram_Video[x+i][y-1] = 0xff;
     }
 }
 
@@ -625,7 +644,7 @@ void CT6834::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 
         for (P_x=0;P_x<6;P_x++)
         {
-            int color = ( (X07_CarDef[Car][P_y] & Mask) ? 1 : 0);
+            int color = ( (X07_CarDef[Car][P_y] & Mask) ? 0xff : 0);
 
             /* Positionnement de la mémoire video */
             /*------------------------------------*/
@@ -672,7 +691,7 @@ void CT6834::Pset (int x, int y)
     fprintf (stderr,"Pset %d,%d ",x,y);
 #endif
     if ( x>=0 && x <120 && y>=0 && y<32)
-        Ram_Video[x][y]=1;
+        Ram_Video[x][y]=0xff;
 
 }
 
