@@ -255,6 +255,18 @@ CUPD16434::~CUPD16434() {
 
 bool CUPD16434::init()
 {
+    Reset();
+
+    return true;
+}
+
+bool CUPD16434::exit()
+{
+    return true;
+}
+
+void CUPD16434::Reset()
+{
     for (int i = 0 ; i < 0x80 ; i++)
     {
         info.imem[i] = 0;
@@ -264,20 +276,11 @@ bool CUPD16434::init()
     info.dataPointer = 0;
     info.status = 0;
     updated = false;
-
-    return true;
-}
-
-bool CUPD16434::exit()
-{
-}
-
-void CUPD16434::Reset()
-{
 }
 
 bool CUPD16434::step()
 {
+    return true;
 }
 
 void CUPD16434::addChar(quint8 c,bool right) {
@@ -312,6 +315,8 @@ BYTE CUPD16434::data(quint8 cmd)
     }
     updated = true;
 //    info.imem[info.dataPointer] = cmd;
+
+    return 0;
 }
 
 BYTE CUPD16434::instruction(quint8 cmd)
@@ -364,10 +369,12 @@ BYTE CUPD16434::cmd_LDPI(quint8 cmd)
 
 BYTE CUPD16434::cmd_WRCURS(quint8 cmd)
 {
+    return 0;
 }
 
 BYTE CUPD16434::cmd_CLCURS(quint8 cmd)
 {
+    return 0;
 }
 
 BYTE CUPD16434::cmd_MODE(quint8 cmd)
@@ -399,22 +406,27 @@ BYTE CUPD16434::cmd_BSET(quint8 cmd,bool set)
 
 BYTE CUPD16434::cmd_SMM(quint8 cmd)
 {
+    return 0;
 }
 
 BYTE CUPD16434::cmd_SFF(quint8 cmd)
 {
+    return 0;
 }
 
 BYTE CUPD16434::cmd_DISPON(quint8 cmd)
 {
+    return 0;
 }
 
 BYTE CUPD16434::cmd_DISPOFF(quint8 cmd)
 {
+    return 0;
 }
 
 BYTE CUPD16434::cmd_STOP(quint8 cmd)
 {
+    return 0;
 }
 
 void CUPD16434::Load_Internal(QXmlStreamReader *xmlIn)

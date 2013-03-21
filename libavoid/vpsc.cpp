@@ -277,7 +277,7 @@ bool IncSolver::satisfy() {
                 //throw "Cycle Error!";
             //}
             // constraint is within block, need to split first
-//            try {
+            try {
                 Constraint* splitConstraint
                     =lb->splitBetween(v->left,v->right,lb,rb);
                 if(splitConstraint!=NULL) {
@@ -287,17 +287,17 @@ bool IncSolver::satisfy() {
                     v->unsatisfiable=true;
                     continue;
                 }
-//            } catch(UnsatisfiableException e) {
-//                e.path.push_back(v);
-//                std::cerr << "Unsatisfiable:" << std::endl;
-//                for(std::vector<Constraint*>::iterator r=e.path.begin();
-//                        r!=e.path.end();++r)
-//                {
-//                    std::cerr << **r <<std::endl;
-//                }
-//                v->unsatisfiable=true;
-//                continue;
-//            }
+            } catch(UnsatisfiableException e) {
+                e.path.push_back(v);
+                std::cerr << "Unsatisfiable:" << std::endl;
+                for(std::vector<Constraint*>::iterator r=e.path.begin();
+                        r!=e.path.end();++r)
+                {
+                    std::cerr << **r <<std::endl;
+                }
+                v->unsatisfiable=true;
+                continue;
+            }
             if(v->slack()>=0) {
                 COLA_ASSERT(!v->active);
                 // v was satisfied by the above split!
@@ -328,7 +328,7 @@ bool IncSolver::satisfy() {
             ofstream f(LOGFILE,ios::app);
             f<<s.str()<<endl;
 #endif
-//            throw s.str().c_str();
+            throw s.str().c_str();
         }
     }
 #ifdef LIBVPSC_LOGGING
@@ -1081,7 +1081,7 @@ Constraint *Block::findMinLMBetween(Variable* const lv, Variable* const rv) {
         fprintf(stderr,"Couldn't find split point!\n");
         UnsatisfiableException e;
         getActivePathBetween(e.path,lv,rv,NULL);
-//        throw e;
+        throw e;
     }
     COLA_ASSERT(min_lm!=NULL);
 #endif
