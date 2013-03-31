@@ -40,7 +40,7 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
         dumpXYW();
         for(int i = 0x400; i <= 0x408; i++)
             pPC->mem[i]= 0;
-        if (pPC->fp_log) fprintf(pPC->fp_log,"CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
     case 0x11: // Y <- 0
@@ -48,7 +48,7 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
         dumpXYW();
         for(int i = 0x410; i <= 0x418; i++)
             pPC->mem[i]= 0;
-        if (pPC->fp_log) fprintf(pPC->fp_log,"CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
     case 0x80: //  X <-> Y
@@ -73,7 +73,13 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
 {
     switch (cmd) {
 
-    case 0x41: cmd_41(); break;
+    case 0x41:
+        if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
+        cmd_41();
+        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
+        break;
 
     default:
         switch (masterCMD) {
@@ -102,9 +108,13 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                 // shift left 400h-406h (4bits)
                 if (pPC->fp_log) fprintf(pPC->fp_log,"\ndivide the mantissa by 10, shift left 400h-406h (4bits)\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
-                for(int i = 0x400; i <= 0x406; i++)
-                    pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
-                pPC->mem[0x406] &= 0xf0;
+                for(int i = 0x400; i < 0x406; i++) {
+                    quint8 _tmp = pPC->mem[i]&0xf0;
+                    pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
+                    pPC->mem[i] |= _tmp>>4;
+                    //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
+                }
+                pPC->mem[0x406] = 0x00;
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
              }   break;

@@ -226,11 +226,11 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x0082:
         return 0x0;
     case 0x0083:
-        return 0x20;
-    case 0x0086:
         return 0x08;
-    case 0x0087:
+    case 0x0086:
         return 0x00;
+    case 0x0087:
+        return 0x10;
 
     /*
      *case 0x00a2:
