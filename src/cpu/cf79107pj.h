@@ -13,12 +13,6 @@ class CCF79107PJ:public QObject{
 
 public:
 
-    typedef struct
-    {
-        quint64 X;
-
-    } REGS;
-
     const char*	GetClassName(){ return("CCF79107PJ");}
     CpcXXXX		*pPC;
 
@@ -26,16 +20,26 @@ public:
     bool	exit(void);						//end
     void	Reset(void);
     bool	step(void);
-    bool    instruction(BYTE cmd);
+    bool    instruction1(UINT8 cmd);
+    bool    instruction2(UINT8 cmd);
+    UINT8    get_status(void);
 
     void	Load_Internal(QXmlStreamReader *);
     void	save_internal(QXmlStreamWriter *);
 
-    CCF79107PJ(CpcXXXX *parent,int clk);
+    CCF79107PJ(CpcXXXX *parent);
     virtual ~CCF79107PJ();
 
+    void cmd_41();
+    UINT16 make_bcd_sub(UINT8 arg1, UINT8 arg2);
+    UINT16 make_bcd_add(UINT8 arg1, UINT8 arg2);
+    void cmd_c0();
+    void dumpXYW();
 private:
-    REGS r;
+
+
+    UINT8 masterCMD;
+    UINT8 BCDret;
 
 };
 

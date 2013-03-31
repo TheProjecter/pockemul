@@ -4,6 +4,7 @@
 class CPObject;
 class CHD66108;
 class Ci80x86;
+class CCF79107PJ;
 
 #include "pcxxxx.h"
 
@@ -26,6 +27,7 @@ public:
     bool init();
 
     CHD66108 *pHD66108;
+    CCF79107PJ *pFPU;
 
     virtual bool run();
 
@@ -39,7 +41,8 @@ public:
     UINT16 getKey();
 
     Ci80x86 *i86cpu;
-    void dumpXYW();
+
+
 private:
     UINT16 ks;
     UINT16 eoi;
@@ -52,6 +55,7 @@ private:
     bool lastIntPulse;
     int lastKeyBufSize;
     bool newKey;
+
 
 };
 

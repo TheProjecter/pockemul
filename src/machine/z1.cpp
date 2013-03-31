@@ -9,6 +9,7 @@
 #include "Log.h"
 #include "Lcdc_z1.h"
 #include "hd66108.h"
+#include "cf79107pj.h"
 
 #ifdef POCKEMUL_BIG_ENDIAN
 #	define LOW(x)	((uint8 *)&(x) + 1)
@@ -70,6 +71,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 
     pLCDC		= new Clcdc_z1(this);
     pCPU		= new Ci80x86(this);
+    pFPU        = new CCF79107PJ(this);
     pTIMER		= new Ctimer(this);
     pHD66108    = new CHD66108(this);
     pKEYB		= new Ckeyb(this,"z1.map");
@@ -87,7 +89,7 @@ Cz1::~Cz1() {
 bool Cz1::init(void)				// initialize
 {
     if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
-//pCPU->logsw = true;
+//    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 
@@ -100,7 +102,7 @@ bool Cz1::init(void)				// initialize
     pHD66108->init();
 
     eoi = 0x8000;
-    io_b8 = timer0Control = timer2Control = timer2Control = 0;
+    io_b8 = timer0Control = timer2Control = 0;
 
     intPulseId = pTIMER->initTP(240);
     lastIntPulse = false;
@@ -114,7 +116,7 @@ bool Cz1::run() {
 
     CpcXXXX::run();
 
-    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
+//    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
 
     bool pulse = pTIMER->GetTP(intPulseId);
     if (pulse != lastIntPulse) {
@@ -173,7 +175,7 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
     if(*d < 0xa0000) return false;
     if(*d < 0xb0000){
         AddLog(LOG_DISPLAY,tr("WriteVram[%1]=%2").arg(*d,5,QChar('0')).arg(data));
-        if(pCPU->fp_log) fprintf(pCPU->fp_log,"Write VRAM");
+        if(pCPU->fp_log) fprintf(pCPU->fp_log,"Write VRAM %c\n",data);
         pHD66108->writeVram( *d, data);
         return false;
     }
@@ -220,16 +222,18 @@ UINT8 Cz1::in8(UINT16 Port)
         return 0x20;
     case 0x005a: /* バッテリー容量 */
         return 0x04 | 0x80;
-    /*
+
     case 0x0082:
-        return 0x00;
+        return 0x0;
     case 0x0083:
-        return 0x08;
+        return 0x20;
     case 0x0086:
-        return 0x00;
-    case 0x0087:
         return 0x08;
-    case 0x00a2:
+    case 0x0087:
+        return 0x00;
+
+    /*
+     *case 0x00a2:
         return 0x0a;
     case 0x00a3:
         return 0x08;
@@ -242,10 +246,13 @@ UINT8 Cz1::in8(UINT16 Port)
         if (v) { AddLog(LOG_KEYBOARD,tr("Read Keyboard[%1] = %2").arg(Port,4,16,QChar('0')).arg(v&0xff,2,16,QChar('0'))); }
         return v;
     case 0x220:
+        AddLog(LOG_TEMP,tr("IN [%1]=%2").arg(Port,4,16,QChar('0')).arg( pFPU->get_status(),4,16,QChar('0')));
+        if (fp_log) fprintf(fp_log,"IN[%04x]=%02X\n",Port, pFPU->get_status());
+        return pFPU->get_status(); break;
     case 0x221:
     case 0x222: {AddLog(LOG_TEMP,tr("IN [%1]").arg(Port,4,16,QChar('0')));
         if (fp_log) fprintf(fp_log,"IN[%04x]\n",Port);
-        return 0x00;
+        return 0x01;
         break;}
     default:
         if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
@@ -304,85 +311,16 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         *HIGH(ks) = x;
         break;
     case 0x0220: /* ?? */
-
-        AddLog(LOG_TEMP,tr("OUT 220H = %1").arg(x,4,16,QChar('0')));
-        dumpXYW();
-        fprintf(fp_log,"OUT 220H %02x\n", x);
-        fprintf(fp_log,"X=");
-        for(int i = 0x400; i <= 0x40f; i++)
-            fprintf(fp_log,"%02x ", mem[i]);
-        fprintf(fp_log,"\n");
-        fprintf(fp_log,"Y=");
-        for(int i = 0x410; i <= 0x41f; i++)
-            fprintf(fp_log,"%02x ", mem[i]);
-        fprintf(fp_log,"\n");
-        fprintf(fp_log,"W=");
-        for(int i = 0x420; i <= 0x42e; i++)
-            fprintf(fp_log,"%02x ", mem[i]);
-        fprintf(fp_log,"\n");
-#if 1
-        if(x == 0x99)
-        {
-//            mem[0x400] = 0x00;
-//            mem[0x401] = 0x00;
-//            mem[0x402] = 0x00;
-//            mem[0x403] = 0x00;
-//            mem[0x404] = 0x00;
-//            mem[0x405] = 0x00;
-//            mem[0x406] = 0x01;
-//            mem[0x407] = 0x06;
-//            mem[0x408] = 0x00;
-        }
-//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x400) != 0)
-//            mem[0x400] = 0;
-//        if(i86cpu->i86read8(&(i86cpu->i86stat), 0, 0x405) != 0)
-//            mem[0x405] = 0;
-
-#endif
-#if 0
-        for(int i = 0x400; i < 0x420; i++)
-            i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x404, 0x12);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x405, 0x34);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x406, 5);//rand() % 0x10);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x407, 0x12);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x408, 0x34);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x409, 0x56);
-        i86cpu->i86write8(&(i86cpu->i86stat), 0, 0x40a, 0x78);
-#endif
+        pFPU->instruction2(x);
         break;
     case 0x0221:
-        AddLog(LOG_TEMP,tr("OUT 221H = %1").arg(x,4,16,QChar('0')));
-        dumpXYW();
 
-        fprintf(fp_log,"OUT 221H %02x\n", x);
-        fprintf(fp_log,"X=");
-        for(int i = 0x400; i <= 0x40f; i++)
-            fprintf(fp_log,"%02x ", mem[i]);
-        fprintf(fp_log,"\n");
-        fprintf(fp_log,"Y=");
-        for(int i = 0x410; i <= 0x41f; i++)
-            fprintf(fp_log,"%02x ", mem[i]);
-        fprintf(fp_log,"\n");
-        fprintf(fp_log,"W=");
-        for(int i = 0x420; i <= 0x42e; i++)
-            fprintf(fp_log,"%02x ", mem[i]);
-        fprintf(fp_log,"\n");
+        pFPU->instruction1(x);
+        break;
 
 
-#if 1
-        if(x == 0x10) {
-            for(int i = 0x400; i <= 0x408; i++)
-                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-        }
-        if(x == 0x11) {
-            for(int i = 0x410; i <= 0x418; i++)
-                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
-        }
-//            for(int i = 0x420; i < 0x42f; i++)
-//                i86cpu->i86write8(&(i86cpu->i86stat), 0, i, 0);
 
-#endif
+
 
 
         break;
@@ -394,70 +332,26 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
     return 0;
 }
 
+
 UINT16 Cz1::in16(UINT16 address)
 {
+    switch (address) {
+    case 0x82 : return 0x400; break;
+    case 0x86 : return 0x800; break;
+    }
+
+    return 0;
 }
 
 UINT16 Cz1::out16(UINT16 Port, UINT16 x)
 {
-    switch (Port) {
-    case 0x220:
-        fprintf(fp_log,"before OUT[%04X]=%04x  PC=%08x\n", Port,x,pCPU->get_PC());
-        dumpXYW();
-        switch (x) {
-        case 0x0499:
-            for(int i = 0x406; i >= 0x401; i--)
-                mem[i] = mem[i-1];
-            mem[0x400]=0;
-        }
-        fprintf(fp_log,"after OUT[%04X]=%04x  PC=%08x\n", Port,x,pCPU->get_PC());
-        dumpXYW();
-        break;
-    default:
         out8(Port + 1, x >> 8);
         out8(Port, x & 0xff);
-    }
 
-//    if ((Port >=0x220)&&(Port < 0x240)) {
-//        fprintf(fp_log,"OUT[%04X]=%04x  pc=%08x\n", Port,x,pCPU->get_PC());
-//        AddLog(LOG_TEMP,tr("OUT[%1]=%2\t%3").arg(Port,4,16,QChar('0')).arg(x,4,16,QChar('0')).arg(pCPU->get_PC(),8,16,QChar('0')));
-//        dumpXYW();
-
-//    }
-//    out8(Port + 1, x >> 8);
-//    out8(Port, x & 0xff);
+    return 0;
 }
 
-void Cz1::dumpXYW(void) {
-#if 0
-    QString _tmp="";
-    for(int i = 0x400; i <= 0x40f; i++) {
-        _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
-    AddLog(LOG_TEMP,"X="+_tmp);
-    _tmp="";
-    for(int i = 0x410; i <= 0x41f; i++)
-        _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
-    AddLog(LOG_TEMP,"Y="+_tmp);
-    _tmp="";
-    for(int i = 0x420; i < 0x42f; i++)
-        _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
-    AddLog(LOG_TEMP,"W="+_tmp);
-#else
-    fprintf(fp_log,"X=");
-    for(int i = 0x400; i <= 0x40f; i++)
-        fprintf(fp_log,"%02x ", mem[i]);
-    fprintf(fp_log,"\n");
-    fprintf(fp_log,"Y=");
-    for(int i = 0x410; i <= 0x41f; i++)
-        fprintf(fp_log,"%02x ", mem[i]);
-    fprintf(fp_log,"\n");
-    fprintf(fp_log,"W=");
-    for(int i = 0x420; i <= 0x42e; i++)
-        fprintf(fp_log,"%02x ", mem[i]);
-    fprintf(fp_log,"\n");
 
-#endif
-}
 
 void Cz1::TurnOFF(void) {
     mainwindow->saveAll = YES;

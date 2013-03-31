@@ -2507,7 +2507,11 @@ void Ci80x86::i86write16(I86stat *cpu, uint16 seg, uint16 off, uint16 v)
 
 uint16 Ci80x86::i86inp16(const I86stat *i86, uint16 port)
 {
+#if 1
     return ((uint16 )i86inp8(i86, port + 1) << 8) | i86inp8(i86, port);
+#else
+    return pPC->in16(port);
+#endif
 }
 
 void Ci80x86::i86out16(I86stat *i86, uint16 port, uint16 x)
@@ -2599,10 +2603,13 @@ DWORD Ci80x86::get_PC()
     //    return (((int )i86->r16.cs << 4) + i86->r16.ip) & 0xfffff;
 }
 
-void Ci80x86::Regs_Info(UINT8)
+void Ci80x86::Regs_Info(UINT8 Type)
 {
     char buf[32];
 
+    switch(Type)
+    {
+    case 0:
         sprintf(
         Regs_String,
         "AX=%04x  BX=%04x  CX=%04x  DX=%04x  SP=%04x  BP=%04x  SI=%04x  DI=%04x\n"
@@ -2629,6 +2636,37 @@ void Ci80x86::Regs_Info(UINT8)
         i86stat.r16.f & 0x0004 ? "PE": "PO",
         i86stat.r16.f & 0x0001 ? "CY": "NC"
         );
+        break;
+    case 1:
+        sprintf(
+        Regs_String,
+        "AX=%04x  BX=%04x  CX=%04x  DX=%04x  SP=%04x  BP=%04x  SI=%04x  DI=%04x "
+        "DS=%04x  ES=%04x  SS=%04x  CS=%04x  IP=%04x  %s %s %s %s %s %s %s %s",
+        i86stat.r16.ax,
+        i86stat.r16.bx,
+        i86stat.r16.cx,
+        i86stat.r16.dx,
+        i86stat.r16.sp,
+        i86stat.r16.bp,
+        i86stat.r16.si,
+        i86stat.r16.di,
+        i86stat.r16.ds,
+        i86stat.r16.es,
+        i86stat.r16.ss,
+        i86stat.r16.cs,
+        i86stat.r16.ip,
+        i86stat.r16.f & 0x0800 ? "OV": "NV",
+        i86stat.r16.f & 0x0400 ? "DN": "UP",
+        i86stat.r16.f & 0x0200 ? "EI": "DI",
+        i86stat.r16.f & 0x0080 ? "NG": "PL",
+        i86stat.r16.f & 0x0040 ? "ZR": "NZ",
+        i86stat.r16.f & 0x0010 ? "AC": "NA",
+        i86stat.r16.f & 0x0004 ? "PE": "PO",
+        i86stat.r16.f & 0x0001 ? "CY": "NC"
+        );
+        break;
+    }
+
 
 
 }
