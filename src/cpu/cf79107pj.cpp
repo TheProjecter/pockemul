@@ -36,24 +36,30 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
 {
     switch(cmd) {
     case 0x10:  // X <- 0
+        if (pPC->fp_log) fprintf(pPC->fp_log,"\nX<-0\nbeforeCCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
         for(int i = 0x400; i <= 0x408; i++)
             pPC->mem[i]= 0;
         if (pPC->fp_log) fprintf(pPC->fp_log,"CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
     case 0x11: // Y <- 0
+        if (pPC->fp_log) fprintf(pPC->fp_log,"\nY<-0\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
         for(int i = 0x410; i <= 0x418; i++)
             pPC->mem[i]= 0;
         if (pPC->fp_log) fprintf(pPC->fp_log,"CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
     case 0x80: //  X <-> Y
+        if (pPC->fp_log) fprintf(pPC->fp_log,"\nX<->Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
         for(int i = 0x410; i <= 0x418; i++) {
             quint8 _t = pPC->mem[i-0x10];
             pPC->mem[i-0x10] = pPC->mem[i];
             pPC->mem[i] = _t;
         }
-        if (pPC->fp_log) fprintf(pPC->fp_log,"CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
     default:
@@ -76,8 +82,12 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
             case 0x48: // BCD Shift(4bits shift)
                 if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
-                for(int i = 0x406; i >= 0x401; i--)
-                    pPC->mem[i] = ((pPC->mem[i-1]&0x0f)<<4) | ((pPC->mem[i] & 0xf0 ) >> 4);
+                for(int i = 0x406; i >= 0x401; i--) {
+                    quint8 _tmp = pPC->mem[i]&0x0f;
+                    pPC->mem[i] = (pPC->mem[i-1]&0xf0)>>4;
+                    pPC->mem[i] |= _tmp<<4;
+                    //pPC->mem[i] = ((pPC->mem[i-1]&0x0f)<<4) | ((pPC->mem[i] & 0xf0 ) >> 4);
+                }
                 pPC->mem[0x400]=(pPC->mem[0x400]>>4)& 0xff;
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
@@ -90,7 +100,7 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
             case 0x4c:    // divide the mantissa by 10
             {
                 // shift left 400h-406h (4bits)
-                if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\ndivide the mantissa by 10, shift left 400h-406h (4bits)\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 for(int i = 0x400; i <= 0x406; i++)
                     pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
@@ -99,7 +109,7 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                 dumpXYW();
              }   break;
             case 0xc0:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\nX <- X + Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 cmd_c0();
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
@@ -130,7 +140,7 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
             switch(cmd) {
             case 0xd0: // X -> Y
             {
-                if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\nX -> Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 for(int i = 0x400; i <= 0x408; i++)
                     pPC->mem[i+0x10] = pPC->mem[i];

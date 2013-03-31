@@ -311,10 +311,11 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         *HIGH(ks) = x;
         break;
     case 0x0220: /* ?? */
+        if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
         pFPU->instruction2(x);
         break;
     case 0x0221:
-
+        if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
         pFPU->instruction1(x);
         break;
 
