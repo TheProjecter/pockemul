@@ -38,6 +38,8 @@ public:
     void cmd_0800();
     void cmd_0491();
     void cmd_inc_exp();
+    void cmd_0801();
+    void cmd_dec_exp();
 private:
 
 

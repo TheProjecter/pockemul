@@ -108,7 +108,7 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                     //pPC->mem[i] = ((pPC->mem[i-1]&0x0f)<<4) | ((pPC->mem[i] & 0xf0 ) >> 4);
                 }
                 pPC->mem[0x400]=(pPC->mem[0x400]&0x0f)<<4;
-                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
+                cmd_dec_exp();
                     //pPC->mem[i]=pPC->mem[i-1];
                 if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
@@ -186,6 +186,13 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 break;
+            case 0x01:
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                cmd_0801();
+                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                break;
             }
         }
             break;
@@ -223,7 +230,19 @@ void CCF79107PJ::cmd_inc_exp(void) //sbbw
 
     BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }
+void CCF79107PJ::cmd_dec_exp(void) //sbbw
+{
+    UINT16 arg = 0x407;
+    UINT16 res0, res1;
 
+    res0 = make_bcd_sub(pPC->mem[arg], 1);
+    pPC->mem[arg] = res0 & 0xff;
+    res1 = (res0>0xff) ? 1 : 0 ;
+    res1 = make_bcd_sub(pPC->mem[arg+1],  res1);
+    pPC->mem[arg+1] = res1 & 0xff;
+
+    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+}
 void CCF79107PJ::cmd_0800(void) //adbw
 {
     UINT16 arg = 0x407;
@@ -239,6 +258,20 @@ void CCF79107PJ::cmd_0800(void) //adbw
     BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }
 
+void CCF79107PJ::cmd_0801(void) //adbw
+{
+    UINT16 arg = 0x417;
+    UINT16 src = 0x407;
+    UINT16 res0, res1;
+
+    res0 = make_bcd_sub(pPC->mem[arg], pPC->mem[src]);
+    pPC->mem[arg] = res0 & 0xff;
+    res1 = (res0>0xff) ? 1 : 0 ;
+    res1 = make_bcd_sub(pPC->mem[arg+1], pPC->mem[src+1] + res1);
+    pPC->mem[arg+1] = res1 & 0xff;
+
+    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+}
 // adbm	$10,$sz,7
 // X = X + Y    return 40h if ok
 void CCF79107PJ::cmd_c0(void) {
