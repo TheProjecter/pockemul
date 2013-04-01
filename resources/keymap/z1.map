@@ -73,5 +73,6 @@
     <KEY description="OUT" height="19" left="159" scancode="0x204" top="256" width="31"/>
     <KEY description="IN" height="20" left="121" scancode="0x205" top="257" width="31"/>
     <KEY description="RESET" height="20" left="29" scancode="0x20d" top="188" width="20"/>
+    <KEY description="SEARCH" height="18" left="82" scancode="0x20f" top="257" width="29"/>
 </Keyboard>
 </KEYBMAP>

@@ -1995,7 +1995,7 @@ int Ci80x86::i86nmi(I86stat *i86)
 
 int Ci80x86::i86int(I86stat *i86, int n)
 {
-    if (fp_log) fprintf(fp_log,"INT %02x\n",n);
+//    if (fp_log) fprintf(fp_log,"INT %02x\n",n);
 
     if(!IF) {
         return FALSE;
@@ -2605,7 +2605,7 @@ DWORD Ci80x86::get_PC()
 
 void Ci80x86::Regs_Info(UINT8 Type)
 {
-    char buf[32];
+    char buf[0x100];
 
     switch(Type)
     {
@@ -2638,10 +2638,20 @@ void Ci80x86::Regs_Info(UINT8 Type)
         );
         break;
     case 1:
+        sprintf(buf,"X:");
+        for(int i = 0x400; i <= 0x40f; i++)
+            sprintf(buf,"%s%02x ", buf,pPC->mem[i]);
+        sprintf(buf,"%s Y:",buf);
+        for(int i = 0x410; i <= 0x41f; i++)
+            sprintf(buf,"%s%02x ",buf, pPC->mem[i]);
+        sprintf(buf,"%s W:",buf);
+        for(int i = 0x420; i <= 0x42f; i++)
+            sprintf(buf,"%s%02x ", buf,pPC->mem[i]);
+
         sprintf(
         Regs_String,
         "AX=%04x  BX=%04x  CX=%04x  DX=%04x  SP=%04x  BP=%04x  SI=%04x  DI=%04x "
-        "DS=%04x  ES=%04x  SS=%04x  CS=%04x  IP=%04x  %s %s %s %s %s %s %s %s",
+        "DS=%04x  ES=%04x  SS=%04x  CS=%04x  IP=%04x  %s %s %s %s %s %s %s %s %s",
         i86stat.r16.ax,
         i86stat.r16.bx,
         i86stat.r16.cx,
@@ -2662,7 +2672,8 @@ void Ci80x86::Regs_Info(UINT8 Type)
         i86stat.r16.f & 0x0040 ? "ZR": "NZ",
         i86stat.r16.f & 0x0010 ? "AC": "NA",
         i86stat.r16.f & 0x0004 ? "PE": "PO",
-        i86stat.r16.f & 0x0001 ? "CY": "NC"
+        i86stat.r16.f & 0x0001 ? "CY": "NC",
+                    buf
         );
         break;
     }

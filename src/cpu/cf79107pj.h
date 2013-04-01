@@ -35,6 +35,9 @@ public:
     UINT16 make_bcd_add(UINT8 arg1, UINT8 arg2);
     void cmd_c0();
     void dumpXYW();
+    void cmd_0800();
+    void cmd_0491();
+    void cmd_inc_exp();
 private:
 
 

@@ -177,7 +177,7 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
     if(*d < 0xa0000) return false;
     if(*d < 0xb0000){
         AddLog(LOG_DISPLAY,tr("WriteVram[%1]=%2").arg(*d,5,QChar('0')).arg(data));
-        if(pCPU->fp_log) fprintf(pCPU->fp_log,"Write VRAM %c\n",data);
+//        if(pCPU->fp_log) fprintf(pCPU->fp_log,"Write VRAM %c\n",data);
         pHD66108->writeVram( *d, data);
         return false;
     }
@@ -222,7 +222,7 @@ UINT8 Cz1::in8(UINT16 Port)
     switch(Port) {
     case 0x003e: /* ? */
         return 0x20;
-    case 0x005a: /* バッテリー容量 */
+    case 0x005a: // model type  used by SYSTEM* test command
         return 0x04 | 0x80;
 
     case 0x0082:
@@ -298,6 +298,9 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
     case 0x0047:
         *HIGH(timer2Control) = x;
         AddLog(LOG_MASTER,tr("Set T2Control High[%1]=%2").arg(x,2,16,QChar('0')).arg(timer2Control,4,16,QChar('0')));
+        break;
+    case 0x60:
+    case 0x61: // RS232 SPEED
         break;
     case 0x00b8:
         io_b8 = x;
@@ -431,7 +434,7 @@ UINT16 Cz1::getKey()
             if (KEY('D'))			data|=0x10;
             if (KEY('X'))			data|=0x20;
             if (KEY('C'))			data|=0x40;
-//            if (KEY(K_SEARCH))			data|=0x80;
+            if (KEY(K_SEARCH))			data|=0x80;
             if (KEY(K_IN))			data|=0x100;
         }
         if (ks&8) {
