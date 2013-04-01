@@ -83,6 +83,8 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 }
 
 Cz1::~Cz1() {
+    delete pFPU;
+    delete pHD66108;
 
 }
 
@@ -318,13 +320,9 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
         pFPU->instruction1(x);
         break;
-
-
-
-
-
-
+    case 0x280: // send to printer
         break;
+
     default:
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
         break;
