@@ -37,7 +37,7 @@ public:
     void dumpXYW();
     void cmd_0800();
     void cmd_0491();
-    void cmd_inc_exp();
+    void cmd_inc_exp(UINT16 adr);
     void cmd_0801();
     void cmd_dec_exp();
 private:

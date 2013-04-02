@@ -135,6 +135,14 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 break;
+            case 0x90:
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                cmd_inc_exp(0x407);
+//                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
+                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                break;
             case 0x91:
                 if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
@@ -155,7 +163,7 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                     //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
                 }
                 pPC->mem[0x406] = (pPC->mem[0x406]&0xf0)>>4;
-                cmd_inc_exp();
+                cmd_inc_exp(0x407);
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
             }
@@ -164,6 +172,23 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
         } break;
         case 0x05: {
             switch(cmd) {
+            case 0x4e: // exchange H06 with L07
+            {
+                // shift left 400h-406h (4bits)
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\ndivide the mantissa by 10, shift left 400h-406h (4bits)\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                for(int i = 0x410; i < 0x416; i++) {
+                    quint8 _tmp = pPC->mem[i]&0xf0;
+                    pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
+                    pPC->mem[i] |= _tmp>>4;
+                    //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
+                }
+                pPC->mem[0x416] = (pPC->mem[0x416]&0xf0)>>4;
+                cmd_inc_exp(0x417);
+                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+            }
+                break;
             case 0xd0: // X -> Y
             {
                 if (pPC->fp_log) fprintf(pPC->fp_log,"\nX -> Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
@@ -205,7 +230,6 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
 void CCF79107PJ::cmd_0491(void) //sbbw
 {
     UINT16 arg = 0x407;
-    UINT16 src = 0x417;
     UINT16 res0, res1;
 
     res0 = make_bcd_sub(pPC->mem[arg], 1);
@@ -217,9 +241,9 @@ void CCF79107PJ::cmd_0491(void) //sbbw
     BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }
 
-void CCF79107PJ::cmd_inc_exp(void) //sbbw
+void CCF79107PJ::cmd_inc_exp(UINT16 adr) //sbbw
 {
-    UINT16 arg = 0x407;
+    UINT16 arg = adr;
     UINT16 res0, res1;
 
     res0 = make_bcd_add(pPC->mem[arg], 1);
@@ -260,8 +284,8 @@ void CCF79107PJ::cmd_0800(void) //adbw
 
 void CCF79107PJ::cmd_0801(void) //adbw
 {
-    UINT16 arg = 0x417;
-    UINT16 src = 0x407;
+    UINT16 arg = 0x407;
+    UINT16 src = 0x417;
     UINT16 res0, res1;
 
     res0 = make_bcd_sub(pPC->mem[arg], pPC->mem[src]);
@@ -391,19 +415,20 @@ void CCF79107PJ::dumpXYW(void) {
         _tmp = _tmp+QString("%1 ").arg(mem[i],2,16,QChar('0'));
     AddLog(LOG_TEMP,"W="+_tmp);
 #else
-    fprintf(pPC->fp_log,"X=");
-    for(int i = 0x400; i <= 0x40f; i++)
-        fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
-    fprintf(pPC->fp_log,"\n");
-    fprintf(pPC->fp_log,"Y=");
-    for(int i = 0x410; i <= 0x41f; i++)
-        fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
-    fprintf(pPC->fp_log,"\n");
-    fprintf(pPC->fp_log,"W=");
-    for(int i = 0x420; i <= 0x42e; i++)
-        fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
-    fprintf(pPC->fp_log,"\n");
-
+    if (pPC->fp_log) {
+        fprintf(pPC->fp_log,"X=");
+        for(int i = 0x400; i <= 0x40f; i++)
+            fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
+        fprintf(pPC->fp_log,"\n");
+        fprintf(pPC->fp_log,"Y=");
+        for(int i = 0x410; i <= 0x41f; i++)
+            fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
+        fprintf(pPC->fp_log,"\n");
+        fprintf(pPC->fp_log,"W=");
+        for(int i = 0x420; i <= 0x42e; i++)
+            fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
+        fprintf(pPC->fp_log,"\n");
+    }
 #endif
 }
 #if 0
