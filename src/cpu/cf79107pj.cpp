@@ -35,6 +35,13 @@ UINT8 CCF79107PJ::get_status()
 bool CCF79107PJ::instruction1(UINT8 cmd)
 {
     switch(cmd) {
+    case 0x0e:
+        if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
+        cmd_0e();
+        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
+        break;
     case 0x10:  // X <- 0
         if (pPC->fp_log) fprintf(pPC->fp_log,"\nX<-0\nbeforeCCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
@@ -80,7 +87,13 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
         if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
-
+    case 0xc1:
+        if (pPC->fp_log) fprintf(pPC->fp_log,"\nX <- X - Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
+        cmd_c1();
+        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+        dumpXYW();
+        break;
     default:
         switch (masterCMD) {
         case 0x04: {
@@ -135,6 +148,13 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 break;
+            case 0xc1:
+                if (pPC->fp_log) fprintf(pPC->fp_log,"\nX <- X - Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                cmd_c1();
+                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+                dumpXYW();
+                break;
             case 0x90:
                 if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
@@ -146,7 +166,8 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
             case 0x91:
                 if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
-                cmd_0491();
+//                cmd_0491();
+                cmd_dec_exp();
 //                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
@@ -218,6 +239,7 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
                 if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
                 dumpXYW();
                 break;
+
             }
         }
             break;
@@ -282,7 +304,7 @@ void CCF79107PJ::cmd_0800(void) //adbw
     BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }
 
-void CCF79107PJ::cmd_0801(void) //adbw
+void CCF79107PJ::cmd_0801(void) //sbbw
 {
     UINT16 arg = 0x407;
     UINT16 src = 0x417;
@@ -295,6 +317,25 @@ void CCF79107PJ::cmd_0801(void) //adbw
     pPC->mem[arg+1] = res1 & 0xff;
 
     BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+}
+
+// Not satisfied by this function. It seems to be called at init. I think it is a BCDret clear function.
+void CCF79107PJ::cmd_0e(void) //adbw
+{
+    UINT16 arg = 0x407;
+    UINT16 src = 0x417;
+    UINT16 res0, res1;
+#if 1
+    res0 = make_bcd_add(pPC->mem[arg], pPC->mem[src]);
+    pPC->mem[arg] = res0 & 0xff;
+    res1 = (res0>0xff) ? 1 : 0 ;
+    res1 = make_bcd_add(pPC->mem[arg+1], pPC->mem[src+1] + res1);
+    pPC->mem[arg+1] = res1 & 0xff;
+#else
+//    res1 = make_bcd_add(pPC->mem[arg+1], BCDret & 0x40);
+    BCDret = 0;
+#endif
+//    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }
 // adbm	$10,$sz,7
 // X = X + Y    return 40h if ok
@@ -309,15 +350,35 @@ void CCF79107PJ::cmd_c0(void) {
     {
         res = make_bcd_add(pPC->mem[dst], pPC->mem[src] + c);
         c = (res > 0xff) ? 1 : 0;
-        pPC->mem[dst] = res&0xff;
-        fprintf(pPC->fp_log,"mem[%04x]=%02X\n",dst,res&0xff);
         f |= (res&0xff);
+        pPC->mem[dst] = res&0xff;
+        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",dst,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+
         dst++; src++;
     }
     BCDret = (f==0 ? 0x40 : 0x00) | (res > 0xff ? 0x01 : 0x00);
 
 }
+void CCF79107PJ::cmd_c1(void) {
+    UINT16 dst = 0x400;
+    UINT16 src = 0x410;
+    UINT8 c, f;
+    UINT16 res = 0;
 
+    c = f = 0;
+    for (int n=7; n>0; n--)
+    {
+        res = make_bcd_sub(pPC->mem[dst], pPC->mem[src] + c);
+        c = (res > 0xff) ? 1 : 0;
+        f |= (res&0xff);
+        pPC->mem[dst] = res&0xff;
+        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",dst,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+
+        dst++; src++;
+    }
+    BCDret = (f==0 ? 0x40 : 0x00) | (res > 0xff ? 0x01 : 0x00);
+
+}
 void CCF79107PJ::cmd_41(void) {
     // X - Y
     UINT8 c, f;

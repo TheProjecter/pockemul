@@ -40,6 +40,8 @@ public:
     void cmd_inc_exp(UINT16 adr);
     void cmd_0801();
     void cmd_dec_exp();
+    void cmd_0e();
+    void cmd_c1();
 private:
 
 
