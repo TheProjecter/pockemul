@@ -10,6 +10,7 @@
 #include "Lcdc_z1.h"
 #include "hd66108.h"
 #include "cf79107pj.h"
+#include "Log.h"
 
 #ifdef POCKEMUL_BIG_ENDIAN
 #	define LOW(x)	((uint8 *)&(x) + 1)
@@ -325,7 +326,10 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
         pFPU->instruction1(x);
         break;
-    case 0x280: // send to printer
+    case 0x280: AddLog(LOG_PRINTER,tr("[%1]:'%2'").arg(x,2,16,QChar('0')).arg(QChar(x)));
+        if (( x!=0xff)&&( x!=0x0d)) {
+            AddLog(LOG_CONSOLE,tr("%1").arg(QChar(x)));
+        }
         break;
 
     default:

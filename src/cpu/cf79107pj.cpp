@@ -39,8 +39,12 @@ UINT8 CCF79107PJ::get_status()
 bool CCF79107PJ::instruction1(UINT8 cmd)
 {
     switch(cmd) {
-    case 0x04: regSelected = VAR_X; masterCMD = cmd; break;
-    case 0x05: regSelected = VAR_Y; masterCMD = cmd; break;
+    case 0x04: regSelected = VAR_X; masterCMD = cmd;
+//        for (int i=VAR_X;i<VAR_X+8;i++) pPC->mem[i] = 0;
+        break;
+    case 0x05: regSelected = VAR_Y; masterCMD = cmd;
+//        for (int i=VAR_Y;i<VAR_Y+8;i++) pPC->mem[i] = 0;
+        break;
     case 0x0e:
         if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
@@ -53,6 +57,7 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
         dumpXYW();
         for(int i = 0x400; i <= 0x408; i++)
             pPC->mem[i]= 0;
+//        pPC->mem[0x418] |= 0x06;
         if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
@@ -61,6 +66,7 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
         dumpXYW();
         for(int i = 0x410; i <= 0x418; i++)
             pPC->mem[i]= 0;
+//        pPC->mem[0x408] |= 0x06;
         if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
         break;
@@ -90,11 +96,12 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
     last_cmd = cmd;
 
     switch (cmd) {
-    case 0x00: cmd_add_exp(VAR_X,VAR_Y); break;
-    case 0x01: cmd_sub_exp(VAR_X,VAR_Y); break;
+    case 0x00: cmd_add_exp(VAR_X); break;
+    case 0x01: cmd_sub_exp(VAR_X); break;
     case 0x41: cmd_41(); break;
     case 0x43: cmd_43(); break;
     case 0x48: cmd_shiftR_mantisse(regSelected); break;
+    case 0x4a: cmd_shiftR_mantisse(regSelected); break;
     case 0x4c: cmd_shiftL_mantisse(regSelected); break;
     case 0x4e: cmd_shiftL_mantisse(regSelected);
 //               cmd_inc_exp(regSelected);
@@ -112,14 +119,20 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
         cmd_inc_exp(regSelected);
         break;
     case 0xc0:
-        cmd_add_mantisse(regSelected,regSelected==VAR_X?VAR_Y:VAR_X);
-//                cmd_add_exp(VAR_X,VAR_Y);
+        cmd_add_mantisse(regSelected);
         break;
     case 0xc1:
-        cmd_sub_mantisse(regSelected,regSelected==VAR_X?VAR_Y:VAR_X);
+        cmd_sub_mantisseXY(regSelected);
+        break;
+    case 0xc2:
+        cmd_add_mantisse(regSelected);
+        pPC->mem[regSelected+7] |= pPC->mem[regSelected+7+(regSelected==VAR_X?0x10:0)];
+        break;
+    case 0xc3:
+        cmd_sub_mantisseYX(regSelected);
         break;
     case 0xd0: // X -> Y
-        for(int i = 0x400; i <= 0x408; i++)
+        for(int i = 0x400; i < 0x408; i++)
             pPC->mem[i+0x10] = pPC->mem[i];
         break;
     default:
@@ -132,88 +145,116 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
 }
 
 void CCF79107PJ::cmd_shiftL_mantisse(UINT16 adr) {
-    for(int i = adr; i < (adr+6); i++) {
-        quint8 _tmp = pPC->mem[i]&0xf0;
-        pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
-        pPC->mem[i] |= _tmp>>4;
+    Read_TMP(adr);
+
+    for(int i = 0; i < 6; i++) {
+        quint8 _tmp = TMP[i]&0xf0;
+        TMP[i] = (TMP[i+1]&0x0f)<<4;
+        TMP[i] |= _tmp>>4;
         //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
     }
-    pPC->mem[adr+6] = (pPC->mem[adr+6]&0xf0)>>4;
+    TMP[6] = (TMP[6]&0xf0)>>4;
+
+    Write_TMP(adr);
 }
 
 void CCF79107PJ::cmd_shiftR_mantisse(UINT16 adr) {
-    for(int i = adr+6; i > adr; i--){
-        quint8 _tmp = pPC->mem[i]&0x0f;
-        pPC->mem[i] = (pPC->mem[i-1]&0xf0)>>4;
-        pPC->mem[i] |= _tmp<<4;
+    Read_TMP(adr);
+
+    for(int i = 6; i > 0; i--){
+        quint8 _tmp = TMP[i]&0x0f;
+        TMP[i] = (TMP[i-1]&0xf0)>>4;
+        TMP[i] |= _tmp<<4;
     }
-    pPC->mem[adr]=(pPC->mem[adr]&0x0f)<<4;
+    TMP[0]=(TMP[0]&0x0f)<<4;
+
+    Write_TMP(adr);
+}
+
+void CCF79107PJ::Read_TMP(UINT16 adr) {
+    memcpy((char*)&TMP,(char*)&(pPC->mem[adr]),0x10);
+}
+
+void CCF79107PJ::Write_TMP(UINT16 adr) {
+    memcpy((char*)&(pPC->mem[adr]),(char*)&TMP,0x10);
 }
 
 void CCF79107PJ::cmd_inc_exp(UINT16 adr) //sbbw
 {
-    UINT16 arg = adr+7;
+    UINT16 arg = 7;
     UINT16 res0, res1;
 
-    res0 = make_bcd_add(pPC->mem[arg], 1);
-    pPC->mem[arg] = res0 & 0xff;
+    Read_TMP(VAR_X);
+
+    res0 = make_bcd_add(TMP[7], 1);
+    TMP[7] = res0 & 0xff;
     res1 = (res0>0xff) ? 1 : 0 ;
-    res1 = make_bcd_add(pPC->mem[arg+1],  res1);
-    pPC->mem[arg+1] = res1 & 0xff;
+    res1 = make_bcd_add(TMP[8],  res1);
+    TMP[8] = res1 & 0xff;
 
     BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
     BCDc = (res1 > 0xff ? 0x01 : 0x00);
     BCDret = BCDz | BCDc;
+
+    Write_TMP(adr);
 }
 
 void CCF79107PJ::cmd_dec_exp(UINT16 adr) //sbbw
 {
-    UINT16 arg = adr+7;
+    UINT16 arg = 7;
     UINT16 res0, res1;
 
-    res0 = make_bcd_sub(pPC->mem[arg], 1);
-    pPC->mem[arg] = res0 & 0xff;
+    Read_TMP(VAR_X);
+
+    res0 = make_bcd_sub(TMP[7], 1);
+    TMP[7] = res0 & 0xff;
     res1 = (res0>0xff) ? 1 : 0 ;
-    res1 = make_bcd_sub(pPC->mem[arg+1],  res1);
-    pPC->mem[arg+1] = res1 & 0xff;
+    res1 = make_bcd_sub(TMP[8],  res1);
+    TMP[8] = res1 & 0xff;
 
     BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
     BCDc = (res1 > 0xff ? 0x01 : 0x00);
     BCDret = BCDz | BCDc;
+
+    Write_TMP(adr);
 }
 
-void CCF79107PJ::cmd_add_exp(UINT16 target,UINT16 operand) //adbw
+void CCF79107PJ::cmd_add_exp(UINT16 target) //adbw
 {
-    UINT16 arg = target+7;
-    UINT16 src = operand+7;
     UINT16 res0, res1;
 
-    res0 = make_bcd_add(pPC->mem[arg], pPC->mem[src]);
-    pPC->mem[arg] = res0 & 0xff;
+    Read_TMP(target);
+
+    res0 = make_bcd_add(pPC->mem[VAR_X+7], pPC->mem[VAR_Y+7]);
+    TMP[7] = res0 & 0xff;
     res1 = (res0>0xff) ? 1 : 0 ;
-    res1 = make_bcd_add(pPC->mem[arg+1], pPC->mem[src+1] + res1);
-    pPC->mem[arg+1] = res1 & 0xff;
+    res1 = make_bcd_add(pPC->mem[VAR_X+8], pPC->mem[VAR_Y+8] + res1);
+    TMP[8] = res1 & 0xff;
 
     BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
     BCDc = (res1 > 0xff ? 0x01 : 0x00);
     BCDret = BCDz | BCDc;
+
+    Write_TMP(target);
 }
 
-void CCF79107PJ::cmd_sub_exp(UINT16 target,UINT16 operand) //sbbw
+void CCF79107PJ::cmd_sub_exp(UINT16 target) //sbbw
 {
-    UINT16 arg = target+7;
-    UINT16 src = operand+7;
     UINT16 res0, res1;
 
-    res0 = make_bcd_sub(pPC->mem[arg], pPC->mem[src]);
-    pPC->mem[arg] = res0 & 0xff;
+    Read_TMP(target);
+
+    res0 = make_bcd_sub(pPC->mem[VAR_X+7], pPC->mem[VAR_Y+7]);
+    TMP[7] = res0 & 0xff;
     res1 = (res0>0xff) ? 1 : 0 ;
-    res1 = make_bcd_sub(pPC->mem[arg+1], pPC->mem[src+1] + res1);
-    pPC->mem[arg+1] = res1 & 0xff;
+    res1 = make_bcd_sub(pPC->mem[VAR_X+8], pPC->mem[VAR_Y+8] + res1);
+    TMP[8] = res1 & 0xff;
 
     BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
     BCDc = (res1 > 0xff ? 0x01 : 0x00);
     BCDret = BCDz | BCDc;
+
+    Write_TMP(target);
 }
 
 // Not satisfied by this function. It seems to be called at init. I think it is a BCDret clear function.
@@ -244,52 +285,82 @@ void CCF79107PJ::cmd_0e(void) //adbw
 
 // adbm	$10,$sz,7
 // X = X + Y    return 40h if ok
-void CCF79107PJ::cmd_add_mantisse(UINT16 target,UINT16 operand) {
-    UINT16 dst = target;
-    UINT16 src = operand;
+void CCF79107PJ::cmd_add_mantisse(UINT16 target) {
+    UINT16 dst = 0;
     UINT8 c, f;
     UINT16 res = 0;
+
+    Read_TMP(VAR_X);
 
     f = 0;
     c = 0;
     for (int n=7; n>0; n--)
     {
-        res = make_bcd_add(pPC->mem[dst], pPC->mem[src] + c);
+        res = make_bcd_add(pPC->mem[VAR_X+dst], pPC->mem[VAR_Y+dst] + c);
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
-        pPC->mem[dst] = res&0xff;
+        TMP[dst] = res&0xff;
         fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",dst,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
 
-        dst++; src++;
+        dst++;
     }
     BCDz = (f==0 ? 0x40 : 0x00);
     BCDc = (res > 0xff ? 0x01 : 0x00);
     BCDret = BCDz | BCDc;
+
+    Write_TMP(target);
 }
 
-void CCF79107PJ::cmd_sub_mantisse(UINT16 target,UINT16 operand) {
-    UINT16 dst = target;
-    UINT16 src = operand;
+void CCF79107PJ::cmd_sub_mantisseXY(UINT16 target) {
+    UINT16 dst = 0;
     UINT8 c, f;
     UINT16 res = 0;
+
+    Read_TMP(VAR_X);
 
     c = 0;
     f = 0;
     for (int n=7; n>0; n--)
     {
-        res = make_bcd_sub(pPC->mem[dst], pPC->mem[src] + c);
+        res = make_bcd_sub(pPC->mem[VAR_X+dst], pPC->mem[VAR_Y+dst] + c);
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
-        pPC->mem[dst] = res&0xff;
+        TMP[dst] = res&0xff;
         fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",dst,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
 
-        dst++; src++;
+        dst++;
     }
     BCDz = (f==0 ? 0x40 : 0x00);
     BCDc = (res > 0xff ? 0x01 : 0x00);
     BCDret = BCDz | BCDc;
-}
 
+    Write_TMP(target);
+}
+void CCF79107PJ::cmd_sub_mantisseYX(UINT16 target) {
+    UINT16 dst = 0;
+    UINT8 c, f;
+    UINT16 res = 0;
+
+    Read_TMP(VAR_Y);
+
+    c = 0;
+    f = 0;
+    for (int n=7; n>0; n--)
+    {
+        res = make_bcd_sub(pPC->mem[VAR_Y+dst], pPC->mem[VAR_X+dst] + c);
+        c = (res > 0xff) ? 1 : 0;
+        f |= (res&0xff);
+        TMP[dst] = res&0xff;
+        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",dst,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+
+        dst++;
+    }
+    BCDz = (f==0 ? 0x40 : 0x00);
+    BCDc = (res > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
+
+    Write_TMP(target);
+}
 void CCF79107PJ::cmd_41(void) {
     // X - Y
     UINT8 c, f;
@@ -298,7 +369,7 @@ void CCF79107PJ::cmd_41(void) {
     c = f = 0;
     for (int n=7; n>0; n--)
     {
-        res = make_bcd_sub(pPC->mem[0x400+n], pPC->mem[0x410+n] + c);
+        res = make_bcd_sub(pPC->mem[VAR_X+n], pPC->mem[VAR_Y+n] + c);
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
 //        pPC->mem[400+n] = res&0xff;
@@ -963,3 +1034,10 @@ SET Y = 1 :   RESET Y puis mise à jours de 416h et 418h à 1
 220h 05D0h : X->Y (used by X*X -> 05D0 and Multiply)
 
 */
+/*
+0005 00C1
+00010203040506070E090A0B0C0D0E0F
+908989898989890708191A1B1C1D1E1F
+202122232425262728292A2B2C2D2E2F
+
+  */
