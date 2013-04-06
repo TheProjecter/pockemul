@@ -33,20 +33,25 @@ public:
     void cmd_41();
     UINT16 make_bcd_sub(UINT8 arg1, UINT8 arg2);
     UINT16 make_bcd_add(UINT8 arg1, UINT8 arg2);
-    void cmd_c0();
+    void cmd_add_mantisse(UINT16 target,UINT16 operand);
     void dumpXYW();
-    void cmd_0800();
-    void cmd_0491();
+    void cmd_add_exp(UINT16 target,UINT16 operand);
     void cmd_inc_exp(UINT16 adr);
-    void cmd_0801();
-    void cmd_dec_exp();
+    void cmd_sub_exp(UINT16 target,UINT16 operand);
+    void cmd_dec_exp(UINT16 adr);
     void cmd_0e();
-    void cmd_c1();
+    void cmd_sub_mantisse(UINT16 target,UINT16 operand);
+    void cmd_shiftL_mantisse(UINT16 adr);
+    void cmd_shiftR_mantisse(UINT16 adr);
+    void cmd_43();
 private:
 
 
     UINT8 masterCMD;
+    UINT16 regSelected;
     UINT8 BCDret;
+    UINT8 BCDz,BCDc;
+    UINT8 last_cmd;
 
 };
 

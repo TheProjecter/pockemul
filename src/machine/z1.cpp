@@ -173,7 +173,7 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
         return true;
 
     }
-    if(*d < 0x10000) return true; /* RAM */
+    if(*d < 0x40000) return true; /* RAM */
     if(*d < 0xa0000) return false;
     if(*d < 0xb0000){
         AddLog(LOG_DISPLAY,tr("WriteVram[%1]=%2").arg(*d,5,QChar('0')).arg(data));
@@ -314,6 +314,8 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 //        ks = (x <<8) | (ks & 0xff);
 //        AddLog(LOG_KEYBOARD,tr("Set KSH[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
         *HIGH(ks) = x;
+        break;
+    case 0x206 : // buzzer : 3 acive, 0 stop
         break;
     case 0x0220: /* ?? */
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());

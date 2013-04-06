@@ -2,6 +2,10 @@
 #include "pcxxxx.h"
 #include "cpu.h"
 
+#define VAR_X 0x400
+#define VAR_Y 0x410
+#define VAR_W 0x420
+
 CCF79107PJ::CCF79107PJ(CpcXXXX *parent)
 {
     pPC = parent;
@@ -35,6 +39,8 @@ UINT8 CCF79107PJ::get_status()
 bool CCF79107PJ::instruction1(UINT8 cmd)
 {
     switch(cmd) {
+    case 0x04: regSelected = VAR_X; masterCMD = cmd; break;
+    case 0x05: regSelected = VAR_Y; masterCMD = cmd; break;
     case 0x0e:
         if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
@@ -71,6 +77,7 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
         break;
     default:
         masterCMD = cmd;
+
     }
 
     return true;
@@ -78,194 +85,74 @@ bool CCF79107PJ::instruction1(UINT8 cmd)
 
 bool CCF79107PJ::instruction2(UINT8 cmd)
 {
-    switch (cmd) {
+    if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+    dumpXYW();
+    last_cmd = cmd;
 
-    case 0x41:
-        if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-        dumpXYW();
-        cmd_41();
-        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-        dumpXYW();
+    switch (cmd) {
+    case 0x00: cmd_add_exp(VAR_X,VAR_Y); break;
+    case 0x01: cmd_sub_exp(VAR_X,VAR_Y); break;
+    case 0x41: cmd_41(); break;
+    case 0x43: cmd_43(); break;
+    case 0x48: cmd_shiftR_mantisse(regSelected); break;
+    case 0x4c: cmd_shiftL_mantisse(regSelected); break;
+    case 0x4e: cmd_shiftL_mantisse(regSelected);
+//               cmd_inc_exp(regSelected);
+        break;
+    case 0x90: cmd_inc_exp(regSelected);
+//                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
+        break;
+    case 0x91: cmd_dec_exp(regSelected); break;
+    case 0x99:
+        cmd_shiftR_mantisse(regSelected);
+        cmd_dec_exp(regSelected);
+        break;
+    case 0x9c: // exchange H06 with L07
+        cmd_shiftL_mantisse(regSelected);
+        cmd_inc_exp(regSelected);
+        break;
+    case 0xc0:
+        cmd_add_mantisse(regSelected,regSelected==VAR_X?VAR_Y:VAR_X);
+//                cmd_add_exp(VAR_X,VAR_Y);
         break;
     case 0xc1:
-        if (pPC->fp_log) fprintf(pPC->fp_log,"\nX <- X - Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-        dumpXYW();
-        cmd_c1();
-        if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-        dumpXYW();
+        cmd_sub_mantisse(regSelected,regSelected==VAR_X?VAR_Y:VAR_X);
+        break;
+    case 0xd0: // X -> Y
+        for(int i = 0x400; i <= 0x408; i++)
+            pPC->mem[i+0x10] = pPC->mem[i];
         break;
     default:
-        switch (masterCMD) {
-        case 0x04: {
-            switch (cmd) {
-            case 0x48: // BCD Shift(4bits shift)
-                if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                for(int i = 0x406; i >= 0x401; i--) {
-                    quint8 _tmp = pPC->mem[i]&0x0f;
-                    pPC->mem[i] = (pPC->mem[i-1]&0xf0)>>4;
-                    pPC->mem[i] |= _tmp<<4;
-                    //pPC->mem[i] = ((pPC->mem[i-1]&0x0f)<<4) | ((pPC->mem[i] & 0xf0 ) >> 4);
-                }
-                pPC->mem[0x400]=(pPC->mem[0x400]&0x0f)<<4;
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0x99:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                for(int i = 0x406; i >= 0x401; i--){
-                    quint8 _tmp = pPC->mem[i]&0x0f;
-                    pPC->mem[i] = (pPC->mem[i-1]&0xf0)>>4;
-                    pPC->mem[i] |= _tmp<<4;
-                    //pPC->mem[i] = ((pPC->mem[i-1]&0x0f)<<4) | ((pPC->mem[i] & 0xf0 ) >> 4);
-                }
-                pPC->mem[0x400]=(pPC->mem[0x400]&0x0f)<<4;
-                cmd_dec_exp();
-                    //pPC->mem[i]=pPC->mem[i-1];
-                if (pPC->fp_log) fprintf(pPC->fp_log,"before CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0x4c:    // divide the mantissa by 10
-            {
-                // shift left 400h-406h (4bits)
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\ndivide the mantissa by 10, shift left 400h-406h (4bits)\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                for(int i = 0x400; i < 0x406; i++) {
-                    quint8 _tmp = pPC->mem[i]&0xf0;
-                    pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
-                    pPC->mem[i] |= _tmp>>4;
-                    //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
-                }
-                pPC->mem[0x406] = (pPC->mem[0x406]&0xf0)>>4;
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-             }   break;
-            case 0xc0:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nX <- X + Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                cmd_c0();
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0xc1:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nX <- X - Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                cmd_c1();
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0x90:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                cmd_inc_exp(0x407);
-//                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0x91:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-//                cmd_0491();
-                cmd_dec_exp();
-//                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0x9c: // exchange H06 with L07
-            {
-                // shift left 400h-406h (4bits)
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\ndivide the mantissa by 10, shift left 400h-406h (4bits)\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                for(int i = 0x400; i < 0x406; i++) {
-                    quint8 _tmp = pPC->mem[i]&0xf0;
-                    pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
-                    pPC->mem[i] |= _tmp>>4;
-                    //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
-                }
-                pPC->mem[0x406] = (pPC->mem[0x406]&0xf0)>>4;
-                cmd_inc_exp(0x407);
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-            }
-                break;
-            }
-        } break;
-        case 0x05: {
-            switch(cmd) {
-            case 0x4e: // exchange H06 with L07
-            {
-                // shift left 400h-406h (4bits)
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\ndivide the mantissa by 10, shift left 400h-406h (4bits)\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                for(int i = 0x410; i < 0x416; i++) {
-                    quint8 _tmp = pPC->mem[i]&0xf0;
-                    pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
-                    pPC->mem[i] |= _tmp>>4;
-                    //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
-                }
-                pPC->mem[0x416] = (pPC->mem[0x416]&0xf0)>>4;
-                cmd_inc_exp(0x417);
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-            }
-                break;
-            case 0xd0: // X -> Y
-            {
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nX -> Y\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                for(int i = 0x400; i <= 0x408; i++)
-                    pPC->mem[i+0x10] = pPC->mem[i];
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-            }
-                break;
-            }
-        }
-        break;
-        case 0x08: {
-            switch(cmd) {
-            case 0x00:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                cmd_0800();
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-            case 0x01:
-                if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                cmd_0801();
-                if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
-                dumpXYW();
-                break;
-
-            }
-        }
-            break;
-        }
+        if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN");
     }
 
+    if (pPC->fp_log) fprintf(pPC->fp_log,"after CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
+    dumpXYW();
     return true;
 }
 
-void CCF79107PJ::cmd_0491(void) //sbbw
-{
-    UINT16 arg = 0x407;
-    UINT16 res0, res1;
+void CCF79107PJ::cmd_shiftL_mantisse(UINT16 adr) {
+    for(int i = adr; i < (adr+6); i++) {
+        quint8 _tmp = pPC->mem[i]&0xf0;
+        pPC->mem[i] = (pPC->mem[i+1]&0x0f)<<4;
+        pPC->mem[i] |= _tmp>>4;
+        //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
+    }
+    pPC->mem[adr+6] = (pPC->mem[adr+6]&0xf0)>>4;
+}
 
-    res0 = make_bcd_sub(pPC->mem[arg], 1);
-    pPC->mem[arg] = res0 & 0xff;
-    res1 = (res0>0xff) ? 1 : 0 ;
-    res1 = make_bcd_sub(pPC->mem[arg+1],  res1);
-    pPC->mem[arg+1] = res1 & 0xff;
-
-    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+void CCF79107PJ::cmd_shiftR_mantisse(UINT16 adr) {
+    for(int i = adr+6; i > adr; i--){
+        quint8 _tmp = pPC->mem[i]&0x0f;
+        pPC->mem[i] = (pPC->mem[i-1]&0xf0)>>4;
+        pPC->mem[i] |= _tmp<<4;
+    }
+    pPC->mem[adr]=(pPC->mem[adr]&0x0f)<<4;
 }
 
 void CCF79107PJ::cmd_inc_exp(UINT16 adr) //sbbw
 {
-    UINT16 arg = adr;
+    UINT16 arg = adr+7;
     UINT16 res0, res1;
 
     res0 = make_bcd_add(pPC->mem[arg], 1);
@@ -274,11 +161,14 @@ void CCF79107PJ::cmd_inc_exp(UINT16 adr) //sbbw
     res1 = make_bcd_add(pPC->mem[arg+1],  res1);
     pPC->mem[arg+1] = res1 & 0xff;
 
-    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
+    BCDc = (res1 > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
-void CCF79107PJ::cmd_dec_exp(void) //sbbw
+
+void CCF79107PJ::cmd_dec_exp(UINT16 adr) //sbbw
 {
-    UINT16 arg = 0x407;
+    UINT16 arg = adr+7;
     UINT16 res0, res1;
 
     res0 = make_bcd_sub(pPC->mem[arg], 1);
@@ -287,12 +177,15 @@ void CCF79107PJ::cmd_dec_exp(void) //sbbw
     res1 = make_bcd_sub(pPC->mem[arg+1],  res1);
     pPC->mem[arg+1] = res1 & 0xff;
 
-    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
+    BCDc = (res1 > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
-void CCF79107PJ::cmd_0800(void) //adbw
+
+void CCF79107PJ::cmd_add_exp(UINT16 target,UINT16 operand) //adbw
 {
-    UINT16 arg = 0x407;
-    UINT16 src = 0x417;
+    UINT16 arg = target+7;
+    UINT16 src = operand+7;
     UINT16 res0, res1;
 
     res0 = make_bcd_add(pPC->mem[arg], pPC->mem[src]);
@@ -301,13 +194,15 @@ void CCF79107PJ::cmd_0800(void) //adbw
     res1 = make_bcd_add(pPC->mem[arg+1], pPC->mem[src+1] + res1);
     pPC->mem[arg+1] = res1 & 0xff;
 
-    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
+    BCDc = (res1 > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
 
-void CCF79107PJ::cmd_0801(void) //sbbw
+void CCF79107PJ::cmd_sub_exp(UINT16 target,UINT16 operand) //sbbw
 {
-    UINT16 arg = 0x407;
-    UINT16 src = 0x417;
+    UINT16 arg = target+7;
+    UINT16 src = operand+7;
     UINT16 res0, res1;
 
     res0 = make_bcd_sub(pPC->mem[arg], pPC->mem[src]);
@@ -316,36 +211,47 @@ void CCF79107PJ::cmd_0801(void) //sbbw
     res1 = make_bcd_sub(pPC->mem[arg+1], pPC->mem[src+1] + res1);
     pPC->mem[arg+1] = res1 & 0xff;
 
-    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
+    BCDc = (res1 > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
 
 // Not satisfied by this function. It seems to be called at init. I think it is a BCDret clear function.
 void CCF79107PJ::cmd_0e(void) //adbw
 {
+#if 0
     UINT16 arg = 0x407;
     UINT16 src = 0x417;
     UINT16 res0, res1;
-#if 1
     res0 = make_bcd_add(pPC->mem[arg], pPC->mem[src]);
     pPC->mem[arg] = res0 & 0xff;
     res1 = (res0>0xff) ? 1 : 0 ;
     res1 = make_bcd_add(pPC->mem[arg+1], pPC->mem[src+1] + res1);
     pPC->mem[arg+1] = res1 & 0xff;
-#else
-//    res1 = make_bcd_add(pPC->mem[arg+1], BCDret & 0x40);
     BCDret = 0;
+#else
+    switch (last_cmd) {
+    case 0x00 :     instruction2(0x01);
+    case 0x01 :     instruction2(0x00);
+
+    }
+
+//    BCDret = 0;
+//    BCDz = BCDc = 0;
 #endif
 //    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }
+
 // adbm	$10,$sz,7
 // X = X + Y    return 40h if ok
-void CCF79107PJ::cmd_c0(void) {
-    UINT16 dst = 0x400;
-    UINT16 src = 0x410;
+void CCF79107PJ::cmd_add_mantisse(UINT16 target,UINT16 operand) {
+    UINT16 dst = target;
+    UINT16 src = operand;
     UINT8 c, f;
     UINT16 res = 0;
 
-    c = f = 0;
+    f = 0;
+    c = 0;
     for (int n=7; n>0; n--)
     {
         res = make_bcd_add(pPC->mem[dst], pPC->mem[src] + c);
@@ -356,16 +262,19 @@ void CCF79107PJ::cmd_c0(void) {
 
         dst++; src++;
     }
-    BCDret = (f==0 ? 0x40 : 0x00) | (res > 0xff ? 0x01 : 0x00);
-
+    BCDz = (f==0 ? 0x40 : 0x00);
+    BCDc = (res > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
-void CCF79107PJ::cmd_c1(void) {
-    UINT16 dst = 0x400;
-    UINT16 src = 0x410;
+
+void CCF79107PJ::cmd_sub_mantisse(UINT16 target,UINT16 operand) {
+    UINT16 dst = target;
+    UINT16 src = operand;
     UINT8 c, f;
     UINT16 res = 0;
 
-    c = f = 0;
+    c = 0;
+    f = 0;
     for (int n=7; n>0; n--)
     {
         res = make_bcd_sub(pPC->mem[dst], pPC->mem[src] + c);
@@ -376,9 +285,11 @@ void CCF79107PJ::cmd_c1(void) {
 
         dst++; src++;
     }
-    BCDret = (f==0 ? 0x40 : 0x00) | (res > 0xff ? 0x01 : 0x00);
-
+    BCDz = (f==0 ? 0x40 : 0x00);
+    BCDc = (res > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
+
 void CCF79107PJ::cmd_41(void) {
     // X - Y
     UINT8 c, f;
@@ -390,11 +301,29 @@ void CCF79107PJ::cmd_41(void) {
         res = make_bcd_sub(pPC->mem[0x400+n], pPC->mem[0x410+n] + c);
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
+//        pPC->mem[400+n] = res&0xff;
     }
-    BCDret = (f==0 ? 0x40 : 0x00) | (res > 0xff ? 0x01 : 0x00);
-
+    BCDz = (f==0 ? 0x40 : 0x00);
+    BCDc = (res > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
 }
+void CCF79107PJ::cmd_43(void) {
+    // X - Y
+    UINT8 c, f;
+    UINT16 res = 0;
 
+    c = f = 0;
+    for (int n=7; n>0; n--)
+    {
+        res = make_bcd_add(pPC->mem[0x410+n], pPC->mem[0x400+n] + c);
+        c = (res > 0xff) ? 1 : 0;
+        f |= (res&0xff);
+//        pPC->mem[400+n] = res&0xff;
+    }
+    BCDz = (f==0 ? 0x40 : 0x00);
+    BCDc = (res > 0xff ? 0x01 : 0x00);
+    BCDret = BCDz | BCDc;
+}
 
 void CCF79107PJ::Load_Internal(QXmlStreamReader *)
 {
@@ -438,26 +367,20 @@ inline UINT16 CCF79107PJ::make_bcd_sub(UINT8 arg1, UINT8 arg2)
     quint32 ret = (arg1&0x0f) - (arg2&0x0f);
     UINT8 carry;
 
-    if (ret > 0x09)
-    {
+    if (ret > 0x09) {
         ret = (ret - 0x06) & 0x0f;
         carry = 1;
     }
-    else
-        carry = 0;
+    else carry = 0;
 
     ret += ((arg1&0xf0) - (arg2&0xf0) - (carry<<4));
-
-    if (ret > 0x9f)
-    {
+    if (ret > 0x9f) {
         ret = (ret - 0x60) & 0x0ff;
         carry = 1;
     }
-    else
-        carry = 0;
+    else carry = 0;
 
     ret -= (carry<<8);
-
     return ret;
 }
 
@@ -477,6 +400,7 @@ void CCF79107PJ::dumpXYW(void) {
     AddLog(LOG_TEMP,"W="+_tmp);
 #else
     if (pPC->fp_log) {
+        fprintf(pPC->fp_log,"BCDz=%02x  BCDc=%02x\n",BCDz,BCDc);
         fprintf(pPC->fp_log,"X=");
         for(int i = 0x400; i <= 0x40f; i++)
             fprintf(pPC->fp_log,"%02x ", pPC->mem[i]);
@@ -982,3 +906,60 @@ main(int argc, char *argv[])
 }
 
 #endif
+
+/*
+      0  /  1
+Bit 0 : Add  / Sub
+Bit 1 :
+Bit 2 : Left / Right
+Bit 3 : no   / Shift
+Bit 4 :   Exponent
+
+Bit 6 :   Mantisse
+
+04  X
+05  Y
+08  ???
+
+41	01000001	sub mantisse flags
+43	01000011	sub mantisse flags and ???
+48	01001000	Shift Left
+4A	01001010	Shift Left and ???
+4C	01001100	Shift Right
+4E	01001110	Shift Right and ???
+90	10010000	Add Exp 1
+91	10010001	Sub Exp 1
+99	10011001	Shift Left and sub Exp 1
+9c	10011100	Shift Right X and add Exp 1
+C0	11000000	Add Mantisse
+C1	11000001	Sub Mantisse
+C2	11000010	Add Matisse and ???
+C3	11000011	Sub Matisse and ???
+D0	11010000	Cpy X to
+
+08 00	Add exp
+08 01	Sub exp
+
+port 221:
+0E	00001110	???
+10	00010000	clear X
+11	00010001	clear Y
+80	10000000	swap X Y
+
+RESET X : 221h à 10h	semble mettre a 0  400h-41Fh
+RESET Y : 221h à 11h
+SET Y = 1 :   RESET Y puis mise à jours de 416h et 418h à 1
+
+220h 41h : equivalent of HD61700 sbbcm instuction (
+220h 43h : compare mantissa ???
+221h à 80h : Y <-> X
+220h 04C0h : X = X + Y:  return 40h if ok
+220h 04C1h : X = X - Y:  return 40h if ok
+220h 0491h : equi sbbw	$17,$sy
+220h 044Ch : divide mantisse by 10 eq. shift left 400h-406h
+220h 0448h : shift right 400h-406h
+220h 0499h : shift right 400h-406h
+220h 054Eh : ???
+220h 05D0h : X->Y (used by X*X -> 05D0 and Multiply)
+
+*/

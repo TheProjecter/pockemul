@@ -28,8 +28,8 @@
     <KEY description="On/Brk" height="21" left="682" masterscancode="0x00" modifier="" scancode="0x03" top="133" width="27"/>
     <KEY description="Rigth Arrow" height="16" left="464" masterscancode="0x00" modifier="" scancode="0x07" top="258" width="27"/>
     <KEY description="BS" height="22" left="637" masterscancode="0x00" modifier="" scancode="0xd6" top="136" width="30"/>
-    <KEY description="[F]" height="17" left="440" masterscancode="0x00" modifier="" scancode="0x12" top="154" width="51"/>
-    <KEY description="Shift" height="17" left="23" masterscancode="0x00" modifier="" scancode="0x11" top="260" width="51"/>
+    <KEY description="[F]" height="17" left="440" masterscancode="0x00" modifier="" scancode="0x11" top="154" width="51"/>
+    <KEY description="Shift" height="17" left="23" masterscancode="0x00" modifier="" scancode="0x12" top="260" width="51"/>
     <KEY description="SML" height="26" left="24" masterscancode="0x00" modifier="" scancode="0x14" top="221" width="30"/>
     <KEY description="ANS" height="18" left="684" masterscancode="0x00" modifier="" scancode="0x207" top="95" width="29"/>
     <KEY description="Space" height="18" left="234" masterscancode="0x00" modifier="" scancode="0x20" top="259" width="105"/>
