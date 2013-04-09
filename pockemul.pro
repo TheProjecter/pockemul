@@ -331,7 +331,8 @@ HEADERS += src/core/Connect.h \
     libavoid/connector.h \
     libavoid/connectionpin.h \
     libavoid/assertions.h \
-    src/machine/printerctronics.h
+    src/machine/printerctronics.h \
+    src/machine/fp40.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -596,7 +597,8 @@ SOURCES += src/core/Connect.cpp \
     libavoid/connend.cpp \
     libavoid/connector.cpp \
     libavoid/connectionpin.cpp \
-    src/machine/printerctronics.cpp
+    src/machine/printerctronics.cpp \
+    src/machine/fp40.cpp
 
 
 

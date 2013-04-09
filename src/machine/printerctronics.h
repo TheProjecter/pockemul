@@ -26,21 +26,22 @@ public:
     virtual void SaveAsText(void);
 
     virtual void ComputeKey(void);
+    virtual bool UpdateFinalImage(void);
 
     //virtual void resizeEvent ( QResizeEvent * );
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
     Cconnector *pSavedCONNECTOR;
 
-    QImage *pc2021buf;
-    QImage *pc2021display;
+    QImage *printerbuf;
+    QImage *printerdisplay;
 
 
     bool	ToDestroy;
 
     void	settop(int value){ top = value; }
     void	setposX(int value) { posX = value; }
-int pc2021_Mode;
+
 
     CprinterCtronics(CPObject *parent = 0);
 
@@ -55,18 +56,21 @@ public:
     bool printerBUSY;
     bool    rmtSwitch;
     int     internal_device_code;
-    virtual void	Printer(qint8 d);			//printer emulator
+    virtual void	Printer(quint8 d);			//printer emulator
     QImage *charTable;
     int margin;
     int		top;
+    QByteArray	TextBuffer;
+    int		posX;
+    int paperWidth;
 
 private:
 
 
 
 
-    int		posX;
-    QByteArray	TextBuffer;
+
+
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;

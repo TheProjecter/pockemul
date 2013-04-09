@@ -168,6 +168,7 @@ enum Models {
     PB2000,
     MD100,
     FP100,
+    FP40,
     FP200,
     Z1,
     Z1GR,

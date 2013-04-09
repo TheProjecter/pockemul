@@ -24,11 +24,12 @@
 
 CprinterCtronics::CprinterCtronics(CPObject *parent):Cprinter(this)
 {								//[constructor]
+    paperWidth = 170;
 }
 
 CprinterCtronics::~CprinterCtronics() {
-    delete pc2021buf;
-    delete pc2021display;
+    delete printerbuf;
+    delete printerdisplay;
     delete pCONNECTOR;
     delete charTable;
 }
@@ -67,8 +68,8 @@ void CprinterCtronics::SaveAsText(void)
 void CprinterCtronics::clearPaper(void)
 {
     // Fill it blank
-    pc2021buf->fill(PaperColor.rgba());
-    pc2021display->fill(QColor(255,255,255,0).rgba());
+    printerbuf->fill(PaperColor.rgba());
+    printerdisplay->fill(QColor(255,255,255,0).rgba());
     settop(10);
     setposX(0);
     // empty TextBuffer
@@ -108,15 +109,15 @@ bool CprinterCtronics::init(void)
 
     // Create CE-126 Paper Image
     // The final paper image is 207 x 149 at (277,0) for the ce125
-    pc2021buf	= new QImage(QSize(170, 3000),QImage::Format_ARGB32);
-    pc2021display= new QImage(QSize(170, 149),QImage::Format_ARGB32);
+    printerbuf	= new QImage(QSize(paperWidth, 3000),QImage::Format_ARGB32);
+    printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
 
 
 //	bells	 = new QSound("ce.wav");
 
 // Create a paper widget
 
-    paperWidget = new CpaperWidget(PaperPos(),pc2021buf,this);
+    paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
     paperWidget->updated = true;
     paperWidget->show();
 
@@ -124,7 +125,8 @@ bool CprinterCtronics::init(void)
     clearPaper();
 
     run_oldstate = -1;
-
+    settop(10);
+    setposX(0);
     return true;
 }
 
@@ -199,8 +201,41 @@ bool CprinterCtronics::Change(int pin) {
     return (pCONNECTOR->Get_pin(pin) != pSavedCONNECTOR->Get_pin(pin) ) ? true:false;
 }
 
-void CprinterCtronics::Printer(qint8 d)
+void CprinterCtronics::Printer(quint8 d)
 {
 
 }
 
+bool CprinterCtronics::UpdateFinalImage(void) {
+
+    Cprinter::UpdateFinalImage();
+
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
+
+    QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
+                                 paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
+                          QPoint(paperWidget->bufferImage->width(),
+                                 paperWidget->getOffset().y() +10)
+                          );
+//    MSG_ERROR(QString("%1 - %2").arg(source.width()).arg(PaperPos().width()));
+    painter.drawImage(PaperPos(),
+                      paperWidget->bufferImage->copy(source).scaled(PaperPos().size(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation )
+                      );
+
+//    painter.setOpacity(0.5);
+//    painter.fillRect(PaperPos(),Qt::black);
+//    painter.setOpacity(1);
+
+//    painter.drawImage(112,145,*capot);
+
+//    int offset = (lastX ) * ratio /( mainwindow->zoom/100);
+//    painter.drawImage(152+offset,178,*head);       // Draw head
+//    painter.drawImage(793 - offset,214,*cable);    // Draw cable
+
+    painter.end();
+
+    return true;
+}

@@ -11,5 +11,6 @@
         <file>ext/cable_blank.png</file>
         <file>ext/ce-127r.png</file>
         <file>ext/pc-2081.png</file>
+        <file>ext/fp40.png</file>
     </qresource>
 </RCC>
