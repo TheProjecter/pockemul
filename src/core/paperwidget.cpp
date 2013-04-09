@@ -61,7 +61,7 @@ void CpaperWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
 	QMenu menu(this);
     menu.addAction(tr("Copy Image"),this,SLOT(paperCopy()));
-    menu.addAction(tr("Copy Text"),this,SLOT(paperCopy()));
+    menu.addAction(tr("Copy Text"),this,SLOT(paperCopyText()));
 	menu.addAction(tr("Cut"),this,SLOT(paperCut()));
 	menu.addAction(tr("Save Image ..."),this,SLOT(paperSaveImage()));
 	menu.addAction(tr("Save Text ..."),this,SLOT(paperSaveText()));
