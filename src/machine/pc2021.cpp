@@ -112,7 +112,7 @@ void Cpc2021::Refreshpc2021(qint8 data)
 // The final paper image is 207 x 149 at (277,0) for the ce125
 
 // grab data char to byteArray
-    if (data==0x0a) return;
+    if ( (data == 0xff) || (data==0x0a)) return;
 
     TextBuffer += data;
 

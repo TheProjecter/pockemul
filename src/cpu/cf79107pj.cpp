@@ -100,10 +100,10 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
     case 0x01: cmd_sub_exp(VAR_X); break;
     case 0x41: cmd_41(); break;
     case 0x43: cmd_43(); break;
-    case 0x48: cmd_shiftR_mantisse(regSelected); break;
-    case 0x4a: cmd_shiftR_mantisse(regSelected); break;
-    case 0x4c: cmd_shiftL_mantisse(regSelected); break;
-    case 0x4e: cmd_shiftL_mantisse(regSelected);
+    case 0x48: cmd_shiftR_mantisse(VAR_X,regSelected); break;
+    case 0x4a: cmd_shiftR_mantisse(VAR_Y,regSelected); break;
+    case 0x4c: cmd_shiftL_mantisse(VAR_X,regSelected); break;
+    case 0x4e: cmd_shiftL_mantisse(VAR_Y,regSelected);
 //               cmd_inc_exp(regSelected);
         break;
     case 0x90: cmd_inc_exp(regSelected);
@@ -111,11 +111,11 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
         break;
     case 0x91: cmd_dec_exp(regSelected); break;
     case 0x99:
-        cmd_shiftR_mantisse(regSelected);
+        cmd_shiftR_mantisse(VAR_X,regSelected);
         cmd_dec_exp(regSelected);
         break;
     case 0x9c: // exchange H06 with L07
-        cmd_shiftL_mantisse(regSelected);
+        cmd_shiftL_mantisse(VAR_X,regSelected);
         cmd_inc_exp(regSelected);
         break;
     case 0xc0:
@@ -132,8 +132,8 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
         cmd_sub_mantisseYX(regSelected);
         break;
     case 0xd0: // X -> Y
-        for(int i = 0x400; i < 0x408; i++)
-            pPC->mem[i+0x10] = pPC->mem[i];
+        for(int i = 0; i < 8; i++)
+            pPC->mem[i+regSelected] = pPC->mem[i+VAR_X];
         break;
     default:
         if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN");
@@ -144,8 +144,8 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
     return true;
 }
 
-void CCF79107PJ::cmd_shiftL_mantisse(UINT16 adr) {
-    Read_TMP(adr);
+void CCF79107PJ::cmd_shiftL_mantisse(UINT16 src,UINT16 adr) {
+    Read_TMP(src);
 
     for(int i = 0; i < 6; i++) {
         quint8 _tmp = TMP[i]&0xf0;
@@ -158,8 +158,8 @@ void CCF79107PJ::cmd_shiftL_mantisse(UINT16 adr) {
     Write_TMP(adr);
 }
 
-void CCF79107PJ::cmd_shiftR_mantisse(UINT16 adr) {
-    Read_TMP(adr);
+void CCF79107PJ::cmd_shiftR_mantisse(UINT16 src,UINT16 adr) {
+    Read_TMP(src);
 
     for(int i = 6; i > 0; i--){
         quint8 _tmp = TMP[i]&0x0f;
@@ -277,8 +277,12 @@ void CCF79107PJ::cmd_0e(void) //adbw
 
     }
 
-//    BCDret = 0;
-//    BCDz = BCDc = 0;
+//    if (pPC->mem[0x408]<=6) pPC->mem[0x408] += 0x06;
+    //pPC->mem[0x408] &= 0x0F;
+//    if (pPC->mem[0x418]<=6) pPC->mem[0x418] += 0x06;
+    //pPC->mem[0x418] &= 0x0F;
+    BCDret = 0;
+    BCDz = BCDc = 0;
 #endif
 //    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
 }

@@ -41,8 +41,8 @@ public:
     void cmd_dec_exp(UINT16 adr);
     void cmd_0e();
     void cmd_sub_mantisseXY(UINT16 target);
-    void cmd_shiftL_mantisse(UINT16 adr);
-    void cmd_shiftR_mantisse(UINT16 adr);
+    void cmd_shiftL_mantisse(UINT16 src, UINT16 adr);
+    void cmd_shiftR_mantisse(UINT16 src, UINT16 adr);
     void cmd_43();
     void Read_TMP(UINT16 adr);
     void Write_TMP(UINT16 adr);

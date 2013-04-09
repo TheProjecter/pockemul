@@ -5,6 +5,7 @@ class CPObject;
 class CHD66108;
 class Ci80x86;
 class CCF79107PJ;
+class Cctronics;
 
 #include "pcxxxx.h"
 
@@ -24,10 +25,17 @@ public:
     virtual UINT8 out8(UINT16 Port,UINT8 x);
     virtual UINT16 in16(UINT16 Port);
     virtual UINT16 out16(UINT16 Port, UINT16 x);
+    virtual bool Get_Connector();
+    virtual bool Set_Connector();
+    virtual void Get_CentConnector();
+    virtual void Set_CentConnecor();
+    virtual void Get_SIOConnector();
+    virtual void Set_SIOConnector();
     bool init();
 
     CHD66108 *pHD66108;
     CCF79107PJ *pFPU;
+    Cctronics *pCENT;
 
     virtual bool run();
 
@@ -41,6 +49,9 @@ public:
     UINT16 getKey();
 
     Ci80x86 *i86cpu;
+
+    Cconnector *pCENTCONNECTOR;    qint64      pCENTCONNECTOR_value;
+
 
 
 private:

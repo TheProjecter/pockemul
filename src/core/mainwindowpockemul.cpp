@@ -107,11 +107,11 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     grabGesture(Qt::PinchGesture);
 
     initObjectTable();
-
+#ifdef AVOID
     router = new Avoid::Router(Avoid::OrthogonalRouting);
     router->setRoutingPenalty((Avoid::PenaltyType)0, 50);
     router->setOrthogonalNudgeDistance(15);
-
+#endif
 qWarning("create");
 
 }

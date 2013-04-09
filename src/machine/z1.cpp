@@ -11,6 +11,8 @@
 #include "hd66108.h"
 #include "cf79107pj.h"
 #include "Log.h"
+#include "Connect.h"
+#include "ctronics.h"
 
 #ifdef POCKEMUL_BIG_ENDIAN
 #	define LOW(x)	((uint8 *)&(x) + 1)
@@ -76,6 +78,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pHD66108    = new CHD66108(this);
     pKEYB		= new Ckeyb(this,"z1.map");
+    pCENT       = new Cctronics(this);
 
     lastKeyBufSize = 0;
     newKey = false;
@@ -86,6 +89,8 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 Cz1::~Cz1() {
     delete pFPU;
     delete pHD66108;
+    delete pCENTCONNECTOR;
+    delete pCENT;
 
 }
 
@@ -109,6 +114,36 @@ bool Cz1::init(void)				// initialize
 
     intPulseId = pTIMER->initTP(240);
     lastIntPulse = false;
+
+    pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
+    publish(pCENTCONNECTOR);
+    pSIOCONNECTOR = new Cconnector(this,9,1,Cconnector::DB_25,"Serial Connector",false,QPoint(0,50));
+    publish(pSIOCONNECTOR);
+
+//    pUART->init();
+//    pUART->pTIMER = pTIMER;
+    pCENT->init();
+    pCENT->setBufferSize(10);
+    pCENT->pTIMER = pTIMER;
+
+    QHash<int,QString> lbl;
+    lbl.clear();
+    lbl[1] = "STROBE";
+    lbl[2] = "D1";
+    lbl[3] = "D2";
+    lbl[4] = "D3";
+    lbl[5] = "D4";
+    lbl[6] = "D5";
+    lbl[7] = "D6";
+    lbl[8] = "D7";
+    lbl[9] = "D8";
+    lbl[10]= "ACK";
+    lbl[11]= "BUSY";
+    lbl[31]= "INIT";
+    lbl[32]= "ERROR";
+    WatchPoint.remove(this);
+    WatchPoint.add(&pCENTCONNECTOR_value,64,36,this,"Centronic 36pins connector",lbl);
+
     return true;
 }
 
@@ -118,6 +153,7 @@ bool Cz1::run() {
 
 
     CpcXXXX::run();
+    pCENT->run();
 
 //    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
 
@@ -257,6 +293,9 @@ UINT8 Cz1::in8(UINT16 Port)
         if (fp_log) fprintf(fp_log,"IN[%04x]\n",Port);
         return 0x01;
         break;}
+    case 0x241: // Ack from centronic
+//        return (pCENT->isAvailable()?0x00:0x01);
+        break;
     default:
         if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
         AddLog(LOG_TEMP,tr("IN[%1]\t%2").arg(Port,4,16,QChar('0')).arg(pCPU->get_PC(),8,16,QChar('0')));
@@ -330,6 +369,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         if (( x!=0xff)&&( x!=0x0d)) {
             AddLog(LOG_CONSOLE,tr("%1").arg(QChar(x)));
         }
+        pCENT->newOutChar( x );
         break;
 
     default:
@@ -534,5 +574,54 @@ UINT16 Cz1::getKey()
 
     }
     return data;
+
+}
+
+bool Cz1::Get_Connector(void) {
+
+    Get_CentConnector();
+    Get_SIOConnector();
+
+    return true;
+}
+
+bool Cz1::Set_Connector(void) {
+    Set_SIOConnector();
+    Set_CentConnecor();
+
+
+    return true;
+}
+
+void Cz1::Get_CentConnector(void) {
+
+    pCENT->Set_ACK( pCENTCONNECTOR->Get_pin(10));
+    pCENT->Set_BUSY( pCENTCONNECTOR->Get_pin(11));
+    pCENT->Set_ERROR( pCENTCONNECTOR->Get_pin(32));
+}
+
+void Cz1::Set_CentConnecor(void) {
+
+    pCENTCONNECTOR->Set_pin((1) ,pCENT->Get_STROBE());
+
+    quint8 d = pCENT->Get_DATA();
+    pCENTCONNECTOR->Set_pin(2	,READ_BIT(d,0));
+    pCENTCONNECTOR->Set_pin(3	,READ_BIT(d,1));
+    pCENTCONNECTOR->Set_pin(4	,READ_BIT(d,2));
+    pCENTCONNECTOR->Set_pin(5	,READ_BIT(d,3));
+    pCENTCONNECTOR->Set_pin(6	,READ_BIT(d,4));
+    pCENTCONNECTOR->Set_pin(7	,READ_BIT(d,5));
+    pCENTCONNECTOR->Set_pin(8	,READ_BIT(d,6));
+    pCENTCONNECTOR->Set_pin(9	,READ_BIT(d,7));
+
+    pCENTCONNECTOR->Set_pin(31	,pCENT->Get_INIT());
+
+}
+
+void Cz1::Get_SIOConnector(void) {
+
+}
+
+void Cz1::Set_SIOConnector(void) {
 
 }

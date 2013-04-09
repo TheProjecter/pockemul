@@ -36,8 +36,9 @@ public:
 
     MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindowPockemul();
-
+#ifdef AVOID
     Avoid::Router *router;
+#endif
     QHash<CPObject *,Avoid::ShapeRef *> shapeRefList;
 
     void setZoom(int );

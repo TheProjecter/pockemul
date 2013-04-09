@@ -21,12 +21,13 @@ void CDirectLink::addLink(Cconnector *A, Cconnector *B, bool close)
         AConnList.append(A);
         BConnList.append(B);
         closeList.append(close);
-
+#ifdef AVOID
         Avoid::ConnEnd srcEnd(mainwindow->shapeRefList[A->Parent],A->Id+1);
         Avoid::ConnEnd dstEnd(mainwindow->shapeRefList[B->Parent],B->Id+1);
         new Avoid::ConnRef(mainwindow->router, srcEnd, dstEnd);
         mainwindow->router->processTransaction();
         mainwindow->router->outputInstanceToSVG("test-connectionpin01");
+#endif
 #else
         // 1 - create the CCable object
          Ccable *pPC = (Ccable*)mainwindow->LoadPocket(CABLE11Pins);
