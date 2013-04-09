@@ -78,7 +78,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pHD66108    = new CHD66108(this);
     pKEYB		= new Ckeyb(this,"z1.map");
-    pCENT       = new Cctronics(this);
+    pCENT       = new Cctronics(this); pCENT->pTIMER = pTIMER;
 
     lastKeyBufSize = 0;
     newKey = false;
@@ -104,8 +104,7 @@ bool Cz1::init(void)				// initialize
 #endif
     CpcXXXX::init();
 
-    for(int i = 0; i < 0x10000; i++)
-        mem[i] = i & 0xff;
+    for(int i = 0; i < 0x10000; i++) mem[i] = i & 0xff;
 
     pHD66108->init();
 
@@ -117,14 +116,14 @@ bool Cz1::init(void)				// initialize
 
     pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
     publish(pCENTCONNECTOR);
-    pSIOCONNECTOR = new Cconnector(this,9,1,Cconnector::DB_25,"Serial Connector",false,QPoint(0,50));
+    pSIOCONNECTOR = new Cconnector(this,9,2,Cconnector::DB_25,"Serial Connector",false,QPoint(0,50));
     publish(pSIOCONNECTOR);
 
 //    pUART->init();
 //    pUART->pTIMER = pTIMER;
+
     pCENT->init();
     pCENT->setBufferSize(10);
-    pCENT->pTIMER = pTIMER;
 
     QHash<int,QString> lbl;
     lbl.clear();
@@ -151,6 +150,8 @@ bool Cz1::init(void)				// initialize
 
 bool Cz1::run() {
 
+    pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
     CpcXXXX::run();
     pCENT->run();
@@ -196,6 +197,8 @@ bool Cz1::run() {
 
     }
 
+    pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
+    pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
     return true;
 }
 
@@ -587,7 +590,7 @@ bool Cz1::Get_Connector(void) {
 
 bool Cz1::Set_Connector(void) {
     Set_SIOConnector();
-    Set_CentConnecor();
+    Set_CentConnector();
 
 
     return true;
@@ -600,11 +603,14 @@ void Cz1::Get_CentConnector(void) {
     pCENT->Set_ERROR( pCENTCONNECTOR->Get_pin(32));
 }
 
-void Cz1::Set_CentConnecor(void) {
+void Cz1::Set_CentConnector(void) {
 
     pCENTCONNECTOR->Set_pin((1) ,pCENT->Get_STROBE());
 
     quint8 d = pCENT->Get_DATA();
+    if ((d>0)&&(d!=0xff)) {
+//        qWarning()<< "centdata"<<d;
+    }
     pCENTCONNECTOR->Set_pin(2	,READ_BIT(d,0));
     pCENTCONNECTOR->Set_pin(3	,READ_BIT(d,1));
     pCENTCONNECTOR->Set_pin(4	,READ_BIT(d,2));

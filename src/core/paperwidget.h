@@ -26,6 +26,7 @@ public:
 private slots:
 	void contextMenuEvent ( QContextMenuEvent * event );
 	void paperCopy();
+    void paperCopyText();
 	void paperCut();
 	void paperSaveImage();
 	void paperSaveText();

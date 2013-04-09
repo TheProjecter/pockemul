@@ -60,7 +60,8 @@ QPoint CpaperWidget::getOffset()
 void CpaperWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
 	QMenu menu(this);
-	menu.addAction(tr("Copy"),this,SLOT(paperCopy()));
+    menu.addAction(tr("Copy Image"),this,SLOT(paperCopy()));
+    menu.addAction(tr("Copy Text"),this,SLOT(paperCopy()));
 	menu.addAction(tr("Cut"),this,SLOT(paperCut()));
 	menu.addAction(tr("Save Image ..."),this,SLOT(paperSaveImage()));
 	menu.addAction(tr("Save Text ..."),this,SLOT(paperSaveText()));
@@ -73,7 +74,12 @@ void CpaperWidget::paperCopy()
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setImage(*bufferImage);
 }
+void CpaperWidget::paperCopyText()
+{
 
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(QString(((Cprinter*)pPC)->TextBuffer));
+}
 void CpaperWidget::paperCut()
 {
 	paperCopy();
@@ -105,6 +111,7 @@ void CpaperWidget::paperSaveText()
 void CpaperWidget::paintEvent(QPaintEvent *event)
 {
 //    if (!updated) return;
+    if (bufferImage == 0) return;
     updated = false;
 
 	float ratio = ( (float) width() ) / ( bufferImage->width() - Offset.x() );

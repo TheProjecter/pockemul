@@ -261,7 +261,7 @@ bool Cfp200::init()
 
     pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
     publish(pCENTCONNECTOR);
-    pSIOCONNECTOR = new Cconnector(this,9,1,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
+    pSIOCONNECTOR = new Cconnector(this,9,2,Cconnector::DIN_8,"Serial Connector",false,QPoint(0,50));
     publish(pSIOCONNECTOR);
 
 //    pUART->init();

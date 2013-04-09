@@ -25,10 +25,10 @@ public:
     virtual UINT8 out8(UINT16 Port,UINT8 x);
     virtual UINT16 in16(UINT16 Port);
     virtual UINT16 out16(UINT16 Port, UINT16 x);
-    virtual bool Get_Connector();
-    virtual bool Set_Connector();
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
     virtual void Get_CentConnector();
-    virtual void Set_CentConnecor();
+    virtual void Set_CentConnector();
     virtual void Get_SIOConnector();
     virtual void Set_SIOConnector();
     bool init();

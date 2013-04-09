@@ -1,5 +1,8 @@
+#include <QDebug>
+
 #include "ctronics.h"
 #include "Inter.h"
+
 
 #define STROBE_DELAY 5
 #define DEFAULT_BUFFERSIZE 100
@@ -17,6 +20,7 @@ bool Cctronics::init()
     DATA=0;
     mode = READY_TO_SEND;
     bufferSize = DEFAULT_BUFFERSIZE;
+    stateStrobeDelay = pTIMER->state;
     return true;
 }
 
@@ -41,8 +45,6 @@ bool Cctronics::isAvailable()
 bool Cctronics::run()
 {
     if (!pTIMER) return true;
-
-
 
     switch (mode) {
 

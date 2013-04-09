@@ -61,7 +61,7 @@ private:
 
 
     int		posX;
-    QByteArray	TextBuffer;
+
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;

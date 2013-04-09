@@ -30,6 +30,8 @@ public:
 
     virtual void raise();
 
+    QByteArray	TextBuffer;
+
 protected:
 	QColor	PaperColor;
 };

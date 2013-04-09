@@ -1,5 +1,6 @@
 
 //TODO: Key management
+#include <QDebug>
 
 #include <QPainter>
 
@@ -29,8 +30,6 @@ Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
     setcfgfname(QString("fp40"));
     BackGroundFname	= ":/EXT/ext/fp40.png";
 
-
-
     delete pKEYB; pKEYB		= new Ckeyb(this,"x710.map");
 
     setDXmm(210);//Pc_DX_mm = 256;
@@ -51,9 +50,9 @@ Cfp40::~Cfp40() {
 
 bool Cfp40::init(void) {
 
-    CprinterCtronics::init();
-
     charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+
+    CprinterCtronics::init();
 
     return true;
 }
@@ -97,6 +96,7 @@ void Cfp40::Printer(quint8 data) {
     }
     else
     {
+//        qWarning()<<"CHAR PRINTED:"<<QChar(data);
         painter.begin(printerbuf);
         int x = ((data>>4) & 0x0F)*6;
         int y = (data & 0x0F) * 8;

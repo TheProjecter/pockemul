@@ -13,6 +13,7 @@
 class Cconnector;
 
 class CprinterCtronics:public Cprinter{
+    Q_OBJECT
 public:
 
     virtual bool init(void);				//initialize
@@ -28,6 +29,7 @@ public:
     virtual void ComputeKey(void);
     virtual bool UpdateFinalImage(void);
 
+    virtual void	Printer(quint8 d);			//printer emulator
     //virtual void resizeEvent ( QResizeEvent * );
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
@@ -56,11 +58,11 @@ public:
     bool printerBUSY;
     bool    rmtSwitch;
     int     internal_device_code;
-    virtual void	Printer(quint8 d);			//printer emulator
+
     QImage *charTable;
     int margin;
     int		top;
-    QByteArray	TextBuffer;
+
     int		posX;
     int paperWidth;
 

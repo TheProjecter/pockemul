@@ -21,7 +21,7 @@ public:
     virtual ~Cfp40();
 
 
-    void Printer(quint8 data);
+    virtual void Printer(quint8 data);
 protected:
 
 protected slots:

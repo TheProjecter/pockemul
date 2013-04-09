@@ -70,7 +70,7 @@ private:
 	
 
 	int		posX;
-	QByteArray	TextBuffer;
+
     bool	Previous_BUSY;
     bool	Previous_MT_OUT1;
 	QTime	time;

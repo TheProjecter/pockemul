@@ -23,8 +23,14 @@
 
 
 CprinterCtronics::CprinterCtronics(CPObject *parent):Cprinter(this)
-{								//[constructor]
+{
+    printerACK = false;
+    printerBUSY = false;
+    printerbuf	= 0;//new QImage(QSize(0, 0),QImage::Format_ARGB32);
+    printerdisplay= 0;//new QImage(QSize(0, 0),QImage::Format_ARGB32);
+    //[constructor]
     paperWidth = 170;
+
 }
 
 CprinterCtronics::~CprinterCtronics() {
@@ -84,9 +90,10 @@ bool CprinterCtronics::init(void)
 
     setfrequency( 0);
 
-    pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(631,468)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,36,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
+    pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parallel Connector",true,QPoint(631,468)); publish(pCONNECTOR);
+    pSavedCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Saved Parrallel Connector",true,QPoint(631,468));
 
+    WatchPoint.remove(this);
     QHash<int,QString> lbl;
     lbl[1] = "STROBE";
     lbl[2] = "D1";
@@ -112,14 +119,15 @@ bool CprinterCtronics::init(void)
     printerbuf	= new QImage(QSize(paperWidth, 3000),QImage::Format_ARGB32);
     printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
 
-
+    paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
+//    paperWidget->show();
 //	bells	 = new QSound("ce.wav");
 
 // Create a paper widget
 
-    paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
-    paperWidget->updated = true;
-    paperWidget->show();
+
+//    paperWidget->show();
+//    paperWidget->hide();
 
     // Fill it blank
     clearPaper();
@@ -127,6 +135,7 @@ bool CprinterCtronics::init(void)
     run_oldstate = -1;
     settop(10);
     setposX(0);
+
     return true;
 }
 
@@ -165,6 +174,7 @@ bool CprinterCtronics::run(void)
     if (GoUp(1)) {
         UINT8 car = (pCONNECTOR->Get_values() >> 1) & 0xFF;
         AddLog(LOG_PRINTER,tr("RECIEVED CHAR : %1").arg(car,2,16,QChar('0')));
+
         if (car != 0xff && car !=0x0a) Printer(car);
         printerACK = true;
         pTIMER->resetTimer(6);
@@ -203,7 +213,7 @@ bool CprinterCtronics::Change(int pin) {
 
 void CprinterCtronics::Printer(quint8 d)
 {
-
+    qWarning()<<"ERROR OLD";
 }
 
 bool CprinterCtronics::UpdateFinalImage(void) {
@@ -224,16 +234,6 @@ bool CprinterCtronics::UpdateFinalImage(void) {
     painter.drawImage(PaperPos(),
                       paperWidget->bufferImage->copy(source).scaled(PaperPos().size(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation )
                       );
-
-//    painter.setOpacity(0.5);
-//    painter.fillRect(PaperPos(),Qt::black);
-//    painter.setOpacity(1);
-
-//    painter.drawImage(112,145,*capot);
-
-//    int offset = (lastX ) * ratio /( mainwindow->zoom/100);
-//    painter.drawImage(152+offset,178,*head);       // Draw head
-//    painter.drawImage(793 - offset,214,*cable);    // Draw cable
 
     painter.end();
 

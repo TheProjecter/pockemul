@@ -67,7 +67,7 @@ bool Cfp100::init(void) {
     Cce515p::init();
 
     pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(631,468)); publish(pCONNECTOR);
-    pSavedCONNECTOR = new Cconnector(this,36,0,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
+    pSavedCONNECTOR = new Cconnector(this,36,1,Cconnector::Canon_15,"Saved Parrallel Connector",true,QPoint(631,468));
 
     QHash<int,QString> lbl;
     lbl[1] = "STROBE";
