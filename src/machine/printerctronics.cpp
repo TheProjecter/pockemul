@@ -241,7 +241,7 @@ bool CprinterCtronics::UpdateFinalImage(void) {
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
 
-    ratio *= charsize;
+//    ratio *= charsize;
     QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
                                  paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
                           QPoint(paperWidget->bufferImage->width(),

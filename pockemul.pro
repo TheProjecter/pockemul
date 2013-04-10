@@ -692,7 +692,8 @@ OTHER_FILES += \
     resources/keymap/pc2021.map \
     resources/keymap/ce127r.map \
     resources/keymap/ce152.map \
-    resources/keymap/pc2081.map
+    resources/keymap/pc2081.map \
+    resources/keymap/fp40.map
 
 
 

@@ -30,7 +30,7 @@ Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
     setcfgfname(QString("fp40"));
     BackGroundFname	= ":/EXT/ext/fp40.png";
 
-    delete pKEYB; pKEYB		= new Ckeyb(this,"x710.map");
+    delete pKEYB; pKEYB		= new Ckeyb(this,"fp40.map");
 
     setDXmm(210);//Pc_DX_mm = 256;
     setDYmm(145);//Pc_DY_mm = 185;
@@ -41,8 +41,8 @@ Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
 
 
     margin = 40;
-    paperWidth = 1200;
-    setPaperPos(QRect(100,26,400,300));
+    paperWidth = 640;
+    setPaperPos(QRect(90,26,400,300));
 }
 
 Cfp40::~Cfp40() {
@@ -75,7 +75,14 @@ bool Cfp40::exit(void) {
 
 void Cfp40::ComputeKey(void)
 {
-
+    if (pKEYB->LastKey == K_PFEED) {
+        Printer(0x0d);
+    }
+    if (pKEYB->LastKey == K_PRT_COND) {
+        if (charsize==1) charsize=2;
+        else charsize = 1;
+        update();
+    }
 //    if (pKEYB->LastKey == K_PRINT_ON) {
 //        printerSwitch = true;
 //    }
@@ -88,20 +95,28 @@ void Cfp40::Printer(quint8 data) {
     QPainter painter;
 
 
-    TextBuffer += data;
+
+
 
     if (data == 0x0d){
-        top+=10;
+        top+=10*charsize;
         setposX(0);
+        TextBuffer += data;
 //        qWarning()<<"CR PRINTED";
     }
     else
     {
+        if (posX>=(80/charsize)) {
+            top+=10*charsize;
+            setposX(0);
+            TextBuffer += 0x0d;
+        }
 //        qWarning()<<"CHAR PRINTED:"<<QChar(data);
+        TextBuffer += data;
         painter.begin(printerbuf);
         int x = ((data>>4) & 0x0F)*6;
         int y = (data & 0x0F) * 8;
-        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top*charsize,5*charsize,7*charsize),
+        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top,5*charsize,7*charsize),
                             *charTable,
                             QRectF( x , y , 5,7));
         posX++;
@@ -111,11 +126,15 @@ void Cfp40::Printer(quint8 data) {
 
     painter.begin(printerdisplay);
 
-    painter.drawImage(QRectF(0,MAX(149-top,0),paperWidth/charsize,MIN(top,149)),*printerbuf,QRectF(0,MAX(0,top-149),paperWidth/charsize,MIN(top,149)));
+    painter.drawImage(QRectF(0,MAX(149-top,0),paperWidth/charsize,MIN(top,149)),
+                      *printerbuf,
+                      QRectF(0,MAX(0,top-149),paperWidth/charsize,MIN(top,149)));
 
 // Draw printer head
 //    painter.fillRect(QRect(0 , 147,207,2),QBrush(QColor(0,0,0)));
 //    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
+
+
 
     painter.end();
 
@@ -130,6 +149,11 @@ void Cfp40::Printer(quint8 data) {
 bool Cfp40::UpdateFinalImage(void) {
 
     CprinterCtronics::UpdateFinalImage();
+
+    QPainter painter;
+    painter.begin(FinalImage);
+    painter.drawImage(650,280,BackgroundImageBackup->copy(650,280,33,60).mirrored(false,charsize==1?false:true));
+    painter.end();
 
     return true;
 }

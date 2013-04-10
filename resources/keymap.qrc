@@ -36,5 +36,6 @@
         <file>keymap/ce152.map</file>
         <file>keymap/ce127r.map</file>
         <file>keymap/pc2081.map</file>
+        <file>keymap/fp40.map</file>
     </qresource>
 </RCC>

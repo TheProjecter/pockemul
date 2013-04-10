@@ -20,8 +20,8 @@ public:
     virtual bool exit(void);				//end
     virtual	bool run(void);					//check access
 
-    virtual bool	Set_Connector(void);
-    virtual bool	Get_Connector(void);
+    virtual bool Set_Connector(void);
+    virtual bool Get_Connector(void);
 
     virtual void clearPaper(void);
     virtual void SaveAsText(void);
@@ -29,17 +29,14 @@ public:
     virtual void ComputeKey(void);
     virtual bool UpdateFinalImage(void);
 
-    virtual void	Printer(quint8 d);			//printer emulator
+    virtual void Printer(quint8 d);			//printer emulator
     //virtual void resizeEvent ( QResizeEvent * );
 
-    Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
+    Cconnector *pCONNECTOR;		qint64 pCONNECTOR_value;
     Cconnector *pSavedCONNECTOR;
 
     QImage *printerbuf;
     QImage *printerdisplay;
-
-
-    bool	ToDestroy;
 
     void	settop(int value){ top = value; }
     void	setposX(int value) { posX = value; }
@@ -56,14 +53,12 @@ public:
 public:
     bool printerACK;
     bool printerBUSY;
-    bool    rmtSwitch;
-    int     internal_device_code;
 
     QImage *charTable;
     int margin;
-    int		top;
+    int	top;
 
-    int		posX;
+    int	posX;
     int paperWidth;
     int charsize;
 
@@ -72,16 +67,10 @@ protected slots:
 
 private:
 
-
-
-
-
-
     bool	ctrl_char;
     BYTE	t,c;
     qint64	run_oldstate;
     qint64  lastState;
-
 
 public:
 
