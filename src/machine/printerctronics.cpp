@@ -22,7 +22,7 @@
 #define UP		1
 
 
-CprinterCtronics::CprinterCtronics(CPObject *parent):Cprinter(this)
+CprinterCtronics::CprinterCtronics(CPObject *parent):Cprinter(parent)
 {
     printerACK = false;
     printerBUSY = false;
@@ -90,7 +90,25 @@ bool CprinterCtronics::init(void)
 
     setfrequency( 0);
 
-    pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parallel Connector",true,QPoint(631,468)); publish(pCONNECTOR);
+    AddLog(LOG_PRINTER,tr("PRT initializing..."));
+
+    if(pKEYB)	pKEYB->init();
+    if(pTIMER)	pTIMER->init();
+
+    // Create CE-126 Paper Image
+    // The final paper image is 207 x 149 at (277,0) for the ce125
+    printerbuf	= new QImage(QSize(paperWidth, 3000),QImage::Format_ARGB32);
+    printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
+
+    paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
+    paperWidget->hide();
+//	bells	 = new QSound("ce.wav");
+
+// Create a paper widget
+
+
+    pCONNECTOR = new Cconnector(this,36,0,Cconnector::Centronics_36,"Parallel Connector",true,QPoint(631,468));
+    publish(pCONNECTOR);
     pSavedCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Saved Parrallel Connector",true,QPoint(631,468));
 
     WatchPoint.remove(this);
@@ -109,25 +127,8 @@ bool CprinterCtronics::init(void)
     lbl[31]= "INIT";
     lbl[32]= "ERROR";
     WatchPoint.add(&pCONNECTOR_value,64,36,this,"// 36pins connector",lbl);
-    AddLog(LOG_PRINTER,tr("PRT initializing..."));
-
-    if(pKEYB)	pKEYB->init();
-    if(pTIMER)	pTIMER->init();
-
-    // Create CE-126 Paper Image
-    // The final paper image is 207 x 149 at (277,0) for the ce125
-    printerbuf	= new QImage(QSize(paperWidth, 3000),QImage::Format_ARGB32);
-    printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
-
-    paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
+    paperWidget->show();
     paperWidget->hide();
-//	bells	 = new QSound("ce.wav");
-
-// Create a paper widget
-
-
-//    paperWidget->show();
-//    paperWidget->hide();
 
     // Fill it blank
     clearPaper();

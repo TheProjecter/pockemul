@@ -527,7 +527,6 @@ void MainWindowPockemul::opensession(QString sessionFN)
                         int idpc2 = xml.attributes().value("idpcTo").toString().toInt();
                         int idco2 = xml.attributes().value("idcoTo").toString().toInt();
                         bool close= (xml.attributes().value("close")=="false") ?false:true;
-                        qWarning()<<"close:"<<close;
                         CPObject * locpc1 = map.value(idpc1);
                         CPObject * locpc2 = map.value(idpc2);
                         Cconnector * locco1 = locpc1->ConnList.value(idco1);

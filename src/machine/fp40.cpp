@@ -26,7 +26,7 @@ TransMap KeyMapce140p[]={
 */
 
 Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
-    //setfrequency( 0);
+    setfrequency( 0);
     setcfgfname(QString("fp40"));
     BackGroundFname	= ":/EXT/ext/fp40.png";
 
@@ -55,6 +55,7 @@ bool Cfp40::init(void) {
 
     CprinterCtronics::init();
 
+    qWarning()<<"init done";
     return true;
 }
 
@@ -93,9 +94,6 @@ void Cfp40::ComputeKey(void)
 
 void Cfp40::Printer(quint8 data) {
     QPainter painter;
-
-
-
 
 
     if (data == 0x0d){

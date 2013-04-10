@@ -1,3 +1,4 @@
+#include <QDebug>
 
 #include "clink.h"
 #include "Connect.h"
@@ -11,7 +12,9 @@ CDirectLink::CDirectLink(void) {
 
 void CDirectLink::addLink(Cconnector *A, Cconnector *B, bool close)
 {
+    addlinkMutex.lock();
     if (close) {
+
         AConnList.append(A);
         BConnList.append(B);
         closeList.append(close);
@@ -40,13 +43,16 @@ void CDirectLink::addLink(Cconnector *A, Cconnector *B, bool close)
          pPC->ConnList.at(reverse?0:1)->setOppDir(B->getDir());
 #endif
     }
+    addlinkMutex.unlock();
 }
 
 void CDirectLink::removeLink(int ind)
 {
+    addlinkMutex.lock();
     AConnList.removeAt(ind);
     BConnList.removeAt(ind);
     closeList.removeAt(ind);
+    addlinkMutex.unlock();
 }
 
 // Return the first connected object found
@@ -60,6 +66,8 @@ CPObject * CDirectLink::findObj(CPObject * search)
         if (found >= 0)	return AConnList.at(found)->Parent;
 
 	}
+
+
 	return 0;
 }
 
@@ -71,7 +79,7 @@ void CDirectLink::findAllObj(CPObject * search, QList<CPObject *> * liste, bool 
 	for (i = 0;i < search->ConnList.size(); i++)
  	{
  		
-		for (j = 0;j < AConnList.size(); j++)
+        for (j = 0;j < AConnList.size(); j++)
 	 	{
             bool closed;
             if (onlyclosed) {
@@ -151,7 +159,8 @@ void CDirectLink::Output(CPObject* pPC)
 
 void CDirectLink::outConnector(Cconnector* search)
 {
-	
+    addlinkMutex.lock();
+
 	// Search the connector in List A
 	int found = AConnList.indexOf(search);
     Cconnector *foundConnector;
@@ -164,9 +173,10 @@ void CDirectLink::outConnector(Cconnector* search)
             foundConnector = AConnList.at(found);
         }
     }
+addlinkMutex.unlock();
     if ( found >= 0 ) {
-        foundConnector->ConnectTo(search);
 
+        foundConnector->ConnectTo(search);
         // start the corresponding pPC
         // if no frequency link to the parent timer
         if (
@@ -181,6 +191,8 @@ void CDirectLink::outConnector(Cconnector* search)
             Output( foundConnector->Parent );
         }
     }
+
+
 }
 
 

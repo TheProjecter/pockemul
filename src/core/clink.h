@@ -1,6 +1,8 @@
 #ifndef _CLINK_H_
 #define _CLINK_H_
 
+#include <QMutex>
+
 #include "pobject.h"
 class Cconnector;
 
@@ -39,6 +41,8 @@ public:
     bool inlogrun(CPObject * pPC){
         return log_run.contains(pPC);
     }
+
+    QMutex addlinkMutex;
 
 };
 
