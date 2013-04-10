@@ -65,6 +65,10 @@ public:
 
     int		posX;
     int paperWidth;
+    int charsize;
+
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
 
 private:
 

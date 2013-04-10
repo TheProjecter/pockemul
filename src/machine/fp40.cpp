@@ -41,8 +41,8 @@ Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
 
 
     margin = 40;
-    paperWidth = 500;
-    setPaperPos(QRect(54,26,500,300));
+    paperWidth = 1200;
+    setPaperPos(QRect(100,26,400,300));
 }
 
 Cfp40::~Cfp40() {
@@ -51,6 +51,7 @@ Cfp40::~Cfp40() {
 bool Cfp40::init(void) {
 
     charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+    charsize = 2;
 
     CprinterCtronics::init();
 
@@ -100,7 +101,7 @@ void Cfp40::Printer(quint8 data) {
         painter.begin(printerbuf);
         int x = ((data>>4) & 0x0F)*6;
         int y = (data & 0x0F) * 8;
-        painter.drawImage(	QPointF( margin + (7 * posX),top),
+        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top*charsize,5*charsize,7*charsize),
                             *charTable,
                             QRectF( x , y , 5,7));
         posX++;
@@ -110,7 +111,7 @@ void Cfp40::Printer(quint8 data) {
 
     painter.begin(printerdisplay);
 
-    painter.drawImage(QRectF(0,MAX(149-top,0),paperWidth,MIN(top,149)),*printerbuf,QRectF(0,MAX(0,top-149),paperWidth,MIN(top,149)));
+    painter.drawImage(QRectF(0,MAX(149-top,0),paperWidth/charsize,MIN(top,149)),*printerbuf,QRectF(0,MAX(0,top-149),paperWidth/charsize,MIN(top,149)));
 
 // Draw printer head
 //    painter.fillRect(QRect(0 , 147,207,2),QBrush(QColor(0,0,0)));

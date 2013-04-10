@@ -120,7 +120,7 @@ bool CprinterCtronics::init(void)
     printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
 
     paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
-//    paperWidget->show();
+    paperWidget->hide();
 //	bells	 = new QSound("ce.wav");
 
 // Create a paper widget
@@ -216,6 +216,22 @@ void CprinterCtronics::Printer(quint8 d)
     qWarning()<<"ERROR OLD";
 }
 
+void CprinterCtronics::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
+
+    BuildContextMenu(&menu);
+
+    QMenu * menuPaper = menu.addMenu(tr("Paper"));
+    menuPaper->addAction(tr("Copy Image"),paperWidget,SLOT(paperCopy()));
+    menuPaper->addAction(tr("Copy Text"),paperWidget,SLOT(paperCopyText()));
+    menuPaper->addAction(tr("Cut"),paperWidget,SLOT(paperCut()));
+    menuPaper->addAction(tr("Save Image ..."),paperWidget,SLOT(paperSaveImage()));
+    menuPaper->addAction(tr("Save Text ..."),paperWidget,SLOT(paperSaveText()));
+
+    menu.exec(event->globalPos () );
+}
+
 bool CprinterCtronics::UpdateFinalImage(void) {
 
     Cprinter::UpdateFinalImage();
@@ -225,6 +241,7 @@ bool CprinterCtronics::UpdateFinalImage(void) {
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
 
+    ratio *= charsize;
     QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
                                  paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
                           QPoint(paperWidget->bufferImage->width(),
