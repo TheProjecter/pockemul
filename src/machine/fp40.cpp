@@ -97,7 +97,7 @@ void Cfp40::Printer(quint8 data) {
 
 
     if (data == 0x0d){
-        top+=10*charsize;
+        top+=10*2;//charsize;
         setposX(0);
         TextBuffer += data;
 //        qWarning()<<"CR PRINTED";
@@ -105,7 +105,7 @@ void Cfp40::Printer(quint8 data) {
     else
     {
         if (posX>=(80/charsize)) {
-            top+=10*charsize;
+            top+=10*2;//charsize;
             setposX(0);
             TextBuffer += 0x0d;
         }
@@ -114,7 +114,7 @@ void Cfp40::Printer(quint8 data) {
         painter.begin(printerbuf);
         int x = ((data>>4) & 0x0F)*6;
         int y = (data & 0x0F) * 8;
-        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top,5*charsize,7*charsize),
+        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top,5*charsize,7*2/*charsize*/),
                             *charTable,
                             QRectF( x , y , 5,7));
         posX++;

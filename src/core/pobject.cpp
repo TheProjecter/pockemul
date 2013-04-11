@@ -168,7 +168,11 @@ void CPObject::MoveWithLinked(QPoint p) {
     // Search all conected objects then move them
     QList<CPObject *> ConList;
     ConList.append(this);
+#ifdef AVOID
     mainwindow->pdirectLink->findAllObj(this,&ConList);
+#else
+    mainwindow->pdirectLink->findAllObj(this,&ConList,false);
+#endif
     for (int i=0;i<ConList.size();i++)
     {
         ConList.at(i)->Move(p);
