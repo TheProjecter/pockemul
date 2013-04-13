@@ -77,5 +77,32 @@
     <KEY description="IN" height="20" left="121" masterscancode="0x00" modifier="" scancode="0x205" top="257" width="31"/>
     <KEY description="RESET" height="20" left="29" masterscancode="0x00" modifier="" scancode="0x20d" top="188" width="20"/>
     <KEY description="SEARCH" height="18" left="82" masterscancode="0x00" modifier="" scancode="0x20f" top="257" width="29"/>
+    <KEY description="!" masterscancode="0x71" modifier="2nd"/>
+    <KEY description="&quot;" masterscancode="0x77" modifier="2nd"/>
+    <KEY description="#" masterscancode="0x65" modifier="2nd"/>
+    <KEY description="$" masterscancode="0x72" modifier="2nd"/>
+    <KEY description="&amp;" masterscancode="0x79" modifier="2nd"/>
+    <KEY description="'" masterscancode="0x75" modifier="2nd"/>
+    <KEY description="&lt;" masterscancode="0x6b" modifier="2nd"/>
+    <KEY description="&gt;" masterscancode="0x6c" modifier="2nd"/>
+    <KEY description="%" masterscancode="0x74" modifier="2nd"/>
+    <KEY description="@" masterscancode="0x61" modifier="2nd"/>
+    <KEY description="_" masterscancode="0x3b" modifier="2nd"/>
+    <KEY description="[" masterscancode="0x68" modifier="2nd"/>
+    <KEY description="]" masterscancode="0x6a" modifier="2nd"/>
+    <KEY description="{" masterscancode="0x66" modifier="2nd"/>
+    <KEY description="}" masterscancode="0x67" modifier="2nd"/>
+    <KEY description="?" masterscancode="0x64" modifier="2nd"/>
+    <KEY description="|" masterscancode="0x6f" modifier="2nd"/>
+    <KEY description="P0" masterscancode="0x30" modifier="2nd"/>
+    <KEY description="P1" masterscancode="0x31" modifier="2nd"/>
+    <KEY description="P2" masterscancode="0x32" modifier="2nd"/>
+    <KEY description="P3" masterscancode="0x33" modifier="2nd"/>
+    <KEY description="P4" masterscancode="0x34" modifier="2nd"/>
+    <KEY description="P5" masterscancode="0x35" modifier="2nd"/>
+    <KEY description="P6" masterscancode="0x36" modifier="2nd"/>
+    <KEY description="P7" masterscancode="0x37" modifier="2nd"/>
+    <KEY description="P8" masterscancode="0x38" modifier="2nd"/>
+    <KEY description="P9" masterscancode="0x39" modifier="2nd"/>
 </Keyboard>
 </KEYBMAP>

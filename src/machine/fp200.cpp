@@ -266,9 +266,10 @@ bool Cfp200::init()
 
 //    pUART->init();
 //    pUART->pTIMER = pTIMER;
+    pCENT->pTIMER = pTIMER;
     pCENT->init();
     pCENT->setBufferSize(10);
-    pCENT->pTIMER = pTIMER;
+
 
     pRP5C01->init();
 

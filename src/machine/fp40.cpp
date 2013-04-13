@@ -26,7 +26,7 @@ TransMap KeyMapce140p[]={
 */
 
 Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
-    setfrequency( 0);
+
     setcfgfname(QString("fp40"));
     BackGroundFname	= ":/EXT/ext/fp40.png";
 

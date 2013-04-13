@@ -21,7 +21,7 @@
 
 #include "pc1211.h"
 #include "pc1245.h"
-#include "pc1250.h"
+#include  "pc1250.h"
 #include "pc1251.h"
 #include "pc1255.h"
 #include "pc1260.h"

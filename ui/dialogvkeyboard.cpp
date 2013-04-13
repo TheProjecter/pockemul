@@ -85,7 +85,7 @@ void DialogVKeyboard::PopulateKeyList()
 
 void DialogVKeyboard::InsertKeySlot(QListWidgetItem *item)
 {
-    ui->textEdit->textCursor().insertText("["+item->text()+"]");
+    ui->textEdit->textCursor().insertText("²"+item->text()+"²");
 }
 
 void DialogVKeyboard::processEscKey(QString word) {
@@ -128,7 +128,7 @@ void DialogVKeyboard::senData()
     // replace 0x0D,0x0A en 0x0D
     finalString.replace(QChar('\n'),QChar('\r'));
 
-    QStringList list = finalString.split(QRegExp("[\\[\\]]"));
+    QStringList list = finalString.split(QRegExp("[\\²]"));
 
     final.clear();
     for (int i=0; i < list.size(); ++i)

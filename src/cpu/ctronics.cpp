@@ -1,13 +1,14 @@
 #include <QDebug>
 
 #include "ctronics.h"
+#include "pcxxxx.h"
 #include "Inter.h"
 
 
 #define STROBE_DELAY 5
 #define DEFAULT_BUFFERSIZE 100
 
-Cctronics::Cctronics(CPObject *parent)
+Cctronics::Cctronics(CPObject *parent):CPObject(parent)
 {
 
 }
@@ -20,6 +21,7 @@ bool Cctronics::init()
     DATA=0;
     mode = READY_TO_SEND;
     bufferSize = DEFAULT_BUFFERSIZE;
+    pTIMER = pPC->pTIMER;
     stateStrobeDelay = pTIMER->state;
     return true;
 }

@@ -84,6 +84,8 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     newKey = false;
 
     i86cpu = (Ci80x86*)pCPU;
+
+    ioFreq = 0;
 }
 
 Cz1::~Cz1() {
@@ -519,6 +521,8 @@ UINT16 Cz1::getKey()
         if (ks&0x40) {
             if (KEY('P'))			data|=0x02;
             if (KEY(K_SHT))         data|=0x04;
+
+            if (pKEYB->isShift)     data|=0x04;
             if (KEY(';'))			data|=0x08;
             if (KEY(':'))			data|=0x10;
             if (KEY(K_UA))			data|=0x20;

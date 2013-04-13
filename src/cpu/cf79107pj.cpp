@@ -19,10 +19,12 @@ CCF79107PJ::~CCF79107PJ()
 
 bool CCF79107PJ::init()
 {
+    return true;
 }
 
 bool CCF79107PJ::exit()
 {
+    return true;
 }
 
 void CCF79107PJ::Reset()
@@ -31,20 +33,21 @@ void CCF79107PJ::Reset()
 
 bool CCF79107PJ::step()
 {
+    return true;
 }
 UINT8 CCF79107PJ::get_status()
 {
-    return BCDret;
+    return (BCDz?0x40:0x00) | (BCDc?0x01:0x00);
 }
 bool CCF79107PJ::instruction1(UINT8 cmd)
 {
+    regSelected = VAR_X;
     switch(cmd) {
     case 0x04: regSelected = VAR_X; masterCMD = cmd;
 //        for (int i=VAR_X;i<VAR_X+8;i++) pPC->mem[i] = 0;
         break;
-    case 0x05: regSelected = VAR_Y; masterCMD = cmd;
-//        for (int i=VAR_Y;i<VAR_Y+8;i++) pPC->mem[i] = 0;
-        break;
+    case 0x05: regSelected = VAR_Y; masterCMD = cmd; break;
+    case 0x08: regSelected = VAR_X; masterCMD = cmd; break;
     case 0x0e:
         if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
         dumpXYW();
@@ -96,43 +99,30 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
     last_cmd = cmd;
 
     switch (cmd) {
-    case 0x00: cmd_add_exp(VAR_X); break;
-    case 0x01: cmd_sub_exp(VAR_X); break;
-    case 0x41: cmd_41(); break;
-    case 0x43: cmd_43(); break;
-    case 0x48: cmd_shiftR_mantisse(VAR_X,regSelected); break;
+    case 0x00: push(VAR_X);cmd_add_exp(VAR_X);         break;
+    case 0x01: push(VAR_X);cmd_sub_exp(VAR_X);         break;
+    case 0x41: cmd_41();                               break;
+    case 0x43: cmd_43();                               break;
+    case 0x48: cmd_shiftR_mantisse(VAR_X,regSelected);
+        break;
     case 0x4a: cmd_shiftR_mantisse(VAR_Y,regSelected); break;
     case 0x4c: cmd_shiftL_mantisse(VAR_X,regSelected); break;
-    case 0x4e: cmd_shiftL_mantisse(VAR_Y,regSelected);
-//               cmd_inc_exp(regSelected);
-        break;
-    case 0x90: cmd_inc_exp(regSelected);
-//                pPC->mem[0x407]=make_bcd_sub(pPC->mem[0x407],1);
-        break;
-    case 0x91: cmd_dec_exp(regSelected); break;
-    case 0x99:
-        cmd_shiftR_mantisse(VAR_X,regSelected);
-        cmd_dec_exp(regSelected);
-        break;
-    case 0x9c: // exchange H06 with L07
-        cmd_shiftL_mantisse(VAR_X,regSelected);
-        cmd_inc_exp(regSelected);
-        break;
-    case 0xc0:
-        cmd_add_mantisse(regSelected);
-        break;
-    case 0xc1:
-        cmd_sub_mantisseXY(regSelected);
-        break;
-    case 0xc2:
-        cmd_add_mantisse(regSelected);
-        pPC->mem[regSelected+7] |= pPC->mem[regSelected+7+(regSelected==VAR_X?0x10:0)];
-        break;
-    case 0xc3:
-        cmd_sub_mantisseYX(regSelected);
-        break;
+    case 0x4e: cmd_shiftL_mantisse(VAR_Y,regSelected); break;
+    case 0x90: cmd_inc_exp(VAR_X,regSelected);               break;
+    case 0x91: cmd_dec_exp(VAR_X,regSelected);               break;
+    case 0x99: cmd_shiftR_mantisse(VAR_X,regSelected);
+
+               cmd_dec_exp(VAR_X,regSelected);
+               break;
+    case 0x9c: cmd_shiftL_mantisse(VAR_X,regSelected);
+               cmd_inc_exp(VAR_X,regSelected);
+               break;
+    case 0xc0: cmd_add_mantisse(VAR_X,regSelected);    break;
+    case 0xc1: cmd_sub_mantisseXY(regSelected);        break;
+    case 0xc2: cmd_add_mantisse(VAR_Y,regSelected);    break;
+    case 0xc3: cmd_sub_mantisseYX(regSelected);        break;
     case 0xd0: // X -> Y
-        for(int i = 0; i < 8; i++)
+        for(int i = 0; i <= 8; i++)
             pPC->mem[i+regSelected] = pPC->mem[i+VAR_X];
         break;
     default:
@@ -151,7 +141,6 @@ void CCF79107PJ::cmd_shiftL_mantisse(UINT16 src,UINT16 adr) {
         quint8 _tmp = TMP[i]&0xf0;
         TMP[i] = (TMP[i+1]&0x0f)<<4;
         TMP[i] |= _tmp>>4;
-        //pPC->mem[i] = ((pPC->mem[i]&0x0f)<<4) | ((pPC->mem[i+1] & 0xf0 ) >> 4);
     }
     TMP[6] = (TMP[6]&0xf0)>>4;
 
@@ -167,7 +156,6 @@ void CCF79107PJ::cmd_shiftR_mantisse(UINT16 src,UINT16 adr) {
         TMP[i] |= _tmp<<4;
     }
     TMP[0]=(TMP[0]&0x0f)<<4;
-
     Write_TMP(adr);
 }
 
@@ -179,12 +167,19 @@ void CCF79107PJ::Write_TMP(UINT16 adr) {
     memcpy((char*)&(pPC->mem[adr]),(char*)&TMP,0x10);
 }
 
-void CCF79107PJ::cmd_inc_exp(UINT16 adr) //sbbw
+void CCF79107PJ::pop(UINT16 adr) {
+    memcpy((char*)&(pPC->mem[adr]),(char*)&STACK,0x10);
+}
+void CCF79107PJ::push(UINT16 adr) {
+    memcpy((char*)&STACK,(char*)&(pPC->mem[adr]),0x10);
+}
+
+void CCF79107PJ::cmd_inc_exp(UINT16 source,UINT16 adr) //sbbw
 {
     UINT16 arg = 7;
     UINT16 res0, res1;
 
-    Read_TMP(VAR_X);
+    Read_TMP(source);
 
     res0 = make_bcd_add(TMP[7], 1);
     TMP[7] = res0 & 0xff;
@@ -192,19 +187,19 @@ void CCF79107PJ::cmd_inc_exp(UINT16 adr) //sbbw
     res1 = make_bcd_add(TMP[8],  res1);
     TMP[8] = res1 & 0xff;
 
-    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
-    BCDc = (res1 > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = ((res0 || res1)==0 );
+    BCDc = (res1 > 0xff);
+
 
     Write_TMP(adr);
 }
 
-void CCF79107PJ::cmd_dec_exp(UINT16 adr) //sbbw
+void CCF79107PJ::cmd_dec_exp(UINT16 source,UINT16 adr) //sbbw
 {
     UINT16 arg = 7;
     UINT16 res0, res1;
 
-    Read_TMP(VAR_X);
+    Read_TMP(source);
 
     res0 = make_bcd_sub(TMP[7], 1);
     TMP[7] = res0 & 0xff;
@@ -212,9 +207,8 @@ void CCF79107PJ::cmd_dec_exp(UINT16 adr) //sbbw
     res1 = make_bcd_sub(TMP[8],  res1);
     TMP[8] = res1 & 0xff;
 
-    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
-    BCDc = (res1 > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = ((res0 || res1)==0);
+    BCDc = (res1 > 0xff);
 
     Write_TMP(adr);
 }
@@ -231,9 +225,8 @@ void CCF79107PJ::cmd_add_exp(UINT16 target) //adbw
     res1 = make_bcd_add(pPC->mem[VAR_X+8], pPC->mem[VAR_Y+8] + res1);
     TMP[8] = res1 & 0xff;
 
-    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
-    BCDc = (res1 > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = ((res0 || res1)==0);
+    BCDc = (res1 > 0xff);
 
     Write_TMP(target);
 }
@@ -250,55 +243,38 @@ void CCF79107PJ::cmd_sub_exp(UINT16 target) //sbbw
     res1 = make_bcd_sub(pPC->mem[VAR_X+8], pPC->mem[VAR_Y+8] + res1);
     TMP[8] = res1 & 0xff;
 
-    BCDz = ((res0 || res1)==0 ? 0x40 : 0x00);
-    BCDc = (res1 > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = ((res0 || res1)==0);
+    BCDc = (res1 > 0xff);
 
+//    pPC->mem[VAR_X+7] = TMP[7];
+//    pPC->mem[VAR_X+8] &= 0x0F;
+//    pPC->mem[VAR_X+8] |= (TMP[8] & 0x0f)<<4;
     Write_TMP(target);
 }
 
 // Not satisfied by this function. It seems to be called at init. I think it is a BCDret clear function.
 void CCF79107PJ::cmd_0e(void) //adbw
 {
-#if 0
-    UINT16 arg = 0x407;
-    UINT16 src = 0x417;
-    UINT16 res0, res1;
-    res0 = make_bcd_add(pPC->mem[arg], pPC->mem[src]);
-    pPC->mem[arg] = res0 & 0xff;
-    res1 = (res0>0xff) ? 1 : 0 ;
-    res1 = make_bcd_add(pPC->mem[arg+1], pPC->mem[src+1] + res1);
-    pPC->mem[arg+1] = res1 & 0xff;
-    BCDret = 0;
-#else
-    switch (last_cmd) {
-    case 0x00 :     instruction2(0x01);
-    case 0x01 :     instruction2(0x00);
 
-    }
+    pop(VAR_X);
 
-//    if (pPC->mem[0x408]<=6) pPC->mem[0x408] += 0x06;
-    //pPC->mem[0x408] &= 0x0F;
-//    if (pPC->mem[0x418]<=6) pPC->mem[0x418] += 0x06;
-    //pPC->mem[0x418] &= 0x0F;
     BCDret = 0;
-    BCDz = BCDc = 0;
-#endif
-//    BCDret = ((res0 || res1)==0 ? 0x40 : 0x00) | (res1 > 0xff ? 0x01 : 0x00);
+    BCDz = 0;
+    BCDc = 0;
 }
 
 // adbm	$10,$sz,7
 // X = X + Y    return 40h if ok
-void CCF79107PJ::cmd_add_mantisse(UINT16 target) {
+void CCF79107PJ::cmd_add_mantisse(UINT16 source,UINT16 target) {
     UINT16 dst = 0;
     UINT8 c, f;
     UINT16 res = 0;
 
-    Read_TMP(VAR_X);
+    Read_TMP(source);
 
     f = 0;
     c = 0;
-    for (int n=7; n>0; n--)
+    for (int n=6; n>=0; n--)
     {
         res = make_bcd_add(pPC->mem[VAR_X+dst], pPC->mem[VAR_Y+dst] + c);
         c = (res > 0xff) ? 1 : 0;
@@ -308,9 +284,8 @@ void CCF79107PJ::cmd_add_mantisse(UINT16 target) {
 
         dst++;
     }
-    BCDz = (f==0 ? 0x40 : 0x00);
-    BCDc = (res > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = (f==0);
+    BCDc = (res > 0xff);
 
     Write_TMP(target);
 }
@@ -324,7 +299,7 @@ void CCF79107PJ::cmd_sub_mantisseXY(UINT16 target) {
 
     c = 0;
     f = 0;
-    for (int n=7; n>0; n--)
+    for (int n=6; n>=0; n--)
     {
         res = make_bcd_sub(pPC->mem[VAR_X+dst], pPC->mem[VAR_Y+dst] + c);
         c = (res > 0xff) ? 1 : 0;
@@ -334,9 +309,9 @@ void CCF79107PJ::cmd_sub_mantisseXY(UINT16 target) {
 
         dst++;
     }
-    BCDz = (f==0 ? 0x40 : 0x00);
-    BCDc = (res > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = (f==0);
+    BCDc = (res > 0xff);
+//    BCDc = (f==0);
 
     Write_TMP(target);
 }
@@ -349,7 +324,7 @@ void CCF79107PJ::cmd_sub_mantisseYX(UINT16 target) {
 
     c = 0;
     f = 0;
-    for (int n=7; n>0; n--)
+    for (int n=6; n>=0; n--)
     {
         res = make_bcd_sub(pPC->mem[VAR_Y+dst], pPC->mem[VAR_X+dst] + c);
         c = (res > 0xff) ? 1 : 0;
@@ -359,45 +334,47 @@ void CCF79107PJ::cmd_sub_mantisseYX(UINT16 target) {
 
         dst++;
     }
-    BCDz = (f==0 ? 0x40 : 0x00);
-    BCDc = (res > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = (f==0);
+    BCDc = (res > 0xff);
+//    BCDc = (f==0);
 
     Write_TMP(target);
 }
 void CCF79107PJ::cmd_41(void) {
     // X - Y
+    UINT16 dst = 0;
     UINT8 c, f;
     UINT16 res = 0;
 
     c = f = 0;
-    for (int n=7; n>0; n--)
+    for (int n=6; n>=0; n--)
     {
-        res = make_bcd_sub(pPC->mem[VAR_X+n], pPC->mem[VAR_Y+n] + c);
+        res = make_bcd_sub(pPC->mem[VAR_X+dst], pPC->mem[VAR_Y+dst] + c);
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
-//        pPC->mem[400+n] = res&0xff;
+        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",VAR_X+dst,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+        dst++;
     }
-    BCDz = (f==0 ? 0x40 : 0x00);
-    BCDc = (res > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = (f==0);
+    BCDc = (res > 0xff);
 }
 void CCF79107PJ::cmd_43(void) {
     // X - Y
+    UINT16 dst = 0;
     UINT8 c, f;
     UINT16 res = 0;
 
     c = f = 0;
-    for (int n=7; n>0; n--)
+    for (int n=6; n>=0; n--)
     {
-        res = make_bcd_add(pPC->mem[0x410+n], pPC->mem[0x400+n] + c);
+        res = make_bcd_sub(pPC->mem[VAR_Y+dst], pPC->mem[VAR_X+dst] + c);
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
 //        pPC->mem[400+n] = res&0xff;
+        dst++;
     }
-    BCDz = (f==0 ? 0x40 : 0x00);
-    BCDc = (res > 0xff ? 0x01 : 0x00);
-    BCDret = BCDz | BCDc;
+    BCDz = (f==0);
+    BCDc = (res > 0xff);
 }
 
 void CCF79107PJ::Load_Internal(QXmlStreamReader *)
@@ -491,496 +468,7 @@ void CCF79107PJ::dumpXYW(void) {
     }
 #endif
 }
-#if 0
-/***************************************/
-/* ??:comet.c ???                */
-/* ??:comet?????               */
-/* ??:????                      */
-/* ??:1.0 ?                        */
-/* ??:???                        */
-/* ??:chai2010@2002.cug.edu.cn      */
-/* ??:2005-5-3                      */
-/***************************************/
 
-#include "comet.h"
-
-/* ??comet?? */
-
-void
-comet_load(void)
-{
-    off_t n, tmp[2];
-    fseek(source, 0, SEEK_SET);
-    n = fread(tmp, sizeof(off_t), 2, source);
-    if(n != 2) {
-        printf("?? %s ????\n", pgmName);
-        exit(1);
-    }
-    n = fread(&cmt.mem[tmp[0]], sizeof(off_t), tmp[1], source);
-    if(n != tmp[1]) {
-        printf("?? %s ????\n", pgmName);
-        exit(1);
-    }
-    cmt.gr[4] = (off_t)sp_start;
-    cmt.pc = tmp[0];
-}
-
-/* ??comet????IO?? */
-
-void
-comet_io(void)
-{
-    int i;
-    off_t addr;
-    short count, type, fio;
-    char *fmt;
-    count = cmt.mem[IO_FLAG] & IO_MAX;
-    if(count == 0) return;
-    fio = cmt.mem[IO_FLAG] & IO_FIO;
-    type = cmt.mem[IO_FLAG] & IO_TYPE;
-    addr = cmt.mem[IO_ADDR];
-    if(type == IO_CHR) fmt = "%c";
-    else if(type == IO_OCT) fmt = "%o";
-    else if(type == IO_DEC) fmt = "%d";
-    else if(type == IO_HEX) fmt = "%x";
-    else {
-        cmt.mem[IO_FLAG] &= (!IO_MAX);
-        cmt.mem[IO_FLAG] |= IO_ERROR;
-        return;
-    }
-    for(i = 0; i < count; ++i) {
-        if(fio == IO_IN)
-            scanf(fmt, &cmt.mem[addr++]);
-        else if(fio == IO_OUT)
-            printf(fmt, cmt.mem[addr++]);
-    }
-    cmt.mem[IO_FLAG] &= (!IO_MAX);
-}
-
-/* ????comet??? */
-
-int
-comet_step(void)
-{
-    off_t temp;
-    off_t adr, x1, x2;
-    short op, gr, xr;
-
-    op = (off_t)cmt.mem[cmt.pc] / 0x100;
-    gr = (off_t)cmt.mem[cmt.pc] % 0x100 / 0x10;
-    xr = (off_t)cmt.mem[cmt.pc] % 0x10;
-    adr = (off_t)cmt.mem[cmt.pc + 1];
-
-    if(gr < 0 || gr > 4) {
-        temp = cmt.mem[cmt.pc];
-        printf("????:mem[%x] = %x\n", cmt.pc, temp);
-        return 0;
-    }
-    if(xr < 0 || xr > 4) {
-        temp = cmt.mem[cmt.pc];
-        printf("????:mem[%x] = %x\n", cmt.pc, temp);
-        return 0;
-    }
-    if(xr != 0) adr += cmt.gr[xr];
-
-    comet_io();
-
-    switch(op) {
-        case HALT:
-            cmt.pc += 1;
-            return 0;
-        case LD:
-            cmt.pc += 2;
-            cmt.gr[gr] = cmt.mem[adr];
-            return 1;
-        case ST:
-            cmt.pc += 2;
-            cmt.mem[adr] = cmt.gr[gr];
-            return 1;
-
-        case LEA:
-            cmt.pc += 2;
-            cmt.gr[gr] = adr;
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case ADD:
-            cmt.pc += 2;
-            cmt.gr[gr] += cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case SUB:
-            cmt.pc += 2;
-            cmt.gr[gr] -= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case MUL:
-            cmt.pc += 2;
-            cmt.gr[gr] *= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case DIV:
-            cmt.pc += 2;
-            cmt.gr[gr] /= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case MOD:
-            cmt.pc += 2;
-            cmt.gr[gr] %= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case AND:
-            cmt.pc += 2;
-            cmt.gr[gr] &= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case OR :
-            cmt.pc += 2;
-            cmt.gr[gr] |= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case EOR:
-            cmt.pc += 2;
-            cmt.gr[gr] ^= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-
-        case SLA:
-            cmt.pc += 2;
-            cmt.gr[gr] <<= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-        case SRA:
-            cmt.pc += 2;
-            cmt.gr[gr] >>= cmt.mem[adr];
-            cmt.fr = cmt.gr[gr];
-            return 1;
-
-        case SLL:
-            cmt.pc += 2;
-            x1 = cmt.mem[gr];
-            x1 <<= cmt.mem[adr];
-            cmt.mem[gr] = cmt.fr = x1;
-            return 1;
-        case SRL:
-            cmt.pc += 2;
-            x1 = cmt.mem[gr];
-            x1 >>= cmt.mem[adr];
-            cmt.mem[gr] = cmt.fr = x1;
-            return 1;
-
-        case CPA:
-            cmt.pc += 2;
-            cmt.fr = cmt.gr[gr] - cmt.mem[adr];
-            return 1;
-        case CPL:
-            cmt.pc += 2;
-            x1 = cmt.gr[gr];
-            x2 = cmt.mem[adr];
-            cmt.fr = x1 - x2;
-            return 1;
-
-        case JMP:
-            cmt.pc += 2;
-            cmt.pc = adr;
-            return 1;
-        case JPZ:
-            cmt.pc += 2;
-            if(cmt.fr >= 0) cmt.pc = adr;
-            return 1;
-        case JMI:
-            cmt.pc += 2;
-            if(cmt.fr < 0) cmt.pc = adr;
-            return 1;
-        case JNZ:
-            cmt.pc += 2;
-            if(cmt.fr != 0) cmt.pc = adr;
-            return 1;
-        case JZE:
-            cmt.pc += 2;
-            if(cmt.fr == 0) cmt.pc = adr;
-            return 1;
-
-        case PUSH:
-            cmt.pc += 2;
-            x1 = --cmt.gr[4];
-            cmt.mem[x1] = cmt.mem[adr];
-            return 1;
-        case POP:
-            cmt.pc += 1;
-            x1 = cmt.gr[4]++;
-            cmt.gr[gr] = cmt.mem[x1];
-            return 1;
-
-        case CALL:
-            cmt.pc += 2;
-            x1 = --cmt.gr[4];
-            cmt.mem[x1] = cmt.pc;
-            cmt.pc = cmt.mem[adr];
-            return 1;
-        case RET:
-            cmt.pc += 1;
-            x1 = cmt.gr[4]++;
-            cmt.pc = cmt.mem[x1];
-            return 1;
-
-        default :
-            temp = cmt.mem[cmt.pc];
-            printf("????:mem[%x] = %x\n", cmt.pc, temp);
-            return 0;
-    }
-}
-
-/* ????,???? */
-
-void
-writeIns(off_t pc, off_t n)
-{
-    off_t op, gr, adr, xr;
-    off_t i;
-
-    for(i = 0; i < n; ++i) {
-        op = cmt.mem[pc] / 0x100;
-        gr = cmt.mem[pc] % 0x100 / 0x10;
-        xr = cmt.mem[pc] % 0x10;
-        adr = cmt.mem[pc + 1];
-        if(op > RET) {
-            printf("mem[%-4x]: ??\n", pc);
-            return;
-        }
-        if(gr < 0 || gr > 4) {
-            printf("mem[%-4x]: ??\n", pc);
-            return;
-        }
-        if(xr < 0 || xr > 4) {
-            printf("mem[%-4x]: ??\n", pc);
-            return;
-        }
-        printf("mem[%-4x]: %s\t", pc, opTab[op].str);
-        if(op == HALT || op == RET) {
-            printf("\n");
-            pc += 1;
-            continue;
-        }else if(op == POP) {
-            printf("GR%d\n", gr);
-            pc += 1;
-            continue;
-        }if(op < CPL) {
-            printf("GR%d, %x", gr, adr);
-            pc += 2;
-        }else {
-            printf("%x", adr);
-            pc += 2;
-        }
-        if(xr != 0) printf(", GR%d", xr);
-        printf("\n");
-    }
-}
-
-/* ??comet????? */
-
-void
-comet_debug(void)
-{
-    off_t stepcnt = 0;
-    off_t pntflag = 0;
-    off_t traflag = 0;
-
-    char buf[32], s[32];
-    off_t x1, x2;
-    int i, n, cmd;
-
-    printf("?? (???? help)...\n\n");
-
-LOOP:
-
-    do {
-        fflush(stdin);
-        printf ("????: ");
-        fgets(buf, NELEMS(buf), stdin);
-        n = sscanf(buf, "%s %x %x", s, &x1, &x2);
-        for(i = 0, cmd = -1; i < NELEMS(dbTab); ++i) {
-            if(!strcmp(dbTab[i].s1, s) ||
-                !strcmp(dbTab[i].s2, s)) {
-                cmd = dbTab[i].db;
-                break;
-            }
-        }
-    }while(n <= 0);
-
-    switch(cmd) {
-        case HELP:
-            printf("????:\n");
-            printf("  h)elp           ???????\n");
-            printf("  g)o             ????????\n");
-            printf("  s)tep  <n>      ?? n ??? (??? 1 )\n");
-            printf("  j)ump  <b>      ??? b ?? (???????)\n");
-            printf("  r)egs           ???????\n");
-            printf("  i)Mem  <b <n>>  ??? b ?? n ?????\n");
-            printf("  d)Mem  <b <n>>  ??? b ?? n ?????\n");
-            printf("  a(lter <b <v>>  ?? b ???????? v ?\n");
-            printf("  t)race          ????????\n");
-            printf("  p)rint          ????????\n");
-            printf("  c)lear          ???????\n");
-            printf("  q)uit           ?????\n");
-            break;
-
-        case GO:
-            stepcnt = 0;
-            do { stepcnt++;
-                if(traflag) writeIns(cmt.pc, 1);
-            }while(comet_step());
-            if(pntflag)
-                printf("?????? = %d\n", stepcnt);
-            break;
-
-        case STEP:
-            if(n >= 2) stepcnt = x1;
-            else stepcnt = 1;
-            for(i = 0; i < stepcnt; ++i) {
-                if(traflag) writeIns(cmt.pc, 1);
-                if(!comet_step()) break;
-            }
-            if(pntflag)
-                printf("?????? = %d\n", i);
-            break;
-
-        case JUMP:
-            if(n < 2) x1 = cmt.pc;
-            cmt.pc = x1;
-            printf("????? %x\n", x1);
-            break;
-
-        case REGS:
-            printf("???????\n");
-            printf("GR[0] = %4x\tPC = %4x\n",
-                (off_t)cmt.gr[0], cmt.pc);
-            printf("GR[1] = %4x\tSP = %4x\n",
-                (off_t)cmt.gr[1], (off_t)cmt.gr[4]);
-            printf("GR[2] = %4x\t", (off_t)cmt.gr[2]);
-            if(cmt.fr > 0) printf("FR =   00\n");
-            else if(cmt.fr < 0) printf("FR =   10\n");
-            else printf("FR =   01\n");
-            printf("GR[3] = %4x\n", (off_t)cmt.gr[3]);
-            break;
-
-        case IMEM:
-            printf("??????\n");
-            if(n < 2) x1 = cmt.pc;
-            if(n < 3) x2 = 1;
-            writeIns(x1, x2);
-            break;
-
-
-        case DMEM:
-            printf("??????\n");
-            if(n < 2) x1 = cmt.pc;
-            if(n < 3) x2 = 1;
-            if(x2 < 0) printf("????\n");
-            for(i = 0; i < x2; ++i) {
-                off_t temp;
-                temp = cmt.mem[x1];
-                printf("mem[%-4x] = %x\n", x1, temp);
-                x1++;
-            }
-            break;
-
-        case ALTER:
-            printf("?????? ");
-            if(n == 3) {
-                printf(" mem[%x] = %x\n", x1, x2);
-                cmt.mem[x1] = x2;
-            }else printf("??!\n");
-            break;
-
-        case TRACE:
-            traflag = !traflag;
-            printf("??????");
-            if(traflag) printf("??\n");
-            else printf("??\n");
-            break;
-
-        case PRINT:
-            pntflag = !pntflag;
-            printf("??????");
-            if(pntflag) printf("??\n");
-            else printf("??\n");
-            break;
-
-        case CLEAR:
-            printf("????????\n");
-            comet_load();
-            break;
-
-        case QUIT:
-            printf("????...\n");
-            return;
-
-        default :
-            printf("???? %s\n", s);
-            break;
-    }
-    goto LOOP;
-}
-
-/* ??????? */
-
-void
-init(int n, char*v[])
-{
-    int len;
-    char *s;
-    if(system("cls")) system("clear");
-    printf("===============\n");
-    printf("COMET?????\n");
-    printf("===============\n\n");
-    if(n != 2 && n != 3) {
-        printf("??: %s [-d(ebug] <???>\n", v[0]);
-        exit(1);
-    }
-    len = strlen(v[n-1]);
-    if(len > 16) {
-        printf("?????");
-        exit(1);
-    }
-    strcpy(pgmName, v[n-1]);
-    s = strchr(pgmName, '.');
-    if(s != NULL) {
-        if(strcmp(s, ".comet")) {
-            printf("%s ??comet??\n", pgmName);
-            exit(1);
-        }
-        s = '\0';
-    }
-    strcat(pgmName, ".comet");
-    if(n == 3) {
-        if(strcmp(v[n-2], "-d") &&
-            strcmp(v[n-2], "-debug")) {
-            printf("??: %s [-d(ebug] <???>\n", v[0]);
-            exit(1);
-        }
-        debug = 1;
-    }
-    source = fopen(pgmName, "rb");
-    if(source == NULL) {
-        printf("%s ??????\n", pgmName);
-        exit(1);
-    }
-    comet_load();
-}
-
-/* ??? */
-
-int
-main(int argc, char *argv[])
-{
-    init(argc, argv);
-    if(debug) comet_debug();
-    else while(comet_step());
-    fclose(source);
-    return 0;
-}
-
-#endif
 
 /*
       0  /  1

@@ -24,12 +24,15 @@
 
 CprinterCtronics::CprinterCtronics(CPObject *parent):Cprinter(parent)
 {
+    pTIMER = new Ctimer(this);
+    setfrequency( 4000);
     printerACK = false;
     printerBUSY = false;
     printerbuf	= 0;//new QImage(QSize(0, 0),QImage::Format_ARGB32);
     printerdisplay= 0;//new QImage(QSize(0, 0),QImage::Format_ARGB32);
     //[constructor]
     paperWidth = 170;
+    ioFreq = 0;
 
 }
 
@@ -88,7 +91,7 @@ bool CprinterCtronics::init(void)
 {
     CPObject::init();
 
-    setfrequency( 0);
+
 
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
 
@@ -167,6 +170,8 @@ bool CprinterCtronics::Set_Connector(void) {
 
 bool CprinterCtronics::run(void)
 {
+    pTIMER->state++;
+
 //    if (pKEYB->LastKey == K_PFEED) { PaperFeed();}
 
     // Si strobe change de status et passe bas vers haut, alors prelever les data

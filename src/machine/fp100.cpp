@@ -24,7 +24,8 @@ TransMap KeyMapce140p[]={
 */
 
 Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
-    //setfrequency( 0);
+    setfrequency( 4000);
+    ioFreq = 0;
     setcfgfname(QString("fp100"));
     BackGroundFname	= ":/EXT/ext/fp100.png";
 

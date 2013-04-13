@@ -4,6 +4,8 @@
  *
  */
 
+// BUG: Centronics seems not working
+
 #include <QPainter>
 #include <QTime>
 #include <QSound>
