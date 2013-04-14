@@ -33,19 +33,19 @@ public:
 
     UINT16 make_bcd_sub(UINT8 arg1, UINT8 arg2);
     UINT16 make_bcd_add(UINT8 arg1, UINT8 arg2);
-    void cmd_add_mantisse(UINT16 source, UINT16 target);
+    void cmd_add_mantisse(void);
     void dumpXYW();
-    void cmd_add_exp(UINT16 target);
-    void cmd_inc_exp(UINT16 source, UINT16 adr);
-    void cmd_sub_exp(UINT16 target);
-    void cmd_dec_exp(UINT16 source, UINT16 adr);
+    void cmd_add_exp(void);
+    void cmd_inc_exp(void);
+    void cmd_sub_exp(void);
+    void cmd_dec_exp(void);
     void cmd_0e();
-    void cmd_sub_mantisseXY(UINT16 target);
-    void cmd_shiftL_mantisse(UINT16 src, UINT16 adr);
-    void cmd_shiftR_mantisse(UINT16 src, UINT16 adr);
+    void cmd_sub_mantisseXY(void);
+    void cmd_shiftL_mantisse(void);
+    void cmd_shiftR_mantisse(void);
     void Read_TMP(UINT16 adr);
     void Write_TMP(UINT16 adr);
-    void cmd_sub_mantisseYX(UINT16 target);
+    void cmd_sub_mantisseYX(void);
     void push(UINT16 adr);
     void pop(UINT16 adr);
 private:

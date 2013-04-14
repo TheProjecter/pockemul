@@ -399,13 +399,13 @@ UINT16 Cz1::in16(UINT16 address)
 UINT16 Cz1::out16(UINT16 Port, UINT16 x)
 {
     switch (Port) {
-    case 0x220:
-        if (fp_log) fprintf(fp_log,"OUT[%04x]=%04x\tpc=%08x\n",Port,x,pCPU->get_PC());
-        pFPU->instruction3(x);
-        break;
+//    case 0x220:
+//        if (fp_log) fprintf(fp_log,"OUT[%04x]=%04x\tpc=%08x\n",Port,x,pCPU->get_PC());
+//        pFPU->instruction3(x);
+//        break;
     default:
-        out8(Port + 1, x >> 8);
         out8(Port, x & 0xff);
+        out8(Port + 1, x >> 8);
         break;
     }
 

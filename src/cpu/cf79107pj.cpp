@@ -95,34 +95,39 @@ bool CCF79107PJ::instruction2(UINT8 cmd)
     if (pPC->fp_log) fprintf(pPC->fp_log,"\nbefore CCF79107[1]=%02x\tpc=%08x\n",cmd,pPC->pCPU->get_PC());
     dumpXYW();
     last_cmd = cmd;
-//    regSelected = 0;
+    regSelected = 0;
+
+
+    switch (cmd & 0x02) {
+    case 0x00: Read_TMP(VAR_X); break;
+    case 0x02: Read_TMP(VAR_Y); break;
+    }
 
     switch (cmd) {
-    case 0x00: push(regSelected);cmd_add_exp(regSelected);         break;
-    case 0x01: push(regSelected);cmd_sub_exp(regSelected);         break;
-    case 0x41: cmd_sub_mantisseXY(regSelected);              break;
-    case 0x43: cmd_sub_mantisseYX(regSelected);              break;
-    case 0x48: cmd_shiftR_mantisse(VAR_X,regSelected);
-        break;
-    case 0x4a: cmd_shiftR_mantisse(VAR_Y,regSelected); break;
-    case 0x4c: cmd_shiftL_mantisse(VAR_X,regSelected); break;
-    case 0x4e: cmd_shiftL_mantisse(VAR_Y,regSelected); break;
-    case 0x90: cmd_inc_exp(VAR_X,regSelected);               break;
-    case 0x91: cmd_dec_exp(VAR_X,regSelected);               break;
-    case 0x99: cmd_shiftR_mantisse(VAR_X,regSelected);
-
-               cmd_dec_exp(VAR_X,regSelected);
+    case 0x00: push(VAR_X);cmd_add_exp();         break;
+    case 0x01: push(VAR_X);cmd_sub_exp();         break;
+    case 0x41: cmd_sub_mantisseXY();              break;
+    case 0x43: cmd_sub_mantisseYX();              break;
+    case 0x48: cmd_shiftR_mantisse(); break;
+    case 0x4a: cmd_shiftR_mantisse(); break;
+    case 0x4c: cmd_shiftL_mantisse(); break;
+    case 0x4e: cmd_shiftL_mantisse(); break;
+    case 0x90: cmd_inc_exp();               break;
+    case 0x91: cmd_dec_exp();               break;
+    case 0x99: cmd_shiftR_mantisse();
+               cmd_dec_exp();
                break;
-    case 0x9c: cmd_shiftL_mantisse(VAR_X,regSelected);
-               cmd_inc_exp(VAR_X,regSelected);
+    case 0x9c: cmd_shiftL_mantisse();
+               cmd_inc_exp();
                break;
-    case 0xc0: cmd_add_mantisse(VAR_X,regSelected);    break;
-    case 0xc1: cmd_sub_mantisseXY(regSelected); /*BCDc |= BCDaf;*/       break;
-    case 0xc2: cmd_add_mantisse(VAR_Y,regSelected);    break;
-    case 0xc3: cmd_sub_mantisseYX(regSelected);        break;
+    case 0xc0: cmd_add_mantisse();    break;
+    case 0xc1: cmd_sub_mantisseXY(); /*BCDc |= BCDaf;*/       break;
+    case 0xc2: cmd_add_mantisse();    break;
+    case 0xc3: cmd_sub_mantisseYX();        break;
     case 0xd0: // X -> Y
         for(int i = 0; i <= 8; i++)
-            pPC->mem[i+regSelected] = pPC->mem[i+VAR_X];
+            TMP[i] = pPC->mem[i+VAR_X];
+//        Write_TMP(regSelected);
         break;
     default:
         if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN");
@@ -141,43 +146,55 @@ bool CCF79107PJ::instruction3(UINT16 cmd)
     dumpXYW();
 
     regSelected = 0;
-    switch(cmd>>8) {
-    case 0x04: regSelected = VAR_X; Read_TMP(VAR_X); break;
-    case 0x05: regSelected = VAR_Y; Read_TMP(VAR_Y); break;
-    case 0x08: regSelected = VAR_X; Read_TMP(VAR_X); break;
-    default:   if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN HB");
-        return true;
+//    switch(cmd>>8) {
+//    case 0x04: regSelected = VAR_X; Read_TMP(VAR_X); break;
+//    case 0x05: regSelected = VAR_Y; Read_TMP(VAR_Y); break;
+//    case 0x08: regSelected = VAR_X; Read_TMP(VAR_X); break;
+//    default:   if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN HB");
+//        return true;
+//    }
+
+    switch (cmd & 0x02) {
+    case 0x00: Read_TMP(VAR_X); break;
+    case 0x02: Read_TMP(VAR_Y); break;
     }
 
     switch (cmd&0xff) {
-    case 0x00: push(regSelected);cmd_add_exp(regSelected);         break;
-    case 0x01: push(regSelected);cmd_sub_exp(regSelected);         break;
-    case 0x41: cmd_sub_mantisseXY(regSelected);              break;
-    case 0x43: cmd_sub_mantisseYX(regSelected);              break;
-    case 0x48: cmd_shiftR_mantisse(VAR_X,regSelected);
-        break;
-    case 0x4a: cmd_shiftR_mantisse(VAR_Y,regSelected); break;
-    case 0x4c: cmd_shiftL_mantisse(VAR_X,regSelected); break;
-    case 0x4e: cmd_shiftL_mantisse(VAR_Y,regSelected); break;
-    case 0x90: cmd_inc_exp(VAR_X,regSelected);               break;
-    case 0x91: cmd_dec_exp(VAR_X,regSelected);               break;
-    case 0x99: cmd_shiftR_mantisse(VAR_X,regSelected);
-
-               cmd_dec_exp(VAR_X,regSelected);
+    case 0x00: push(VAR_X);cmd_add_exp(); break;
+    case 0x01: push(VAR_X);cmd_sub_exp(); break;
+    case 0x41: cmd_sub_mantisseXY();        break;
+    case 0x43: cmd_sub_mantisseYX();        break;
+    case 0x48: cmd_shiftR_mantisse(); break;
+    case 0x4a: cmd_shiftR_mantisse(); break;
+    case 0x4c: cmd_shiftL_mantisse(); break;
+    case 0x4e: cmd_shiftL_mantisse(); break;
+    case 0x90: cmd_inc_exp();         break;
+    case 0x91: cmd_dec_exp();         break;
+    case 0x99: cmd_shiftR_mantisse();
+               cmd_dec_exp();
                break;
-    case 0x9c: cmd_shiftL_mantisse(VAR_X,regSelected);
-               cmd_inc_exp(VAR_X,regSelected);
+    case 0x9c: cmd_shiftL_mantisse();
+               cmd_inc_exp();
                break;
-    case 0xc0: cmd_add_mantisse(VAR_X,regSelected);    break;
-    case 0xc1: cmd_sub_mantisseXY(regSelected); /*BCDc |= BCDaf;*/       break;
-    case 0xc2: cmd_add_mantisse(VAR_Y,regSelected);    break;
-    case 0xc3: cmd_sub_mantisseYX(regSelected);        break;
+    case 0xc0: cmd_add_mantisse();    break;
+    case 0xc1: cmd_sub_mantisseXY();        break;
+    case 0xc2: cmd_add_mantisse();    break;
+    case 0xc3: cmd_sub_mantisseYX();        break;
     case 0xd0: // X -> Y
         for(int i = 0; i <= 8; i++)
-            pPC->mem[i+regSelected] = pPC->mem[i+VAR_X];
+            TMP[i] = pPC->mem[i+VAR_X];
+//        Write_TMP(regSelected);
         break;
     default:
         if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN");
+    }
+
+    switch(cmd>>8) {
+    case 0x04: Write_TMP(VAR_X); /*regSelected = VAR_X*/;break;
+    case 0x05: Write_TMP(VAR_Y); /*regSelected = VAR_Y*/;break;
+    case 0x08: Write_TMP(VAR_X); /*regSelected = VAR_X*/;break;
+    default:   if (pPC->fp_log) fprintf(pPC->fp_log,"UNKNOWN HB");
+        return true;
     }
 
     regSelected = 0;
@@ -187,8 +204,8 @@ bool CCF79107PJ::instruction3(UINT16 cmd)
     return true;
 }
 
-void CCF79107PJ::cmd_shiftL_mantisse(UINT16 src,UINT16 adr) {
-    Read_TMP(src);
+void CCF79107PJ::cmd_shiftL_mantisse(void) {
+//    Read_TMP(src);
 
     for(int i = 0; i < 6; i++) {
         quint8 _tmp = TMP[i]&0xf0;
@@ -197,11 +214,11 @@ void CCF79107PJ::cmd_shiftL_mantisse(UINT16 src,UINT16 adr) {
     }
     TMP[6] = (TMP[6]&0xf0)>>4;
 
-    Write_TMP(adr);
+//    Write_TMP(adr);
 }
 
-void CCF79107PJ::cmd_shiftR_mantisse(UINT16 src,UINT16 adr) {
-    Read_TMP(src);
+void CCF79107PJ::cmd_shiftR_mantisse(void) {
+//    Read_TMP(src);
 
     for(int i = 6; i > 0; i--){
         quint8 _tmp = TMP[i]&0x0f;
@@ -209,7 +226,7 @@ void CCF79107PJ::cmd_shiftR_mantisse(UINT16 src,UINT16 adr) {
         TMP[i] |= _tmp<<4;
     }
     TMP[0]=(TMP[0]&0x0f)<<4;
-    Write_TMP(adr);
+//    Write_TMP(adr);
 }
 
 void CCF79107PJ::Read_TMP(UINT16 adr) {
@@ -229,7 +246,7 @@ void CCF79107PJ::push(UINT16 adr) {
     memcpy((char*)&STACK,(char*)&(pPC->mem[adr]),0x10);
 }
 
-void CCF79107PJ::cmd_inc_exp(UINT16 source,UINT16 adr) //sbbw
+void CCF79107PJ::cmd_inc_exp() //sbbw
 {
     UINT16 arg = 7;
     UINT16 res0, res1;
@@ -246,10 +263,10 @@ void CCF79107PJ::cmd_inc_exp(UINT16 source,UINT16 adr) //sbbw
     BCDc = (res1 > 0xff);
 
 
-    Write_TMP(adr);
+//    Write_TMP(adr);
 }
 
-void CCF79107PJ::cmd_dec_exp(UINT16 source,UINT16 adr) //sbbw
+void CCF79107PJ::cmd_dec_exp(void) //sbbw
 {
     UINT16 arg = 7;
     UINT16 res0, res1;
@@ -265,10 +282,10 @@ void CCF79107PJ::cmd_dec_exp(UINT16 source,UINT16 adr) //sbbw
     BCDz = ((res0 || res1)==0);
     BCDc = (res1 > 0xff);
 
-    Write_TMP(adr);
+//    Write_TMP(adr);
 }
 
-void CCF79107PJ::cmd_add_exp(UINT16 target) //adbw
+void CCF79107PJ::cmd_add_exp(void) //adbw
 {
     UINT16 res0, res1;
 
@@ -283,10 +300,10 @@ void CCF79107PJ::cmd_add_exp(UINT16 target) //adbw
     BCDz = ((res0 || res1)==0);
     BCDc = (res1 > 0xff);
 
-    Write_TMP(target);
+//    Write_TMP(target);
 }
 
-void CCF79107PJ::cmd_sub_exp(UINT16 target) //sbbw
+void CCF79107PJ::cmd_sub_exp() //sbbw
 {
     UINT16 res0, res1;
 
@@ -304,7 +321,7 @@ void CCF79107PJ::cmd_sub_exp(UINT16 target) //sbbw
 //    pPC->mem[VAR_X+7] = TMP[7];
 //    pPC->mem[VAR_X+8] &= 0x0F;
 //    pPC->mem[VAR_X+8] |= (TMP[8] & 0x0f)<<4;
-    Write_TMP(target);
+//    Write_TMP(target);
 }
 
 // Not satisfied by this function. It seems to be called at init. I think it is a BCDret clear function.
@@ -321,7 +338,7 @@ void CCF79107PJ::cmd_0e(void) //adbw
 
 // adbm	$10,$sz,7
 // X = X + Y    return 40h if ok
-void CCF79107PJ::cmd_add_mantisse(UINT16 source,UINT16 target) {
+void CCF79107PJ::cmd_add_mantisse(void) {
 
     UINT8 c, f;
     UINT16 res = 0;
@@ -336,15 +353,15 @@ void CCF79107PJ::cmd_add_mantisse(UINT16 source,UINT16 target) {
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
         TMP[n] = res&0xff;
-        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",target+n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
     }
     BCDz = (f==0);
     BCDc = (res > 0xff);
 
-    Write_TMP(target);
+//    Write_TMP(target);
 }
 
-void CCF79107PJ::cmd_sub_mantisseXY(UINT16 target) {
+void CCF79107PJ::cmd_sub_mantisseXY(void) {
 
     UINT8 c, f;
     UINT16 res = 0;
@@ -367,11 +384,11 @@ void CCF79107PJ::cmd_sub_mantisseXY(UINT16 target) {
 //    BCDc = BCDaf;
 //    BCDc = (f==0);
 
-    Write_TMP(target);
+//    Write_TMP(target);
 }
 
 
-void CCF79107PJ::cmd_sub_mantisseYX(UINT16 target) {
+void CCF79107PJ::cmd_sub_mantisseYX(void) {
     UINT8 c, f;
     UINT16 res = 0;
 
@@ -391,7 +408,7 @@ void CCF79107PJ::cmd_sub_mantisseYX(UINT16 target) {
     BCDc = (res > 0xff);
 //    BCDc = (f==0);
 
-    Write_TMP(target);
+//    Write_TMP(target);
 }
 
 
