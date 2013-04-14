@@ -22,6 +22,7 @@ public:
     bool	step(void);
     bool    instruction1(UINT8 cmd);
     bool    instruction2(UINT8 cmd);
+    bool    instruction3(UINT16 cmd);
     UINT8    get_status(void);
 
     void	Load_Internal(QXmlStreamReader *);
@@ -30,7 +31,6 @@ public:
     CCF79107PJ(CpcXXXX *parent);
     virtual ~CCF79107PJ();
 
-    void cmd_41();
     UINT16 make_bcd_sub(UINT8 arg1, UINT8 arg2);
     UINT16 make_bcd_add(UINT8 arg1, UINT8 arg2);
     void cmd_add_mantisse(UINT16 source, UINT16 target);
@@ -43,7 +43,6 @@ public:
     void cmd_sub_mantisseXY(UINT16 target);
     void cmd_shiftL_mantisse(UINT16 src, UINT16 adr);
     void cmd_shiftR_mantisse(UINT16 src, UINT16 adr);
-    void cmd_43();
     void Read_TMP(UINT16 adr);
     void Write_TMP(UINT16 adr);
     void cmd_sub_mantisseYX(UINT16 target);
@@ -55,7 +54,7 @@ private:
     UINT8 masterCMD;
     UINT16 regSelected;
     UINT8 BCDret;
-    bool BCDz,BCDc;
+    bool BCDz,BCDc,BCDaf;
     UINT8 last_cmd;
     UINT8 TMP[0x10];
     UINT8 STACK[0x10];
