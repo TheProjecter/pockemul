@@ -98,7 +98,7 @@ Cz1::~Cz1() {
 
 bool Cz1::init(void)				// initialize
 {
-    if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
+//    if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
 //    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
