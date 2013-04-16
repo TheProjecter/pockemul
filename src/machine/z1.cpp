@@ -41,7 +41,7 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
-    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
+    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
 
 
 //    KeyMap		= KeyMap1250;
@@ -96,9 +96,13 @@ Cz1::~Cz1() {
 
 }
 
+
+#define TIMER0  5
+#define TIMER1  6
+#define TIMER2  7
 bool Cz1::init(void)				// initialize
 {
-//    if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
+    if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
 //    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
@@ -114,6 +118,7 @@ bool Cz1::init(void)				// initialize
     io_b8 = timer0Control = timer2Control = 0;
 
     intPulseId = pTIMER->initTP(240);
+    pTIMER->resetTimer(TIMER0);
     lastIntPulse = false;
 
     pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
@@ -149,7 +154,6 @@ bool Cz1::init(void)				// initialize
 }
 
 
-
 bool Cz1::run() {
 
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
@@ -159,6 +163,23 @@ bool Cz1::run() {
     pCENT->run();
 
 //    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
+
+    if (pCPU->get_PC()==0xf0002505)
+        if (fp_log) fprintf(fp_log,"INT 0x2505\n");
+
+    qint64 r=0;
+    if ( (r=pTIMER->usElapsedId(TIMER0))>=100000) {
+        if(eoi & 0x8000) {
+            if(i86cpu->i86int(&(i86cpu->i86stat), 0x08)) {
+
+                pTIMER->resetTimer(TIMER0);
+                    if (fp_log) fprintf(fp_log,"INT 0x08\n");
+                AddLog(LOG_MASTER,"INT 0x13");
+                eoi = 0;
+            }
+        }
+
+    }
 
     bool pulse = pTIMER->GetTP(intPulseId);
     if (pulse != lastIntPulse) {
@@ -186,6 +207,7 @@ bool Cz1::run() {
                 }
             }
         }
+
         if((timer2Control & 0xe001) == 0xe001) {
             if(eoi & 0x8000) {
                 if(i86cpu->i86int(&(i86cpu->i86stat), 0x13)) {
@@ -262,6 +284,11 @@ UINT8 Cz1::in8(UINT16 Port)
     UINT16 v=0;
 
     switch(Port) {
+    case 0x36 : if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        return 0x00; break;
+    case 0x37 :
+        if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        return 0x10; break;
     case 0x003e: /* ? */
         return 0x20;
     case 0x005a: // model type  used by SYSTEM* test command
@@ -389,6 +416,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 UINT16 Cz1::in16(UINT16 address)
 {
     switch (address) {
+    case 0x36 : return 0x1000; break;
     case 0x82 : return 0x400; break;
     case 0x86 : return 0x800; break;
     }
@@ -423,9 +451,6 @@ void Cz1::TurnOFF(void) {
 
 void Cz1::TurnON(void){
     CpcXXXX::TurnON();
-
-
-    AddLog(LOG_CANON,"TURN ON");
 
 }
 
