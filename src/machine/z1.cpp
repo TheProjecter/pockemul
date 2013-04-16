@@ -41,11 +41,11 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
-    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
+    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
 
 
-    KeyMap		= KeyMap1250;
-    KeyMapLenght= KeyMap1250Lenght;
+//    KeyMap		= KeyMap1250;
+//    KeyMapLenght= KeyMap1250Lenght;
 
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;
@@ -360,7 +360,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 //        AddLog(LOG_KEYBOARD,tr("Set KSH[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
         *HIGH(ks) = x;
         break;
-    case 0x206 : // buzzer : 3 acive, 0 stop
+    case 0x206 : // buzzer : 3 active, 0 stop
         break;
     case 0x0220: /* ?? */
         if (fp_log) fprintf(fp_log,"OUT[%04x]=%02x\tpc=%08x\n",Port,x,pCPU->get_PC());
@@ -398,17 +398,16 @@ UINT16 Cz1::in16(UINT16 address)
 
 UINT16 Cz1::out16(UINT16 Port, UINT16 x)
 {
+
     switch (Port) {
-//    case 0x220:
-//        if (fp_log) fprintf(fp_log,"OUT[%04x]=%04x\tpc=%08x\n",Port,x,pCPU->get_PC());
-//        pFPU->instruction3(x);
-//        break;
+    case 0x200: break;
+    case 0x220: break;
     default:
-        out8(Port, x & 0xff);
-        out8(Port + 1, x >> 8);
+        if (fp_log) fprintf(fp_log,"OUT16[%04x]=%04x\tpc=%08x\n",Port,x,pCPU->get_PC());
         break;
     }
-
+    out8(Port, x & 0xff);
+    out8(Port + 1, x >> 8);
     return 0;
 }
 
@@ -541,7 +540,7 @@ UINT16 Cz1::getKey()
         if (ks&0x80) {
             if (KEY(K_MENU))		data|=0x02;
             if (KEY(K_LOG))			data|=0x04;
-//            if (KEY(K_M))			data|=0x08;
+            if (KEY(K_RM))			data|=0x08;
             if (KEY('7'))			data|=0x10;
             if (KEY('4'))			data|=0x20;
             if (KEY('1'))			data|=0x40;
@@ -573,9 +572,9 @@ UINT16 Cz1::getKey()
             if (KEY(K_BS))			data|=0x200;
         }
         if (ks&0x400) {
-            if (KEY(K_ROOT))			data|=0x02;
+            if (KEY(K_ROOT))		data|=0x02;
             if (KEY(K_SQR))			data|=0x04;
-//            if (KEY(K_ENG)			data|=0x08;
+            if (KEY(K_ENG))			data|=0x08;
             if (KEY(K_CLR))			data|=0x10;
             if (KEY(K_COS))			data|=0x20;
             if (KEY(K_POT))			data|=0x40;
