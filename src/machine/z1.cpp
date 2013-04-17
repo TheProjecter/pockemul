@@ -311,6 +311,21 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x005a: // model type  used by SYSTEM* test command
         return 0x04 | 0x80;
 
+    // RS232C communication input
+    case 0x64:
+        if (fp_log) fprintf(fp_log,"IN[%04x]=80    pc=%08x\n",Port,pCPU->get_PC());
+        return 0x08;
+        break;
+    case 0x65:
+        if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        break;
+    case 0x66:
+        if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        return 0x08;
+    case 0x67:
+        if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        break;
+
     case 0x0082:
         return 0x0;
     case 0x0083:
@@ -404,6 +419,11 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         break;
     case 0x60:
     case 0x61: // RS232 SPEED
+        break;
+    case 0x6a:
+        if (( x!=0xff)&&( x!=0x0d)) {
+            AddLog(LOG_CONSOLE,tr("%1").arg(QChar(x)));
+        }
         break;
     case 0x00b8:
         io_b8 = x;
