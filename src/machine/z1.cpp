@@ -23,15 +23,30 @@
 #endif
 
 
-Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
+Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
 {								//[constructor]
     setfrequency( (int) 3865000);
-    setcfgfname(QString("z1"));
+    model = mod;
+    switch (model) {
+    case Z1GR:
+        setcfgfname(QString("z1gr"));
+        SessionHeader	= "Z1GGRPKM";
+        Initial_Session_Fname ="z1gr.pkm";
+        BackGroundFname	= ":/z1/z1gr.png";
+        break;
+    case FX890P:
+        setcfgfname(QString("fx890p"));
+        SessionHeader	= "FX890PPKM";
+        Initial_Session_Fname ="fx890p.pkm";
+        BackGroundFname	= ":/z1/fx-890p.png";
+        break;
+    default:
+        setcfgfname(QString("z1"));
+        SessionHeader	= "Z1PKM";
+        Initial_Session_Fname ="z1.pkm";
+        BackGroundFname	= ":/z1/z1.png";
+    }
 
-    SessionHeader	= "Z1PKM";
-    Initial_Session_Fname ="z1.pkm";
-
-    BackGroundFname	= ":/z1/z1gr.png";
     LcdFname		= ":/z1/z1grlcd.png";
     SymbFname		= "";
 
@@ -40,6 +55,8 @@ Cz1::Cz1(CPObject *parent)	: CpcXXXX(parent)
 
     SlotList.clear();
     SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
+    if (model==FX890P)
+        SlotList.append(CSlot(32 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
     SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
 
@@ -262,7 +279,7 @@ bool Cz1::Chk_Adr_R(DWORD *d, DWORD data)
     }
 
 
-    if( *d < 0x10000) return true;
+    if( *d < 0x20000) return true;
     else if (*d < 0xa0000) { mem[*d] = *d & 0xff; return true; }
     else if (*d < 0xb0000) {
         AddLog(LOG_DISPLAY,tr("ReadVram[%1]").arg(*d,5,QChar('0')));
@@ -297,10 +314,24 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x0082:
         return 0x0;
     case 0x0083:
+        switch (model) {
+        case Z1GR:
+        case Z1: return 0x08;
+        case FX890P : return 0x10;
+        default: return 0x08;
+        }
+
         return 0x08;
     case 0x0086:
         return 0x00;
     case 0x0087:
+        switch (model) {
+        case Z1GR:
+        case Z1: return 0x10;
+        case FX890P : return 0x18;
+        default: return 0x10;
+        }
+
         return 0x10;
 
     /*
@@ -667,3 +698,4 @@ void Cz1::Get_SIOConnector(void) {
 void Cz1::Set_SIOConnector(void) {
 
 }
+

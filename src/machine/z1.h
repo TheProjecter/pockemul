@@ -8,13 +8,14 @@ class CCF79107PJ;
 class Cctronics;
 
 #include "pcxxxx.h"
+#include "init.h"
 
 class Cz1 : public CpcXXXX
 {
     Q_OBJECT
 
 public:
-    Cz1(CPObject *parent = 0);
+    Cz1(CPObject *parent = 0,Models mod=Z1);
     virtual ~Cz1();
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
@@ -66,11 +67,9 @@ private:
     bool lastIntPulse;
     int lastKeyBufSize;
     bool newKey;
+    Models model;
 
 
-};
-
-class Cz1GR:public Cz1{
 };
 
 #endif // Z1_H

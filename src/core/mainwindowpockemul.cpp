@@ -191,6 +191,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["Casio FP-100"]=FP100;
     objtable["Casio FP-40"]=FP40;
     objtable["Casio FP-200"]=FP200;
+    objtable["Casio FX-890P"]=FX890P;
     objtable["Casio Z-1"]=Z1;
     objtable["Casio Z-1GR"]=Z1GR;
     objtable["Nec PC-2001"]=PC2001;

@@ -170,6 +170,7 @@ enum Models {
     FP100,
     FP40,
     FP200,
+    FX890P,
     Z1,
     Z1GR,
     PC2001,

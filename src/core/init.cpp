@@ -159,8 +159,9 @@ CPObject *pPC=0;
         case MD100  : pPC = new Cmd100;     pPC->setName("Casio MD-100"); break;
         case FP100  : pPC = new Cfp100;     pPC->setName("Casio FP-100"); break;
         case FP40   : pPC = new Cfp40;      pPC->setName("Casio FP-40"); break;
-        case Z1     : pPC = new Cz1;        pPC->setName("Casio Z-1"); break;
-        case Z1GR   : pPC = new Cz1GR;      pPC->setName("Casio Z-1GR"); break;
+        case FX890P : pPC = new Cz1(0,FX890P);  pPC->setName("Casio FX-890P"); break;
+        case Z1     : pPC = new Cz1;            pPC->setName("Casio Z-1"); break;
+        case Z1GR   : pPC = new Cz1(0,Z1GR);    pPC->setName("Casio Z-1GR"); break;
 
         case PC2001   : pPC = new Cpc2001;      pPC->setName("Nec PC-2001"); break;
         case PC2021   : pPC = new Cpc2021;      pPC->setName("Nec PC-2021"); break;
