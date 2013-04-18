@@ -852,7 +852,7 @@ bool CpcXXXX::LoadExt(QXmlStreamReader *xmlIn)
                     int i = xmlIn->attributes().value("idarray").toString().toInt(0,10);
                     QString Id = xmlIn->attributes().value("idext").toString();
                     AddLog(LOG_MASTER,"Found : "+Id);
-                    for (int j = 0;j<40;j++) {
+                    for (int j = 0;j<NB_EXT;j++) {
                         if (extensionArray[i]->ExtArray[j]->Id == Id) {
                             extensionArray[i]->ExtArray[j]->IsChecked = true;
                             AddLog(LOG_MASTER,tr("Found : %1").arg(j));
@@ -877,7 +877,7 @@ bool CpcXXXX::SaveExt(QXmlStreamWriter *xmlOut)
     xmlOut->writeAttribute("version", "1.0");
     for (int i = 0; i<4;i++) {
         if (extensionArray[i]) {
-            for (int j = 0; j<40;j++) {
+            for (int j = 0; j<NB_EXT;j++) {
                 CExtension* e = extensionArray[i]->ExtArray[j];
                 if (e && e->IsChecked) {
                     xmlOut->writeStartElement("ext");

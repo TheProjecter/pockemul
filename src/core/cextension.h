@@ -52,7 +52,11 @@
 #define ID_FP205    34      // 8Ko EPROM Module
 #define ID_FP231CE  35      // 8Ko RAM Module
 
+#define ID_RP_8     36
+#define ID_RP_33    37
+#define ID_RP_256   38
 
+#define NB_EXT  39
 
 class CExtension{
 public:
@@ -89,8 +93,8 @@ public:
 
     QActionGroup *actionGroup;
 
-    CExtension	*ExtArray[40];
-//    QList<CExtension> ExtList;
+    CExtension	*ExtArray[NB_EXT];
+    QList<CExtension> ExtList;
 
     void setAvailable(int ind,bool value);
     void setAvailable(int ind,bool value,bool checked);
@@ -105,7 +109,7 @@ public:
         delete loadAction;
         delete saveAction;
         delete actionGroup;
-        for (int i=0;i<40;i++) delete ExtArray[i];
+        for (int i=0;i<NB_EXT;i++) delete ExtArray[i];
 
     }
 };

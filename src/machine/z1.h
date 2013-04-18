@@ -32,6 +32,7 @@ public:
     virtual void Set_CentConnector();
     virtual void Get_SIOConnector();
     virtual void Set_SIOConnector();
+    virtual void	initExtension(void);
     bool init();
 
     CHD66108 *pHD66108;

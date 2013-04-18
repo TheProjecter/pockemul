@@ -12,13 +12,21 @@ bool CpcXXXX::CheckUpdateExtension(CExtension *ext)
 
 void CpcXXXX::updateExtension(CExtensionArray *array,QAction *action)
 {
-        for (int ind = 0 ; ind < MAXEXT; ind++){
+        for (int ind = 0 ; ind < NB_EXT; ind++){
 			if (array->ExtArray[ind]->Action == action)
 			{
 				if (CheckUpdateExtension(array->ExtArray[ind]))
 					array->setChecked(ind,true);
 			}
 		}
+
+        for (int ind = 0 ; ind < array->ExtList.size(); ind++){
+            if (array->ExtList[ind].Action == action)
+            {
+                if (CheckUpdateExtension(&array->ExtList[ind]))
+                    array->setChecked(ind,true);
+            }
+        }
 }
 
 void CpcXXXX::ExtChanged(void) {
@@ -43,25 +51,39 @@ void CpcXXXX::updateMenuFromExtension(void)
 	bool checked;
 
 	for (int indArray = 0; indArray < 5; indArray++){
-		if (extensionArray[indArray]) 
-        for (int indExt = 0; indExt < MAXEXT ; indExt++) {
-			checked = extensionArray[indArray]->ExtArray[indExt]->IsChecked;
-			action = extensionArray[indArray]->ExtArray[indExt]->Action;
-			if (action) action->setChecked(false);
-			if (action && checked &&  !action->isChecked()) action->setChecked(true);
-		}
+        if (extensionArray[indArray]) {
+            for (int indExt = 0; indExt < NB_EXT ; indExt++) {
+                checked = extensionArray[indArray]->ExtArray[indExt]->IsChecked;
+                action = extensionArray[indArray]->ExtArray[indExt]->Action;
+                if (action) action->setChecked(false);
+                if (action && checked &&  !action->isChecked()) action->setChecked(true);
+            }
+            for (int indExt = 0; indExt < extensionArray[indArray]->ExtList.size() ; indExt++) {
+                checked = extensionArray[indArray]->ExtList[indExt].IsChecked;
+                action = extensionArray[indArray]->ExtList[indExt].Action;
+                if (action) action->setChecked(false);
+                if (action && checked &&  !action->isChecked()) action->setChecked(true);
+            }
+        }
 	}
 }
 
 
 CExtension * CpcXXXX::findExtension(CExtensionArray *array,QAction *action)
 {
-    for (int ind = 0 ; ind < MAXEXT; ind++){
+    for (int ind = 0 ; ind < NB_EXT; ind++){
 		if (array->ExtArray[ind]->Action == action)
 		{
 			return(array->ExtArray[ind]);
 		}
 	}
+    for (int ind = 0 ; ind < array->ExtList.size(); ind++){
+        if (array->ExtList[ind].Action == action)
+        {
+            return &(array->ExtList[ind]);
+        }
+    }
+
 	return(0);
 }
 
@@ -83,7 +105,7 @@ void CpcXXXX::addExtMenu(CExtensionArray *ext)
 	ext->Menu->addSeparator();
 	ext->actionGroup = new QActionGroup(this);
 	connect(ext->actionGroup, SIGNAL(triggered(QAction *)), this, SLOT(manageExtensions(QAction *)));
-    for (int ind = 0 ; ind < MAXEXT; ind++){
+    for (int ind = 0 ; ind < NB_EXT; ind++){
 		if (ext->ExtArray[ind]->IsAvailable){
 			ext->ExtArray[ind]->Action = ext->Menu->addAction(ext->ExtArray[ind]->Id + " ("+ext->ExtArray[ind]->Description+")");
 			ext->ExtArray[ind]->Action->setToolTip(ext->ExtArray[ind]->Description);
@@ -93,7 +115,7 @@ void CpcXXXX::addExtMenu(CExtensionArray *ext)
 			ext->actionGroup->addAction(ext->ExtArray[ind]->Action);
 		}
 	}
-    // check if power saved extensions exist
+    // check if power saved extensions" exist
     ext->Menu->addSeparator();
     ext->loadAction = ext->Menu->addAction("Load...");
     ext->saveAction = ext->Menu->addAction("Save...");
@@ -112,7 +134,7 @@ void CpcXXXX::emptyExtensionArray(QAction *action)
 			{
 				// is this array empty or not ?
 //				bool isempty=true;
-                for (int indExt = 0;indExt<MAXEXT; indExt++)
+                for (int indExt = 0;indExt<NB_EXT; indExt++)
 				{
 					if (extensionArray[ind]->ExtArray[indExt]->IsChecked)
 						{

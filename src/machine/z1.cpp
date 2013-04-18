@@ -13,6 +13,7 @@
 #include "Log.h"
 #include "Connect.h"
 #include "ctronics.h"
+#include "cextension.h"
 
 #ifdef POCKEMUL_BIG_ENDIAN
 #	define LOW(x)	((uint8 *)&(x) + 1)
@@ -55,14 +56,31 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
 
     SlotList.clear();
     SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
-    if (model==FX890P)
-        SlotList.append(CSlot(32 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, RAM , "RAM"));
+
+//    if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) {
+//        SlotList.append(CSlot(64 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
+//        SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, RAM , "RAM"));
+//        SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, RAM , "RAM"));
+//    }
+//    if (model==FX890P) {
+//         if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) {
+//             SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, RAM , "RAM"));
+//         }
+//         else {
+//             SlotList.append(CSlot(32 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
+//         }
+//    }
     SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
-    SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
 
+    if (model==Z1GR)
+        SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
+    else
+        SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
 
-//    KeyMap		= KeyMap1250;
-//    KeyMapLenght= KeyMap1250Lenght;
 
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;
@@ -126,8 +144,9 @@ bool Cz1::init(void)				// initialize
 
 #endif
     CpcXXXX::init();
+    initExtension();
 
-    for(int i = 0; i < 0x10000; i++) mem[i] = i & 0xff;
+//    for(int i = 0; i < 0x10000; i++) mem[i] = i & 0xff;
 
     pHD66108->init();
 
@@ -170,6 +189,24 @@ bool Cz1::init(void)				// initialize
     return true;
 }
 
+void	Cz1::initExtension(void)
+{
+
+    // initialise ext_MemSlot1
+    ext_MemSlot1 = new CExtensionArray("Internal Memory","Custom internal memory");
+    ext_MemSlot1->setAvailable(ID_RP_256,true);
+
+    // initialise ext_MemSlot1
+    ext_MemSlot2 = new CExtensionArray("Memory Slot","Add memory module");
+    ext_MemSlot2->setAvailable(ID_RP_8,true);
+    ext_MemSlot2->setAvailable(ID_RP_33,true);  ext_MemSlot1->setChecked(ID_RP_33,true);
+
+    addExtMenu(ext_MemSlot1);
+    addExtMenu(ext_MemSlot2);
+
+    extensionArray[0] = ext_MemSlot1;
+    extensionArray[1] = ext_MemSlot2;
+}
 
 bool Cz1::run() {
 
@@ -184,19 +221,7 @@ bool Cz1::run() {
     if (pCPU->get_PC()==0xf0002505)
         if (fp_log) fprintf(fp_log,"INT 0x2505\n");
 
-    qint64 r=0;
-    if ( (r=pTIMER->usElapsedId(TIMER0))>=100000) {
-        if(eoi & 0x8000) {
-            if(i86cpu->i86int(&(i86cpu->i86stat), 0x08)) {
 
-                pTIMER->resetTimer(TIMER0);
-                    if (fp_log) fprintf(fp_log,"INT 0x08\n");
-                AddLog(LOG_MASTER,"INT 0x13");
-                eoi = 0;
-            }
-        }
-
-    }
 
     bool pulse = pTIMER->GetTP(intPulseId);
     if (pulse != lastIntPulse) {
@@ -209,11 +234,11 @@ bool Cz1::run() {
             lastKeyBufSize = pKEYB->keyPressedList.size();
         }
 
-        if (pKEYB->LastKey == K_POW_OFF) {
-            newKey = false;
-            AddLog(LOG_MASTER,"INT NMI");
-            i86cpu->i86nmi(&i86cpu->i86stat);
-        }
+//        if (pKEYB->LastKey == K_BRK) {
+//            newKey = false;
+//            AddLog(LOG_MASTER,"INT NMI");
+//            i86cpu->i86nmi(&i86cpu->i86stat);
+//        }
         if (newKey) {
             if(eoi & 0x8000) {
                 if(i86cpu->i86int(&(i86cpu->i86stat), 0x0c)) {
@@ -238,6 +263,19 @@ bool Cz1::run() {
 
     }
 
+    qint64 r=0;
+    if ( (r=pTIMER->usElapsedId(TIMER0))>=100000) {
+        if(eoi & 0x8000) {
+            if(i86cpu->i86int(&(i86cpu->i86stat), 0x08)) {
+
+                pTIMER->resetTimer(TIMER0);
+                    if (fp_log) fprintf(fp_log,"INT 0x08\n");
+                AddLog(LOG_MASTER,"INT 0x13");
+                eoi = 0;
+            }
+        }
+
+    }
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
     return true;
@@ -254,7 +292,7 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
         return true;
 
     }
-    if(*d < 0x40000) return true; /* RAM */
+    if(*d < 0x50000) return true; /* RAM */
     if(*d < 0xa0000) return false;
     if(*d < 0xb0000){
         AddLog(LOG_DISPLAY,tr("WriteVram[%1]=%2").arg(*d,5,QChar('0')).arg(data));
@@ -329,6 +367,7 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x0082:
         return 0x0;
     case 0x0083:
+if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) return 0x40;
         switch (model) {
         case Z1GR:
         case Z1: return 0x08;
@@ -340,6 +379,7 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x0086:
         return 0x00;
     case 0x0087:
+    if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) return 0x48;
         switch (model) {
         case Z1GR:
         case Z1: return 0x10;
@@ -419,6 +459,18 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         break;
     case 0x60:
     case 0x61: // RS232 SPEED
+//                 97FFh                ; 75bps
+//                 8BFFh                ; 150bps
+//                 85FFh                ; 300bps
+//                 82FFh                ; 600bps
+//                 817Fh                ; 1200bps
+//                 80BFh                ; 2400bps
+//                 805Fh                ; 4800bps
+//                 802Fh                ; 9600bps
+//                 8017h                ; 19200bps
+
+        break;
+    case 0x64: // send or 20h if configure with XON/XOFF
         break;
     case 0x6a:
         if (( x!=0xff)&&( x!=0x0d)) {
