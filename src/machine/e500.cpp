@@ -40,6 +40,14 @@ C0000   -----------------------
         |                     |
 FFFFF   -----------------------
 
+<CE0> 80000h ~ BFFFFh logique négative RAM intégrée (S1 :)
+<CE1> 40000h ~ 7FFFFh logique positive élargi carte RAM (S2 :)
+<CE2> C0000H ~ FFFFFh logique négative intégré dans la ROM (S3 :)
+<CE3> 20000h ~ 3FFFFh logique négative (comme DELTA)
+<CE4>??
+<CE5>??
+<CE6> 10000h ~ 1FFFFh négative carte graphique logique
+<CE7> BC000h réservation du réseau de logique positive BFFFFh ~
 */
 
 Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
@@ -556,7 +564,7 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
         return((*d&0x10)==0);		/* CLOCK (010xx) */
     }
 #endif
-    return false;
+    return true;
 }
 
 /*****************************************************************************/
