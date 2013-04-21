@@ -864,7 +864,7 @@ int CPObject::mapKey(QKeyEvent * event) {
         case Qt::Key_F10:		key = K_MOD;		event->accept();	break;
         case Qt::Key_F11:		key = K_BRK;		event->accept();	break;
     default: key = event->key() & 0x1FFFFFF; event->accept();
-        qWarning()<<"key def:"<<key;
+//        qWarning()<<"key def:"<<key;
         }
 //    if ( (event->key() >= 0x41) && (event->key() <= 0x5A) ) { key = event->key(); event->accept();	}
 //    if ( (event->key() >= 0x30) && (event->key() <= 0x39) ) { key = event->key(); event->accept();	}

@@ -83,7 +83,7 @@ Cmp220::Cmp220(CPObject *parent):Cce125(parent)
 
 Cce125::Cce125(CPObject *parent):Cce126(parent)
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-125.jpg";
+    BackGroundFname	= ":/EXT/ext/ce-125.png";
     setcfgfname("ce125");
 
 

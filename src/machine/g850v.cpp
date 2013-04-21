@@ -190,7 +190,7 @@ void Cg850v::Reset()
     out( 0x17, 0x0f);
     out( 0x18, 0);
     out( 0x19, 0);
-    out( 0x1b, 0);
+    out( 0x1b, 3);
     out( 0x1c, 1);
     ((CZ80*)pCPU)->z80.r.im = 1;
     mem[0x790d] = 0;
@@ -281,6 +281,7 @@ UINT8 Cg850v::in(UINT8 address)
     case 0x1a: pCPU->imem[address] = 0x00;
         return 0;
     case 0x1b:
+        AddLog(LOG_CONSOLE,tr("IN RAM bank:%1\n").arg(ramBank));
         pCPU->imem[address] = ramBank;
         return 0;
     case 0x1c: pCPU->imem[address] = 0x00;
@@ -378,6 +379,7 @@ UINT8 Cg850v::out(UINT8 address, UINT8 value)
         return 0;
     case 0x1b:
         ramBank = value & 0x04;
+        AddLog(LOG_CONSOLE,tr("RAM bank:%1\n").arg(ramBank));
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"RAM BANK SWITCH: %i\n",ramBank);
         return 0;
     case 0x1c:

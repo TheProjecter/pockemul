@@ -3,7 +3,6 @@
         <file>ext/26-3591.jpg</file>
         <file>ext/cable.png</file>
         <file>ext/ce-123p.jpg</file>
-        <file>ext/ce-125.jpg</file>
         <file>ext/ce-125eject.jpg</file>
         <file>ext/ce-125load.jpg</file>
         <file>ext/ce-125play.jpg</file>
@@ -31,5 +30,6 @@
         <file>ext/ce-140f.png</file>
         <file>ext/simu.png</file>
         <file>ext/ce-150.png</file>
+        <file>ext/ce-125.png</file>
     </qresource>
 </RCC>

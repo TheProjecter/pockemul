@@ -4,7 +4,7 @@
    <example idpocket="CE-122" filename="./" name="Sharp ce-122" image=":/EXT/ext/ce-122.png"/>
    <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/EXT/ext/ce-152.png"/>
    <example idpocket="CE-127R" filename="./" name="Sharp ce-127r" image=":/EXT/ext/ce-127r.png"/>
-    <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/EXT/ext/ce-125.jpg"/>
+    <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/EXT/ext/ce-125.png"/>
     <example idpocket="MP-220" filename="./" name="Seiko MP-220" image=":/EXT/ext/mp-220.jpg"/>
      <example idpocket="26-3591" filename="./" name="Tandy 26-3591" image=":/EXT/ext/26-3591.jpg"/>
      <example idpocket="CE-126P" filename="./" name="Sharp ce-126p" image=":/EXT/ext/ce-126p.png"/>

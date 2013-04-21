@@ -16,8 +16,6 @@ Cpc1255::Cpc1255(CPObject *parent)	: Cpc1250(parent)
 
 
     memsize			= 0x10000;
-//		NbSlot		= 4;
-
     SlotList.clear();
     SlotList.append(CSlot(8	, 0x0000 ,	":/PC1255/pc1255/cpu-1255.rom"	, "pc1255/cpu-1255.rom"	, ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""									, "pc1255/R1-1255.ram"	, RAM , "RAM"));

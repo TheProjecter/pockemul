@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "z1.h"
-#include "i80x86.h"
+#include "i80L188EB.h"
 #include "Inter.h"
 #include "Keyb.h"
 #include "Log.h"
@@ -60,20 +60,6 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, RAM , "RAM"));
-
-//    if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) {
-//        SlotList.append(CSlot(64 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
-//        SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, RAM , "RAM"));
-//        SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, RAM , "RAM"));
-//    }
-//    if (model==FX890P) {
-//         if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) {
-//             SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, RAM , "RAM"));
-//         }
-//         else {
-//             SlotList.append(CSlot(32 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
-//         }
-//    }
     SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
 
     if (model==Z1GR)
@@ -118,7 +104,7 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     lastKeyBufSize = 0;
     newKey = false;
 
-    i86cpu = (Ci80x86*)pCPU;
+    i80l188ebcpu = (Ci80L188EB*)pCPU;
 
     ioFreq = 0;
 }
@@ -218,8 +204,8 @@ bool Cz1::run() {
 
 //    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
 
-    if (pCPU->get_PC()==0xf0002505)
-        if (fp_log) fprintf(fp_log,"INT 0x2505\n");
+//    if (pCPU->get_PC()==0xf0002505)
+//        if (fp_log) fprintf(fp_log,"INT 0x2505\n");
 
 
 
@@ -241,7 +227,7 @@ bool Cz1::run() {
 //        }
         if (newKey) {
             if(eoi & 0x8000) {
-                if(i86cpu->i86int(&(i86cpu->i86stat), 0x0c)) {
+                if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x0c)) {
                     newKey = false;
 //                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x0C\n");
                     AddLog(LOG_MASTER,"INT 0x0C");
@@ -252,7 +238,7 @@ bool Cz1::run() {
 
         if((timer2Control & 0xe001) == 0xe001) {
             if(eoi & 0x8000) {
-                if(i86cpu->i86int(&(i86cpu->i86stat), 0x13)) {
+                if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x13)) {
 //                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x13\n");
                     AddLog(LOG_MASTER,"INT 0x13");
                     eoi = 0;
@@ -266,7 +252,7 @@ bool Cz1::run() {
     qint64 r=0;
     if ( (r=pTIMER->usElapsedId(TIMER0))>=100000) {
         if(eoi & 0x8000) {
-            if(i86cpu->i86int(&(i86cpu->i86stat), 0x08)) {
+            if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x08)) {
 
                 pTIMER->resetTimer(TIMER0);
                     if (fp_log) fprintf(fp_log,"INT 0x08\n");

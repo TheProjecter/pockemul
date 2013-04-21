@@ -3,7 +3,7 @@
 
 class CPObject;
 class CHD66108;
-class Ci80x86;
+class Ci80L188EB;
 class CCF79107PJ;
 class Cctronics;
 
@@ -50,7 +50,7 @@ public:
 
     UINT16 getKey();
 
-    Ci80x86 *i86cpu;
+    Ci80L188EB *i80l188ebcpu;
 
     Cconnector *pCENTCONNECTOR;    qint64      pCENTCONNECTOR_value;
 

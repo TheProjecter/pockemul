@@ -1997,7 +1997,7 @@ int Ci80x86::i86int(I86stat *i86, int n)
 {
 //    if (fp_log) fprintf(fp_log,"INT %02x\n",n);
 
-    if(!IF) {
+    if(!halt && !IF) {
         return FALSE;
     }
 

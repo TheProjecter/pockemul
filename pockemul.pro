@@ -332,7 +332,8 @@ HEADERS += src/core/Connect.h \
     libavoid/connectionpin.h \
     libavoid/assertions.h \
     src/machine/printerctronics.h \
-    src/machine/fp40.h
+    src/machine/fp40.h \
+    src/cpu/i80L188EB.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -598,7 +599,8 @@ SOURCES += src/core/Connect.cpp \
     libavoid/connector.cpp \
     libavoid/connectionpin.cpp \
     src/machine/printerctronics.cpp \
-    src/machine/fp40.cpp
+    src/machine/fp40.cpp \
+    src/cpu/i80L188EB.cpp
 
 
 
