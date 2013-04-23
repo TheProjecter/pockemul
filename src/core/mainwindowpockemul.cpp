@@ -39,6 +39,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "clink.h"
 #include "sc61860.h"
 #include "downloadmanager.h"
+#include "servertcp.h"
 
 
 extern MainWindowPockemul* mainwindow;
@@ -113,6 +114,8 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     router->setOrthogonalNudgeDistance(15);
 #endif
 qWarning("create");
+
+server = new ServeurTcp(this);
 
 }
 

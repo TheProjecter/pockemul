@@ -23,6 +23,8 @@ class WindowIDE;
 class LaunchButtonWidget;
 class QCommandLine;
 class DownloadManager;
+class ServeurTcp;
+
 namespace Avoid {
         class Router;
         class ShapeRef;
@@ -47,6 +49,7 @@ public:
     DialogLog		*dialoglog;
     dialogAnalog	*dialoganalogic;
     WindowIDE       *windowide;
+    ServeurTcp      *server;
 
 
     //	CpaperWidget	*paperWidget;
@@ -62,6 +65,7 @@ public:
     qint64	rawclk;
     CPObject * LoadPocket(int result);
     CPObject *LoadPocket(QString Id);
+
     ASKYN saveAll;
     float	zoom;
 
@@ -84,6 +88,7 @@ public slots:
     void opensession(QString sessionFN=QString());
 
 private slots:
+
     void about();
     void Log();
     void IDE();

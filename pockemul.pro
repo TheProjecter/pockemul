@@ -334,7 +334,8 @@ HEADERS += src/core/Connect.h \
     src/machine/printerctronics.h \
     src/machine/fp40.h \
     src/cpu/i80L188EB.h \
-    src/cpu/pit8253.h
+    src/cpu/pit8253.h \
+    src/core/servertcp.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -602,7 +603,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/printerctronics.cpp \
     src/machine/fp40.cpp \
     src/cpu/i80L188EB.cpp \
-    src/cpu/pit8253.cpp
+    src/cpu/pit8253.cpp \
+    src/core/servertcp.cpp
 
 
 

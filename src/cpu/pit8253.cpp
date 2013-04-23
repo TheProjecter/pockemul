@@ -684,7 +684,7 @@ void timer::step()
 
     if (!EXT()) {
         if (RTG()) {
-
+            qWarning("RTG");
         }
         else { // RTG=0
             if (!tinp) return;
