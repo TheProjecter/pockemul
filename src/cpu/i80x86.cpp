@@ -1281,7 +1281,7 @@
     ROTATE16_RM(_ROR16, CL);
 
 #define SAHF() \
-    F = (AH & 0x80 ? MASK_SF: 0) | (AH & 0x40 ? MASK_ZF: 0) | (AH & 0x10 ? MASK_AF: 0) | (AH & 0x04 ? MASK_PF: 0) | (AH & 0x01); \
+    F = (F & 0xFF2A ) | (AH & 0x80 ? MASK_SF: 0) | (AH & 0x40 ? MASK_ZF: 0) | (AH & 0x10 ? MASK_AF: 0) | (AH & 0x04 ? MASK_PF: 0) | (AH & 0x01); \
     IP += _length;
 
 #define _SCASB() \
@@ -1997,7 +1997,7 @@ int Ci80x86::i86int(I86stat *i86, int n)
 {
 //    if (fp_log) fprintf(fp_log,"INT %02x\n",n);
 
-    if(!halt && !IF) {
+    if(!IF) {
         return FALSE;
     }
 
@@ -2019,6 +2019,7 @@ int Ci80x86::i86exec(I86stat *i86)
 
     if(i86->r16.hlt) {
         i86->i.states = 0;
+        pPC->pTIMER->state += 4;
         return I86_HALT;
     }
 

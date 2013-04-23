@@ -39,6 +39,7 @@ public:
     CCF79107PJ *pFPU;
     Cctronics *pCENT;
 
+
     virtual bool run();
 
     virtual void Reset();
@@ -58,7 +59,7 @@ public:
 
 private:
     UINT16 ks;
-    UINT16 eoi;
+
     UINT8 io_b8;
     UINT16 timer0Control;
     UINT16 timer1Control;

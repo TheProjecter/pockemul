@@ -150,7 +150,7 @@ public:
     char *fn_status;					//status file name
     bool usestatus;						//use status file(0:no,1:yes)
     bool *SlotName[4];					//slot filename
-    bool	halt,off;					//halt,off flag
+    bool	off;					//halt,off flag
     bool	end,save, e6, cpulog,logsw;	//etc.flag
     BYTE	emsmode;					//ems memory size
 

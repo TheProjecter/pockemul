@@ -595,7 +595,10 @@ bool CpcXXXX::run(void)
 
 
 	}
-    else pTIMER->state+=1000;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+    else {
+        pCPU->step();
+        pTIMER->state+=10;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+    }
 
     Set_Connector();		//Write the connectors
     if (pCONNECTOR) {

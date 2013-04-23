@@ -4,6 +4,7 @@
 #include "common.h"
 #include "z1.h"
 #include "i80L188EB.h"
+#include "pit8253.h"
 #include "Inter.h"
 #include "Keyb.h"
 #include "Log.h"
@@ -94,7 +95,7 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     PowerSwitch = 0;
 
     pLCDC		= new Clcdc_z1(this);
-    pCPU		= new Ci80x86(this);
+    pCPU		= new Ci80L188EB(this);
     pFPU        = new CCF79107PJ(this);
     pTIMER		= new Ctimer(this);
     pHD66108    = new CHD66108(this);
@@ -114,7 +115,6 @@ Cz1::~Cz1() {
     delete pHD66108;
     delete pCENTCONNECTOR;
     delete pCENT;
-
 }
 
 
@@ -136,7 +136,7 @@ bool Cz1::init(void)				// initialize
 
     pHD66108->init();
 
-    eoi = 0x8000;
+    i80l188ebcpu->eoi = 0x8000;
     io_b8 = timer0Control = timer2Control = 0;
 
     intPulseId = pTIMER->initTP(240);
@@ -199,9 +199,13 @@ bool Cz1::run() {
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
+//    quint64 _states = pTIMER->state;
+
     CpcXXXX::run();
     pCENT->run();
 
+    // incremennt timers
+//    i80l188ebcpu->p8253->step(pTIMER->state - _states);
 //    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
 
 //    if (pCPU->get_PC()==0xf0002505)
@@ -220,35 +224,36 @@ bool Cz1::run() {
             lastKeyBufSize = pKEYB->keyPressedList.size();
         }
 
-//        if (pKEYB->LastKey == K_BRK) {
+//        if (pCPU->halt && (pKEYB->LastKey == K_BRK)) {
 //            newKey = false;
 //            AddLog(LOG_MASTER,"INT NMI");
-//            i86cpu->i86nmi(&i86cpu->i86stat);
+//            i80l188ebcpu->i86nmi(&i80l188ebcpu->i86stat);
 //        }
         if (newKey) {
-            if(eoi & 0x8000) {
+            if(i80l188ebcpu->eoi & 0x8000) {
                 if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x0c)) {
                     newKey = false;
 //                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x0C\n");
                     AddLog(LOG_MASTER,"INT 0x0C");
-                    eoi = 0;
+                    i80l188ebcpu->eoi = 0;
                 }
             }
         }
 
-        if((timer2Control & 0xe001) == 0xe001) {
-            if(eoi & 0x8000) {
-                if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x13)) {
-//                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x13\n");
-                    AddLog(LOG_MASTER,"INT 0x13");
-                    eoi = 0;
-                }
-            }
-        }
+//        if((timer2Control & 0xe001) == 0xe001) {
+//            if(i80l188ebcpu->eoi & 0x8000) {
+//                if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x13)) {
+////                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x13\n");
+//                    AddLog(LOG_MASTER,"INT 0x13");
+//                    i80l188ebcpu->eoi = 0;
+//                }
+//            }
+//        }
 
 
     }
 
+#if 0
     qint64 r=0;
     if ( (r=pTIMER->usElapsedId(TIMER0))>=100000) {
         if(eoi & 0x8000) {
@@ -262,6 +267,7 @@ bool Cz1::run() {
         }
 
     }
+#endif
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
     return true;
@@ -416,31 +422,61 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 {
     switch(Port) {
     case 0x0002:
-        *LOW(eoi) = x;
+        *LOW(i80l188ebcpu->eoi) = x;
 //        AddLog(LOG_MASTER,tr("Set eoi Low[%1]=%2").arg(x,2,16,QChar('0')).arg(eoi,4,16,QChar('0')));
         break;
     case 0x0003:
-        *HIGH(eoi) = x;
+        *HIGH(i80l188ebcpu->eoi) = x;
 //        AddLog(LOG_MASTER,tr("Set eoi High[%1]=%2").arg(x,2,16,QChar('0')).arg(eoi,4,16,QChar('0')));
         break;
+    case 0x0032:
+        *LOW(i80l188ebcpu->p8253->t0->tcmpA) = x;
+        break;
+    case 0x0033:
+        *HIGH(i80l188ebcpu->p8253->t0->tcmpA) = x;
+        break;
+    case 0x0034:
+        *LOW(i80l188ebcpu->p8253->t0->tcmpB) = x;
+        break;
+    case 0x0035:
+        *HIGH(i80l188ebcpu->p8253->t0->tcmpB) = x;
+        break;
     case 0x0036:
-        *LOW(timer0Control) = x;
+        *LOW(i80l188ebcpu->p8253->t0->tcon) = x;
         break;
     case 0x0037:
-        *HIGH(timer0Control) = x;
+        *HIGH(i80l188ebcpu->p8253->t0->tcon) = x;
+        break;
+    case 0x003a:
+        *LOW(i80l188ebcpu->p8253->t1->tcmpA) = x;
+        break;
+    case 0x003b:
+        *HIGH(i80l188ebcpu->p8253->t1->tcmpA) = x;
+        break;
+    case 0x003c:
+        *LOW(i80l188ebcpu->p8253->t1->tcmpB) = x;
+        break;
+    case 0x003d:
+        *HIGH(i80l188ebcpu->p8253->t1->tcmpB) = x;
         break;
     case 0x003e:
-        *LOW(timer1Control) = x;
+        *LOW(i80l188ebcpu->p8253->t1->tcon) = x;
+        break;
+    case 0x0042:
+        *LOW(i80l188ebcpu->p8253->t2->tcmpA) = x;
+        break;
+    case 0x0043:
+        *HIGH(i80l188ebcpu->p8253->t2->tcmpA) = x;
         break;
     case 0x003f:
-        *HIGH(timer1Control) = x;
+        *HIGH(i80l188ebcpu->p8253->t1->tcon) = x;
         break;
     case 0x0046:
-        *LOW(timer2Control) = x;
+        *LOW(i80l188ebcpu->p8253->t2->tcon) = x;
         AddLog(LOG_MASTER,tr("Set T2Control Low[%1]=%2").arg(x,2,16,QChar('0')).arg(timer2Control,4,16,QChar('0')));
         break;
     case 0x0047:
-        *HIGH(timer2Control) = x;
+        *HIGH(i80l188ebcpu->p8253->t2->tcon) = x;
         AddLog(LOG_MASTER,tr("Set T2Control High[%1]=%2").arg(x,2,16,QChar('0')).arg(timer2Control,4,16,QChar('0')));
         break;
     case 0x60:
@@ -498,6 +534,7 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         break;
     }
 
+//    pCPU->imem[Port] = x;
     return 0;
 }
 

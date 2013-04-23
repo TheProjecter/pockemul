@@ -3,19 +3,10 @@
 
 #include "i80x86.h"
 
-
+class C8253PIT;
 
 class Ci80L188EB : public Ci80x86
 {
-    class timer {
-
-        quint16 TCON;
-        quint16 TCNT;
-        quint16 TCMPA;
-        quint16 TCMPB;
-
-    };
-
 
 public:
     Ci80L188EB(CPObject *parent);
@@ -26,11 +17,11 @@ public:
     virtual void	step(void);						//step SC61860
     virtual void	Reset(void);
 
-    timer timer0;
-    timer timer1;
-    timer timer2;
 
 
+    C8253PIT *p8253;
+
+    quint16 eoi;
 
 };
 
