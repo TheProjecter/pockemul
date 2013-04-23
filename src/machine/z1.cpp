@@ -118,12 +118,9 @@ Cz1::~Cz1() {
 }
 
 
-#define TIMER0  5
-#define TIMER1  6
-#define TIMER2  7
 bool Cz1::init(void)				// initialize
 {
-    if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
+//    if (!fp_log) fp_log=fopen("z1.log","wt");	// Open log file
 //    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
@@ -140,7 +137,7 @@ bool Cz1::init(void)				// initialize
     io_b8 = timer0Control = timer2Control = 0;
 
     intPulseId = pTIMER->initTP(240);
-    pTIMER->resetTimer(TIMER0);
+
     lastIntPulse = false;
 
     pCENTCONNECTOR = new Cconnector(this,36,1,Cconnector::Centronics_36,"Parrallel Connector",false,QPoint(715,50));
@@ -204,15 +201,6 @@ bool Cz1::run() {
     CpcXXXX::run();
     pCENT->run();
 
-    // incremennt timers
-//    i80l188ebcpu->p8253->step(pTIMER->state - _states);
-//    if (pCPU->fp_log && !pCPU->halt && !off ) fprintf(pCPU->fp_log,"eoi=%04x   t2Ctrl=%04x\n\n", eoi,timer2Control);
-
-//    if (pCPU->get_PC()==0xf0002505)
-//        if (fp_log) fprintf(fp_log,"INT 0x2505\n");
-
-
-
     bool pulse = pTIMER->GetTP(intPulseId);
     if (pulse != lastIntPulse) {
 
@@ -240,34 +228,9 @@ bool Cz1::run() {
             }
         }
 
-//        if((timer2Control & 0xe001) == 0xe001) {
-//            if(i80l188ebcpu->eoi & 0x8000) {
-//                if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x13)) {
-////                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"INT 0x13\n");
-//                    AddLog(LOG_MASTER,"INT 0x13");
-//                    i80l188ebcpu->eoi = 0;
-//                }
-//            }
-//        }
-
 
     }
 
-#if 0
-    qint64 r=0;
-    if ( (r=pTIMER->usElapsedId(TIMER0))>=100000) {
-        if(eoi & 0x8000) {
-            if(i80l188ebcpu->i86int(&(i80l188ebcpu->i86stat), 0x08)) {
-
-                pTIMER->resetTimer(TIMER0);
-                    if (fp_log) fprintf(fp_log,"INT 0x08\n");
-                AddLog(LOG_MASTER,"INT 0x13");
-                eoi = 0;
-            }
-        }
-
-    }
-#endif
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
     return true;

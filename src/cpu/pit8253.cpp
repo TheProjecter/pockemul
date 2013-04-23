@@ -658,12 +658,10 @@ void C8253PIT::step(qint64 nbstates)
 {
     for (qint64 i=0; i< nbstates;i++) {
         count++;
-        if (count == 4) {
-            t0->step();
-            t1->step();
-            t2->step();
-            count = 0;
-        }
+        if (count == 2) t0->step();
+        else if (count == 4) t1->step();
+        else if (count == 6) t2->step();
+        else if (count == 8) count = 0;
     }
 }
 

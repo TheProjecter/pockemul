@@ -252,7 +252,7 @@ void CCF79107PJ::cmd_add_mantisse(void) {
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
         reg[n] = res&0xff;
-        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+        if (pPC->fp_log) fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
     }
     BCDz = (f==0);
     BCDc = (res > 0xff);
@@ -272,7 +272,7 @@ void CCF79107PJ::cmd_sub_mantisseXY(void) {
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
         reg[n] = res&0xff;
-        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c af=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0',
+        if (pPC->fp_log) fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c af=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0',
                 BCDaf?'1':'0');
     }
     BCDz = (f==0);
@@ -294,7 +294,7 @@ void CCF79107PJ::cmd_sub_mantisseYX(void) {
         c = (res > 0xff) ? 1 : 0;
         f |= (res&0xff);
         reg[n] = res&0xff;
-        fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
+        if (pPC->fp_log) fprintf(pPC->fp_log,"mem[%04x]=%02X  f=%c c=%c\n",n,res&0xff,(f==0?'1':'0'),res>0xff?'1':'0');
     }
     BCDz = (f==0);
     BCDc = (res > 0xff);
