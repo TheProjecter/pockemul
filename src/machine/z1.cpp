@@ -144,7 +144,7 @@ bool Cz1::init(void)				// initialize
     publish(pCENTCONNECTOR);
     pSIOCONNECTOR = new Cconnector(this,9,2,Cconnector::DB_25,"Serial Connector",false,QPoint(0,50));
     publish(pSIOCONNECTOR);
-    pSERIALCONNECTOR = new Cconnector(this,2,3,Cconnector::Jack,"Syncronous Serial Connector",false,QPoint(0,10));
+    pSERIALCONNECTOR = new Cconnector(this,3,3,Cconnector::Jack,"Serial Jack Connector",false,QPoint(0,20));
     publish(pSERIALCONNECTOR);
 
 //    pUART->init();

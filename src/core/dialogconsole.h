@@ -1,6 +1,8 @@
 #ifndef DIALOGCONSOLE_H
 #define DIALOGCONSOLE_H
 //
+#include <QMutex>
+
 #include "ui_serialconsole.h"
 
 class Csio;
@@ -13,6 +15,7 @@ public:
 	
 	void refresh( void);
 
+    QMutex refreshMutex;
 private slots:
 	void	sendData( void);
     void    openFile(void);

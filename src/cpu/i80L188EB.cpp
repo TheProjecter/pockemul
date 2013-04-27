@@ -132,20 +132,20 @@ void Ci80uart::step(qint64 states)
                     samplingCNT++;
                     // Send bit on RXD
 
-                    if ((transmitedBit==0) && (MODE==3)) {
+                    if ((transmitedBit==0) && (MODE&1)) {
                         // send byte start
                         TXD = false;
                         transmitedBit++;
                         TParity = false;
                     }
-                    else if ((transmitedBit<=8) && (MODE==3)) {
+                    else if ((transmitedBit<=8) && (MODE&1)) {
                         //            TShiftReg &= 0xfffe;
                         TXD = (TShiftReg & 0x01 ? true: false);
                         TParity ^= TXD;
                         AddLog(LOG_SIO,QString("Send bit:")+(TXD?"1":"0"));
                         TShiftReg >>=1;
                         transmitedBit++;
-                    } else if ((transmitedBit==9) && (MODE==3)) {
+                    } else if ((transmitedBit==9) && (MODE&2)) {
                         // 9th bit
                         if (PEN()) {
                             TXD = (EVN()?TParity:!TParity);
@@ -155,7 +155,7 @@ void Ci80uart::step(qint64 states)
                         }
                         transmitedBit++;
                     }
-                    else if ((transmitedBit==10) && (MODE==3)) {
+                    else if ((transmitedBit>=9) && (MODE&1)) {
                         // stop bit
                         TXD = true;
                         SxSTS |= MASK_TI;

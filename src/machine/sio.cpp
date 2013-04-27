@@ -194,7 +194,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,3,this,pSIOCONNECTOR->Desc);
                                 BackGroundFname	= ":/EXT/ext/jackR.png";
-                                pSIOCONNECTOR->setSnap(QPoint(35,7));
+                                pSIOCONNECTOR->setSnap(QPoint(56,6));
                                 setDX(75);
                                 setDY(20);
                                 resize(getDX(),getDY());
@@ -513,8 +513,13 @@ void Csio::ExportBit(bool data) {}
 
 void Csio::byteRecv(qint8 data)
 {
-    if (data >0)
-	baOutput.append( (char) data);
+    if (data >0) {
+
+        dialogconsole->refreshMutex.lock();
+        baOutput.append( (char) data);
+        dialogconsole->refreshMutex.unlock();
+    }
+
 
     // Emit signal new data
     emit newByteRecv(data);
@@ -583,7 +588,7 @@ void Csio::bitToByte(void)
         waitbitstop = 0;
         //		Bit START
         AddLog(LOG_CONSOLE,tr("START BIT\n"));
-        Sii_wait_recv	= TICKS_BDS*1.5;
+        Sii_wait_recv	= TICKS_BDS*1.3;
         c=0;
     }
     else if (!waitbitstart && !waitbitstop)

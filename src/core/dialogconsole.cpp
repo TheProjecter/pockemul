@@ -1,6 +1,7 @@
 #include <QTextCursor>
 #include <QCloseEvent>
 #include <QFileDialog>
+#include <QDebug>
 
 #include "dialogconsole.h"
 #include "common.h"
@@ -38,10 +39,11 @@ void DialogConsole::refresh( void)
 	
 	if (! pSIO) return;
     if (pSIO->pTIMER) ConnectLbl->setText("Connected to : " + pSIO->pTIMER->pPC->getName());
+    refreshMutex.lock();
 	if (pSIO->baOutput.size() > currentIndex)
 	{
-		int len = pSIO->baOutput.size()-currentIndex;
-		textEdit_out->textCursor().setPosition(currentIndex);
+        int len = pSIO->baOutput.size()-currentIndex;
+        textEdit_out->textCursor().movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 		
 		for (int i=0 ; i < len ; i++)
 		{
@@ -55,7 +57,8 @@ void DialogConsole::refresh( void)
 
 			textEdit_out->insertPlainText(add);
 		}
-		textEdit_out->textCursor().setPosition(currentIndex);
+
+        textEdit_out->textCursor().movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
 
 //	SCROOL TO BOTTOM
 		QTextCursor cursor(textEdit_out->textCursor());
@@ -64,6 +67,7 @@ void DialogConsole::refresh( void)
 		
 		currentIndex += len;
 	}
+    refreshMutex.unlock();
 }
 
 void DialogConsole::changeBaudrate(QString baud) {
