@@ -12,5 +12,6 @@
         <file>ext/ce-127r.png</file>
         <file>ext/pc-2081.png</file>
         <file>ext/fp40.png</file>
+        <file>ext/jackR.png</file>
     </qresource>
 </RCC>

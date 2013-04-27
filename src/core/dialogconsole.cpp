@@ -46,10 +46,13 @@ void DialogConsole::refresh( void)
 		for (int i=0 ; i < len ; i++)
 		{
 			QString add;
-			const unsigned char loc = pSIO->baOutput.at(currentIndex + i);
-			if ((loc < 0x20) || (loc > 0x7F)) add = QString(" [0x%1] ").arg(loc,2,16,QChar('0'));
+            const unsigned char loc = pSIO->baOutput.at(currentIndex + i);
+            if ( cbCRLF->isChecked() && (loc == 0x0D) )
+                add = QString(loc); // TO DO : Manage CR
+            else if ( cbCRLF->isChecked() && (loc == 0x0A) ) {}
+            else if ((loc < 0x20) || (loc > 0x7F)) add = QString(" [0x%1] ").arg(loc,2,16,QChar('0'));
 				else add = QString(loc);
-			if ( cbCRLF->isChecked() && (loc == 0x0D) ) add = QString(loc); // TO DO : Manage CR
+
 			textEdit_out->insertPlainText(add);
 		}
 		textEdit_out->textCursor().setPosition(currentIndex);

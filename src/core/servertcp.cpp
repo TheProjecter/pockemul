@@ -32,11 +32,14 @@ void ServeurTcp ::lecture()
     QString ligne;
     while(clientConnection->canReadLine())    // tant qu'on peut lire sur la socket
     {
-        ligne = clientConnection->readLine(); // on lit une ligne
+        ligne = clientConnection->readLine().trimmed(); // on lit une ligne
+
         ligne.remove('\n');
         qWarning()<<ligne;
         emit vers_IHM_texte(ligne);           // on l'envoie à l'IHM
         process_command(ligne);
+        QTextStream texte(clientConnection);
+        texte <<"PockEmul>";
     }
 
 }
@@ -45,21 +48,25 @@ void ServeurTcp::send_greeting(QTextStream *sock)
 {
     *sock << endl << "Welcome to the PockEmul v1.0 TELNET interface." << endl;
     *sock << "Use decimal, C hex (0x2a) or Asm hex (14h) for input." << endl;
-    *sock << "Type 'help' for a list of supported commands." << endl;
+    *sock << "Type 'help' for a list of supported commands." << endl<< endl;
+    *sock << "PockEmul>" << flush;
 
 }
 
 void ServeurTcp::cmd_help(QTextStream *sock,QString subcmd)
 {
     if (subcmd=="") {
-    *sock << "Help" << endl << "====" << endl;
-    *sock << "  bye" << endl;
-    *sock << "  list        List all running model" << endl;
-    *sock << "  start model_name" << endl;
-    *sock << "  key(k) [enter cr f1 esc ctrl+c shift+code+a \"Text\" ...]" << endl;
-}
+        *sock << "Help" << endl << "====" << endl;
+        *sock << "  bye" << endl;
+        *sock << "  close Id" << endl;
+        *sock << "  list            List all running model Ids" << endl;
+        *sock << "  load pml_file   Load a .pml file" << endl;
+        *sock << "  select Id       focus on the designed pocke. Use list to retrieve Ids" << endl;
+        *sock << "  start model_name" << endl;
+//        *sock << "  key(k) [enter cr f1 esc ctrl+c shift+code+a \"Text\" ...]" << endl;
+    }
     else if(subcmd=="start") {
-        *sock << "Help start" << endl << "====" << endl;
+        *sock << "Help start" << endl << "==========" << endl;
         *sock << "  start ModelName" << endl;
         QHashIterator<QString, Models> i(mainwindow->objtable);
         while (i.hasNext()) {
@@ -67,6 +74,10 @@ void ServeurTcp::cmd_help(QTextStream *sock,QString subcmd)
             *sock << i.key() << " , " ;
         }
         *sock << endl;
+    }
+    else if(subcmd=="close") {
+        *sock << "Help close" << endl << "==========" << endl;
+        *sock << "  close [all,Id]  close all pocket or select by Id (use list command)." << endl;
     }
 }
 void ServeurTcp::process_command(QString ligne)
@@ -87,6 +98,11 @@ void ServeurTcp::process_command(QString ligne)
         qWarning()<<args[1];
         mainwindow->LoadPocket((args.size()>1)?args.at(1):"");
     }
+    else if (cmd=="load") {
+        qWarning()<<args[1];
+        if (args.size()>1)
+        mainwindow->opensession(args.at(1));
+    }
     else if (cmd == "list") {
         for (int i=0;i<listpPObject.size();i++)
         {
@@ -102,6 +118,25 @@ void ServeurTcp::process_command(QString ligne)
             pc->raise();
             pc->setFocus();
         }
+    }
+    else if (cmd=="close") {
+        if ((args.size()==2) && (args.at(1) == "all")) {
+            for (int i=0;i<listpPObject.size();i++)
+            {
+                CPObject *po = listpPObject.at(i);
+                po->slotExit();
+            }
+            return;
+        }
+        if ((args.size()==2) && (args.at(1).toInt() < listpPObject.size())) {
+            mainwindow->saveAll = NO;
+            CPObject *pc = listpPObject.at(args.at(1).toInt());
+            pc->slotExit();
+            return;
+        }
+        texte << "Bad argument." << endl;
+        cmd_help(&texte,"close");
+        return;
     }
 }
 

@@ -27,7 +27,7 @@
 
 Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 3865000);
+    setfrequency( (int) 3686400);
     model = mod;
     switch (model) {
     case Z1GR:
@@ -144,6 +144,8 @@ bool Cz1::init(void)				// initialize
     publish(pCENTCONNECTOR);
     pSIOCONNECTOR = new Cconnector(this,9,2,Cconnector::DB_25,"Serial Connector",false,QPoint(0,50));
     publish(pSIOCONNECTOR);
+    pSERIALCONNECTOR = new Cconnector(this,2,3,Cconnector::Jack,"Syncronous Serial Connector",false,QPoint(0,10));
+    publish(pSERIALCONNECTOR);
 
 //    pUART->init();
 //    pUART->pTIMER = pTIMER;
@@ -166,8 +168,13 @@ bool Cz1::init(void)				// initialize
     lbl[11]= "BUSY";
     lbl[31]= "INIT";
     lbl[32]= "ERROR";
+    QHash<int,QString> lbl_serial;
+    lbl_serial.clear();
+    lbl_serial[1] = "RXD";
+    lbl_serial[2] = "TXD";
     WatchPoint.remove(this);
     WatchPoint.add(&pCENTCONNECTOR_value,64,36,this,"Centronic 36pins connector",lbl);
+    WatchPoint.add(&pSERIALCONNECTOR_value,64,3,this,"Synchronous serial connector",lbl_serial);
 
     return true;
 }
@@ -195,6 +202,7 @@ bool Cz1::run() {
 
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+    pSERIALCONNECTOR_value = pSERIALCONNECTOR->Get_values();
 
 //    quint64 _states = pTIMER->state;
 
@@ -233,6 +241,8 @@ bool Cz1::run() {
 
     pCENTCONNECTOR_value = pCENTCONNECTOR->Get_values();
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+    pSERIALCONNECTOR_value = pSERIALCONNECTOR->Get_values();
+
     return true;
 }
 
@@ -304,21 +314,36 @@ UINT8 Cz1::in8(UINT16 Port)
     case 0x005a: // model type  used by SYSTEM* test command
         return 0x04 | 0x80;
 
+    case 0x62: return *LOW(i80l188ebcpu->pserial0->BxCNT);
+    case 0x63: return *HIGH(i80l188ebcpu->pserial0->BxCNT);
     // RS232C communication input
     case 0x64:
+        return  *LOW(i80l188ebcpu->pserial0->SxCON);
         if (fp_log) fprintf(fp_log,"IN[%04x]=80    pc=%08x\n",Port,pCPU->get_PC());
         return 0x08;
         break;
     case 0x65:
         if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        return  *HIGH(i80l188ebcpu->pserial0->SxCON);
         break;
     case 0x66:
+//        AddLog(LOG_SIO,tr("Read SxSTSL=%1").arg(*LOW(i80l188ebcpu->pserial0->SxSTS),2,16,QChar('0')));
         if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        return  *LOW(i80l188ebcpu->pserial0->SxSTS);
         return 0x08;
     case 0x67:
+//        AddLog(LOG_SIO,tr("Read SxSTSH=%1").arg(*HIGH(i80l188ebcpu->pserial0->SxSTS),2,16,QChar('0')));
         if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        return  *HIGH(i80l188ebcpu->pserial0->SxSTS);
         break;
-
+    case 0x68 : {
+     quint8 x= i80l188ebcpu->pserial0->SxRBUF & 0xff;
+        if (( x!=0xff)&&( x!=0x0d)) {
+            AddLog(LOG_CONSOLE,tr("%1").arg(QChar(x)));
+        }
+    }
+        return  *LOW(i80l188ebcpu->pserial0->SxRBUF);
+    case 0x69 : return *HIGH(i80l188ebcpu->pserial0->SxRBUF);
     case 0x0082:
         return 0x0;
     case 0x0083:
@@ -442,36 +467,45 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         *HIGH(i80l188ebcpu->p8253->t2->tcon) = x;
         AddLog(LOG_MASTER,tr("Set T2Control High[%1]=%2").arg(x,2,16,QChar('0')).arg(timer2Control,4,16,QChar('0')));
         break;
-    case 0x60:
-    case 0x61: // RS232 SPEED
-//                 97FFh                ; 75bps
-//                 8BFFh                ; 150bps
-//                 85FFh                ; 300bps
-//                 82FFh                ; 600bps
-//                 817Fh                ; 1200bps
-//                 80BFh                ; 2400bps
-//                 805Fh                ; 4800bps
-//                 802Fh                ; 9600bps
-//                 8017h                ; 19200bps
-
+    case 0x60: // B0CMP
+        AddLog(LOG_SIO,tr("Set BxCMP Low=%1").arg(x,2,16,QChar('0')));
+        *LOW(i80l188ebcpu->pserial0->BxCMP) = x;
         break;
-    case 0x64: // send or 20h if configure with XON/XOFF
+    case 0x61:
+        *HIGH(i80l188ebcpu->pserial0->BxCMP) = x;
+        AddLog(LOG_SIO,tr("Set BxCMP High=%1").arg(x,2,16,QChar('0')));
+        break;
+    case 0x64:
+        *LOW(i80l188ebcpu->pserial0->SxCON) = x;
+        AddLog(LOG_SIO,tr("Write SxCONL:%1  mode=%2").arg(x,2,16,QChar('0')).arg(x&0x07,2,16,QChar('0')));
+        if (fp_log) fprintf(fp_log,"IN[%04x]=80    pc=%08x\n",Port,pCPU->get_PC());
+        break;
+    case 0x65:
+        if (fp_log) fprintf(fp_log,"IN[%04x]    pc=%08x\n",Port,pCPU->get_PC());
+        *HIGH(i80l188ebcpu->pserial0->SxCON) = x;
+        AddLog(LOG_SIO,tr("Write SxCONH:%1").arg(x,2,16,QChar('0')));
         break;
     case 0x6a:
         if (( x!=0xff)&&( x!=0x0d)) {
-            AddLog(LOG_CONSOLE,tr("%1").arg(QChar(x)));
+            AddLog(LOG_SIO,tr("send L:[%1]=%2").arg(x,2,16,QChar('0')).arg(QChar(x)));
         }
+        i80l188ebcpu->pserial0->set_SxTBUFL(x);
+        //*LOW(i80l188ebcpu->pserial0->SxTBUF) = x;
+        break;
+    case 0x6b:
+        if (( x!=0xff)&&( x!=0x0d)) {
+            AddLog(LOG_SIO,tr("send H:[%1]=%2").arg(x,2,16,QChar('0')).arg(QChar(x)));
+        }
+        //*HIGH(i80l188ebcpu->pserial0->SxTBUF) = x;
         break;
     case 0x00b8:
         io_b8 = x;
         break;
     case 0x0200:
-//        ks = ks & 0xff00 | x;
 //        AddLog(LOG_KEYBOARD,tr("Set KSL[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
         *LOW(ks) = x;
         break;
     case 0x0201:
-//        ks = (x <<8) | (ks & 0xff);
 //        AddLog(LOG_KEYBOARD,tr("Set KSH[%1]=%2").arg(x,2,16,QChar('0')).arg(ks,4,16,QChar('0')));
         *HIGH(ks) = x;
         break;
@@ -706,7 +740,7 @@ UINT16 Cz1::getKey()
 }
 
 bool Cz1::Get_Connector(void) {
-
+    Get_SerialConnector();
     Get_CentConnector();
     Get_SIOConnector();
 
@@ -714,11 +748,20 @@ bool Cz1::Get_Connector(void) {
 }
 
 bool Cz1::Set_Connector(void) {
+    Set_SerialConnector();
     Set_SIOConnector();
     Set_CentConnector();
 
 
     return true;
+}
+
+void Cz1::Get_SerialConnector(void) {
+
+    i80l188ebcpu->pserial0->set_RXD(pSERIALCONNECTOR->Get_pin(1));
+}
+void Cz1::Set_SerialConnector(void) {
+    pSERIALCONNECTOR->Set_pin(2,!i80l188ebcpu->pserial0->get_TXD());
 }
 
 void Cz1::Get_CentConnector(void) {

@@ -5,11 +5,12 @@
 /* UART(serial port) emulation class                      */
 /**********************************************************/
 #include <QMenu>
+#include <QMutex>
 
 #include "pobject.h"
 
 
-#define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
+
 class DialogConsole;
 #include "Connect.h"
 
@@ -92,7 +93,7 @@ public:
 	void paintEvent(QPaintEvent *);
 
     bool initSignalMap(Cconnector::ConnectorType type);
-    qint8 getPinId(SIGNAME signal);
+    quint8 getPinId(SIGNAME signal);
 
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *);
@@ -100,6 +101,7 @@ public:
     void initConnectorType(QString type);
 
     void updateMapConsole();
+    bool SIO_GET_PIN(SIGNAME signal);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void ShowConsole(void);
@@ -110,6 +112,7 @@ signals:
     void newByteRecv(qint8);
 
 private:
+    QMutex SMapMutex;
 	int		inBitNb;
 	int		Sii_ndx;
     int		Sii_wait,Sii_wait_recv;
@@ -125,7 +128,7 @@ private:
     qint64  oldstate_in;
     qint64  oldstate_out;
     bool    Start_Bit_Sent;
-    unsigned char	t,c,waitbitstart,waitbitstop;
+    unsigned char	t,c,waitbitstart,waitbitstop,waitparity;
     int byteBufferSize;
 };
 

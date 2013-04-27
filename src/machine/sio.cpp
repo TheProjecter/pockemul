@@ -11,9 +11,11 @@
 #include "dialoganalog.h"
 #include "init.h"
 
-#define SIO_GET_PIN(n)		pSIOCONNECTOR->Get_pin(getPinId(n))
+//#define SIO_GET_PIN(n)		(getPinId(n) == 0xff ? 0 : (getPinId(n)==0xfe?1:pSIOCONNECTOR->Get_pin(getPinId(n))))
 #define SIO_SET_PIN(n,v)	pSIOCONNECTOR->Set_pin(getPinId(n),v)
 
+//#define TICKS_BDS	(getfrequency()/baudrate)
+#define TICKS_BDS	(pTIMER->pPC->getfrequency()/baudrate)
 
 #define SIO_GNDP	1
 #define SIO_SD 		2
@@ -30,13 +32,28 @@
 #define SIO_ER		14
 #define SIO_PRQ		15
 
+bool Csio::SIO_GET_PIN(SIGNAME signal) {
+    switch (getPinId(signal)) {
+    case 0xfe : return false;
+    case 0xff: return true;
+    default: return pSIOCONNECTOR->Get_pin(getPinId(signal));
+    }
+}
+
 
 Csio::~Csio(){
     delete(pSIOCONNECTOR);
 }
 
-qint8 Csio::getPinId(SIGNAME signal) {
-    return signalMap[signal];
+quint8 Csio::getPinId(SIGNAME signal) {
+    quint8 ret = 0;
+    SMapMutex.lock();
+    if (signalMap.contains(signal))
+        ret= signalMap[signal];
+
+    SMapMutex.unlock();
+
+    return ret;
 }
 
 bool Csio::SaveSession_File(QXmlStreamWriter *xmlOut)
@@ -73,6 +90,7 @@ void Csio::updateMapConsole(void) {
 }
 
 bool Csio::initSignalMap(Cconnector::ConnectorType type) {
+    SMapMutex.lock();
     switch (type) {
     case Cconnector::Sharp_11 : signalMap.clear();
                                 signalMap[S_SD] = 7;    // ok
@@ -161,10 +179,32 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,8,this,pSIOCONNECTOR->Desc);
                                 break;
+    case Cconnector::Jack   :   signalMap.clear();
+                                signalMap[S_SD] = 2;
+                                signalMap[S_RD] = 1;
+                                signalMap[S_RS] = 0xff;
+                                signalMap[S_CS] = 0;
+                                signalMap[S_CD] = 0;
+                                signalMap[S_RR] = 0;
+                                signalMap[S_ER] = 0xff;
+                                updateMapConsole();
+                                pSIOCONNECTOR->Desc = "Jack";
+                                pSIOCONNECTOR->setNbpins(3);
+                                pSIOCONNECTOR->setType(Cconnector::Jack);
+                                WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
+                                WatchPoint.add(&pSIOCONNECTOR_value,64,3,this,pSIOCONNECTOR->Desc);
+                                BackGroundFname	= ":/EXT/ext/jackR.png";
+                                pSIOCONNECTOR->setSnap(QPoint(35,7));
+                                setDX(75);
+                                setDY(20);
+                                resize(getDX(),getDY());
+                                InitDisplay();
+                                break;
     default: return false;
         break;
     }
 
+    SMapMutex.unlock();
     return true;
 }
 
@@ -179,9 +219,9 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
 
     currentBit=oldstate_in=0;
     Start_Bit_Sent = false;
-    t=c=0;waitbitstart=1;waitbitstop=0;
+    t=c=0;waitbitstart=1;waitbitstop=waitparity=0;
 
-    baudrate = 1200;
+    baudrate = 4800;
 
     ToDestroy = false;
 
@@ -196,7 +236,8 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     Sii_Bit_Nb			= 0;
     Sii_LfWait			= 500;
 
-    setfrequency( 0 );
+    setfrequency( 0);
+    ioFreq = 0;
     BackGroundFname	= ":/EXT/ext/serial.png";
 
     pTIMER		= new Ctimer(this);
@@ -228,7 +269,8 @@ void Csio::Set_RS(bool val) { RS = val;	}
 
 void Csio::Set_BaudRate(int br) {
     baudrate = br;
-    AddLog(LOG_SIO,tr("new baudrate = %1").arg(br))
+    AddLog(LOG_CONSOLE,tr("new baudrate = %1\n").arg(br));
+    qWarning()<<"new baudrate"<<baudrate;
 }
 int  Csio::Get_BaudRate(void) {return baudrate;}
 
@@ -247,6 +289,7 @@ void Csio::contextMenuEvent ( QContextMenuEvent * event )
         menuConnectorType->addAction(tr("Canon 9 pins"));
         menuConnectorType->addAction(tr("DB25 Serial Connector"));
         menuConnectorType->addAction(tr("DIN 8 pins"));
+        menuConnectorType->addAction(tr("Jack"));
 
         connect(menuConnectorType, SIGNAL(triggered(QAction*)), this, SLOT(slotConnType(QAction*)));
 
@@ -271,6 +314,9 @@ void Csio::initConnectorType(QString type) {
     }
     else if (type == QString("DIN 8 pins")) {
         initSignalMap(Cconnector::DIN_8);
+    }
+    else if (type == QString("Jack")) {
+        initSignalMap(Cconnector::Jack);
     }
 
 }
@@ -321,6 +367,7 @@ bool Csio::run(void)
     //SIO_SET_PIN(SIO_PAK, 0);
 
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
+//    pTIMER->state++;
 	return true;
 }
 
@@ -466,6 +513,7 @@ void Csio::ExportBit(bool data) {}
 
 void Csio::byteRecv(qint8 data)
 {
+    if (data >0)
 	baOutput.append( (char) data);
 
     // Emit signal new data
@@ -495,52 +543,65 @@ void Csio::bitToByte(void)
     if (deltastate < Sii_wait_recv) {
         return;
     }
-		
+//    AddLog(LOG_CONSOLE,".");
 	if (!(ER && RS)) 
 	{
         oldstate_out	= pTIMER->state;
         Sii_wait_recv	= 0;
         waitbitstart = 1;
+//        AddLog(LOG_CONSOLE,tr("Wait not(ER&&RS)\n"));
+
 		return;
 	}	
 //    Sii_wait	= TICKS_BDS;
     oldstate_out	= pTIMER->state;
 //    oldstate_out	+= Sii_wait;
 		
-    AddLog(LOG_SIO,tr("STOP BIT"));
-    if (waitbitstop && (SD==0))
+//    AddLog(LOG_CONSOLE,tr("STOP BIT\n"));
+    if (waitparity)
+    {
+        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(20);
+        waitbitstop = 1;
+        waitparity = 0;
+        //		Bit parity
+        AddLog(LOG_CONSOLE,tr("parity BIT\n"));
+        Sii_wait_recv = TICKS_BDS;
+    }
+    else if (waitbitstop && (SD==0))
     {
         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
         waitbitstop = 0;
         waitbitstart = 1;
         //		Bit STOP
-        AddLog(LOG_SIO,tr("STOP BIT"));
+        AddLog(LOG_CONSOLE,tr("STOP BIT\n"));
         Sii_wait_recv = 0;
     }
     else if (waitbitstart && SD)
     {
         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
         waitbitstart = 0;
+        waitbitstop = 0;
         //		Bit START
-        AddLog(LOG_SIO,tr("START BIT"));
-        Sii_wait_recv	= TICKS_BDS;
+        AddLog(LOG_CONSOLE,tr("START BIT\n"));
+        Sii_wait_recv	= TICKS_BDS*1.5;
         c=0;
     }
-    else if (!waitbitstart)
+    else if (!waitbitstart && !waitbitstop)
     {
 		t>>=1;
 		if(SD==0) t|=0x80;
-		AddLog(LOG_SIO,tr("Bit = %1").arg(SD));
+        AddLog(LOG_CONSOLE,tr("%1").arg(SD));
         if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(c+2);
 		if((c=(++c)&7)==0)
         {
-			AddLog(LOG_SIO,tr("Byte = %1").arg(t,2,16,QChar('0')));
+            AddLog(LOG_CONSOLE,tr(" Byte = %1\n").arg(t,2,16,QChar('0')));
             byteRecv(t);
 			t=0;
-			waitbitstop = 1;
+            waitparity = 1;
 //            Set_CS(0);
 //            Sii_wait_recv = 0;
 		}
+        Sii_wait_recv	= TICKS_BDS;
 	}
 //    else if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(0);
 }
