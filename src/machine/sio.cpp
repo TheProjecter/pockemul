@@ -602,7 +602,12 @@ void Csio::bitToByte(void)
             AddLog(LOG_CONSOLE,tr(" Byte = %1\n").arg(t,2,16,QChar('0')));
             byteRecv(t);
 			t=0;
-            waitparity = 1;
+            if (dialogconsole->parity != DialogConsole::NONE)
+                waitparity = 1;
+            else {
+                waitbitstop = 1;
+                waitparity = 0;
+            }
 //            Set_CS(0);
 //            Sii_wait_recv = 0;
 		}

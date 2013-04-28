@@ -16,7 +16,11 @@ public:
 	void refresh( void);
 
     QMutex refreshMutex;
+    enum PARITY { NONE,EVEN,ODD};
+
+    PARITY parity;
 private slots:
+    void parityToggle(bool checked);
 	void	sendData( void);
     void    openFile(void);
     void	stopStream( void);

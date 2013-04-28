@@ -335,7 +335,8 @@ HEADERS += src/core/Connect.h \
     src/machine/fp40.h \
     src/cpu/i80L188EB.h \
     src/cpu/pit8253.h \
-    src/core/servertcp.h
+    src/core/servertcp.h \
+    src/machine/lbc1100.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -389,7 +390,8 @@ RESOURCES += resources/ext.qrc \
     resources/z1.qrc \
     resources/fp200.qrc \
     resources/pc1211.qrc \
-    resources/pc2001.qrc
+    resources/pc2001.qrc \
+    resources/lbc1100.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -604,7 +606,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/fp40.cpp \
     src/cpu/i80L188EB.cpp \
     src/cpu/pit8253.cpp \
-    src/core/servertcp.cpp
+    src/core/servertcp.cpp \
+    src/machine/lbc1100.cpp
 
 
 

@@ -140,6 +140,10 @@
         <document desc="Introduction to C 2/3 (en)" link="http://pockemul.free.fr/Documents/userguide/PB2000/CasioPB2000C_II.pdf"/>
         <document desc="Introduction to C 3/3 (en)" link="http://pockemul.free.fr/Documents/userguide/PB2000/CasioPB2000C_III.pdf"/>
     </model>
+    <model value="lbc1100">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/general/lbc-1100_e.html"/>
+        <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/General_LBC-1100.pdf"/>
+    </model>
     <model value="e500">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-e500_e.html"/>
         <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PCE500_OM_GB.pdf"/>
@@ -160,4 +164,5 @@
         <url desc="Silicium (fr)" link="http://www.silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=206:casio-fp-200&amp;catid=55:calcs&amp;Itemid=29"/>
         <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/FP200_OM_FR.pdf"/>
     </model>
+
 </weblinks>

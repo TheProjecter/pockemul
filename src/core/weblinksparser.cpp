@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "weblinksparser.h"
 
 
@@ -10,8 +12,9 @@ bool WebLinksParser::startElement( const QString&, const QString&, const QString
         if (parent->getcfgfname()==model)
             parent->insertLinkAction(CPObject::WEBLINK,desc,link);
     }
-    if(name == "document" )
+    else if(name == "document" )
     {
+        qWarning()<<model;
         QString desc=attrs.value("desc");
         QString link=attrs.value("link");
         if (parent->getcfgfname()==model)

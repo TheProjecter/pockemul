@@ -20,6 +20,9 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
     connect(baudCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(changeBaudrate(QString)));
     connect(pbStop,SIGNAL(clicked()),this,SLOT(stopStream()));
 
+    connect(parityNrb,SIGNAL(toggled(bool)),this,SLOT(parityToggle(bool)));
+    connect(parityErb,SIGNAL(toggled(bool)),this,SLOT(parityToggle(bool)));
+    connect(parityOrb,SIGNAL(toggled(bool)),this,SLOT(parityToggle(bool)));
     connect(lEdit_CD,SIGNAL(textChanged(QString)),this,SLOT(updateMapCD(QString)));
     connect(lEdit_CS,SIGNAL(textChanged(QString)),this,SLOT(updateMapCS(QString)));
     connect(lEdit_ER,SIGNAL(textChanged(QString)),this,SLOT(updateMapER(QString)));
@@ -30,6 +33,7 @@ DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, 
 
     pSIO = (Csio *) parent;
     currentIndex=0;
+    parity = NONE;
 	
 }
 //
@@ -68,6 +72,13 @@ void DialogConsole::refresh( void)
 		currentIndex += len;
 	}
     refreshMutex.unlock();
+}
+
+void DialogConsole::parityToggle(bool checked)
+{
+    if (parityNrb->isChecked()) parity = NONE;
+    if (parityErb->isChecked()) parity = EVEN;
+    if (parityOrb->isChecked()) parity = ODD;
 }
 
 void DialogConsole::changeBaudrate(QString baud) {

@@ -200,6 +200,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["Nec PC-2001"]=PC2001;
     objtable["Nec PC-2021"]=PC2021;
     objtable["Nec PC-2081"]=PC2081;
+    objtable["General LBC-1100"]=LBC1100;
 }
 
 //

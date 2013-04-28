@@ -74,6 +74,8 @@
 #include "pc2001.h"
 #include "pc2021.h"
 
+#include "lbc1100.h"
+
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -166,6 +168,7 @@ CPObject *pPC=0;
         case PC2001   : pPC = new Cpc2001;      pPC->setName("Nec PC-2001"); break;
         case PC2021   : pPC = new Cpc2021;      pPC->setName("Nec PC-2021"); break;
         case PC2081   : pPC = new Cpc2081;      pPC->setName("Nec PC-2081"); break;
+        case LBC1100  : pPC = new Clbc1100;      pPC->setName("General LBC-1100"); break;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");
