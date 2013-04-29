@@ -63,19 +63,19 @@
 #include "cx710.h"
 #include "e500.h"
 #include "g850v.h"
-#include "pb1000.h"
-#include "pb2000.h"
-#include "md100.h"
-#include "fp100.h"
-#include "fp40.h"
-#include "fp200.h"
+#include "casio/pb1000.h"
+#include "casio/pb2000.h"
+#include "casio/md100.h"
+#include "casio/fp100.h"
+#include "casio/fp40.h"
+#include "casio/fp200.h"
 
-#include "z1.h"
+#include "casio/z1.h"
 #include "pc2001.h"
 #include "pc2021.h"
 
-#include "lbc1100.h"
-#include "cl1000.h"
+#include "general/lbc1100.h"
+#include "general/cl1000.h"
 
 
 extern QList<CPObject *> listpPObject;  

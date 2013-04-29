@@ -263,7 +263,7 @@ HEADERS += src/core/Connect.h \
     src/machine/cx710.h \
     src/cpu/uart.h \
     ui/uartconsole.h \
-    src/machine/pb1000.h \
+    src/machine/casio/pb1000.h \
     src/cpu/hd44352.h \
     ui/cregshd61700widget.h \
     src/lcd/Lcdc_x07.h \
@@ -279,22 +279,22 @@ HEADERS += src/core/Connect.h \
     pictureflow/slideshow.h \
     src/core/launchbuttonwidget.h \
     src/core/tapandholdgesture.h \
-    src/machine/pb2000.h \
-    src/machine/md100.h \
-    src/machine/casiodisk.h \
-    src/machine/fp100.h \
+    src/machine/casio/pb2000.h \
+    src/machine/casio/md100.h \
+    src/machine/casio/casiodisk.h \
+    src/machine/casio/fp100.h \
     src/machine/g850v.h \
     src/cpu/sed1560.h \
     src/lcd/Lcdc_g850.h \
     src/cpu/i80x86.h \
-    src/machine/z1.h \
+    src/machine/casio/z1.h \
     src/cpu/hd66108.h \
     src/lcd/Lcdc_z1.h \
     src/cpu/cf79107pj.h \
     src/cpu/i8085.h \
     src/cpu/i8085cpu.h \
     src/cpu/i8085daa.h \
-    src/machine/fp200.h \
+    src/machine/casio/fp200.h \
     src/lcd/Lcdc_fp200.h \
     src/cpu/rp5c01.h \
     ui/dialogvkeyboard.h \
@@ -332,12 +332,12 @@ HEADERS += src/core/Connect.h \
     libavoid/connectionpin.h \
     libavoid/assertions.h \
     src/machine/printerctronics.h \
-    src/machine/fp40.h \
+    src/machine/casio/fp40.h \
     src/cpu/i80L188EB.h \
     src/cpu/pit8253.h \
     src/core/servertcp.h \
-    src/machine/lbc1100.h \
-    src/machine/cl1000.h
+    src/machine/general/lbc1100.h \
+    src/machine/general/cl1000.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -539,7 +539,7 @@ SOURCES += src/core/Connect.cpp \
     src/machine/cx710.cpp \
     src/cpu/uart.cpp \
     ui/uartconsole.cpp \
-    src/machine/pb1000.cpp \
+    src/machine/casio/pb1000.cpp \
     src/cpu/hd44352.cpp \
     ui/cregshd61700widget.cpp \
     src/lcd/Lcdc_x07.cpp \
@@ -554,21 +554,20 @@ SOURCES += src/core/Connect.cpp \
     pictureflow/slideshow.cpp \
     src/core/launchbuttonwidget.cpp \
     src/core/tapandholdgesture.cpp \
-    src/machine/pb2000.cpp \
-    src/machine/md100.cpp \
-    src/machine/casiodisk.cpp \
-    src/machine/fp100.cpp \
+    src/machine/casio/pb2000.cpp \
+    src/machine/casio/md100.cpp \
+    src/machine/casio/casiodisk.cpp \
     src/machine/g850v.cpp \
     src/cpu/sed1560.cpp \
     src/lcd/Lcdc_g850.cpp \
     src/cpu/i80x86.cpp \
-    src/machine/z1.cpp \
+    src/machine/casio/z1.cpp \
     src/cpu/hd66108.cpp \
     src/lcd/Lcdc_z1.cpp \
     src/cpu/i80x86_dasm.cpp \
     src/cpu/cf79107pj.cpp \
     src/cpu/i8085.cpp \
-    src/machine/fp200.cpp \
+    src/machine/casio/fp200.cpp \
     src/cpu/i8085_dasm.cpp \
     src/lcd/Lcdc_fp200.cpp \
     src/cpu/rp5c01.cpp \
@@ -604,13 +603,13 @@ SOURCES += src/core/Connect.cpp \
     libavoid/connector.cpp \
     libavoid/connectionpin.cpp \
     src/machine/printerctronics.cpp \
-    src/machine/fp40.cpp \
+    src/machine/casio/fp40.cpp \
     src/cpu/i80L188EB.cpp \
     src/cpu/pit8253.cpp \
     src/core/servertcp.cpp \
-    src/machine/lbc1100.cpp \
-    src/machine/cl1000.cpp
-
+    src/machine/general/lbc1100.cpp \
+    src/machine/general/cl1000.cpp \
+    src/machine/casio/fp100.cpp
 
 
 
