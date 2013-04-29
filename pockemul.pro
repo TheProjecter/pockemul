@@ -336,7 +336,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/i80L188EB.h \
     src/cpu/pit8253.h \
     src/core/servertcp.h \
-    src/machine/lbc1100.h
+    src/machine/lbc1100.h \
+    src/machine/cl1000.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -607,7 +608,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i80L188EB.cpp \
     src/cpu/pit8253.cpp \
     src/core/servertcp.cpp \
-    src/machine/lbc1100.cpp
+    src/machine/lbc1100.cpp \
+    src/machine/cl1000.cpp
 
 
 

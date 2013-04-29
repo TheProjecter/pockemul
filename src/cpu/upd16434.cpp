@@ -431,6 +431,7 @@ BYTE CUPD16434::cmd_STOP(quint8 cmd)
 
 void CUPD16434::Load_Internal(QXmlStreamReader *xmlIn)
 {
+#if 0
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "upd16434")) {
@@ -439,10 +440,12 @@ void CUPD16434::Load_Internal(QXmlStreamReader *xmlIn)
         }
         xmlIn->skipCurrentElement();
     }
+#endif
 }
 
 void CUPD16434::save_internal(QXmlStreamWriter *xmlOut)
 {
+
     xmlOut->writeStartElement("cpu");
         xmlOut->writeAttribute("model","upd16434");
         QByteArray ba_reg((char*)&info,sizeof(info));

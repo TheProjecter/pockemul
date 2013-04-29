@@ -39,7 +39,8 @@ public:
         Casio_30,
         Centronics_36,
         DB_25,
-        DIN_8
+        DIN_8,
+        General_20
     };
 
     enum ConnectorDir

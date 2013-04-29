@@ -176,7 +176,8 @@ enum Models {
     PC2001,
     PC2021,
     PC2081,
-    LBC1100
+    LBC1100,
+    CL1000
 };
 
 #endif

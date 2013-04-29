@@ -75,6 +75,7 @@
 #include "pc2021.h"
 
 #include "lbc1100.h"
+#include "cl1000.h"
 
 
 extern QList<CPObject *> listpPObject;  
@@ -169,6 +170,8 @@ CPObject *pPC=0;
         case PC2021   : pPC = new Cpc2021;      pPC->setName("Nec PC-2021"); break;
         case PC2081   : pPC = new Cpc2081;      pPC->setName("Nec PC-2081"); break;
         case LBC1100  : pPC = new Clbc1100;      pPC->setName("General LBC-1100"); break;
+
+        case CL1000  : pPC = new Ccl1000;      pPC->setName("General CL-1000"); break;
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");

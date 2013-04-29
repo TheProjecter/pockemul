@@ -14,7 +14,6 @@ bool WebLinksParser::startElement( const QString&, const QString&, const QString
     }
     else if(name == "document" )
     {
-        qWarning()<<model;
         QString desc=attrs.value("desc");
         QString link=attrs.value("link");
         if (parent->getcfgfname()==model)

@@ -12,7 +12,6 @@
      <example idpocket="CE-129P" filename="./" name="Sharp ce-129p" image=":/EXT/ext/ce-129p.jpg"/>
      <example idpocket="CE-120P" filename="./" name="Sharp ce-120p" image=":/EXT/ext/ce-120p.png"/>
      <example idpocket="CE-140P" filename="./" name="Sharp ce-140p" image=":/EXT/ext/ce-140p.jpg"/>
-     <example idpocket="CE-150" filename="./" name="Sharp ce-150" image=":/EXT/ext/ce-150.png"/>
      <example idpocket="CE-140F" filename="./" name="Sharp ce-140f" image=":/EXT/ext/ce-140f.png"/>
      <example idpocket="CE-1600P" filename="./" name="Sharp ce-1600p" image=":/EXT/ext/ce-1600p.png"/>
      <example idpocket="Canon X-710" filename="./" name="Canon X-710" image=":/x07/x710.png"/>
@@ -24,6 +23,7 @@
      <example idpocket="Casio FP-100" filename="./" name="Casio FP-100" image=":/EXT/ext/fp100.png"/>
      <example idpocket="Casio FP-40" filename="./" name="Casio FP-40" image=":/EXT/ext/fp40.png"/>
      <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/EXT/ext/pc-2021.png"/>
-     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/EXT/ext/pc-2081.png"/>
+     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/EXT/ext/pc-2081.png"/>   
+     <example idpocket="General CL-1000" filename="./" name="General CL-1000" image=":/EXT/ext/cl-1000.png"/>
    </demos>
  </demolauncher>
