@@ -102,31 +102,31 @@ HEADERS += src/core/Connect.h \
     src/cpu/pd1990ac.h \
     src/cpu/sc61860.h \
     src/cpu/sc62015.h \
-    src/machine/Ce126.h \
+    src/machine/sharp/Ce126.h \
     src/machine/ccable.h \
-    src/machine/ce125.h \
-    src/machine/ce150.h \
-    src/machine/ce152.h \
-    src/machine/pc1245.h \
-    src/machine/pc1250.h \
-    src/machine/pc1251.h \
-    src/machine/pc1255.h \
-    src/machine/pc1260.h \
-    src/machine/pc1350.h \
-    src/machine/pc1360.h \
-    src/machine/pc1401.h \
-    src/machine/pc1402.h \
-    src/machine/pc1403.h \
-    src/machine/pc1450.h \
-    src/machine/pc1475.h \
-    src/machine/pc1500.h \
+    src/machine/sharp/ce125.h \
+    src/machine/sharp/ce150.h \
+    src/machine/sharp/ce152.h \
+    src/machine/sharp/pc1245.h \
+    src/machine/sharp/pc1250.h \
+    src/machine/sharp/pc1251.h \
+    src/machine/sharp/pc1255.h \
+    src/machine/sharp/pc1260.h \
+    src/machine/sharp/pc1350.h \
+    src/machine/sharp/pc1360.h \
+    src/machine/sharp/pc1401.h \
+    src/machine/sharp/pc1402.h \
+    src/machine/sharp/pc1403.h \
+    src/machine/sharp/pc1450.h \
+    src/machine/sharp/pc1475.h \
+    src/machine/sharp/pc1500.h \
     src/machine/pcxxxx.h \
     src/machine/sio.h \
     src/cpu/z80.h \
     src/cpu/z80memory.h \
     src/cpu/lh5803.h \
-    src/machine/pc1600.h \
-    src/machine/ce1600p.h \
+    src/machine/sharp/pc1600.h \
+    src/machine/sharp/ce1600p.h \
     src/cpu/hd61102.h \
     src/cpu/z80-2.h \
     src/cpu/lu57813p.h \
@@ -136,15 +136,15 @@ HEADERS += src/core/Connect.h \
     src/machine/cmotor.h \
     src/cpu/tc8576p.h \
     src/core/cextension.h \
-    src/machine/pc2500.h \
+    src/machine/sharp/pc2500.h \
     src/core/Keyb2500.h \
     src/machine/ce515p.h \
-    src/machine/pc1421.h \
-    src/machine/pc1280.h \
+    src/machine/sharp/pc1421.h \
+    src/machine/sharp/pc1280.h \
     src/core/Keyb1280.h \
     src/core/qhexedit.h \
     src/core/qhexedit_p.h \
-    src/machine/ce140p.h \
+    src/machine/sharp/ce140p.h \
     src/core/weblinksparser.h \
     src/core/wavfile.h \
     src/core/lcc/lcc.h \
@@ -157,14 +157,14 @@ HEADERS += src/core/Connect.h \
     src/core/lcc/cstdlib.h \
     resources/lcc/model/PC-1350/graph.h \
     src/core/lcc/parser/parser.h \
-    src/machine/ce140f.h \
+    src/machine/sharp/ce140f.h \
     src/machine/cesimu.h \
     src/core/dialogsimulator.h \
     src/core/bineditor/bineditor.h \
     src/core/bineditor/texteditor_global.h \
     src/core/bineditor/colorscheme.h \
     src/core/bineditor/texteditorconstants.h \
-    src/machine/ce120p.h \
+    src/machine/sharp/ce120p.h \
     qcodeedit/qreliablefilewatch.h \
     qcodeedit/qpanellayout.h \
     qcodeedit/qlinemarksinfocenter.h \
@@ -259,7 +259,7 @@ HEADERS += src/core/Connect.h \
     src/machine/cx07char.h \
     ui/cregsz80widget.h \
     src/cpu/hd61700.h \
-    src/machine/e500.h \
+    src/machine/sharp/e500.h \
     src/machine/cx710.h \
     src/cpu/uart.h \
     ui/uartconsole.h \
@@ -283,7 +283,7 @@ HEADERS += src/core/Connect.h \
     src/machine/casio/md100.h \
     src/machine/casio/casiodisk.h \
     src/machine/casio/fp100.h \
-    src/machine/g850v.h \
+    src/machine/sharp/g850v.h \
     src/cpu/sed1560.h \
     src/lcd/Lcdc_g850.h \
     src/cpu/i80x86.h \
@@ -302,9 +302,9 @@ HEADERS += src/core/Connect.h \
     src/core/qcommandline.h \
     src/core/version.h \
     tinybasic/tinybasic.h \
-    src/machine/pc1211.h \
+    src/machine/sharp/pc1211.h \
     src/lcd/Lcdc_pc1211.h \
-    src/machine/ce122.h \
+    src/machine/sharp/ce122.h \
     src/core/downloadmanager.h \
     src/machine/pc2001.h \
     src/cpu/upd16434.h \
@@ -426,30 +426,30 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/pd1990ac.cpp \
     src/cpu/sc61860.cpp \
     src/cpu/sc62015.cpp \
-    src/machine/Ce126.cpp \
+    src/machine/sharp/Ce126.cpp \
     src/machine/ccable.cpp \
-    src/machine/ce125.cpp \
-    src/machine/ce150.cpp \
-    src/machine/ce152.cpp \
-    src/machine/pc1245.cpp \
-    src/machine/pc1250.cpp \
-    src/machine/pc1251.cpp \
-    src/machine/pc1255.cpp \
-    src/machine/pc1260.cpp \
-    src/machine/pc1350.cpp \
-    src/machine/pc1360.cpp \
-    src/machine/pc1401.cpp \
-    src/machine/pc1402.cpp \
-    src/machine/pc1403.cpp \
-    src/machine/pc1450.cpp \
-    src/machine/pc1475.cpp \
-    src/machine/pc1500.cpp \
+    src/machine/sharp/ce125.cpp \
+    src/machine/sharp/ce150.cpp \
+    src/machine/sharp/ce152.cpp \
+    src/machine/sharp/pc1245.cpp \
+    src/machine/sharp/pc1250.cpp \
+    src/machine/sharp/pc1251.cpp \
+    src/machine/sharp/pc1255.cpp \
+    src/machine/sharp/pc1260.cpp \
+    src/machine/sharp/pc1350.cpp \
+    src/machine/sharp/pc1360.cpp \
+    src/machine/sharp/pc1401.cpp \
+    src/machine/sharp/pc1402.cpp \
+    src/machine/sharp/pc1403.cpp \
+    src/machine/sharp/pc1450.cpp \
+    src/machine/sharp/pc1475.cpp \
+    src/machine/sharp/pc1500.cpp \
     src/machine/pcxxxx.cpp \
     src/machine/sio.cpp \
     src/cpu/z80.cpp \
     src/cpu/lh5803.cpp \
-    src/machine/pc1600.cpp \
-    src/machine/ce1600p.cpp \
+    src/machine/sharp/pc1600.cpp \
+    src/machine/sharp/ce1600p.cpp \
     src/cpu/z80_dasm.cpp \
     src/cpu/hd61102.cpp \
     src/cpu/lu57813p.cpp \
@@ -458,13 +458,13 @@ SOURCES += src/core/Connect.cpp \
     src/machine/cmotor.cpp \
     src/cpu/tc8576p.cpp \
     src/core/cextension.cpp \
-    src/machine/pc2500.cpp \
+    src/machine/sharp/pc2500.cpp \
     src/machine/ce515p.cpp \
-    src/machine/pc1421.cpp \
-    src/machine/pc1280.cpp \
+    src/machine/sharp/pc1421.cpp \
+    src/machine/sharp/pc1280.cpp \
     src/core/qhexedit.cpp \
     src/core/qhexedit_p.cpp \
-    src/machine/ce140p.cpp \
+    src/machine/sharp/ce140p.cpp \
     src/core/weblinksparser.cpp \
     src/core/wavfile.cpp \
     src/core/lcc/lcc.cpp \
@@ -475,12 +475,12 @@ SOURCES += src/core/Connect.cpp \
     src/core/lcc/pasm.cpp \
     src/core/lcc/cstdlib.cpp \
     src/core/lcc/parser/parser.cpp \
-    src/machine/ce140f.cpp \
+    src/machine/sharp/ce140f.cpp \
     src/machine/cesimu.cpp \
     src/core/dialogsimulator.cpp \
     src/core/bineditor/bineditor.cpp \
     src/core/bineditor/colorscheme.cpp \
-    src/machine/ce120p.cpp \
+    src/machine/sharp/ce120p.cpp \
     qcodeedit/qreliablefilewatch.cpp \
     qcodeedit/qpanellayout.cpp \
     qcodeedit/qlinemarksinfocenter.cpp \
@@ -535,7 +535,7 @@ SOURCES += src/core/Connect.cpp \
     ui/cregsz80widget.cpp \
     src/cpu/hd61700d.cpp \
     src/cpu/hd61700.cpp \
-    src/machine/e500.cpp \
+    src/machine/sharp/e500.cpp \
     src/machine/cx710.cpp \
     src/cpu/uart.cpp \
     ui/uartconsole.cpp \
@@ -557,7 +557,7 @@ SOURCES += src/core/Connect.cpp \
     src/machine/casio/pb2000.cpp \
     src/machine/casio/md100.cpp \
     src/machine/casio/casiodisk.cpp \
-    src/machine/g850v.cpp \
+    src/machine/sharp/g850v.cpp \
     src/cpu/sed1560.cpp \
     src/lcd/Lcdc_g850.cpp \
     src/cpu/i80x86.cpp \
@@ -575,9 +575,9 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/ctronics.cpp \
     src/core/qcommandline.cpp \
     tinybasic/tinybasic.cpp \
-    src/machine/pc1211.cpp \
+    src/machine/sharp/pc1211.cpp \
     src/lcd/Lcdc_pc1211.cpp \
-    src/machine/ce122.cpp \
+    src/machine/sharp/ce122.cpp \
     src/core/downloadmanager.cpp \
     src/machine/pc2001.cpp \
     src/cpu/upd16434.cpp \

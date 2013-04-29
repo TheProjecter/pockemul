@@ -1,0 +1,72 @@
+#ifndef _PC1250_H
+#define _PC1250_H
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <QImage>
+
+
+#include "pcxxxx.h"
+
+
+
+
+// WARNING: -- TO MODIFY !!!!!!!!!!!!!
+//#define KEY(c)	( asfocus && ( GetAsyncKeyState(c) || (toupper(pPC->pKEYB->LastKey)==toupper(c)) || pPC->pKEYB->LastKey == c) )
+#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+
+class Cpc1250:public CpcXXXX{						//PC1250 emulator main class
+
+public:
+    const char*	GetClassName(){ return("Cpc1250");}
+
+	void	TurnON(void);
+
+    virtual bool init(void);
+    virtual bool	Set_Connector(void);
+    virtual bool	Get_Connector(void);
+    virtual BYTE	Get_PortA(void);
+	virtual BYTE	Get_PortB(void);
+
+    virtual bool	InitDisplay(void);
+    //bool	CompleteDisplay(void);
+    virtual bool UpdateFinalImage(void);
+
+	bool	Mem_Mirror(DWORD *d);
+    virtual bool	Chk_Adr(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    UINT8 in(UINT8 address){return(1);}
+    UINT8 out(UINT8 address,UINT8 value){return(1);}
+
+
+	virtual bool	LoadExtra(QFile *);
+	virtual bool	SaveExtra(QFile *);
+
+	Cpc1250(CPObject *parent = 0);
+
+	virtual ~Cpc1250()
+	{								//[constructor]
+	}
+protected:
+	BYTE previous_key;
+
+    QImage iPowerOFF;
+    QImage iPowerRUN;
+    QImage iPowerPRO;
+    QImage iPowerRSV;
+};
+
+
+
+class Ctrspc3:public Cpc1250{						//PC1250 emulator main class
+public:
+
+    Ctrspc3(CPObject *parent = 0);
+
+
+};
+
+#endif
+
+
