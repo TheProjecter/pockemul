@@ -27,7 +27,7 @@
 //#include "debugger.h"
 #include "hd61700.h"
 #include "hd44352.h"
-#include "pb1000.h"
+#include "casio/pb1000.h"
 #include "Log.h"
 #include "pcxxxx.h"
 #include "Inter.h"

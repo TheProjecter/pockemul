@@ -2,7 +2,7 @@
 #include "common.h"
 #include "pcxxxx.h"
 #include "cpu.h"
-#include "e500.h"
+#include "sharp/e500.h"
 #include "Lcdc_e500.h"
 #include "Lcdc_symb.h"
 

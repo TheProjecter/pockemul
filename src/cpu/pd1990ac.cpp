@@ -6,7 +6,7 @@
 #include "common.h"
 #include "Log.h"
 #include "pd1990ac.h"
-#include "pc1500.h"
+#include "Inter.h"
 
 bool	CPD1990AC::exit(void)						//end
 {

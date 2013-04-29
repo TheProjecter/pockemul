@@ -2,7 +2,7 @@
 #include "common.h"
 #include "pcxxxx.h"
 #include "cpu.h"
-#include "g850v.h"
+#include "sharp/g850v.h"
 #include "sed1560.h"
 #include "Lcdc_g850.h"
 #include "Lcdc_symb.h"

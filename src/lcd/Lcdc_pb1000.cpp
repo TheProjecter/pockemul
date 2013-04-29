@@ -1,7 +1,7 @@
 #include <QPainter>
 #include "common.h"
 #include "pcxxxx.h"
-#include "pb1000.h"
+#include "casio/pb1000.h"
 #include "hd44352.h"
 #include "Lcdc_pb1000.h"
 #include "Lcdc_symb.h"

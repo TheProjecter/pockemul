@@ -3,7 +3,7 @@
 
 #include "Lcdc_pc1211.h"
 #include "Lcdc_symb.h"
-#include "pc1211.h"
+#include "sharp/pc1211.h"
 #include "tinybasic/tinybasic.h"
 #include "Inter.h"
 

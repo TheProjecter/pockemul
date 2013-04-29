@@ -129,6 +129,9 @@ bool Clbc1100::init(void)				// initialize
 
     portB = 0;
 
+
+
+
     return true;
 }
 
@@ -280,6 +283,7 @@ void Clbc1100::Reset()
 {
     CpcXXXX::Reset();
     pLCDC->init();
+    for (int i=0;i<4;i++) upd16434[i]->Reset();
     sendToPrinter=0;
 
 }

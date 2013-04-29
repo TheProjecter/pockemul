@@ -1,7 +1,7 @@
 #include <QPainter>
 #include "common.h"
 #include "pcxxxx.h"
-#include "pc1600.h"
+#include "sharp/pc1600.h"
 #include "Lcdc_pc1600.h"
 #include "Lcdc_symb.h"
 

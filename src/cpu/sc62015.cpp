@@ -12,7 +12,7 @@
 #include "Inter.h"
 #include "Debug.h"
 #include "Keyb.h"
-#include "e500.h"
+//#include "e500.h"
 //#include "rtc.h"
 //#include "opt11.h"
 //#include "ssfdc.h"

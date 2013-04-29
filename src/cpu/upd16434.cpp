@@ -272,6 +272,7 @@ void CUPD16434::Reset()
         info.imem[i] = 0;
     }
 
+    info.mode = SWM;
     info.on_off = 0;
     info.dataPointer = 0;
     info.status = 0;
@@ -431,7 +432,7 @@ BYTE CUPD16434::cmd_STOP(quint8 cmd)
 
 void CUPD16434::Load_Internal(QXmlStreamReader *xmlIn)
 {
-#if 0
+#if 1
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "upd16434")) {

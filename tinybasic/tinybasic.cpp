@@ -10,7 +10,7 @@
 
 #include "tinybasic.h"
 #include "pcxxxx.h"
-#include "pc1211.h"
+#include "sharp/pc1211.h"
 #include "Keyb.h"
 #include "Inter.h"
 

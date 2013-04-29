@@ -4,7 +4,7 @@
 
 #include "Lcdc.h"
 #include "hd44352.h"
-#include "pb1000.h"
+//#include "pb1000.h"
 
 class Clcdc_pb1000:public Clcdc{
 public:

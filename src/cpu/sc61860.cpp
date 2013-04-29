@@ -12,7 +12,6 @@
 #include "Inter.h"
 #include "Debug.h"
 #include "Keyb.h"
-#include "Ce126.h"
 #include "dialoganalog.h"
 #include "dialoglog.h"
 #include "ui/cregssc61860widget.h"

@@ -4,8 +4,8 @@
 #include "common.h"
 #include "lh5810.h"
 #include "lh5801.h"
-#include "pc1500.h"
-#include "ce152.h"
+//#include "pc1500.h"
+//#include "ce152.h"
 
 #define PB7	((lh5810.r_opb & 0x80)?TRUE:FALSE) 
 

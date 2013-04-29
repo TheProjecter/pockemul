@@ -2,7 +2,7 @@
 #include "common.h"
 #include "pcxxxx.h"
 #include "cpu.h"
-#include "z1.h"
+#include "casio/z1.h"
 #include "hd66108.h"
 #include "Lcdc_z1.h"
 #include "Log.h"

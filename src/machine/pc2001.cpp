@@ -275,6 +275,7 @@ void Cpc2001::Reset()
 {
     CpcXXXX::Reset();
     pLCDC->init();
+    for (int i=0;i<4;i++) upd16434[i]->Reset();
     sendToPrinter=0;
 
 }
