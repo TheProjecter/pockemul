@@ -9,7 +9,7 @@
 #include "Log.h"
 #include "paperwidget.h"
 
-Cce122::Cce122()
+Cce122::Cce122(CPObject *parent):Cce126(parent)
 {								//[constructor]
     BackGroundFname	= ":/EXT/ext/ce-122.png";
     setcfgfname("ce122");
@@ -28,7 +28,7 @@ Cce122::Cce122()
 
 bool Cce122::init(void)
 {
-    CPObject::init();
+    Cce126::init();
 
     setfrequency( 0);
     remove(pCONNECTOR); delete pCONNECTOR;
