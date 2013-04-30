@@ -227,7 +227,7 @@ public:
          bool leftPosition;
          bool processingInput;
          LINENUM labelLineNum;
-         bool printMode;
+         DEVICE printMode;
 
 };
 

@@ -41,6 +41,8 @@ public:
 
     QMutex printerBufferMutex;
     void sendToPrinter();
+
+    qint64 lastBreakPress;
 };
 
 #endif // PC1211_H

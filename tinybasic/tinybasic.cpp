@@ -447,7 +447,7 @@ bool CTinyBasic::init()
     processingInput = false;
     breakFlag = false;
     errorNumber = 0;
-    printMode = false;
+    printMode = CTinyBasic::DISPLAY;
 
     inLIST = false;
     alsoWait = false;
@@ -2348,7 +2348,7 @@ void CTinyBasic::go_LIST(LINENUM lineNb) {
     //    while(list_line != program_end)
     if (list_line != program_end) {
         inLIST = true;
-        printline(printMode?PRINTER:DISPLAY);
+        printline(printMode);
     }
 
 
@@ -2373,7 +2373,7 @@ void CTinyBasic::go_LIST_NEXT() {
     QMap<LINENUM,unsigned char*>::const_iterator  i = lineMap.lowerBound(linenum);
     if (i.key()==linenum) i++;
     if (i ==lineMap.end()){
-        if (printMode) {
+        if (printMode==PRINTER) {
             nextStep = WARMSTART;
             return;
         }
@@ -2383,7 +2383,7 @@ void CTinyBasic::go_LIST_NEXT() {
     linenum = i.key();
     list_line = i.value();
     inLIST = true;
-    printline(printMode?PRINTER:DISPLAY);
+    printline(printMode);
 
 //    waitForRTN = true;
     if (printMode == DISPLAY) {
@@ -2485,7 +2485,7 @@ void CTinyBasic::go_PRINT() {
 
 //    if (!CheckRunnig()) return;
 
-    DEVICE output = printMode?PRINTER:DISPLAY;
+    DEVICE output = printMode;
 
     outputBuffer.clear();
     leftPosition=false;

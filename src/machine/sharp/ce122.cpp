@@ -22,6 +22,7 @@ Cce122::Cce122(CPObject *parent):Cce126(parent)
 
     delete pKEYB; pKEYB=new Ckeyb(this,"ce122.map");
 
+    Power=true;
     printSwitch = true;
 
 }
@@ -87,8 +88,10 @@ bool Cce122::run(void)
         pCONNECTOR->Set_values(0);
     }
 
-    if (Power & printSwitch) pCONNECTOR->Set_pin(0,true);
-    else pCONNECTOR->Set_pin(0,false);
+    if (Power && printSwitch) {
+        pCONNECTOR->Set_pin(1,true);
+    }
+    else pCONNECTOR->Set_pin(1,false);
 
 
     return true;

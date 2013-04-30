@@ -60,6 +60,7 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
 
 
     cursorPos =0;
+    lastBreakPress=0;
 }
 
 Cpc1211::~Cpc1211()
@@ -82,14 +83,15 @@ bool Cpc1211::init()
 
 
 bool Cpc1211::printerConnected(void) {
-    if (pCONNECTOR->Get_pin(0))
+//    qWarning()<<"printer connected:"<<pCONNECTOR->Get_pin(1);
+    if (pCONNECTOR->Get_pin(1))
         return true;
     return false;
 }
 
 bool Cpc1211::run()
 {
-    qint64 lastBreakPress=0;
+
 
 //    qWarning("RUN");
     CTinyBasic *pBASIC = (CTinyBasic *)pCPU;
@@ -100,7 +102,7 @@ bool Cpc1211::run()
 
 
     if (!printerConnected()) {
-        pBASIC->printMode = false;
+        pBASIC->printMode = CTinyBasic::DISPLAY;
     }
 
     if (pKEYB->LastKey==K_BRK) {
@@ -108,18 +110,26 @@ bool Cpc1211::run()
             pBASIC->breakFlag = true;
         }
         else {
-            if (lastBreakPress==0) lastBreakPress=pTIMER->state;
-            if (pTIMER->msElapsed(lastBreakPress)<1500) {
+            if (lastBreakPress==0) {
+                lastBreakPress=pTIMER->state;
+                qWarning()<<"init break timer";
+            }
+            if ((pTIMER->msElapsed(lastBreakPress)>500) && (pTIMER->msElapsed(lastBreakPress)<2000)) {
                 // Check if Printer is connected
+                qWarning()<<"Second break";
                 if (printerConnected()) {
-                   pBASIC->printMode = true;
+                   pBASIC->printMode = CTinyBasic::PRINTER;
                     qWarning()<<"PRINT MODE ON";
                 }
-                else pBASIC->printMode = false;
             }
+            else {
+                pBASIC->printMode = CTinyBasic::DISPLAY;
+            }
+
         }
         pKEYB->LastKey = 0;
     }
+    if (pTIMER->msElapsed(lastBreakPress)>2000) lastBreakPress=0;
 
 
     if (pBASIC->pauseFlag) {
