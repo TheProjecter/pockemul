@@ -29,8 +29,6 @@ Ccl1000::Ccl1000(CPObject *parent):Cce515p(this) {
     setcfgfname(QString("cl1000"));
     BackGroundFname	= ":/EXT/ext/cl-1000.png";
 
-
-
     delete pKEYB; pKEYB		= new Ckeyb(this,"cl1000.map");
 
     setDXmm(260);//Pc_DX_mm = 256;
@@ -40,19 +38,12 @@ Ccl1000::Ccl1000(CPObject *parent):Cce515p(this) {
     setDX(928);//Pc_DX	= 895;
     setDY(804);//Pc_DY	= 615;
 
-
-
     printerACK = false;
     printerBUSY = false;
 
-
-    capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
-    head = LoadImage(QSize(79,161),":/EXT/ext/fp100head.png");
-    cable = LoadImage(QSize(75,10),":/EXT/ext/fp100cable.png");
-
-    margin = 40;
-    Paper_DX = 960+2*margin;
-    setPaperPos(QRect(154,26,731,300));
+    margin = 20;
+    Paper_DX = 240+2*margin;
+    setPaperPos(QRect(90,0,214,245));
 }
 
 Ccl1000::~Ccl1000() {
@@ -87,7 +78,9 @@ bool Ccl1000::init(void) {
     lbl[32]= "ERROR";
     WatchPoint.add(&pCONNECTOR_value,64,36,this,"// 36pins connector",lbl);
 
-    paperWidget->hide();
+//    paperWidget->hide();
+
+    PaperFeed();PaperFeed();
     return true;
 }
 
@@ -98,24 +91,15 @@ bool Ccl1000::run(void) {
     // Si strobe change de status et passe bas vers haut, alors prelever les data
     // mettre le busy
     //
-    if (GoUp(1)) {
-        UINT8 car = (pCONNECTOR->Get_values() >> 1) & 0xFF;
-        AddLog(LOG_PRINTER,tr("RECIEVED CHAR : %1").arg(car,2,16,QChar('0')));
-        if (car != 0xff && car !=0x0a) Command( car );
-        printerACK = true;
-        pTIMER->resetTimer(6);
+    quint8 c = pCONNECTOR->Get_values();
+
+    if ( c>0 && c != 0xff && c !=0x0a) {
+        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
+        SET_PIN(9,1);
+        Command(c);
     }
 
-
-    if (printerACK && (pTIMER->nsElapsedId(6) > 500)) {
-        AddLog(LOG_PRINTER,tr("PRINTER printerStatusPort ACK OFF, BUSY OFF"));
-        printerACK = false;
-    }
-
-    printerBUSY = (moveBuffer.size()>100) ? true:false;
-    pCONNECTOR->Set_pin(10,printerACK);
-    pCONNECTOR->Set_pin(11,printerBUSY);
-    pCONNECTOR->Set_pin(32,true);
+    pCONNECTOR_value = pCONNECTOR->Get_values();
 
     pSavedCONNECTOR->Set_values(pCONNECTOR->Get_values());
     pCONNECTOR_value = pCONNECTOR->Get_values();

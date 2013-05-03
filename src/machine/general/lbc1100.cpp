@@ -165,6 +165,10 @@ bool Clbc1100::run() {
     {
         upd7907->upd7907stat.serialPending = false;
         switch(LCD_PORT) {
+        case 0x53: // Send to Printer
+            sendToPrinter = data;
+            upd7907->upd7907stat.imem[0x08] = 0;
+            break;
         case 0x52: // Select LCD chip
             if (initcmd) {
                 currentLCDctrl = data & 0x03;
@@ -273,15 +277,15 @@ UINT16 Clbc1100::out16(UINT16 address, UINT16 value)
 
 bool Clbc1100::Set_Connector()
 {
-    pTAPECONNECTOR->Set_pin(3,true);       // RMT
-    pTAPECONNECTOR->Set_pin(2,upd7907->upd7907stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
+//    pTAPECONNECTOR->Set_pin(3,true);       // RMT
+//    pTAPECONNECTOR->Set_pin(2,upd7907->upd7907stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
 
     if (sendToPrinter>0) {
-        pPRINTERCONNECTOR->Set_values(sendToPrinter);
+        pCONNECTOR->Set_values(sendToPrinter);
         AddLog(LOG_PRINTER,QString("Send Char:%1").arg(sendToPrinter,2,16,QChar('0')));
     }
     else
-        pPRINTERCONNECTOR->Set_values(0);
+        pCONNECTOR->Set_values(0);
 
     return true;
 }
@@ -289,7 +293,7 @@ bool Clbc1100::Set_Connector()
 bool Clbc1100::Get_Connector()
 {
 
-    if (pPRINTERCONNECTOR->Get_pin(9)) {
+    if (pCONNECTOR->Get_pin(9)) {
         sendToPrinter = 0;
     }
 
