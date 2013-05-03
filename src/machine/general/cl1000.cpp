@@ -1,6 +1,7 @@
 //TODO: Key management
 
 #include <QPainter>
+#include <QDebug>
 
 #include "cl1000.h"
 #include "Connect.h"
@@ -49,9 +50,7 @@ Ccl1000::Ccl1000(CPObject *parent):Cce515p(this) {
 Ccl1000::~Ccl1000() {
     delete pCONNECTOR;
     delete pSavedCONNECTOR;
-    delete capot;
-    delete head;
-    delete cable;
+
 }
 
 bool Ccl1000::init(void) {
@@ -78,9 +77,12 @@ bool Ccl1000::init(void) {
     lbl[32]= "ERROR";
     WatchPoint.add(&pCONNECTOR_value,64,36,this,"// 36pins connector",lbl);
 
-//    paperWidget->hide();
+    paperWidget->hide();
 
     PaperFeed();PaperFeed();
+
+    charSize = 1;
+
     return true;
 }
 
@@ -156,7 +158,7 @@ void Ccl1000::ComputeKey(void)
 
 bool Ccl1000::UpdateFinalImage(void) {
 
-    return true;
+
     Cce515p::UpdateFinalImage();
 
     QPainter painter;
@@ -174,15 +176,16 @@ bool Ccl1000::UpdateFinalImage(void) {
                       paperWidget->bufferImage->copy(source).scaled(PaperPos().size(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation )
                       );
 
-    painter.setOpacity(0.5);
-    painter.fillRect(PaperPos(),Qt::black);
-    painter.setOpacity(1);
+//    painter.setOpacity(0.5);
+//    painter.fillRect(PaperPos(),Qt::black);
+//    painter.setOpacity(1);
 
-    painter.drawImage(112,145,*capot);
+//    painter.drawImage(112,145,*capot);
 
-    int offset = (lastX ) * ratio /( mainwindow->zoom/100);
-    painter.drawImage(152+offset,178,*head);       // Draw head
-    painter.drawImage(793 - offset,214,*cable);    // Draw cable
+//    int offset = (lastX ) * ratio /( mainwindow->zoom/100);
+//    painter.drawImage(152+offset,178,*head);       // Draw head
+//    painter.drawImage(793 - offset,214,*cable);    // Draw cable
+//    qWarning()<<"update";
 
     painter.end();
 

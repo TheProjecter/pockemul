@@ -46,8 +46,8 @@ public:
     CUPD16434 *upd16434[4];
     CPD1990AC *pd1990ac;
 
-    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
-    Cconnector	*pPRINTERCONNECTOR;	qint64 pPRINTERCONNECTOR_value;
+//    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
+//    Cconnector	*pPRINTERCONNECTOR;	qint64 pPRINTERCONNECTOR_value;
 private:
     quint8 portB;
     quint8 sendToPrinter;

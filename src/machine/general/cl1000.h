@@ -35,9 +35,6 @@ private:
 
     bool printerACK;
     bool printerBUSY;
-    QImage *capot;
-    QImage *head;
-    QImage *cable;
 
 };
 

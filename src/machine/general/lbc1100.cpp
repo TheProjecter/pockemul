@@ -119,16 +119,16 @@ bool Clbc1100::init(void)				// initialize
                                      QPoint(0,72));
     publish(pCONNECTOR);
 
-    pTAPECONNECTOR	= new Cconnector(this,3,1,Cconnector::Jack,"Line in / Rec / Rmt",false,
-                                     QPoint(804,231),Cconnector::EAST);
-    publish(pTAPECONNECTOR);
-    pPRINTERCONNECTOR	= new Cconnector(this,9,2,Cconnector::DIN_8,"Printer",false,
-                                         QPoint(402,0),Cconnector::NORTH);
-    publish(pPRINTERCONNECTOR);
+//    pTAPECONNECTOR	= new Cconnector(this,3,1,Cconnector::Jack,"Line in / Rec / Rmt",false,
+//                                     QPoint(804,231),Cconnector::EAST);
+//    publish(pTAPECONNECTOR);
+//    pPRINTERCONNECTOR	= new Cconnector(this,9,2,Cconnector::DIN_8,"Printer",false,
+//                                         QPoint(402,0),Cconnector::NORTH);
+//    publish(pPRINTERCONNECTOR);
 
     WatchPoint.add(&pCONNECTOR_value,64,20,this,"20 pins connector");
-    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
-    WatchPoint.add(&pPRINTERCONNECTOR_value,64,9,this,"Printer");
+//    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
+//    WatchPoint.add(&pPRINTERCONNECTOR_value,64,9,this,"Printer");
 
     portB = 2;
 
@@ -223,8 +223,9 @@ bool Clbc1100::run() {
 
      fillSoundBuffer(upd7907->upd7907stat.to ? 0xff : 0x00);
 
-     pTAPECONNECTOR_value   = pTAPECONNECTOR->Get_values();
-     pPRINTERCONNECTOR_value = pPRINTERCONNECTOR->Get_values();
+     pCONNECTOR_value = pCONNECTOR->Get_values();
+//     pTAPECONNECTOR_value   = pTAPECONNECTOR->Get_values();
+//     pPRINTERCONNECTOR_value = pPRINTERCONNECTOR->Get_values();
     return true;
 }
 
@@ -247,7 +248,7 @@ bool Clbc1100::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Clbc1100::in(UINT8 Port)
 {
     switch (Port) {
-    case 0x01 : return portB  | (pTAPECONNECTOR->Get_pin(1) ? 0x80 : 0x00); break;
+    case 0x01 : return portB ;// | (pTAPECONNECTOR->Get_pin(1) ? 0x80 : 0x00); break;
     case 0x02 : return (getKey() & 0x3F); break;
     }
 
