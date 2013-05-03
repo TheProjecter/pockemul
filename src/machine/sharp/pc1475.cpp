@@ -26,7 +26,6 @@ Cpc1475::Cpc1475(CPObject *parent)	: Cpc1360(parent)
     LcdFname		= ":/PC1475/pc1475/1475lcd.png";
     SymbFname		= ":/PC1475/pc1475/1475symb.png";
     memsize			= 0x40000;
-//		NbSlot		= 14;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	":/PC1475/pc1475/cpu-1475.rom"	, "pc-1475/cpu-1475.rom" ,ROM , "CPU ROM"));

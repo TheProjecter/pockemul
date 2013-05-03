@@ -1,18 +1,27 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>lbc1100</model>
 <Keyboard>
-    <KEY description="-" height="18" left="480" masterscancode="0x00" modifier="" scancode="0x2d" top="222" width="25"/>
+    <KEY description="^" height="18" left="373" masterscancode="0x00" modifier="" scancode="0x5e" top="187" width="25"/>
+    <KEY description="Blank key" height="18" left="417" masterscancode="0x00" modifier="" scancode="0xae" top="187" width="25"/>
+    <KEY description="@" height="18" left="523" masterscancode="0x00" modifier="" scancode="0x40" top="222" width="25"/>
+    <KEY description="-" height="18" left="480" masterscancode="0x00" modifier="" scancode="0x2d" top="221" width="25"/>
+    <KEY description="[" height="18" left="503" masterscancode="0x00" modifier="" scancode="0x5b" top="258" width="25"/>
+    <KEY description="]" height="18" left="546" masterscancode="0x00" modifier="" scancode="0x5d" top="257" width="25"/>
     <KEY description="Tab" height="20" left="0" masterscancode="0x00" modifier="" scancode="0x0f" top="0" width="20"/>
     <KEY description="&apos;" height="20" left="0" masterscancode="0x00" modifier="" scancode="0xb0" top="0" width="20"/>
     <KEY description="(" height="20" left="0" masterscancode="0x00" modifier="" scancode="0x28" top="0" width="20"/>
     <KEY description=")" height="20" left="0" masterscancode="0x00" modifier="" scancode="0x29" top="0" width="20"/>
     <KEY description="*" height="23" left="735" masterscancode="0x00" modifier="" scancode="0x2a" top="220" width="30"/>
+    <KEY description=", (keypad)" height="20" left="691" masterscancode="0x00" modifier="" scancode="0xad" top="292" width="27"/>
     <KEY description="," height="20" left="405" masterscancode="0x00" modifier="" scancode="0x2c" top="326" width="27"/>
     <KEY description="." height="18" left="445" masterscancode="0x00" modifier="" scancode="0x2e" top="329" width="25"/>
-    <KEY description="/" height="22" left="735" masterscancode="0x00" modifier="" scancode="0x2f" top="186" width="30"/>
+    <KEY description=". (keypad)" height="18" left="648" masterscancode="0x00" modifier="" scancode="0xab" top="295" width="25"/>
+    <KEY description="/" height="22" left="325" masterscancode="0x00" modifier="" scancode="0x2f" top="184" width="30"/>
+    <KEY description="/ (keypad)" height="22" left="735" masterscancode="0x00" modifier="" scancode="0xac" top="186" width="30"/>
     <KEY description=":" height="20" left="513" masterscancode="0x00" modifier="" scancode="0x3a" top="290" width="28"/>
     <KEY description=";" height="20" left="469" masterscancode="0x00" modifier="" scancode="0x3b" top="292" width="27"/>
     <KEY description="+" height="20" left="734" masterscancode="0x00" modifier="" scancode="0x2b" top="293" width="30"/>
+    <KEY description="- (keypad)" height="18" left="736" masterscancode="0x00" modifier="" scancode="0xaa" top="258" width="25"/>
     <KEY description="OFF" height="27" left="729" masterscancode="0x00" modifier="" scancode="0xc8" top="25" width="29"/>
     <KEY description="ON" height="23" left="685" masterscancode="0x00" modifier="" scancode="0xc7" top="28" width="30"/>
     <KEY description="CLS" height="21" left="543" masterscancode="0x00" modifier="" scancode="0x0c" top="185" width="27"/>

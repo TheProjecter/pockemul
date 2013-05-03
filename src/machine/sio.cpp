@@ -41,6 +41,46 @@ bool Csio::SIO_GET_PIN(SIGNAME signal) {
 }
 
 
+Csio::Csio(CPObject *parent)	: CPObject(this)
+{							//[constructor]
+    si=so=0;			//si,so port access?(0:none, 1:access)
+    plink=0;			//aplinks using?(0:none, 1:using)
+    plinkmode=0;		//select plink client(0:plink, 1:plinkc)
+    exportbit=0;
+    exportbyte=1;
+    convCRLF=1;
+
+    currentBit=oldstate_in=0;
+    Start_Bit_Sent = false;
+    t=c=0;waitbitstart=1;waitbitstop=waitparity=0;
+
+    baudrate = 9600;
+
+    ToDestroy = false;
+
+    outBitNb = 0;
+    Sii_ndx				= 0;
+    Sii_wait			= 0;
+    Sii_wait_recv       = 0;
+    Sii_startbitsent	= FALSE;
+    Sii_stopbitsent		= TRUE;
+    Sii_TransferStarted = FALSE;
+    Sii_TextLength		= 0;
+    Sii_Bit_Nb			= 0;
+    Sii_LfWait			= 500;
+
+    setfrequency( 0);
+    ioFreq = 0;
+    BackGroundFname	= ":/EXT/ext/serial.png";
+
+    pTIMER		= new Ctimer(this);
+    setDX(195);
+    setDY(145);
+
+    dialogconsole = new DialogConsole(this);
+
+}
+
 Csio::~Csio(){
     delete(pSIOCONNECTOR);
 }
@@ -208,45 +248,6 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
     return true;
 }
 
-Csio::Csio(CPObject *parent)	: CPObject(this)
-{							//[constructor]
-    si=so=0;			//si,so port access?(0:none, 1:access)
-    plink=0;			//aplinks using?(0:none, 1:using)
-    plinkmode=0;		//select plink client(0:plink, 1:plinkc)
-    exportbit=0;
-    exportbyte=1;
-    convCRLF=1;
-
-    currentBit=oldstate_in=0;
-    Start_Bit_Sent = false;
-    t=c=0;waitbitstart=1;waitbitstop=waitparity=0;
-
-    baudrate = 4800;
-
-    ToDestroy = false;
-
-    inBitNb = 0;
-    Sii_ndx				= 0;
-    Sii_wait			= 0;
-    Sii_wait_recv       = 0;
-    Sii_startbitsent	= FALSE;
-    Sii_stopbitsent		= TRUE;
-    Sii_TransferStarted = FALSE;
-    Sii_TextLength		= 0;
-    Sii_Bit_Nb			= 0;
-    Sii_LfWait			= 500;
-
-    setfrequency( 0);
-    ioFreq = 0;
-    BackGroundFname	= ":/EXT/ext/serial.png";
-
-    pTIMER		= new Ctimer(this);
-    setDX(195);
-    setDY(145);
-
-    dialogconsole = new DialogConsole(this);
-
-}
 
 void Csio::Set_Sii_bit(qint8 bit)	{ Sii_bit = bit;				}
 qint8 Csio::Get_Sii_bit(void)		{ return (Sii_bit);				}
@@ -352,14 +353,14 @@ bool Csio::run(void)
 	Sii_bit = 0;
     if (ER && CD && RR)	{
 //        if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
-        Sii_bit = inReadBit();
+        Sii_bit = transmit();
 
 
     }
 	Set_RD( Sii_bit );	
 	
 
-    bitToByte();
+    receive();
 
     SIO_SET_PIN(S_RD, Get_RD());
     SIO_SET_PIN(S_CS, Get_CS());
@@ -390,7 +391,8 @@ void Csio::clearInput(void)
 	baInput.clear();
 }
 
-bool Csio::inReadBit(void)
+// Implement parity
+bool Csio::transmit(void)
 {
 
     if (oldstate_in	== 0) oldstate_in = pTIMER->state;
@@ -489,17 +491,17 @@ qint8 Csio::byteToBit(qint8 data)
 			return(3);  // Startbit = 1
 		}
 		else
-		if (inBitNb<8)
+        if (outBitNb<8)
 		{
-			bit = ( ((data >> inBitNb) & 0x01) ? 0 : 1 );
-			inBitNb++;
+            bit = ( ((data >> outBitNb) & 0x01) ? 0 : 1 );
+            outBitNb++;
 //            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(inBitNb+2);
 			return(bit);
 		}
 		else
-		if (inBitNb == 8)
+        if (outBitNb == 8)
 		{
-			inBitNb = 0;
+            outBitNb = 0;
 			AddLog(LOG_SIO,tr("STOP BIT"));
 //            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
 			Start_Bit_Sent	= FALSE;
@@ -528,7 +530,7 @@ void Csio::byteRecv(qint8 data)
 }
 
 // convert bit to Byte
-void Csio::bitToByte(void)
+void Csio::receive(void)
 {
 
     int deltastate=0;

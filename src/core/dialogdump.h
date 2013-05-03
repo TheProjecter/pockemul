@@ -16,7 +16,6 @@ public:
 
 
     BINEditor::BinEditor *hexeditor;
-//    QHexEdit *hextemp;
 
 private slots:
 	void slotDump( QTableWidgetItem * , QTableWidgetItem * );

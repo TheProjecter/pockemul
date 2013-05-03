@@ -451,31 +451,23 @@ bool CpcXXXX::init(void)
 	AddLog(LOG_MASTER,tr("Memory initialisation"));
 	if((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);		/* alloc main ram */
 	ClearRam(InitMemValue);
-	AddLog(LOG_MASTER,tr("Success"));
-
 
 	AddLog(LOG_MASTER,tr("LCD init"));
-
     if(pLCDC && !(pLCDC->init())) return(0);
-	AddLog(LOG_MASTER,"Success");
 
 	AddLog(LOG_MASTER,tr("Memory loading nb slot:%1").arg(SlotList.size()));
 	for (int s=0; s < SlotList.size(); ++s)
 	{
 		if (SlotList[s].getType() == ROM)	Mem_Load(s);
 	}
-	AddLog(LOG_MASTER,"Success");
-
 
     AddLog(LOG_MASTER,tr("CPU init"));
     if (!pCPU) return 0;
     if(!(pCPU->init())) return(0);
-    AddLog(LOG_MASTER,"Success");
-
 	if(pKEYB)	pKEYB->init();
 	if(pTIMER)	pTIMER->init();
 	if(pLCDC)	pLCDC->init_screen();
-
+    AddLog(LOG_MASTER,"Success");
 
     QHash<int,QString> lbl;
     lbl[1]="MT_OUT2";
@@ -505,7 +497,6 @@ bool CpcXXXX::init(void)
 /*****************************************************************************/
 bool CpcXXXX::exit(void)
 {
-
 	TurnOFF();
 
 	if (pLCDC)		pLCDC->exit();
@@ -531,11 +522,7 @@ bool CpcXXXX::run(void)
 
     Get_Connector();
     // Read the connectors
-    if (pCONNECTOR) {
-        pCONNECTOR_value = pCONNECTOR->Get_values();
-    }
-
-
+    if (pCONNECTOR) pCONNECTOR_value = pCONNECTOR->Get_values();
 
 	if(!pCPU->halt && !off)
 	{
@@ -574,7 +561,7 @@ bool CpcXXXX::run(void)
             fflush(pCPU->fp_log);
         }
         else {
-            pCPU->step();
+            if (!off) pCPU->step();
 #ifndef QT_NO_DEBUG
             Regs_Info(0);
 #endif
@@ -596,8 +583,9 @@ bool CpcXXXX::run(void)
 
 	}
     else {
-        pCPU->step();
-        pTIMER->state+=10;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+        if (!off) {pCPU->step();
+            pTIMER->state+=10;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
+        }
     }
 
     Set_Connector();		//Write the connectors
@@ -917,15 +905,11 @@ void CpcXXXX::LoadSession(void)
 		return ;
 	}
 
-#if 1
     QXmlStreamReader xmlIn;
 
     xmlIn.setDevice(&file);
     if (LoadSession_File(&xmlIn) && pLCDC) pLCDC->Update();
 
-#else
-	if (LoadSession_File(&file)) pLCDC->Update();
-#endif
 	file.close();							// Close the file
 
 }
@@ -939,8 +923,6 @@ QString fileName = QFileDialog::getSaveFileName(
                     tr("PockEmul sessions (*.pkm)"));
     QFile file(fileName);
 
-#if 1
-
     if (file.open(QFile::WriteOnly | QFile::Truncate)) {
         QString s;
         QXmlStreamWriter *xmlOut = new QXmlStreamWriter(&s);
@@ -950,18 +932,6 @@ QString fileName = QFileDialog::getSaveFileName(
         out << s;
     }
 
-#else
-
-	if (!file.open(QIODevice::WriteOnly)) {
-		QMessageBox::warning(mainwindow,tr("PockEmul"),
-								tr("Cannot write file %1:\n%2.")
-								.arg(file.fileName())
-								.arg(file.errorString()));
-		return ;
-	}
-
-	SaveSession_File(&file);
-#endif
 	file.close();							// Close the file
 }
 

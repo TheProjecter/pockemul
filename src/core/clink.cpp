@@ -173,14 +173,13 @@ void CDirectLink::outConnector(Cconnector* search)
             foundConnector = AConnList.at(found);
         }
     }
-addlinkMutex.unlock();
-    if ( found >= 0 ) {
+    addlinkMutex.unlock();
 
+    if ( found >= 0 ) {
         foundConnector->ConnectTo(search);
         // start the corresponding pPC
         // if no frequency link to the parent timer
-        if (
-            (foundConnector->Parent->getfrequency() == 0 ) &&
+        if ( (foundConnector->Parent->getfrequency() == 0 ) &&
              (! inlogrun(foundConnector->Parent) ))
         {
 //				AddLog(LOG_TEMP,tr("Connector Chain with %1").arg(BConnList.at(found)->Parent->getName()));
@@ -191,8 +190,6 @@ addlinkMutex.unlock();
             Output( foundConnector->Parent );
         }
     }
-
-
 }
 
 

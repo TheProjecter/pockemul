@@ -87,7 +87,6 @@ HEADERS += src/core/Connect.h \
     src/core/dialoglog.h \
     src/core/dialogstartup.h \
     src/core/global.h \
-    src/core/hexviewer.h \
     src/core/init.h \
     src/core/keybce150.h \
     src/core/keybce152.h \
@@ -142,8 +141,6 @@ HEADERS += src/core/Connect.h \
     src/machine/sharp/pc1421.h \
     src/machine/sharp/pc1280.h \
     src/core/Keyb1280.h \
-    src/core/qhexedit.h \
-    src/core/qhexedit_p.h \
     src/machine/sharp/ce140p.h \
     src/core/weblinksparser.h \
     src/core/wavfile.h \
@@ -411,7 +408,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/dialogkeylist.cpp \
     src/core/dialoglog.cpp \
     src/core/dialogstartup.cpp \
-    src/core/hexviewer.cpp \
     src/core/init.cpp \
     src/core/mainwindowpockemul.cpp \
     src/core/paperwidget.cpp \
@@ -462,8 +458,6 @@ SOURCES += src/core/Connect.cpp \
     src/machine/ce515p.cpp \
     src/machine/sharp/pc1421.cpp \
     src/machine/sharp/pc1280.cpp \
-    src/core/qhexedit.cpp \
-    src/core/qhexedit_p.cpp \
     src/machine/sharp/ce140p.cpp \
     src/core/weblinksparser.cpp \
     src/core/wavfile.cpp \

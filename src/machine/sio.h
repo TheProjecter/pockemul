@@ -8,11 +8,10 @@
 #include <QMutex>
 
 #include "pobject.h"
-
+#include "Connect.h"
 
 
 class DialogConsole;
-#include "Connect.h"
 
 class Csio:public CPObject{
 Q_OBJECT
@@ -62,10 +61,10 @@ public:
 	qint8	Get_Sii_bit(void);
 	
     qint8	byteToBit(qint8 data);
-	bool	inReadBit(void);
+	bool	transmit(void);
 	void	startTransfer(void);
 
-    void	bitToByte(void);
+    void	receive(void);
 
 
 	bool	CD,CS,RD,RR,RS,ER,SD;
@@ -113,7 +112,7 @@ signals:
 
 private:
     QMutex SMapMutex;
-	int		inBitNb;
+    int		outBitNb;
 	int		Sii_ndx;
     int		Sii_wait,Sii_wait_recv;
 	bool	Sii_startbitsent;

@@ -843,6 +843,7 @@ void Cupd7907::upd7907_take_irq(upd7907_state *cpustate)
 		{
             irqline = UPD7907_INTF1;
 			vector = 0x0010;
+//            MKL |= 0x08;
 			if (!((IRR & INTF2)	&& 0 == (MKL & 0x10)))
 			    IRR&=~INTF1;
 		}
@@ -850,7 +851,7 @@ void Cupd7907::upd7907_take_irq(upd7907_state *cpustate)
 		if ((IRR & INTF2)	&& 0 == (MKL & 0x10))
         {
             irqline = UPD7907_INTF2;
-			vector = 0x0010;
+            vector = 0x0010;
 			IRR&=~INTF2;
 		}
 		else
@@ -11053,16 +11054,18 @@ void Cupd7907::OUT(upd7907_state *cpustate)
 void Cupd7907::MOV_A_S(upd7907_state *cpustate)
 {
     A = S;
-    logerror("unimplemented instruction: MOV_A_S\n");
+    if ((cpustate->pPC->pCPU->fp_log))
+        fprintf(cpustate->pPC->pCPU->fp_log,"\nREAD SERIAL=%02X = (%c)\n", S,S);
 }
 
 void Cupd7907::MOV_S_A(upd7907_state *cpustate)
 {
     S = A;
-    if ((S!=0)&&(cpustate->pPC->pCPU->fp_log))
+    if ((cpustate->pPC->pCPU->fp_log))
         fprintf(cpustate->pPC->pCPU->fp_log,"\nSERIAL=%02X = (%c)\n", S,S);
 
-    logerror("unimplemented instruction: MOV_A_S\n");
+    cpustate->serialPending = true;
+
 }
 
 void Cupd7907::PEN(upd7907_state *cpustate)
@@ -11191,6 +11194,7 @@ void Cupd7907::Reset()
     cpustate->ovc0 = ( ( TMM & 0x04 ) ? 16 * 8 : 8 ) * TM0;
 
     softi=false;
+    cpustate->serialPending = false;
 }
 
 void Cupd7907::Load_Internal(QXmlStreamReader *xmlIn)
@@ -11834,11 +11838,9 @@ void Cupd7907::Regs_Info(UINT8 Type)
     case 1:			// Log File
         sprintf(
                     Regs_String,
-                    "IFF=%02X [f6ba]=%02X%02X%02X%02X [VV98]=%02X AF=%02x%02x BC=%04x DE=%04x HL=%04x SP=%04x PC=%04x V=%02x EOM=%02X "
+                    "IFF=%02X AF=%02x%02x BC=%04x DE=%04x HL=%04x SP=%04x PC=%04x V=%02x EOM=%02X "
                     "%c%c%c%c%c%c(%02x) ",
                     IFF,
-                    pPC->mem[0xf6ba],pPC->mem[0xf6bb],pPC->mem[0xf6bc],pPC->mem[0xf6bd],
-                    pPC->mem[0xff98],
                     A,PSW,BC,DE,HL,SP,PC,V,EOM,
                     (PSW & Z ? 'Z': '-'),
                     (PSW & SK ? 'S': '-'),
@@ -11890,7 +11892,9 @@ bool Cupd7907::exit()
 
 void Cupd7907::step()
 {
-    execute(&upd7907stat);
+    {
+        execute(&upd7907stat);
+    }
 
 
 }

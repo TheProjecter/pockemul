@@ -51,6 +51,8 @@ public:
 private:
     quint8 portB;
     quint8 sendToPrinter;
+    quint8 currentLCDctrl;
+    bool initcmd;
 
 };
 

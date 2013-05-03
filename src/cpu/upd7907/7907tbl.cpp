@@ -6304,10 +6304,10 @@ const struct opcode_s Cupd7907::opXX_7907[256] =
     {DCR_B_7801,	1, 6, 6,L0|L1},	{DCR_C_7801,	1, 6, 6,L0|L1},
     {JMP_w, 		3,16,16,L0|L1},	{OFFIW_wa_xx,	3,19,19,L0|L1},
     {ACI_A_xx,		2,11,11,L0|L1},	{OFFI_A_xx, 	2,11,11,L0|L1},
-    {illegal,		1, 6, 6,L0|L1},	{illegal,		1, 6, 6,L0|L1},
-    {illegal,		1, 6, 6,L0|L1},	{illegal,		1, 6, 6,L0|L1},
-    {illegal,		1, 6, 6,L0|L1},	{illegal,		1, 6, 6,L0|L1},
-    {illegal,		1, 6, 6,L0|L1},	{illegal,		1, 6, 6,L0|L1},
+    {BIT_0_wa,		2,10,10,L0|L1},	{BIT_1_wa,		2,10,10,L0|L1},
+    {BIT_2_wa,		2,10,10,L0|L1},	{BIT_3_wa,		2,10,10,L0|L1},
+    {BIT_4_wa,		2,10,10,L0|L1},	{BIT_5_wa,		2,10,10,L0|L1},
+    {BIT_6_wa,		2,10,10,L0|L1},	{BIT_7_wa,		2,10,10,L0|L1},
 
     /* 0x60 - 0x7F */
     {PRE_60,		1, 0, 0,L0|L1},	{DAA,			1, 6, 6,L0|L1},

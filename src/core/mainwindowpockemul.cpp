@@ -222,8 +222,6 @@ void MainWindowPockemul::slotUnLink(Cconnector * conn) {
         if (mainwindow->pdirectLink->AConnList.at(i) == conn)
         {
             mainwindow->pdirectLink->removeLink(i);
-//            mainwindow->pdirectLink->AConnList.removeAt(i);
-//            mainwindow->pdirectLink->BConnList.removeAt(i);
             i--;
         }
     }
@@ -232,8 +230,6 @@ void MainWindowPockemul::slotUnLink(Cconnector * conn) {
         if (mainwindow->pdirectLink->BConnList.at(i) == conn)
         {
             mainwindow->pdirectLink->removeLink(i);
-//            mainwindow->pdirectLink->AConnList.removeAt(i);
-//            mainwindow->pdirectLink->BConnList.removeAt(i);
             i--;
         }
     }

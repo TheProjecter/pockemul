@@ -222,6 +222,8 @@ struct upd7907_state
     const struct opcode_s *op64;
     const struct opcode_s *op70;
     const struct opcode_s *op74;
+
+    bool serialPending;
 };
 typedef void (* funcPtr)(upd7907_state *);
 struct opcode_s {
@@ -256,6 +258,9 @@ public:
     virtual void Regs_Info(UINT8);
 
     upd7907_state upd7907stat;
+
+
+
     bool softi;
     static UINT8 RP(upd7907_state *cpustate, offs_t port);
     static void WP(upd7907_state *cpustate, offs_t port, UINT8 data);

@@ -23,7 +23,7 @@
 
 
  PB 0x00 : output to Printer
-    0x01 : SERIAL ???? perhaps the BUSY
+    0x01 : ACK for serial transmission
     0x02 : output to LCD
     0x04 : read timer chip bit
 
@@ -52,15 +52,14 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
 
     SlotList.clear();
     SlotList.append(CSlot(4 , 0x0000 ,	":/lbc1100/rom-0000-0FFF.bin", ""	, ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x2000 ,	":/lbc1100/rom-2000-5FFF.bin", ""	, ROM , "ROM"));
-    SlotList.append(CSlot(40 ,0x6000 ,	""	, ""	, RAM , "RAM"));
+    SlotList.append(CSlot(12, 0x1000 ,	"", ""	,                             RAM , "RAM"));
+    SlotList.append(CSlot(4,  0x4000 ,	":/lbc1100/lbc-4000-4FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x5000 ,	":/lbc1100/lbc-5000-5FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x6000 ,	":/lbc1100/lbc-6000-6FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x7000 ,	":/lbc1100/lbc-7000-7FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(32 ,0x8000 ,	""	, ""	,                         RAM , "RAM"));
 
-
-    KeyMap		= KeyMap1250;
-    KeyMapLenght= KeyMap1250Lenght;
-
-    PowerSwitch	= 0;
-    Pc_Offset_X = Pc_Offset_Y = 0;
+//    Pc_Offset_X = Pc_Offset_Y = 0;
 
     setDXmm(220);//Pc_DX_mm 206
     setDYmm(105);//Pc_DY_mm =83)
@@ -85,6 +84,10 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
     PowerSwitch = 0;
 
     pLCDC		= new Clcdc_pc2001(this);
+    pLCDC->Color_Off.setRgb(
+                (int) (154*pLCDC->contrast),
+                (int) (145*pLCDC->contrast),
+                (int) (116*pLCDC->contrast));
     pCPU		= new Cupd7907(this);    upd7907 = (Cupd7907*)pCPU;
     for (int i=0;i<4;i++) upd16434[i]  = new CUPD16434(this);
     pd1990ac    = new CPD1990AC(this);
@@ -127,29 +130,28 @@ bool Clbc1100::init(void)				// initialize
     WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
     WatchPoint.add(&pPRINTERCONNECTOR_value,64,9,this,"Printer");
 
-    portB = 0;
+    portB = 2;
 
 
-
+initcmd = true;
 
     return true;
 }
 
-
+#define LCD_PORT    (upd7907->upd7907stat.imem[0x00])
 
 bool Clbc1100::run() {
 
 
     CpcXXXX::run();
 
-    if (pTIMER->msElapsedId(1)>20) {
-        Cupd7907 *upd7810 = (Cupd7907 *)pCPU;
-        upd7810->upd7907stat.irr |= 0x08;
+    if (pTIMER->msElapsedId(1)>1000) {
+        // Check if interrupts are enabled
+//        upd7907->upd7907stat.irr |= 0x10;
         pTIMER->resetTimer(1);
     }
 
-//    if (pTIMER->msElapsedId(2)>3)
-    if (upd7907->upd7907stat.imem[0x00] &0x40)
+    if (upd7907->upd7907stat.imem[0x01] & 0x40)
     {
         UNSET_BIT(portB,1);
     }
@@ -158,17 +160,45 @@ bool Clbc1100::run() {
     }
 
     quint8 data = upd7907->upd7907stat.imem[0x08];
-    if ( (data > 0) && (data != 0xff))
+//    if ( (data > 0) && (data != 0xff))
+    if (upd7907->upd7907stat.serialPending)
     {
-
-        switch (upd7907->upd7907stat.imem[0x00]>>6) {
-        case 0x00:   // LCD transmission
+        upd7907->upd7907stat.serialPending = false;
+        switch(LCD_PORT) {
+        case 0x52: // Select LCD chip
+            if (initcmd) {
+                currentLCDctrl = data & 0x03;
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"Select LCD Controler:%02x\n",currentLCDctrl);
+                initcmd = false;
+            }
+            else {
+                upd16434[currentLCDctrl]->instruction(data);
+            }
+            break;
+        case 0x50: // Send data to LCD
+            if (initcmd) {
+                currentLCDctrl = data & 0x03;
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"Select LCD Controler:%02x\n",currentLCDctrl);
+                initcmd = false;
+            }
+            else {
+                upd16434[currentLCDctrl]->data(data);
+            }
+            break;
+        case 0x51: initcmd = true;
+            break;
+        default:
+            break;
+        }
+#if 0
+        switch (LCD_PORT>>6) {
+        case 0x01:   // LCD transmission
         {
             // flip flop PB1 0-2-0
             //        SET_BIT(portB,1);
             pTIMER->resetTimer(2);
-            quint8 currentLCDctrl = upd7907->upd7907stat.imem[0] & 0x03;
-            quint8 cmddata = (upd7907->upd7907stat.imem[0] >> 2) & 0x01;
+            quint8 currentLCDctrl = LCD_PORT & 0x03;
+            quint8 cmddata = (LCD_PORT >> 4) & 0x01;
             switch(cmddata) {
             case 0x01: upd16434[currentLCDctrl]->instruction(data);
                 break;
@@ -178,14 +208,15 @@ bool Clbc1100::run() {
             upd7907->upd7907stat.imem[0x08] = 0;
         }
             break;
-        case 0x01:  // PRINTER PORT
+        case 0x00:  // PRINTER PORT
             sendToPrinter = data;
             upd7907->upd7907stat.imem[0x08] = 0;
             break;
         }
+#endif
+
     }
 
-//     fillSoundBuffer(upd7907->upd7810stat.imem[0x00] & 0x10 ? 0xff : 0x00);
      fillSoundBuffer(upd7907->upd7907stat.to ? 0xff : 0x00);
 
      pTAPECONNECTOR_value   = pTAPECONNECTOR->Get_values();
@@ -196,9 +227,10 @@ bool Clbc1100::run() {
 bool Clbc1100::Chk_Adr(DWORD *d, DWORD data)
 {
 
-    if(*d >= 0x6000) return true; /* RAM */
+    if(*d < 0x8000) return false; /* ROM */
+//    if(*d < 0xE000) return false; /* RAM */
 
-    return false;
+    return true;
 }
 
 bool Clbc1100::Chk_Adr_R(DWORD *d, DWORD data)
@@ -222,9 +254,10 @@ UINT8 Clbc1100::in(UINT8 Port)
 
 UINT8 Clbc1100::out(UINT8 Port, UINT8 x)
 {
-//    switch (Port) {
+    switch (Port) {
 //    case 0x01 : portB = x; break;
-//    }
+    case 0x00: if (x&0x01) initcmd = true; break;
+    }
 
     return 0;
 }
@@ -285,6 +318,7 @@ void Clbc1100::Reset()
     pLCDC->init();
     for (int i=0;i<4;i++) upd16434[i]->Reset();
     sendToPrinter=0;
+    initcmd = true;
 
 }
 
@@ -325,118 +359,118 @@ UINT16 Clbc1100::getKey()
         }
 
         if (ks&0x02) {
-            if (KEY('Q'))			data|=0x01;
+            if (KEY(K_F9))			data|=0x01;
             if (KEY('A'))			data|=0x02;
-//            if (KEY(K_F1))			data|=0x04;
+            if (KEY('Q'))			data|=0x04;
             if (KEY(K_0))			data|=0x08;
             if (KEY('1'))			data|=0x10;
             if (KEY('Z'))			data|=0x20;
         }
         if (ks&0x04) {
-            if (KEY('W'))			data|=0x01;
+            if (KEY('X'))			data|=0x01;
             if (KEY('S'))			data|=0x02;
-            if (KEY('X'))			data|=0x04;
+            if (KEY('W'))			data|=0x04;
             if (KEY(K_1))			data|=0x08;
             if (KEY('2'))			data|=0x10;
 //            if (KEY(K_F1))			data|=0x20; // F1
         }
 
         if (ks&0x08) {
-            if (KEY(','))			data|=0x01;
+            if (KEY('C'))			data|=0x01;
             if (KEY('D'))			data|=0x02;
-            if (KEY('C'))			data|=0x04;
+            if (KEY('E'))			data|=0x04;
             if (KEY(K_2))			data|=0x08;
             if (KEY('3'))			data|=0x10;
 //            if (KEY(K_F2))			data|=0x20;     //F2
         }
 
         if (ks&0x10) {
-            if (KEY('R'))			data|=0x01;
+            if (KEY('V'))			data|=0x01;
             if (KEY('F'))			data|=0x02;
-            if (KEY('V'))			data|=0x04;
+            if (KEY('R'))			data|=0x04;
             if (KEY(K_3))			data|=0x08;
             if (KEY('4'))			data|=0x10;
 //            if (KEY(K_F3))			data|=0x20;     //F3
         }
         if (ks&0x20) {
-            if (KEY('T'))			data|=0x01;
+            if (KEY('B'))			data|=0x01;
             if (KEY('G'))			data|=0x02;
-            if (KEY('B'))			data|=0x04;
+            if (KEY('T'))			data|=0x04;
             if (KEY(K_4))			data|=0x08;
             if (KEY('5'))			data|=0x10;
 //            if (KEY(K_F4))			data|=0x20;     //F4
         }
         if (ks&0x40) {
-            if (KEY('Y'))			data|=0x01;
+            if (KEY('N'))			data|=0x01;
             if (KEY('H'))			data|=0x02;
-            if (KEY('N'))			data|=0x04;
+            if (KEY('Y'))			data|=0x04;
             if (KEY(K_5))			data|=0x08;
             if (KEY('6'))			data|=0x10;
             if (KEY(','))			data|=0x20;
         }
         if (ks&0x80) {
-            if (KEY('U'))			data|=0x01;
+            if (KEY('M'))			data|=0x01;
             if (KEY('J'))			data|=0x02;
-            if (KEY('M'))			data|=0x04;
+            if (KEY('U'))			data|=0x04;
             if (KEY(K_6))			data|=0x08;
             if (KEY('7'))			data|=0x10;
             if (KEY('.'))			data|=0x20;
         }
         if (ks&0x100) {
-            if (KEY('I'))			data|=0x01;
+            if (KEY(K_SLH))			data|=0x01;
             if (KEY('K'))			data|=0x02;
-            if (KEY('/'))			data|=0x04;
+            if (KEY('I'))			data|=0x04;
             if (KEY(K_7))			data|=0x08;
             if (KEY('8'))			data|=0x10;
             if (KEY('/'))			data|=0x20;
         }
         if (ks&0x200) {
-            if (KEY('O'))			data|=0x01;
+            if (KEY('*'))			data|=0x01;
             if (KEY('L'))			data|=0x02;
-            if (KEY('*'))			data|=0x04;
+            if (KEY('O'))			data|=0x04;
             if (KEY(K_8))			data|=0x08;
             if (KEY('9'))			data|=0x10;
             if (KEY(';'))			data|=0x20;
         }
         if (ks&0x400) {
-            if (KEY('P'))			data|=0x01;
-//            if (KEY(K_F2))			data|=0x02;
-//            if (KEY('-'))			data|=0x04;     // numpad -
+            if (KEY(K_MIN))			data|=0x01;     // numpad -
+            if (KEY('^'))			data|=0x02;
+            if (KEY('P'))			data|=0x04;
             if (KEY(K_9))			data|=0x08;
             if (KEY('0'))			data|=0x10;
             if (KEY(':'))			data|=0x20;
         }
         if (ks&0x800) {
-            if (KEY('@'))			data|=0x01;
-//            if (KEY(K_F2))			data|=0x02;
-            if (KEY('+'))			data|=0x04;
-            if (KEY('E'))			data|=0x08;
+            if (KEY('+'))			data|=0x01;
+            if (KEY(K_F1))			data|=0x02;
+            if (KEY('@'))			data|=0x04;
+            if (KEY(K_COMMA))		data|=0x08;
             if (KEY('-'))			data|=0x10;
             if (KEY(']'))			data|=0x20;
         }
         if (ks&0x1000) {
-            if (KEY('^'))			data|=0x01;
+            if (KEY(K_PT))			data|=0x01;
             if (KEY(' '))			data|=0x02; //???
-//            if (KEY('.'))			data|=0x04; // Numpad .
+            if (KEY(K_F3))			data|=0x04; // Numpad .
             if (KEY(K_UA))			data|=0x08;
             if (KEY('['))			data|=0x10;
-//            if (KEY(K_F6))			data|=0x20;
+            if (KEY(K_BLANK))		data|=0x20; // Blank key ( _ shifted)
         }
         if (ks&0x2000) {
-            if (KEY(K_DEL))			data|=0x01;
+            if (KEY(K_F5))			data|=0x01;
             if (KEY(K_INS))			data|=0x02;
-//            if (KEY(K_UA))			data|=0x04;
+            if (KEY(K_DEL))			data|=0x04;
             if (KEY(K_DA))			data|=0x08;
             if (KEY(K_LA))			data|=0x10;
             if (KEY(K_RA))			data|=0x20;
         }
         if (ks&0x4000) {
-//            if (KEY(K_F1))			data|=0x01;
+            if (KEY(K_F6))			data|=0x01;
             if (KEY(K_RET))			data|=0x02;
-//            if (KEY(K_F3))			data|=0x04;
+            if (KEY(K_F7))			data|=0x04;
             if (KEY(K_SML))			data|=0x08;  // KANA ???
             if (KEY(K_CLR))			data|=0x10; // CLR ???
-//            if (KEY(K_F6))			data|=0x20;
+            if (KEY(K_F8))			data|=0x20;
         }
 //        if (ks&0x8000) {
 //            if (KEY(K_F1))			data|=0x01;

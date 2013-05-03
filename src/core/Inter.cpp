@@ -10,41 +10,31 @@
 
 extern MainWindowPockemul *mainwindow;
 
-#define TIMER_RES 30
-
-
-UINT nTimerId;
-WORD wTimerRes;
 
 void Ctimer::SetCPUspeed(float t)
 {
     //set CPU speed by %
     CPUSpeed = t ;
-//    if (t<100)
-        state = currentState();// mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+    state = currentState();
 }
 
 qint64 Ctimer::currentState(void) {
-//    return (qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
     return (qint64) (( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) )/1000000L);
 }
 
 bool Ctimer::init(void)
 {
     AddLog(LOG_MASTER,QObject::tr("Timer init..."));
-	wTimerRes = 0;
     deltaStep = 0;
 	SetCPUspeed(1);
 
-
-
 	AddLog(LOG_MASTER,"Success");
-	return(1);
+    return(true);
 }
 
 bool Ctimer::exit(void)
 {
-	return(1);
+    return(true);
 }
 
 bool Ctimer::CheckSpeed(void)

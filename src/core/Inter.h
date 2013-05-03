@@ -107,9 +107,4 @@ private:
 
 
 
-
-extern UINT nTimerId;
-extern WORD wTimerRes;
-
-
 #endif	// _INTER_H_
