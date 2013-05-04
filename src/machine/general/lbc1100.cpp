@@ -109,8 +109,8 @@ bool Clbc1100::init(void)				// initialize
 
 //pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
-    if (!fp_log) fp_log=fopen("lbc1100.log","wt");	// Open log file
+//    pCPU->logsw = true;
+//    if (!fp_log) fp_log=fopen("lbc1100.log","wt");	// Open log file
 #endif
     CpcXXXX::init();
 
@@ -355,16 +355,16 @@ UINT16 Clbc1100::getKey()
 
         if (ks&0x01) {
 //            if (KEY(K_F1))			data|=0x01;
-//            if (KEY(K_F2))			data|=0x02;
+//            if (KEY(K_F3))			data|=0x02;
 //            if (KEY(K_SHT))			data|=0x04;
             if (pKEYB->isShift) data|=0x04;
-//            if (KEY(K_F4))			data|=0x08;
-//            if (KEY(K_F5))			data|=0x10;
-//            if (KEY(K_F6))			data|=0x20;
+//            if (KEY(K_F5))			data|=0x08;
+//            if (KEY(K_F6))			data|=0x10;
+//            if (KEY(K_F7))			data|=0x20;
         }
 
         if (ks&0x02) {
-            if (KEY(K_F9))			data|=0x01;
+//            if (KEY(K_F1))			data|=0x01;
             if (KEY('A'))			data|=0x02;
             if (KEY('Q'))			data|=0x04;
             if (KEY(K_0))			data|=0x08;
@@ -377,7 +377,7 @@ UINT16 Clbc1100::getKey()
             if (KEY('W'))			data|=0x04;
             if (KEY(K_1))			data|=0x08;
             if (KEY('2'))			data|=0x10;
-//            if (KEY(K_F1))			data|=0x20; // F1
+            if (KEY(K_F1))			data|=0x20; // F1
         }
 
         if (ks&0x08) {
@@ -386,7 +386,9 @@ UINT16 Clbc1100::getKey()
             if (KEY('E'))			data|=0x04;
             if (KEY(K_2))			data|=0x08;
             if (KEY('3'))			data|=0x10;
-//            if (KEY(K_F2))			data|=0x20;     //F2
+            if (KEY(K_F2))			data|=0x20;     //F2
+//            if (KEY(K_F1))			data|=0x40;     //F2
+
         }
 
         if (ks&0x10) {
@@ -395,7 +397,7 @@ UINT16 Clbc1100::getKey()
             if (KEY('R'))			data|=0x04;
             if (KEY(K_3))			data|=0x08;
             if (KEY('4'))			data|=0x10;
-//            if (KEY(K_F3))			data|=0x20;     //F3
+            if (KEY(K_F3))			data|=0x20;     //F3
         }
         if (ks&0x20) {
             if (KEY('B'))			data|=0x01;
@@ -403,7 +405,7 @@ UINT16 Clbc1100::getKey()
             if (KEY('T'))			data|=0x04;
             if (KEY(K_4))			data|=0x08;
             if (KEY('5'))			data|=0x10;
-//            if (KEY(K_F4))			data|=0x20;     //F4
+            if (KEY(K_F4))			data|=0x20;     //F4
         }
         if (ks&0x40) {
             if (KEY('N'))			data|=0x01;
@@ -447,7 +449,7 @@ UINT16 Clbc1100::getKey()
         }
         if (ks&0x800) {
             if (KEY('+'))			data|=0x01;
-            if (KEY(K_F1))			data|=0x02;
+//            if (KEY(K_F5))			data|=0x02;
             if (KEY('@'))			data|=0x04;
             if (KEY(K_COMMA))		data|=0x08;
             if (KEY('-'))			data|=0x10;
@@ -456,13 +458,13 @@ UINT16 Clbc1100::getKey()
         if (ks&0x1000) {
             if (KEY(K_PT))			data|=0x01;
             if (KEY(' '))			data|=0x02; //???
-            if (KEY(K_F3))			data|=0x04; // Numpad .
+            if (KEY('\\'))			data|=0x04; // hidden key \|
             if (KEY(K_UA))			data|=0x08;
             if (KEY('['))			data|=0x10;
             if (KEY(K_BLANK))		data|=0x20; // Blank key ( _ shifted)
         }
         if (ks&0x2000) {
-            if (KEY(K_F5))			data|=0x01;
+//            if (KEY(K_F5))			data|=0x01;
             if (KEY(K_INS))			data|=0x02;
             if (KEY(K_DEL))			data|=0x04;
             if (KEY(K_DA))			data|=0x08;
@@ -470,12 +472,12 @@ UINT16 Clbc1100::getKey()
             if (KEY(K_RA))			data|=0x20;
         }
         if (ks&0x4000) {
-            if (KEY(K_F6))			data|=0x01;
+//            if (KEY(K_F7))			data|=0x01;
             if (KEY(K_RET))			data|=0x02;
-            if (KEY(K_F7))			data|=0x04;
+//            if (KEY(K_F6))			data|=0x04;
             if (KEY(K_SML))			data|=0x08;  // KANA ???
             if (KEY(K_CLR))			data|=0x10; // CLR ???
-            if (KEY(K_F8))			data|=0x20;
+            if (KEY(K_F5))			data|=0x20;
         }
 //        if (ks&0x8000) {
 //            if (KEY(K_F1))			data|=0x01;

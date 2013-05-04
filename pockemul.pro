@@ -698,7 +698,8 @@ OTHER_FILES += \
     resources/keymap/ce152.map \
     resources/keymap/pc2081.map \
     resources/keymap/fp40.map \
-    resources/keymap/lbc1100.map
+    resources/keymap/lbc1100.map \
+    resources/keymap/cl1000.map
 
 
 

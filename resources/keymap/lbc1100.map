@@ -1,6 +1,11 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>lbc1100</model>
 <Keyboard>
+    <KEY description="F1" height="20" left="61" masterscancode="0x00" modifier="" scancode="0xf6" top="188" width="30"/>
+    <KEY description="F2" height="20" left="108" masterscancode="0x00" modifier="" scancode="0xf7" top="186" width="30"/>
+    <KEY description="F3" height="20" left="152" masterscancode="0x00" modifier="" scancode="0xf8" top="186" width="30"/>
+    <KEY description="F4" height="20" left="197" masterscancode="0x00" modifier="" scancode="0xf9" top="186" width="30"/>
+    <KEY description="F5" height="20" left="239" masterscancode="0x00" modifier="" scancode="0xfa" top="186" width="30"/>
     <KEY description="^" height="18" left="373" masterscancode="0x00" modifier="" scancode="0x5e" top="187" width="25"/>
     <KEY description="Blank key" height="18" left="417" masterscancode="0x00" modifier="" scancode="0xae" top="187" width="25"/>
     <KEY description="@" height="18" left="523" masterscancode="0x00" modifier="" scancode="0x40" top="222" width="25"/>

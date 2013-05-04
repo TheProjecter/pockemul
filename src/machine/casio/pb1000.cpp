@@ -112,7 +112,7 @@ bool Cpb1000::init(void)				// initialize
 {
 //pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+//    pCPU->logsw = true;
 #endif
     CpcXXXX::init();
 //    initExtension();
