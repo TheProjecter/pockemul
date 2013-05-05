@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "lbc1100.h"
 #include "upd7907/upd7907.h"
 #include "upd16434.h"
@@ -119,18 +121,9 @@ bool Clbc1100::init(void)				// initialize
                                      QPoint(0,72));
     publish(pCONNECTOR);
 
-//    pTAPECONNECTOR	= new Cconnector(this,3,1,Cconnector::Jack,"Line in / Rec / Rmt",false,
-//                                     QPoint(804,231),Cconnector::EAST);
-//    publish(pTAPECONNECTOR);
-//    pPRINTERCONNECTOR	= new Cconnector(this,9,2,Cconnector::DIN_8,"Printer",false,
-//                                         QPoint(402,0),Cconnector::NORTH);
-//    publish(pPRINTERCONNECTOR);
-
     WatchPoint.add(&pCONNECTOR_value,64,20,this,"20 pins connector");
-//    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
-//    WatchPoint.add(&pPRINTERCONNECTOR_value,64,9,this,"Printer");
 
-    portB = 2;
+    portB = 0;
 
 
 initcmd = true;
@@ -352,6 +345,7 @@ UINT16 Clbc1100::getKey()
     if ((pKEYB->LastKey) && ks )
     {
 //        if (fp_log) fprintf(fp_log,"KSTROBE=%04X\n",ks);
+        qWarning()<<"key"<<pKEYB->LastKey;
 
         if (ks&0x01) {
 //            if (KEY(K_F1))			data|=0x01;

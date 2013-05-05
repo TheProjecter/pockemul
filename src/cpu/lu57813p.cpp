@@ -1,34 +1,21 @@
 
-//#include <stdlib.h>
-//#include <string.h>
 
-//#include <time.h>
 #include "common.h"
-#include "Log.h"
 #include "lu57813p.h"
+#include "Log.h"
 #include "Inter.h"
 #include "Keyb.h"
 
-
-
-void	CLU57813P::Load_Internal(QFile *file){
-    char t[16];
-    QDataStream in(file);
-
-    in.readRawData(t, 11);
-    in.readRawData( (char *)imem,sizeof(imem));	// Write Header
-    qint8 stackpointer;
-    in >> stackpointer;
-    sp = stackpointer;
+CLU57813P::CLU57813P(CpcXXXX *parent)
+{
+        c0=c1=c2=stb=cs=data_in=gnd=clk=data_out=tp=out_enable=n_xtal=xtal=vdd=FALSE;
+        Current_Bit = 0;
+        pPC = parent;
+        digitalvalue = 0;
 }
 
-void	CLU57813P::save_internal(QFile *file){
-    QDataStream out(file);
+CLU57813P::~CLU57813P(){}
 
-    out.writeRawData("LU57813PSTA", 11);					//header
-    out.writeRawData((char*)imem,sizeof(imem));			//i-mem
-    out << (qint8) sp;
-}
 
 void CLU57813P::Load_Internal(QXmlStreamReader *xmlIn)
 {
@@ -98,7 +85,7 @@ bool CLU57813P::init(void)
     return(1);
 };
                 //initialize
-void CLU57813P::Reset(void){};
+void CLU57813P::Reset(void){}
 
 void CLU57813P::addretrace (void)
 {
@@ -349,28 +336,20 @@ qint64 delta_state;
 }
 
 
-void	CLU57813P::Set_c0(bool bit)			{ c0			= bit;	};
-void	CLU57813P::Set_c1(bool bit)			{ c1			= bit;	};
-void	CLU57813P::Set_c2(bool bit)			{ c2			= bit;	};
-void	CLU57813P::Set_stb(bool bit)		{ stb			= bit;	};
-void	CLU57813P::Set_cs(bool bit)			{ cs			= bit;	};
-void	CLU57813P::Set_data(bool bit)		{ data_in		= bit;	};
-void	CLU57813P::Set_gnd(bool bit)		{ gnd			= bit;	};
-void	CLU57813P::Set_clk(bool bit)		{ clk			= bit;	};
-void	CLU57813P::Set_out_enable(bool bit)	{ out_enable	= bit;	};
-void	CLU57813P::Set_n_xtal(bool bit)		{ n_xtal		= bit;	};
-void	CLU57813P::Set_xtal(bool bit)		{ xtal			= bit;	};
-void	CLU57813P::Set_vdd(bool bit)		{ vdd			= bit;	};
+void	CLU57813P::Set_c0(bool bit)			{ c0			= bit;	}
+void	CLU57813P::Set_c1(bool bit)			{ c1			= bit;	}
+void	CLU57813P::Set_c2(bool bit)			{ c2			= bit;	}
+void	CLU57813P::Set_stb(bool bit)		{ stb			= bit;	}
+void	CLU57813P::Set_cs(bool bit)			{ cs			= bit;	}
+void	CLU57813P::Set_data(bool bit)		{ data_in		= bit;	}
+void	CLU57813P::Set_gnd(bool bit)		{ gnd			= bit;	}
+void	CLU57813P::Set_clk(bool bit)		{ clk			= bit;	}
+void	CLU57813P::Set_out_enable(bool bit)	{ out_enable	= bit;	}
+void	CLU57813P::Set_n_xtal(bool bit)		{ n_xtal		= bit;	}
+void	CLU57813P::Set_xtal(bool bit)		{ xtal			= bit;	}
+void	CLU57813P::Set_vdd(bool bit)		{ vdd			= bit;	}
 
-CLU57813P::CLU57813P(CpcXXXX *parent)
-{
-        c0=c1=c2=stb=cs=data_in=gnd=clk=data_out=tp=out_enable=n_xtal=xtal=vdd=FALSE;
-        Current_Bit = 0;
-        pPC = parent;
-        digitalvalue = 0;
-}
 
-CLU57813P::~CLU57813P(){};
 
 void CLU57813P::Regs_Info(UINT8 Type)
 {

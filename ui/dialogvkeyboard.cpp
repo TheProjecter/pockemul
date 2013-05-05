@@ -7,6 +7,8 @@
 #include "Keyb.h"
 #include "Inter.h"
 
+//TODO: Add a specific temporization for modified key
+
 extern MainWindowPockemul *mainwindow;
 extern QList<CPObject *> listpPObject;
 
@@ -50,7 +52,14 @@ void DialogVKeyboard::configWait(QString cfg) {
         changeCharWait(40);
         changeCRWait(200);
     }
-    else {
+    else if (cfg=="lbc1100") {
+        changeCharWait(150);
+        changeCRWait(200);
+    }
+    else if (cfg=="pc1600") {
+        changeCharWait(60);
+        changeCRWait(200);
+    }    else {
         changeCharWait(40);
         changeCRWait(200);
     }

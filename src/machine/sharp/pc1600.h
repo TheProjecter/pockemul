@@ -67,8 +67,6 @@ public:
     void    Hack_CRVA(void);
     FILE*   fp_CRVA;
 
-    bool	LoadConfig(QFile *file);
-    bool	SaveConfig(QFile *file);
     bool	LoadConfig(QXmlStreamReader *);
     bool	SaveConfig(QXmlStreamWriter *);
     bool	InitDisplay(void);

@@ -8,7 +8,7 @@
 
 #include	"common.h"
 #include	"pc1600.h"
-#include "z80.h"
+#include    "z80.h"
 #include    "Lcdc_pc1600.h"
 #include	"Inter.h"
 #include	"Debug.h"
@@ -21,14 +21,14 @@ extern int	g_DasmStep;
 extern bool	UpdateDisplayRunning;
 
 
-Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
+Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
 #ifndef QT_NO_DEBUG
     if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 #endif
 
     setfrequency( (int) 3500000);
-    ioFreq = 0;
+//    ioFreq = 0;
     setcfgfname(QString("pc1600"));
 
     SessionHeader	= "PC1600PKM";
@@ -39,13 +39,10 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     memsize			= 0x0E0000;
     InitMemValue	= 0x00;
 
-    SlotList.clear();
-
     KeyMap		= KeyMap1600;
     KeyMapLenght= KeyMap1600Lenght;
 
     Pc_Offset_X = Pc_Offset_Y = 0;
-
 
     setDXmm(195);//Pc_DX_mm = 195;
     setDYmm(86);//Pc_DY_mm = 86;
@@ -66,8 +63,6 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     Lcd_Symb_DX	= 317;
     Lcd_Symb_DY	= 5;
 
-    DialogExtensionID = 0;//IDD_EXT_PROPERTIES_1500;
-
     SoundOn			= false;
     lh5810_Access	= false;
     ce150_Access	= false;
@@ -87,20 +82,14 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(this)
     cpuSwitchPending = false;
 
     pLU57813P   = new CLU57813P(this);
-
     pLH5810		= new CLH5810_PC1600(this);
-
     pTIMER		= new Ctimer(this);
-
-
-    pKEYB		= new Ckeyb(this,"pc1600.map",scandef_pc1600);
+    pKEYB		= new Ckeyb(this,"pc1600.map");
     pce152		= new Cce152_PC15XX(this);
     delete pce152->pTIMER; pce152->pTIMER = pTIMER;
-
     pHD61102_1  = new CHD61102(this);
     pHD61102_2  = new CHD61102(this);
-
-    pTC8576P = new CTC8576P(this,1288800);
+    pTC8576P    = new CTC8576P(this,1288800);
 
     ce1600_connected = false;
 
@@ -218,7 +207,7 @@ void Cpc1600::TurnON(void)
     pHD61102_1->updated = pHD61102_2->updated = true;
 }
 
-void	Cpc1600::initExtension(void)
+void Cpc1600::initExtension(void)
 {
     // initialise ext_MemSlot1  S1
     ext_MemSlot1 = new CExtensionArray("Memory Slot 1 (S1)","Add memory module");
@@ -256,46 +245,12 @@ bool Cpc1600::CompleteDisplay(void)
     return TRUE;
 }
 
-
 bool Cpc1600::InitDisplay(void)
 {
     AddLog(LOG_FUNC,"Cpc1600::InitDisplay");
 
     CpcXXXX::InitDisplay();
 
-    return(1);
-}
-
-
-
-bool Cpc1600::LoadConfig(QFile *file)
-{
-    AddLog(LOG_FUNC,"Cpc1600::LoadConfig");
-    CpcXXXX::LoadConfig(file);
-
-    QDataStream in(file);
-    qint8 b1,b2,b3,b4,csp,mcpu;
-
-    in >> b1 >> b2 >> b3 >> b4;
-    in >> csp >> mcpu;
-    bank1 = b1;
-    bank2 = b2;
-    bank3 = b3;
-    bank4 = b4;
-    cpuSwitchPending = csp;
-    masterCPU = mcpu;
-    pCPU = (masterCPU ? (CCPU *)pZ80 : (CCPU *)pLH5803);
-
-    pZ80->Load_Internal(file);
-    pLH5803->Load_Internal(file);
-    pLH5810->Load_Internal(file);
-    pHD61102_1->Load_Internal(file);
-    pHD61102_2->Load_Internal(file);
-    pLU57813P->Load_Internal(file);
-    pTC8576P->Load_Internal(file);
-
-
-    //--	fread(&Extension,1,sizeof(TExtension),fp);
     return(1);
 }
 
@@ -324,28 +279,6 @@ bool Cpc1600::LoadConfig(QXmlStreamReader *xmlIn)
     pLU57813P->Load_Internal(xmlIn);
     pTC8576P->Load_Internal(xmlIn);
     return true;
-}
-bool Cpc1600::SaveConfig(QFile *file)
-{
-    AddLog(LOG_FUNC,"Cpc1600::SaveConfig");
-    CpcXXXX::SaveConfig(file);
-
-    QDataStream out(file);
-    out << (qint8)bank1 << (qint8)bank2 << (qint8)bank3 << (qint8)bank4;
-    out << (qint8)cpuSwitchPending << (qint8) masterCPU;
-
-    pZ80->save_internal(file);
-    pLH5803->save_internal(file);
-    pLH5810->save_internal(file);
-    pHD61102_1->save_internal(file);
-    pHD61102_2->save_internal(file);
-    pLU57813P->save_internal(file);
-    pTC8576P->save_internal(file);
-
-
-
-//--	fwrite(&Extension,1,sizeof(TExtension),fp);
-    return(1);
 }
 
 bool Cpc1600::SaveConfig(QXmlStreamWriter *xmlOut)
@@ -402,13 +335,12 @@ bool Cpc1600::init(void)				// initialize
     pADCONNECTOR= new Cconnector(this,8,2,Cconnector::Jack,"Digital connector 2 pins",false,QPoint(679,20));	publish(pADCONNECTOR);
 
     WatchPoint.remove(this);
-
     WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opb),8,8,this,"LH5810 Port B");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
 
-    QMessageBox::about(this, tr("Attention"),"PC-1600 Emulation is in alpha stage.");
+//    QMessageBox::about(this, tr("Attention"),"PC-1600 Emulation is in alpha stage.");
     return true;
 }
 
@@ -468,10 +400,7 @@ bool Cpc1600::run(void)
     //----------------------------------
     pLH5810->SetRegBit(LH5810_OPC,6,pLH5810->GetReg(LH5810_OPC) & 0x80);
     fillSoundBuffer((pLH5810->GetReg(LH5810_OPC) & 0x40 ? 0x00 : 0xff));
-
     //----------------------------------
-
-
 
     // 1/64s and 1/2s interrupt
     PUT_BIT(pCPU->imem[0x32],4,pTIMER->GetTP( pLU57813P->Get_tpIndex64()));
@@ -482,17 +411,12 @@ bool Cpc1600::run(void)
         pLU57813P->step();
     }
 
-    if (pLU57813P->Get_Kon())
-    {
-        pLH5810->step();
-    }
+    if (pLU57813P->Get_Kon()) { pLH5810->step(); }
 
-    //pTC8576P->step();
+//    pTC8576P->step();
 
     return(1);
 }
-
-
 
 INLINE void Cpc1600::hack(DWORD pc)
 {
@@ -504,7 +428,7 @@ INLINE void Cpc1600::hack(DWORD pc)
                  ((ADDR >= 0x4000) && (ADDR <= 0x7FFF) && (BANK == bank2)) || \
                  ((ADDR >= 0x8000) && (ADDR <= 0xBFFF) && (BANK == bank3)) || \
                  ((ADDR >= 0xC000) && (ADDR <= 0xFFFF) && (BANK == bank4)) ) {\
-            fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
+            if (fp_log) fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
             if (pCPU->fp_log) fprintf(pCPU->fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
             }\
         }
@@ -515,7 +439,7 @@ INLINE void Cpc1600::hack(DWORD pc)
                  ((ADDR >= 0x4000) && (ADDR <= 0x7FFF) && (BANK == bank2)) || \
                  ((ADDR >= 0x8000) && (ADDR <= 0xBFFF) && (BANK == bank3)) || \
                  ((ADDR >= 0xC000) && (ADDR <= 0xFFFF) && (BANK == bank4)) ) {\
-            fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
+            if (fp_log) fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
             if (pCPU->fp_log) fprintf(pCPU->fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
             }\
         }
@@ -731,25 +655,21 @@ INLINE void Cpc1600::hack(DWORD pc)
 
 void Cpc1600::LoadSIO(void) {
     fclose(fp_CRVA);
-        // Display the Open dialog box.
-        QString ofn = QFileDialog::getOpenFileName(
-                        mainwindow,
-                        "Choose a file",
-                        ".",
-                        "Text Files (*.*)");
+    // Display the Open dialog box.
+    QString ofn = QFileDialog::getOpenFileName(
+                mainwindow,
+                "Choose a file",
+                ".",
+                "Text Files (*.*)");
 
-        if (ofn.isEmpty())
-        {
-            return ;
-        }
+    if (ofn.isEmpty()) return;
 
-        char * str = qstrdup(ofn.toLocal8Bit());
+    char * str = qstrdup(ofn.toLocal8Bit());
 
-        if ((fp_CRVA = fopen(str,"r"))==NULL) {
-            MSG_ERROR(tr("Failed to open file"));
-            return ;
-        }
-
+    if ((fp_CRVA = fopen(str,"r"))==NULL) {
+        MSG_ERROR(tr("Failed to open file"));
+        return ;
+    }
 }
 
 void Cpc1600::Hack_CRVA(void){
@@ -764,8 +684,7 @@ void Cpc1600::Hack_CRVA(void){
         c=fgetc(fp_CRVA);
         if (c==0x0A) c=fgetc(fp_CRVA);
     }
-    if (c==EOF)
-    {
+    if (c==EOF) {
         fclose(fp_CRVA);
         fp_CRVA = 0;
         c = 0x1A;
@@ -784,18 +703,18 @@ INLINE bool Cpc1600::lh5810_write(void)
 {
 //	AddLog(LOG_FUNC,"Cpc1600::lh5810_write");
 
-    pLH5810->SetReg(LH5810_RESET,	pPC->pCPU->imem[0x14]);
-    pLH5810->SetReg(LH5810_U  ,	pPC->pCPU->imem[0x15]);
-    pLH5810->SetReg(LH5810_L,	pPC->pCPU->imem[0x16]);
+    pLH5810->SetReg(LH5810_RESET,pCPU->imem[0x14]);
+    pLH5810->SetReg(LH5810_U  ,	pCPU->imem[0x15]);
+    pLH5810->SetReg(LH5810_L,	pCPU->imem[0x16]);
 
-    pLH5810->SetReg(LH5810_OPC,	pPC->pCPU->imem[0x18]);
-    pLH5810->SetReg(LH5810_G  ,	pPC->pCPU->imem[0x19]);
-    pLH5810->SetReg(LH5810_MSK,	pPC->pCPU->imem[0x1A]);
-    pLH5810->SetReg(LH5810_IF ,	pPC->pCPU->imem[0x1B]);
-    pLH5810->SetReg(LH5810_DDA,	pPC->pCPU->imem[0x1C]);
-    pLH5810->SetReg(LH5810_DDB,	pPC->pCPU->imem[0x1D]);
-    pLH5810->SetReg(LH5810_OPA,	pPC->pCPU->imem[0x1E]);
-    pLH5810->SetReg(LH5810_OPB,	pPC->pCPU->imem[0x1F]);
+    pLH5810->SetReg(LH5810_OPC,	pCPU->imem[0x18]);
+    pLH5810->SetReg(LH5810_G  ,	pCPU->imem[0x19]);
+    pLH5810->SetReg(LH5810_MSK,	pCPU->imem[0x1A]);
+    pLH5810->SetReg(LH5810_IF ,	pCPU->imem[0x1B]);
+    pLH5810->SetReg(LH5810_DDA,	pCPU->imem[0x1C]);
+    pLH5810->SetReg(LH5810_DDB,	pCPU->imem[0x1D]);
+    pLH5810->SetReg(LH5810_OPA,	pCPU->imem[0x1E]);
+    pLH5810->SetReg(LH5810_OPB,	pCPU->imem[0x1F]);
 
 
     return(1);
@@ -806,23 +725,17 @@ INLINE bool Cpc1600::lh5810_read(void)
 //    pLH5810->step();
 //	AddLog(LOG_FUNC,"Cpc1600::lh5810_read");
 
+    pCPU->imem[0x15] = pLH5810->GetReg(LH5810_U);
+    pCPU->imem[0x16] = pLH5810->GetReg(LH5810_L);
 
-
-    pPC->pCPU->imem[0x15] = pLH5810->GetReg(LH5810_U);
-    pPC->pCPU->imem[0x16] = pLH5810->GetReg(LH5810_L);
-
-    pPC->pCPU->imem[0x18] = pLH5810->GetReg(LH5810_OPC);
-    pPC->pCPU->imem[0x19] = pLH5810->GetReg(LH5810_G);
-    pPC->pCPU->imem[0x1A] = pLH5810->GetReg(LH5810_MSK);
-    pPC->pCPU->imem[0x1B] = pLH5810->GetReg(LH5810_IF);
-    pPC->pCPU->imem[0x1C] = pLH5810->GetReg(LH5810_DDA);
-    pPC->pCPU->imem[0x1D] = pLH5810->GetReg(LH5810_DDB);
-    pPC->pCPU->imem[0x1E] = pLH5810->GetReg(LH5810_OPA);
-    pPC->pCPU->imem[0x1F] = pLH5810->GetReg(LH5810_OPB);
-
-//    if (pPC->pCPU->imem[0x1F] == 0x20) {
-//        pPC->pCPU->imem[0x1F] = 0x20;
-//    }
+    pCPU->imem[0x18] = pLH5810->GetReg(LH5810_OPC);
+    pCPU->imem[0x19] = pLH5810->GetReg(LH5810_G);
+    pCPU->imem[0x1A] = pLH5810->GetReg(LH5810_MSK);
+    pCPU->imem[0x1B] = pLH5810->GetReg(LH5810_IF);
+    pCPU->imem[0x1C] = pLH5810->GetReg(LH5810_DDA);
+    pCPU->imem[0x1D] = pLH5810->GetReg(LH5810_DDB);
+    pCPU->imem[0x1E] = pLH5810->GetReg(LH5810_OPA);
+    pCPU->imem[0x1F] = pLH5810->GetReg(LH5810_OPB);
 
     return(1);
 }
@@ -830,12 +743,10 @@ INLINE bool Cpc1600::lh5810_read(void)
 bool Cpc1600::Mem_Mirror(DWORD *d)
 {
     // LH5803 mirror
-    if (!masterCPU)
-    {
+    if (!masterCPU) {
         if ( (*d>=0x7400) && (*d<=0x744F) )	{ *d+=0x200; return(1); }
         if ( (*d>=0x7500) && (*d<=0x754F) )	{ *d+=0x200; return(1); }
     }
-
 
     return(1);
 }
@@ -943,9 +854,6 @@ bool Cpc1600::Chk_Adr(DWORD *d,DWORD data)
     return (false);
 }
 
-
-
-
 bool Cpc1600::Chk_Adr_R(DWORD *d,DWORD data)
 {
     Mem_Mirror(d);
@@ -1018,10 +926,8 @@ bool Cpc1600::Chk_Adr_R(DWORD *d,DWORD data)
     return(1);
 }
 
-
-
-void Cpc1600::Set_Port(PORTS Port,BYTE data){};
-BYTE Cpc1600::Get_Port(PORTS Port){return(0);};
+void Cpc1600::Set_Port(PORTS Port,BYTE data){}
+BYTE Cpc1600::Get_Port(PORTS Port){return(0);}
 
 UINT8 Cpc1600::out(UINT8 address,UINT8 value)
 {
@@ -1030,28 +936,26 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
         fprintf(pCPU->fp_log,"%-40s   iff=%i OUT [%02X]=%02X\t\t\t%s\n"," ",((CZ80 *)pCPU)->z80.r.iff,address,value,pCPU->Regs_String);
     }    // Manage CPU port modification
 
-
-    if ((address >= 0x10) && (address <= 0x1f))
-    {
-        switch (address) {
-            // LH5810
-        case 0x14: break;
-        case 0x15: break;
-        case 0x16: break;
-        case 0x18: break;
-        case 0x19: break;
-        case 0x1a: break;
-        case 0x1b: break;
-        case 0x1c: break;
-        case 0x1d: break;
-        case 0x1e: break;
-        case 0x1f: break;
-        }
-        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
-        lh5810_write(); pLH5810->step();
-    }
-
     switch(address) {
+    case 0x10:
+    case 0x11:
+    case 0x12:
+    case 0x13:
+    case 0x14:
+    case 0x15:
+    case 0x16:
+    case 0x18:
+    case 0x19:
+    case 0x1a:
+    case 0x1b:
+    case 0x1c:
+    case 0x1d:
+    case 0x1e:
+    case 0x1f:
+        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
+        lh5810_write();
+        pLH5810->step();
+        break;
     case 0x20: if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         break;
     case 0x21:  // Send a command to the sub-CPU ( the sub-CPU answer on port 33h)
@@ -1202,17 +1106,10 @@ UINT8 Cpc1600::in(UINT8 address)
 
 }
 
-
-
 void Cpc1600::Regs_Info(UINT8 Type)
 {
-
     strcat(Regs_String,	"");
-    //CpcXXXX::Regs_Info(0);
-    //pLH5810->Regs_Info(0);
     pCPU->Regs_Info(1);
-    //strcat(Regs_String,	"\r\n");
-    //strcat(Regs_String,pLH5810->Regs_String);
 }
 
 #define LOGPC() \
@@ -1280,7 +1177,6 @@ void Cpc1600::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
 
     BuildContextMenu(&menu);
-
     menu.addSeparator();
 
         //-----------------------------------------------//
@@ -1300,11 +1196,8 @@ void Cpc1600::contextMenuEvent ( QContextMenuEvent * event )
 
 bool	CLH5810_PC1600::init(void)
 {
-
     return(1);
 }
-
-
 
 #define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
 BYTE Cpc1600::getKey()
@@ -1429,21 +1322,15 @@ bool CLH5810_PC1600::step()
     ////////////////////////////////////////////////////////////////////
     //	ON/Break
     ////////////////////////////////////////////////////////////////////
-
     SetRegBit(LH5810_OPB,7,((Cpc1600 *)pPC)->pLU57813P->Get_Kon());
-
-
 
       //----------------------//
      // Standard LH5810 STEP //
     //----------------------//
     CLH5810::step();
 
-
     pPC->pKEYB->Set_KS(GetReg(LH5810_OPA));
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"Set_KS( %02x )\n",GetReg(LH5810_OPA));
 
-
     return(1);
 }
-

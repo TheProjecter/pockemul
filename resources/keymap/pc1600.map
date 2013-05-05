@@ -93,7 +93,7 @@
     <KEY description="}" masterscancode="0x36" modifier="2nd"/>
     <KEY description="|" masterscancode="0x30" modifier="2nd"/>
     <KEY description="_" masterscancode="0x2e" modifier="2nd"/>
-    <KEY description="&quot;" masterscancode="0x34" modifier="2nd"/>
+    <KEY description="'" masterscancode="0x34" modifier="2nd"/>
     <KEY description="\" masterscancode="0x37" modifier="2nd"/>
     <KEY description="~" masterscancode="0x38" modifier="2nd"/>
 </Keyboard>

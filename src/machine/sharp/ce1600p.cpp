@@ -43,7 +43,7 @@ Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
     Paper_X = 192;
     Paper_Y = 50;
     setDX(1100);//Pc_DX	= 1100;
-    setDY(773);//Pc_DY	= 773;
+    setDY(780);//Pc_DY	= 773;
 
     KeyMap		= KeyMapce1600p;
     KeyMapLenght= KeyMapce1600pLenght;
@@ -108,12 +108,17 @@ bool Cce1600p::run(void)
     ////////////////////////////////////////////////////////////////////
     //	PRINT MODE
     //////////////////////////////////////////////////////////////////
-    if (pKEYB->LastKey==K_PRINT)
+    if (pKEYB->LastKey==K_PRINT_ON)
     {
-        Print_Mode = ! Print_Mode;
-        if (pTIMER->pPC) PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],4,true);
+        Print_Mode = true;
         pKEYB->LastKey = 0;
     }
+    if (pKEYB->LastKey==K_PRINT_OFF)
+    {
+        Print_Mode = false;
+        pKEYB->LastKey = 0;
+    }
+    if (pTIMER->pPC) PUT_BIT(pTIMER->pPC->pCPU->imem[0x81],4,Print_Mode);
 
     ////////////////////////////////////////////////////////////////////
     //	PAPER FEED

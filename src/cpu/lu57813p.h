@@ -37,8 +37,6 @@ public:
     void	increment_day(void);
     void	increment_month(void);
 
-    void	Load_Internal(QFile *);
-    void	save_internal(QFile *);
     void	Load_Internal(QXmlStreamReader *);
     void	save_internal(QXmlStreamWriter *);
 
@@ -55,7 +53,7 @@ public:
     void	Set_data(bool);
     void	Set_gnd(bool);
     void	Set_clk(bool);
-    void	Set_out_enable(bool);;
+    void	Set_out_enable(bool);
     void	Set_n_xtal(bool);
     void	Set_xtal(bool);
     void	Set_vdd(bool);

@@ -176,11 +176,11 @@
 		_state += 7; \
         CallSubLevel++ ; \
 /*		if(z->i.emulate_subroutine && (s = z80subroutine(z, PC)) >= 0) { \
-			PC = MEM16(SP); \
-			SP += 2; \
-			if(SP > z->i.stack_under) \
-				return Z80_UNDERFLOW; \
-			_state += s; \
+            PC = MEM16(SP); \
+            SP += 2; \
+            if(SP > z->i.stack_under) \
+                return Z80_UNDERFLOW; \
+            _state += s; \
         } */\
 	} else \
 		PC += _length;
@@ -413,19 +413,19 @@
 	PC += _length
 
 #define JP(x, y) \
-	if(x) { \
+    if(x) { \
         /*int s; */\
-		PC = y; \
+        PC = y; \
 /*		if(z->i.emulate_subroutine && (s = z80subroutine(z, PC)) >= 0) { \
-			PC = MEM16(SP); \
-			SP += 2; \
-			if(SP > z->i.stack_under) \
-				return Z80_UNDERFLOW; \
-			_state += s; \
+            PC = MEM16(SP); \
+            SP += 2; \
+            if(SP > z->i.stack_under) \
+                return Z80_UNDERFLOW; \
+            _state += s; \
         }*/ \
-	} else { \
-		PC += _length; \
-	}
+    } else { \
+        PC += _length; \
+    }
 
 #define JR(x, y) \
 	if(x) { \
@@ -1152,7 +1152,7 @@ int CZ80::z80retn(Z80stat *z) {
 }
 
 /*
-	DAA実行時にAレジスタに加算される値とCYフラグ
+    DAA実行時にAレジスタに加算される値とCYフラグ
 */
 inline void CZ80::daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f)
 {
@@ -1220,7 +1220,7 @@ inline void CZ80::daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f)
 }
 
 /*
-	Rレジスタ用乱数seedを設定する
+    Rレジスタ用乱数seedを設定する
 */
 void CZ80::z80srand(uint32 seed)
 {
@@ -1228,7 +1228,7 @@ void CZ80::z80srand(uint32 seed)
 }
 
 /*
-	RESET信号を送る
+    RESET信号を送る
 */
 int CZ80::z80reset(Z80stat *z)
 {
@@ -1243,7 +1243,7 @@ int CZ80::z80reset(Z80stat *z)
 }
 
 /*
-	NMI信号を送る
+    NMI信号を送る
 */
 int CZ80::z80nmi(Z80stat *z)
 {
@@ -1258,7 +1258,7 @@ int CZ80::z80nmi(Z80stat *z)
 }
 
 /*
-	INT信号を送ったとき割り込みが発生するかチェックする (IM 0)
+    INT信号を送ったとき割り込みが発生するかチェックする (IM 0)
 */
 int CZ80::z80int0chk(const Z80stat *z)
 {
@@ -1397,8 +1397,8 @@ int CZ80::z80exec(Z80stat *z)
 
 	do {
 #if defined(Z80_TRACE)
-		if(z->i.trace)
-			z80log(z);
+        if(z->i.trace)
+            z80log(z);
 #endif
 		switch(FETCH_XX()) {
 		case 0x00: NOP();           break;	/* nop */
