@@ -130,22 +130,25 @@ void Ctimer::resetTP(int index)
     previous_state_tp[index] = 0;
 }
 
+
+
 bool	Ctimer::GetTP(int index)
 {
     if ( (index < 0) || (index >= 10)) return false;
 
 // generate Timer Pulse signal
-#define TP_STATE(index)		(pPC->getfrequency() / frequency_tp[index])
+
     qint64 delta_state;
 
     if (previous_state_tp[index] == 0) previous_state_tp[index] = pPC->pTIMER->state;
 
     // Process a while because we could have miss some ticks :-) . I don't know if it is relevant
     // to take this into account .
-    while ( (delta_state = (state - previous_state_tp[index])) >= (TP_STATE(index)/2) )
+    int _base = TP_STATE(index)/2;
+    while ( (delta_state = (state - previous_state_tp[index])) >= (_base) )
     {
         tp[index] ^= 1;
-        previous_state_tp[index] += (TP_STATE(index) / 2);
+        previous_state_tp[index] += _base;
     };
 
     return(tp[index]);

@@ -26,6 +26,7 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
 #ifndef QT_NO_DEBUG
     if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 #endif
+if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 
     setfrequency( (int) 3500000);
 //    ioFreq = 0;
@@ -193,7 +194,6 @@ void Cpc1600::Reset(void)
     pLH5803->Reset();
     pLU57813P->Reset();
     pLH5810->Reset();
-
     //CpcXXXX::Reset();
 }
 
@@ -310,8 +310,10 @@ bool Cpc1600::init(void)				// initialize
 {
     fp_CRVA = 0;
     // if DEBUG then log CPU
+
+//    pZ80->logsw = true;
 #ifndef QT_NO_DEBUG
-    pZ80->logsw = true;
+//    pZ80->logsw = true;
 #endif
     CpcXXXX::init();
 
@@ -322,6 +324,7 @@ bool Cpc1600::init(void)				// initialize
 #ifndef QT_NO_DEBUG
 //    pCPU->logsw = true;
 #endif
+//    pCPU->logsw = true;
 
     pCPU->init();
     masterCPU=true;
@@ -329,7 +332,6 @@ bool Cpc1600::init(void)				// initialize
 
     pLU57813P->init();
     pLH5810->init();
-
     pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
     pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
     pADCONNECTOR= new Cconnector(this,8,2,Cconnector::Jack,"Digital connector 2 pins",false,QPoint(679,20));	publish(pADCONNECTOR);
@@ -367,9 +369,7 @@ bool Cpc1600::run(void)
                 pCPU = pLH5803;
                 cpuSwitchPending = false;
                 masterCPU = false;
-                for (int i=0x30;i<0x40;i++) {
-                     mem[0x8A000+i] = pZ80->imem[i];
-                }
+                memcpy((char*) &mem[0x8A30],(char*)&pZ80->imem[0x30],0x10);
             }
         }
         else
@@ -381,16 +381,14 @@ bool Cpc1600::run(void)
             cpuSwitchPending = false;
             masterCPU = true;
             // Copy 0x30-0x3f to 1A030-1A03F
-            for (int i=0x30;i<0x40;i++) {
-                pZ80->imem[i] = mem[0x8A000+i];
-            }
+            memcpy((char*)&pZ80->imem[0x30],(char*) &mem[0x8A30],0x10);
         }
     }
 
 // ---------------------------------------------------------
 
     Current_PC = pCPU->get_PC();
-
+//hack(Current_PC);
 #ifndef QT_NO_DEBUG
     hack(Current_PC);
 #endif
@@ -398,24 +396,25 @@ bool Cpc1600::run(void)
     //----------------------------------
     // SOUND BUFFER (quite simple no?)
     //----------------------------------
-    pLH5810->SetRegBit(LH5810_OPC,6,pLH5810->GetReg(LH5810_OPC) & 0x80);
-    fillSoundBuffer((pLH5810->GetReg(LH5810_OPC) & 0x40 ? 0x00 : 0xff));
+
+    pLH5810->SetRegBit(CLH5810::OPC,6,pLH5810->GetReg(CLH5810::OPC) & 0x80);
+
+//    fillSoundBuffer((pLH5810->GetReg(CLH5810::OPC) & 0x40 ? 0x00 : 0xff));
     //----------------------------------
 
     // 1/64s and 1/2s interrupt
     PUT_BIT(pCPU->imem[0x32],4,pTIMER->GetTP( pLU57813P->Get_tpIndex64()));
-
     bool tips = pTIMER->GetTP( pLU57813P->Get_tpIndex2());
+
     if (READ_BIT(pCPU->imem[0x32],6) != tips) {
         PUT_BIT(pCPU->imem[0x32],6,tips);
         pLU57813P->step();
     }
-
     if (pLU57813P->Get_Kon()) { pLH5810->step(); }
 
 //    pTC8576P->step();
 
-    return(1);
+    return true;
 }
 
 INLINE void Cpc1600::hack(DWORD pc)
@@ -444,7 +443,7 @@ INLINE void Cpc1600::hack(DWORD pc)
             }\
         }
 
-    if (fp_log == 0) return;
+//    if (fp_log == 0) return;
 
     switch (pc)
     {
@@ -510,6 +509,7 @@ INLINE void Cpc1600::hack(DWORD pc)
     FUNC_CALL_C(0,0x01D8,0x03,QT_TR_NOOP("RS232 / SIO - [%1] - CSNDA      - Transmit one byte cf data.\n"));                break;
     FUNC_CALL_C(0,0x01D8,0x04,QT_TR_NOOP("RS232 / SIO - [%1] - CRCVA      - Receive one byte cf data (if there is no data te read, wait until data are sent in.)\n"));
                         Hack_CRVA();
+                        AddLog(LOG_SIO,"HACK");
                         break;
     FUNC_CALL_C(0,0x01D8,0x07,QT_TR_NOOP("RS232 / SIO - [%1] - CRCV1      - Receive one byte of data (do net wait even if there is no data te read.)\n"));                break;
     FUNC_CALL_C(0,0x01D8,0x0E,QT_TR_NOOP("RS232 / SIO - [%1] - CSETHS     - Set RS and ER signais to high in the auto handshake mode.\n"));                break;
@@ -689,6 +689,7 @@ void Cpc1600::Hack_CRVA(void){
         fp_CRVA = 0;
         c = 0x1A;
     }
+    AddLog(LOG_SIO,tr("data:[%1]=%2").arg(c,2,16,QChar('0')).arg(QChar(c)));
     if (fp_log) fprintf(fp_log,"SEND DATA [%02x]\n",c);
     ((CZ80 *)pCPU)->z80.r.a = c;
     ((CZ80 *)pCPU)->z80retn(&((CZ80 *)pCPU)->z80);
@@ -703,18 +704,18 @@ INLINE bool Cpc1600::lh5810_write(void)
 {
 //	AddLog(LOG_FUNC,"Cpc1600::lh5810_write");
 
-    pLH5810->SetReg(LH5810_RESET,pCPU->imem[0x14]);
-    pLH5810->SetReg(LH5810_U  ,	pCPU->imem[0x15]);
-    pLH5810->SetReg(LH5810_L,	pCPU->imem[0x16]);
+    pLH5810->SetReg(CLH5810::RESET,pCPU->imem[0x14]);
+    pLH5810->SetReg(CLH5810::U  ,	pCPU->imem[0x15]);
+    pLH5810->SetReg(CLH5810::L,	pCPU->imem[0x16]);
 
-    pLH5810->SetReg(LH5810_OPC,	pCPU->imem[0x18]);
-    pLH5810->SetReg(LH5810_G  ,	pCPU->imem[0x19]);
-    pLH5810->SetReg(LH5810_MSK,	pCPU->imem[0x1A]);
-    pLH5810->SetReg(LH5810_IF ,	pCPU->imem[0x1B]);
-    pLH5810->SetReg(LH5810_DDA,	pCPU->imem[0x1C]);
-    pLH5810->SetReg(LH5810_DDB,	pCPU->imem[0x1D]);
-    pLH5810->SetReg(LH5810_OPA,	pCPU->imem[0x1E]);
-    pLH5810->SetReg(LH5810_OPB,	pCPU->imem[0x1F]);
+    pLH5810->SetReg(CLH5810::OPC,	pCPU->imem[0x18]);
+    pLH5810->SetReg(CLH5810::G  ,	pCPU->imem[0x19]);
+    pLH5810->SetReg(CLH5810::MSK,	pCPU->imem[0x1A]);
+    pLH5810->SetReg(CLH5810::IF ,	pCPU->imem[0x1B]);
+    pLH5810->SetReg(CLH5810::DDA,	pCPU->imem[0x1C]);
+    pLH5810->SetReg(CLH5810::DDB,	pCPU->imem[0x1D]);
+    pLH5810->SetReg(CLH5810::OPA,	pCPU->imem[0x1E]);
+    pLH5810->SetReg(CLH5810::OPB,	pCPU->imem[0x1F]);
 
 
     return(1);
@@ -725,17 +726,17 @@ INLINE bool Cpc1600::lh5810_read(void)
 //    pLH5810->step();
 //	AddLog(LOG_FUNC,"Cpc1600::lh5810_read");
 
-    pCPU->imem[0x15] = pLH5810->GetReg(LH5810_U);
-    pCPU->imem[0x16] = pLH5810->GetReg(LH5810_L);
+    pCPU->imem[0x15] = pLH5810->GetReg(CLH5810::U);
+    pCPU->imem[0x16] = pLH5810->GetReg(CLH5810::L);
 
-    pCPU->imem[0x18] = pLH5810->GetReg(LH5810_OPC);
-    pCPU->imem[0x19] = pLH5810->GetReg(LH5810_G);
-    pCPU->imem[0x1A] = pLH5810->GetReg(LH5810_MSK);
-    pCPU->imem[0x1B] = pLH5810->GetReg(LH5810_IF);
-    pCPU->imem[0x1C] = pLH5810->GetReg(LH5810_DDA);
-    pCPU->imem[0x1D] = pLH5810->GetReg(LH5810_DDB);
-    pCPU->imem[0x1E] = pLH5810->GetReg(LH5810_OPA);
-    pCPU->imem[0x1F] = pLH5810->GetReg(LH5810_OPB);
+    pCPU->imem[0x18] = pLH5810->GetReg(CLH5810::OPC);
+    pCPU->imem[0x19] = pLH5810->GetReg(CLH5810::G);
+    pCPU->imem[0x1A] = pLH5810->GetReg(CLH5810::MSK);
+    pCPU->imem[0x1B] = pLH5810->GetReg(CLH5810::IF);
+    pCPU->imem[0x1C] = pLH5810->GetReg(CLH5810::DDA);
+    pCPU->imem[0x1D] = pLH5810->GetReg(CLH5810::DDB);
+    pCPU->imem[0x1E] = pLH5810->GetReg(CLH5810::OPA);
+    pCPU->imem[0x1F] = pLH5810->GetReg(CLH5810::OPB);
 
     return(1);
 }
@@ -937,22 +938,11 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
     }    // Manage CPU port modification
 
     switch(address) {
-    case 0x10:
-    case 0x11:
-    case 0x12:
-    case 0x13:
-    case 0x14:
-    case 0x15:
-    case 0x16:
-    case 0x18:
-    case 0x19:
-    case 0x1a:
-    case 0x1b:
-    case 0x1c:
-    case 0x1d:
-    case 0x1e:
-    case 0x1f:
-        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
+    case 0x10:    case 0x11:    case 0x12:    case 0x13:
+    case 0x14:    case 0x15:    case 0x16:    case 0x17:
+    case 0x18:    case 0x19:    case 0x1a:    case 0x1b:
+    case 0x1c:    case 0x1d:    case 0x1e:    case 0x1f:
+//        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
         lh5810_write();
         pLH5810->step();
         break;
@@ -960,7 +950,7 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
         break;
     case 0x21:  // Send a command to the sub-CPU ( the sub-CPU answer on port 33h)
         // In fact it send the command via he UART parallel port !!!!
-        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X   - SEND //\n",address,value);
+//        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X   - SEND //\n",address,value);
         pLU57813P->command(value);
         break;
     case 0x22: pTC8576P->in(value);
@@ -1019,7 +1009,6 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
     case 0x58:  pHD61102_1->instruction(value);
                 pLCDC->Refresh = true;
                 break;
-
     case 0x52:  pHD61102_1->instruction(0x100|value);
                 pHD61102_2->instruction(0x100|value);
                 pLCDC->Refresh = true;
@@ -1030,6 +1019,8 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
     case 0x5a:  pHD61102_1->instruction(0x100|value);
                 pLCDC->Refresh = true;
                 break;
+//////////////////////////////////////////////////////////
+
 
     case 0x80:
     case 0x81:
@@ -1050,6 +1041,15 @@ UINT8 Cpc1600::in(UINT8 address)
         fprintf(pCPU->fp_log,"%-40s   IN [%02X]\t\t\t%s\n"," ",address,pCPU->Regs_String);
     }
     switch (address) {
+    case 0x10:    case 0x11:    case 0x12:    case 0x13:
+    case 0x14:    case 0x15:    case 0x16:    case 0x17:
+    case 0x18:    case 0x19:    case 0x1a:    case 0x1b:
+    case 0x1c:    case 0x1d:    case 0x1e:    case 0x1f:
+//        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
+        pLH5810->step();lh5810_read();
+        break;
+
+
     case 0x20: if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;
     case 0x21: if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
@@ -1060,26 +1060,15 @@ UINT8 Cpc1600::in(UINT8 address)
         break;
     case 0x23:
         pCPU->imem[address] = pTC8576P->get_psr();
-        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
+//        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;// bit 5 to 0
     case 0x28:
         if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
         break;
 
-    case 0x14:
-    case 0x15:
-    case 0x16:
-    case 0x18:
-    case 0x19:
-    case 0x1a:
-    case 0x1b:
-    case 0x1c:
-    case 0x1d:
-    case 0x1e:
-    case 0x1f:  if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
-                pLH5810->step();lh5810_read(); break;
 
-    case 0x33: if (pLU57813P->output_pending) pCPU->imem[address] = pLU57813P->Get_reg_out(); break;
+    case 0x33: if (pLU57813P->output_pending) pCPU->imem[address] = pLU57813P->Get_reg_out();
+        break;
 
     case 0x37:  {
             BYTE c = getKey();
@@ -1094,11 +1083,8 @@ UINT8 Cpc1600::in(UINT8 address)
     //////////////////////////////////////////////////////////
     case 0x55: pCPU->imem[address] = pHD61102_2->instruction(0x200); break;
     case 0x59: pCPU->imem[address] = pHD61102_1->instruction(0x200); break;
-
     case 0x57: pCPU->imem[address] = pHD61102_2->instruction(0x300); break;
     case 0x5b: pCPU->imem[address] = pHD61102_1->instruction(0x300); break;
-
-
 
     }
 
@@ -1207,7 +1193,7 @@ BYTE Cpc1600::getKey()
 
     if (pKEYB->LastKey)
     {
-        BYTE ks1 = pLH5810->GetReg(LH5810_OPB);
+        BYTE ks1 = pLH5810->GetReg(CLH5810::OPB);
         if (!( ks1 & 0x40)) {
             if (KEY(K_CTRL))		data|=0x01;
             if (KEY(K_KBII))		data|=0x02;
@@ -1299,7 +1285,7 @@ BYTE Cpc1600::getKey()
         }
 
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
-        //SetReg(LH5810_OPA,data^0xff);
+        //SetReg(CLH5810::OPA,data^0xff);
     }
     return data^0xff;
 
@@ -1316,21 +1302,20 @@ bool CLH5810_PC1600::step()
     ////////////////////////////////////////////////////////////////////
     //	Timer pulse to PB5
     ////////////////////////////////////////////////////////////////////
-//    SetRegBit(LH5810_OPB,5,pPC->pTIMER->GetTP( ((Cpc1600 *)pPC)->tpIndex64));    // 1/64s signal le timer doit etre en mode 4
-    SetRegBit(LH5810_OPB,5,pPC->pTIMER->GetTP( ((Cpc1600 *)pPC)->pLU57813P->Get_tpIndex64()));    // 1/64s signal le timer doit etre en mode 4
+    SetRegBit(OPB,5,pPC->pTIMER->GetTP( ((Cpc1600 *)pPC)->pLU57813P->Get_tpIndex64()));    // 1/64s signal le timer doit etre en mode 4
 
     ////////////////////////////////////////////////////////////////////
     //	ON/Break
     ////////////////////////////////////////////////////////////////////
-    SetRegBit(LH5810_OPB,7,((Cpc1600 *)pPC)->pLU57813P->Get_Kon());
+    SetRegBit(OPB,7,((Cpc1600 *)pPC)->pLU57813P->Get_Kon());
 
       //----------------------//
      // Standard LH5810 STEP //
     //----------------------//
     CLH5810::step();
 
-    pPC->pKEYB->Set_KS(GetReg(LH5810_OPA));
-//    if (pPC->fp_log) fprintf(pPC->fp_log,"Set_KS( %02x )\n",GetReg(LH5810_OPA));
+    pPC->pKEYB->Set_KS(GetReg(OPA));
+//    if (pPC->fp_log) fprintf(pPC->fp_log,"Set_KS( %02x )\n",GetReg(CLH5810::OPA));
 
     return(1);
 }

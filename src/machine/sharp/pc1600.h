@@ -38,7 +38,7 @@ public:
     bool	step(void);
     const char*	GetClassName(){ return("CLH5810_PC1600");}
 
-    CLH5810_PC1600(CPObject *parent)	: CLH5810(parent)
+    CLH5810_PC1600(CPObject *parent=0)	: CLH5810(parent)
     {
 
     }

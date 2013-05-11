@@ -419,17 +419,17 @@ INLINE bool Cpc15XX::lh5810_write(void)
 //	AddLog(LOG_FUNC,"Cpc1500::lh5810_write");
 
 
-	pLH5810->SetReg(LH5810_RESET,	Get_8(0x1F004));
-	pLH5810->SetReg(LH5810_U,		Get_8(0x1F005));
-	pLH5810->SetReg(LH5810_L,		Get_8(0x1F006));
-	pLH5810->SetReg(LH5810_OPC,	Get_8(0x1F008));
-	pLH5810->SetReg(LH5810_G  ,	Get_8(0x1F009));
-	pLH5810->SetReg(LH5810_MSK,	Get_8(0x1F00A));
-	pLH5810->SetReg(LH5810_IF ,	Get_8(0x1F00B));
-	pLH5810->SetReg(LH5810_DDA,	Get_8(0x1F00C));
-	pLH5810->SetReg(LH5810_DDB,	Get_8(0x1F00D));
-	pLH5810->SetReg(LH5810_OPA,	Get_8(0x1F00E));
-	pLH5810->SetReg(LH5810_OPB,	Get_8(0x1F00F));
+    pLH5810->SetReg(CLH5810::RESET,	Get_8(0x1F004));
+    pLH5810->SetReg(CLH5810::U,		Get_8(0x1F005));
+    pLH5810->SetReg(CLH5810::L,		Get_8(0x1F006));
+    pLH5810->SetReg(CLH5810::OPC,	Get_8(0x1F008));
+    pLH5810->SetReg(CLH5810::G  ,	Get_8(0x1F009));
+    pLH5810->SetReg(CLH5810::MSK,	Get_8(0x1F00A));
+    pLH5810->SetReg(CLH5810::IF ,	Get_8(0x1F00B));
+    pLH5810->SetReg(CLH5810::DDA,	Get_8(0x1F00C));
+    pLH5810->SetReg(CLH5810::DDB,	Get_8(0x1F00D));
+    pLH5810->SetReg(CLH5810::OPA,	Get_8(0x1F00E));
+    pLH5810->SetReg(CLH5810::OPB,	Get_8(0x1F00F));
 
 	return(1);
 }
@@ -439,17 +439,17 @@ INLINE bool Cpc15XX::lh5810_read(void)
 //	AddLog(LOG_FUNC,"Cpc1500::lh5810_read");
 
 
-	mem[0x1F005] = pLH5810->GetReg(LH5810_U);
-	mem[0x1F006] = pLH5810->GetReg(LH5810_L);
+    mem[0x1F005] = pLH5810->GetReg(CLH5810::U);
+    mem[0x1F006] = pLH5810->GetReg(CLH5810::L);
 
-	mem[0x1F008] = pLH5810->GetReg(LH5810_OPC);
-	mem[0x1F009] = pLH5810->GetReg(LH5810_G);
-	mem[0x1F00A] = pLH5810->GetReg(LH5810_MSK);
-	mem[0x1F00B] = pLH5810->GetReg(LH5810_IF);
-	mem[0x1F00C] = pLH5810->GetReg(LH5810_DDA);
-	mem[0x1F00D] = pLH5810->GetReg(LH5810_DDB);
-	mem[0x1F00E] = pLH5810->GetReg(LH5810_OPA);
-	mem[0x1F00F] = pLH5810->GetReg(LH5810_OPB);
+    mem[0x1F008] = pLH5810->GetReg(CLH5810::OPC);
+    mem[0x1F009] = pLH5810->GetReg(CLH5810::G);
+    mem[0x1F00A] = pLH5810->GetReg(CLH5810::MSK);
+    mem[0x1F00B] = pLH5810->GetReg(CLH5810::IF);
+    mem[0x1F00C] = pLH5810->GetReg(CLH5810::DDA);
+    mem[0x1F00D] = pLH5810->GetReg(CLH5810::DDB);
+    mem[0x1F00E] = pLH5810->GetReg(CLH5810::OPA);
+    mem[0x1F00F] = pLH5810->GetReg(CLH5810::OPB);
 
 	pKEYB->Set_KS(Get_8(0x1F00C));
 	
@@ -678,8 +678,8 @@ bool Cpc15XX::Get_Connector(void)
 
 bool	CLH5810_PC1500::init(void)
 {
-	SetRegBit(LH5810_OPB,3,TRUE);	// Export model vs domestic model
-	SetRegBit(LH5810_OPB,4,FALSE);	// PB4 to GND
+    SetRegBit(OPB,3,TRUE);	// Export model vs domestic model
+    SetRegBit(OPB,4,FALSE);	// PB4 to GND
 
 	return(1);
 }						//initialize
@@ -710,8 +710,8 @@ bool CLH5810_PC1500::step()
 
 	// PB5 = TP
 	// PB6 = DATA
-	SetRegBit(LH5810_OPB,5,pPD1990AC->Get_tp());
-	SetRegBit(LH5810_OPB,6,pPD1990AC->Get_data());
+    SetRegBit(OPB,5,pPD1990AC->Get_tp());
+    SetRegBit(OPB,6,pPD1990AC->Get_data());
 
 	
 	////////////////////////////////////////////////////////////////////
@@ -721,10 +721,10 @@ bool CLH5810_PC1500::step()
 
     if (pPC->pKEYB->Kon)
     {
-        SetRegBit(LH5810_OPB,7,TRUE);
+        SetRegBit(OPB,7,TRUE);
     } else
     {
-        SetRegBit(LH5810_OPB,7,FALSE);
+        SetRegBit(OPB,7,FALSE);
     }
 
 	////////////////////////////////////////////////////////////////////
@@ -755,12 +755,12 @@ bool CLH5810_PC1500::step()
 		pPC15XX->pce152->WriteBitToWav(1,&pPC15XX->pce152->info);				// Stop bit
 		pPC15XX->pce152->WriteBitToWav(1,&pPC15XX->pce152->info);				// Stop bit
 
-		SetRegBit(LH5810_IF,3,true);
+        SetRegBit(IF,3,true);
 	}
 
 
-	SetRegBit(LH5810_OPB,3,TRUE);	// Export model vs domestic model
-	SetRegBit(LH5810_OPB,4,FALSE);	// PB4 to GND
+    SetRegBit(OPB,3,TRUE);	// Export model vs domestic model
+    SetRegBit(OPB,4,FALSE);	// PB4 to GND
 
 	  //----------------------//
 	 // Standard LH5810 STEP //

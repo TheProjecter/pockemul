@@ -142,7 +142,7 @@ bool Cce150::init(void)
 
 INLINE bool Cce150::lh5810_write(void)
 {
-#if 1 // TRY TO OPTIMIZE ... 
+#if 0 // TRY TO OPTIMIZE ...
     SETREG_LH5810_OPC(pLH5810,pTIMER->pPC->Get_8(0x1B008))
     SETREG_LH5810_G(pLH5810  ,pTIMER->pPC->Get_8(0x1B009))
     SETREG_LH5810_MSK(pLH5810,pTIMER->pPC->Get_8(0x1B00A))
@@ -152,27 +152,27 @@ INLINE bool Cce150::lh5810_write(void)
     SETREG_LH5810_OPA(pLH5810,pTIMER->pPC->Get_8(0x1B00E))
     SETREG_LH5810_OPB(pLH5810,pTIMER->pPC->Get_8(0x1B00F))
 #else	
-	pLH5810->SetReg(LH5810_OPC,pTIMER->pPC->Get_8(0x1B008));
-	pLH5810->SetReg(LH5810_G  ,pTIMER->pPC->Get_8(0x1B009));
-	pLH5810->SetReg(LH5810_MSK,pTIMER->pPC->Get_8(0x1B00A));
-	pLH5810->SetReg(LH5810_IF ,pTIMER->pPC->Get_8(0x1B00B));
-	pLH5810->SetReg(LH5810_DDA,pTIMER->pPC->Get_8(0x1B00C));
-	pLH5810->SetReg(LH5810_DDB,pTIMER->pPC->Get_8(0x1B00D));
-	pLH5810->SetReg(LH5810_OPA,pTIMER->pPC->Get_8(0x1B00E));
-	pLH5810->SetReg(LH5810_OPB,pTIMER->pPC->Get_8(0x1B00F));
+    pLH5810->SetReg(CLH5810::OPC,pTIMER->pPC->Get_8(0x1B008));
+    pLH5810->SetReg(CLH5810::G  ,pTIMER->pPC->Get_8(0x1B009));
+    pLH5810->SetReg(CLH5810::MSK,pTIMER->pPC->Get_8(0x1B00A));
+    pLH5810->SetReg(CLH5810::IF ,pTIMER->pPC->Get_8(0x1B00B));
+    pLH5810->SetReg(CLH5810::DDA,pTIMER->pPC->Get_8(0x1B00C));
+    pLH5810->SetReg(CLH5810::DDB,pTIMER->pPC->Get_8(0x1B00D));
+    pLH5810->SetReg(CLH5810::OPA,pTIMER->pPC->Get_8(0x1B00E));
+    pLH5810->SetReg(CLH5810::OPB,pTIMER->pPC->Get_8(0x1B00F));
 #endif
 	return(1);
 }
 INLINE bool Cce150::lh5810_read(void)
 {
-	pTIMER->pPC->Set_8(0x1B008 , pLH5810->GetReg(LH5810_OPC));
-	pTIMER->pPC->Set_8(0x1B009 , pLH5810->GetReg(LH5810_G));
-	pTIMER->pPC->Set_8(0x1B00A , pLH5810->GetReg(LH5810_MSK));
-	pTIMER->pPC->Set_8(0x1B00B , pLH5810->GetReg(LH5810_IF));
-	pTIMER->pPC->Set_8(0x1B00C , pLH5810->GetReg(LH5810_DDA));
-	pTIMER->pPC->Set_8(0x1B00D , pLH5810->GetReg(LH5810_DDB));
-	pTIMER->pPC->Set_8(0x1B00E , pLH5810->GetReg(LH5810_OPA));
-	pTIMER->pPC->Set_8(0x1B00F , pLH5810->GetReg(LH5810_OPB));
+    pTIMER->pPC->Set_8(0x1B008 , pLH5810->GetReg(CLH5810::OPC));
+    pTIMER->pPC->Set_8(0x1B009 , pLH5810->GetReg(CLH5810::G));
+    pTIMER->pPC->Set_8(0x1B00A , pLH5810->GetReg(CLH5810::MSK));
+    pTIMER->pPC->Set_8(0x1B00B , pLH5810->GetReg(CLH5810::IF));
+    pTIMER->pPC->Set_8(0x1B00C , pLH5810->GetReg(CLH5810::DDA));
+    pTIMER->pPC->Set_8(0x1B00D , pLH5810->GetReg(CLH5810::DDB));
+    pTIMER->pPC->Set_8(0x1B00E , pLH5810->GetReg(CLH5810::CLH5810::OPA));
+    pTIMER->pPC->Set_8(0x1B00F , pLH5810->GetReg(CLH5810::OPB));
 
 	return(1);
 }
@@ -198,7 +198,7 @@ bool Cce150::run(void)
 	////////////////////////////////////////////////////////////////////
 	//	VOLTAGE OK :-)
 	//////////////////////////////////////////////////////////////////
-	pLH5810->SetRegBit(LH5810_OPB,6,FALSE);
+    pLH5810->SetRegBit(CLH5810::OPB,6,FALSE);
 
 	////////////////////////////////////////////////////////////////////
 	//	PRINT MODE
@@ -206,7 +206,7 @@ bool Cce150::run(void)
 	if (pKEYB->LastKey==K_PRINT)
 	{
 		Print_Mode = ! Print_Mode;
-		pLH5810->SetRegBit(LH5810_OPA,5,Print_Mode);
+        pLH5810->SetRegBit(CLH5810::OPA,5,Print_Mode);
         pKEYB->LastKey = 0;
 	}
 	
@@ -215,11 +215,11 @@ bool Cce150::run(void)
 	//////////////////////////////////////////////////////////////////
 	if (pKEYB->LastKey==K_PFEED)
 	{
-		pLH5810->SetRegBit(LH5810_OPB,7,true);
+        pLH5810->SetRegBit(CLH5810::OPB,7,true);
 		AddLog(LOG_MASTER,"Paper Feed");
 	}
 	else
-		pLH5810->SetRegBit(LH5810_OPB,7,false);
+        pLH5810->SetRegBit(CLH5810::OPB,7,false);
 
 	////////////////////////////////////////////////////////////////////
 	//	RMT ON/OFF
@@ -271,11 +271,11 @@ bool Cce150::run(void)
 	{
 		if	( (Pen_Color==0) && (Rot == 0) && (Pen_X <= -45) )
 		{
-			pLH5810->SetRegBit(LH5810_OPB,2,TRUE);	// COLOR MAGNET
+            pLH5810->SetRegBit(CLH5810::OPB,2,TRUE);	// COLOR MAGNET
 			AddLog(LOG_PRINTER,"Color Magnet");
 		}
-		else
-			pLH5810->SetRegBit(LH5810_OPB,2,FALSE);	// NO COLOR MAGNET
+        else
+            pLH5810->SetRegBit(CLH5810::OPB,2,FALSE);	// NO COLOR MAGNET
 	}
 
 	if (PB0) 

@@ -16,15 +16,16 @@ CLU57813P::CLU57813P(CpcXXXX *parent)
 
 CLU57813P::~CLU57813P(){}
 
-
+// TODO: STORE AND read stack enstead of imem
 void CLU57813P::Load_Internal(QXmlStreamReader *xmlIn)
 {
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "lu57813")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
-            memcpy((char *) &imem,ba_reg.data(),sizeof(imem));
-            sp = xmlIn->attributes().value("stackpointer").toString().toInt(0,16);
+            stack = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+//            memcpy((char *) &imem,ba_reg.data(),sizeof(imem));
+
+//            sp = xmlIn->attributes().value("stackpointer").toString().toInt(0,16);
         }
         xmlIn->skipCurrentElement();
     }
@@ -34,9 +35,9 @@ void CLU57813P::save_internal(QXmlStreamWriter *xmlOut)
 {
     xmlOut->writeStartElement("cpu");
         xmlOut->writeAttribute("model","lu57813");
-        QByteArray ba_reg((char*)&imem,sizeof(imem));
-        xmlOut->writeAttribute("registers",ba_reg.toBase64());
-        xmlOut->writeAttribute("stackpointer",QString("%1").arg(sp,2,16));
+//        QByteArray ba_reg((char*)&imem,sizeof(imem));
+        xmlOut->writeAttribute("registers",stack.toBase64());
+//        xmlOut->writeAttribute("stackpointer",QString("%1").arg(sp,2,16));
     xmlOut->writeEndElement();
 }
 
@@ -87,7 +88,7 @@ bool CLU57813P::init(void)
                 //initialize
 void CLU57813P::Reset(void){}
 
-void CLU57813P::addretrace (void)
+INLINE void CLU57813P::addretrace (void)
 {
     datetime.seconds++;
     if ( (datetime.seconds & 0x0f) < 10 )
@@ -158,9 +159,8 @@ void CLU57813P::increment_month(void)
 }
 
 void CLU57813P::store(BYTE value) {
-//    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STORE - [%01x]=%02x\n",sp,value);
-    imem[sp] = value;
-    sp++;
+    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STORE - [%02x]=%02x\n",stack.count()+1,value);
+    stack.append(value);
 }
 
 void CLU57813P::SetDigital(BYTE val) {
@@ -201,19 +201,19 @@ void CLU57813P::request(BYTE value)
         // 53 : during initalisation. Read a return value just after.
         // Unknown effect !!!!
     case 0x03 : reg_out = 0x00;
-        if (pPC->fp_log) fprintf(pPC->fp_log,"Unknown action 53.\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown request 53.\n");
         break;
 
         // 55 : Read the digital value of the CE-1600P battery voltage.
 //        This routine is used for monitoring the Ni-Cd battery supply voltage cf the
 //        CE-1600P. If the value is Iess than A8H, it is judged as the low battery.
     case 0x05 : reg_out = 0xc0;
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Read the digital value of the voltage input at the analog input port..\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the digital value of the voltage input at the analog input port..\n");
         break;
 
         // 56 : Read the digital value of the voltage input at the analog input port.
     case 0x06 : reg_out = digitalvalue;
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Read the digital value of the voltage input at the analog input port..\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the digital value of the voltage input at the analog input port..\n");
         break;
 
         //57 : Read the digital value cf the supply voltage cf the PC-1600 main unit.
@@ -221,47 +221,61 @@ void CLU57813P::request(BYTE value)
 //        the value is less than AFH, it is judged as the Low battery. The low battery state is
 //        released when the value becomes greater than BEH.
     case 0x07 : reg_out = 0xC0;
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Unknown action, perhaps voltage monitor.\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the digital value cf the supply voltage cf the PC-1600 main unit.\n");
         break;
 
         // 5A : first call from the main CPU. Unknown action
     case 0x0a : reg_out = 0xa0;
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Unknown action, perhaps voltage monitor.\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown action, perhaps voltage monitor.\n");
         break;
 
         // 5C : (Bit 5 et the byte in A register indicates the state of the CI signal: If the CI
         // signal is high, then bit 5 = 0. If it is Iow, then bit 5 = 1.)
     case 0x0c : reg_out = 0x20;
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"indicates the state of the CI signal\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - indicates the state of the CI signal\n");
         break;
 
         // 5D : Read the current interrupt cause for SC-7852.
     case 0x0d: reg_out = get_irq();
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Read the current interrupt cause for SC-7852.\n");
+//        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the current interrupt cause for SC-7852.\n");
         break;
 
         // 5E : Read the current setting of the interrupt mask for SC-7852.
     case 0x0e : reg_out = irq_mask;
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Read the current setting of the interrupt mask for SC-7852.\n");
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the current setting of the interrupt mask for SC-7852.\n");
         break;
 
         // 5F : Set the interrupt mask for SC-7852. from sp[0] and sp[1]
-    case 0x0f : irq_mask = (imem[0]<<4) + imem[1];
-//        if (pPC->fp_log) fprintf(pPC->fp_log,"Set the interrupt mask for SC-7852. from sp[0] and sp[1]\n");
+    case 0x0f :
+        if (stack.size() >= 2) {
+            irq_mask = (stack.at(0)<<4) + stack.at(1);
+            stack.remove(0,2);
+        }
+
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Set the interrupt mask for SC-7852. from sp[0] and sp[1]\n");
         break;
 
+    default: // UNKNOWN COMMAND
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown request %02X.\n",value);
     }
     output_pending = true;
 }
 
 void CLU57813P::dumpregister(BYTE value)
 {
-//    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER - %02x\n",value);
+
     switch (value) {
         // 6B : Affect WAKE regiser from stack
-    case 0x0b : break;
+    case 0x0b :
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER - %02x\n",value);
+//        for (int i=0;i<9;i++)
+//            wakeReg[i] = stack.dequeue();//imem[i];
+        stack.clear();
+        break;
         // 6C : Ask for TIME
-    case 0x0c : sp = 0;
+    case 0x0c :
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER - %02x\n",value);
+        stack.clear();
                 store(datetime.month);
                 store(datetime.days >> 4);
                 store(datetime.days & 0x0f);
@@ -271,9 +285,36 @@ void CLU57813P::dumpregister(BYTE value)
                 store(datetime.minutes & 0x0f);
                 store(datetime.seconds >> 4);
                 store(datetime.seconds & 0x0f);
-                sp = 0;
+
                 break;
-    case 0x0f : reg_out = imem[sp]; sp++; output_pending = true; break;
+    case 0x0d : // Store new date
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER STORE DATE- %02x\n",value);
+        if (pPC->fp_log) fflush(pPC->fp_log);
+        if (stack.size() >= 9) {
+            if ( stack.at(0) != 0x0f) datetime.month = stack.at(0);
+            if ( (stack.at(1) != 0x0f) && (stack.at(2) != 0x0f)) datetime.days = ((stack.at(1)&0x0f)<<4)|(stack.at(2)&0x0f);
+            if ( (stack.at(3) != 0x0f) && (stack.at(4) != 0x0f)) datetime.hours = ((stack.at(3)&0x0f)<<4)|(stack.at(4)&0x0f);
+            if ( (stack.at(5) != 0x0f) && (stack.at(6) != 0x0f)) datetime.minutes = ((stack.at(5)&0x0f)<<4)|(stack.at(6)&0x0f);
+            if ( (stack.at(7) != 0x0f) && (stack.at(8) != 0x0f)) datetime.seconds = ((stack.at(7)&0x0f)<<4)|(stack.at(8)&0x0f);
+            stack.clear();//remove(0,9);
+        }
+        break;
+
+
+    case 0x0e: // Key click ????
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER KEYCLICK- %02x\n",value);
+        break;
+    case 0x0f :
+        output_pending = true;
+        if (!stack.isEmpty()) {
+            reg_out = (BYTE) stack.at(0);
+            stack.remove(0,1);
+        }
+        else
+            reg_out = 0;
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER - POP - %02X\n",reg_out);
+        break;
+    default: if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DUMPREGISTER UNKNOWN- %02x\n",value);
     }
 }
 
@@ -284,11 +325,23 @@ void CLU57813P::command(BYTE val)
 
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - COMMAND - %02x\n",val);
     switch (oper) {
-    case 0x00: sp = 0; store(0x0f - value); break;
+    case 0x00: stack.clear(); store(0x0f - value); break;
     case 0x0f: store(0x0f - value);break;
     case 0x05: request(value); break;
     case 0x06: dumpregister(value); break;
-    case 0x07: store(0x0f - value);
+    case 0x07: store(0x0f - value); break;
+    case 0x09: // Initiate WAKE$(0) 6 PARAM 06
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - WAKE$(0) - %02x\n",value);
+        break;
+    case 0x0c: // initiate ON ADIN command ?
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - ON ADIN - %02x\n",value);
+        break;
+    case 0x0a: // End ON ADIN command ?
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - 0x0A - %02x\n",value);
+        break;
+    default:
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown oper %02X-%02x\n",oper,value);
+        break;
 
     }
 
@@ -310,9 +363,6 @@ bool CLU57813P::step(void)
 
     return true;
 }
-
-//void	CPD1990AC::Load_Internal(FILE *ffile);
-//void	CPD1990AC::save_internal(FILE *file);
 
 BYTE    CLU57813P::Get_reg_out(void) {
     output_pending = false;

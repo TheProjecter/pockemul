@@ -3,10 +3,11 @@
 
 
 #include <QDateTime>
+#include <QQueue>
 #include "pcxxxx.h"
 
 class CLU57813P:public QObject{
-
+Q_OBJECT
     struct datetime_s
 {
     int seconds;
@@ -77,8 +78,8 @@ public:
 
 private:
 
+    QByteArray stack;
     BYTE    imem[32];
-    BYTE    sp;     // stackpointer
     BYTE    irq;
     BYTE    irq_mask;
     BYTE    digitalvalue;
@@ -113,6 +114,8 @@ private:
     BYTE    cmd;
     BYTE    ord;
     BYTE    reg_out;
+
+    quint8 wakeReg[9];
 };
 
 

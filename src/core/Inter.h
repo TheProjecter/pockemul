@@ -26,6 +26,9 @@
 
 class CPObject;
 class CpcXXXX;
+#include "pcxxxx.h"
+
+#define TP_STATE(index)		(pPC->getfrequency() / frequency_tp[index])
 
 //////////////////////////////////////////////////////////////////////
 // interrupt & timer emulation   /////////////////////////////////////
@@ -97,6 +100,7 @@ public:
 
     int getFreqTP(int index);
     void setFreqTP(int index, int freq);
+
 private:
     qint64 previous_state_tp[10];
     qint64 timerSate[10];

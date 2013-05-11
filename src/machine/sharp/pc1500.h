@@ -12,11 +12,14 @@
 //#include "Log.h"
 #include "lh5801.h"
 #include "lh5810.h"
+#include "pd1990ac.h"
 //#include "ce150.h"
 //#include "Connect.h"
 #include "Keyb.h"
 
 #include "ce152.h"
+
+class CPD1990AC;
 
 class CLH5810_PC1500:public CLH5810{
     Q_OBJECT

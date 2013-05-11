@@ -248,8 +248,6 @@ bool Cpc2500::run(void)
     Set_Port_Bit(PORT_B,8,1);
     pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
-
-
     Cpc1350::run();
 
     //pce515p->pCONNECTOR->Set_values(pCONNECTOR->Get_values());
@@ -276,18 +274,6 @@ bool Cpc2500::run(void)
 
 bool Cpc2500::Set_Connector(void)
 {
-#if 0
-    // MANAGE STANDARD CONNECTOR
-    pCONNECTOR->Set_pin(PIN_MT_OUT2	,0);
-    pCONNECTOR->Set_pin(PIN_GND		,0);
-    pCONNECTOR->Set_pin(PIN_VGG		,1);
-    pCONNECTOR->Set_pin(PIN_BUSY	,GET_PORT_BIT(PORT_F,3));		// F03
-    pCONNECTOR->Set_pin(PIN_D_OUT	,GET_PORT_BIT(PORT_F,2));		// F02
-    pCONNECTOR->Set_pin(PIN_MT_OUT1	,pCPU->Get_Xout());
-    pCONNECTOR->Set_pin(PIN_SEL2	,0);
-    pCONNECTOR->Set_pin(PIN_SEL1	,0);
-#endif
-
     pTAPECONNECTOR->Set_pin(2,pCPU->Get_Xout());
 
     // MANAGE SERIAL CONNECTOR
