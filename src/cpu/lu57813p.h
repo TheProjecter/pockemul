@@ -30,7 +30,7 @@ public:
     void    command(BYTE cmd);
 
     void    store(BYTE value);
-    void    dumpregister(BYTE value);
+    void    action(BYTE value);
     void    request(BYTE value);
     BYTE    get_irq(void);
     void    SetDigital(BYTE val);
@@ -78,6 +78,7 @@ public:
 
 private:
 
+    QByteArray password;
     QByteArray stack;
     BYTE    imem[32];
     BYTE    irq;
