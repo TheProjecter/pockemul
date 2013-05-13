@@ -7,6 +7,8 @@
 #include "Keyb.h"
 #include "cpu.h"
 
+#define ADIN_ADR    0x20
+
 CLU57813P::CLU57813P(CpcXXXX *parent)
 {
         c0=c1=c2=stb=cs=data_in=gnd=clk=data_out=tp=out_enable=n_xtal=xtal=vdd=FALSE;
@@ -23,10 +25,9 @@ void CLU57813P::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "lu57813")) {
-            stack = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
-//            memcpy((char *) &imem,ba_reg.data(),sizeof(imem));
-
-//            sp = xmlIn->attributes().value("stackpointer").toString().toInt(0,16);
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            memcpy((char *) &imem,ba_reg.data(),sizeof(imem));
+            sp = xmlIn->attributes().value("stackpointer").toString().toInt(0,16);
         }
         xmlIn->skipCurrentElement();
     }
@@ -36,9 +37,9 @@ void CLU57813P::save_internal(QXmlStreamWriter *xmlOut)
 {
     xmlOut->writeStartElement("cpu");
         xmlOut->writeAttribute("model","lu57813");
-//        QByteArray ba_reg((char*)&imem,sizeof(imem));
-        xmlOut->writeAttribute("registers",stack.toBase64());
-//        xmlOut->writeAttribute("stackpointer",QString("%1").arg(sp,2,16));
+        QByteArray ba_reg((char*)&imem,sizeof(imem));
+        xmlOut->writeAttribute("registers",ba_reg.toBase64());
+        xmlOut->writeAttribute("stackpointer",QString("%1").arg(sp,2,16));
     xmlOut->writeEndElement();
 }
 
@@ -84,8 +85,11 @@ bool CLU57813P::init(void)
     tpIndex64 = pPC->pTIMER->initTP(64);
     tpIndex2 = pPC->pTIMER->initTP(2);
 
+    memset(password,0,0x10);
+    sp = 0;
+
     return(1);
-};
+}
                 //initialize
 void CLU57813P::Reset(void){}
 
@@ -159,9 +163,10 @@ void CLU57813P::increment_month(void)
     }
 }
 
-void CLU57813P::store(BYTE value) {
-    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STORE - [%02x]=%02x\n",stack.size(),value);
-    stack.append(value);
+void CLU57813P::store(BYTE bank,BYTE value) {
+    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STORE (%01x) - [%02x]=%02x\n",bank,sp,value);
+    imem[sp] = value;
+    sp++;
 }
 
 void CLU57813P::SetDigital(BYTE val) {
@@ -199,21 +204,30 @@ void CLU57813P::request(BYTE value)
 
     switch (value) {
 
+    case 0x01 :
+        reg_out = 0x00;
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown request 01.\n");
+        break;
+
+    case 0x03 :
         // 53 : during initalisation. Read a return value just after.
         // Unknown effect !!!!
-    case 0x03 : reg_out = 0x00;
+        reg_out = 0x00;
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown request 53.\n");
         break;
 
+
+    case 0x05 :
         // 55 : Read the digital value of the CE-1600P battery voltage.
 //        This routine is used for monitoring the Ni-Cd battery supply voltage cf the
 //        CE-1600P. If the value is Iess than A8H, it is judged as the low battery.
-    case 0x05 : reg_out = 0xc0;
+        reg_out = 0xc0;
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the digital value of the voltage input at the analog input port..\n");
         break;
 
+        case 0x06 :
         // 56 : Read the digital value of the voltage input at the analog input port.
-    case 0x06 : reg_out = digitalvalue;
+        reg_out = digitalvalue;
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Read the digital value of the voltage input at the analog input port..\n");
         break;
 
@@ -236,8 +250,8 @@ void CLU57813P::request(BYTE value)
         //      (Bit 2 AND the byte in A register indicates the state of the PASSWORD signal: If the PASSWORD IS SET
         //          signal is high, then bit 2 = 0. If it is Iow, then bit 2 = 1.)
 
-        reg_out = 0x20 | (password.isEmpty() ? 0x00 : 0x04);
-        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - indicates the state of the CI signal %lld\n",pPC->pTIMER->state);
+        reg_out = 0x20 | (password[0]==0?0x00 : 0x04);
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - indicates the state of the signal\n");
         if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"\n Check LU57813P\n");
         break;
 
@@ -253,10 +267,7 @@ void CLU57813P::request(BYTE value)
 
         // 5F : Set the interrupt mask for SC-7852. from sp[0] and sp[1]
     case 0x0f :
-        if (stack.size() >= 2) {
-            irq_mask = (stack.at(0)<<4) + stack.at(1);
-            stack.remove(0,2);
-        }
+        irq_mask = (imem[0]<<4) + imem[1];
 
         // 0x20 : ALARM$
         // 0x40 : TIME_CHECK
@@ -277,62 +288,57 @@ void CLU57813P::action(BYTE value)
     switch (value) {
     case 0x04 : // 64 : Clear PASSWORD regiser from stack
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STACK -> RESET PASSWORD - %02x\n",value);
-        if (password == stack.left(0x10)) {
-            password.clear();
+        if (memcmp(password,imem,0x10)==0) {
+            password[0] = 0;
             if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - PASSWORD CLEARED\n");
         }
-        stack.clear();
         break;
     case 0x05 : // 65 : Affect PASSWORD regiser from stack
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STACK -> PASSWORD - %02x\n",value);
-        password = stack.left(0x10);
-        stack.clear();
+        memcpy(password,imem,0x10);
         break;
     case 0x07 : // 67 : Affect ALARM regiser from stack
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STACK -> ALARM$ - %02x\n",value);
 //        for (int i=0;i<9;i++)
 //            wakeReg[i] = stack.dequeue();//imem[i];
-        stack.clear();
     break;
     case 0x09 : // 69 : Affect TIME_CHECK$ register from stack
     if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STACK -> TIME_CHECK - %02x\n",value);
 //        for (int i=0;i<9;i++)
 //            wakeReg[i] = stack.dequeue();//imem[i];
-    stack.clear();
+
     break;
 
     case 0x0b : // 6B : Affect WAKE regiser from stack
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STACK -> WAKE$0 - %02x\n",value);
 //        for (int i=0;i<9;i++)
 //            wakeReg[i] = stack.dequeue();//imem[i];
-        stack.clear();
         break;
         // 6C : Ask for TIME
     case 0x0c :
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - DATE -> STACK - %02x\n",value);
-        stack.clear();
-                store(datetime.month);
-                store(datetime.days >> 4);
-                store(datetime.days & 0x0f);
-                store(datetime.hours >> 4);
-                store(datetime.hours & 0x0f);
-                store(datetime.minutes >> 4);
-                store(datetime.minutes & 0x0f);
-                store(datetime.seconds >> 4);
-                store(datetime.seconds & 0x0f);
-
-                break;
+        sp=0;
+        store(0,datetime.month);
+        store(0,datetime.days >> 4);
+        store(0,datetime.days & 0x0f);
+        store(0,datetime.hours >> 4);
+        store(0,datetime.hours & 0x0f);
+        store(0,datetime.minutes >> 4);
+        store(0,datetime.minutes & 0x0f);
+        store(0,datetime.seconds >> 4);
+        store(0,datetime.seconds & 0x0f);
+        sp=0;
+        break;
     case 0x0d : // Store new date
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - STACK -> DATE- %02x\n",value);
         if (pPC->fp_log) fflush(pPC->fp_log);
-        if (stack.size() >= 9) {
-            if ( stack.at(0) != 0x0f) datetime.month = stack.at(0);
-            if ( (stack.at(1) != 0x0f) && (stack.at(2) != 0x0f)) datetime.days = ((stack.at(1)&0x0f)<<4)|(stack.at(2)&0x0f);
-            if ( (stack.at(3) != 0x0f) && (stack.at(4) != 0x0f)) datetime.hours = ((stack.at(3)&0x0f)<<4)|(stack.at(4)&0x0f);
-            if ( (stack.at(5) != 0x0f) && (stack.at(6) != 0x0f)) datetime.minutes = ((stack.at(5)&0x0f)<<4)|(stack.at(6)&0x0f);
-            if ( (stack.at(7) != 0x0f) && (stack.at(8) != 0x0f)) datetime.seconds = ((stack.at(7)&0x0f)<<4)|(stack.at(8)&0x0f);
-            stack.clear();//remove(0,9);
-        }
+
+        if ( imem[0] != 0x0f) datetime.month = imem[0];
+        if ( (imem[1] != 0x0f) && (imem[2] != 0x0f)) datetime.days = ((imem[1]&0x0f)<<4)|(imem[2]&0x0f);
+        if ( (imem[3] != 0x0f) && (imem[4] != 0x0f)) datetime.hours = ((imem[3]&0x0f)<<4)|(imem[4]&0x0f);
+        if ( (imem[5] != 0x0f) && (imem[6] != 0x0f)) datetime.minutes = ((imem[5]&0x0f)<<4)|(imem[6]&0x0f);
+        if ( (imem[7] != 0x0f) && (imem[8] != 0x0f)) datetime.seconds = ((imem[7]&0x0f)<<4)|(imem[8]&0x0f);
+
         break;
 
 
@@ -341,12 +347,8 @@ void CLU57813P::action(BYTE value)
         break;
     case 0x0f :
         output_pending = true;
-        if (!stack.isEmpty()) {
-            reg_out = (BYTE) stack.at(0);
-            stack.remove(0,1);
-        }
-        else
-            reg_out = 0;
+        reg_out = imem[sp];
+        sp++;
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - POP - %02X\n",reg_out);
         break;
     default: if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - ACTION UNKNOWN- %02x\n",value);
@@ -360,22 +362,27 @@ void CLU57813P::command(BYTE val)
 
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - COMMAND - %02x\n",val);
     switch (oper) {
-    case 0x00: stack.clear(); store(0x0f - value); break;
-    case 0x0f: store(0x0f - value);break;
+    case 0x00: sp=0; store(oper,0x0f - value); break;
     case 0x05: request(value); break;
     case 0x06: action(value); break;
-    case 0x07: store(0x0f - value); break;
+    case 0x07: store(oper,0x0f - value); break;
     case 0x09: // Initiate
                 // WAKE$(0) param 06
                 // ALARM$   param 05
-        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - command 09 - %02x\n",value);
-        break;
-    case 0x0c: // initiate ON ADIN command ?
-        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - ON ADIN - %02x\n",value);
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown 0x09 - %02x\n",value);
         break;
     case 0x0a: // End ON ADIN command ?
-        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - 0x0A - %02x\n",value);
+        if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown 0x0A - %02x\n",value);
         break;
+    case 0x0c:
+        if (value == 0x03) { // initiate ON ADIN command ?
+            if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - StackPointer = ADIN_ADR (%02x) - %02x\n",ADIN_ADR,value);
+            sp = ADIN_ADR;
+        }
+        else
+            if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown 0x0C - %02x\n",value);
+        break;
+//    case 0x0f: store(oper,0x0f - value);break;
     default:
         if (pPC->fp_log) fprintf(pPC->fp_log,"LU57813P - Unknown oper %02X-%02x\n",oper,value);
         break;

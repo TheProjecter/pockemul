@@ -29,7 +29,7 @@ public:
 
     void    command(BYTE cmd);
 
-    void    store(BYTE value);
+    void    store(BYTE bank, BYTE value);
     void    action(BYTE value);
     void    request(BYTE value);
     BYTE    get_irq(void);
@@ -78,9 +78,10 @@ public:
 
 private:
 
-    QByteArray password;
-    QByteArray stack;
+    BYTE    password[0x10];
+//    QByteArray stack;
     BYTE    imem[32];
+    BYTE    sp; // Stackpointer
     BYTE    irq;
     BYTE    irq_mask;
     BYTE    digitalvalue;
