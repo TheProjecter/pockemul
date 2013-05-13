@@ -1173,7 +1173,7 @@ void CPObject::slotReset() {
 }
 
 void CPObject::slotHardReset() {
-    resetAt = (pTIMER->CPUSpeed * getfrequency())*5 + pTIMER->state;
+    hardresetAt = (pTIMER->CPUSpeed * getfrequency())*5 + pTIMER->state;
 
 //    Reset();
 }

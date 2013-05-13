@@ -284,6 +284,7 @@ INLINE void CLH5801::change_pc(UINT16 addr)
 
 void CLH5801::Reset(void)
 {
+    memset(imem,0,imemsize);
 	P	= (UINT16) get_mem(0xFFFE,SIZE_16);
 	lh5801.HLT=lh5801.IR0=lh5801.IR1=lh5801.IR2=0;
 	S	= 0;

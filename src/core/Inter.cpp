@@ -132,6 +132,8 @@ void Ctimer::resetTP(int index)
 
 
 
+#define TP_STATE(index)		(pPC->getfrequency() / frequency_tp[index])
+
 bool	Ctimer::GetTP(int index)
 {
     if ( (index < 0) || (index >= 10)) return false;

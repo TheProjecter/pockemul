@@ -394,7 +394,7 @@ quint16 Cfp200::getKey()
 //    i85cpu->i8085_set_SID(0);
 //    if (ks == 0x0B) strobe = 0xffff;
 
-//    if ((pKEYB->LastKey>0))// && ks )
+    if ((pKEYB->LastKey>0) && ks )
     {
         if (strobe & 0x01) {
             if (KEY('7'))			data|=0x10;

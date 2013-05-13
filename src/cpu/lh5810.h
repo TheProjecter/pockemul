@@ -101,7 +101,7 @@ public:
         case L:		return(lh5810.r_l	= data);	break;
         case G:		return(lh5810.r_g	= data);	break;
         case MSK:	return(lh5810.r_msk = data&0x0F);	break;
-        case IF:		return(lh5810.r_if	= data);	break;
+        case IF:	return(lh5810.r_if	= data);	break;
         case DDA:	return(lh5810.r_dda = data);	break;
         case DDB:	return(lh5810.r_ddb = data);	break;
         case OPA:	return(lh5810.r_opa = ( (lh5810.r_opa & (~lh5810.r_dda)) | (data & (lh5810.r_dda))) );	break;
@@ -123,7 +123,7 @@ public:
             case L:		return(lh5810.r_l	|= (0x01 << bit));	break;
             case G:		return(lh5810.r_g	|= (0x01 << bit));	break;
             case MSK:	return(lh5810.r_msk |= (0x01 << bit));	break;
-            case IF:		return(lh5810.r_if	|= (0x01 << bit));	break;
+            case IF:	return(lh5810.r_if	|= (0x01 << bit));	break;
             case DDA:	return(lh5810.r_dda |= (0x01 << bit));	break;
             case DDB:	return(lh5810.r_ddb |= (0x01 << bit));	break;
             case OPA:	return(lh5810.r_opa |= (0x01 << bit));	break;
@@ -141,7 +141,7 @@ public:
             case L:		return(lh5810.r_l	&= ((0x01 << bit) ^ 0xff));	break;
             case G:		return(lh5810.r_g	&= ((0x01 << bit) ^ 0xff));	break;
             case MSK:	return(lh5810.r_msk &= ((0x01 << bit) ^ 0xff));	break;
-            case IF:		return(lh5810.r_if	&= ((0x01 << bit) ^ 0xff));	break;
+            case IF:	return(lh5810.r_if	&= ((0x01 << bit) ^ 0xff));	break;
             case DDA:	return(lh5810.r_dda &= ((0x01 << bit) ^ 0xff));	break;
             case DDB:	return(lh5810.r_ddb &= ((0x01 << bit) ^ 0xff));	break;
             case OPA:	return(lh5810.r_opa &= ((0x01 << bit) ^ 0xff));	break;

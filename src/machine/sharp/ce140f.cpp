@@ -286,18 +286,6 @@ bool Cce140f::Get_Connector(void) {
 }
 
 bool Cce140f::Set_Connector(void) {
-#if 0
-    SET_PIN(PIN_MT_OUT2,MT_OUT2);
-    SET_PIN(PIN_BUSY,BUSY);
-    SET_PIN(PIN_D_OUT,D_OUT);
-    SET_PIN(PIN_MT_IN,MT_IN);
-    SET_PIN(PIN_MT_OUT1,MT_OUT1);
-    SET_PIN(PIN_D_IN,D_IN);
-    SET_PIN(PIN_ACK,ACK);
-    SET_PIN(PIN_SEL2,SEL2);
-    SET_PIN(PIN_SEL1,SEL1);
-#else
-
     //MT_OUT2	= GET_PIN(PIN_MT_OUT2);
     //BUSY    = GET_PIN(PIN_BUSY);
     bool extD_OUT	= pCONNECTOR_Ext->Get_pin(PIN_D_OUT);
@@ -329,7 +317,7 @@ bool Cce140f::Set_Connector(void) {
     pCONNECTOR->Set_pin(PIN_ACK,ACK || extACK);
     pCONNECTOR->Set_pin(PIN_SEL2,SEL2);
     pCONNECTOR->Set_pin(PIN_SEL1,SEL1);
- #endif
+
     return true;
 }
 

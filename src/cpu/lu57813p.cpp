@@ -91,7 +91,8 @@ bool CLU57813P::init(void)
     return(1);
 }
                 //initialize
-void CLU57813P::Reset(void){}
+void CLU57813P::Reset(void){
+}
 
 INLINE void CLU57813P::addretrace (void)
 {

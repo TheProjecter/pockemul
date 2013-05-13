@@ -29,7 +29,7 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
 if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 
     setfrequency( (int) 3500000);
-//    ioFreq = 0;
+    ioFreq = 0;
     setcfgfname(QString("pc1600"));
 
     SessionHeader	= "PC1600PKM";
@@ -186,15 +186,21 @@ Cpc1600::~Cpc1600()
     delete pce152;
     delete pHD61102_1;
     delete pHD61102_2;
+    delete pLU57813P;
 }
 
 void Cpc1600::Reset(void)
 {
+    bank1 = bank2 = bank3 = bank4 = 0;
+    masterCPU = true;
+    cpuSwitchPending = false;
+    pCPU = pZ80;
+    pCPU->halt = false;
     pZ80->Reset();
     pLH5803->Reset();
     pLU57813P->Reset();
     pLH5810->Reset();
-    //CpcXXXX::Reset();
+//    CpcXXXX::Reset();
 }
 
 void Cpc1600::TurnON(void)
@@ -203,8 +209,17 @@ void Cpc1600::TurnON(void)
 
     //remove(Initial_Session_Fname.toStdString().c_str());
     //pCPU->Reset();
-    CpcXXXX::TurnON();
     pHD61102_1->updated = pHD61102_2->updated = true;
+    Reset();
+    hardreset = true;
+    CpcXXXX::TurnON();
+Reset();
+}
+
+void Cpc1600::TurnOFF()
+{
+    mainwindow->saveAll = NO;
+    CpcXXXX::TurnOFF();
 }
 
 void Cpc1600::initExtension(void)
@@ -343,6 +358,7 @@ bool Cpc1600::init(void)				// initialize
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
 
 //    QMessageBox::about(this, tr("Attention"),"PC-1600 Emulation is in alpha stage.");
+
     return true;
 }
 
@@ -357,6 +373,8 @@ bool Cpc1600::run(void)
     CpcXXXX::run();
 
     if (off) return true;
+
+
 
     if (cpuSwitchPending)
     {
@@ -399,7 +417,7 @@ bool Cpc1600::run(void)
 
     pLH5810->SetRegBit(CLH5810::OPC,6,pLH5810->GetReg(CLH5810::OPC) & 0x80);
 
-//    fillSoundBuffer((pLH5810->GetReg(CLH5810::OPC) & 0x40 ? 0x00 : 0xff));
+    fillSoundBuffer((pLH5810->GetReg(CLH5810::OPC) & 0x40 ? 0x00 : 0xff));
     //----------------------------------
 
     // 1/64s and 1/2s interrupt

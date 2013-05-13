@@ -67,9 +67,9 @@ void CLH5810::save_internal(QXmlStreamWriter *xmlOut)
 void	CLH5810::Reset(void)
 {
 	lh5810.r_g=lh5810.r_msk=lh5810.r_if=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=lh5810.r_f=0X00;
-	lh5810.r_dda=lh5810.r_ddb=0xFF;
+    lh5810.r_dda=lh5810.r_ddb=0x00;
 
-};
+}
 
 bool CLH5810::step()
 {

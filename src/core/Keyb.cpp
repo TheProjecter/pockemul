@@ -91,7 +91,7 @@ int Ckeyb::KeyClick(QPoint pts)
         }
 
     }
-    if ((smallerDistance < 30) && (nearestIndex>=0)) {
+    if ((smallerDistance < (30*mainwindow->zoom/100)) && (nearestIndex>=0)) {
         if (!pPC->closed) {
         return Keys.at(nearestIndex).ScanCode;
 }

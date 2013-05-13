@@ -583,7 +583,8 @@ bool CpcXXXX::run(void)
 
 	}
     else {
-        if (!off) {pCPU->step();
+        if (!off) {
+            pCPU->step();
             pTIMER->state+=10;// = pTIMER->currentState();//qint64) ( mainwindow->rawclk * (pTIMER->CPUSpeed *(getfrequency() / 1000L)) );
         }
     }

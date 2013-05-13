@@ -68,6 +68,16 @@ bool Cce120p::Set_Connector(void) {
     bool extSEL2	= pCONNECTOR_Ext->Get_pin(PIN_SEL2);
     bool extSEL1	= pCONNECTOR_Ext->Get_pin(PIN_SEL1);
 
+    pCONNECTOR_Ext->Set_pin(PIN_MT_OUT2,MT_OUT2);
+    pCONNECTOR_Ext->Set_pin(PIN_BUSY,BUSY);
+    pCONNECTOR_Ext->Set_pin(PIN_D_OUT,D_OUT);
+    pCONNECTOR_Ext->Set_pin(PIN_MT_IN,MT_IN);
+    pCONNECTOR_Ext->Set_pin(PIN_MT_OUT1,MT_OUT1);
+    pCONNECTOR_Ext->Set_pin(PIN_D_IN,D_IN);
+    //pCONNECTOR_Ext->Set_pin(PIN_ACK,ACK || extACK);
+    pCONNECTOR_Ext->Set_pin(PIN_SEL2,SEL2);
+    pCONNECTOR_Ext->Set_pin(PIN_SEL1,SEL1);
+
     pCONNECTOR->Set_pin(PIN_MT_OUT2,MT_OUT2);
     pCONNECTOR->Set_pin(PIN_BUSY,BUSY);
     pCONNECTOR->Set_pin(PIN_D_OUT,D_OUT || extD_OUT);
@@ -78,15 +88,6 @@ bool Cce120p::Set_Connector(void) {
     pCONNECTOR->Set_pin(PIN_SEL2,SEL2 || extSEL2);
     pCONNECTOR->Set_pin(PIN_SEL1,SEL1 || extSEL1);
 
-    pCONNECTOR_Ext->Set_pin(PIN_MT_OUT2,MT_OUT2);
-    pCONNECTOR_Ext->Set_pin(PIN_BUSY,BUSY);
-    pCONNECTOR_Ext->Set_pin(PIN_D_OUT,D_OUT);
-    pCONNECTOR_Ext->Set_pin(PIN_MT_IN,MT_IN);
-    pCONNECTOR_Ext->Set_pin(PIN_MT_OUT1,MT_OUT1);
-    pCONNECTOR_Ext->Set_pin(PIN_D_IN,D_IN);
-    //pCONNECTOR_Ext->Set_pin(PIN_ACK,ACK || extACK);
-    pCONNECTOR_Ext->Set_pin(PIN_SEL2,SEL2);
-    pCONNECTOR_Ext->Set_pin(PIN_SEL1,SEL1);
 
     return true;
 }

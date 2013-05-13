@@ -78,6 +78,7 @@ public:
 
     virtual bool	Mem_Mirror(DWORD *d);
     void	TurnON(void);
+    void	TurnOFF(void);
     void    Reset(void);
 
     void	Regs_Info(UINT8 Type);

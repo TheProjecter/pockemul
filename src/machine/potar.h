@@ -9,7 +9,8 @@
 
 class DialogPotar;
 
-class Cpotar:public CPObject{
+class Cpotar:public CPObject {
+    Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpotar");}
 
@@ -27,7 +28,10 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *);
-
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
+    void ShowConsole(void);
+    void HideConsole(void);
 private:
     // Analogic value
     BYTE value;

@@ -28,7 +28,7 @@ class CPObject;
 class CpcXXXX;
 #include "pcxxxx.h"
 
-#define TP_STATE(index)		(pPC->getfrequency() / frequency_tp[index])
+
 
 //////////////////////////////////////////////////////////////////////
 // interrupt & timer emulation   /////////////////////////////////////

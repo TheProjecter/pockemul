@@ -2945,6 +2945,7 @@ inline void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
 bool	CZ80::init(void)
 {
 
+    memset(imem,0,imemsize);
     Check_Log();
     pDEBUG->init();
     Reset();

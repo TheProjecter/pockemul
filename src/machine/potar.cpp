@@ -75,3 +75,23 @@ void Cpotar::paintEvent(QPaintEvent *event)
 //    dialogpotar->refresh();
 }
 
+void Cpotar::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
+
+    BuildContextMenu(&menu);
+
+    menu.addSeparator();
+
+    menu.addAction(tr("Show console"),this,SLOT(ShowConsole()));
+    menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
+
+    menu.exec(event->globalPos () );
+}
+
+void Cpotar::ShowConsole(void) {
+    dialogpotar->show();
+}
+void Cpotar::HideConsole(void) {
+    dialogpotar->hide();
+}
