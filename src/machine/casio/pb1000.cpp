@@ -29,6 +29,7 @@
 Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
     setfrequency( (int) 910000/1);
+    ioFreq = 0;
     setcfgfname(QString("pb1000"));
 
     SessionHeader	= "PB1000PKM";

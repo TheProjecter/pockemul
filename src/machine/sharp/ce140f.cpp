@@ -20,60 +20,33 @@
 #include "common.h"
 
 #include "ce140f.h"
-#include "pcxxxx.h"
-#include "Log.h"
+#include "Inter.h"
+#include "Connect.h"
 #include "dialoganalog.h"
-#include "paperwidget.h"
 #include "Keyb.h"
 
 #define DOWN	0
 #define UP		1
 
-TransMap KeyMapce140f[]={
-    {1,	"FEED  ",	K_PFEED,34,234,	9},
-    {2,	"RMT ON",	K_RMT_ON,34,234,9},
-    {3,	"RMT OFF",	K_RMT_OFF,34,234,9},
-    {4,	"POWER ON",	K_POW_ON,34,234,	9},
-    {5,	"POWER OFF",K_POW_OFF,34,234,	9}
-};
-int KeyMapce140fLenght = 5;
-
-
 
 Cce140f::Cce140f(CPObject *parent):CPObject(parent)
 {								//[constructor]
     setfrequency( 0);
-    //ce140fbuf	= 0;
-    //ce140fdisplay= 0;
-    bells		= 0;
-    ToDestroy	= false;
     BackGroundFname	= ":/EXT/ext/ce-140f.png";
     setcfgfname("ce140f");
 
-
-
-    settop(10);
-    setposX(0);
     pTIMER		= new Ctimer(this);
-    KeyMap      = KeyMapce140f;
-    KeyMapLenght= KeyMapce140fLenght;
     pKEYB		= new Ckeyb(this,"ce140f.map");
     setDX(620);//Pc_DX	= 620;//480;
     setDY(488);//Pc_DY	= 488;//420;
 
-
-    //setPaperPos(QRect(150,-3,207,149));
-
-
     ctrl_char = false;
     t = 0;
     c = 0;
-    rmtSwitch = false;
     busyLed = false;
 }
 
 Cce140f::~Cce140f() {
-    delete bells;
     delete pCONNECTOR;
     delete pCONNECTOR_Ext;
 }
@@ -94,24 +67,8 @@ bool Cce140f::UpdateFinalImage(void) {
 
 void Cce140f::ComputeKey(void)
 {
-    if (pKEYB->LastKey == K_PFEED) {
-        RefreshCe140f(0x0d);
-    }
-    if (pKEYB->LastKey == K_RMT_ON) {
-        rmtSwitch = true;
-    }
-    if (pKEYB->LastKey == K_RMT_OFF) {
-        rmtSwitch = false;
-    }
-}
-
-
-void Cce140f::RefreshCe140f(qint8 data)
-{
 
 }
-
-
 
 
 bool Cce140f::init(void)
@@ -131,12 +88,6 @@ bool Cce140f::init(void)
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
 
-//	bells	 = new QSound("ce.wav");
-
-// Create a paper widget
-
-//    paperWidget = new CpaperWidget(PaperPos(),ce140fbuf,this);
-//    paperWidget->show();
 
 //	SET_PIN(PIN_ACK,DOWN);
 AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1":"0"));
@@ -170,11 +121,8 @@ void Cce140f::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
 
     BuildContextMenu(&menu);
-
     menu.addSeparator();
-
     menu.addAction(tr("Define Directory"),this,SLOT(definePath()));
-
     menu.exec(event->globalPos () );
 }
 
@@ -194,7 +142,7 @@ bool Cce140f::exit(void)
 {
     AddLog(LOG_PRINTER,"CE-140F Closing...");
     AddLog(LOG_PRINTER,"done.");
-    CPObject::exit();//Cprinter::exit();
+    CPObject::exit();
     return true;
 }
 
@@ -802,22 +750,11 @@ void Cce140f::process_LOAD(int cmd) {
             data_out.append(0x00);
             checksum=0;
 
-
             // Envoyer une ligne complete
             // Until 0x0D
             // EOF = 0x1A
             // Start at 0x10
 
-#if 0
-            //data_out.append(CheckSum(0x0f));
-
-            //data_out.append(CheckSum(0xff));
-            data_out.append(CheckSum(0x00));
-            data_out.append(CheckSum(0x0A));
-            data_out.append(CheckSum(0x02));
-            data_out.append(CheckSum(0x41));
-            data_out.append(CheckSum(0x0D));
-#else
             do {
                 c=ba_load.at(0);
                 data_out.append(CheckSum(c));  // 0x1A pour fin de fichier
@@ -830,7 +767,7 @@ void Cce140f::process_LOAD(int cmd) {
                 data_out.append(CheckSum(0x1A));  // 0x1A pour fin de fichier
                 }
             }
-#endif
+
             data_out.append(checksum);
             data_out.append(0x00);
             break;

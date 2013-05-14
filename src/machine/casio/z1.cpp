@@ -61,7 +61,7 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(64  , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
+    SlotList.append(CSlot(64 , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
 
     if (model==Z1GR)
         SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
@@ -575,6 +575,7 @@ void Cz1::TurnOFF(void) {
 void Cz1::TurnON(void){
     CpcXXXX::TurnON();
 
+    pHD66108->init();
 }
 
 

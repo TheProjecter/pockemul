@@ -17,6 +17,8 @@ CHD66108::CHD66108(CpcXXXX *parent)
     info.Xadr = 0;
     info.Yadr = 0;
     info.status = 0;
+
+
     updated = true;
 }
 
@@ -164,5 +166,14 @@ void CHD66108::save_internal(QXmlStreamWriter *xmlOut)
 
 bool CHD66108::init()
 {
+//    memset(&vram[0],0x00,sizeof(vram));
+//    reg=fcr=xar=yar=0;
+    return true;
+}
+
+
+void CHD66108::Reset()
+{
     memset(&vram[0],0x00,sizeof(vram));
+    reg=fcr=xar=yar=0;
 }

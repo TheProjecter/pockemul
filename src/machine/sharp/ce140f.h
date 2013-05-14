@@ -15,12 +15,13 @@
 #include <QDir>
 
 
-#include "cprinter.h"
-#include "Keyb.h"
-#include "Connect.h"
-#include "Inter.h"
+#include "pobject.h"
+//#include "Keyb.h"
+//#include "Connect.h"
+//#include "Inter.h"
 
 
+class Cconnector;
 
 class Cce140f:public CPObject{
     Q_OBJECT
@@ -32,27 +33,14 @@ public:
 
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);
-
     virtual bool UpdateFinalImage(void);
-
     virtual void ComputeKey(void);
 
-    //virtual void resizeEvent ( QResizeEvent * );
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
     Cconnector	*pCONNECTOR_Ext;	qint64 pCONNECTOR_Ext_value;
 
-//    QImage *ce140fbuf;
-//    QImage *ce140fdisplay;
-
-    void RefreshCe140f(qint8 data);
-    QSound *bells;
-
-    bool	ToDestroy;
-
-    void	settop(int value){ top = value; }
-    void	setposX(int value) { posX = value; }
-int ce140f_Mode;
+    int ce140f_Mode;
 
     void Push8(BYTE b);
     void Push4(BYTE b);
@@ -79,7 +67,6 @@ int ce140f_Mode;
     virtual ~Cce140f();
 
 public:
-    bool    rmtSwitch;
 
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
@@ -90,8 +77,6 @@ private:
 
     void	pulldownsignal(void);
 
-    int		top;
-    int		posX;
     QByteArray	TextBuffer;
     bool	Previous_PIN_BUSY;
     bool	Previous_PIN_MT_OUT1;
