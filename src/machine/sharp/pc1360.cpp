@@ -21,7 +21,6 @@ Cpc1360::Cpc1360(CPObject *parent)	: Cpc13XX(parent)
     LcdFname		= ":/PC1360/pc1360/1360lcd.png";
     SymbFname		= ":/PC1360/pc1360/1360symb.png";
     memsize			= 0x40000;
-//		NbSlot		= 14;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	":/PC1360/pc1360/cpu-1360.rom"	, "pc-1360/cpu-1360.rom", ROM , "CPU ROM"));

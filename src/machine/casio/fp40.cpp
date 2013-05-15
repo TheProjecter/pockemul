@@ -55,7 +55,7 @@ bool Cfp40::init(void) {
 
     CprinterCtronics::init();
 
-    qWarning()<<"init done";
+//    qWarning()<<"init done";
     return true;
 }
 
