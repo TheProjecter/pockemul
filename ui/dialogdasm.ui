@@ -32,13 +32,6 @@
       <number>10</number>
      </property>
      <item>
-      <widget class="QToolButton" name="tbStep">
-       <property name="text">
-        <string>Step</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QToolButton" name="tbStart">
        <property name="text">
         <string>Start</string>
@@ -46,9 +39,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton_3">
+      <widget class="QToolButton" name="tbStep">
        <property name="text">
-        <string>...</string>
+        <string>Step</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="tbStepOver">
+       <property name="text">
+        <string>StepOver</string>
        </property>
       </widget>
      </item>

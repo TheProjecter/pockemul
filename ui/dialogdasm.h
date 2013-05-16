@@ -2,6 +2,7 @@
 #define DIALOGDASM_H
 
 #include <QDialog>
+class QListWidgetItem;
 class CpcXXXX;
 class CregCPU;
 
@@ -43,7 +44,9 @@ public slots:
     void start();
     void stop();
     void step();
+    void stepOver();
     void addBreakPoint();
+    void breakPointChanged(QListWidgetItem* item);
 };
 
 #endif // DIALOGDASM_H

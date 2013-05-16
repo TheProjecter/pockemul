@@ -295,7 +295,7 @@ public:
     bool DasmStep;
     bool DasmFlag;
     DWORD DasmLastAdr;
-    QList<DWORD> BreakPointAdr;
+    QMap<DWORD,Qt::CheckState> BreakPoints;
     int BreakSubLevel;
 
 

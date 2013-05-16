@@ -27,9 +27,10 @@ DialogDasm::DialogDasm(QWidget *parent) :
     connect(ui->tbStart,SIGNAL(clicked()),this,SLOT(start()));
 //    connect(ui->pbStop,SIGNAL(clicked()),this,SLOT(stop()));
     connect(ui->tbStep,SIGNAL(clicked()),this,SLOT(step()));
+    connect(ui->tbStepOver,SIGNAL(clicked()),this,SLOT(stepOver()));
     connect(pPC,SIGNAL(RefreshDasm()),this,SLOT(RefreshDasm()));
     connect(ui->tbAddBrkPt,SIGNAL(clicked()),this,SLOT(addBreakPoint()));
-
+    connect(ui->lwBreakPts,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(breakPointChanged(QListWidgetItem*)));
 
     QFont font;
     font.setFamily("Courier");
@@ -157,10 +158,7 @@ void DialogDasm::RefreshDasm()
                 Index++;
             }
         }
-//        pPC->pCPU->Regs_Info(2);
 
-
-        //ShowReg();
     }
     if (regwidget) regwidget->refresh();
     loadImem();
@@ -194,10 +192,7 @@ void DialogDasm::resizeEvent( QResizeEvent * event )
 void DialogDasm::start()
 {
     pPC->DasmFlag = false;
-    pPC->pCPU->halt = 0;
-    pPC->DasmStep = false;
-    //Edit_GetText(g_hWndBreakDasm,Buffer,5);
-    //sscanf(Buffer,"%04x",&g_BreakPointAdr);
+    pPC->DasmLastAdr = 0xFFFFFFFF;
     ui->codelistWidget->clear();
     Index = 0;
     if (pPC->BreakSubLevel == pPC->pCPU->CallSubLevel)
@@ -214,15 +209,30 @@ void DialogDasm::stop()
 
 void DialogDasm::step()
 {
+    pPC->BreakSubLevel = 99999;
     pPC->DasmStep = true;
     pPC->DasmFlag = false;
-//    pPC->pCPU->halt = 0;
+    //    pPC->pCPU->halt = 0;
+}
+
+void DialogDasm::stepOver()
+{
+    pPC->BreakSubLevel = pPC->pCPU->CallSubLevel;
+    pPC->DasmStep = true;
+    pPC->DasmFlag = false;
 }
 
 void DialogDasm::addBreakPoint()
 {
-    pPC->BreakPointAdr.append(ui->breakPointLineEdit->text().toLongLong(0,16));
+    pPC->BreakPoints[ui->breakPointLineEdit->text().toLongLong(0,16)] = Qt::Checked;
+
     QListWidgetItem *_item = new QListWidgetItem(ui->breakPointLineEdit->text());
     _item->setCheckState(Qt::Checked);
     ui->lwBreakPts->addItem(_item);
+}
+
+void DialogDasm::breakPointChanged(QListWidgetItem *item)
+{
+    pPC->BreakPoints[item->text().toLongLong(0,16)] = item->checkState();
+
 }

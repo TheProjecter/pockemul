@@ -79,7 +79,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     ioFreq = 24000;
     DasmFlag = false;
     DasmStep = false;
-    BreakPointAdr.clear();
+    BreakPoints.clear();
     BreakSubLevel = -1;
 
 }
@@ -558,17 +558,21 @@ bool CpcXXXX::run(void)
 #endif
         }
 
-        if (BreakPointAdr.contains(pCPU->get_PC()))
+        if (BreakPoints.value(pCPU->get_PC(),Qt::Unchecked) == Qt::Checked)
         {
                 DasmStep = true;
         }
         if (DasmStep)
         {
-            DasmLastAdr = pCPU->get_PC();
-            pCPU->pDEBUG->DisAsm_1(DasmLastAdr);
-            emit RefreshDasm();
-            DasmFlag = true;
-            DasmStep = false;
+            if ( (pCPU->get_PC() != DasmLastAdr) &&
+                 (BreakSubLevel >= pCPU->CallSubLevel)){
+                BreakSubLevel = pCPU->CallSubLevel;
+                DasmLastAdr = pCPU->get_PC();
+                pCPU->pDEBUG->DisAsm_1(DasmLastAdr);
+                emit RefreshDasm();
+                DasmFlag = true;
+                DasmStep = false;
+            }
         }
 
 	}
