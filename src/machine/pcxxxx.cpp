@@ -20,6 +20,7 @@
 #include "cextension.h"
 #include "Keyb.h"
 #include "xmlwriter.h"
+#include "ui/cregcpu.h"
 
 #define		bREAD				0
 
@@ -78,7 +79,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     ioFreq = 24000;
     DasmFlag = false;
     DasmStep = false;
-    BreakPointAdr = 9999999; //-- MAXDWORD;
+    BreakPointAdr.clear();
     BreakSubLevel = -1;
 
 }
@@ -93,7 +94,6 @@ CpcXXXX::~CpcXXXX()
 //    delete ext_MemSlot2;
 //    delete ext_MemSlot3;
 }
-
 
 bool CpcXXXX::UpdateFinalImage(void)
 {
@@ -524,27 +524,18 @@ bool CpcXXXX::run(void)
     // Read the connectors
     if (pCONNECTOR) pCONNECTOR_value = pCONNECTOR->Get_values();
 
+    if (DasmFlag) return true;
+
 	if(!pCPU->halt && !off)
 	{
-
-
-        if (DasmStep)
-        {
-            DasmLastAdr = pCPU->get_PC();
-            pCPU->pDEBUG->DisAsm_1(DasmLastAdr);
-            emit RefreshDasm();
-            pCPU->halt = true;
-        }
-
-        if ( (pCPU->logsw) && (pCPU->fp_log) )
-        {
+        if ( (pCPU->logsw) && (pCPU->fp_log) ) {
             pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
             for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
 
-        pCPU->step();
-        Regs_Info(1);
+            pCPU->step();
+            Regs_Info(1);
 
             fprintf(pCPU->fp_log,"%-40s   %s  \n",pCPU->pDEBUG->Buffer,pCPU->Regs_String);
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
@@ -567,19 +558,18 @@ bool CpcXXXX::run(void)
 #endif
         }
 
-
-
-
-        if (BreakPointAdr == (pCPU->get_PC()))
-		{
-			pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
-//--			ListBox_ResetContent(g_hWndListDasm);
-            DasmFlag = 1;
+        if (BreakPointAdr.contains(pCPU->get_PC()))
+        {
+                DasmStep = true;
+        }
+        if (DasmStep)
+        {
+            DasmLastAdr = pCPU->get_PC();
+            pCPU->pDEBUG->DisAsm_1(DasmLastAdr);
             emit RefreshDasm();
-            pCPU->halt = true;
-		}
-        if (DasmStep && (DasmLastAdr==pCPU->get_PC())) pCPU->halt = false;
-
+            DasmFlag = true;
+            DasmStep = false;
+        }
 
 	}
     else {
@@ -599,8 +589,6 @@ bool CpcXXXX::run(void)
 //		pCPU->halt = 1;
 //		DasmStep = 0;
 //	}
-
-
 
 	return(1);
 }
@@ -645,9 +633,6 @@ void CpcXXXX::Mem_Save(BYTE s)
 	}
 }
 
-
-
-
 bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
     xmlOut->writeStartElement("session");
         xmlOut->writeAttribute("version", "2.0");
@@ -665,9 +650,6 @@ bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
 //    SaveExtra(&xw);									// Save all other data  (virtual)
     return true;
 }
-
-
-
 
 bool CpcXXXX::SaveSession_File(QFile *file)
 {

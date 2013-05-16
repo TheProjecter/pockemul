@@ -620,11 +620,12 @@ void Ce500::TurnON()
             Initial_Session_Load();
         }
         else hardreset = false;
+
+        if (pLCDC) pLCDC->TurnON();
+        this->Reset();
         off = 0;
         Power = true;
         PowerSwitch = PS_RUN;
-        if (pLCDC) pLCDC->TurnON();
-        this->Reset();
     }
 }
 

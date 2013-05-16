@@ -81,6 +81,7 @@ void Clcdc::disp_symb(void)
 void	Clcdc::check(void)  {}
 
 void	Clcdc::TurnON(void) {
+    Update();
     On = true;
     Refresh = true;
     redraw = true;
@@ -404,9 +405,6 @@ static const struct {
 
 void Clcdc_pc1250::disp_symb(void)
 {
-
-	
-//	HRESULT hr;
 
 	if ( (DirtyBuf[SYMB1_ADR_1250-0xF800]) ||
 		 (DirtyBuf[SYMB2_ADR_1250-0xF800]) ||

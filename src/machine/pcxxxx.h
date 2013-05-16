@@ -295,7 +295,7 @@ public:
     bool DasmStep;
     bool DasmFlag;
     DWORD DasmLastAdr;
-    qint32 BreakPointAdr;
+    QList<DWORD> BreakPointAdr;
     int BreakSubLevel;
 
 

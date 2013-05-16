@@ -3137,6 +3137,7 @@ void Csc62015::Reset(void) {
     imem[IMEM_EOH] = 0;
     imem[IMEM_EOL] = 0;
     reg.x.p=pPC->Get_20(VECT_RESET);
+   halt = false;
 
 }
 

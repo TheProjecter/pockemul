@@ -22,13 +22,13 @@ DialogDasm::DialogDasm(QWidget *parent) :
     NextMaxAdr = 0;
 
     imemHexEditor = new BINEditor::BinEditor(ui->imemframe);
-    memHexEditor = new BINEditor::BinEditor(ui->memframe);
+//    memHexEditor = new BINEditor::BinEditor(ui->memframe);
 
-    connect(ui->pbStart,SIGNAL(clicked()),this,SLOT(start()));
-    connect(ui->pbStop,SIGNAL(clicked()),this,SLOT(stop()));
-    connect(ui->pbStep,SIGNAL(clicked()),this,SLOT(step()));
-    connect(ui->breakPointLineEdit,SIGNAL(textChanged(QString)),this,SLOT(newBreakPoint(QString)));
+    connect(ui->tbStart,SIGNAL(clicked()),this,SLOT(start()));
+//    connect(ui->pbStop,SIGNAL(clicked()),this,SLOT(stop()));
+    connect(ui->tbStep,SIGNAL(clicked()),this,SLOT(step()));
     connect(pPC,SIGNAL(RefreshDasm()),this,SLOT(RefreshDasm()));
+    connect(ui->tbAddBrkPt,SIGNAL(clicked()),this,SLOT(addBreakPoint()));
 
 
     QFont font;
@@ -40,9 +40,11 @@ DialogDasm::DialogDasm(QWidget *parent) :
     if (pPC->pCPU->regwidget) {
         regwidget = pPC->pCPU->regwidget;
         regwidget->setParent(ui->regframe);
+
     }
     this->show();
     this->resize(545,490);
+    regwidget->show();
 
 }
 
@@ -176,16 +178,16 @@ void DialogDasm::loadImem()
 
 void DialogDasm::loadMem()
 {
-    if (pPC) {
-        memHexEditor->setData(pPC->getmem());
-    }
-    update();
+//    if (pPC) {
+//        memHexEditor->setData(pPC->getmem());
+//    }
+//    update();
 }
 
 void DialogDasm::resizeEvent( QResizeEvent * event )
 {
     imemHexEditor->resize( ui->imemframe->size());
-    memHexEditor->resize(ui->memframe->size());
+//    memHexEditor->resize(ui->memframe->size());
     if (regwidget) regwidget->resize(ui->regframe->size());
 }
 
@@ -205,18 +207,22 @@ void DialogDasm::start()
 
 void DialogDasm::stop()
 {
-    pPC->DasmFlag = false;
-    pPC->pCPU->halt = 1;
+//    pPC->DasmFlag = false;
+//    pPC->pCPU->halt = 1;
+    pPC->DasmStep = true;
 }
 
 void DialogDasm::step()
 {
-    pPC->DasmFlag = true;
-    pPC->pCPU->halt = 0;
     pPC->DasmStep = true;
+    pPC->DasmFlag = false;
+//    pPC->pCPU->halt = 0;
 }
 
-void DialogDasm::newBreakPoint(QString v)
+void DialogDasm::addBreakPoint()
 {
-    pPC->BreakPointAdr = v.toLongLong(0,16);
+    pPC->BreakPointAdr.append(ui->breakPointLineEdit->text().toLongLong(0,16));
+    QListWidgetItem *_item = new QListWidgetItem(ui->breakPointLineEdit->text());
+    _item->setCheckState(Qt::Checked);
+    ui->lwBreakPts->addItem(_item);
 }

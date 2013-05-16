@@ -491,7 +491,10 @@ void MainWindowPockemul::opensession(QString sessionFN)
                         locPC->Front = (xml.attributes().value("front")=="true") ?true:false;
 
                         locPC->Power = (xml.attributes().value("power")=="true") ?true:false;
-                        if (locPC->Power) locPC->TurnON();
+                        if (locPC->Power) {
+
+                            locPC->TurnON();
+                        }
 
                         while (xml.readNextStartElement()) {
                             QString eltname = xml.name().toString();

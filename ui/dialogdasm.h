@@ -43,7 +43,7 @@ public slots:
     void start();
     void stop();
     void step();
-    void newBreakPoint(QString v);
+    void addBreakPoint();
 };
 
 #endif // DIALOGDASM_H
