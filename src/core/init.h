@@ -132,6 +132,7 @@ enum Models {
     PC1403H,
     PC1450,
     PC1475,
+    PC1425,
     PC1500,
     PC1500A,
     TandyPC2,

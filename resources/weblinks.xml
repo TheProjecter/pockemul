@@ -58,6 +58,10 @@
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403_e.html"/>
         <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1403_OM_GB.pdf"/>
     </model>
+    <model value="pc1425">
+        <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1425_e.html"/>
+        <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/PC1425_OM_FR.pdf"/>
+    </model>
     <model value="pc1403H">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403h_e.html"/>
     </model>

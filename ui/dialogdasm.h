@@ -26,8 +26,8 @@ public:
     bool IsAdrInList(qint32 adr);
     CpcXXXX * pPC;
     int		Index;
-    qint32	MaxAdr;
-    qint32	NextMaxAdr;
+    quint32	MaxAdr;
+    quint32	NextMaxAdr;
 
     void resizeEvent(QResizeEvent *event);
     void selectRow(int index);

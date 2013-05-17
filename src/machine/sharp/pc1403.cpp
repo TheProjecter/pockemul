@@ -154,10 +154,16 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
             case 0x09:	RomBank = 1; break;
             case 0x0A:	RomBank = 2; break;
             case 0x0B:	RomBank = 3; break;
+
         }
+//        if (pCPU->fp_log) fprintf(pCPU->fp_log,"BK:%02X = %i",data,RomBank);
 		return(1);
 	}
-	if ( (*d>=0x3E00) && (*d<=0x3FFF) )	{ pKEYB->Set_KS( (BYTE) data & 0x7F );/*ShowPortsAuto(0);*/	return(1);}
+    if ( (*d>=0x3E00) && (*d<=0x3FFF) )	{
+        out5 = data & 0x80;
+        pKEYB->Set_KS( (BYTE) data & 0x7F );/*ShowPortsAuto(0);*/
+        return(1);
+    }
     if ( (*d>=0x4000) && (*d<=0x7FFF) )	{*d += 0xC000 + (RomBank * 0x4000); return(0); }
 	if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(1); }
 

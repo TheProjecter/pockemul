@@ -334,7 +334,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/pit8253.h \
     src/core/servertcp.h \
     src/machine/general/lbc1100.h \
-    src/machine/general/cl1000.h
+    src/machine/general/cl1000.h \
+    src/machine/sharp/pc1425.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -603,7 +604,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/servertcp.cpp \
     src/machine/general/lbc1100.cpp \
     src/machine/general/cl1000.cpp \
-    src/machine/casio/fp100.cpp
+    src/machine/casio/fp100.cpp \
+    src/machine/sharp/pc1425.cpp
 
 
 

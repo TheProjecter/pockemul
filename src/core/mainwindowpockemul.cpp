@@ -156,6 +156,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["PC-1421"]=PC1421;
     objtable["PC-1450"]=PC1450;
     objtable["PC-1475"]=PC1475;
+    objtable["PC-1425"]=PC1425;
 
     objtable["PC-1500"]=PC1500;
     objtable["PC-1500A"]=PC1500A;

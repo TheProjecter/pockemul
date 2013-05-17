@@ -16,24 +16,19 @@ Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
     LcdFname		= ":/PC1260/pc1260/1260lcd.png";
     SymbFname		= ":/PC1260/pc1260/1260symb.png";
 
-
     memsize			= 0x10000;
-//		NbSlot		= 3;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	":/PC1260/pc1260/cpu-1260.rom"	, "" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
     SlotList.append(CSlot(32, 0x8000 ,	":/PC1260/pc1260/bas-1260.rom"	, "" , ROM , "BASIC ROM"));
 
-//		Pc_DX		= 409;
-//		Pc_DY		= 213;
-
     Lcd_X		= 79;
     Lcd_Y		= 37;
-            Lcd_DX		= 312;
+    Lcd_DX		= 312;
     Lcd_DY		= 30;
-            Lcd_ratio_X	= 1;//1.18;
-            Lcd_ratio_Y	= 1;//1.18;
+    Lcd_ratio_X	= 1;//1.18;
+    Lcd_ratio_Y	= 1;//1.18;
 
     Lcd_Symb_X	= 53;
     Lcd_Symb_Y	= 40;

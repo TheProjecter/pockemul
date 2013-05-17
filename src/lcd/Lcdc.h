@@ -240,7 +240,7 @@ public:
 	bool init(void);
 	void disp(void);				//display LCDC data to screen
 	void disp_symb(void);
-    const char*	GetClassName(){ return("Clcdc_pc1450");};
+    const char*	GetClassName(){ return("Clcdc_pc1450");}
 
 
 	int x2a[100];
@@ -262,7 +262,7 @@ public:
 	bool init(void);
 	void disp(void);				//display LCDC data to screen
 	void disp_symb(void);
-    const char*	GetClassName(){ return("Clcdc_pc1475");};
+    const char*	GetClassName(){ return("Clcdc_pc1475");}
 
 
 	int x2a[100];

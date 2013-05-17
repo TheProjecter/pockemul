@@ -122,7 +122,6 @@ void DialogDasm::RefreshDasm()
                     ui->codelistWidget->addItem(item);
                     selectRow(ui->codelistWidget->count()-1);
 
-                    //ListBox_SetItemData(g_hWndListDasm, Index, 0);
                     NextMaxAdr = pPC->pCPU->pDEBUG->NextDasmAdr;
                     Index++;
                 }
@@ -135,12 +134,6 @@ void DialogDasm::RefreshDasm()
             item->setData(Qt::UserRole,adr);
             ui->codelistWidget->addItem(item);
             selectRow(ui->codelistWidget->count()-1);
-
-            //ui->codelistWidget->currentItem()->setFont();
-
-            //ListBox_SetItemData(g_hWndListDasm, Index, pPC->pCPU->pDEBUG->DasmAdr);
-
-            //ListBox_SetCurSel(g_hWndListDasm, Index);
             Index++;
 // full until 15 lines
             for (int j=Index;j<15;j++)
@@ -153,8 +146,6 @@ void DialogDasm::RefreshDasm()
                 item->setData(Qt::UserRole,adr);
 
                 ui->codelistWidget->addItem(item);
-//                ListBox_AddItemData(g_hWndListDasm,pPC->pCPU->pDEBUG->Buffer);
-//                ListBox_SetItemData(g_hWndListDasm, Index, pPC->pCPU->pDEBUG->DasmAdr);
                 Index++;
             }
         }
@@ -212,7 +203,6 @@ void DialogDasm::step()
     pPC->BreakSubLevel = 99999;
     pPC->DasmStep = true;
     pPC->DasmFlag = false;
-    //    pPC->pCPU->halt = 0;
 }
 
 void DialogDasm::stepOver()

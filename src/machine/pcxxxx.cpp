@@ -442,7 +442,7 @@ void CpcXXXX::set_mem(DWORD adr,int size,DWORD data)
 bool CpcXXXX::init(void)
 {
 #ifndef QT_NO_DEBUG
-    //pCPU->logsw = true;
+    pCPU->logsw = true;
 #endif
 	CPObject::init();
 	
@@ -561,6 +561,7 @@ bool CpcXXXX::run(void)
         if (BreakPoints.value(pCPU->get_PC(),Qt::Unchecked) == Qt::Checked)
         {
                 DasmStep = true;
+                BreakSubLevel = 99999;
         }
         if (DasmStep)
         {

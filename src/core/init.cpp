@@ -38,6 +38,7 @@
 #include "sharp/pc1421.h"
 #include "sharp/pc1450.h"
 #include "sharp/pc1475.h"
+#include "sharp/pc1425.h"
 
 #include "sharp/pc1500.h"
 #include "sharp/ce150.h"
@@ -121,6 +122,7 @@ CPObject *pPC=0;
         case PC1421	: pPC = new Cpc1421;	pPC->setName("PC-1421");break;
         case PC1450	: pPC = new Cpc1450;	pPC->setName("PC-1450");break;
         case PC1475	: pPC = new Cpc1475;	pPC->setName("PC-1475");break;
+        case PC1425	: pPC = new Cpc1425;	pPC->setName("PC-1425");break;
 
         case PC1500	: pPC = new Cpc1500;	pPC->setName("PC-1500");break;
         case PC1500A: pPC = new Cpc1500A;	pPC->setName("PC-1500A");break;
