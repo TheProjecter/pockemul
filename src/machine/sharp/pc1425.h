@@ -17,8 +17,6 @@ public:
     {								//[constructor]
     }
 
-    BYTE Get_PortA();
-    BYTE Get_PortB();
 private:
 };
 

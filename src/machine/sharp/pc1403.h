@@ -31,7 +31,8 @@ public:
     Cpc1403(CPObject *parent = 0);
     virtual ~Cpc1403()
 	{								//[constructor]
-	}
+    }
+    BYTE Get_PortA();
 private:
 };
 

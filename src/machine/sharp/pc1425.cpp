@@ -49,17 +49,5 @@ bool Cpc1425::Chk_Adr_R(DWORD *d,DWORD data)
     return(Cpc1403::Chk_Adr_R(d,data));
 }
 
-BYTE	Cpc1425::Get_PortA(void)
-{
-    BYTE data = Cpc1403::Get_PortA();
-
-    data |= out5;
-
-    return (data);
-}
 
 
-BYTE	Cpc1425::Get_PortB(void) {
-//    if (IO_B & 4) IO_B |= 8;
-    return (IO_B);
-}

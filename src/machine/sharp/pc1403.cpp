@@ -180,6 +180,15 @@ bool Cpc1403::Chk_Adr_R(DWORD *d,DWORD data)
 	return(1);	
 }
 
+BYTE	Cpc1403::Get_PortA(void)
+{
+    BYTE data = Cpc1401::Get_PortA();
+
+    data |= out5;
+
+    return (data);
+}
+
 Cpc1403H::Cpc1403H(CPObject *parent) : Cpc1403(parent)
 {											//[constructor]
     setfrequency( (int) 768000/3);
