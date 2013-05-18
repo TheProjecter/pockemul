@@ -33,6 +33,7 @@ unix {
 win32 {
     Release:OBJECTS_DIR += build/o/wr
     Debug:OBJECTS_DIR += build/o/wd
+    QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
 FORMS += ui/about.ui \
