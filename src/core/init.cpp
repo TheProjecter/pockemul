@@ -215,8 +215,10 @@ void CPocketThread::run()
 {
     bool pause = true;
 
+#ifdef NEWTIMER
     QElapsedTimer timer;
     timer.start();
+#endif
 
     while(true)
     {

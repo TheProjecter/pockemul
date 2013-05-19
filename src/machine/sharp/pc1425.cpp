@@ -1,4 +1,6 @@
 #include "pc1425.h"
+#include "Lcdc.h"
+#include "Log.h"
 
 Cpc1425::Cpc1425(CPObject *parent) : Cpc1403(parent)
 {											//[constructor]
@@ -22,7 +24,8 @@ Cpc1425::Cpc1425(CPObject *parent) : Cpc1403(parent)
     SlotList.append(CSlot(16, 0x18000 ,	":/PC1425/pc1425/b2-1425.bin", "" , ROM , "BANK 3"));
     SlotList.append(CSlot(16, 0x1C000 ,	":/PC1425/pc1425/b3-1425.bin", "" , ROM , "BANK 4"));
 
-    pKEYB->fn_KeyMap = "pc1450.map";
+    delete pLCDC;	pLCDC = new Clcdc_pc1425(this);
+    pKEYB->fn_KeyMap = "pc1425.map";
 
     Lcd_X		= 130;
     Lcd_Y		= 53;
@@ -40,6 +43,7 @@ Cpc1425::Cpc1425(CPObject *parent) : Cpc1403(parent)
 
 bool Cpc1425::Chk_Adr(DWORD *d,DWORD data)
 {
+
     if ( (*d>=0x8000) && (*d<=0xdFFF) )	{ return(1); }
     return (Cpc1403::Chk_Adr(d,data));
 }

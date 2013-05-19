@@ -11,6 +11,7 @@
     </model>
     <model value="pc1250">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1250_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1251_OM_GB.pdf"/>
     </model>
     <model value="pc1251">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1251_e.html"/>
@@ -18,6 +19,7 @@
     </model>
     <model value="pc1255">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1255_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1251_OM_GB.pdf"/>
     </model>
     <model value="pc1260">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1260_e.html"/>
@@ -40,6 +42,7 @@
     </model>
     <model value="pc1350">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1350_e.html"/>
+        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1350_OM_DE.pdf"/>
     </model>
     <model value="pc1360">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1360_e.html"/>
@@ -64,15 +67,18 @@
     </model>
     <model value="pc1403H">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1403h_e.html"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PC1403_OM_GB.pdf"/>
     </model>
     <model value="pc1421">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1421_e.html"/>
+        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1421_OM_DE.pdf"/>
     </model>
     <model value="pc1450">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1450_e.html"/>
     </model>
     <model value="pc1475">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1475_e.html"/>
+        <document desc="User Guide (de)" link="http://pockemul.free.fr/Documents/userguide/PC1475_OM_DE.pdf"/>
     </model>
     <model value="pc1500">
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/sharp/pc-1500_e.html"/>

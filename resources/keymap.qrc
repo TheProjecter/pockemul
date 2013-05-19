@@ -39,5 +39,6 @@
         <file>keymap/fp40.map</file>
         <file>keymap/lbc1100.map</file>
         <file>keymap/cl1000.map</file>
+        <file>keymap/pc1425.map</file>
     </qresource>
 </RCC>

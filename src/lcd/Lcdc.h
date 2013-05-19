@@ -140,7 +140,7 @@ class Clcdc_pc1245:public Clcdc_pc1250{
 public:
 	void disp_symb(void);
 	void disp(void);				//display LCDC data to screen
-    const char*	GetClassName(){ return("Clcdc_pc1245");};
+    const char*	GetClassName(){ return("Clcdc_pc1245");}
 
 	Clcdc_pc1245(CPObject *parent = 0)	: Clcdc_pc1250(parent)
 	{						//[constructor]
@@ -177,7 +177,7 @@ class Clcdc_pc1260:public Clcdc_pc1250{
 public:
 	void disp_symb(void);
 	void disp(void);				//display LCDC data to screen
-    const char*	GetClassName(){ return("Clcdc_pc1260");};
+    const char*	GetClassName(){ return("Clcdc_pc1260");}
 
 
 	Clcdc_pc1260(CPObject *parent = 0)	: Clcdc_pc1250(parent){						//[constructor]
@@ -196,7 +196,7 @@ class Clcdc_pc1401:public Clcdc{
 public:
 	void disp(void);				//display LCDC data to screen
 	void disp_symb(void);
-    const char*	GetClassName(){ return("Clcdc_pc1401");};
+    const char*	GetClassName(){ return("Clcdc_pc1401");}
 
 
 
@@ -216,7 +216,7 @@ class Clcdc_pc1403:public Clcdc{
 public:
 	void disp(void);				//display LCDC data to screen
 	void disp_symb(void);
-    const char*	GetClassName(){ return("Clcdc_pc1403");};
+    const char*	GetClassName(){ return("Clcdc_pc1403");}
 
 
 
@@ -225,14 +225,31 @@ public:
 							(int) (0x5d*contrast),
 							(int) (0x71*contrast),
 							(int) (0x6a*contrast));
-	};
+    }
 	virtual ~Clcdc_pc1403()
 	{						//[constructor]
-	};
+    }
 
 };
 
+class Clcdc_pc1425:public Clcdc_pc1403{
+public:
+    void disp_symb(void);
+    const char*	GetClassName(){ return("Clcdc_pc1425");}
 
+
+
+    Clcdc_pc1425(CPObject *parent = 0)	: Clcdc_pc1403(parent){						//[constructor]
+        Color_Off.setRgb(
+                            (int) (0x5d*contrast),
+                            (int) (0x71*contrast),
+                            (int) (0x6a*contrast));
+    }
+    virtual ~Clcdc_pc1425()
+    {						//[constructor]
+    }
+
+};
 
 
 class Clcdc_pc1450:public Clcdc{
