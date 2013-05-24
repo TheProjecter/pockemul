@@ -445,8 +445,8 @@ INLINE void Cpc1600::hack(DWORD pc)
                  ((ADDR >= 0x4000) && (ADDR <= 0x7FFF) && (BANK == bank2)) || \
                  ((ADDR >= 0x8000) && (ADDR <= 0xBFFF) && (BANK == bank3)) || \
                  ((ADDR >= 0xC000) && (ADDR <= 0xFFFF) && (BANK == bank4)) ) {\
-            if (fp_log) fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
+            /*if (fp_log) fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);*/ \
+            /*if (pCPU->fp_log) fprintf(pCPU->fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);*/ \
             }\
         }
 
@@ -456,14 +456,14 @@ INLINE void Cpc1600::hack(DWORD pc)
                  ((ADDR >= 0x4000) && (ADDR <= 0x7FFF) && (BANK == bank2)) || \
                  ((ADDR >= 0x8000) && (ADDR <= 0xBFFF) && (BANK == bank3)) || \
                  ((ADDR >= 0xC000) && (ADDR <= 0xFFFF) && (BANK == bank4)) ) {\
-            if (fp_log) fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c); \
+            /*if (fp_log) fprintf(fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);*/ \
+            /*if (pCPU->fp_log) fprintf(pCPU->fp_log,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);*/ \
             }\
         }
 
 //    if (fp_log == 0) return;
 
-    if (fp_log) fprintf(fp_log,tr("[%1] - PRTANK  - Display one character\n").arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);
+//    if (fp_log) fprintf(fp_log,tr("[%1] - PRTANK  - Display one character\n").arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);
     switch (pc)
     {
 
