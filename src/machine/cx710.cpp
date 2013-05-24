@@ -23,7 +23,7 @@ TransMap KeyMapce140p[]={
 Cx710::Cx710(CPObject *parent):Cce515p(this) {
     //setfrequency( 0);
     setcfgfname(QString("x710"));
-    BackGroundFname	= ":/x07/x710.png";
+    BackGroundFname	= P_RES(":/x07/x710.png");
 
 
 //    KeyMap      = KeyMapx710;

@@ -12,16 +12,16 @@ Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
     SessionHeader	= "PC1260PKM";
     Initial_Session_Fname ="pc1260.pkm";
 
-    BackGroundFname	= ":/PC1260/pc1260/pc1260.png";
-    LcdFname		= ":/PC1260/pc1260/1260lcd.png";
-    SymbFname		= ":/PC1260/pc1260/1260symb.png";
+    BackGroundFname	= P_RES(":/pc1260/pc1260.png");
+    LcdFname		= P_RES(":/pc1260/1260lcd.png");
+    SymbFname		= P_RES(":/pc1260/1260symb.png");
 
     memsize			= 0x10000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1260/pc1260/cpu-1260.rom"	, "" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1260/cpu-1260.rom")	, "" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1260/pc1260/bas-1260.rom"	, "" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1260/bas-1260.rom")	, "" , ROM , "BASIC ROM"));
 
     Lcd_X		= 79;
     Lcd_Y		= 37;
@@ -73,8 +73,8 @@ Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
     SessionHeader	= "PC1261PKM";
     Initial_Session_Fname ="pc1261.pkm";
 
-    BackGroundFname	= ":/PC1261/pc1261/pc1261.png";
-    LcdFname		= ":/PC1261/pc1261/1261lcd.png";
+    BackGroundFname	= P_RES(":/pc1261/pc1261.png");
+    LcdFname		= P_RES(":/pc1261/1261lcd.png");
 //		SymbFname		= "pc-1261\\1261symb.png";
 
 
@@ -82,9 +82,9 @@ Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1261/pc1261/cpu-1261.rom"	, "" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1261/cpu-1261.rom")	, "" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1261/pc1261/bas-1261.rom"	, "" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1261/bas-1261.rom")	, "" , ROM , "BASIC ROM"));
 
 }
 bool Cpc1261::Chk_Adr(DWORD *d,DWORD data)
@@ -102,8 +102,8 @@ Cpc1262::Cpc1262(CPObject *parent)	: Cpc1261(this)
     SessionHeader	= "PC1262PKM";
     Initial_Session_Fname ="pc1262.pkm";
 
-    BackGroundFname	= ":/PC1262/pc1262/pc1262.png";
-    LcdFname		= ":/PC1262/pc1262/1262lcd.png";
+    BackGroundFname	= P_RES(":/pc1262/pc1262.png");
+    LcdFname		= P_RES(":/pc1262/1262lcd.png");
 //		SymbFname		= "pc-1262\\1262symb.png";
 
 
@@ -111,9 +111,9 @@ Cpc1262::Cpc1262(CPObject *parent)	: Cpc1261(this)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1262/pc1262/cpu-1262.rom"	, "" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1262/cpu-1262.rom")	, "" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1262/pc1262/bas-1262.rom"	, "" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1262/bas-1262.rom")	, "" , ROM , "BASIC ROM"));
 }
 
 

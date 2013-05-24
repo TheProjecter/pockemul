@@ -11,7 +11,7 @@
 
 Cce122::Cce122(CPObject *parent):Cce126(parent)
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-122.png";
+    BackGroundFname	= P_RES(":/ext/ce-122.png");
     setcfgfname("ce122");
     setDX(1002);//Pc_DX	= 282;
     setDY(330);//Pc_DY	= 95;
@@ -51,7 +51,7 @@ bool Cce122::init(void)
 
 
 
-    charTable = new QImage(":/EXT/ext/ce122table.bmp");
+    charTable = new QImage(P_RES(":/ext/ce122table.bmp"));
 
 //	bells	 = new QSound("ce.wav");
 

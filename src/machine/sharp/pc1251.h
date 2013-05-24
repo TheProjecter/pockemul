@@ -29,7 +29,7 @@ public:
         SessionHeader	= "TRSPC3EXTPKM";
         Initial_Session_Fname ="trspc3ext.pkm";
 
-        BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
+        BackGroundFname	= P_RES(":/pc1250/pc31k.png");
     }
 
 

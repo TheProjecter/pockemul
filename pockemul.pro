@@ -8,6 +8,8 @@ CONFIG += rtti
 #CONFIG += mobility
 MOBILITY =
 #DEFINES += NO_SOUND Q_OS_ANDROID
+#DEFINES += LOCRES
+
 QT += core \
     gui \
     network \
@@ -353,7 +355,8 @@ MOC_DIR += build/moc
 OPENEDFILES += 
 
 RCC_DIR += build/rcc
-RESOURCES += resources/ext.qrc \
+RESOURCES +=  \
+    resources/ext.qrc \
     resources/pc1245.qrc \
     resources/pc1250.qrc \
     resources/pc1251.qrc \
@@ -370,17 +373,12 @@ RESOURCES += resources/ext.qrc \
     resources/pc1475.qrc \
     resources/pc1500.qrc \
     resources/pockemul.qrc \
-    src/core/lfhex/lfhex.qrc \
     resources/pc1600.qrc \
     resources/pc2500.qrc \
     resources/pc1421.qrc \
     resources/pc1425.qrc \
     resources/pc1460.qrc \
     resources/pc1280.qrc \
-    resources/keymap.qrc \
-    resources/stdlibs.qrc \
-    qcodeedit/qxs/qxs.qrc \
-    resources/asmlibs.qrc \
     resources/x07.qrc \
     resources/pb1000.qrc \
     resources/e500.qrc \
@@ -391,7 +389,13 @@ RESOURCES += resources/ext.qrc \
     resources/fp200.qrc \
     resources/pc1211.qrc \
     resources/pc2001.qrc \
-    resources/lbc1100.qrc
+    resources/lbc1100.qrc \
+    resources/keymap.qrc \
+    resources/stdlibs.qrc \
+    qcodeedit/qxs/qxs.qrc \
+    src/core/lfhex/lfhex.qrc \
+    resources/asmlibs.qrc \
+    resources/core.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \

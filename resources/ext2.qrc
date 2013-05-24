@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/EXT">
+    <qresource prefix="/">
         <file>ext/fp100.png</file>
         <file>ext/fp100cable.png</file>
         <file>ext/fp100-capot.png</file>

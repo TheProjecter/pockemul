@@ -13,17 +13,17 @@ Cpc1421::Cpc1421(CPObject *parent)	: Cpc1401(parent)
     SessionHeader	= "PC1421PKM";
     Initial_Session_Fname ="pc1421.pkm";
 
-    BackGroundFname	= ":/PC1421/pc1421/pc-1421.png";
-//		LcdFname		= ":/PC1402/pc1402/1402lcd.jpng";
-//		SymbFname		= ":/PC1402/pc1402/1402symb.png";
+    BackGroundFname	= P_RES(":/pc1421/pc-1421.png");
+//		LcdFname		= ":/pc1402/1402lcd.jpng";
+//		SymbFname		= ":/pc1402/1402symb.png";
 
 
 //    memsize			= 0x10000;
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1421/pc1421/cpu-1421.rom", "pc-1421/cpu-1421.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1421/cpu-1421.rom"), "pc-1421/cpu-1421.rom" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1421/R1-1421.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1421/pc1421/bas-1421.rom", "pc-1421/bas-1421.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1421/bas-1421.rom"), "pc-1421/bas-1421.rom" , ROM , "BASIC ROM"));
 
 }

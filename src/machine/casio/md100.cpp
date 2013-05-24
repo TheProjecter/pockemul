@@ -28,7 +28,7 @@ Cmd100::Cmd100(CPObject *parent):CPObject(parent)
 {								//[constructor]
     setfrequency( 0);
 
-    BackGroundFname	= ":/EXT/ext/md-100.png";
+    BackGroundFname	= P_RES(":/ext/md-100.png");
     setcfgfname("md100");
 
 

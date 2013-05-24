@@ -13,18 +13,18 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
     SessionHeader	= "PC1245PKM";
 	Initial_Session_Fname ="pc1245.pkm";
 	
-	BackGroundFname	= ":/PC1245/pc1245/pc1245.png";
-	LcdFname		= ":/PC1245/pc1245/1245lcd.png";
-	SymbFname		= ":/PC1245/pc1245/1245symb.png";
+    BackGroundFname	= P_RES(":/pc1245/pc1245.png");
+    LcdFname		= P_RES(":/pc1245/1245lcd.png");
+    SymbFname		= P_RES(":/pc1245/1245symb.png");
 	
 
 	memsize			= 0x10000;
 //	NbSlot		= 4;
 
 	SlotList.clear();
-	SlotList.append(CSlot(8	, 0x0000 ,	":/PC1245/pc1245/cpu-1245.rom"	, "pc1245/cpu-1245.rom"	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1245/cpu-1245.rom")	, "pc1245/cpu-1245.rom"	, ROM , "CPU ROM"));
 	SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1245/R1-1245.ram"	, RAM , "RAM"));
-	SlotList.append(CSlot(16, 0x4000 ,	":/PC1245/pc1245/bas-1245.rom"	, "pc1245/bas-1245.rom"	, ROM , "BASIC ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1245/bas-1245.rom")	, "pc1245/bas-1245.rom"	, ROM , "BASIC ROM"));
 	SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1245/R2-1245.ram" 	, RAM , "RAM"));
 
 
@@ -74,9 +74,9 @@ bool Cpc1245::InitDisplay(void)
 
     CpcXXXX::InitDisplay();
 
-    iPowerOFF.load( ":/PC1245/pc1245/powerOFF.png");
-    iPowerRUN.load( ":/PC1245/pc1245/powerRUN.png");
-    iPowerPRO.load( ":/PC1245/pc1245/powerPRO.png");
+    iPowerOFF.load( P_RES(":/pc1245/powerOFF.png"));
+    iPowerRUN.load( P_RES(":/pc1245/powerRUN.png"));
+    iPowerPRO.load( P_RES(":/pc1245/powerPRO.png"));
 
     return(1);
 }
@@ -118,9 +118,9 @@ Cmc2200::Cmc2200(CPObject *parent)	: Cpc1245(parent)
     SessionHeader	= "MC2200PKM";
     Initial_Session_Fname ="mc2200.pkm";
 
-    BackGroundFname	= ":/PC1245/pc1245/mc2200.png";
-    LcdFname		= ":/PC1245/pc1245/mc2200lcd.png";
-    SymbFname		= ":/PC1245/pc1245/mc2200symb.png";
+    BackGroundFname	= P_RES(":/pc1245/mc2200.png");
+    LcdFname		= P_RES(":/pc1245/mc2200lcd.png");
+    SymbFname		= P_RES(":/pc1245/mc2200symb.png");
 
     Lcd_X		= 125;
     Lcd_Y		= 54;

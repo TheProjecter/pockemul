@@ -29,9 +29,9 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 
     SessionHeader	= "PC1500PKM";
 	Initial_Session_Fname ="pc1500.pkm";
-    BackGroundFname	= ":/PC1500/pc1500/pc1500.png";
-    LcdFname		= ":/PC1500/pc1500/1500lcd.png";
-    SymbFname		= ":/PC1500/pc1500/1500symb.png";
+    BackGroundFname	= P_RES(":/pc1500/pc1500.png");
+    LcdFname		= P_RES(":/pc1500/1500lcd.png");
+    SymbFname		= P_RES(":/pc1500/1500symb.png");
 	memsize			= 0x26000;
 	InitMemValue	= 0xFF;
 
@@ -96,9 +96,9 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
 
     SessionHeader	= "PC1500APKM";
     Initial_Session_Fname ="pc1500A.pkm";
-    BackGroundFname	= ":/PC1500A/pc1500A/pc1500A.png";
-    LcdFname		= ":/PC1500A/pc1500A/1500Alcd.png";
-    SymbFname		= ":/PC1500A/pc1500A/1500Asymb.png";
+    BackGroundFname	= P_RES(":/pc1500A/pc1500A.png");
+    LcdFname		= P_RES(":/pc1500A/1500Alcd.png");
+    SymbFname		= P_RES(":/pc1500A/1500Asymb.png");
     memsize			= 0x26000;
 
     SlotList.clear();
@@ -107,11 +107,11 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     SlotList.append(CSlot(16, 0x4000 ,	""								, "" , RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , NOTUSED , "NOT USED"));
     SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0xC000 ,	":/PC1500A/pc1500A/SYS1500A.ROM", "" , ROM , "SYSTEM ROM"));
+    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500A/SYS1500A.ROM"), "" , ROM , "SYSTEM ROM"));
     SlotList.append(CSlot(64, 0x10000 ,	""								, "" , RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , ROM , "ROM"));
     SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x24000 ,	":/PC1500A/pc1500A/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
+    SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500A/CE-150.ROM")	, "" , ROM , "CE-150 ROM"));
 
     delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
 
@@ -123,9 +123,9 @@ Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
 
     SessionHeader	= "TRSPC-2PKM";
     Initial_Session_Fname ="trspc2.pkm";
-    BackGroundFname	= ":/TRSPC2/pc1500/trspc2.png";
-    LcdFname		= ":/TRSPC2/pc1500/pc2lcd.png";
-    SymbFname		= ":/TRSPC2/pc1500/pc2symb.png";
+    BackGroundFname	= P_RES(":/TRSPC2/pc1500/trspc2.png");
+    LcdFname		= P_RES(":/TRSPC2/pc1500/pc2lcd.png");
+    SymbFname		= P_RES(":/TRSPC2/pc1500/pc2symb.png");
 
     Lcd_X		= 181;//152 ;
     Lcd_Y		= 62;//52 ;
@@ -562,7 +562,7 @@ void Cpc15XX::Set_Port(PORTS Port,BYTE data){}
 BYTE Cpc15XX::Get_Port(PORTS Port){return(0);}
 
 #define KS		( pKEYB->Get_KS()) 
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 
 UINT8 Cpc15XX::in(UINT8 address)
 {

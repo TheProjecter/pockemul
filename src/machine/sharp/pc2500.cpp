@@ -13,7 +13,7 @@
 #include "paperwidget.h"
 #include "ce515p.h"
 
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 
 Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
 {								//[constructor]
@@ -22,17 +22,17 @@ Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
     SessionHeader	= "PC2500PKM";
     Initial_Session_Fname ="pc2500.pkm";
 
-    BackGroundFname	= ":/PC2500/pc2500/pc2500.png";
-    LcdFname		= ":/PC2500/pc2500/2500lcd.png";
-    SymbFname		= ":/PC2500/pc2500/2500symb.png";
+    BackGroundFname	= P_RES(":/pc2500/pc2500.png");
+    LcdFname		= P_RES(":/pc2500/2500lcd.png");
+    SymbFname		= P_RES(":/pc2500/2500symb.png");
     memsize			= 0x18000;
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC2500/pc2500/cpu-2500.bin"	, "pc-2500/cpu-2500.bin"	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc2500/cpu-2500.bin")	, "pc-2500/cpu-2500.bin"	, ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	""								, "pc-2500/R1-2500.ram"		, RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC2500/pc2500/r1-2500.bin"	, "pc-2500/r1-2500.bin"	, ROM , "BAS ROM"));
-    SlotList.append(CSlot(32, 0x10000 ,	":/PC2500/pc2500/r2-2500.bin"	, "pc-2500/r2-2500.bin"	, ROM , "BUSINESS ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc2500/r1-2500.bin")	, "pc-2500/r1-2500.bin"	, ROM , "BAS ROM"));
+    SlotList.append(CSlot(32, 0x10000 ,	P_RES(":/pc2500/r2-2500.bin")	, "pc-2500/r2-2500.bin"	, ROM , "BUSINESS ROM"));
 
     KeyMap		= KeyMap2500;
     KeyMapLenght= KeyMap2500Lenght;

@@ -28,7 +28,7 @@ TransMap KeyMapce140p[]={
 Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
 
     setcfgfname(QString("fp40"));
-    BackGroundFname	= ":/EXT/ext/fp40.png";
+    BackGroundFname	= P_RES(":/ext/fp40.png");
 
     delete pKEYB; pKEYB		= new Ckeyb(this,"fp40.map");
 
@@ -50,7 +50,7 @@ Cfp40::~Cfp40() {
 
 bool Cfp40::init(void) {
 
-    charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+    charTable = new QImage(P_RES(":/ext/ce126ptable.bmp"));
     charsize = 2;
 
     CprinterCtronics::init();

@@ -32,7 +32,7 @@
 Cce140f::Cce140f(CPObject *parent):CPObject(parent)
 {								//[constructor]
     setfrequency( 0);
-    BackGroundFname	= ":/EXT/ext/ce-140f.png";
+    BackGroundFname	= P_RES(":/ext/ce-140f.png");
     setcfgfname("ce140f");
 
     pTIMER		= new Ctimer(this);

@@ -127,7 +127,7 @@ void Ckeyb::keyscan(void)
 		{
 			ch = scandef[i * 8 + j];
 
-			if ( (LastKey == ch) || (toupper(LastKey) == toupper(ch)) )
+            if ( (LastKey == ch) || (TOUPPER(LastKey) == TOUPPER(ch)) )
 			{
 //                if (ch=='k') {
 //                    LastKey=0;

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/PC1403">
+    <qresource prefix="/">
         <file>pc1403/bas-1403.rom</file>
         <file>pc1403/cpu-1403.rom</file>
         <file>pc1403/ba1-1403.rom</file>

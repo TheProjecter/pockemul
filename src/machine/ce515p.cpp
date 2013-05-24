@@ -39,8 +39,8 @@
 Cce515p::Cce515p(CPObject *parent):Cprinter(parent)
 {
     //[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-150.jpg";
-    PaperFname		= "ext\\ce-150paper.jpg";
+    BackGroundFname	= P_RES(":/ext/ce-150.jpg");
+    PaperFname		= "ext/ce-150paper.jpg";
     setcfgfname(QString("ce515p"));
     Paper_X = 100;  Paper_DX = 500;
     Paper_Y = 100;
@@ -265,7 +265,7 @@ bool Cce515p::init(void)
 {
     CPObject::init();
 #ifndef NO_SOUND
-    clac = new QSound(":/EXT/ext/clac2.wav");
+    clac = new QSound(":/ext/clac2.wav");
 #endif
 
     setfrequency( 0);
@@ -280,7 +280,7 @@ bool Cce515p::init(void)
     // Create CE-150 Paper Image
     ce515pbuf	= new QImage(QSize(Paper_DX, 3000),QImage::Format_ARGB32);
     ce515pdisplay= new QImage(QSize(Paper_DX, 567),QImage::Format_ARGB32);
-    ce515ppen	= new QImage(":/EXT/ext/ce-150pen.png");
+    ce515ppen	= new QImage(P_RES(":/ext/ce-150pen.png"));
     // Fill it blank
     clearPaper();
 

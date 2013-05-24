@@ -47,7 +47,7 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     charTable = 0;
     margin = 25;
     ToDestroy	= false;
-    BackGroundFname	= ":/EXT/ext/ce-126p.png";
+    BackGroundFname	= P_RES(":/ext/ce-126p.png");
     setcfgfname("ce126p");
 
     settop(10);
@@ -201,7 +201,7 @@ bool Cce126::init(void)
 
 
 
-	charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+    charTable = new QImage(P_RES(":/ext/ce126ptable.bmp"));
 	
 //	bells	 = new QSound("ce.wav");	
 
@@ -588,7 +588,7 @@ bool Cce126::run(void)
 
 Cce123::Cce123()
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-123p.jpg";
+    BackGroundFname	= P_RES(":/ext/ce-123p.jpg");
     setcfgfname("ce123p");
     setDX(708);//Pc_DX	= 708;
     setDY(566);//Pc_DY	= 566;
@@ -605,7 +605,7 @@ bool Cce123::init(void) {
 
 Cce129::Cce129()
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-129p.jpg";
+    BackGroundFname	= P_RES(":/ext/ce-129p.jpg");
     setcfgfname("ce129p");
     setDX(708);//Pc_DX	= 708;
     setDY(566);//Pc_DY	= 566;
@@ -622,7 +622,7 @@ bool Cce129::init(void) {
 }
 C263591::C263591()
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/26-3591.jpg";
+    BackGroundFname	= P_RES(":/ext/26-3591.jpg");
     setcfgfname("263591");
     setDX(854);//Pc_DX	= 854;
     setDY(349);//Pc_DY	= 349;

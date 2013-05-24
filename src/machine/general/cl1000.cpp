@@ -28,7 +28,7 @@ Ccl1000::Ccl1000(CPObject *parent):Cce515p(this) {
     setfrequency( 0);
     ioFreq = 0;
     setcfgfname(QString("cl1000"));
-    BackGroundFname	= ":/EXT/ext/cl-1000.png";
+    BackGroundFname	= P_RES(":/ext/cl-1000.png");
 
     delete pKEYB; pKEYB		= new Ckeyb(this,"cl1000.map");
 

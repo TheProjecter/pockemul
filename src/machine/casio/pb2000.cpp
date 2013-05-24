@@ -32,8 +32,8 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
     SessionHeader	= "pb2000PKM";
     Initial_Session_Fname ="pb2000.pkm";
 
-    BackGroundFname	= ":/pb2000/pb-2000.png";
-    LcdFname		= ":/pb2000/pb-2000lcd.png";
+    BackGroundFname	= P_RES(":/pb2000/pb-2000.png");
+    LcdFname		= P_RES(":/pb2000/pb-2000lcd.png");
 
     SymbFname		= "";
 
@@ -42,9 +42,9 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
 
     SlotList.clear();
-    SlotList.append(CSlot(64, 0x00000 ,	":/pb2000/rom1.bin"	, ""	, ROM , "ROM 1"));
+    SlotList.append(CSlot(64, 0x00000 ,	P_RES(":/pb2000/rom1.bin")	, ""	, ROM , "ROM 1"));
     SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, RAM , "RAM 0"));
-    SlotList.append(CSlot(6 , 0x20000 ,	":/pb2000/rom0.bin" , ""	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(6 , 0x20000 ,	P_RES(":/pb2000/rom0.bin") , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
     SlotList.append(CSlot(64, 0x30000 ,	"EMPTY"             , ""	, ROM , "EXT ROM"));      // Originally in 70000
 
@@ -76,7 +76,7 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
     closed = false;
 
-    overlay = new QImage(":/pb2000/coverlay.bmp");
+    overlay = new QImage(P_RES(":/pb2000/coverlay.bmp"));
 
 }
 
@@ -112,27 +112,27 @@ void Cpb2000::TurnON(void){
     SlotList[4].setLabel("EMPTY");
 
     if (ext_MemSlot1->ExtArray[ID_OM51P]->IsChecked) {
-        SlotList[4].setFileName(":/pb2000/om51p.bin");
+        SlotList[4].setFileName(P_RES(":/pb2000/om51p.bin"));
         SlotList[4].setLabel("PROLOG");
-        overlay = new QImage(":/pb2000/prologoverlay.png");
+        overlay = new QImage(P_RES(":/pb2000/prologoverlay.png"));
         Mem_Load(4);
     }
     else
     if (ext_MemSlot1->ExtArray[ID_OM53B]->IsChecked) {
-        SlotList[4].setFileName(":/pb2000/om53b.bin");
+        SlotList[4].setFileName(P_RES(":/pb2000/om53b.bin"));
         SlotList[4].setLabel("BASIC");
-        overlay = new QImage(":/pb2000/basicoverlay.bmp");
+        overlay = new QImage(P_RES(":/pb2000/basicoverlay.bmp"));
         Mem_Load(4);
     }
     else
     if (ext_MemSlot1->ExtArray[ID_OM55L]->IsChecked) {
-        SlotList[4].setFileName(":/pb2000/om55l.bin");
+        SlotList[4].setFileName(P_RES(":/pb2000/om55l.bin"));
         SlotList[4].setLabel("LISP");
-        overlay = new QImage(":/pb2000/lispoverlay.bmp");
+        overlay = new QImage(P_RES(":/pb2000/lispoverlay.bmp"));
         Mem_Load(4);
     }
     else
-        overlay = new QImage(":/pb2000/coverlay.bmp");
+        overlay = new QImage(P_RES(":/pb2000/coverlay.bmp"));
 
 
 
@@ -300,8 +300,8 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
 
 
 
-#define toupper( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define TOUPPER( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
+#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 UINT16 Cpb2000::getKey(void) {
     DWORD ko = 0;
     UINT16 data = 0;

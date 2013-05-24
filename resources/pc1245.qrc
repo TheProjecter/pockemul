@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/PC1245">
+    <qresource prefix="/">
         <file>pc1245/1245lcd.png</file>
         <file>pc1245/1245symb.png</file>
         <file>pc1245/bas-1245.rom</file>

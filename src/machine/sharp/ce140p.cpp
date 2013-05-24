@@ -24,7 +24,7 @@ int KeyMapce140pLenght = 3;
 Cce140p::Cce140p(CPObject *parent):Cce515p(this) {
     //setfrequency( 0);
     setcfgfname(QString("ce140p"));
-    BackGroundFname	= ":/EXT/ext/ce-140p.png";
+    BackGroundFname	= P_RES(":/ext/ce-140p.png");
     printerSwitch =true;
 
     //pTIMER		= new Ctimer(this);

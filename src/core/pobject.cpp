@@ -999,7 +999,7 @@ void CPObject::computeWebLinksMenu(QMenu * menu) {
     // Does weblinks.xml exists locally ? if not generate one
     QString weblinksFn = QApplication::applicationDirPath()+"/weblinks.xml";
     if (!QFile::exists(weblinksFn)) {
-        QFile::copy(":/POCKEMUL/weblinks.xml",weblinksFn);
+        QFile::copy(P_RES(":/pockemul/weblinks.xml"),weblinksFn);
         QFile::setPermissions(weblinksFn,QFile::WriteOther);
     }
     QFile fileRes(weblinksFn);
@@ -1101,6 +1101,7 @@ bool CPObject::InitDisplay(void)
 {
 //    qWarning("INIT DISPLAY");
     delete BackgroundImageBackup;
+    qWarning()<<BackGroundFname;
 	BackgroundImageBackup = LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
     delete BackgroundImage;
     BackgroundImage = new QImage(*BackgroundImageBackup);

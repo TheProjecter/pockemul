@@ -31,7 +31,7 @@
 Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
 {
     //[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-1600p.png";
+    BackGroundFname	= P_RES(":/ext/ce-1600p.png");
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce1600p"));
     //SnapPts = QPoint(375,404);
@@ -57,7 +57,7 @@ bool Cce1600p::init(void)
         CPObject::init();
 
     #if 0
-        QResource res(":/EXT/ext/clac2.wav");
+        QResource res(P_RES(":/ext/clac2.wav"));
         clac = FSOUND_Sample_Load(FSOUND_FREE, (const char*) res.data(), FSOUND_LOADMEMORY, 0, res.size());
     #endif
 
@@ -76,7 +76,7 @@ bool Cce1600p::init(void)
         // Create CE-150 Paper Image
         ce150buf	= new QImage(QSize(1920, 3000),QImage::Format_ARGB32);
         ce150display= new QImage(QSize(1920, 567),QImage::Format_ARGB32);
-        ce150pen	= new QImage(":/EXT/ext/ce-150pen.png");
+        ce150pen	= new QImage(P_RES(":/ext/ce-150pen.png"));
         // Fill it blank
         clearPaper();
 

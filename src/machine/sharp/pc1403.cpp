@@ -56,21 +56,21 @@ Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
     SessionHeader	= "PC1403PKM";
     Initial_Session_Fname ="pc1403.pkm";
 
-    BackGroundFname	= ":/PC1403/pc1403/pc1403.png";
-    LcdFname		= ":/PC1403/pc1403/1403lcd.png";
-    SymbFname		= ":/PC1403/pc1403/1403symb.png";
+    BackGroundFname	= P_RES(":/pc1403/pc1403.png");
+    LcdFname		= P_RES(":/pc1403/1403lcd.png");
+    SymbFname		= P_RES(":/pc1403/1403symb.png");
     memsize			= 0x20000;
 //		NbSlot		= 8;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1403/pc1403/cpu-1403.rom"	, "pc-1403/cpu-1403.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1403/cpu-1403.rom")	, "pc-1403/cpu-1403.rom" , ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1403/R1-1403.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	":/PC1403/pc1403/ba1-1403.rom"	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1403/ba1-1403.rom")	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
     SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1403/R2-1403.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x10000 ,	":/PC1403/pc1403/ba1-1403.rom"	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
-    SlotList.append(CSlot(16, 0x14000 ,	":/PC1403/pc1403/ba2-1403.rom"	, "pc-1403/ba2-1403.rom" , ROM , "BANK 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	":/PC1403/pc1403/ba3-1403.rom"	, "pc-1403/ba3-1403.rom" , ROM , "BANK 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	":/PC1403/pc1403/ba4-1403.rom"	, "pc-1403/ba4-1403.rom" , ROM , "BANK 4"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1403/ba1-1403.rom")	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1403/ba2-1403.rom")	, "pc-1403/ba2-1403.rom" , ROM , "BANK 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1403/ba3-1403.rom")	, "pc-1403/ba3-1403.rom" , ROM , "BANK 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1403/ba4-1403.rom")	, "pc-1403/ba4-1403.rom" , ROM , "BANK 4"));
 
     RomBank = 0;
 
@@ -197,9 +197,9 @@ Cpc1403H::Cpc1403H(CPObject *parent) : Cpc1403(parent)
     SessionHeader	= "PC1403HPKM";
     Initial_Session_Fname ="pc1403H.pkm";
 
-    BackGroundFname	= ":/PC1403/pc1403/pc1403h.png";
-    LcdFname		= ":/PC1403/pc1403/1403lcd.png";
-    SymbFname		= ":/PC1403/pc1403/1403symb.png";
+    BackGroundFname	= P_RES(":/pc1403/pc1403h.png");
+    LcdFname		= P_RES(":/pc1403/1403lcd.png");
+    SymbFname		= P_RES(":/pc1403/1403symb.png");
 
 
 }

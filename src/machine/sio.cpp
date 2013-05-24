@@ -71,7 +71,7 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
 
     setfrequency( 0);
     ioFreq = 0;
-    BackGroundFname	= ":/EXT/ext/serial.png";
+    BackGroundFname	= P_RES(":/ext/serial.png");
 
     pTIMER		= new Ctimer(this);
     setDX(195);
@@ -146,7 +146,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 pSIOCONNECTOR->setType(Cconnector::Sharp_11);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,11,this,pSIOCONNECTOR->Desc);
-                                BackGroundFname	= ":/EXT/ext/simu.png";
+                                BackGroundFname	= P_RES(":/ext/simu.png");
                                 pSIOCONNECTOR->setSnap(QPoint(130,7));
                                 setDX(160);
                                 setDY(160);
@@ -167,7 +167,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 pSIOCONNECTOR->setType(Cconnector::Sharp_15);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,15,this,pSIOCONNECTOR->Desc);
-                                BackGroundFname	= ":/EXT/ext/serial.png";
+                                BackGroundFname	= P_RES(":/ext/serial.png");
                                 pSIOCONNECTOR->setSnap(QPoint(23,28));
                                 setDX(195);
                                 setDY(145);
@@ -233,7 +233,7 @@ bool Csio::initSignalMap(Cconnector::ConnectorType type) {
                                 pSIOCONNECTOR->setType(Cconnector::Jack);
                                 WatchPoint.remove((qint64*)pSIOCONNECTOR_value);
                                 WatchPoint.add(&pSIOCONNECTOR_value,64,3,this,pSIOCONNECTOR->Desc);
-                                BackGroundFname	= ":/EXT/ext/jackR.png";
+                                BackGroundFname	= P_RES(":/ext/jackR.png");
                                 pSIOCONNECTOR->setSnap(QPoint(56,6));
                                 setDX(75);
                                 setDY(20);

@@ -17,7 +17,7 @@ Ccesimu::Ccesimu(CPObject *parent): CPObject(this)
     //ToDestroy = false;
 
     setfrequency( 0);
-    BackGroundFname	= ":/EXT/ext/simu.png";
+    BackGroundFname	= P_RES(":/ext/simu.png");
 
     pTIMER		= new Ctimer(this);
     setDX(160);//Pc_DX	= 160;
@@ -67,7 +67,7 @@ void Ccesimu::HelpDialog(void) {
     layout->addWidget(textbrowser);
     helpDialog->setLayout(layout);
     helpDialog->setWindowTitle(tr("Script Help"));
-    textbrowser->setSource(QUrl("qrc:/POCKEMUL/pockemul/script_help.html"));
+    textbrowser->setSource(QUrl("qrc:/pockemul/script_help.html"));
     helpDialog->show();
 }
 

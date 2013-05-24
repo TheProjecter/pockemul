@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/PC1250">
+    <qresource prefix="/">
         <file>pc1250/1250A.bmp</file>
         <file>pc1250/1250lcd.png</file>
         <file>pc1250/1250symb.png</file>

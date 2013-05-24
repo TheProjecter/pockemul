@@ -58,7 +58,7 @@
 Cce150::Cce150(CPObject *parent):Cprinter(this)
 {
     //[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-150.png";
+    BackGroundFname	= P_RES(":/ext/ce-150.png");
     PaperFname		= "ext\\ce-150paper.jpg";
     setcfgfname(QString("ce150"));
     Paper_X = 120;  Paper_DX = 382;//320;
@@ -128,7 +128,7 @@ bool Cce150::init(void)
     // Create CE-150 Paper Image
     ce150buf	= new QImage(QSize(320, 3000),QImage::Format_ARGB32);
     ce150display= new QImage(QSize(320, 567),QImage::Format_ARGB32);
-    ce150pen	= new QImage(":/EXT/ext/ce-150pen.png");
+    ce150pen	= new QImage(":/ext/ce-150pen.png");
     // Fill it blank
     clearPaper();
 

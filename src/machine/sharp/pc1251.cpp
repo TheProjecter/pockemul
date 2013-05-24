@@ -9,18 +9,18 @@ Cpc1251::Cpc1251(CPObject *parent)	: Cpc1250(this)
     SessionHeader	= "PC1251PKM";
     Initial_Session_Fname ="pc1251.pkm";
 
-    BackGroundFname	= ":/PC1251/pc1251/pc1251.png"; //":/PC1251/pc1251/pc1251hd.jpg"; //
-    LcdFname		= ":/PC1251/pc1251/1251lcd.png";
-    SymbFname		= ":/PC1251/pc1251/1251symb.png";
+    BackGroundFname	= P_RES(":/pc1251/pc1251.png"); //":/pc1251/pc1251hd.jpg"; //
+    LcdFname		= P_RES(":/pc1251/1251lcd.png");
+    SymbFname		= P_RES(":/pc1251/1251symb.png");
 
 
     memsize			= 0x10000;
 //		NbSlot		= 4;
 
     SlotList.clear();
-    SlotList.append(CSlot(8	, 0x0000 ,	":/PC1251/pc1251/cpu-1251.rom", "pc-1251/cpu-1251.rom", ROM , "CPU ROM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1251/cpu-1251.rom"), "pc-1251/cpu-1251.rom", ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""						, "pc-1251/R1-1251.ram"	, RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	":/PC1251/pc1251/bas-1251.rom", "pc-1251/bas-1251.rom", ROM , "BASIC ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1251/bas-1251.rom"), "pc-1251/bas-1251.rom", ROM , "BASIC ROM"));
     SlotList.append(CSlot(32, 0x8000 ,	""						, "pc-1251/R2-1251.ram" , RAM , "RAM"));
 
 }

@@ -24,16 +24,16 @@ Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "PC1401PKM";
     Initial_Session_Fname ="pc1401.pkm";
 
-    BackGroundFname	= ":/PC1401/pc1401/pc1401.png";
-    LcdFname		= ":/PC1401/pc1401/1401lcd.png";
-    SymbFname		= ":/PC1401/pc1401/1401symb.png";
+    BackGroundFname	= P_RES(":/pc1401/pc1401.png");
+    LcdFname		= P_RES(":/pc1401/1401lcd.png");
+    SymbFname		= P_RES(":/pc1401/1401symb.png");
     memsize			= 0x10000;
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1401/pc1401/cpu-1401.rom", "pc-1401/cpu-1401.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1401/cpu-1401.rom"), "pc-1401/cpu-1401.rom" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1401/R1-1401.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1401/pc1401/bas-1401.rom", "pc-1401/bas-1401.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1401/bas-1401.rom"), "pc-1401/bas-1401.rom" , ROM , "BASIC ROM"));
 
     KeyMap		= KeyMap1401;
     KeyMapLenght= KeyMap1401Lenght;

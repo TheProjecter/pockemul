@@ -42,6 +42,9 @@
  #include <QDebug>
  #include <QDir>
 
+#include "mainwindowpockemul.h"
+extern MainWindowPockemul *mainwindow;
+#include "common.h"
  #include "launcher.h"
 
  Launcher::Launcher(QString id,QString executableName, QString caption, QString imageName, QStringList args,QString description)
@@ -76,7 +79,7 @@
 
  QImage* Launcher::getImage()
  {
-     return new QImage(imagePath);
+     return new QImage(P_RES(imagePath));
  }
 
  QString Launcher::getIdPocket()

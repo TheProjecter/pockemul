@@ -111,11 +111,11 @@ public:
 		SlotList.append(CSlot(16, 0x4000 ,	""								, "" , RAM , "RAM"));
 		SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , NOTUSED , "NOT USED"));
 		SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(16, 0xC000 ,	":/PC1500/pc1500/SYS1500.ROM"	, "" , ROM , "SYSTEM ROM"));
+        SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500/SYS1500.ROM")	, "" , ROM , "SYSTEM ROM"));
 		SlotList.append(CSlot(64, 0x10000 ,	""								, "" , RAM , "RAM"));
 		SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , ROM , "ROM"));
 		SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , ROM , "ROM"));
-		SlotList.append(CSlot(8 , 0x24000 ,	":/PC1500/pc1500/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
+        SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500/CE-150.ROM"), "" , ROM , "CE-150 ROM"));
 	}
 
 	~Cpc1500()

@@ -43,16 +43,16 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "PC2001PKM";
     Initial_Session_Fname ="pc2001.pkm";
 
-    BackGroundFname	= ":/pc2001/pc-2001.png";
-    LcdFname		= ":/pc2001/pc-2001lcd.png";
+    BackGroundFname	= P_RES(":/pc2001/pc-2001.png");
+    LcdFname		= P_RES(":/pc2001/pc-2001lcd.png");
     SymbFname		= "";
 
     memsize		= 0xFFFF;
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(4 , 0x0000 ,	":/pc2001/rom-0000-0FFF.bin", ""	, ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x2000 ,	":/pc2001/rom-2000-5FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/pc2001/rom-0000-0FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x2000 ,	P_RES(":/pc2001/rom-2000-5FFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(40 ,0x6000 ,	""	, ""	, RAM , "RAM"));
 
 
@@ -294,7 +294,7 @@ bool Cpc2001::SaveConfig(QXmlStreamWriter *xmlOut)
 
 
 
-#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
 
 UINT16 Cpc2001::getKey()
 {

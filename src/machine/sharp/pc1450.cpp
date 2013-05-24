@@ -21,15 +21,15 @@ Cpc1450::Cpc1450(CPObject *parent)	: Cpc1350(parent)
     SessionHeader	= "PC1450PKM";
     Initial_Session_Fname ="pc1450.pkm";
 
-    BackGroundFname	= ":/PC1450/pc1450/pc1450.png";
-    LcdFname		= ":/PC1450/pc1450/1450lcd.png";
-    SymbFname		= ":/PC1450/pc1450/1450symb.png";
+    BackGroundFname	= P_RES(":/pc1450/pc1450.png");
+    LcdFname		= P_RES(":/pc1450/1450lcd.png");
+    SymbFname		= P_RES(":/pc1450/1450symb.png");
     memsize			= 0x10000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1450/pc1450/cpu-1450.rom", "pc-1450/cpu-1450.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1450/cpu-1450.rom"), "pc-1450/cpu-1450.rom" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	""						, "pc-1450/R1-1450.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1450/pc1450/bas-1450.rom", "pc-1450/bas-1450.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1450/bas-1450.rom"), "pc-1450/bas-1450.rom" , ROM , "BASIC ROM"));
 
     KeyMap = KeyMap1450;
     KeyMapLenght = KeyMap1450Lenght;

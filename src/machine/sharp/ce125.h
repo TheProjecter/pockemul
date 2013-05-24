@@ -15,10 +15,10 @@ public:
 	
 	Cce125tape(CPObject *parent = 0)	: Cce152(parent)
 	{									//[constructor]
-        BackGroundFname	= ":/EXT/ext/ce-125tape.png";
-        playImage = ":/EXT/ext/ce-125play.png";
-        recordImage=":/EXT/ext/ce-125record.png";
-        loadImage = ":/EXT/ext/ce-125load.png";
+        BackGroundFname	= P_RES(":/ext/ce-125tape.png");
+        playImage = P_RES(":/ext/ce-125play.png");
+        recordImage=P_RES(":/ext/ce-125record.png");
+        loadImage = P_RES(":/ext/ce-125load.png");
         setDX(249);//Pc_DX	= 249;
         setDY(299);//Pc_DY	= 299;
 		KeyMap		= KeyMapce125tape;

@@ -21,16 +21,16 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "PC1250PKM";
 	Initial_Session_Fname ="pc1250.pkm";
 
-	BackGroundFname	= ":/PC1250/pc1250/pc1250.png";
-	LcdFname		= ":/PC1250/pc1250/1250lcd.png";
-	SymbFname		= ":/PC1250/pc1250/1250symb.png";
+    BackGroundFname	= P_RES(":/pc1250/pc1250.png");
+    LcdFname		= P_RES(":/pc1250/1250lcd.png");
+    SymbFname		= P_RES(":/pc1250/1250symb.png");
 
 	memsize		= 0x10000;
 
 	SlotList.clear();
-	SlotList.append(CSlot(8	, 0x0000 ,	":/PC1250/pc1250/cpu-1250.rom"	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1250/cpu-1250.rom")	, "pc1250/cpu-1250.rom"	, ROM , "CPU ROM"));
 	SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1250/R1-1250.ram"	, RAM , "RAM"));
-	SlotList.append(CSlot(16, 0x4000 ,	":/PC1250/pc1250/bas-1250.rom"	, "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1250/bas-1250.rom"	), "pc1250/bas-1250.rom"	, ROM , "BASIC ROM"));
 	SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1250/R2-1250.ram" 	, RAM , "RAM"));
 
 	KeyMap		= KeyMap1250;
@@ -79,7 +79,7 @@ Ctrspc3::Ctrspc3(CPObject *parent)	: Cpc1250(this)
     SessionHeader	= "TRSPC3PKM";
     Initial_Session_Fname ="trspc3.pkm";
 
-    BackGroundFname	= ":/PC1250/pc1250/pc31k.png";
+    BackGroundFname	= P_RES(":/pc1250/pc31k.png");
 }
 
 bool Cpc1250::UpdateFinalImage(void)
@@ -111,10 +111,10 @@ bool Cpc1250::InitDisplay(void)
 
 	CpcXXXX::InitDisplay();
 
-    iPowerOFF.load( ":/PC1250/pc1250/powerOFF.png");
-    iPowerRUN.load( ":/PC1250/pc1250/powerRUN.png");
-    iPowerPRO.load( ":/PC1250/pc1250/powerPRO.png");
-    iPowerRSV.load( ":/PC1250/pc1250/powerRSV.png");
+    iPowerOFF.load( P_RES(":/pc1250/powerOFF.png"));
+    iPowerRUN.load( P_RES(":/pc1250/powerRUN.png"));
+    iPowerPRO.load( P_RES(":/pc1250/powerPRO.png"));
+    iPowerRSV.load( P_RES(":/pc1250/powerRSV.png"));
 
 	return(1);
 }

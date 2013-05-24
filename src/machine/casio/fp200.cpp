@@ -31,15 +31,15 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "FP200PKM";
     Initial_Session_Fname ="fp200.pkm";
 
-    BackGroundFname	= ":/fp200/fp200.png";
-    LcdFname		= ":/fp200/fp200lcd.png";
+    BackGroundFname	= P_RES(":/fp200/fp200.png");
+    LcdFname		= P_RES(":/fp200/fp200lcd.png");
     SymbFname		= "";
 
     memsize		= 0x10000;
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(32 , 0x0000 ,	":/fp200/fp200rom.bin"   , ""	, ROM , "ROM"));
+    SlotList.append(CSlot(32 , 0x0000 ,	P_RES(":/fp200/fp200rom.bin")   , ""	, ROM , "ROM"));
     SlotList.append(CSlot(8  , 0x8000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(8  , 0xa000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(8  , 0xc000 ,	""                  , ""	, RAM , "RAM"));
@@ -382,9 +382,9 @@ void Cfp200::ExtChanged()
     Reset();
 }
 
-#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
 
-//#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+//#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 quint16 Cfp200::getKey()
 {
 
@@ -394,7 +394,7 @@ quint16 Cfp200::getKey()
 //    i85cpu->i8085_set_SID(0);
 //    if (ks == 0x0B) strobe = 0xffff;
 
-    if ((pKEYB->LastKey>0) && ks )
+    if ((pKEYB->LastKey>0))
     {
         if (strobe & 0x01) {
             if (KEY('7'))			data|=0x10;
@@ -422,7 +422,7 @@ quint16 Cfp200::getKey()
         }
         if (strobe & 0x10) {
 
-            if (KEY(K_SML))			data|=0x01;
+            if (KEY(K_DEF))			data|=0x01;
             if (KEY(K_INS))			data|=0x04;
             if (KEY(K_CLR))			data|=0x04;
             if (KEY(K_F0))			data|=0x08;
@@ -486,7 +486,7 @@ quint16 Cfp200::getKey()
         }
         if (strobe & 0x200) {
             if (KEY(K_RET))			data|=0x01;
-//            if (KEY(K_SML))			data|=0x04;
+            if (KEY(K_SML))			data|=0x04;
             if (KEY('_'))			data|=0x08;
             if (KEY('6'))			data|=0x10;
             if (KEY('Y'))           data|=0x20;

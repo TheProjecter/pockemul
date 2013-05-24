@@ -19,7 +19,7 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     setfrequency( 4000);
     ioFreq = 0;
     setcfgfname(QString("fp100"));
-    BackGroundFname	= ":/EXT/ext/fp100.png";
+    BackGroundFname	= P_RES(":/ext/fp100.png");
 
 
 
@@ -38,9 +38,9 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     printerBUSY = false;
 
 
-    capot = LoadImage(QSize(849,274),":/EXT/ext/fp100-capot.png");
-    head = LoadImage(QSize(79,161),":/EXT/ext/fp100head.png");
-    cable = LoadImage(QSize(75,10),":/EXT/ext/fp100cable.png");
+    capot = LoadImage(QSize(849,274),P_RES(":/ext/fp100-capot.png"));
+    head = LoadImage(QSize(79,161),P_RES(":/ext/fp100head.png"));
+    cable = LoadImage(QSize(75,10),P_RES(":/ext/fp100cable.png"));
 
     margin = 40;
     Paper_DX = 960+2*margin;

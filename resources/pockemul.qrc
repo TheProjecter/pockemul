@@ -1,21 +1,10 @@
 <RCC>
-    <qresource prefix="/POCKEMUL">
-        <file>pockemul/pockemul.bmp</file>
+    <qresource prefix="/">
         <file>pockemul/release_notes.html</file>
         <file>weblinks.xml</file>
         <file>pockemul/script_help.html</file>
         <file>pockemul/config.xml</file>
-        <file>pockemul/open.png</file>
         <file>pockemul/configExt.xml</file>
-        <file>pockemul/pocket.png</file>
-        <file>pockemul/ext.png</file>
-        <file>pockemul/dev.png</file>
-        <file>pockemul/save.png</file>
-        <file>pockemul/load.png</file>
-        <file>pockemul/exit.png</file>
         <file>pockemul/splash.png</file>
-        <file>pockemul/folder.png</file>
-        <file>pockemul/bookcase.png</file>
-        <file>pockemul/pdfthumbnail.png</file>
     </qresource>
 </RCC>

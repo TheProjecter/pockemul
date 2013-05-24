@@ -15,7 +15,7 @@ Ccable::Ccable(CPObject *parent)	: CPObject(this)
 {							//[constructor]
 
     setfrequency( 0);
-    BackGroundFname	= ":/EXT/ext/cable_blank.png";
+    BackGroundFname	= P_RES(":/ext/cable_blank.png");
 
     pTIMER		= new Ctimer(this);
     setDX(150);
@@ -106,7 +106,7 @@ bool Ccable::Adapt(Cconnector *A, Cconnector *B)
         pCONNECTOR_B->setSnap(QPoint(r.width(),r.height()));
 
     }
-    BackGroundFname	= ":/EXT/ext/cable_blank.png";
+    BackGroundFname	= P_RES(":/ext/cable_blank.png");
     InitDisplay();
 
     return reverse;

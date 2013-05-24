@@ -13,7 +13,7 @@ Cpotar::Cpotar(CPObject *parent )	: CPObject(this)
 
 
     setfrequency( 0);
-    BackGroundFname	= ":/EXT/ext/jack.png";
+    BackGroundFname	= P_RES(":/ext/jack.png");
 
     setDX(75);//Pc_DX	= 75;
     setDY(20);//Pc_DY	= 20;

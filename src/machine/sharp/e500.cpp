@@ -58,9 +58,9 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "E500PKM";
     Initial_Session_Fname ="e500.pkm";
 
-    BackGroundFname	= ":/e500/pc-e500.png";
-    LcdFname		= ":/e500/e500lcd.png";
-    SymbFname		= ":/e500/e500symb.png";
+    BackGroundFname	= P_RES(":/e500/pc-e500.png");
+    LcdFname		= P_RES(":/e500/e500lcd.png");
+    SymbFname		= P_RES(":/e500/e500symb.png");
 
     memsize		= 0x100000;
     InitMemValue	= 0xff;
@@ -68,7 +68,7 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(256, 0x40000 , ""             , ""            , RAM , "RAM S1"));
     SlotList.append(CSlot(256, 0x80000 , ""             , ""            , RAM , "RAM S2"));
-    SlotList.append(CSlot(256, 0xC0000 , ":/e500/s3.rom", "e500/s3.rom" , ROM , "ROM S3"));
+    SlotList.append(CSlot(256, 0xC0000 , P_RES(":/e500/s3.rom"), "e500/s3.rom" , ROM , "ROM S3"));
 
 
     PowerSwitch	= 0;
@@ -656,8 +656,8 @@ UINT8 Ce500::out(UINT8 address, UINT8 value)
     return 0;
 }
 
-//#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+//#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
+#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 
 
 BYTE Ce500::getKey()
@@ -812,7 +812,7 @@ Ce550::Ce550(CPObject *parent):Ce500(parent)
     SessionHeader	= "E550PKM";
     Initial_Session_Fname ="e550.pkm";
 
-    BackGroundFname	= ":/e500/pc-e550.png";
+    BackGroundFname	= P_RES(":/e500/pc-e550.png");
 
     Lcd_X		= 70;
     Lcd_Y		= 96;

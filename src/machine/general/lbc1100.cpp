@@ -45,20 +45,20 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "LBC1100PKM";
     Initial_Session_Fname ="lbc1100.pkm";
 
-    BackGroundFname	= ":/lbc1100/lbc-1100.png";
-    LcdFname		= ":/lbc1100/lbc-1100lcd.png";
+    BackGroundFname	= P_RES(":/lbc1100/lbc-1100.png");
+    LcdFname		= P_RES(":/lbc1100/lbc-1100lcd.png");
     SymbFname		= "";
 
     memsize		= 0xFFFF;
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(4 , 0x0000 ,	":/lbc1100/rom-0000-0FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/lbc1100/rom-0000-0FFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(12, 0x1000 ,	"", ""	,                             RAM , "RAM"));
-    SlotList.append(CSlot(4,  0x4000 ,	":/lbc1100/lbc-4000-4FFF.bin", ""	, ROM , "ROM"));
-    SlotList.append(CSlot(4,  0x5000 ,	":/lbc1100/lbc-5000-5FFF.bin", ""	, ROM , "ROM"));
-    SlotList.append(CSlot(4,  0x6000 ,	":/lbc1100/lbc-6000-6FFF.bin", ""	, ROM , "ROM"));
-    SlotList.append(CSlot(4,  0x7000 ,	":/lbc1100/lbc-7000-7FFF.bin", ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x4000 ,	P_RES(":/lbc1100/lbc-4000-4FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x5000 ,	P_RES(":/lbc1100/lbc-5000-5FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x6000 ,	P_RES(":/lbc1100/lbc-6000-6FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x7000 ,	P_RES(":/lbc1100/lbc-7000-7FFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(32 ,0x8000 ,	""	, ""	,                         RAM , "RAM"));
 
 //    Pc_Offset_X = Pc_Offset_Y = 0;
@@ -334,7 +334,7 @@ bool Clbc1100::SaveConfig(QXmlStreamWriter *xmlOut)
 
 
 
-#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
 
 UINT16 Clbc1100::getKey()
 {

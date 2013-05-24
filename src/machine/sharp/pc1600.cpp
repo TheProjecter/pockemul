@@ -34,9 +34,9 @@ if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 
     SessionHeader	= "PC1600PKM";
     Initial_Session_Fname ="pc1600.pkm";
-    BackGroundFname	= ":/PC1600/pc1600/pc-1600.png";
-    LcdFname		= ":/PC1600/pc1600/pc1600lcd.png";
-    SymbFname		= ":/PC1600/pc1600/1600symb.png";
+    BackGroundFname	= P_RES(":/pc1600/pc-1600.png");
+    LcdFname		= P_RES(":/pc1600/pc1600lcd.png");
+    SymbFname		= P_RES(":/pc1600/1600symb.png");
     memsize			= 0x0E0000;
     InitMemValue	= 0x00;
 
@@ -104,8 +104,8 @@ if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
     SlotList.clear();
 
     // Bank 0
-    SlotList.append(CSlot(16, 0x00000 ,	":/PC1600/pc1600/romI-0.bin"	, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x04000 ,	":/PC1600/pc1600/romII-0.bin"	, "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x00000 ,	P_RES(":/pc1600/romI-0.bin")	, "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x04000 ,	P_RES(":/pc1600/romII-0.bin")	, "" , ROM , "ROM"));
     SlotList.append(CSlot(16, 0x08000 ,	""								, "" , RAM , "RAM"));
     SlotList.append(CSlot(16, 0x0C000 ,	""								, "" , RAM , "RAM"));
 
@@ -122,27 +122,27 @@ if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
     SlotList.append(CSlot(16, 0x2C000 ,	""								, "" , NOTUSED , "NOT USED"));
 
     // Bank 3
-    SlotList.append(CSlot(16, 0x30000 ,	":/PC1600/pc1600/rom3b.bin"     , "" , ROM , "ROM 3b"));
-    SlotList.append(CSlot(16, 0x34000 ,	":/PC1600/pc1600/romIII-3.bin"	, "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x30000 ,	P_RES(":/pc1600/rom3b.bin" )    , "" , ROM , "ROM 3b"));
+    SlotList.append(CSlot(16, 0x34000 ,	P_RES(":/pc1600/romIII-3.bin")	, "" , ROM , "ROM"));
     SlotList.append(CSlot(16, 0x38000 ,	""								, "" , RAM , "RAM"));
     SlotList.append(CSlot(16, 0x3C000 ,	""								, "" , NOTUSED , "NOT USED"));
 
     // Bank 4
     SlotList.append(CSlot(16, 0x40000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x44000 ,":/PC1600/pc1600/romce1600-1.bin", "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x44000 ,P_RES(":/pc1600/romce1600-1.bin"), "" , ROM , "ROM"));
     SlotList.append(CSlot(16, 0x48000 ,	""								, "" , NOTUSED , "NOT USED"));
     SlotList.append(CSlot(16, 0x4C000 ,	""								, "" , NOTUSED , "NOT USED"));
 
     // Bank 5
     SlotList.append(CSlot(16, 0x50000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x54000 ,":/PC1600/pc1600/romce1600-2.bin", "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x54000 ,P_RES(":/pc1600/romce1600-2.bin"), "" , ROM , "ROM"));
     SlotList.append(CSlot(16, 0x58000 ,	""								, "" , NOTUSED , "NOT USED"));
     SlotList.append(CSlot(16, 0x5C000 ,	""								, "" , NOTUSED , "NOT USED"));
 
     // Bank 6
     SlotList.append(CSlot(16, 0x60000 ,	""                              , "" , NOTUSED , "NOT USED"));
     SlotList.append(CSlot(16, 0x64000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x68000 ,	":/PC1600/pc1600/romIV-6.bin"	, "" , ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x68000 ,	P_RES(":/pc1600/romIV-6.bin")	, "" , ROM , "ROM"));
     SlotList.append(CSlot(16, 0x6C000 ,	""								, "" , NOTUSED , "NOT USED"));
 
     // Initialize bank nummber
@@ -154,11 +154,11 @@ if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
     SlotList.append(CSlot(16, 0x74000 ,	""								, "" , RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x78000 ,	""								, "" , NOTUSED , "NOT USED"));
     SlotList.append(CSlot(8 , 0x7A000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x7C000 ,	":/PC1600/pc1600/rom1500.bin"	, "" , ROM , "SYSTEM ROM"));
+    SlotList.append(CSlot(16, 0x7C000 ,	P_RES(":/pc1600/rom1500.bin")	, "" , ROM , "SYSTEM ROM"));
     SlotList.append(CSlot(64, 0x80000 ,	""								, "" , RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x90000 ,	""								, "" , ROM , "ROM"));
     SlotList.append(CSlot(8 , 0x92000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x94000 ,	":/PC1500/pc1500/CE-150.ROM"	, "" , ROM , "CE-150 ROM"));
+    SlotList.append(CSlot(8 , 0x94000 ,	P_RES(":/pc1500/CE-150.ROM")	, "" , ROM , "CE-150 ROM"));
 
     // RAM BANK
     SlotList.append(CSlot(16, 0xA0000 ,	""								, "" , RAM , "RAM"));
@@ -463,6 +463,7 @@ INLINE void Cpc1600::hack(DWORD pc)
 
 //    if (fp_log == 0) return;
 
+    if (fp_log) fprintf(fp_log,tr("[%1] - PRTANK  - Display one character\n").arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')).toStdString().c_str(),pZ80->z80.r.c);
     switch (pc)
     {
 
@@ -1203,7 +1204,7 @@ bool	CLH5810_PC1600::init(void)
     return(1);
 }
 
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 BYTE Cpc1600::getKey()
 {
 

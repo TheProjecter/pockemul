@@ -7,7 +7,7 @@
 
 Cce120p::Cce120p()
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-120p.png";
+    BackGroundFname	= P_RES(":/ext/ce-120p.png");
     setcfgfname("ce120p");
     setDX(883);//Pc_DX	= 883;
     setDY(568);//Pc_DY	= 568;

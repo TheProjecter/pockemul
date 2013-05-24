@@ -41,22 +41,22 @@ void Cce125tape::ComputeKey(void)
 		switch (mode)
 		{
 		case EJECT: 
-        case STOP : BackGroundFname	= ":/EXT/ext/ce-125eject.png";
+        case STOP : BackGroundFname	= P_RES(":/ext/ce-125eject.png");
 					InitDisplay();
 					update();
 					if (LoadTape())
                         BackGroundFname	= loadImage;
 					else
-                        BackGroundFname	= ":/EXT/ext/ce-125tape.png";
+                        BackGroundFname	= P_RES(":/ext/ce-125tape.png");
 					InitDisplay();
 					update(); break;
-        case LOAD : BackGroundFname	= ":/EXT/ext/ce-125eject.png";
+        case LOAD : BackGroundFname	= P_RES(":/ext/ce-125eject.png");
 					InitDisplay();
 					update();
 					if (LoadTape())
                         BackGroundFname	= loadImage;
 					else
-                        BackGroundFname	= ":/EXT/ext/ce-125tape.png";
+                        BackGroundFname	= P_RES(":/ext/ce-125tape.png");
 					InitDisplay();
 					update(); break;
 		case RECORD:
@@ -77,13 +77,13 @@ void Cce125tape::ComputeKey(void)
 
 Cmp220::Cmp220(CPObject *parent):Cce125(parent)
 {
-    BackGroundFname	= ":/EXT/ext/mp-220.jpg";
+    BackGroundFname	= P_RES(":/ext/mp-220.jpg");
     setcfgfname("mp220");
 }
 
 Cce125::Cce125(CPObject *parent):Cce126(parent)
 {								//[constructor]
-    BackGroundFname	= ":/EXT/ext/ce-125.png";
+    BackGroundFname	= P_RES(":/ext/ce-125.png");
     setcfgfname("ce125");
 
 

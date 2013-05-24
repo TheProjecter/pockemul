@@ -37,7 +37,7 @@ Cpc2021::Cpc2021(CPObject *parent):Cprinter(this)
     charTable = 0;
     margin = 25;
     ToDestroy	= false;
-    BackGroundFname	= ":/EXT/ext/pc-2021.png";
+    BackGroundFname	= P_RES(":/ext/pc-2021.png");
     setcfgfname("pc2021");
 
     settop(10);
@@ -199,7 +199,7 @@ bool Cpc2021::init(void)
 
 
 //TODO Update the chartable with upd16343 char table
-    charTable = new QImage(":/EXT/ext/ce126ptable.bmp");
+    charTable = new QImage(P_RES(":/ext/ce126ptable.bmp"));
 
 //	bells	 = new QSound("ce.wav");
 

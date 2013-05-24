@@ -35,9 +35,9 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "PB1000PKM";
     Initial_Session_Fname ="pb1000.pkm";
 
-    BackGroundFname	= ":/pb1000/pb-1000.png";
-    LcdFname		= ":/pb1000/pb-1000lcd.png";
-    back = new QImage(":/pb1000/pb1000back.png");
+    BackGroundFname	= P_RES(":/pb1000/pb-1000.png");
+    LcdFname		= P_RES(":/pb1000/pb-1000lcd.png");
+    back = new QImage(P_RES(":/pb1000/pb1000back.png"));
     SymbFname		= "";
 
     memsize         = 0x20000;
@@ -45,9 +45,9 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
 
     SlotList.clear();
-    SlotList.append(CSlot(6 , 0x0000 ,	":/pb1000/rom0.bin" , ""	, ROM , "CPU ROM"));
+    SlotList.append(CSlot(6 , 0x0000 ,	P_RES(":/pb1000/rom0.bin") , ""	, ROM , "CPU ROM"));
     SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "RAM0"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/pb1000/rom1.bin"	, ""	, ROM , "ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pb1000/rom1.bin")	, ""	, ROM , "ROM"));
     SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, RAM , "RAM1"));
     SlotList.append(CSlot(1 , 0x1800 ,	""					, ""	, ROM , "PORT"));
 
@@ -74,7 +74,7 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new CHD61700(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pb1000.map");
-    pHD44352    = new CHD44352(":/pb1000/chr.bin");
+    pHD44352    = new CHD44352(P_RES(":/pb1000/chr.bin"));
 
     m_kb_matrix = 0;
 //    shift=fct = false;
@@ -359,8 +359,8 @@ void Cpb1000::paintEvent(QPaintEvent *event)
 }
 
 #define IA ((CHD61700*)pCPU)->m_reg8bit[4]
-#define toupper( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
-#define KEY(c)	( toupper(pKEYB->LastKey) == toupper(c) )
+#define TOUPPER( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
+#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 UINT16 Cpb1000::getKey() {
 
     DWORD ko = 0;

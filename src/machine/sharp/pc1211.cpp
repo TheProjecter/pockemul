@@ -17,9 +17,9 @@ Cpc1211::Cpc1211(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "PC1211PKM";
     Initial_Session_Fname ="pc1211.pkm";
 
-    BackGroundFname	= ":/pc1211/pc-1211.png";
-    LcdFname		= ":/pc1211/pc-1211lcd.png";
-    SymbFname		= ":/pc1211/pc-1211symb.png";
+    BackGroundFname	= P_RES(":/pc1211/pc-1211.png");
+    LcdFname		= P_RES(":/pc1211/pc-1211lcd.png");
+    SymbFname		= P_RES(":/pc1211/pc-1211symb.png");
 
     memsize		= 0x10000;
 

@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
  <demolauncher>
    <demos>
-   <example idpocket="CE-122" filename="./" name="Sharp ce-122" image=":/EXT/ext/ce-122.png"/>
-   <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/EXT/ext/ce-152.png"/>
-   <example idpocket="CE-127R" filename="./" name="Sharp ce-127r" image=":/EXT/ext/ce-127r.png"/>
-    <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/EXT/ext/ce-125.png"/>
-    <example idpocket="MP-220" filename="./" name="Seiko MP-220" image=":/EXT/ext/mp-220.jpg"/>
-     <example idpocket="26-3591" filename="./" name="Tandy 26-3591" image=":/EXT/ext/26-3591.jpg"/>
-     <example idpocket="CE-126P" filename="./" name="Sharp ce-126p" image=":/EXT/ext/ce-126p.png"/>
-     <example idpocket="CE-123P" filename="./" name="Sharp ce-123p" image=":/EXT/ext/ce-123p.jpg"/>
-     <example idpocket="CE-129P" filename="./" name="Sharp ce-129p" image=":/EXT/ext/ce-129p.jpg"/>
-     <example idpocket="CE-120P" filename="./" name="Sharp ce-120p" image=":/EXT/ext/ce-120p.png"/>
-     <example idpocket="CE-140P" filename="./" name="Sharp ce-140p" image=":/EXT/ext/ce-140p.jpg"/>
-     <example idpocket="CE-150" filename="./" name="Sharp ce-150" image=":/EXT/ext/ce-150.png"/>
-     <example idpocket="CE-140F" filename="./" name="Sharp ce-140f" image=":/EXT/ext/ce-140f.png"/>
-     <example idpocket="CE-1600P" filename="./" name="Sharp ce-1600p" image=":/EXT/ext/ce-1600p.png"/>
+   <example idpocket="CE-122" filename="./" name="Sharp ce-122" image=":/ext/ce-122.png"/>
+   <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/ext/ce-152.png"/>
+   <example idpocket="CE-127R" filename="./" name="Sharp ce-127r" image=":/ext/ce-127r.png"/>
+    <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/ext/ce-125.png"/>
+    <example idpocket="MP-220" filename="./" name="Seiko MP-220" image=":/ext/mp-220.jpg"/>
+     <example idpocket="26-3591" filename="./" name="Tandy 26-3591" image=":/ext/26-3591.jpg"/>
+     <example idpocket="CE-126P" filename="./" name="Sharp ce-126p" image=":/ext/ce-126p.png"/>
+     <example idpocket="CE-123P" filename="./" name="Sharp ce-123p" image=":/ext/ce-123p.jpg"/>
+     <example idpocket="CE-129P" filename="./" name="Sharp ce-129p" image=":/ext/ce-129p.jpg"/>
+     <example idpocket="CE-120P" filename="./" name="Sharp ce-120p" image=":/ext/ce-120p.png"/>
+     <example idpocket="CE-140P" filename="./" name="Sharp ce-140p" image=":/ext/ce-140p.jpg"/>
+     <example idpocket="CE-150" filename="./" name="Sharp ce-150" image=":/ext/ce-150.png"/>
+     <example idpocket="CE-140F" filename="./" name="Sharp ce-140f" image=":/ext/ce-140f.png"/>
+     <example idpocket="CE-1600P" filename="./" name="Sharp ce-1600p" image=":/ext/ce-1600p.png"/>
      <example idpocket="Canon X-710" filename="./" name="Canon X-710" image=":/x07/x710.png"/>
-     <example idpocket="Serial Console" filename="./" name="Serial Console" image=":/EXT/ext/serial.png"/>
-     <example idpocket="Potar" filename="./" name="Potar" image=":/EXT/ext/jack.png"/>
-     <example idpocket="Simulator" filename="./" name="Simulator" image=":/EXT/ext/simu.png"/>
-     <example idpocket="11Pins Cable" filename="./" name="Sharp EA-129C" image=":/EXT/ext/cable.png"/>
-     <example idpocket="Casio MD-100" filename="./" name="Casio MD-100" image=":/EXT/ext/md-100.png"/>
-     <example idpocket="Casio FP-100" filename="./" name="Casio FP-100" image=":/EXT/ext/fp100.png"/>
-     <example idpocket="Casio FP-40" filename="./" name="Casio FP-40" image=":/EXT/ext/fp40.png"/>
-     <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/EXT/ext/pc-2021.png"/>
-     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/EXT/ext/pc-2081.png"/>   
-     <example idpocket="General CL-1000" filename="./" name="General CL-1000" image=":/EXT/ext/cl-1000.png"/>
+     <example idpocket="Serial Console" filename="./" name="Serial Console" image=":/ext/serial.png"/>
+     <example idpocket="Potar" filename="./" name="Potar" image=":/ext/jack.png"/>
+     <example idpocket="Simulator" filename="./" name="Simulator" image=":/ext/simu.png"/>
+     <example idpocket="11Pins Cable" filename="./" name="Sharp EA-129C" image=":/ext/cable.png"/>
+     <example idpocket="Casio MD-100" filename="./" name="Casio MD-100" image=":/ext/md-100.png"/>
+     <example idpocket="Casio FP-100" filename="./" name="Casio FP-100" image=":/ext/fp100.png"/>
+     <example idpocket="Casio FP-40" filename="./" name="Casio FP-40" image=":/ext/fp40.png"/>
+     <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/ext/pc-2021.png"/>
+     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/ext/pc-2081.png"/>
+     <example idpocket="General CL-1000" filename="./" name="General CL-1000" image=":/ext/cl-1000.png"/>
    </demos>
  </demolauncher>

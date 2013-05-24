@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/PC1425">
+    <qresource prefix="/">
         <file>pc1425/cpu-1425.bin</file>
         <file>pc1425/pc1425.png</file>
         <file>pc1425/b0-1425.bin</file>

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/EXT">
+    <qresource prefix="/">
         <file>ext/26-3591.jpg</file>
         <file>ext/cable.png</file>
         <file>ext/ce-123p.jpg</file>

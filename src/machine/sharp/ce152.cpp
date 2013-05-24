@@ -69,7 +69,7 @@ FILE	*fp_tape=NULL;
 Cce152::Cce152(CPObject *parent)	: CPObject(parent)
 {
    // if (parent == 0) pPC = (CPObject *)this;
-    BackGroundFname	= ":/EXT/ext/ce-152.png";
+    BackGroundFname	= P_RES(":/ext/ce-152.png");
     setcfgfname("ce152");
     Tapein		= 0;				//Tape loaded (0:none, other:access)
     TapeCounter	= 0;
@@ -89,7 +89,7 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
 }
 Cce127r::Cce127r(CPObject *parent) : Cce152(parent)
 {
-    BackGroundFname	= ":/EXT/ext/ce-127r.png";
+    BackGroundFname	= P_RES(":/ext/ce-127r.png");
     setcfgfname("ce127r");
     setDXmm(132);//Pc_DX_mm = 135;
     setDYmm(74);//Pc_DY_mm = 70;
@@ -102,7 +102,7 @@ Cce127r::Cce127r(CPObject *parent) : Cce152(parent)
 
 Cpc2081::Cpc2081(CPObject *parent) : Cce152(parent)
 {
-    BackGroundFname	= ":/EXT/ext/pc-2081.png";
+    BackGroundFname	= P_RES(":/ext/pc-2081.png");
     setcfgfname("pc2081");
     setDXmm(184);//Pc_DX_mm = 135;
     setDYmm(114);//Pc_DY_mm = 70;

@@ -11,18 +11,18 @@ Cpc1402::Cpc1402(CPObject *parent)	: Cpc1401(parent)
     SessionHeader	= "PC1402PKM";
     Initial_Session_Fname ="pc1402.pkm";
 
-    BackGroundFname	= ":/PC1402/pc1402/pc1402.png";
-    LcdFname		= ":/PC1402/pc1402/1402lcd.png";
-    SymbFname		= ":/PC1402/pc1402/1402symb.png";
+    BackGroundFname	= P_RES(":/pc1402/pc1402.png");
+    LcdFname		= P_RES(":/pc1402/1402lcd.png");
+    SymbFname		= P_RES(":/pc1402/1402symb.png");
 
 
     memsize			= 0x10000;
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	":/PC1402/pc1402/cpu-1402.rom", "pc-1402/cpu-1402.rom" , ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1402/cpu-1402.rom"), "pc-1402/cpu-1402.rom" , ROM , "CPU ROM"));
     SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1402/R1-1402.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	":/PC1402/pc1402/bas-1402.rom", "pc-1402/bas-1402.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1402/bas-1402.rom"), "pc-1402/bas-1402.rom" , ROM , "BASIC ROM"));
 
 }
 

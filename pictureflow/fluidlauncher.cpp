@@ -181,7 +181,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
      QImage img;
 
      if (fileInfo.completeSuffix()=="pdf") {
-         return QImage(":/POCKEMUL/pockemul/pdfthumbnail.png");
+         return QImage(":/core/pdfthumbnail.png");
      }
 
      if (fileInfo.completeSuffix()=="pml") {
@@ -229,7 +229,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
              img = new QImage(ExtractImage(fileInfo));
          }
          else if (fileInfo.isDir()) {
-             img->load(":/POCKEMUL/pockemul/folder.png");
+             img->load(":/core/folder.png");
          }
 
          QStringList sl;

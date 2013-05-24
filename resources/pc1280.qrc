@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/PC1280">
+    <qresource prefix="/">
         <file>pc1280/b0-1280.rom</file>
         <file>pc1280/b1-1280.rom</file>
         <file>pc1280/b2-1280.rom</file>

@@ -73,8 +73,8 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     SessionHeader	= "X07PKM";
     Initial_Session_Fname ="x07.pkm";
 
-    BackGroundFname	= ":/x07/x07.png";
-    LcdFname		= ":/x07/x07lcd.png";
+    BackGroundFname	= P_RES(":/x07/x07.png");
+    LcdFname		= P_RES(":/x07/x07lcd.png");
     SymbFname		= "";
 
     memsize		= 0x10000;
@@ -87,7 +87,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "ROM Carte 8kb"));
     SlotList.append(CSlot(8 , 0x8000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
     SlotList.append(CSlot(4 , 0xA000 ,	""                  , ""	, ROM , "ROM TV"));
-    SlotList.append(CSlot(20, 0xB000 ,	":/x07/rom_xo7.bin" , "x07/rom_xo7.bin" 	, ROM , "BASIC ROM"));
+    SlotList.append(CSlot(20, 0xB000 ,	P_RES(":/x07/rom_xo7.bin") , "x07/rom_xo7.bin" 	, ROM , "BASIC ROM"));
 
     KeyMap		= KeyMap1250;
     KeyMapLenght= KeyMap1250Lenght;

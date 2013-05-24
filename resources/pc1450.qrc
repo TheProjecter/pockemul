@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/PC1450">
+    <qresource prefix="/">
         <file>pc1450/bas-1450.rom</file>
         <file>pc1450/cpu-1450.rom</file>
         <file>pc1450/1450lcd.png</file>

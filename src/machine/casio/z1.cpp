@@ -34,22 +34,22 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
         setcfgfname(QString("z1gr"));
         SessionHeader	= "Z1GGRPKM";
         Initial_Session_Fname ="z1gr.pkm";
-        BackGroundFname	= ":/z1/z1gr.png";
+        BackGroundFname	= P_RES(":/z1/z1gr.png");
         break;
     case FX890P:
         setcfgfname(QString("fx890p"));
         SessionHeader	= "FX890PPKM";
         Initial_Session_Fname ="fx890p.pkm";
-        BackGroundFname	= ":/z1/fx-890p.png";
+        BackGroundFname	= P_RES(":/z1/fx-890p.png");
         break;
     default:
         setcfgfname(QString("z1"));
         SessionHeader	= "Z1PKM";
         Initial_Session_Fname ="z1.pkm";
-        BackGroundFname	= ":/z1/z1.png";
+        BackGroundFname	= P_RES(":/z1/z1.png");
     }
 
-    LcdFname		= ":/z1/z1grlcd.png";
+    LcdFname		= P_RES(":/z1/z1grlcd.png");
     SymbFname		= "";
 
     memsize		= 0xFFFFF;
@@ -64,9 +64,9 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     SlotList.append(CSlot(64 , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
 
     if (model==Z1GR)
-        SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1gr.bin"	, ""	, ROM , "ROM"));
+        SlotList.append(CSlot(128 , 0xE0000 ,	P_RES(":/z1/romz1gr.bin")	, ""	, ROM , "ROM"));
     else
-        SlotList.append(CSlot(128 , 0xE0000 ,	":/z1/romz1.bin"	, ""	, ROM , "ROM"));
+        SlotList.append(CSlot(128 , 0xE0000 ,	P_RES(":/z1/romz1.bin")	, ""	, ROM , "ROM"));
 
 
     PowerSwitch	= 0;
@@ -613,7 +613,7 @@ KIS                                                                             
 
 */
 
-#define KEY(c)	( pKEYB->keyPressedList.contains(toupper(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(tolower(c)))
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
 
 UINT16 Cz1::getKey()
 {
