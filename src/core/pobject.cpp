@@ -1,7 +1,10 @@
 #include <QtGui>
 #include <QMutex>
 
+#ifdef P_AVOID
 #include "libavoid.h"
+#endif
+
 #include "common.h"
 #include "pobject.h"
 #include "Inter.h"

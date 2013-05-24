@@ -12,7 +12,11 @@
 
 #include "init.h"
 #include "mainwindowpockemul.h"
+
+#ifdef P_AVOID
 #include "libavoid.h"
+#endif
+
 #include "common.h"
 
 #include "dialoganalog.h"

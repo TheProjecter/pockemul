@@ -19,14 +19,18 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 #include "mainwindowpockemul.h"
 
+#ifdef P_AVOID
 #include "libavoid.h"
+#endif
 
 #include "launchbuttonwidget.h"
 #include "dialoganalog.h"
 #include "dialogabout.h"
 #include "dialogstartup.h"
 #include "dialoglog.h"
+#ifdef P_IDE
 #include "ui/windowide.h"
+#endif
 #include "hexviewer.h"
 #include "autoupdater.h"
 
@@ -69,7 +73,9 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     setStatusBar(0);
     dialoglog = 0;
     dialoganalogic = 0;
+#ifdef P_IDE
     windowide = 0;
+#endif
     scaleFactor = 1;
     zoom = 100;
     saveAll = ASK;
@@ -125,7 +131,9 @@ MainWindowPockemul::~MainWindowPockemul() {
     qWarning("DELETE dialoglog");
     delete dialoglog;
     delete dialoganalogic;
+#ifdef P_IDE
     delete windowide;
+#endif
     delete FrameTimer;
     delete pdirectLink;
 
@@ -349,10 +357,12 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
                         dialoganalogic->fill_twWatchPoint();
                         dialoganalogic->update();
                     }
+#ifdef P_IDE
                     if (windowide) {
                         windowide->addtargetCB(newpPC);
                         windowide->update();
                     }
+#endif
                     return newpPC;
                 }
 
@@ -428,8 +438,10 @@ void MainWindowPockemul::Log()
 
 void MainWindowPockemul::IDE()
 {
+#ifdef P_IDE
         if (windowide==0) windowide = new WindowIDE(this);
         windowide->show();
+#endif
 }
 
 void MainWindowPockemul::Analogic()

@@ -19,16 +19,20 @@ class CDirectLink;
 class CKey;
 class CpcXXXX;
 class Cconnector;
+#ifdef P_IDE
 class WindowIDE;
+#endif
 class LaunchButtonWidget;
 class QCommandLine;
 class DownloadManager;
 class ServeurTcp;
 
+#ifdef P_AVOID
 namespace Avoid {
         class Router;
         class ShapeRef;
 }
+#endif
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow
 {
@@ -38,17 +42,19 @@ public:
 
     MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindowPockemul();
-#ifdef AVOID
+#ifdef P_AVOID
     Avoid::Router *router;
-#endif
     QHash<CPObject *,Avoid::ShapeRef *> shapeRefList;
+#endif
 
     void setZoom(int );
     void setCpu(int );
 
     DialogLog		*dialoglog;
     dialogAnalog	*dialoganalogic;
+#ifdef P_IDE
     WindowIDE       *windowide;
+#endif
     ServeurTcp      *server;
 
 

@@ -4,7 +4,10 @@
 #include "Connect.h"
 #include "Log.h"
 #include "ccable.h"
+
+#ifdef P_AVOID
 #include "libavoid.h"
+#endif
 
 CDirectLink::CDirectLink(void) {
 

@@ -14,7 +14,10 @@
 #include "pobject.h"
 #include "dialogstartup.h"
 #include "init.h"
+
+#ifdef P_AVOID
 #include "libavoid.h"
+#endif
 
 #include "downloadmanager.h"
 
@@ -110,27 +113,32 @@ int main(int argc, char *argv[])
     mainwindow->resize(680,520);
 
 
+    int v_inter = 60;
+    int v_pos = 12;
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,
                                                 LaunchButtonWidget::PictureFlow,
                                                 QStringList()<<P_RES(":/pockemul/config.xml"),
                                                 ":/core/pocket.png");
-    launch1->setGeometry(0,12,48,48);
+    launch1->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     launch1->setToolTip("Start a new Pocket Emulation.");
 
     LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwindow->centralwidget,
                                                  LaunchButtonWidget::PictureFlow,
                                                  QStringList()<<P_RES(":/pockemul/configExt.xml"),
                                                  ":/core/ext.png");
-    launch2->setGeometry(0,75,48,48);
+    launch2->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     launch2->setToolTip("Start a new Extension Emulation.");
 
-#ifndef Q_OS_ANDROID
+#ifdef P_IDE
     LaunchButtonWidget* dev = new LaunchButtonWidget(mainwindow->centralwidget,
                                                      LaunchButtonWidget::Action,
                                                      QStringList(),
                                                      ":/core/dev.png");
     mainwindow->connect(dev,SIGNAL(clicked()),mainwindow,SLOT(IDE()));
-    dev->setGeometry(0,150,48,48);
+    dev->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     dev->setToolTip("Start the Integrated development Environment.");
 #endif
     LaunchButtonWidget* save = new LaunchButtonWidget(mainwindow->centralwidget,
@@ -138,7 +146,8 @@ int main(int argc, char *argv[])
                                                       QStringList(),
                                                       ":/core/save.png");
     mainwindow->connect(save,SIGNAL(clicked()),mainwindow,SLOT(saveassession()));
-    save->setGeometry(0,225,48,48);
+    save->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     save->setToolTip("Save the current session.");
 
     LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow->centralwidget,
@@ -146,7 +155,8 @@ int main(int argc, char *argv[])
                                                       QStringList()<<"."<<"*.pml",
                                                       ":/core/load.png");
 //    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
-    load->setGeometry(0,300,48,48);
+    load->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     load->setToolTip("Load an existing session.");
 
     LaunchButtonWidget* bookcase = new LaunchButtonWidget(mainwindow->centralwidget,
@@ -154,7 +164,8 @@ int main(int argc, char *argv[])
                                                           QStringList()<< (QDir::homePath()+"/pockemul/documents")<<"*.pdf",
                                                       ":/core/bookcase.png");
 //    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
-    bookcase->setGeometry(0,375,48,48);
+    bookcase->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     bookcase->setToolTip("Browse the bookcase.");
 
 
@@ -163,7 +174,8 @@ int main(int argc, char *argv[])
                                                       QStringList(),
                                                       ":/core/exit.png");
     mainwindow->connect(exit,SIGNAL(clicked()),qApp, SLOT(quit()));//closeAllWindows()));
-    exit->setGeometry(0,450,48,48);
+    exit->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
     exit->setToolTip("Exit PockEmul.");
 
 //    CTinyBasic tb;

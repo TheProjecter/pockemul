@@ -1,5 +1,20 @@
 QMAKE_CXXFLAGS += -fsigned-char
 
+PROJECT_TYPE = \
+    EMSCRIPTEN \
+    P_IDE \
+    EMB_QRC \
+    P_LIBAVOID \
+
+contains(PROJECT_TYPE,EMSCRIPTEN) {
+PROJECT_TYPE -= \
+    P_IDE \
+    EMB_QRC \
+    P_LIBAVOID \
+
+}
+
+
 CONFIG += qt \
     resources \
     thread \
@@ -8,7 +23,8 @@ CONFIG += rtti
 #CONFIG += mobility
 MOBILITY =
 #DEFINES += NO_SOUND Q_OS_ANDROID
-#DEFINES += LOCRES
+
+
 
 QT += core \
     gui \
@@ -38,6 +54,221 @@ win32 {
     QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
+contains(PROJECT_TYPE,P_LIBAVOID) {
+DEFINES += P_AVOID
+
+HEADERS += \
+    libavoid/vpsc.h \
+    libavoid/visibility.h \
+    libavoid/viscluster.h \
+    libavoid/vertices.h \
+    libavoid/timer.h \
+    libavoid/shape.h \
+    libavoid/router.h \
+    libavoid/orthogonal.h \
+    libavoid/obstacle.h \
+    libavoid/makepath.h \
+    libavoid/libavoid.h \
+    libavoid/junction.h \
+    libavoid/graph.h \
+    libavoid/geomtypes.h \
+    libavoid/geometry.h \
+    libavoid/debug.h \
+    libavoid/connend.h \
+    libavoid/connector.h \
+    libavoid/connectionpin.h \
+    libavoid/assertions.h \
+
+SOURCES += \
+    libavoid/vpsc.cpp \
+    libavoid/visibility.cpp \
+    libavoid/viscluster.cpp \
+    libavoid/vertices.cpp \
+    libavoid/timer.cpp \
+    libavoid/shape.cpp \
+    libavoid/router.cpp \
+    libavoid/orthogonal.cpp \
+    libavoid/obstacle.cpp \
+    libavoid/makepath.cpp \
+    libavoid/junction.cpp \
+    libavoid/graph.cpp \
+    libavoid/geomtypes.cpp \
+    libavoid/geometry.cpp \
+    libavoid/connend.cpp \
+    libavoid/connector.cpp \
+    libavoid/connectionpin.cpp \
+
+
+}
+
+contains(PROJECT_TYPE,P_IDE) {
+DEFINES += P_IDE
+
+HEADERS += \
+    src/core/lcc/lcc.h \
+    src/core/ide/highlighter.h \
+    src/core/lcc/lcpp.h \
+    src/core/lcc/codegen.h \
+    src/core/lcc/pasm.h \
+    resources/lcc/model/PC-1350/stdio.h \
+    resources/lcc/model/PC-1350/stdio.h \
+    src/core/lcc/cstdlib.h \
+    resources/lcc/model/PC-1350/graph.h \
+    src/core/lcc/parser/parser.h \
+    src/machine/sharp/ce120p.h \
+    qcodeedit/qreliablefilewatch.h \
+    qcodeedit/qpanellayout.h \
+    qcodeedit/qlinemarksinfocenter.h \
+    qcodeedit/qlanguagefactory.h \
+    qcodeedit/qlanguagedefinition.h \
+    qcodeedit/qformatscheme.h \
+    qcodeedit/qformatfactory.h \
+    qcodeedit/qformat.h \
+    qcodeedit/qeditsession.h \
+    qcodeedit/qeditorinputbindinginterface.h \
+    qcodeedit/qeditorinputbinding.h \
+    qcodeedit/qeditorfactory.h \
+    qcodeedit/qeditor.h \
+    qcodeedit/qcodeedit.h \
+    qcodeedit/qcodecompletionengine.h \
+    qcodeedit/qce-config.h \
+    qcodeedit/document/qdocumentsearch.h \
+    qcodeedit/document/qdocumentline_p.h \
+    qcodeedit/document/qdocumentline.h \
+    qcodeedit/document/qdocumentcursor_p.h \
+    qcodeedit/document/qdocumentcursor.h \
+    qcodeedit/document/qdocumentcommand.h \
+    qcodeedit/document/qdocumentbuffer.h \
+    qcodeedit/document/qdocument_p.h \
+    qcodeedit/document/qdocument.h \
+    qcodeedit/qnfa/qnfadefinition.h \
+    qcodeedit/qnfa/qnfa.h \
+    qcodeedit/qnfa/light_vector.h \
+    qcodeedit/snippets/qsnippetpatternloader.h \
+    qcodeedit/snippets/qsnippetmanager.h \
+    qcodeedit/snippets/qsnippetedit.h \
+    qcodeedit/snippets/qsnippetbinding.h \
+    qcodeedit/snippets/qsnippet_p.h \
+    qcodeedit/snippets/qsnippet.h \
+    qcodeedit/widgets/qstatuspanel.h \
+    qcodeedit/widgets/qsimplecolorpicker.h \
+    qcodeedit/widgets/qsearchreplacepanel.h \
+    qcodeedit/widgets/qpanel.h \
+    qcodeedit/widgets/qlinenumberpanel.h \
+    qcodeedit/widgets/qlinemarkpanel.h \
+    qcodeedit/widgets/qlinechangepanel.h \
+    qcodeedit/widgets/qgotolinepanel.h \
+    qcodeedit/widgets/qgotolinedialog.h \
+    qcodeedit/widgets/qformatconfig.h \
+    qcodeedit/widgets/qfoldpanel.h \
+    qcodeedit/widgets/qeditconfig.h \
+    qcodeedit/widgets/qcalltip.h \
+    src/core/ide/editorwidget.h \
+    ui/windowide.h \
+    qcodeedit/widgets/qhexpanel.h \
+    qcodeedit/widgets/qoutpanel.h \
+    resources/lcc/model/PC-1350/sound.h \
+    resources/lcc/model/__sound.h \
+    resources/lcc/model/PC-1350/internal.h \
+    resources/lcc/model/PC-1251/internal.h \
+    resources/lcc/model/PC-1251/sound.h \
+    resources/lcc/model/__stdio.h \
+    resources/lcc/model/PC-1251/stdio.h \
+    resources/lcc/model/__internal.h \
+    resources/lcc/model/PC-1262/stdio.h \
+    resources/lcc/model/PC-1262/sound.h \
+    resources/lcc/model/PC-1262/internal.h \
+    resources/lcc/model/PC-1360/stdio.h \
+    resources/lcc/model/PC-1360/sound.h \
+    resources/lcc/model/PC-1360/internal.h \
+    resources/lcc/model/PC-1360/graph.h \
+    qcodeedit/ccompletion.h \
+    qcodeedit/qcodecompletionwidget_p.h \
+    qcodeedit/qcodecompletionwidget.h \
+    resources/lcc/model/PC-1261/stdio.h \
+    resources/lcc/model/PC-1261/sound.h \
+    resources/lcc/model/PC-1261/internal.h \
+    resources/lcc/model/PC-1250/stdio.h \
+    resources/lcc/model/PC-1250/sound.h \
+    resources/lcc/model/PC-1250/internal.h \
+    resources/lcc/model/PC-1255/stdio.h \
+    resources/lcc/model/PC-1255/sound.h \
+    resources/lcc/model/PC-1255/internal.h \
+    resources/lcc/model/PC-1260/stdio.h \
+    resources/lcc/model/PC-1260/sound.h \
+    resources/lcc/model/PC-1260/internal.h \
+    resources/lcc/model/PC-1475/stdio.h \
+    resources/lcc/model/PC-1475/sound.h \
+    resources/lcc/model/PC-1475/internal.h \
+
+SOURCES += \
+    src/core/lcc/lcc.cpp \
+    src/core/lcc/calcunit.cpp \
+    src/core/ide/highlighter.cpp \
+    src/core/lcc/lcpp.cpp \
+    src/core/lcc/codegen.cpp \
+    src/core/lcc/pasm.cpp \
+    src/core/lcc/cstdlib.cpp \
+    src/core/lcc/parser/parser.cpp \
+    qcodeedit/qreliablefilewatch.cpp \
+    qcodeedit/qpanellayout.cpp \
+    qcodeedit/qlinemarksinfocenter.cpp \
+    qcodeedit/qlanguagefactory.cpp \
+    qcodeedit/qlanguagedefinition.cpp \
+    qcodeedit/qformatscheme.cpp \
+    qcodeedit/qeditsession.cpp \
+    qcodeedit/qeditorinputbinding.cpp \
+    qcodeedit/qeditorfactory.cpp \
+    qcodeedit/qeditor.cpp \
+    qcodeedit/qcodeedit.cpp \
+    qcodeedit/qcodecompletionengine.cpp \
+    qcodeedit/document/qdocumentsearch.cpp \
+    qcodeedit/document/qdocumentline.cpp \
+    qcodeedit/document/qdocumentcursor.cpp \
+    qcodeedit/document/qdocumentcommand.cpp \
+    qcodeedit/document/qdocumentbuffer.cpp \
+    qcodeedit/document/qdocument.cpp \
+    qcodeedit/qnfa/xml2qnfa.cpp \
+    qcodeedit/qnfa/qnfadefinition.cpp \
+    qcodeedit/qnfa/qnfa.cpp \
+    qcodeedit/snippets/qsnippetmanager.cpp \
+    qcodeedit/snippets/qsnippetedit.cpp \
+    qcodeedit/snippets/qsnippetbinding.cpp \
+    qcodeedit/snippets/qsnippet.cpp \
+    qcodeedit/widgets/qstatuspanel.cpp \
+    qcodeedit/widgets/qsimplecolorpicker.cpp \
+    qcodeedit/widgets/qsearchreplacepanel.cpp \
+    qcodeedit/widgets/qpanel.cpp \
+    qcodeedit/widgets/qlinenumberpanel.cpp \
+    qcodeedit/widgets/qlinemarkpanel.cpp \
+    qcodeedit/widgets/qlinechangepanel.cpp \
+    qcodeedit/widgets/qgotolinepanel.cpp \
+    qcodeedit/widgets/qgotolinedialog.cpp \
+    qcodeedit/widgets/qformatconfig.cpp \
+    qcodeedit/widgets/qfoldpanel.cpp \
+    qcodeedit/widgets/qeditconfig.cpp \
+    qcodeedit/widgets/qcalltip.cpp \
+    src/core/ide/editorwidget.cpp \
+    ui/windowide.cpp \
+    qcodeedit/widgets/qhexpanel.cpp \
+    qcodeedit/widgets/qoutpanel.cpp \
+    qcodeedit/ccompletion.cpp \
+    qcodeedit/qcodecompletionwidget.cpp \
+
+
+FORMS += \
+    qcodeedit/widgets/searchreplace.ui \
+    qcodeedit/widgets/gotolinedialog.ui \
+    qcodeedit/widgets/gotoline.ui \
+    qcodeedit/widgets/formatconfig.ui \
+    qcodeedit/widgets/editconfig.ui \
+    qcodeedit/snippets/snippetedit.ui \
+    ui/windowide.ui \
+
+
+}
+
+
 FORMS += ui/about.ui \
     ui/dialoganalog.ui \
     ui/dialogconnectorlink.ui \
@@ -49,13 +280,6 @@ FORMS += ui/about.ui \
     ui/startup.ui \
     ui/dialogpotar.ui \
     ui/simulatorconsole.ui \
-    qcodeedit/widgets/searchreplace.ui \
-    qcodeedit/widgets/gotolinedialog.ui \
-    qcodeedit/widgets/gotoline.ui \
-    qcodeedit/widgets/formatconfig.ui \
-    qcodeedit/widgets/editconfig.ui \
-    qcodeedit/snippets/snippetedit.ui \
-    ui/windowide.ui \
     ui/dialogdasm.ui \
     ui/cregssc61860widget.ui \
     ui/cregslh5801widget.ui \
@@ -147,108 +371,6 @@ HEADERS += src/core/Connect.h \
     src/machine/sharp/ce140p.h \
     src/core/weblinksparser.h \
     src/core/wavfile.h \
-    src/core/lcc/lcc.h \
-    src/core/ide/highlighter.h \
-    src/core/lcc/lcpp.h \
-    src/core/lcc/codegen.h \
-    src/core/lcc/pasm.h \
-    resources/lcc/model/PC-1350/stdio.h \
-    resources/lcc/model/PC-1350/stdio.h \
-    src/core/lcc/cstdlib.h \
-    resources/lcc/model/PC-1350/graph.h \
-    src/core/lcc/parser/parser.h \
-    src/machine/sharp/ce140f.h \
-    src/machine/cesimu.h \
-    src/core/dialogsimulator.h \
-    src/core/bineditor/bineditor.h \
-    src/core/bineditor/texteditor_global.h \
-    src/core/bineditor/colorscheme.h \
-    src/core/bineditor/texteditorconstants.h \
-    src/machine/sharp/ce120p.h \
-    qcodeedit/qreliablefilewatch.h \
-    qcodeedit/qpanellayout.h \
-    qcodeedit/qlinemarksinfocenter.h \
-    qcodeedit/qlanguagefactory.h \
-    qcodeedit/qlanguagedefinition.h \
-    qcodeedit/qformatscheme.h \
-    qcodeedit/qformatfactory.h \
-    qcodeedit/qformat.h \
-    qcodeedit/qeditsession.h \
-    qcodeedit/qeditorinputbindinginterface.h \
-    qcodeedit/qeditorinputbinding.h \
-    qcodeedit/qeditorfactory.h \
-    qcodeedit/qeditor.h \
-    qcodeedit/qcodeedit.h \
-    qcodeedit/qcodecompletionengine.h \
-    qcodeedit/qce-config.h \
-    qcodeedit/document/qdocumentsearch.h \
-    qcodeedit/document/qdocumentline_p.h \
-    qcodeedit/document/qdocumentline.h \
-    qcodeedit/document/qdocumentcursor_p.h \
-    qcodeedit/document/qdocumentcursor.h \
-    qcodeedit/document/qdocumentcommand.h \
-    qcodeedit/document/qdocumentbuffer.h \
-    qcodeedit/document/qdocument_p.h \
-    qcodeedit/document/qdocument.h \
-    qcodeedit/qnfa/qnfadefinition.h \
-    qcodeedit/qnfa/qnfa.h \
-    qcodeedit/qnfa/light_vector.h \
-    qcodeedit/snippets/qsnippetpatternloader.h \
-    qcodeedit/snippets/qsnippetmanager.h \
-    qcodeedit/snippets/qsnippetedit.h \
-    qcodeedit/snippets/qsnippetbinding.h \
-    qcodeedit/snippets/qsnippet_p.h \
-    qcodeedit/snippets/qsnippet.h \
-    qcodeedit/widgets/qstatuspanel.h \
-    qcodeedit/widgets/qsimplecolorpicker.h \
-    qcodeedit/widgets/qsearchreplacepanel.h \
-    qcodeedit/widgets/qpanel.h \
-    qcodeedit/widgets/qlinenumberpanel.h \
-    qcodeedit/widgets/qlinemarkpanel.h \
-    qcodeedit/widgets/qlinechangepanel.h \
-    qcodeedit/widgets/qgotolinepanel.h \
-    qcodeedit/widgets/qgotolinedialog.h \
-    qcodeedit/widgets/qformatconfig.h \
-    qcodeedit/widgets/qfoldpanel.h \
-    qcodeedit/widgets/qeditconfig.h \
-    qcodeedit/widgets/qcalltip.h \
-    src/core/ide/editorwidget.h \
-    ui/windowide.h \
-    qcodeedit/widgets/qhexpanel.h \
-    qcodeedit/widgets/qoutpanel.h \
-    resources/lcc/model/PC-1350/sound.h \
-    resources/lcc/model/__sound.h \
-    resources/lcc/model/PC-1350/internal.h \
-    resources/lcc/model/PC-1251/internal.h \
-    resources/lcc/model/PC-1251/sound.h \
-    resources/lcc/model/__stdio.h \
-    resources/lcc/model/PC-1251/stdio.h \
-    resources/lcc/model/__internal.h \
-    resources/lcc/model/PC-1262/stdio.h \
-    resources/lcc/model/PC-1262/sound.h \
-    resources/lcc/model/PC-1262/internal.h \
-    resources/lcc/model/PC-1360/stdio.h \
-    resources/lcc/model/PC-1360/sound.h \
-    resources/lcc/model/PC-1360/internal.h \
-    resources/lcc/model/PC-1360/graph.h \
-    qcodeedit/ccompletion.h \
-    qcodeedit/qcodecompletionwidget_p.h \
-    qcodeedit/qcodecompletionwidget.h \
-    resources/lcc/model/PC-1261/stdio.h \
-    resources/lcc/model/PC-1261/sound.h \
-    resources/lcc/model/PC-1261/internal.h \
-    resources/lcc/model/PC-1250/stdio.h \
-    resources/lcc/model/PC-1250/sound.h \
-    resources/lcc/model/PC-1250/internal.h \
-    resources/lcc/model/PC-1255/stdio.h \
-    resources/lcc/model/PC-1255/sound.h \
-    resources/lcc/model/PC-1255/internal.h \
-    resources/lcc/model/PC-1260/stdio.h \
-    resources/lcc/model/PC-1260/sound.h \
-    resources/lcc/model/PC-1260/internal.h \
-    resources/lcc/model/PC-1475/stdio.h \
-    resources/lcc/model/PC-1475/sound.h \
-    resources/lcc/model/PC-1475/internal.h \
     qcodemodel2/qcodenode.h \
     ui/dialogdasm.h \
     ui/cregssc61860widget.h \
@@ -311,26 +433,6 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_pc2001.h \
     src/cpu/upd7907/upd7907.h \
     src/machine/pc2021.h \
-    libavoid/vpsc.h \
-    libavoid/visibility.h \
-    libavoid/viscluster.h \
-    libavoid/vertices.h \
-    libavoid/timer.h \
-    libavoid/shape.h \
-    libavoid/router.h \
-    libavoid/orthogonal.h \
-    libavoid/obstacle.h \
-    libavoid/makepath.h \
-    libavoid/libavoid.h \
-    libavoid/junction.h \
-    libavoid/graph.h \
-    libavoid/geomtypes.h \
-    libavoid/geometry.h \
-    libavoid/debug.h \
-    libavoid/connend.h \
-    libavoid/connector.h \
-    libavoid/connectionpin.h \
-    libavoid/assertions.h \
     src/machine/printerctronics.h \
     src/machine/casio/fp40.h \
     src/cpu/i80L188EB.h \
@@ -338,7 +440,12 @@ HEADERS += src/core/Connect.h \
     src/core/servertcp.h \
     src/machine/general/lbc1100.h \
     src/machine/general/cl1000.h \
-    src/machine/sharp/pc1425.h
+    src/machine/sharp/pc1425.h \
+    src/machine/sharp/ce140f.h \
+    src/machine/cesimu.h \
+    src/core/dialogsimulator.h \
+    src/core/bineditor/bineditor.h \
+    src/core/bineditor/colorscheme.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -355,6 +462,8 @@ MOC_DIR += build/moc
 OPENEDFILES += 
 
 RCC_DIR += build/rcc
+
+contains(PROJECT_TYPE, EMB_QRC) {
 RESOURCES +=  \
     resources/ext.qrc \
     resources/pc1245.qrc \
@@ -389,7 +498,13 @@ RESOURCES +=  \
     resources/fp200.qrc \
     resources/pc1211.qrc \
     resources/pc2001.qrc \
-    resources/lbc1100.qrc \
+    resources/lbc1100.qrc
+}
+else {
+DEFINES += LOCRES
+}
+
+RESOURCES +=  \
     resources/keymap.qrc \
     resources/stdlibs.qrc \
     qcodeedit/qxs/qxs.qrc \
@@ -467,64 +582,12 @@ SOURCES += src/core/Connect.cpp \
     src/machine/sharp/ce140p.cpp \
     src/core/weblinksparser.cpp \
     src/core/wavfile.cpp \
-    src/core/lcc/lcc.cpp \
-    src/core/lcc/calcunit.cpp \
-    src/core/ide/highlighter.cpp \
-    src/core/lcc/lcpp.cpp \
-    src/core/lcc/codegen.cpp \
-    src/core/lcc/pasm.cpp \
-    src/core/lcc/cstdlib.cpp \
-    src/core/lcc/parser/parser.cpp \
     src/machine/sharp/ce140f.cpp \
     src/machine/cesimu.cpp \
     src/core/dialogsimulator.cpp \
     src/core/bineditor/bineditor.cpp \
     src/core/bineditor/colorscheme.cpp \
     src/machine/sharp/ce120p.cpp \
-    qcodeedit/qreliablefilewatch.cpp \
-    qcodeedit/qpanellayout.cpp \
-    qcodeedit/qlinemarksinfocenter.cpp \
-    qcodeedit/qlanguagefactory.cpp \
-    qcodeedit/qlanguagedefinition.cpp \
-    qcodeedit/qformatscheme.cpp \
-    qcodeedit/qeditsession.cpp \
-    qcodeedit/qeditorinputbinding.cpp \
-    qcodeedit/qeditorfactory.cpp \
-    qcodeedit/qeditor.cpp \
-    qcodeedit/qcodeedit.cpp \
-    qcodeedit/qcodecompletionengine.cpp \
-    qcodeedit/document/qdocumentsearch.cpp \
-    qcodeedit/document/qdocumentline.cpp \
-    qcodeedit/document/qdocumentcursor.cpp \
-    qcodeedit/document/qdocumentcommand.cpp \
-    qcodeedit/document/qdocumentbuffer.cpp \
-    qcodeedit/document/qdocument.cpp \
-    qcodeedit/qnfa/xml2qnfa.cpp \
-    qcodeedit/qnfa/qnfadefinition.cpp \
-    qcodeedit/qnfa/qnfa.cpp \
-    qcodeedit/snippets/qsnippetmanager.cpp \
-    qcodeedit/snippets/qsnippetedit.cpp \
-    qcodeedit/snippets/qsnippetbinding.cpp \
-    qcodeedit/snippets/qsnippet.cpp \
-    qcodeedit/widgets/qstatuspanel.cpp \
-    qcodeedit/widgets/qsimplecolorpicker.cpp \
-    qcodeedit/widgets/qsearchreplacepanel.cpp \
-    qcodeedit/widgets/qpanel.cpp \
-    qcodeedit/widgets/qlinenumberpanel.cpp \
-    qcodeedit/widgets/qlinemarkpanel.cpp \
-    qcodeedit/widgets/qlinechangepanel.cpp \
-    qcodeedit/widgets/qgotolinepanel.cpp \
-    qcodeedit/widgets/qgotolinedialog.cpp \
-    qcodeedit/widgets/qformatconfig.cpp \
-    qcodeedit/widgets/qfoldpanel.cpp \
-    qcodeedit/widgets/qeditconfig.cpp \
-    qcodeedit/widgets/qcalltip.cpp \
-    src/core/ide/editorwidget.cpp \
-    ui/windowide.cpp \
-    qcodeedit/widgets/qhexpanel.cpp \
-    qcodeedit/widgets/qoutpanel.cpp \
-    qcodeedit/ccompletion.cpp \
-    qcodeedit/qcodecompletionwidget.cpp \
     qcodemodel2/qcodenode.cpp \
     ui/dialogdasm.cpp \
     ui/cregssc61860widget.cpp \
@@ -585,23 +648,6 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/upd7907/upd7907d.cpp \
     src/cpu/upd7907/upd7907.cpp \
     src/machine/pc2021.cpp \
-    libavoid/vpsc.cpp \
-    libavoid/visibility.cpp \
-    libavoid/viscluster.cpp \
-    libavoid/vertices.cpp \
-    libavoid/timer.cpp \
-    libavoid/shape.cpp \
-    libavoid/router.cpp \
-    libavoid/orthogonal.cpp \
-    libavoid/obstacle.cpp \
-    libavoid/makepath.cpp \
-    libavoid/junction.cpp \
-    libavoid/graph.cpp \
-    libavoid/geomtypes.cpp \
-    libavoid/geometry.cpp \
-    libavoid/connend.cpp \
-    libavoid/connector.cpp \
-    libavoid/connectionpin.cpp \
     src/machine/printerctronics.cpp \
     src/machine/casio/fp40.cpp \
     src/cpu/i80L188EB.cpp \

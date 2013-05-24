@@ -6,7 +6,10 @@
 #include "Connect.h"
 #include "mainwindowpockemul.h"
 #include "pobject.h"
+
+#ifdef P_AVOID
 #include "libavoid.h"
+#endif
 
 extern MainWindowPockemul* mainwindow;
 
@@ -49,6 +52,7 @@ void Cconnector::setSnap(QPoint p)
 
     double x = (double)p.x()/Parent->getDX();
     double y = (double)p.y()/Parent->getDY();
+#ifdef P_AVOID
     if (mainwindow->shapeRefList.contains(Parent)) {
         shapeconnectionpin = new Avoid::ShapeConnectionPin(mainwindow->shapeRefList[Parent],
                                                            Id+1,
@@ -56,7 +60,9 @@ void Cconnector::setSnap(QPoint p)
                                                            10);
 
     }
+#endif
 }
+
 void Cconnector::Dump_pin(void)
 {
 	for (int i=0;i<nbpins;i++)

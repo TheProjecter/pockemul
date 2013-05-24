@@ -15,8 +15,10 @@
 #define SET_PIN(n,v)	(pCONNECTOR->Set_pin(n,v))
 
 class CPObject;
-namespace Avoid { class ShapeConnectionPin; }
 
+#ifdef P_AVOID
+namespace Avoid { class ShapeConnectionPin; }
+#endif
 
 class Cconnector:public QObject
 {
@@ -57,7 +59,9 @@ public:
 	
 	QString	Desc;
 	
+#ifdef P_AVOID
     Avoid::ShapeConnectionPin *shapeconnectionpin;
+#endif
 
     virtual bool init(void){return true;}
     virtual bool exit(void){return true;}
