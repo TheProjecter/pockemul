@@ -28,9 +28,11 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "dialogabout.h"
 #include "dialogstartup.h"
 #include "dialoglog.h"
+
 #ifdef P_IDE
 #include "ui/windowide.h"
 #endif
+
 #include "hexviewer.h"
 #include "autoupdater.h"
 
@@ -38,12 +40,10 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "common.h"
 #include "Log.h"
 #include "pcxxxx.h"
-//#include "pc1500.h"
 #include "Connect.h"
 #include "Inter.h"
 #include "Lcdc.h"
 #include "clink.h"
-#include "sc61860.h"
 #include "downloadmanager.h"
 #include "servertcp.h"
 
@@ -60,8 +60,6 @@ QTime t,tf;
 QElapsedTimer et;
 QTimer *timer;
 QList<CPObject *> listpPObject;
-
-
 
 
 MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainWindow(parent, f)

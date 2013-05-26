@@ -12,7 +12,7 @@ typedef struct {
     BYTE    imem[0x80];
 } UPD16434info;
 
-class CUPD16434:public QObject{
+class CUPD16434{
 
 
 
@@ -47,7 +47,7 @@ public:
     void	save_internal(QXmlStreamWriter *);
 
     CUPD16434(CpcXXXX *parent);
-    virtual ~CUPD16434();
+    ~CUPD16434();
 
     void	addretrace (void);
 

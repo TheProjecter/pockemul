@@ -1,7 +1,7 @@
-QMAKE_CXXFLAGS += -fsigned-char
 
 PROJECT_TYPE = \
-    EMSCRIPTEN \
+#    EMSCRIPTEN \
+#    ANDROID \
     P_IDE \
     EMB_QRC \
     P_LIBAVOID \
@@ -12,19 +12,20 @@ PROJECT_TYPE -= \
     EMB_QRC \
     P_LIBAVOID \
 
+DEFINES += NO_SOUND EMSCRIPTEN
 }
 
+contains(PROJECT_TYPE,ANDROID) {
+DEFINES += NO_SOUND Q_OS_ANDROID
+}
+
+QMAKE_CXXFLAGS += -fsigned-char
 
 CONFIG += qt \
     resources \
     thread \
     warn_on
 CONFIG += rtti
-#CONFIG += mobility
-MOBILITY =
-#DEFINES += NO_SOUND Q_OS_ANDROID
-
-
 
 QT += core \
     gui \
@@ -287,6 +288,7 @@ FORMS += ui/about.ui \
     ui/uartconsole.ui \
     ui/cregshd61700widget.ui \
     ui/dialogvkeyboard.ui
+
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
     src/core/Debug.h \
@@ -328,9 +330,9 @@ HEADERS += src/core/Connect.h \
     src/cpu/pd1990ac.h \
     src/cpu/sc61860.h \
     src/cpu/sc62015.h \
-    src/machine/sharp/Ce126.h \
     src/machine/ccable.h \
     src/machine/sharp/ce125.h \
+    src/machine/sharp/Ce126.h \
     src/machine/sharp/ce150.h \
     src/machine/sharp/ce152.h \
     src/machine/sharp/pc1245.h \
@@ -346,13 +348,21 @@ HEADERS += src/core/Connect.h \
     src/machine/sharp/pc1450.h \
     src/machine/sharp/pc1475.h \
     src/machine/sharp/pc1500.h \
+    src/machine/sharp/pc1600.h \
+    src/machine/sharp/ce1600p.h \
+    src/machine/sharp/pc2500.h \
+    src/machine/sharp/pc1421.h \
+    src/machine/sharp/pc1280.h \
+    src/machine/sharp/e500.h \
+    src/machine/sharp/g850v.h \
+    src/machine/sharp/ce140p.h \
+    src/machine/sharp/pc1425.h \
+    src/machine/sharp/ce140f.h \
     src/machine/pcxxxx.h \
     src/machine/sio.h \
     src/cpu/z80.h \
     src/cpu/z80memory.h \
     src/cpu/lh5803.h \
-    src/machine/sharp/pc1600.h \
-    src/machine/sharp/ce1600p.h \
     src/cpu/hd61102.h \
     src/cpu/z80-2.h \
     src/cpu/lu57813p.h \
@@ -362,15 +372,11 @@ HEADERS += src/core/Connect.h \
     src/machine/cmotor.h \
     src/cpu/tc8576p.h \
     src/core/cextension.h \
-    src/machine/sharp/pc2500.h \
     src/core/Keyb2500.h \
     src/machine/ce515p.h \
-    src/machine/sharp/pc1421.h \
-    src/machine/sharp/pc1280.h \
     src/core/Keyb1280.h \
-    src/machine/sharp/ce140p.h \
     src/core/weblinksparser.h \
-    src/core/wavfile.h \
+#    src/core/wavfile.h \
     qcodemodel2/qcodenode.h \
     ui/dialogdasm.h \
     ui/cregssc61860widget.h \
@@ -381,11 +387,9 @@ HEADERS += src/core/Connect.h \
     src/machine/cx07char.h \
     ui/cregsz80widget.h \
     src/cpu/hd61700.h \
-    src/machine/sharp/e500.h \
     src/machine/cx710.h \
     src/cpu/uart.h \
     ui/uartconsole.h \
-    src/machine/casio/pb1000.h \
     src/cpu/hd44352.h \
     ui/cregshd61700widget.h \
     src/lcd/Lcdc_x07.h \
@@ -393,6 +397,8 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_pc1600.h \
     src/lcd/Lcdc_pb1000.h \
     src/lcd/Lcdc_e500.h \
+    src/lcd/Lcdc_fp200.h \
+    src/lcd/Lcdc_pc1211.h \
     src/lcd/Lcdc.h \
     pictureflow/pictureflow.h \
     pictureflow/materialflow.h \
@@ -401,31 +407,29 @@ HEADERS += src/core/Connect.h \
     pictureflow/slideshow.h \
     src/core/launchbuttonwidget.h \
     src/core/tapandholdgesture.h \
+    src/machine/casio/pb1000.h \
     src/machine/casio/pb2000.h \
     src/machine/casio/md100.h \
     src/machine/casio/casiodisk.h \
     src/machine/casio/fp100.h \
-    src/machine/sharp/g850v.h \
+    src/machine/casio/fp200.h \
+    src/machine/casio/z1.h \
     src/cpu/sed1560.h \
     src/lcd/Lcdc_g850.h \
     src/cpu/i80x86.h \
-    src/machine/casio/z1.h \
     src/cpu/hd66108.h \
     src/lcd/Lcdc_z1.h \
     src/cpu/cf79107pj.h \
     src/cpu/i8085.h \
     src/cpu/i8085cpu.h \
     src/cpu/i8085daa.h \
-    src/machine/casio/fp200.h \
-    src/lcd/Lcdc_fp200.h \
     src/cpu/rp5c01.h \
-    ui/dialogvkeyboard.h \
     src/cpu/ctronics.h \
+    ui/dialogvkeyboard.h \
     src/core/qcommandline.h \
     src/core/version.h \
     tinybasic/tinybasic.h \
     src/machine/sharp/pc1211.h \
-    src/lcd/Lcdc_pc1211.h \
     src/machine/sharp/ce122.h \
     src/core/downloadmanager.h \
     src/machine/pc2001.h \
@@ -440,12 +444,11 @@ HEADERS += src/core/Connect.h \
     src/core/servertcp.h \
     src/machine/general/lbc1100.h \
     src/machine/general/cl1000.h \
-    src/machine/sharp/pc1425.h \
-    src/machine/sharp/ce140f.h \
     src/machine/cesimu.h \
     src/core/dialogsimulator.h \
     src/core/bineditor/bineditor.h \
-    src/core/bineditor/colorscheme.h
+    src/core/bineditor/colorscheme.h \
+    src/lcd/Lcdc_lbc1100.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -537,12 +540,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/pockemul.cpp \
     src/core/slot.cpp \
     src/core/xmlwriter.cpp \
-    src/cpu/cpu.cpp \
-    src/cpu/lh5801.cpp \
-    src/cpu/lh5810.cpp \
-    src/cpu/pd1990ac.cpp \
-    src/cpu/sc61860.cpp \
-    src/cpu/sc62015.cpp \
     src/machine/sharp/Ce126.cpp \
     src/machine/ccable.cpp \
     src/machine/sharp/ce125.cpp \
@@ -561,55 +558,87 @@ SOURCES += src/core/Connect.cpp \
     src/machine/sharp/pc1450.cpp \
     src/machine/sharp/pc1475.cpp \
     src/machine/sharp/pc1500.cpp \
-    src/machine/pcxxxx.cpp \
-    src/machine/sio.cpp \
-    src/cpu/z80.cpp \
-    src/cpu/lh5803.cpp \
-    src/machine/sharp/pc1600.cpp \
-    src/machine/sharp/ce1600p.cpp \
-    src/cpu/z80_dasm.cpp \
-    src/cpu/hd61102.cpp \
-    src/cpu/lu57813p.cpp \
-    src/machine/potar.cpp \
-    src/core/dialogpotar.cpp \
-    src/machine/cmotor.cpp \
-    src/cpu/tc8576p.cpp \
-    src/core/cextension.cpp \
-    src/machine/sharp/pc2500.cpp \
-    src/machine/ce515p.cpp \
     src/machine/sharp/pc1421.cpp \
     src/machine/sharp/pc1280.cpp \
     src/machine/sharp/ce140p.cpp \
+    src/machine/sharp/pc2500.cpp \
+    src/machine/sharp/g850v.cpp \
+    src/machine/sharp/pc1600.cpp \
+    src/machine/sharp/ce1600p.cpp \
+    src/machine/sharp/ce120p.cpp \
+    src/machine/sharp/e500.cpp \
+    src/machine/sharp/pc1211.cpp \
+    src/machine/sharp/pc1425.cpp \
+    src/machine/pcxxxx.cpp \
+    src/machine/sio.cpp \
+    src/machine/cx07.cpp \
+    src/machine/cx710.cpp \
+    src/machine/casio/pb1000.cpp \
+    src/machine/casio/pb2000.cpp \
+    src/machine/casio/md100.cpp \
+    src/machine/casio/casiodisk.cpp \
+    src/machine/casio/z1.cpp \
+    src/machine/casio/fp40.cpp \
+    src/machine/casio/fp100.cpp \
+    src/machine/casio/fp200.cpp \
+    src/machine/pc2001.cpp \
+    src/machine/pc2021.cpp \
+    src/machine/printerctronics.cpp \
+    src/machine/general/lbc1100.cpp \
+    src/machine/general/cl1000.cpp \
+    src/machine/potar.cpp \
+    src/machine/cmotor.cpp \
+    src/machine/ce515p.cpp \
     src/core/weblinksparser.cpp \
-    src/core/wavfile.cpp \
+#    src/core/wavfile.cpp \
     src/machine/sharp/ce140f.cpp \
     src/machine/cesimu.cpp \
     src/core/dialogsimulator.cpp \
     src/core/bineditor/bineditor.cpp \
     src/core/bineditor/colorscheme.cpp \
-    src/machine/sharp/ce120p.cpp \
+    src/core/dialogpotar.cpp \
+    src/lcd/Lcdc_pc1211.cpp \
+    src/machine/sharp/ce122.cpp \
     qcodemodel2/qcodenode.cpp \
     ui/dialogdasm.cpp \
     ui/cregssc61860widget.cpp \
     ui/cregcpu.cpp \
     ui/cregslh5801widget.cpp \
-    src/machine/cx07.cpp \
+    src/cpu/cpu.cpp \
+    src/cpu/lh5801.cpp \
+    src/cpu/lh5810.cpp \
+    src/cpu/pd1990ac.cpp \
+    src/cpu/sc61860.cpp \
+    src/cpu/sc62015.cpp \
     src/cpu/ct6834.cpp \
+    src/cpu/z80.cpp \
+    src/cpu/lh5803.cpp \
+    src/cpu/z80_dasm.cpp \
+    src/cpu/hd61102.cpp \
+    src/cpu/lu57813p.cpp \
     ui/cregsz80widget.cpp \
+    src/cpu/tc8576p.cpp \
     src/cpu/hd61700d.cpp \
     src/cpu/hd61700.cpp \
-    src/machine/sharp/e500.cpp \
-    src/machine/cx710.cpp \
     src/cpu/uart.cpp \
-    ui/uartconsole.cpp \
-    src/machine/casio/pb1000.cpp \
     src/cpu/hd44352.cpp \
+    src/cpu/i80x86.cpp \
+    src/cpu/hd66108.cpp \
+    src/cpu/upd16434.cpp \
+    src/cpu/i8085_dasm.cpp \
+    src/cpu/i80x86_dasm.cpp \
+    src/cpu/cf79107pj.cpp \
+    src/cpu/i8085.cpp \
+    src/cpu/rp5c01.cpp \
+    src/cpu/ctronics.cpp \
+    src/core/cextension.cpp \
     ui/cregshd61700widget.cpp \
     src/lcd/Lcdc_x07.cpp \
     src/lcd/Lcdc_pc1600.cpp \
     src/lcd/Lcdc_pb1000.cpp \
     src/lcd/Lcdc_e500.cpp \
     src/lcd/Lcdc.cpp \
+    ui/uartconsole.cpp \
     pictureflow/pictureflow.cpp \
     pictureflow/materialflow.cpp \
     pictureflow/fluidlauncher.cpp \
@@ -617,46 +646,21 @@ SOURCES += src/core/Connect.cpp \
     pictureflow/slideshow.cpp \
     src/core/launchbuttonwidget.cpp \
     src/core/tapandholdgesture.cpp \
-    src/machine/casio/pb2000.cpp \
-    src/machine/casio/md100.cpp \
-    src/machine/casio/casiodisk.cpp \
-    src/machine/sharp/g850v.cpp \
     src/cpu/sed1560.cpp \
     src/lcd/Lcdc_g850.cpp \
-    src/cpu/i80x86.cpp \
-    src/machine/casio/z1.cpp \
-    src/cpu/hd66108.cpp \
-    src/lcd/Lcdc_z1.cpp \
-    src/cpu/i80x86_dasm.cpp \
-    src/cpu/cf79107pj.cpp \
-    src/cpu/i8085.cpp \
-    src/machine/casio/fp200.cpp \
-    src/cpu/i8085_dasm.cpp \
     src/lcd/Lcdc_fp200.cpp \
-    src/cpu/rp5c01.cpp \
+    src/lcd/Lcdc_z1.cpp \
     ui/dialogvkeyboard.cpp \
-    src/cpu/ctronics.cpp \
     src/core/qcommandline.cpp \
     tinybasic/tinybasic.cpp \
-    src/machine/sharp/pc1211.cpp \
-    src/lcd/Lcdc_pc1211.cpp \
-    src/machine/sharp/ce122.cpp \
     src/core/downloadmanager.cpp \
-    src/machine/pc2001.cpp \
-    src/cpu/upd16434.cpp \
     src/lcd/Lcdc_pc2001.cpp \
     src/cpu/upd7907/upd7907d.cpp \
     src/cpu/upd7907/upd7907.cpp \
-    src/machine/pc2021.cpp \
-    src/machine/printerctronics.cpp \
-    src/machine/casio/fp40.cpp \
     src/cpu/i80L188EB.cpp \
     src/cpu/pit8253.cpp \
     src/core/servertcp.cpp \
-    src/machine/general/lbc1100.cpp \
-    src/machine/general/cl1000.cpp \
-    src/machine/casio/fp100.cpp \
-    src/machine/sharp/pc1425.cpp
+    src/lcd/Lcdc_lbc1100.cpp
 
 
 
@@ -760,7 +764,57 @@ OTHER_FILES += \
 
 
 
+contains(PROJECT_TYPE,EMSCRIPTEN) {
+SOURCES = \
+    src/core/Connect.cpp \
+    src/core/Dasm.cpp \
+    src/core/Debug.cpp \
+    src/core/Inter.cpp \
+    src/core/Keyb.cpp \
+    src/core/Log.cpp \
+    src/core/analog.cpp \
+    src/core/autoupdater.cpp \
+    src/core/clink.cpp \
+    src/core/cprinter.cpp \
+    src/core/dialogabout.cpp \
+    src/core/dialogdump.cpp \
+    src/core/dialoganalog.cpp \
+    src/core/dialogkeylist.cpp \
+    src/core/dialoglog.cpp \
+    src/core/dialogstartup.cpp \
+    src/core/init.cpp \
+    src/core/mainwindowpockemul.cpp \
+    src/core/paperwidget.cpp \
+    src/core/pcxxxx_ext.cpp \
+    src/core/pobject.cpp \
+    src/core/pockemul.cpp \
+    src/core/slot.cpp \
+    src/core/xmlwriter.cpp \
+    src/machine/pcxxxx.cpp \
+    src/core/weblinksparser.cpp \
+    src/cpu/cpu.cpp \
+    src/core/cextension.cpp \
+    src/lcd/Lcdc.cpp \
+    pictureflow/pictureflow.cpp \
+    pictureflow/materialflow.cpp \
+    pictureflow/fluidlauncher.cpp \
+    pictureflow/launcher.cpp \
+    pictureflow/slideshow.cpp \
+    src/core/launchbuttonwidget.cpp \
+    src/core/tapandholdgesture.cpp \
+    src/core/qcommandline.cpp \
+    src/core/downloadmanager.cpp \
+    src/core/servertcp.cpp \
 
+FORMS = ui/about.ui \
+    ui/dialoganalog.ui \
+    ui/dialogdump.ui \
+    ui/dialogkeylist.ui \
+    ui/dialoglog.ui \
+    ui/pockemul.ui \
+    ui/startup.ui \
+    ui/dialogvkeyboard.ui
+}
 
 
 

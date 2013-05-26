@@ -7,7 +7,7 @@
 #include "Log.h"
 #include "Keyb.h"
 #include "Inter.h"
-#include "Lcdc_pc2001.h"
+#include "Lcdc_lbc1100.h"
 #include "Connect.h"
 
 /*
@@ -85,11 +85,7 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
 
     PowerSwitch = 0;
 
-    pLCDC		= new Clcdc_pc2001(this);
-    pLCDC->Color_Off.setRgb(
-                (int) (154*pLCDC->contrast),
-                (int) (145*pLCDC->contrast),
-                (int) (116*pLCDC->contrast));
+    pLCDC		= new Clcdc_lbc1100(this);
     pCPU		= new Cupd7907(this);    upd7907 = (Cupd7907*)pCPU;
     for (int i=0;i<4;i++) upd16434[i]  = new CUPD16434(this);
     pd1990ac    = new CPD1990AC(this);
@@ -103,7 +99,10 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
 }
 
 Clbc1100::~Clbc1100() {
-    for (int i=0;i<4;i++) delete(upd16434[i]);
+    // BUG : crash when deleting those pointers. Need investigation
+    for (int i=0;i<4;i++) {
+        delete(upd16434[i]);
+    }
 }
 
 bool Clbc1100::init(void)				// initialize
