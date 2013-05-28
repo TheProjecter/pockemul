@@ -3,7 +3,9 @@
 
 
 #include <QTime>
+#ifndef QT_NO_SOUND
 #include <QSound>
+#endif
 
 #include "common.h"
 #include "cprinter.h"
@@ -35,7 +37,9 @@ public:
     QImage *pc2021display;
 
     void Refreshpc2021(qint8 data);
+#ifndef QT_NO_SOUND
     QSound *bells;
+#endif
 
     bool	ToDestroy;
 

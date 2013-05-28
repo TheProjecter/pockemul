@@ -33,7 +33,7 @@ Cpc2021::Cpc2021(CPObject *parent):Cprinter(this)
     setfrequency( 0);
     pc2021buf	= 0;
     pc2021display= 0;
-    bells		= 0;
+    //bells		= 0;
     charTable = 0;
     margin = 25;
     ToDestroy	= false;
@@ -70,7 +70,7 @@ Cpc2021::~Cpc2021() {
     delete pc2021display;
     delete pCONNECTOR;
     delete charTable;
-    delete bells;
+//    delete bells;
 }
 
 void Cpc2021::ComputeKey(void)
