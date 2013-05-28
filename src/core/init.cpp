@@ -228,7 +228,12 @@ void CPocketThread::run()
     timer.start();
 #endif
 
+#ifdef EMSCRIPTEN
+    int j=0;
+    while((j++)<1000)
+#else
     while(true)
+#endif
     {
         //int j=0;
         //while ((j++) < 20)
@@ -276,7 +281,11 @@ void CPocketThread::run()
                 }
             }
         }
+#ifdef EMSCRIPTEN
+        if (pause) return;
+#else
         if (pause) msleep(10);
+#endif
 #ifdef NEWTIMER
         mainwindow->rawclk += timer.nsecsElapsed();
         timer.restart();

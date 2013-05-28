@@ -35,7 +35,7 @@ QString appDir;
 int main(int argc, char *argv[])
 {
 
-    QApplication app(argc, argv);
+    QApplication *app = new QApplication(argc, argv);
 
     QCoreApplication::setOrganizationDomain("pockemul.free.fr");
     QCoreApplication::setOrganizationName("Remy Corp.");
@@ -89,16 +89,16 @@ int main(int argc, char *argv[])
 
     mainwindow = new MainWindowPockemul;
 
-    appDir = app.applicationDirPath();
+    appDir = app->applicationDirPath();
 
-    qWarning()<<app.applicationDirPath();
+    qWarning()<<app->applicationDirPath();
 
 #ifdef Q_OS_ANDROID
     QSplashScreen splash;
     splash.setPixmap(QPixmap(P_RES(":/pockemul/splash.png").scaled(mainwindow->geometry().size()));
     splash.showFullScreen();
     splash.showMessage("Loading modules...",Qt::AlignLeft,Qt::white);
-    app.processEvents();
+    app->processEvents();
     splash.finish(mainwindow);
 
     mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
@@ -191,8 +191,15 @@ int main(int argc, char *argv[])
 #endif
 
 //    mainwindow->LoadPocket(PC1211);
+#ifdef EMSCRIPTEN
+    app->exec();
+    while(true) {
+        app->processEvents();
+        mainwindow->PcThread->run();
+    }
+#endif
+    return app->exec();
 
-    return app.exec();
 
 }
 

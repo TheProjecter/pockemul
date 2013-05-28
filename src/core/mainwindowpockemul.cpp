@@ -108,7 +108,9 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     PcThread = new CPocketThread(this);
     PcThread->connect(PcThread,SIGNAL(Resize(QSize,CPObject * )),this,SLOT(resizeSlot(QSize,CPObject * )));
     PcThread->connect(PcThread,SIGNAL(Destroy(CPObject * )),this,SLOT(DestroySlot(CPObject * )));
+#ifndef EMSCRIPTEN
     PcThread->start();
+#endif
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
@@ -667,6 +669,9 @@ void MainWindowPockemul::updateTimer()
 
     rawclk += deltaTime*1000000L;
     //AddLog(LOG_TEMP,tr("temps:%1").arg(deltaTime));
+#ifdef EMSCRIPTEN
+    PcThread->run();
+#endif
 
 }
 

@@ -1,22 +1,27 @@
 
 PROJECT_TYPE = \
+    STANDARD \
 #    EMSCRIPTEN \
 #    ANDROID \
-    P_IDE \
-    EMB_QRC \
-    P_LIBAVOID \
+
+
+contains(PROJECT_TYPE,STANDARD) {
+PROJECT_MODULE += \
+    M_IDE \
+    M_EMB_QRC \
+    M_LIBAVOID \
+}
+
 
 contains(PROJECT_TYPE,EMSCRIPTEN) {
-PROJECT_TYPE -= \
-    P_IDE \
-    EMB_QRC \
-    P_LIBAVOID \
-
 DEFINES += NO_SOUND EMSCRIPTEN
 }
 
 contains(PROJECT_TYPE,ANDROID) {
 DEFINES += NO_SOUND Q_OS_ANDROID
+PROJECT_MODULE += \
+    M_EMB_QRC \
+
 }
 
 QMAKE_CXXFLAGS += -fsigned-char
@@ -55,7 +60,7 @@ win32 {
     QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
-contains(PROJECT_TYPE,P_LIBAVOID) {
+contains(PROJECT_MODULE,M_LIBAVOID) {
 DEFINES += P_AVOID
 
 HEADERS += \
@@ -102,7 +107,7 @@ SOURCES += \
 
 }
 
-contains(PROJECT_TYPE,P_IDE) {
+contains(PROJECT_MODULE,M_IDE) {
 DEFINES += P_IDE
 
 HEADERS += \
@@ -466,7 +471,7 @@ OPENEDFILES +=
 
 RCC_DIR += build/rcc
 
-contains(PROJECT_TYPE, EMB_QRC) {
+contains(PROJECT_MODULE, M_EMB_QRC) {
 RESOURCES +=  \
     resources/ext.qrc \
     resources/pc1245.qrc \
