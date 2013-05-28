@@ -255,7 +255,8 @@ void dialogAnalog::plot(bool forceRedraw,QSize size)
 	if (forceRedraw)
 	{
 		initPixmap(size);
-        QPen dataPen1( QColor(Qt::green));
+        QColor greenColor(Qt::green);
+        QPen dataPen1( greenColor);
 		fillPixmap(&dataplot,&dataPen1);
 #if 0
 	    QPen dataPen2(QColor(Qt::red));
@@ -362,7 +363,8 @@ void dialogAnalog::initPixmap(QSize size)
 	QPen linePen(QColor(100,100,100));
     QPen textPen(QColor(255, 255, 255));
     QPen gridPen(QColor(100, 100, 100));
-    QPen dataPen(QColor(Qt::green));
+    QColor greenColor(Qt::green);
+    QPen dataPen(greenColor);
 
 	// draw the fields and the text ----------------------------------------------------------------
     {
