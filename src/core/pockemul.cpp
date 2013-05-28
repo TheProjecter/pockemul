@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 {
 
     QApplication *app = new QApplication(argc, argv);
+     app->setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
     QCoreApplication::setOrganizationDomain("pockemul.free.fr");
     QCoreApplication::setOrganizationName("Remy Corp.");

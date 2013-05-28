@@ -908,8 +908,9 @@ void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
 }
 
 void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
+#ifndef EMSCRIPTEN
     downloadManager->resize();
-
+#endif
 }
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
