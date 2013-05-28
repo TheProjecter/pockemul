@@ -43,7 +43,8 @@ Cce126::Cce126(CPObject *parent):Cprinter(this)
     setfrequency( 0);
     ce126buf	= 0;
     ce126display= 0;
-    bells		= 0;
+    
+//bells		= 0;
     charTable = 0;
     margin = 25;
     ToDestroy	= false;
@@ -75,7 +76,7 @@ Cce126::~Cce126() {
     delete pCONNECTOR;
     delete pTAPECONNECTOR;
     delete charTable;
-    delete bells;
+//    delete bells;
 }
 
 void Cce126::ComputeKey(void)

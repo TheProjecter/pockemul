@@ -43,7 +43,10 @@ public:
 	QImage *ce126display;
 	
 	void RefreshCe126(qint8 data);
+
+#ifndef QT_NO_SOUND
 	QSound *bells;
+#endif
 	
 	bool	ToDestroy;
 		
