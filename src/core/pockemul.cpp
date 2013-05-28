@@ -124,6 +124,7 @@ int main(int argc, char *argv[])
     v_pos += v_inter;
     launch1->setToolTip("Start a new Pocket Emulation.");
 
+#ifndef EMSCRIPTEN
     LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwindow->centralwidget,
                                                  LaunchButtonWidget::PictureFlow,
                                                  QStringList()<<P_RES(":/pockemul/configExt.xml"),
@@ -131,6 +132,7 @@ int main(int argc, char *argv[])
     launch2->setGeometry(0,v_pos,48,48);
     v_pos += v_inter;
     launch2->setToolTip("Start a new Extension Emulation.");
+#endif
 
 #ifdef P_IDE
     LaunchButtonWidget* dev = new LaunchButtonWidget(mainwindow->centralwidget,
