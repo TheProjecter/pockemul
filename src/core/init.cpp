@@ -26,7 +26,6 @@
 #include "Inter.h"
 #include "clink.h"
 
-#ifndef EMSCRIPTEN
 #include "sharp/pc1211.h"
 #include "sharp/pc1245.h"
 #include "sharp/pc1250.h"
@@ -84,7 +83,7 @@
 
 #include "general/lbc1100.h"
 #include "general/cl1000.h"
-#endif
+
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -104,7 +103,6 @@ CPObject *pPC=0;
     {
 
         case EMPTY	: return 0;
-#ifndef EMSCRIPTEN
         case PC1211	: pPC = new Cpc1211;	pPC->setName("PC-1211");break;
         case PC1245	: pPC = new Cpc1245;	pPC->setName("PC-1245");break;
         case MC2200	: pPC = new Cmc2200;	pPC->setName("MC-2200");break;
@@ -181,7 +179,7 @@ CPObject *pPC=0;
         case LBC1100  : pPC = new Clbc1100;      pPC->setName("General LBC-1100"); break;
 
         case CL1000  : pPC = new Ccl1000;      pPC->setName("General CL-1000"); break;
-#endif
+
         default			: return 0;
     }
 	AddLog(LOG_MASTER,"OK1");
