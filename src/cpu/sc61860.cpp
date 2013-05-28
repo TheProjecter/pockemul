@@ -50,8 +50,10 @@ CSC61860::CSC61860(CPObject *parent)	: CCPU(parent)
     first_pass = true;
     pDEBUG	= new Cdebug_sc61860(parent);
     imemsize = 0x60;
+#ifndef EMSCRIPTEN
     regwidget = (CregCPU*) new Cregssc61860Widget(parent,this);
     regwidget->hide();
+#endif
     start2khz = 0;
     start4khz = 0;
     wait_loop_running = cup_loop_running = cdn_loop_running = false;
@@ -2785,8 +2787,9 @@ bool CSC61860::init(void)
 
 
     //if(logsw) fp_log=fopen("sc61860.log","wt");			//open log file
-
+#ifndef EMSCRIPTEN
 	pDEBUG->init();
+#endif
 
 	return(1);
 }
