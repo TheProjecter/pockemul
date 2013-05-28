@@ -180,9 +180,10 @@ int main(int argc, char *argv[])
 
 //    CTinyBasic tb;
 //    tb.test();
-
+#ifndef EMSCRIPTEN
     downloadManager = new DownloadManager();
     downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
+#endif
 
     mainwindow->show();
 
