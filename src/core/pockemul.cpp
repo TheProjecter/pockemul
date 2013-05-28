@@ -193,11 +193,9 @@ int main(int argc, char *argv[])
 //    mainwindow->LoadPocket(PC1211);
 #ifdef EMSCRIPTEN
     app->exec();
-    while(true) {
-        app->processEvents();
-        mainwindow->PcThread->run();
-    }
+    return 0;
 #endif
+
     return app->exec();
 
 
