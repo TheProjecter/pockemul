@@ -670,7 +670,7 @@ void MainWindowPockemul::updateTimer()
     if (deltaTime == -1) {	t.start();}
     deltaTime = t.restart();
 
-    rawclk += deltaTime*1000000L;
+    rawclk += deltaTime;//*1000000L;
     //AddLog(LOG_TEMP,tr("temps:%1").arg(deltaTime));
 #ifdef EMSCRIPTEN
     PcThread->run();
