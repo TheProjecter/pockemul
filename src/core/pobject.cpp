@@ -919,6 +919,7 @@ void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.setStyleSheet("QMenu { color: black }");
     menu.exec(event->globalPos () );
+
     event->accept();
 }
 
