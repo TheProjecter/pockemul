@@ -121,9 +121,12 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
     router->setRoutingPenalty((Avoid::PenaltyType)0, 50);
     router->setOrthogonalNudgeDistance(15);
 #endif
-qWarning("create");
 
+#ifndef EMSCRIPTEN
 server = new ServeurTcp(this);
+#endif
+
+qWarning("create");
 
 }
 
