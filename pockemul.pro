@@ -292,7 +292,8 @@ FORMS += ui/about.ui \
     ui/cregsz80widget.ui \
     ui/uartconsole.ui \
     ui/cregshd61700widget.ui \
-    ui/dialogvkeyboard.ui
+    ui/dialogvkeyboard.ui \
+    ui/serialconsole.ui
 
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \
@@ -765,61 +766,6 @@ OTHER_FILES += \
     resources/keymap/pc1425.map
 
 
-
-
-
-
-contains(PROJECT_TYPE,EMSCRIPTEN) {
-SOURCES = \
-    src/core/Connect.cpp \
-    src/core/Dasm.cpp \
-    src/core/Debug.cpp \
-    src/core/Inter.cpp \
-    src/core/Keyb.cpp \
-    src/core/Log.cpp \
-    src/core/analog.cpp \
-    src/core/autoupdater.cpp \
-    src/core/clink.cpp \
-    src/core/cprinter.cpp \
-    src/core/dialogabout.cpp \
-    src/core/dialogdump.cpp \
-    src/core/dialoganalog.cpp \
-    src/core/dialogkeylist.cpp \
-    src/core/dialoglog.cpp \
-    src/core/dialogstartup.cpp \
-    src/core/init.cpp \
-    src/core/mainwindowpockemul.cpp \
-    src/core/paperwidget.cpp \
-    src/core/pcxxxx_ext.cpp \
-    src/core/pobject.cpp \
-    src/core/pockemul.cpp \
-    src/core/slot.cpp \
-    src/core/xmlwriter.cpp \
-    src/machine/pcxxxx.cpp \
-    src/core/weblinksparser.cpp \
-    src/cpu/cpu.cpp \
-    src/core/cextension.cpp \
-    src/lcd/Lcdc.cpp \
-    pictureflow/pictureflow.cpp \
-    pictureflow/materialflow.cpp \
-    pictureflow/fluidlauncher.cpp \
-    pictureflow/launcher.cpp \
-    pictureflow/slideshow.cpp \
-    src/core/launchbuttonwidget.cpp \
-    src/core/tapandholdgesture.cpp \
-    src/core/qcommandline.cpp \
-    src/core/downloadmanager.cpp \
-    src/core/servertcp.cpp \
-
-FORMS = ui/about.ui \
-    ui/dialoganalog.ui \
-    ui/dialogdump.ui \
-    ui/dialogkeylist.ui \
-    ui/dialoglog.ui \
-    ui/pockemul.ui \
-    ui/startup.ui \
-    ui/dialogvkeyboard.ui
-}
 
 
 

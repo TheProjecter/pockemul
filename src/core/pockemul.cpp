@@ -113,7 +113,9 @@ int main(int argc, char *argv[])
     mainwindow->setWindowIcon ( QIcon(":/core/pockemul.bmp") );
     mainwindow->resize(680,520);
 
-
+#ifdef EMSCRIPTEN
+    mainwindow->setWindowTitle("PockEmul Online");
+#endif
     int v_inter = 60;
     int v_pos = 12;
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,
