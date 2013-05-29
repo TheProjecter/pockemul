@@ -293,7 +293,7 @@ FORMS += ui/about.ui \
     ui/uartconsole.ui \
     ui/cregshd61700widget.ui \
     ui/dialogvkeyboard.ui \
-    ui/serialconsole.ui
+
 
 HEADERS += src/core/Connect.h \
     src/core/Dasm.h \

@@ -20,7 +20,9 @@ void Ctimer::SetCPUspeed(float t)
 
 qint64 Ctimer::currentState(void) {
 //    return (qint64) (( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) )/1000000L);
-    return (qint64) ( (mainwindow->rawclk * CPUSpeed * pPC->getfrequency()) / 1000L);
+//    return (qint64) ( (mainwindow->rawclk * CPUSpeed * pPC->getfrequency()) / 1000L);
+
+    return (qint64) ( (mainwindow->rawclk * CPUSpeed * (pPC->getfrequency() / 1000L)));
 }
 
 bool Ctimer::init(void)
