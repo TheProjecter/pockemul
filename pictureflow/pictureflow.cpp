@@ -508,7 +508,7 @@ void PictureFlowPrivate::setCurrentSlide(int index)
   step = 0;
   animateTimer.stop();
   centerIndex = qBound(index, 0, slideImages.count()-1);
-  qWarning(" setCurrentSlide   centerId=%i   Target=%i",centerIndex,target);
+//  qWarning(" setCurrentSlide   centerId=%i   Target=%i",centerIndex,target);
   target = centerIndex;
   slideFrame = index << 16;
   resetSlides();
@@ -533,7 +533,7 @@ void PictureFlowPrivate::showPrevious()
 
 void PictureFlowPrivate::showNext()
 {
-    qWarning("showNext: s=%i  t=%i  c=%i\n",step,target,centerIndex);
+//    qWarning("showNext: s=%i  t=%i  c=%i\n",step,target,centerIndex);
   if(step <= 0)
   {
     if(centerIndex < slideImages.count()-1)
@@ -705,15 +705,15 @@ QImage* PictureFlowPrivate::surface(int slideIndex)
 // render and thus cause less flicker.
 void PictureFlowPrivate::triggerRender()
 {
-    qWarning()<<"triggerRender start";
+//    qWarning()<<"triggerRender start";
   triggerTimer.start();
-  qWarning()<<"triggerRender end";
+//  qWarning()<<"triggerRender end";
 }
 
 // Render the slides. Updates only the offscreen buffer.
 void PictureFlowPrivate::render()
 {
-    qWarning("start render\n");
+//    qWarning("start render\n");
   buffer.fill(BACKGROUNDCOLOR);
 
   int nleft = leftSlides.count();
@@ -792,6 +792,7 @@ void PictureFlowPrivate::render()
         c2 = rs.right();
     }
 
+#ifndef EMSCRIPTEN
     QPainter painter;
     painter.begin(&buffer);
 
@@ -810,8 +811,9 @@ void PictureFlowPrivate::render()
                       Qt::AlignCenter, captions[leftTextIndex+1]);
 
     painter.end();
+#endif
   }
-  qWarning("end render\n");
+//  qWarning("end render\n");
 }
 
 static inline uint BYTE_MUL_RGB16(uint x, uint a) {
@@ -1083,7 +1085,7 @@ void PictureFlowPrivate::updateAnimation()
   centerSlide.cx = -step * fmul(offsetX, ftick);
   centerSlide.cy = fmul(offsetY, ftick);
 
-  qWarning("centerId=%i   Target=%i",centerIndex,target);
+//  qWarning("centerId=%i   Target=%i",centerIndex,target);
   if(centerIndex == target)
   {
     resetSlides();
@@ -1288,7 +1290,7 @@ void PictureFlow::keyPressEvent(QKeyEvent* event)
       showSlide(currentSlide()-10);
     }
     else {
-        qWarning("KEY PRESS :%i",event->key());
+//        qWarning("KEY PRESS :%i",event->key());
       showPrevious();
     }
     event->accept();

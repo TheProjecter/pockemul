@@ -682,11 +682,13 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                     QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
                     for (int r=0; r<nearList.size();r++) {
 //                        qWarning("pre box :%i",mainwindow);
+#ifndef EMSCRIPTEN
                         if (QMessageBox::question(mainwindow, "PockEmul",
                                                   "Do you want to link those two materials ?\n"+
                                                   nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
                                                   "Yes",
-                                                  "No", 0, 0, 1) == 0) {
+                                                  "No", 0, 0, 1) == 0)
+                        {
                             // The user clicked the Yes button or pressed Enter
                             // Connect
 
@@ -697,6 +699,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                             QList<CPObject *> list;
                             listpPObject.at(k)->manageStackPos(&list);
                         }
+#endif
 //                        qWarning("post box :%i",mainwindow);
                     }
                 }
