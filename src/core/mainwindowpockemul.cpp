@@ -392,6 +392,9 @@ void MainWindowPockemul::Minimize_All() {
 }
 
 void MainWindowPockemul::Close_All() {
+#ifdef EMSCRIPTEN
+    saveAll = NO;
+#else
     switch(QMessageBox::question(mainwindow,
                                  "PockEmul",
                                  "Do you want to save all sessions ?",
@@ -401,6 +404,7 @@ void MainWindowPockemul::Close_All() {
     case QMessageBox::Cancel: return;
     default: return;
     }
+#endif
 
     for (int k = 0; k < listpPObject.size(); k++)
     {

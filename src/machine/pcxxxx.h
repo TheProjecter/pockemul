@@ -246,7 +246,7 @@ public:
 
 
 
-	int		RomBank,RamBank;					// Bank Number id
+    quint8		RomBank,RamBank;					// Bank Number id
     int     ProtectMemory;
 	UINT	DialogExtensionID;
 
