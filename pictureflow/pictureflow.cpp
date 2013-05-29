@@ -428,7 +428,7 @@ PictureFlowPrivate::PictureFlowPrivate(PictureFlow* w)
   fade = 256;
 
   triggerTimer.setSingleShot(true);
-  triggerTimer.setInterval(0);
+  triggerTimer.setInterval(1);
   QObject::connect(&triggerTimer, SIGNAL(timeout()), widget, SLOT(render()));
 
   recalc(slideWidth, slideHeight);
@@ -705,7 +705,9 @@ QImage* PictureFlowPrivate::surface(int slideIndex)
 // render and thus cause less flicker.
 void PictureFlowPrivate::triggerRender()
 {
+    qWarning()<<"triggerRender start";
   triggerTimer.start();
+  qWarning()<<"triggerRender end";
 }
 
 // Render the slides. Updates only the offscreen buffer.
