@@ -433,8 +433,9 @@ void MainWindowPockemul::SelectPocket(QAction * action) {
 
 void MainWindowPockemul::about()
 {
-    DialogAbout dialogabout(this);
-    dialogabout.popup();
+    DialogAbout *dialogabout = new DialogAbout(this);
+    dialogabout->setModal(true);
+    dialogabout->show();
 }
 
 void MainWindowPockemul::Log()
@@ -461,7 +462,7 @@ void MainWindowPockemul::Analogic()
 void MainWindowPockemul::CheckUpdates()
 {
     CAutoUpdater dialogcheckupdate(this);
-    dialogcheckupdate.popup();
+    dialogcheckupdate.show();
 }
 
 void MainWindowPockemul::opensession(QString sessionFN)

@@ -915,12 +915,12 @@ void CPObject::focusOutEvent ( QFocusEvent * event )
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {
 
-    QMenu menu(this);
-    BuildContextMenu(&menu);
+    QMenu *menu = new QMenu(this);
+    BuildContextMenu(menu);
 
-    menu.setStyleSheet("QMenu { color: black }");
-    //menu.exec(event->globalPos () );
-menu.popup(event->globalPos () );
+    menu->setStyleSheet("QMenu { color: black }");
+    //menu->exec(event->globalPos () );
+menu->popup(event->globalPos () );
     event->accept();
 }
 

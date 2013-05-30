@@ -167,6 +167,9 @@ bool CpcXXXX::InitDisplay(void)
 
 void CpcXXXX::TurnOFF(void)
 {
+#ifdef EMSCRIPTEN
+    mainwindow->saveAll=NO;
+#endif
     switch (mainwindow->saveAll) {
     case ASK:
         if ( QMessageBox::question(this, "PockEmul",
