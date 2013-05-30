@@ -434,7 +434,7 @@ void MainWindowPockemul::SelectPocket(QAction * action) {
 void MainWindowPockemul::about()
 {
     DialogAbout dialogabout(this);
-    dialogabout.exec();
+    dialogabout.popup();
 }
 
 void MainWindowPockemul::Log()
@@ -461,7 +461,7 @@ void MainWindowPockemul::Analogic()
 void MainWindowPockemul::CheckUpdates()
 {
     CAutoUpdater dialogcheckupdate(this);
-    dialogcheckupdate.exec();
+    dialogcheckupdate.popup();
 }
 
 void MainWindowPockemul::opensession(QString sessionFN)
@@ -669,7 +669,7 @@ void MainWindowPockemul::paintEvent(QPaintEvent *event) {}
 
 void MainWindowPockemul::updateTimer()
 {
-    static qint64 deltaTime = -1;
+    static int deltaTime = -1;
 
     if (deltaTime == -1) {	t.start();}
     deltaTime = t.restart();
@@ -947,7 +947,11 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
 
     pObject->exit();
     pObject->close();
+#ifdef EMSCRIPTEN
+    delete pObject;
+#else
     pObject->deleteLater();
+#endif
 }
 
 void MainWindowPockemul::closeEvent(QCloseEvent *event)

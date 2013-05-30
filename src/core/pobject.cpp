@@ -17,10 +17,8 @@
 #include "clink.h"
 #include "dialogkeylist.h"
 #include "dialogdump.h"
-#ifndef EMSCRIPTEN
 #include "ui/dialogdasm.h"
 #include "ui/dialogvkeyboard.h"
-#endif
 #include "weblinksparser.h"
 //#include "sc61860.h"
 
@@ -921,8 +919,8 @@ void CPObject::contextMenuEvent ( QContextMenuEvent * event )
     BuildContextMenu(&menu);
 
     menu.setStyleSheet("QMenu { color: black }");
-    menu.exec(event->globalPos () );
-
+    //menu.exec(event->globalPos () );
+menu.popup(event->globalPos () );
     event->accept();
 }
 
@@ -1206,18 +1204,14 @@ void CPObject::Dump()
 
 void CPObject::Dasm()
 {
-#ifndef EMSCRIPTEN
     dialogdasm = new DialogDasm(this);
     dialogdasm->show();
-#endif
 }
 
 void CPObject::VirtualKeyboard()
 {
-#ifndef EMSCRIPTEN
     dialogVKeyboard = new DialogVKeyboard(this);
     dialogVKeyboard->show();
-#endif
 }
 
 bool CPObject::getdisp_onRaised()

@@ -68,7 +68,7 @@ public:
 
     void slotUnlink(CPObject *);
 
-    qint64	rawclk;
+    quint64	rawclk;
     CPObject * LoadPocket(int result);
     CPObject *LoadPocket(QString Id);
 
