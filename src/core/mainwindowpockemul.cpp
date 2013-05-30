@@ -277,6 +277,12 @@ void MainWindowPockemul::slotWebLink(QAction *action) {
 #define POCKEMUL_DOCUMENTS_URL "http://pockemul.free.fr/Documents/userguide/"
 
 void MainWindowPockemul::slotDocument(QAction *action) {
+
+#ifdef EMSCRIPEN
+    QString s = action->data().toString();
+    QUrl url(s);
+    QDesktopServices::openUrl(url);
+#else
     // Check if document is already downloaded
     // if yes open it
     // if no propose to download it : display the size ?
@@ -296,16 +302,12 @@ void MainWindowPockemul::slotDocument(QAction *action) {
         default: return;
         }
         // Download it
-
-
-
-
-            QUrl url(action->data().toString());
-            downloadManager->doDownload(url);
-
+        QUrl url(action->data().toString());
+        downloadManager->doDownload(url);
     }
     QUrl url(fn);
     QDesktopServices::openUrl(url);
+#endif
 }
 
 void MainWindowPockemul::slotNewLink(QAction * action)

@@ -1002,13 +1002,19 @@ void CPObject::computeWebLinksMenu(QMenu * menu) {
     connect(menuweblink, SIGNAL(triggered( QAction *)), mainwindow, SLOT(slotWebLink( QAction *)));
     connect(menuDocument, SIGNAL(triggered(QAction*)), mainwindow, SLOT(slotDocument(QAction*)));
 // FETCH XML FILE TO ADD MENU ACTIONS
+#ifdef EMSCRIPTEN
+    QFile fileRes(P_RES(":/pockemul/weblinks.xml"));
+#else
+
     // Does weblinks.xml exists locally ? if not generate one
     QString weblinksFn = QApplication::applicationDirPath()+"/weblinks.xml";
     if (!QFile::exists(weblinksFn)) {
         QFile::copy(P_RES(":/pockemul/weblinks.xml"),weblinksFn);
         QFile::setPermissions(weblinksFn,QFile::WriteOther);
     }
+
     QFile fileRes(weblinksFn);
+ #endif
     QXmlInputSource sourceRes(&fileRes);
     QXmlSimpleReader reader;
     reader.setContentHandler( new WebLinksParser(this) );
