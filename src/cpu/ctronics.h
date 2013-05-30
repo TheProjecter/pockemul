@@ -54,7 +54,7 @@ class Cctronics : public CPObject {
         bool	STROBE,INIT,ACK,BUSY,ERROR;
         quint8  DATA;
 
-        qint64  stateStrobeDelay,stateAckDelay;
+        quint64  stateStrobeDelay,stateAckDelay;
         QByteArray outputBuffer;
         int bufferSize;
 };

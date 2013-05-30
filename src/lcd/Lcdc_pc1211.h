@@ -23,7 +23,7 @@ public:
 
 //    quint8 cursorPos;
     bool cursorBlink;
-    qint64 blinkState;
+    quint64 blinkState;
 
 };
 

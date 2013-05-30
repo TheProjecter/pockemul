@@ -347,7 +347,7 @@ bool Cce126::run(void)
 
 #if 1
 // Try to introduce a latency 
-    qint64	deltastate = 0;
+    quint64	deltastate = 0;
 	
 	if (run_oldstate == -1) run_oldstate = pTIMER->state;
 	deltastate = pTIMER->state - run_oldstate;

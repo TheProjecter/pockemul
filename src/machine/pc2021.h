@@ -68,8 +68,8 @@ private:
 
     bool	ctrl_char;
     BYTE	t,c;
-    qint64	run_oldstate;
-    qint64  lastState;
+    quint64	run_oldstate;
+    quint64  lastState;
 
 
 public:

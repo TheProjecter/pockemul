@@ -219,10 +219,10 @@ bool CPObject::exit()
 	return true;
 }
 
-qint64 CPObject::runRange(qint64 step) {
+quint64 CPObject::runRange(quint64 step) {
     if (pTIMER) {
 
-        qint64 t = pTIMER->state;
+        quint64 t = pTIMER->state;
 
         while (!off && (pTIMER->state - t < step)) {
             run();
@@ -321,7 +321,7 @@ int CPObject::exitsound()
 void CPObject::fillSoundBuffer(BYTE val)
 {
 #ifndef NO_SOUND
-	qint64 new_state,delta_state;
+    quint64 new_state,delta_state;
 	 
 	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
 		
@@ -337,7 +337,7 @@ void CPObject::fillSoundBuffer(BYTE val)
     delta_state = pTIMER->state - fillSoundBuffer_old_state;
     if (delta_state < 0) fillSoundBuffer_old_state=new_state;
 	// Calculate nb of state to skip corresponding to the CPU frequency
-    qint64 wait = ((pTIMER->CPUSpeed*getfrequency()) / SAMPLERATE );
+    quint64 wait = ((pTIMER->CPUSpeed*getfrequency()) / SAMPLERATE );
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
     if (delta_state >= wait)
     {

@@ -63,7 +63,7 @@ public:
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *);
 
-    qint64  runRange(qint64);
+    quint64 runRange(quint64);
 
 	QPoint		SnapPts;
 	qreal		RangeFrom(CPObject * target);

@@ -79,10 +79,10 @@ private:
 	QTime	time;
 	bool	ctrl_char;
 	BYTE	t,c;
-	qint64	run_oldstate;
+    quint64	run_oldstate;
     int     code_transfer_step;
     int     device_code;
-    qint64  lastState;
+    quint64  lastState;
 
 
 public:

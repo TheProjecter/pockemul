@@ -397,7 +397,7 @@ bool Csio::transmit(void)
 
     if (oldstate_in	== 0) oldstate_in = pTIMER->state;
 	BYTE		data		= 0;
-	int			deltastate	= 0;
+    quint64			deltastate	= 0;
 
 	Sii_LfWait = 100;
     Sii_wait	= TICKS_BDS;

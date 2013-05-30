@@ -122,7 +122,7 @@ bool Cce515p::run(void)
 //    bool bit = false;
 //    bool has_moved = false;
 
-    int deltastate=0;
+    quint64 deltastate=0;
     if (oldstate_run == 0)	oldstate_run = pTIMER->state;
 
     //	0	START BIT

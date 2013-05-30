@@ -159,7 +159,7 @@ void DialogVKeyboard::senData()
         }
     }
 
-    qint64 refstate ;
+    quint64 refstate ;
 
     for (int i=0;i<final.size();i++) {
         int b = final.at(i);

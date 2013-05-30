@@ -106,7 +106,7 @@ public:
     C8253PIT(Ci80L188EB *parent);
     ~C8253PIT();
 
-    void step(qint64 nbstates);
+    void step(quint64 nbstates);
     quint32 decimal_from_bcd(quint16 val);
     quint32 adjusted_count(int bcd, UINT16 val);
     void throwint(int intNo);

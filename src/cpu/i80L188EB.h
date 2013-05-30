@@ -59,7 +59,7 @@ public:
 
     void  Reset(void);
 
-    void step(qint64 states);
+    void step(quint64 states);
 
     void write_SxCON(quint16 value);
     quint8 get_SxRBUF() { return SxRBUF;}

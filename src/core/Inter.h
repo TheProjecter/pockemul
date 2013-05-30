@@ -55,24 +55,24 @@ public:
     bool GetTP(int index);
     void deleteTP(int index);
 	void SetCPUspeed(float);
-    int     msElapsed(qint64 stateRef);
-    qint64  usElapsed(qint64 stateRef);
-    qint64  nsElapsed(qint64 stateRef);
-    qint64  stElapsedId(int id);
+    int     msElapsed(quint64 stateRef);
+    quint64  usElapsed(quint64 stateRef);
+    quint64  nsElapsed(quint64 stateRef);
+    quint64 stElapsedId(int id);
     int     msElapsedId(int id);
-    qint64  usElapsedId(int id);
-    qint64  nsElapsedId(int id);
+    quint64  usElapsedId(int id);
+    quint64  nsElapsedId(int id);
 
     bool    resetTimer(int);
-    qint64  currentState(void);
+    quint64 currentState(void);
 
-	qint64	state;					//state counter
+    quint64	state;					//state counter
 	long	chkspeed;				//speed counter
 	float	CPUSpeed;				//CPU speed(100%=STATE_PAR_TIMER)
 
 	bool	Suspend;
 
-	qint64 last_state,nb_state;
+    quint64 last_state,nb_state;
     int deltaStep;
 	
     Ctimer(CPObject *parent = 0)//	: CPObject(parent)
@@ -102,8 +102,8 @@ public:
     void setFreqTP(int index, int freq);
 
 private:
-    qint64 previous_state_tp[10];
-    qint64 timerSate[10];
+    quint64 previous_state_tp[10];
+    quint64 timerSate[10];
     int     frequency_tp[10];
     bool    tp[10];
 

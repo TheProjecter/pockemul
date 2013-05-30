@@ -96,7 +96,7 @@ private:
     int m_1hz;					// 1 Hz condition
     int m_16hz;					// 16 Hz condition
 
-    qint64 statelog;
+    quint64 statelog;
 
 };
 

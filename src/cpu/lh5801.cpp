@@ -121,7 +121,7 @@ INLINE void CLH5801::TIMER_INC(void)
 void CLH5801::step(void)
 {
 
-	qint64	Current_State;
+    quint64	Current_State;
 
 	if (Is_Timer_Reached) { lh5801.IR1=1; Is_Timer_Reached = FALSE; }
 

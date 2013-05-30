@@ -2247,7 +2247,7 @@ void CTinyBasic::go_MEM() {
 }
 
 void CTinyBasic::go_BEEP(bool initial) {
-    static qint64 refstate = pPC->pTIMER->state;
+    static quint64 refstate = pPC->pTIMER->state;
 
     if (!CheckRunnig()) return;
 

@@ -97,8 +97,8 @@ private:
     int     baudrate;
 
     BIT_TYPE   currentBit;
-    qint64  oldstate_in;
-    qint64  oldstate_out;
+    quint64  oldstate_in;
+    quint64  oldstate_out;
     bool    Start_Bit_Sent;
     unsigned char	t,c,waitbitstart,waitbitstop;
     int byteBufferSize;

@@ -245,7 +245,7 @@ void CPocketThread::run()
                 if ( f != 0)
                 {
                     // test si en retard
-                    qint64 cs = pPC->pTIMER->currentState();
+                    quint64 cs = pPC->pTIMER->currentState();
                     if (pPC->pTIMER->state <= cs)
                     {
                         if (pPC->ioFreq > 0) {

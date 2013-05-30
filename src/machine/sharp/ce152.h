@@ -89,8 +89,8 @@ protected:
 	char	*fname_wav;
 	int		med_pt;
 	int		low_pt;
-	qint64	first_state;
-	qint64	counter;
+    quint64	first_state;
+    quint64	counter;
 	int		GetWav_Val;
 
 	int		UpdateHeadToWav (u_long    nbSamp,WavFileInfo* ptrFile);

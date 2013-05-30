@@ -796,7 +796,7 @@ void MainWindowPockemul::updateFrameTimer()
     int statepersec;
     int rate=0;
     static int OneSecTimer=0;
-    long Current_State;
+    quint64 Current_State;
 
 // Calculate emulation speed
 // Normally each frame equal pPC->frequency state / NBFRAMEPERSEC

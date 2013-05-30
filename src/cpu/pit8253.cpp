@@ -654,9 +654,9 @@ C8253PIT::~C8253PIT()
 {
 }
 
-void C8253PIT::step(qint64 nbstates)
+void C8253PIT::step(quint64 nbstates)
 {
-    for (qint64 i=0; i< nbstates;i++) {
+    for (quint64 i=0; i< nbstates;i++) {
         count++;
         if (count == 2) t0->step();
         else if (count == 4) t1->step();

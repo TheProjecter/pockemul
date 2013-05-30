@@ -261,7 +261,7 @@ bool Cce152::SetWav(bool bit)
 
 	// Calculate nb of byte to skip corresponding to the CPU frequency
     qint64 wait = ( pTIMER->pPC->getfrequency()) / info.freq;
-    qint64 delta = (pTIMER->state - first_state);
+    quint64 delta = (pTIMER->state - first_state);
 
 //    if (pTIMER->pPC->pCPU) fprintf(fp_tape," Xout=%d - ",pTIMER->pPC->pCPU->Get_Xout());
 
@@ -527,7 +527,7 @@ int Cce152_PC15XX::SetBit(bool)
 int Cce152_PC15XX::serial(int bit)
 {
 	QTime time;
-	static qint64 last_state = 0;
+    static quint64 last_state = 0;
 	static DWORD last_time=0;
 
 	static int c=0,waitbitstart=1,waitbitstop=0;
@@ -608,8 +608,8 @@ int Cce152_PC15XX::GetBit(void)
 	int			nb_byte;
 	static int	Byte_read = 0;
 	float		ratio;
-	qint64		new_state;
-	qint64		delta_state;
+    quint64		new_state;
+    quint64		delta_state;
     u_long		trans ;
 	static char		bit=1;
 	static int last_TapeCounter=0;

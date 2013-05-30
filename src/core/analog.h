@@ -6,7 +6,7 @@
 typedef	struct 
 {
 	qint64	values;
-	qint64	state;
+    quint64	state;
     quint8	marker;
 } TAnalog_Data;
 
@@ -16,11 +16,11 @@ class CData:public QObject
     public:
 		void			Clear(void);
 		void			Write(TAnalog_Data);
-		void			Write(qint64,qint64);
+        void			Write(qint64, quint64);
 
 		TAnalog_Data	Read(int);
 		qint64			Read_values(int);
-		qint64			Read_state(int);
+        quint64			Read_state(int);
 		qint8			Read_marker(int);
 		qint64			nb_data;
         int				size(void){ return dataset.size(); }

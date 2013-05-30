@@ -74,7 +74,7 @@ void Ci80uart::Reset()
 
 #define MODE (SxCON & 0x07)
 
-void Ci80uart::step(qint64 states)
+void Ci80uart::step(quint64 states)
 {
     if (BxCMP == 0) return;
 

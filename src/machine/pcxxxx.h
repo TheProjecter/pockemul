@@ -242,7 +242,7 @@ public:
     void    Mem_Save(QXmlStreamWriter *xmlOut,BYTE s);
 	void	Mem_Save(BYTE s);
 
-    qint64	old_state;
+    quint64	old_state;
 
 
 

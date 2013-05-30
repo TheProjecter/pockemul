@@ -46,7 +46,7 @@ void CData::Write(TAnalog_Data tmp_value)
 
 }
 
-void CData::Write(qint64 val,qint64 state)
+void CData::Write(qint64 val,quint64 state)
 {
 	TAnalog_Data loc;
 	
@@ -65,7 +65,7 @@ qint64 CData::Read_values(int indice)
 {
     return dataset.at(indice).values;
 }
-qint64 CData::Read_state(int indice)
+quint64 CData::Read_state(int indice)
 {
     return dataset.at(indice).state;
 }

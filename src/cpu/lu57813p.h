@@ -110,8 +110,8 @@ private:
     QDateTime	lastDateTime;
     CpcXXXX *pPC;
 
-    qint64 previous_state;
-    qint64 previous_state_tp;
+    quint64 previous_state;
+    quint64 previous_state_tp;
 
     BYTE    cmd;
     BYTE    ord;

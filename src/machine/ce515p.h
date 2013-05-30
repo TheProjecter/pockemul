@@ -116,9 +116,9 @@ protected:
     int orig_Y;
     int lineType;
     int mainRot;
-    qint64  oldstate_run;
-    qint64  printer_oldstate_draw;
-    qint64  printer_oldstate_paperfeed;
+    quint64  oldstate_run;
+    quint64  printer_oldstate_draw;
+    quint64  printer_oldstate_paperfeed;
     unsigned char	t,c,waitbitstart,waitbitstop;
 #ifndef NO_SOUND
     QSound *clac;

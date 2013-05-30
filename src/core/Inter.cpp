@@ -18,11 +18,11 @@ void Ctimer::SetCPUspeed(float t)
     state = currentState();
 }
 
-qint64 Ctimer::currentState(void) {
+quint64 Ctimer::currentState(void) {
 //    return (qint64) (( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) )/1000000L);
 //    return (qint64) ( (mainwindow->rawclk * CPUSpeed * pPC->getfrequency()) / 1000L);
 
-    return (qint64) ( (mainwindow->rawclk * CPUSpeed * (pPC->getfrequency() / 1000L)));
+    return (quint64) ( (mainwindow->rawclk * CPUSpeed * (pPC->getfrequency() / 1000L)));
 }
 
 bool Ctimer::init(void)
@@ -42,7 +42,7 @@ bool Ctimer::exit(void)
 
 bool Ctimer::CheckSpeed(void)
 {
-    qint64 r = currentState();//qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
+    quint64 r = currentState();//qint64) ( mainwindow->rawclk * (CPUSpeed *(pPC->getfrequency() / 1000L)) );
     return (state < r);
 }
 
@@ -58,7 +58,7 @@ bool Ctimer::resetTimer(int id) {
     return false;
 }
 
-qint64 Ctimer::stElapsedId(int id) {
+quint64 Ctimer::stElapsedId(int id) {
     return (state - timerSate[id]);
 }
 
@@ -67,27 +67,27 @@ int Ctimer::msElapsedId(int id) {
     qint64 r = (state - timerSate[id]) * 1000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
-qint64 Ctimer::usElapsedId(int id) {
+quint64 Ctimer::usElapsedId(int id) {
 
-    qint64 r = (state - timerSate[id]) * 1000000L / (CPUSpeed *pPC->getfrequency());
+    quint64 r = (state - timerSate[id]) * 1000000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
-qint64 Ctimer::nsElapsedId(int id) {
+quint64 Ctimer::nsElapsedId(int id) {
 
-    qint64 r = (state - timerSate[id]) * 1000000000L / (CPUSpeed *pPC->getfrequency());
+    quint64 r = (state - timerSate[id]) * 1000000000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
-int Ctimer::msElapsed(qint64 stateRef) {
+int Ctimer::msElapsed(quint64 stateRef) {
 
-    qint64 r = (state - stateRef) * 1000L / (CPUSpeed *pPC->getfrequency());
+    quint64 r = (state - stateRef) * 1000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
-qint64 Ctimer::usElapsed(qint64 stateRef) {
+quint64 Ctimer::usElapsed(quint64 stateRef) {
 
-    qint64 r = (state - stateRef) * 1000000L / (CPUSpeed *pPC->getfrequency());
+    quint64 r = (state - stateRef) * 1000000L / (CPUSpeed *pPC->getfrequency());
     return r;
 }
-qint64 Ctimer::nsElapsed(qint64 stateRef) {
+quint64 Ctimer::nsElapsed(quint64 stateRef) {
 
     qint64 r = (state - stateRef) * 1000000000L / (CPUSpeed *pPC->getfrequency());
     return r;
@@ -143,7 +143,7 @@ bool	Ctimer::GetTP(int index)
 
 // generate Timer Pulse signal
 
-    qint64 delta_state;
+    quint64 delta_state;
 
     if (previous_state_tp[index] == 0) previous_state_tp[index] = pPC->pTIMER->state;
 

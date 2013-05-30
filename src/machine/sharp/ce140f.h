@@ -98,10 +98,10 @@ private:
     QFile   file_save;
     QFile   file_load;
     QByteArray ba_load;
-    qint64  lastState;
+    quint64  lastState;
     int     fileCount;
     QStringList fileList;
-    qint64  lastRunState;
+    quint64  lastRunState;
     bool    busyLed;
 
     bool MT_OUT2;

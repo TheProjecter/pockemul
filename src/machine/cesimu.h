@@ -54,7 +54,7 @@ public:
     QTextBrowser    *textbrowser;
     QHBoxLayout     *layout;
 
-    qint64  states[20];
+    quint64  states[20];
 
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
@@ -63,8 +63,8 @@ protected slots:
     void HelpDialog(void);
 
 private:
-    qint64  run_oldstate;
-    qint64  latency;
+    quint64  run_oldstate;
+    quint64  latency;
 
 };
 
