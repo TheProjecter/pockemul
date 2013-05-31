@@ -1087,9 +1087,9 @@ QImage * CPObject::LoadImage(QSize size,QString fname)
 {
 //    qWarning("LoadImage : %s",fname.toAscii().data());
 	QImage *tempImage;
-    QImage loc = QImage(fname).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    QImage loc = QImage(fname).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation).convertToFormat(QImage::Format_ARGB32);
 	tempImage = new QImage(loc);
-	return tempImage;
+    return tempImage;
 }
 
 
@@ -1114,7 +1114,8 @@ bool CPObject::InitDisplay(void)
 //    qWarning("INIT DISPLAY");
     delete BackgroundImageBackup;
     qWarning()<<BackGroundFname;
-	BackgroundImageBackup = LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
+
+    BackgroundImageBackup = LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
     delete BackgroundImage;
     BackgroundImage = new QImage(*BackgroundImageBackup);
     delete FinalImage;
