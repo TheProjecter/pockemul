@@ -85,7 +85,7 @@ Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
     Lcd_X	= 116;
     Lcd_Y	= 53;
     Lcd_DX	= 144;
-    Lcd_DY	= 11;
+    Lcd_DY	= 7;
     Lcd_ratio_X	= 1.5;
     Lcd_ratio_Y	= 2;
 

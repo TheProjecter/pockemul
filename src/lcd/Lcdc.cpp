@@ -567,14 +567,14 @@ void Clcdc_pc1245::disp(void)
 	{	adr = 0xF800 + ind;
 		if (DirtyBuf[adr-0xF800])
 		{
+            Refresh = TRUE;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
 			x =ind + (ind/5);			// +1 every 5 cols
 			y = 0;
 			
 			for (b=0; b<7;b++)
-			{
-				Refresh = TRUE;
+            {
 				painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
 				painter.drawPoint( x, y+b);
 			}
@@ -1021,10 +1021,10 @@ void Clcdc_pc1403::disp(void)
 	// 1-6
 	for (ind=0; ind<0x1E; ind++)
 	{
-			Refresh = true;
 		adr = 0x3000 + ind;
 		if (DirtyBuf[adr-0x3000])
 		{
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0 );
 			x =ind + (ind/5);			// +1 every 5 cols
 			y = 0;

@@ -49,7 +49,7 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/lbc1100/lbc-1100lcd.png");
     SymbFname		= "";
 
-    memsize		= 0xFFFF;
+    memsize		= 0x10000;
     InitMemValue	= 0xFF;
 
     SlotList.clear();
