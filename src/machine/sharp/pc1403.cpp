@@ -94,6 +94,8 @@ Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
     Lcd_Symb_DX	= 210;
     Lcd_Symb_DY	= 35;
 
+    memOffset = 0xC000;
+
 }
 
 
@@ -156,6 +158,7 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
             case 0x0B:	RomBank = 3; break;
 
         }
+        memOffset = 0xC000 + (RomBank * 0x4000);
 //        if (pCPU->fp_log) fprintf(pCPU->fp_log,"BK:%02X = %i",data,RomBank);
 		return(1);
 	}
@@ -164,8 +167,9 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
         pKEYB->Set_KS( (BYTE) data & 0x7F );/*ShowPortsAuto(0);*/
         return(1);
     }
-    if ( (*d>=0x4000) && (*d<=0x7FFF) )	{*d += 0xC000 + (RomBank * 0x4000); return(0); }
-	if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(1); }
+//    if ( (*d>=0x4000) && (*d<=0x7FFF) )	{*d += 0xC000 + (RomBank * 0x4000); return(0); }
+    if ( (*d>=0x4000) && (*d<=0x7FFF) )	{*d += memOffset; return(0); }
+    if ( (*d>=0xE000) && (*d<=0xFFFF) )	{ return(1); }
 
 	return(0);
 
@@ -174,7 +178,8 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
 bool Cpc1403::Chk_Adr_R(DWORD *d,DWORD data)
 {
     if ( (*d>=0x4000) && (*d<=0x7FFF) )	{
-        *d += 0xC000 + (RomBank * 0x4000);
+//        *d += 0xC000 + (RomBank * 0x4000);
+        *d += memOffset;
         return(1);
     }
 	return(1);	

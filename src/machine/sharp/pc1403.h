@@ -27,6 +27,7 @@ public:
     virtual UINT8 out(UINT8 address,UINT8 value){return(1);}
 
     BYTE out5;
+    DWORD memOffset;
 
     Cpc1403(CPObject *parent = 0);
     virtual ~Cpc1403()
