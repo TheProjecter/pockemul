@@ -219,7 +219,7 @@ bool Cce126::init(void)
     Previous_MT_OUT1 = GET_PIN(PIN_MT_OUT1);
 	time.start();
 	
-	run_oldstate = -1;
+    run_oldstate = 0;
 
     code_transfer_step = 0;
     device_code = 0;
@@ -349,7 +349,7 @@ bool Cce126::run(void)
 // Try to introduce a latency 
     quint64	deltastate = 0;
 	
-	if (run_oldstate == -1) run_oldstate = pTIMER->state;
+    if (run_oldstate == 0) run_oldstate = pTIMER->state;
 	deltastate = pTIMER->state - run_oldstate;
 	if (deltastate < CE126LATENCY ) return true;
 	run_oldstate	= pTIMER->state;
@@ -610,6 +610,11 @@ Cce129::Cce129()
     setcfgfname("ce129p");
     setDX(708);//Pc_DX	= 708;
     setDY(566);//Pc_DY	= 566;
+
+    setDXmm(196);
+    setDYmm(155);
+    setDZmm(33);
+
     SnapPts = QPoint(88,288);
 
     setPaperPos(QRect(89,185-149,207,149));

@@ -94,6 +94,8 @@ bool Cpc1360::run(void)
     pSIOCONNECTOR_value = pSIOCONNECTOR->Get_values();
 
     CpcXXXX::run();
+
+    return true;
 }
 
 // PIN_MT_OUT2	1
@@ -195,29 +197,29 @@ bool Cpc1360::Chk_Adr(DWORD *d,DWORD data)
 	if ( (*d>=0x3400) && (*d<=0x35FF) )	{ RomBank = data &0x07;	return(1); }
 	if ( (*d>=0x3E00) && (*d<=0x3FFF) )
 	{
-		int K=0;
+        BYTE KStrobe=0;
 
 		switch (data & 0x0F)
 		{
-			case 0x00: K=0x00;	break;
-			case 0x01: K=0x01;	break;
-			case 0x02: K=0x02;	break;
-			case 0x03: K=0x04;	break;
-			case 0x04: K=0x08;	break;
-			case 0x05: K=0x10;	break;
-			case 0x06: K=0x20;	break;
-			case 0x07: K=0x40;	break;
-			case 0x08: K=0x80;	break;
-			case 0x09: K=0x00;	break;
-			case 0x0A: K=0x00;	break;
-			case 0x0B: K=0x00;	break;
-			case 0x0C: K=0x00;	break;
-			case 0x0D: K=0x00;	break;
-			case 0x0E: K=0x00;	break;
-			case 0x0F: K=0x7F;	break;
+            case 0x00: KStrobe=0x00;	break;
+            case 0x01: KStrobe=0x01;	break;
+            case 0x02: KStrobe=0x02;	break;
+            case 0x03: KStrobe=0x04;	break;
+            case 0x04: KStrobe=0x08;	break;
+            case 0x05: KStrobe=0x10;	break;
+            case 0x06: KStrobe=0x20;	break;
+            case 0x07: KStrobe=0x40;	break;
+            case 0x08: KStrobe=0x80;	break;
+            case 0x09: KStrobe=0x00;	break;
+            case 0x0A: KStrobe=0x00;	break;
+            case 0x0B: KStrobe=0x00;	break;
+            case 0x0C: KStrobe=0x00;	break;
+            case 0x0D: KStrobe=0x00;	break;
+            case 0x0E: KStrobe=0x00;	break;
+            case 0x0F: KStrobe=0x7F;	break;
 		}
 
-		pKEYB->Set_KS( K );
+        pKEYB->Set_KS( KStrobe );
 
 		return(1);
 	}

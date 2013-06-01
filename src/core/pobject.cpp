@@ -311,7 +311,7 @@ int CPObject::initsound()
 
 int CPObject::exitsound()
 {
-	return true;
+    return 1;
 }
 
 
@@ -680,12 +680,17 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                     QList<Cconnector *> nearList = nearConnectors(listpPObject.at(k)->ConnList.at(c),SNAPRANGE);
                     for (int r=0; r<nearList.size();r++) {
 //                        qWarning("pre box :%i",mainwindow);
-#ifndef EMSCRIPTEN
+#ifdef EMSCRIPTEN
+                        QMessageBox *msgBox = new QMessageBox(this);
+                         msgBox->setText(nearList.at(r)->Desc + " linked to ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc);
+                         msgBox->show();
+#else
                         if (QMessageBox::question(mainwindow, "PockEmul",
                                                   "Do you want to link those two materials ?\n"+
                                                   nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
                                                   "Yes",
                                                   "No", 0, 0, 1) == 0)
+#endif
                         {
                             // The user clicked the Yes button or pressed Enter
                             // Connect
@@ -697,7 +702,6 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                             QList<CPObject *> list;
                             listpPObject.at(k)->manageStackPos(&list);
                         }
-#endif
 //                        qWarning("post box :%i",mainwindow);
                     }
                 }

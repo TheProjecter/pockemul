@@ -951,7 +951,7 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
     pObject->exit();
     pObject->close();
 #ifdef EMSCRIPTEN
-    delete pObject;
+    //delete pObject;
 #else
     pObject->deleteLater();
 #endif

@@ -228,6 +228,10 @@ bool Ckeyb::init(void)
 
 bool Ckeyb::exit(void)
 {
+#ifdef EMSCRIPTEN
+    return true;
+#endif
+
 	if (! modified) return true;
 		
      int ret = QMessageBox::warning(mainwindow, QObject::tr("PockEmul"),

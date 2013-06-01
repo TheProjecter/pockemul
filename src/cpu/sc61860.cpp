@@ -2872,7 +2872,7 @@ bool CSC61860::exit(void)
 
 	if(usestatus)
 	{
-		save();
+        save();
 	}
 	return true;
 }
