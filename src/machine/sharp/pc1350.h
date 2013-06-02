@@ -13,7 +13,7 @@
 extern BYTE scandef_pc1350[];
 
 class Cpc13XX:public CpcXXXX{						//PC1350 emulator main class
-
+Q_OBJECT
 public:
     virtual const char*	GetClassName(){ return("Cpc13XX");}
 
@@ -35,7 +35,7 @@ private:
 };
 
 class Cpc1350:public Cpc13XX{						//PC1350 emulator main class
-
+Q_OBJECT
 public:
     virtual BYTE	Get_PortA(void);
     virtual BYTE	Get_PortB(void);

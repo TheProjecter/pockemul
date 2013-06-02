@@ -12,7 +12,7 @@
 
 
 class Cpc1360:public Cpc13XX{						//PC1360 emulator main class
-
+Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1360");}
 

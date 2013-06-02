@@ -10,7 +10,7 @@ class Cce515p;
 
 
 class Cpc2500:public Cpc1350{						//PC1350 emulator main class
-
+Q_OBJECT
 public:
     virtual BYTE	Get_PortA(void);
 //    BYTE	Get_PortB(void);

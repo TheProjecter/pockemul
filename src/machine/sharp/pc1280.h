@@ -10,7 +10,7 @@
 
 
 class Cpc1280:public Cpc1360{						//PC1350 emulator main class
-    Q_OBJECT
+Q_OBJECT
 
     Q_PROPERTY(int angle READ angle WRITE setAngle)
     Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)

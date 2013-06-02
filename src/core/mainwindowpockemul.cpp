@@ -339,6 +339,7 @@ CPObject * MainWindowPockemul::LoadPocket(QString Id) {
 }
 
 CPObject * MainWindowPockemul::LoadPocket(int result) {
+    qWarning()<<"Load Pocket:"<<result;
     CPObject *newpPC;
     if (result)	{
                 newpPC = InitApp(result);

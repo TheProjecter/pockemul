@@ -26,7 +26,6 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     SymbFname		= P_RES(":/pc1280/1280symb.png");
     back = new QImage(P_RES(":/pc1280/pc-1280back.png"));
     memsize			= 0x40000;
-//		NbSlot		= 14;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1280/cpu-1280.rom")	, "pc-1280/cpu-1280.rom" , ROM , "CPU ROM"));

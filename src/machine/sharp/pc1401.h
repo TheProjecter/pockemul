@@ -9,6 +9,7 @@
 
 
 class Cpc1401:public CpcXXXX{						//PC1403 emulator main class
+Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1401");}
 

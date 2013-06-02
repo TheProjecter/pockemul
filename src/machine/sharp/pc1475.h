@@ -6,6 +6,7 @@
 
 
 class Cpc1475:public Cpc1360{						//PC1350 emulator main class
+Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1475");}
 

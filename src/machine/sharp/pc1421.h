@@ -5,6 +5,7 @@
 #include "pc1401.h"
 
 class Cpc1421:public Cpc1401{
+    Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1421");}
 

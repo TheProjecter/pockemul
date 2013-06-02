@@ -182,6 +182,7 @@ CPObject *pPC=0;
 
         default			: return 0;
     }
+    qWarning()<<"init";
 	AddLog(LOG_MASTER,"OK1");
     int dx = pPC->getDX()*mainwindow->zoom/100;
     int dy = pPC->getDY()*mainwindow->zoom/100;
@@ -191,6 +192,7 @@ CPObject *pPC=0;
     mainwindow->router->addShape(mainwindow->shapeRefList[pPC]);
 #endif
 	if (!pPC->init()) return 0;
+    qWarning()<<"init ok";
 
 //	int l = mainwindow->menuBar()->height();
 //	mainwindow->resize(QSize(pPC->Pc_DX, pPC->Pc_DY+l));

@@ -4,6 +4,7 @@
 #include "pc1401.h"
 
 class Cpc1402:public Cpc1401{						//PC1360 emulator main class
+Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1402");}
 

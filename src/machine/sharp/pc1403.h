@@ -13,6 +13,7 @@ extern TransMap KeyMap1403[];
 extern int KeyMap1403Lenght; 
 
 class Cpc1403:public Cpc1401{						//PC1403 emulator main class
+Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1403");}
 
@@ -38,6 +39,7 @@ private:
 };
 
 class Cpc1403H:public Cpc1403{						
+Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1403H");}
 
