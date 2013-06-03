@@ -228,7 +228,7 @@ bool Cg850v::Mem_Mirror(DWORD *d)
             *d = 0x8000 + 0x1840;   // Tricks to return 0x2d value :-(
         }
     }
-    if ( (*d>=0xc000) && (*d<=0xffff) ) {
+    else if ( (*d>=0xc000) && (*d<=0xffff) ) {
         if (romBank < 23) {
             *d += ((romBank-1) * 0x4000);
         }
@@ -415,7 +415,10 @@ bool Cg850v::run()
     CpcXXXX::run();
 
 #if 1
-    if ( (pKEYB->LastKey == K_BRK) && (interruptMask & 0x02) )  {
+    if (pKEYB->LastKey==0) {
+            keyBreak &= ~0x80;
+        }
+    else if ( (pKEYB->LastKey == K_BRK) && (interruptMask & 0x02) )  {
 //        AddLog(LOG_MASTER,"BREAK");
         keyBreak |= 0x80;
 //        pKEYB->LastKey = 0;
@@ -428,9 +431,7 @@ bool Cg850v::run()
         interruptType |= 0x01;
         ((CZ80*)pCPU)->z80int1(&((CZ80*)pCPU)->z80);
     }
-    else if (pKEYB->LastKey==0) {
-        keyBreak &= ~0x80;
-    }
+
 #endif
 
     return true;
