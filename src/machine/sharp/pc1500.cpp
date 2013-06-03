@@ -24,7 +24,7 @@ extern bool	UpdateDisplayRunning;
 Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
 	setfrequency( (int) 2600000/2);
-    ioFreq = 0;//500000;
+    ioFreq = 0;//5000;
 	setcfgfname(QString("pc1500"));
 
     SessionHeader	= "PC1500PKM";
@@ -470,7 +470,7 @@ bool Cpc15XX::Mem_Mirror(DWORD *d)
 	return(1);
 } 
 
-bool Cpc1500A::Mem_Mirror(DWORD *d) 
+inline bool Cpc1500A::Mem_Mirror(DWORD *d)
 {
 	if ( (*d>=0x7000) && (*d<=0x71FF) )	{ *d+=0x600; return(1); }
 	if ( (*d>=0x7200) && (*d<=0x73FF) )	{ *d+=0x400; return(1); }
@@ -772,24 +772,24 @@ bool CLH5810_PC1500::step()
 
 void Cpc15XX::contextMenuEvent ( QContextMenuEvent * event )
 {
-	QMenu menu(this);
+    QMenu *menu = new QMenu(this);
 	
-	BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 	
-	menu.addSeparator();
+    menu->addSeparator();
 
 	    //-----------------------------------------------//
 	   // Specific Tape menu for the PC1500				//
 	  // I use a hack to manage tape read and write	   //
 	 // as i need to improve LH5810 serial emulation  //
 	//-----------------------------------------------//
-	QMenu * menuTape = menu.addMenu(tr("Tape"));
+    QMenu * menuTape = menu->addMenu(tr("Tape"));
 		menuTape->addAction(tr("Load..."),pce152,SLOT(LoadTape()));
 		menuTape->addAction(tr("Play"),pce152,SLOT(Play()));
 		menuTape->addAction(tr("Stop"),pce152,SLOT(StopPlay()));
 		menuTape->addAction(tr("Record"),pce152,SLOT(RecTape()));
 	//--------------------------------------------------
 	
-	menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
 }
 

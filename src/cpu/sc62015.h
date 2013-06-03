@@ -82,6 +82,7 @@ union {
 } SCREG;
 
 class Csc62015:public CCPU{
+    Q_OBJECT
 public:
     Csc62015(CPObject *);
     virtual ~Csc62015();

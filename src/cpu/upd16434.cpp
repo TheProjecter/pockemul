@@ -302,8 +302,10 @@ BYTE CUPD16434::data(quint8 cmd)
     switch (info.mode) {
 
     case SCMR: addChar(cmd,true);
+        updated = true;
         break;
     case SCML: addChar(cmd,false);
+        updated = true;
         break;
     default:
         switch (info.mode & 0xfc) {
@@ -321,9 +323,10 @@ BYTE CUPD16434::data(quint8 cmd)
             AddLog(LOG_DISPLAY,QString("mode:%1").arg(info.mode));
             break;
         }
+        updated = true;
 
     }
-    updated = true;
+
 //    info.imem[info.dataPointer] = cmd;
 
     return 0;
@@ -331,6 +334,7 @@ BYTE CUPD16434::data(quint8 cmd)
 
 BYTE CUPD16434::instruction(quint8 cmd)
 {
+    updated = true;
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 CMD: %02x\n",cmd);
 
 //    AddLog(LOG_DISPLAY,tr("UPD16434 CMD:%1").arg(cmd,4,16,QChar('0')));

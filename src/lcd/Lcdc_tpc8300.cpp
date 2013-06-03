@@ -4,14 +4,14 @@
 #include "common.h"
 #include "pcxxxx.h"
 #include "cpu.h"
-#include "general/lbc1100.h"
+#include "tpc8300.h"
 #include "upd16434.h"
 
 
-#include "Lcdc_lbc1100.h"
+#include "Lcdc_tpc8300.h"
 #include "Log.h"
 
-Clcdc_lbc1100::Clcdc_lbc1100(CPObject *parent )	: Clcdc(parent){						//[constructor]
+Clcdc_tpc8300::Clcdc_tpc8300(CPObject *parent )	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
                         (int) (154*contrast),
                         (int) (145*contrast),
@@ -22,17 +22,17 @@ Clcdc_lbc1100::Clcdc_lbc1100(CPObject *parent )	: Clcdc(parent){						//[constru
 
 
 
-void Clcdc_lbc1100::disp_symb(void)
+void Clcdc_tpc8300::disp_symb(void)
 {
 
     Clcdc::disp_symb();
 }
 
 
-void Clcdc_lbc1100::disp(void)
+void Clcdc_tpc8300::disp(void)
 {
 
-    Clbc1100 *lbc1100 = (Clbc1100*)pPC;
+    Ctpc8300 *tpc8300 = (Ctpc8300*)pPC;
 
     BYTE b;
 
@@ -40,7 +40,7 @@ void Clcdc_lbc1100::disp(void)
 
 
     if (!ready) return;
-    if (!lbc1100->upd16434[0]) return;
+    if (!tpc8300->upd16434[0]) return;
 
     qWarning()<<"update";
 
@@ -49,15 +49,15 @@ void Clcdc_lbc1100::disp(void)
 
     QPainter painter(pPC->LcdImage);
 
-    for (int i = 0 ; i<4; i++)
+    for (int i = 0 ; i<3; i++)
     {
-        if (!lbc1100->upd16434[i]->updated) break;
+        if (!tpc8300->upd16434[i]->updated) break;
         Refresh = true;
     //AddLog(LOG_DISPLAY,"DISP");
-        lbc1100->upd16434[i]->updated = false;
+        tpc8300->upd16434[i]->updated = false;
         for (int j = 0; j< 0x32;j++)
         {
-            BYTE data = lbc1100->upd16434[i]->info.imem[0x31 - j];
+            BYTE data = tpc8300->upd16434[i]->info.imem[0x31 - j];
             for (b=0;b<8;b++)
             {
                 painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
@@ -66,7 +66,7 @@ void Clcdc_lbc1100::disp(void)
         }
         for (int j = 0; j< 0x32;j++)
         {
-            BYTE data = lbc1100->upd16434[i]->info.imem[0x71-j];
+            BYTE data = tpc8300->upd16434[i]->info.imem[0x71-j];
             for (b=0;b<8;b++)
             {
                 painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
@@ -74,13 +74,11 @@ void Clcdc_lbc1100::disp(void)
             }
         }
     }
-//    if (g850->pSED1560->info.on_off)
-
-
 
     redraw = 0;
     painter.end();
 }
+
 
 
 

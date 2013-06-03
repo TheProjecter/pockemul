@@ -41,16 +41,14 @@ void Clcdc_pc2001::disp(void)
     if (!ready) return;
     if (!pc2001->upd16434[0]) return;
 
-
-    Refresh = true;
-
     disp_symb();
 
     QPainter painter(pPC->LcdImage);
 
     for (int i = 0 ; i<4; i++)
     {
-//        if (!pc2001->upd16434[i]->updated) break;
+        if (!pc2001->upd16434[i]->updated) break;
+        Refresh = true;
     //AddLog(LOG_DISPLAY,"DISP");
         pc2001->upd16434[i]->updated = false;
         for (int j = 0; j< 0x32;j++)

@@ -84,6 +84,8 @@
 #include "general/lbc1100.h"
 #include "general/cl1000.h"
 
+#include "tpc8300.h"
+
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -179,6 +181,7 @@ CPObject *pPC=0;
         case LBC1100  : pPC = new Clbc1100;      pPC->setName("General LBC-1100"); break;
 
         case CL1000  : pPC = new Ccl1000;      pPC->setName("General CL-1000"); break;
+        case TPC8300 : pPC = new Ctpc8300;      pPC->setName("SANCO TPC-8300"); break;
 
         default			: return 0;
     }

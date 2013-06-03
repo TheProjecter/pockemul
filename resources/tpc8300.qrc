@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tpc8300/tpc8300-0000-0FFF.bin</file>
+        <file>tpc8300/tpc-8300.png</file>
+        <file>tpc8300/tpc-8300lcd.png</file>
+    </qresource>
+</RCC>

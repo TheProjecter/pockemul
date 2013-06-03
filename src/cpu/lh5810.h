@@ -130,6 +130,7 @@ public:
             case OPB:	return(lh5810.r_opb |= (0x01 << bit));	break;
             case OPC:	return(lh5810.r_opc |= (0x01 << bit));	break;
             case F:		return(lh5810.r_f	|= (0x01 << bit));	break;
+            default:    break;
             }
         }
         else
@@ -148,6 +149,7 @@ public:
             case OPB:	return(lh5810.r_opb &= ((0x01 << bit) ^ 0xff));	break;
             case OPC:	return(lh5810.r_opc &= ((0x01 << bit) ^ 0xff));	break;
             case F:		return(lh5810.r_f	&= ((0x01 << bit) ^ 0xff));	break;
+            default:    break;
     #else
             case LH5810_U:		return(lh5810.r_u	&= ~(0x01 << bit));	break;
             case LH5810_L:		return(lh5810.r_l	&= ~(0x01 << bit));	break;

@@ -454,7 +454,9 @@ HEADERS += src/core/Connect.h \
     src/core/dialogsimulator.h \
     src/core/bineditor/bineditor.h \
     src/core/bineditor/colorscheme.h \
-    src/lcd/Lcdc_lbc1100.h
+    src/lcd/Lcdc_lbc1100.h \
+    src/machine/tpc8300.h \
+    src/lcd/Lcdc_tpc8300.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -519,7 +521,8 @@ RESOURCES +=  \
     qcodeedit/qxs/qxs.qrc \
     src/core/lfhex/lfhex.qrc \
     resources/asmlibs.qrc \
-    resources/core.qrc
+    resources/core.qrc \
+    resources/tpc8300.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -666,7 +669,9 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/i80L188EB.cpp \
     src/cpu/pit8253.cpp \
     src/core/servertcp.cpp \
-    src/lcd/Lcdc_lbc1100.cpp
+    src/lcd/Lcdc_lbc1100.cpp \
+    src/machine/tpc8300.cpp \
+    src/lcd/Lcdc_tpc8300.cpp
 
 
 
