@@ -3,5 +3,6 @@
         <file>tpc8300/tpc8300-0000-0FFF.bin</file>
         <file>tpc8300/tpc-8300.png</file>
         <file>tpc8300/tpc-8300lcd.png</file>
+        <file>tpc8300/tpc8300-4000-5FFF.bin</file>
     </qresource>
 </RCC>

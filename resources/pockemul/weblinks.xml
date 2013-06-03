@@ -174,5 +174,8 @@
         <url desc="Silicium (fr)" link="http://www.silicium.org/site/index.php?option=com_content&amp;view=article&amp;id=206:casio-fp-200&amp;catid=55:calcs&amp;Itemid=29"/>
         <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/FP200_OM_FR.pdf"/>
     </model>
-
+    <model value="tpc8300">
+        <url desc="MyCalcDB" link="http://casio.ledudu.com/pockets.asp?type=169"/>
+        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/Sanco_TPC-8300_e.pdf"/>
+    </model>
 </weblinks>

@@ -53,29 +53,28 @@ Ctpc8300::Ctpc8300(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/tpc8300/rom-0000-0FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/tpc8300/tpc8300-0000-0FFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(12, 0x1000 ,	"", ""	,                             RAM , "RAM"));
-    SlotList.append(CSlot(4,  0x4000 ,	P_RES(":/tpc8300/lbc-4000-4FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(4,  0x5000 ,	P_RES(":/tpc8300/lbc-5000-5FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(4,  0x6000 ,	P_RES(":/tpc8300/lbc-6000-6FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(4,  0x7000 ,	P_RES(":/tpc8300/lbc-7000-7FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(8,  0x4000 ,	P_RES(":/tpc8300/tpc8300-4000-5FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x6000 ,	P_RES(":/tpc8300/tpc8300-6000-6FFF.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4,  0x7000 ,	P_RES(":/tpc8300/tpc8300-7000-7FFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(32 ,0x8000 ,	""	, ""	,                         RAM , "RAM"));
 
 //    Pc_Offset_X = Pc_Offset_Y = 0;
 
-    setDXmm(220);//Pc_DX_mm 206
-    setDYmm(105);//Pc_DY_mm =83)
-    setDZmm(25);//Pc_DZ_mm =30)
+    setDXmm(199);//Pc_DX_mm 206
+    setDYmm(96);//Pc_DY_mm =83)
+    setDZmm(26);//Pc_DZ_mm =30)
 
-    setDX(786);//Pc_DX		= 483;//409;
-    setDY(376);//Pc_DY		= 252;//213;
+    setDX(711);//Pc_DX		= 483;//409;
+    setDY(343);//Pc_DY		= 252;//213;
 
-    Lcd_X		= 70;
-    Lcd_Y		= 60;
-    Lcd_DX		= 240;//168;//144 ;
-    Lcd_DY		= 21;
-    Lcd_ratio_X	= 2.15;// * 1.18;
-    Lcd_ratio_Y	= 2.75;// * 1.18;
+    Lcd_X		= 197;
+    Lcd_Y		= 44;
+    Lcd_DX		= 144;//168;//144 ;
+    Lcd_DY		= 20;
+    Lcd_ratio_X	= 2.25;// * 1.18;
+    Lcd_ratio_Y	= 2.25;// * 1.18;
 
     Lcd_Symb_X	= 55;//(int) (45 * 1.18);
     Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
@@ -117,7 +116,7 @@ bool Ctpc8300::init(void)				// initialize
 
     pTIMER->resetTimer(1);
     pCONNECTOR	= new Cconnector(this,20,0,Cconnector::General_20,"20 pins connector",false,
-                                     QPoint(0,72));
+                                     QPoint(0,158));
     publish(pCONNECTOR);
 
     WatchPoint.add(&pCONNECTOR_value,64,20,this,"20 pins connector");

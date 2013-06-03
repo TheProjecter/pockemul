@@ -217,6 +217,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["General LBC-1100"]=LBC1100;
     objtable["General CL-1000"]=CL1000;
     objtable["SANCO TPC-8300"]=TPC8300;
+    objtable["SANCO TP-83"]=TP83;
 }
 
 //

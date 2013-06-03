@@ -26,5 +26,6 @@
      <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/ext/pc-2021.png"/>
      <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/ext/pc-2081.png"/>
      <example idpocket="General CL-1000" filename="./" name="General CL-1000" image=":/ext/cl-1000.png"/>
+     <example idpocket="SANCO TP-83" filename="./" name="SANCO TP-83" image=":/ext/tp-83.png"/>
    </demos>
  </demolauncher>

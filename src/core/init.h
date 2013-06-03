@@ -179,7 +179,8 @@ enum Models {
     PC2081,
     LBC1100,
     CL1000,
-    TPC8300
+    TPC8300,
+    TP83
 };
 
 #endif

@@ -85,6 +85,7 @@
 #include "general/cl1000.h"
 
 #include "tpc8300.h"
+#include "tp83.h"
 
 
 extern QList<CPObject *> listpPObject;  
@@ -178,10 +179,11 @@ CPObject *pPC=0;
         case PC2001   : pPC = new Cpc2001;      pPC->setName("Nec PC-2001"); break;
         case PC2021   : pPC = new Cpc2021;      pPC->setName("Nec PC-2021"); break;
         case PC2081   : pPC = new Cpc2081;      pPC->setName("Nec PC-2081"); break;
-        case LBC1100  : pPC = new Clbc1100;      pPC->setName("General LBC-1100"); break;
+        case LBC1100  : pPC = new Clbc1100;     pPC->setName("General LBC-1100"); break;
 
-        case CL1000  : pPC = new Ccl1000;      pPC->setName("General CL-1000"); break;
+        case CL1000  : pPC = new Ccl1000;       pPC->setName("General CL-1000"); break;
         case TPC8300 : pPC = new Ctpc8300;      pPC->setName("SANCO TPC-8300"); break;
+        case TP83    : pPC = new Ctp83;         pPC->setName("SANCO TP-83"); break;
 
         default			: return 0;
     }

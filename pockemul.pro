@@ -456,7 +456,8 @@ HEADERS += src/core/Connect.h \
     src/core/bineditor/colorscheme.h \
     src/lcd/Lcdc_lbc1100.h \
     src/machine/tpc8300.h \
-    src/lcd/Lcdc_tpc8300.h
+    src/lcd/Lcdc_tpc8300.h \
+    src/machine/tp83.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -671,7 +672,8 @@ SOURCES += src/core/Connect.cpp \
     src/core/servertcp.cpp \
     src/lcd/Lcdc_lbc1100.cpp \
     src/machine/tpc8300.cpp \
-    src/lcd/Lcdc_tpc8300.cpp
+    src/lcd/Lcdc_tpc8300.cpp \
+    src/machine/tp83.cpp
 
 
 
@@ -768,7 +770,10 @@ OTHER_FILES += \
     resources/keymap/fp40.map \
     resources/keymap/lbc1100.map \
     resources/keymap/cl1000.map \
-    resources/keymap/pc1425.map
+    resources/keymap/pc1425.map \
+    resources/pockemul/weblinks.xml \
+    resources/keymap/tpc8300.map \
+    resources/keymap/tp83.map
 
 
 
