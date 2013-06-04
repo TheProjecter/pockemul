@@ -24,7 +24,7 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 #endif
 
     setfrequency( (int) 8000000);
-    ioFreq = 0;
+//    ioFreq = 0;
     setcfgfname(QString("g850"));
 
     SessionHeader	= "G850PKM";
@@ -104,7 +104,6 @@ Cg850v::Cg850v(CPObject *parent)	: CpcXXXX(this)
 
     keyBreak = pin11If = 0;
 
-    ioFreq=0;
 }
 
 Cg850v::~Cg850v()
@@ -414,7 +413,7 @@ bool Cg850v::run()
 {
     CpcXXXX::run();
 
-#if 1
+#if 0
     if (pKEYB->LastKey==0) {
             keyBreak &= ~0x80;
         }

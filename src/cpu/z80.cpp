@@ -2914,12 +2914,12 @@ inline void CZ80::z80write8(const Z80stat *z, uint16 address, uint8 value)
 /*
     16bits READ/WRITE (リトルエンディアン)
 */
-uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
+inline uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
 {
     return ((CpcXXXX *)pPC)->Get_16(address);
 
 }
-void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
+inline void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
 {
     ((CpcXXXX *)pPC)->Set_16(address,value);
 }

@@ -41,36 +41,36 @@ void Clcdc_tpc8300::disp(void)
 
     if (!ready) return;
     if (!tpc8300->upd16434[0]) return;
-
-    qWarning()<<"update";
-
-
+//qWarning()<<"disp";
     disp_symb();
 
     QPainter painter(pPC->LcdImage);
 
     for (int i = 0 ; i<3; i++)
     {
-        if (!tpc8300->upd16434[i]->updated) break;
-        Refresh = true;
-    //AddLog(LOG_DISPLAY,"DISP");
-        tpc8300->upd16434[i]->updated = false;
-        for (int j = 0; j< 0x32;j++)
-        {
-            BYTE data = tpc8300->upd16434[i]->info.imem[0x31 - j];
-            for (b=0;b<8;b++)
+
+        if (tpc8300->upd16434[i]->updated) {
+            Refresh = true;
+            qWarning()<<"update:"<<i;
+            //AddLog(LOG_DISPLAY,"DISP");
+            tpc8300->upd16434[i]->updated = false;
+            for (int j = 0; j< 0x28;j++)
             {
-                painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
-                painter.drawPoint(j + j/5 + i*60,b + (b==7));
+                BYTE data = tpc8300->upd16434[i]->info.imem[0x27 - j];
+                for (b=0;b<8;b++)
+                {
+                    painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
+                    painter.drawPoint(j + j/5 + i*48,b + (b==7));
+                }
             }
-        }
-        for (int j = 0; j< 0x32;j++)
-        {
-            BYTE data = tpc8300->upd16434[i]->info.imem[0x71-j];
-            for (b=0;b<8;b++)
+            for (int j = 0; j< 0x28;j++)
             {
-                painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
-                painter.drawPoint(j + j/5 + i*60,b + (b==7)+12);
+                BYTE data = tpc8300->upd16434[i]->info.imem[0x67-j];
+                for (b=0;b<8;b++)
+                {
+                    painter.setPen(((data>>b)&0x01)? Color_On : Color_Off);
+                    painter.drawPoint(j + j/5 + i*48,b + (b==7)+12);
+                }
             }
         }
     }

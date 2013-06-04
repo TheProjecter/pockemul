@@ -108,7 +108,7 @@ Clbc1100::~Clbc1100() {
 bool Clbc1100::init(void)				// initialize
 {
 
-//pCPU->logsw = true;
+pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
 //    pCPU->logsw = true;
 //    if (!fp_log) fp_log=fopen("lbc1100.log","wt");	// Open log file

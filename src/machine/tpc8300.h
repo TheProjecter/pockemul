@@ -43,7 +43,7 @@ public:
     UINT16 getKey();
 
     Cupd7907 *upd7907;
-    CUPD16434 *upd16434[4];
+    CUPD16434 *upd16434[3];
     CPD1990AC *pd1990ac;
 
 //    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
