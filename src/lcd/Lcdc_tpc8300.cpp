@@ -13,9 +13,9 @@
 
 Clcdc_tpc8300::Clcdc_tpc8300(CPObject *parent )	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
-                        (int) (154*contrast),
-                        (int) (145*contrast),
-                        (int) (116*contrast));
+                        (int) (101*contrast),
+                        (int) (99*contrast),
+                        (int) (92*contrast));
 }
 
 

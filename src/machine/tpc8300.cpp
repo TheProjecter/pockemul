@@ -154,7 +154,13 @@ bool Ctpc8300::run() {
     if (upd7907->upd7907stat.serialPending)
     {
         upd7907->upd7907stat.serialPending = false;
-        switch (LCD_PORT>>6) {
+        switch (LCD_PORT) {
+        case 0x77:  // PRINTER PORT
+        case 0x7F:
+            sendToPrinter = data;
+            AddLog(LOG_CONSOLE,tr("PRINTER:%1=(%2)").arg(data).arg(QChar(data)));
+            upd7907->upd7907stat.imem[0x08] = 0;
+            break;
         default:   // LCD transmission
         {
             // flip flop PB1 0-2-0
@@ -169,19 +175,16 @@ bool Ctpc8300::run() {
 
             quint8 cmddata = (LCD_PORT >> 6) & 0x01;
             switch(cmddata) {
-            case 0x01: qWarning()<<"lcd cmd:"<<currentLCDctrl;upd16434[currentLCDctrl]->instruction(data);
+            case 0x01: /*qWarning()<<"lcd cmd:"<<currentLCDctrl;*/upd16434[currentLCDctrl]->instruction(data);
                 break;
-            case 0x00: qWarning()<<"lcd data:"<<currentLCDctrl;upd16434[currentLCDctrl]->data(data);
+            case 0x00: /*qWarning()<<"lcd data:"<<currentLCDctrl*/;upd16434[currentLCDctrl]->data(data);
                 break;
             }
              upd16434[currentLCDctrl]->updated = true;
 //            upd7907->upd7907stat.imem[0x08] = 0;
         }
             break;
-//        case 0x00:  // PRINTER PORT
-//            sendToPrinter = data;
-//            upd7907->upd7907stat.imem[0x08] = 0;
-//            break;
+
         }
 
     }
@@ -317,7 +320,7 @@ UINT16 Ctpc8300::getKey()
     if ((pKEYB->LastKey) && ks )
     {
 //        if (fp_log) fprintf(fp_log,"KSTROBE=%04X\n",ks);
-        qWarning()<<QString("ks:%1").arg(ks,4,16,QChar('0'));
+//        qWarning()<<QString("ks:%1").arg(ks,4,16,QChar('0'));
 
         if (ks&0x01) {
             if (KEY('Q'))			data|=0x01;

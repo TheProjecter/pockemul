@@ -81,7 +81,7 @@ bool Ctp83::init(void) {
 
     PaperFeed();PaperFeed();
 
-    charSize = 1;
+    charSize = 2;
 
     return true;
 }
@@ -95,10 +95,12 @@ bool Ctp83::run(void) {
     //
     quint8 c = pCONNECTOR->Get_values();
 
-    if ( c>0 && c != 0xff && c !=0x0a) {
-        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
+    if ( c>0) {
         SET_PIN(9,1);
-        Command(c);
+        if (c != 0xff && c !=0x0a) {
+            AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
+            Command(c);
+        }
     }
 
     pCONNECTOR_value = pCONNECTOR->Get_values();
