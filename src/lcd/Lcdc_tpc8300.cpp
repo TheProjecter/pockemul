@@ -51,7 +51,7 @@ void Clcdc_tpc8300::disp(void)
 
         if (tpc8300->upd16434[i]->updated) {
             Refresh = true;
-            qWarning()<<"update:"<<i;
+//            qWarning()<<"update:"<<i;
             //AddLog(LOG_DISPLAY,"DISP");
             tpc8300->upd16434[i]->updated = false;
             for (int j = 0; j< 0x28;j++)

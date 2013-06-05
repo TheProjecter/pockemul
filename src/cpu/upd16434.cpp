@@ -286,7 +286,7 @@ bool CUPD16434::step()
 }
 
 void CUPD16434::addChar(quint8 c,bool right) {
-    qWarning()<<"UPD16434 ADD CHAR at "<<info.dataPointer<<": "<<c<<"=("<<QChar(c)<<")";
+//    qWarning()<<"UPD16434 ADD CHAR at "<<info.dataPointer<<": "<<c<<"=("<<QChar(c)<<")";
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 ADD CHAR at %i: %02x=(%c)\n",info.dataPointer,c,c);
     for (int i = 0;i<5;i++) {
         info.imem[info.dataPointer] = upd16434charfont5x7[(c-0x20)*5+4-i];
@@ -339,7 +339,7 @@ BYTE CUPD16434::instruction(quint8 cmd)
     if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"UPD16434 CMD: %02x\n",cmd);
 
 //    AddLog(LOG_DISPLAY,tr("UPD16434 CMD:%1").arg(cmd,4,16,QChar('0')));
-    qWarning()<<"UPD16434 CMD:"<<cmd;
+//    qWarning()<<"UPD16434 CMD:"<<cmd;
 
     if ((cmd & MASK_LDPI) == MASK_LDPI ) { return cmd_LDPI(cmd); }
     else
