@@ -126,6 +126,7 @@ MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainW
 server = new ServeurTcp(this);
 #endif
 
+
 qWarning("create");
 
 }
@@ -924,6 +925,8 @@ void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
 #ifndef EMSCRIPTEN
     downloadManager->resize();
 #endif
+    zoomSlider->setGeometry(mainwindow->width()-30,20,20,mainwindow->height()-40);
+
 }
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)

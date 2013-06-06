@@ -118,6 +118,7 @@ bool Ctpc8300::init(void)				// initialize
                                      QPoint(0,158));
     publish(pCONNECTOR);
 
+    WatchPoint.remove(this);
     WatchPoint.add(&pCONNECTOR_value,64,20,this,"20 pins connector");
 
     portB = 0;
@@ -216,7 +217,7 @@ bool Ctpc8300::Chk_Adr_R(DWORD *d, DWORD data)
 UINT8 Ctpc8300::in(UINT8 Port)
 {
     switch (Port) {
-    case 0x01 : return portB ;// | (pTAPECONNECTOR->Get_pin(1) ? 0x80 : 0x00); break;
+    case 0x01 : return portB | (pCONNECTOR->Get_pin(12) ? 0x80 : 0x00); break;
     case 0x02 : return (getKey() & 0x3F); break;
     }
 
@@ -246,15 +247,16 @@ UINT16 Ctpc8300::out16(UINT16 address, UINT16 value)
 
 bool Ctpc8300::Set_Connector()
 {
-//    pTAPECONNECTOR->Set_pin(3,true);       // RMT
-//    pTAPECONNECTOR->Set_pin(2,upd7907->upd7907stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
-
     if (sendToPrinter>0) {
         pCONNECTOR->Set_values(sendToPrinter);
         AddLog(LOG_PRINTER,QString("Send Char:%1").arg(sendToPrinter,2,16,QChar('0')));
     }
     else
         pCONNECTOR->Set_values(0);
+
+    // TAPE
+    pCONNECTOR->Set_pin(10,true);       // RMT
+    pCONNECTOR->Set_pin(11,upd7907->upd7907stat.imem[0x00] & 0x10 ? 0xff : 0x00);    // Out
 
     return true;
 }

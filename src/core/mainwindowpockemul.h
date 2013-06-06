@@ -75,6 +75,8 @@ public:
     ASKYN saveAll;
     float	zoom;
 
+    QSlider *zoomSlider;
+
     void doZoom(QPoint point, float delta, int step=10);
 
     bool event(QEvent *event);

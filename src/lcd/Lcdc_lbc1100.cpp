@@ -42,7 +42,7 @@ void Clcdc_lbc1100::disp(void)
     if (!ready) return;
     if (!lbc1100->upd16434[0]) return;
 
-    qWarning()<<"update";
+//    qWarning()<<"update";
 
 
     disp_symb();
