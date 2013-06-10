@@ -267,17 +267,12 @@ bool CUPD16434::exit()
 
 void CUPD16434::Reset()
 {
-//    for (int i = 0 ; i < 0x80 ; i++)
-//    {
-//        info.imem[i] = 0;
-//    }
-
     memset(info.imem,0,sizeof(info.imem));
     info.mode = SWM;
     info.on_off = 0;
     info.dataPointer = 0;
     info.status = 0;
-    updated = false;
+    updated = true;
 }
 
 bool CUPD16434::step()

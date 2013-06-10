@@ -133,7 +133,7 @@ public:
     DWORD   Get_d(BYTE len);
     DWORD   Get_d2(BYTE len, BYTE *r);
 
-    short   Step_sc62015_();
+    void Step_sc62015_();
 
 //    void    set_mem(DWORD adr, int size, DWORD data);
 //    DWORD   get_mem(DWORD adr, int size);

@@ -38,7 +38,7 @@
 #define		SLOT2			1
 #define		SLOT3			2
 #define		EMS				3
-#define		SLOT3EXT		4
+//#define		SLOT3EXT		4
 
 
 
@@ -62,8 +62,6 @@ Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
     logsw=0;				//log mode?(0:off, 1:on)
     usestatus=0;
     fp_status=0;
-    fn_status="e500e.sta";
-    fn_log="sc62015.log";
     CallSubLevel=0;
 
     div500	= div2	= false;
@@ -279,6 +277,7 @@ inline DWORD Csc62015::Get_r(BYTE r)
 	case	6:return(reg.x.u ); break;
 	case	7:return(reg.x.s ); break;
 	}
+    return 0;
 }
 
 /*****************************************************************************/
@@ -1544,8 +1543,7 @@ inline void Csc62015::Op_6e(void)
 /* XOR A,(n) */
 inline void Csc62015::Op_6f(void)
 {
-	register BYTE	a;
-	register DWORD	t;
+    DWORD	t;
     t=reg.r.a^Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1627,8 +1625,7 @@ inline void Csc62015::Op_76(void)
 /* AND A,(n) */
 inline void Csc62015::Op_77(void)
 {
-	register BYTE	a;
-	register DWORD	t;
+    DWORD	t;
     t=reg.r.a&Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1724,8 +1721,7 @@ inline void Csc62015::Op_7e(void)
 /* OR A,(n) */
 inline void Csc62015::Op_7f(void)
 {
-	register BYTE	a;
-	register DWORD	t;
+    DWORD	t;
     t=reg.r.a|Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -2937,7 +2933,7 @@ inline void Csc62015::Op_ff(void)
 
 
 /* execute one operation code(for after pre byte) */
-inline short Csc62015::Step_sc62015_(void)
+void Csc62015::Step_sc62015_(void)
 {
 	register DWORD t;
 	t=reg.x.p;
@@ -2982,6 +2978,7 @@ bool Csc62015::Mem_Load(BYTE s)
 	}else printf("file not found(%s).\n",SlotName[s]);
 	return(r);
 #endif
+    return true;
 }
 /*****************************************************************************/
 /* Load EMS from file														 */
@@ -3026,6 +3023,7 @@ bool Csc62015::EMS_Load(void)
 	}else printf("file not found(%s).\n",SlotName[EMS]);
 	return(r);
 #endif
+    return true;
 }
 /*****************************************************************************/
 /* Save Memory to file														 */
@@ -3174,6 +3172,7 @@ bool Csc62015::exit(void)
 			fclose(fp_status);
 		}
 	}
+    return true;
 }
 
 /*****************************************************************************/
@@ -3510,6 +3509,7 @@ DWORD Csc62015::get_reg(REGNAME regname)
 	case REG_F :return(reg.x.f);
     case REG_PC :return(reg.r.pc);
 	}
+    return 0;
 }
 
 /*****************************************************************************/
@@ -3530,6 +3530,7 @@ void Csc62015::set_reg(REGNAME regname,DWORD data)
 	case REG_S :reg.x.s =data; break;
 	case REG_P :reg.x.p =data; break;
 	case REG_F :reg.x.f =data; break;
+    default: break;
 	}
 }
 
@@ -3718,7 +3719,7 @@ void Csc62015::Set_Xout(bool data)
 
 INLINE void Csc62015::compute_xout(void)
 {
-    qint64 delta;
+
     qint64 wait2khz = pPC->getfrequency()/1000/4;
     qint64 wait4khz = pPC->getfrequency()/1000/8;
 
@@ -3744,8 +3745,7 @@ INLINE void Csc62015::compute_xout(void)
                         if (fp_log) fprintf(fp_log,"XOUT 2Khz INIT\n");
                         Xout = true;
                     }
-                    delta = pPC->pTIMER->state - start2khz;
-                    //while
+
                     if ((pPC->pTIMER->state - start2khz) >= wait2khz){
                         Xout = !Xout;
                         start2khz += wait2khz;
@@ -3762,8 +3762,7 @@ INLINE void Csc62015::compute_xout(void)
                         if (fp_log) fprintf(fp_log,"XOUT 4Khz INIT\n");
                         Xout = true;
                     }
-                    delta = pPC->pTIMER->state - start4khz;
-                    //while
+
                     if (( pPC->pTIMER->state - start4khz) >= wait4khz)
                     {
                         Xout = !Xout;
@@ -3811,263 +3810,263 @@ DWORD Cdebug_sc62015::DisAsm_1(DWORD adr)
     }	DisAsmTbl;
 
     DisAsmTbl	d[]={
-         1,"NOP",						/* 00h */
-         1,"RETI",
-        -3,"JP    %02X%02X",
-        -4,"JPF   %1X%02X%02X",
-        -3,"CALL  %02X%02X",
-        -4,"CALLF %1X%02X%02X",
-         1,"RET",
-         1,"RETF",
-         2,"MV    A,%02X",
-         2,"MV    IL,%02X",
-        -3,"MV    BA,%02X%02X",
-        -3,"MV    I,%02X%02X",
-        -4,"MV    X,%1X%02X%02X",
-        -4,"MV    Y,%1X%02X%02X",
-        -4,"MV    U,%1X%02X%02X",
-        -4,"MV    S,%1X%02X%02X",
-         2,"JP    (%02X)",					/* 10h */
-        10,"JP    %s",
-         2,"JR    +%02X",
-         2,"JR    -%02X",
-        -3,"JPZ   %02X%02X",
-        -3,"JPNZ  %02X%02X",
-        -3,"JPC   %02X%02X",
-        -3,"JPNC  %02X%02X",
-         2,"JRZ   +%02X",
-         2,"JRZ   -%02X",
-         2,"JRNZ  +%02X",
-         2,"JRNZ  -%02X",
-         2,"JRC   +%02X",
-         2,"JRC   -%02X",
-         2,"JRNC  +%02X",
-         2,"JRNC  -%02X",
-         1,"???   (20)",					/* 20h */
-         1,"PRE   21",
-         1,"PRE   22",
-         1,"PRE   23",
-         1,"PRE   24",
-         1,"PRE   25",
-         1,"PRE   26",
-         1,"PRE   27",
-         1,"PUSHU A",
-         1,"PUSHU IL",
-         1,"PUSHU BA",
-         1,"PUSHU I",
-         1,"PUSHU X",
-         1,"PUSHU Y",
-         1,"PUSHU F",
-         1,"PUSHU IMR",
-         1,"PRE   30",					/* 30h */
-         1,"PRE   31",
-         1,"PRE   32",
-         1,"PRE   33",
-         1,"PRE   34",
-         1,"PRE   35",
-         1,"PRE   36",
-         1,"PRE   37",
-         1,"POPU  A",
-         1,"POPU  IL",
-         1,"POPU  BA",
-         1,"POPU  I",
-         1,"POPU  X",
-         1,"POPU  Y",
-         1,"POPU  F",
-         1,"POPU  IMR",
-         2,"ADD   A,%02X",						/* 40h */
-         3,"ADD   (%02X),%02X",
-         2,"ADD   A,(%02X)",
-         2,"ADD   (%02X),A",
-        11,"ADD   %s,%s",
-        11,"ADD   %s,%s",
-        11,"ADD   %s,%s",
-         3,"PMDF  (%02X),%02X",
-         2,"SUB   A,%02X",
-         3,"SUB   (%02X),%02X",
-         2,"SUB   A,(%02X)",
-         2,"SUB   (%02X),A",
-        11,"SUB   %s,%s",
-        11,"SUB   %s,%s",
-        11,"SUB   %s,%s",
-         1,"PUSHS F",
-         2,"ADC   A,%02X",						/* 50h */
-         3,"ADC   (%02X),%02X",
-         2,"ADC   A,(%02X)",
-         2,"ADC   (%02X),A",
-         3,"ADCL  (%02X),(%02X)",
-         2,"ADCL  (%02X),A",
-        12,"MVL   (%02X),[%s%s%02X]",
-         2,"PMDF  (%02X),a",
-         2,"SBC   A,%02X",
-         3,"SBC   (%02X),%02X",
-         2,"SBC   A,(%02X)",
-         2,"SBC   (%02X),A",
-         3,"SBCL  (%02X),(%02X)",
-         2,"SBCL  (%02X),A",
-        13,"MVL   [%s%s%02X],(%02X)",
-         1,"POPS  F",
-         2,"CMP   A,%02X",						/* 60h */
-         3,"CMP   (%02X),%02X",
-         5,"CMP   [%1X%02X%02X],%02X",
-         2,"CMP   (%02X),A",
-         2,"TEST  A,%02X",
-         3,"TEST  (%02X),%02X",
-         5,"TEST  [%1X%02X%02X],%02X",
-         2,"TEST  (%02X),A",
-         2,"XOR   A,%02X",
-         3,"XOR   (%02X),%02X",
-         5,"XOR   [%1X%02X%02X],%02X",
-         2,"XOR   (%02X),A",
-        10,"INC   %s",
-         2,"INC   (%02X)",
-         3,"XOR   (%02X),(%02X)",
-         2,"XOR   A,(%02X)",
-         2,"AND   A,%02X",						/* 70h */
-         3,"AND   (%02X),%02X",
-         5,"AND   [%1X%02X%02X],%02X",
-         2,"AND   (%02X),A",
-         1,"MV    A,B",
-         1,"MV    B,A",
-         3,"AND   (%02X),(%02X)",
-         2,"AND   A,(%02X)",
-         2,"OR    A,%02X",
-         3,"OR    (%02X),%02X",
-         5,"OR    [%1X%02X%02X],%02X",
-         2,"OR    (%02X),A",
-        10,"DEC   %s",
-         2,"DEC   (%02X)",
-         3,"OR    (%02X),(%02X)",
-         2,"OR    A,(%02X)",
-         2,"MV    A,(%02X)",					/* 80h */
-         2,"MV    IL,(%02X)",
-         2,"MV    BA,(%02X)",
-         2,"MV    I,(%02X)",
-         2,"MV    X,(%02X)",
-         2,"MV    Y,(%02X)",
-         2,"MV    U,(%02X)",
-         2,"MV    S,(%02X)",
-        -4,"MV    A,[%1X%02X%02X]",
-        -4,"MV    IL,[%1X%02X%02X]",
-        -4,"MV    BA,[%1X%02X%02X]",
-        -4,"MV    I,[%1X%02X%02X]",
-        -4,"MV    X,[%1X%02X%02X]",
-        -4,"MV    Y,[%1X%02X%02X]",
-        -4,"MV    U,[%1X%02X%02X]",
-        -4,"MV    S,[%1X%02X%02X]",
-        14,"MV    A,[%s]",						/* 90h */
-        14,"MV    IL,[%s]",
-        14,"MV    BA,[%s]",
-        14,"MV    I,[%s]",
-        14,"MV    X,[%s]",
-        14,"MV    Y,[%s]",
-        14,"MV    U,[%s]",
-         1,"SC",
-        15,"MV    A,[(%02X)%s]",
-        15,"MV    IL,[(%02X)%s]",
-        15,"MV    BA,[(%02X)%s]",
-        15,"MV    I,[(%02X)%s]",
-        15,"MV    X,[(%02X)%s]",
-        15,"MV    Y,[(%02X)%s]",
-        15,"MV    U,[(%02X)%s]",
-         1,"RC",
-         2,"MV    (%02X),A",					/* a0h */
-         2,"MV    (%02X),IL",
-         2,"MV    (%02X),BA",
-         2,"MV    (%02X),I",
-         2,"MV    (%02X),X",
-         2,"MV    (%02X),Y",
-         2,"MV    (%02X),U",
-         2,"MV    (%02X),S",
-        -4,"MV    [%1X%02X%02X],A",
-        -4,"MV    [%1X%02X%02X],IL",
-        -4,"MV    [%1X%02X%02X],BA",
-        -4,"MV    [%1X%02X%02X],I",
-        -4,"MV    [%1X%02X%02X],X",
-        -4,"MV    [%1X%02X%02X],Y",
-        -4,"MV    [%1X%02X%02X],U",
-        -4,"MV    [%1X%02X%02X],S",
-        14,"MV    [%s],A",						/* b0h */
-        14,"MV    [%s],IL",
-        14,"MV    [%s],BA",
-        14,"MV    [%s],I",
-        14,"MV    [%s],X",
-        14,"MV    [%s],Y",
-        14,"MV    [%s],U",
-         3,"CMP   (%02X),(%02X)",
-        15,"MV    [(%02X)%s],A",
-        15,"MV    [(%02X)%s],IL",
-        15,"MV    [(%02X)%s],BA",
-        15,"MV    [(%02X)%s],I",
-        15,"MV    [(%02X)%s],X",
-        15,"MV    [(%02X)%s],Y",
-        15,"MV    [(%02X)%s],U",
-         1,"???   (BF)",
-         3,"EX    (%02X),(%02X)",				/* c0h */
-         3,"EXW   (%02X),(%02X)",
-         3,"EXP   (%02X),(%02X)",
-         3,"EXL   (%02X),(%02X)",
-         3,"DADL  (%02X),(%02X)",
-         2,"DADL  (%02X),A",
-         3,"CMPW  (%02X),(%02X)",
-         3,"CMPP  (%02X),(%02X)",
-         3,"MV    (%02X),(%02X)",
-         3,"MVW   (%02X),(%02X)",
-         3,"MVP   (%02X),(%02X)",
-         3,"MVL   (%02X),(%02X)",
-         3,"MV    (%02X),%02X",
-         4,"MVW   (%02X),%02X%02X",
-         1,"TCL",
-         3,"MVLD  (%02X),(%02X)",
-        -5,"MV    (%02X),[%1X%02X%02X]",				/* d0h */
-        -5,"MVW   (%02X),[%1X%02X%02X]",
-        -5,"MVP   (%02X),[%1X%02X%02X]",
-        -5,"MVL   (%02X),[%1X%02X%02X]",
-         3,"DSBL  (%02X),(%02X)",
-         2,"DSBL  (%02X),A",
-        16,"CMPW  (%02X),%s",
-        16,"CMPP  (%02X),%s",
-         5,"MV    [%1X%02X%02X],(%02X)",
-         5,"MVW   [%1X%02X%02X],(%02X)",
-         5,"MVP   [%1X%02X%02X],(%02X)",
-         5,"MVL   [%1X%02X%02X],(%02X)",
-        -5,"MVP   (%02X),%1X%02X%02X",
-         1,"EX    A,B",
-         1,"HALT",
-         1,"OFF",
-        17,"MV    (%02X),[%s]",						/* e0h */
-        17,"MVW   (%02X),[%s]",
-        17,"MVP   (%02X),[%s]",
-        17,"MVL   (%02X),[%s]",
-         1,"ROR   A",
-         2,"ROR   (%02X)",
-         1,"ROL   A",
-         2,"ROL   (%02X)",
-        18,"MV    [%s],(%02X)",
-        18,"MVW   [%s],(%02X)",
-        18,"MVP   [%s],(%02X)",
-        18,"MVL   [%s],(%02X)",
-         2,"DSLL  (%02X)",
-        11,"EX    %s,%s",
-         1,"SWAP  A",
-         1,"WAIT",
-        19,"MV    (%02X),[(%02X)%s]",					/* f0h */
-        19,"MVW   (%02X),[(%02X)%s]",
-        19,"MVP   (%02X),[(%02X)%s]",
-        19,"MVL   (%02X),[(%02X)%s]",
-         1,"SHR   A",
-         2,"SHR   (%02X)",
-         1,"SHL   A",
-         2,"SHL   (%02X)",
-        20,"MV    [(%02X)%s],(%02X)",
-        20,"MVW   [(%02X)%s],(%02X)",
-        20,"MVP   [(%02X)%s],(%02X)",
-        20,"MVL   [(%02X)%s],(%02X)",
-         2,"DSRL  (%02X)",
-        11,"MV    %s,%s",
-         1,"IR",
-         1,"RESET"};
-    char	*reg[]={"A","IL","BA","I","X","Y","U","S"};
+         {1,"NOP"},						/* 00h */
+         {1,"RETI"},
+        {-3,"JP    %02X%02X"},
+        {-4,"JPF   %1X%02X%02X"},
+        {-3,"CALL  %02X%02X"},
+        {-4,"CALLF %1X%02X%02X"},
+         {1,"RET"},
+         {1,"RETF"},
+         {2,"MV    A,%02X"},
+         {2,"MV    IL,%02X"},
+        {-3,"MV    BA,%02X%02X"},
+        {-3,"MV    I,%02X%02X"},
+        {-4,"MV    X,%1X%02X%02X"},
+        {-4,"MV    Y,%1X%02X%02X"},
+        {-4,"MV    U,%1X%02X%02X"},
+        {-4,"MV    S,%1X%02X%02X"},
+         {2,"JP    (%02X)"},					/* 10h */
+        {10,"JP    %s"},
+         {2,"JR    +%02X"},
+         {2,"JR    -%02X"},
+        {-3,"JPZ   %02X%02X"},
+        {-3,"JPNZ  %02X%02X"},
+        {-3,"JPC   %02X%02X"},
+        {-3,"JPNC  %02X%02X"},
+        { 2,"JRZ   +%02X"},
+        { 2,"JRZ   -%02X"},
+        { 2,"JRNZ  +%02X"},
+        { 2,"JRNZ  -%02X"},
+        { 2,"JRC   +%02X"},
+        { 2,"JRC   -%02X"},
+        { 2,"JRNC  +%02X"},
+        { 2,"JRNC  -%02X"},
+        { 1,"???   (20)"},					/* 20h */
+        { 1,"PRE   21"},
+        { 1,"PRE   22"},
+        { 1,"PRE   23"},
+        { 1,"PRE   24"},
+        { 1,"PRE   25"},
+        { 1,"PRE   26"},
+        { 1,"PRE   27"},
+        { 1,"PUSHU A"},
+        { 1,"PUSHU IL"},
+        { 1,"PUSHU BA"},
+        { 1,"PUSHU I"},
+        { 1,"PUSHU X"},
+        { 1,"PUSHU Y"},
+        { 1,"PUSHU F"},
+        { 1,"PUSHU IMR"},
+        { 1,"PRE   30"},					/* 30h */
+        { 1,"PRE   31"},
+        { 1,"PRE   32"},
+        { 1,"PRE   33"},
+        { 1,"PRE   34"},
+        { 1,"PRE   35"},
+        { 1,"PRE   36"},
+        { 1,"PRE   37"},
+        { 1,"POPU  A"},
+        { 1,"POPU  IL"},
+        { 1,"POPU  BA"},
+        { 1,"POPU  I"},
+        { 1,"POPU  X"},
+        { 1,"POPU  Y"},
+        { 1,"POPU  F"},
+        { 1,"POPU  IMR"},
+        { 2,"ADD   A,%02X"},						/* 40h */
+        { 3,"ADD   (%02X),%02X"},
+        { 2,"ADD   A,(%02X)"},
+        { 2,"ADD   (%02X),A"},
+        {11,"ADD   %s,%s"},
+        {11,"ADD   %s,%s"},
+        {11,"ADD   %s,%s"},
+        { 3,"PMDF  (%02X),%02X"},
+        { 2,"SUB   A,%02X"},
+       {  3,"SUB   (%02X),%02X"},
+         {2,"SUB   A,(%02X)"},
+         {2,"SUB   (%02X),A"},
+        {11,"SUB   %s,%s"},
+        {11,"SUB   %s,%s"},
+        {11,"SUB   %s,%s"},
+        { 1,"PUSHS F"},
+        { 2,"ADC   A,%02X"},						/* 50h */
+        { 3,"ADC   (%02X),%02X"},
+        { 2,"ADC   A,(%02X)"},
+        { 2,"ADC   (%02X),A"},
+        { 3,"ADCL  (%02X),(%02X)"},
+        { 2,"ADCL  (%02X),A"},
+        {12,"MVL   (%02X),[%s%s%02X]"},
+        { 2,"PMDF  (%02X),a"},
+        { 2,"SBC   A,%02X"},
+        { 3,"SBC   (%02X),%02X"},
+        { 2,"SBC   A,(%02X)"},
+        { 2,"SBC   (%02X),A"},
+        { 3,"SBCL  (%02X),(%02X)"},
+        { 2,"SBCL  (%02X),A"},
+        {13,"MVL   [%s%s%02X],(%02X)"},
+        { 1,"POPS  F"},
+        { 2,"CMP   A,%02X"},						/* 60h */
+        { 3,"CMP   (%02X),%02X"},
+        { 5,"CMP   [%1X%02X%02X],%02X"},
+        { 2,"CMP   (%02X),A"},
+        { 2,"TEST  A,%02X"},
+        { 3,"TEST  (%02X),%02X"},
+        { 5,"TEST  [%1X%02X%02X],%02X"},
+        { 2,"TEST  (%02X),A"},
+        { 2,"XOR   A,%02X"},
+        { 3,"XOR   (%02X),%02X"},
+        { 5,"XOR   [%1X%02X%02X],%02X"},
+        { 2,"XOR   (%02X),A"},
+        {10,"INC   %s"},
+        { 2,"INC   (%02X)"},
+        { 3,"XOR   (%02X),(%02X)"},
+        { 2,"XOR   A,(%02X)"},
+        { 2,"AND   A,%02X"},						/* 70h */
+        { 3,"AND   (%02X),%02X"},
+        { 5,"AND   [%1X%02X%02X],%02X"},
+        { 2,"AND   (%02X),A"},
+        { 1,"MV    A,B"},
+        { 1,"MV    B,A"},
+        { 3,"AND   (%02X),(%02X)"},
+        { 2,"AND   A,(%02X)"},
+        { 2,"OR    A,%02X"},
+        { 3,"OR    (%02X),%02X"},
+        { 5,"OR    [%1X%02X%02X],%02X"},
+        { 2,"OR    (%02X),A"},
+        {10,"DEC   %s"},
+        { 2,"DEC   (%02X)"},
+        { 3,"OR    (%02X),(%02X)"},
+        { 2,"OR    A,(%02X)"},
+        { 2,"MV    A,(%02X)"},					/* 80h */
+        { 2,"MV    IL,(%02X)"},
+        { 2,"MV    BA,(%02X)"},
+        { 2,"MV    I,(%02X)"},
+        { 2,"MV    X,(%02X)"},
+        { 2,"MV    Y,(%02X)"},
+        { 2,"MV    U,(%02X)"},
+        { 2,"MV    S,(%02X)"},
+        {-4,"MV    A,[%1X%02X%02X]"},
+        {-4,"MV    IL,[%1X%02X%02X]"},
+        {-4,"MV    BA,[%1X%02X%02X]"},
+        {-4,"MV    I,[%1X%02X%02X]"},
+        {-4,"MV    X,[%1X%02X%02X]"},
+        {-4,"MV    Y,[%1X%02X%02X]"},
+        {-4,"MV    U,[%1X%02X%02X]"},
+        {-4,"MV    S,[%1X%02X%02X]"},
+        {14,"MV    A,[%s]"},						/* 90h */
+        {14,"MV    IL,[%s]"},
+        {14,"MV    BA,[%s]"},
+        {14,"MV    I,[%s]"},
+        {14,"MV    X,[%s]"},
+        {14,"MV    Y,[%s]"},
+        {14,"MV    U,[%s]"},
+        { 1,"SC"},
+        {15,"MV    A,[(%02X)%s]"},
+        {15,"MV    IL,[(%02X)%s]"},
+        {15,"MV    BA,[(%02X)%s]"},
+        {15,"MV    I,[(%02X)%s]"},
+        {15,"MV    X,[(%02X)%s]"},
+        {15,"MV    Y,[(%02X)%s]"},
+        {15,"MV    U,[(%02X)%s]"},
+        { 1,"RC"},
+        { 2,"MV    (%02X),A"},					/* a0h */
+        { 2,"MV    (%02X),IL"},
+        { 2,"MV    (%02X),BA"},
+        { 2,"MV    (%02X),I"},
+        { 2,"MV    (%02X),X"},
+        { 2,"MV    (%02X),Y"},
+        { 2,"MV    (%02X),U"},
+        { 2,"MV    (%02X),S"},
+        {-4,"MV    [%1X%02X%02X],A"},
+        {-4,"MV    [%1X%02X%02X],IL"},
+        {-4,"MV    [%1X%02X%02X],BA"},
+        {-4,"MV    [%1X%02X%02X],I"},
+        {-4,"MV    [%1X%02X%02X],X"},
+        {-4,"MV    [%1X%02X%02X],Y"},
+        {-4,"MV    [%1X%02X%02X],U"},
+        {-4,"MV    [%1X%02X%02X],S"},
+        {14,"MV    [%s],A"},						/* b0h */
+        {14,"MV    [%s],IL"},
+        {14,"MV    [%s],BA"},
+        {14,"MV    [%s],I"},
+        {14,"MV    [%s],X"},
+        {14,"MV    [%s],Y"},
+        {14,"MV    [%s],U"},
+        { 3,"CMP   (%02X),(%02X)"},
+        {15,"MV    [(%02X)%s],A"},
+        {15,"MV    [(%02X)%s],IL"},
+        {15,"MV    [(%02X)%s],BA"},
+        {15,"MV    [(%02X)%s],I"},
+        {15,"MV    [(%02X)%s],X"},
+        {15,"MV    [(%02X)%s],Y"},
+        {15,"MV    [(%02X)%s],U"},
+        { 1,"???   (BF)"},
+        { 3,"EX    (%02X),(%02X)"},				/* c0h */
+        { 3,"EXW   (%02X),(%02X)"},
+        { 3,"EXP   (%02X),(%02X)"},
+        { 3,"EXL   (%02X),(%02X)"},
+        { 3,"DADL  (%02X),(%02X)"},
+        { 2,"DADL  (%02X),A"},
+        { 3,"CMPW  (%02X),(%02X)"},
+        { 3,"CMPP  (%02X),(%02X)"},
+        { 3,"MV    (%02X),(%02X)"},
+        { 3,"MVW   (%02X),(%02X)"},
+        { 3,"MVP   (%02X),(%02X)"},
+        { 3,"MVL   (%02X),(%02X)"},
+        { 3,"MV    (%02X),%02X"},
+        { 4,"MVW   (%02X),%02X%02X"},
+        { 1,"TCL"},
+        { 3,"MVLD  (%02X),(%02X)"},
+        {-5,"MV    (%02X),[%1X%02X%02X]"},				/* d0h */
+        {-5,"MVW   (%02X),[%1X%02X%02X]"},
+        {-5,"MVP   (%02X),[%1X%02X%02X]"},
+        {-5,"MVL   (%02X),[%1X%02X%02X]"},
+        { 3,"DSBL  (%02X),(%02X)"},
+        { 2,"DSBL  (%02X),A"},
+        {16,"CMPW  (%02X),%s"},
+        {16,"CMPP  (%02X),%s"},
+        { 5,"MV    [%1X%02X%02X],(%02X)"},
+        { 5,"MVW   [%1X%02X%02X],(%02X)"},
+        { 5,"MVP   [%1X%02X%02X],(%02X)"},
+        { 5,"MVL   [%1X%02X%02X],(%02X)"},
+        {-5,"MVP   (%02X),%1X%02X%02X"},
+        { 1,"EX    A,B"},
+        { 1,"HALT"},
+        { 1,"OFF"},
+        {17,"MV    (%02X),[%s]"},						/* e0h */
+        {17,"MVW   (%02X),[%s]"},
+        {17,"MVP   (%02X),[%s]"},
+        {17,"MVL   (%02X),[%s]"},
+        { 1,"ROR   A"},
+        { 2,"ROR   (%02X)"},
+        { 1,"ROL   A"},
+        { 2,"ROL   (%02X)"},
+        {18,"MV    [%s],(%02X)"},
+        {18,"MVW   [%s],(%02X)"},
+        {18,"MVP   [%s],(%02X)"},
+        {18,"MVL   [%s],(%02X)"},
+        { 2,"DSLL  (%02X)"},
+        {11,"EX    %s,%s"},
+        { 1,"SWAP  A"},
+        { 1,"WAIT"},
+        {19,"MV    (%02X),[(%02X)%s]"},					/* f0h */
+        {19,"MVW   (%02X),[(%02X)%s]"},
+        {19,"MVP   (%02X),[(%02X)%s]"},
+        {19,"MVL   (%02X),[(%02X)%s]"},
+        { 1,"SHR   A"},
+        { 2,"SHR   (%02X)"},
+        { 1,"SHL   A"},
+        { 2,"SHL   (%02X)"},
+        {20,"MV    [(%02X)%s],(%02X)"},
+        {20,"MVW   [(%02X)%s],(%02X)"},
+        {20,"MVP   [(%02X)%s],(%02X)"},
+        {20,"MVL   [(%02X)%s],(%02X)"},
+        { 2,"DSRL  (%02X)"},
+        {11,"MV    %s,%s"},
+        { 1,"IR"},
+        { 1,"RESET"}};
+    const char	*reg[]={"A","IL","BA","I","X","Y","U","S"};
     char	l,b[16],s[32];
     BYTE	t,i;
 

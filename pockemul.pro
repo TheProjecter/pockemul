@@ -457,7 +457,8 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_lbc1100.h \
     src/machine/tpc8300.h \
     src/lcd/Lcdc_tpc8300.h \
-    src/machine/tp83.h
+    src/machine/tp83.h \
+    src/cpu/m6502.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -673,7 +674,8 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_lbc1100.cpp \
     src/machine/tpc8300.cpp \
     src/lcd/Lcdc_tpc8300.cpp \
-    src/machine/tp83.cpp
+    src/machine/tp83.cpp \
+    src/cpu/m6502.cpp
 
 
 
