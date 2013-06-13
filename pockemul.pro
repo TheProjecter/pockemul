@@ -458,7 +458,10 @@ HEADERS += src/core/Connect.h \
     src/machine/tpc8300.h \
     src/lcd/Lcdc_tpc8300.h \
     src/machine/tp83.h \
-    src/cpu/m6502.h
+    src/cpu/m6502.h \
+    src/machine/panasonic/rlh1000.h \
+    src/machine/panasonic/rlp6001.h \
+    src/machine/panasonic/rlp9001.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -524,7 +527,8 @@ RESOURCES +=  \
     src/core/lfhex/lfhex.qrc \
     resources/asmlibs.qrc \
     resources/core.qrc \
-    resources/tpc8300.qrc
+    resources/tpc8300.qrc \
+    resources/rlh1000.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -675,7 +679,11 @@ SOURCES += src/core/Connect.cpp \
     src/machine/tpc8300.cpp \
     src/lcd/Lcdc_tpc8300.cpp \
     src/machine/tp83.cpp \
-    src/cpu/m6502.cpp
+    src/cpu/m6502.cpp \
+    src/cpu/m6502_dasm.cpp \
+    src/machine/panasonic/rlh1000.cpp \
+    src/machine/panasonic/rlp6001.cpp \
+    src/machine/panasonic/rlp9001.cpp
 
 
 

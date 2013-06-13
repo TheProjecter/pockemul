@@ -180,7 +180,10 @@ enum Models {
     LBC1100,
     CL1000,
     TPC8300,
-    TP83
+    TP83,
+    RLH1000,
+    RLP6001,
+    RLP9001
 };
 
 #endif

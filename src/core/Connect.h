@@ -42,7 +42,8 @@ public:
         Centronics_36,
         DB_25,
         DIN_8,
-        General_20
+        General_20,
+        Panasonic_44
     };
 
     enum ConnectorDir

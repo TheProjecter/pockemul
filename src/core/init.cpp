@@ -86,7 +86,9 @@
 
 #include "tpc8300.h"
 #include "tp83.h"
-
+#include "panasonic/rlh1000.h"
+#include "panasonic/rlp6001.h"
+#include "panasonic/rlp9001.h"
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -184,6 +186,10 @@ CPObject *pPC=0;
         case CL1000  : pPC = new Ccl1000;       pPC->setName("General CL-1000"); break;
         case TPC8300 : pPC = new Ctpc8300;      pPC->setName("SANCO TPC-8300"); break;
         case TP83    : pPC = new Ctp83;         pPC->setName("SANCO TP-83"); break;
+
+        case RLH1000 : pPC = new Crlh1000;      pPC->setName("Panasonic HHC RL-H1000"); break;
+        case RLP6001 : pPC = new Crlp6001;      pPC->setName("Panasonic RL-P6001"); break;
+        case RLP9001 : pPC = new Crlp9001;      pPC->setName("Panasonic RL-P9001"); break;
 
         default			: return 0;
     }
