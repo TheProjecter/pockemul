@@ -3,15 +3,43 @@
 
 #include "cpu.h"
 
+#define SIG_CPU_OVERFLOW	0
+#define SIG_CPU_IRQ	101
+#define SIG_CPU_FIRQ	102
+#define SIG_CPU_NMI	103
+#define SIG_CPU_BUSREQ	104
+#define SIG_CPU_DEBUG	201
+
 typedef union {
 #ifdef POCKEMUL_BIG_ENDIAN
-    struct { quint8 h3,h2,h,l; } b;
-    struct { quint16 h,l; } w;
+    struct {
+        quint8 h3, h2, h, l;
+    } b;
+    struct {
+        qint8 h3, h2, h, l;
+    } sb;
+    struct {
+        quint16 h, l;
+    } w;
+    struct {
+        qint16 h, l;
+    } sw;
 #else
-    struct { quint8 l,h,h2,h3; } b;
-    struct { quint16 l,h; } w;
+    struct {
+        quint8 l, h, h2, h3;
+    } b;
+    struct {
+        quint16 l, h;
+    } w;
+    struct {
+        qint8 l, h, h2, h3;
+    } sb;
+    struct {
+        qint16 l, h;
+    } sw;
 #endif
     quint32 d;
+    qint32 sd;
 }	PAIR;
 
 class Cm6502:public CCPU{
@@ -34,8 +62,9 @@ public:
     virtual	bool	Get_Xout(void) { return true;}
     virtual	void	Set_Xout(bool) {}
 
-    virtual	DWORD	get_PC(void) {}					//get Program Counter
-    virtual void	Regs_Info(UINT8) {}
+    virtual	DWORD	get_PC(void);					//get Program Counter
+    virtual void    set_PC(DWORD);
+    virtual void	Regs_Info(UINT8);
 
 
     virtual void	Reset(void);

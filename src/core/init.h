@@ -183,7 +183,8 @@ enum Models {
     TP83,
     RLH1000,
     RLP6001,
-    RLP9001
+    RLP9001,
+    RLP1004A
 };
 
 #endif

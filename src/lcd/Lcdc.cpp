@@ -4,6 +4,7 @@
 //#include <string.h>
 #include <stdlib.h>
 #include <QPainter>
+#include <QDebug>
 
 #include "common.h"
 
@@ -1790,3 +1791,5 @@ void Clcdc_pc1500::disp(void)
 	redraw = 0;
 	painter.end();
 }
+
+

@@ -33,6 +33,7 @@ public:
     Cm6502 *m6502;
 
 private:
+    quint8 latchByte;
 
 };
 

@@ -461,7 +461,9 @@ HEADERS += src/core/Connect.h \
     src/cpu/m6502.h \
     src/machine/panasonic/rlh1000.h \
     src/machine/panasonic/rlp6001.h \
-    src/machine/panasonic/rlp9001.h
+    src/machine/panasonic/rlp9001.h \
+    src/machine/panasonic/rlp1004a.h \
+    src/lcd/Lcdc_rlh1000.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -683,7 +685,9 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502_dasm.cpp \
     src/machine/panasonic/rlh1000.cpp \
     src/machine/panasonic/rlp6001.cpp \
-    src/machine/panasonic/rlp9001.cpp
+    src/machine/panasonic/rlp9001.cpp \
+    src/machine/panasonic/rlp1004a.cpp \
+    src/lcd/Lcdc_rlh1000.cpp
 
 
 

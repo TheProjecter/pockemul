@@ -124,7 +124,7 @@ public:
     int		getfrequency() { return frequency; }
     void	setfrequency(int f) { frequency = f; }
 
-    QImage * LoadImage(QSize size, QString fname, bool Hmirror=false, bool Vmirror=false);
+    QImage * LoadImage(QSize size, QString fname, bool Hmirror=false, bool Vmirror=false, int angle=0);
 	bool	Refresh_Display;
 
 	QList<Cconnector*> ConnList;

@@ -193,12 +193,13 @@ public:
 class Cdebug_m6502:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr){}			//disasm 1 line to Buffer
+    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
 
         Cdebug_m6502(CPObject *parent)	: Cdebug(parent)
         {
         }
         virtual ~Cdebug_m6502(){}
 
+        int DasmOpe(char *S,BYTE *A,unsigned long PC);
 };
 #endif

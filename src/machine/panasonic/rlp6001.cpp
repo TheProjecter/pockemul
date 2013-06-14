@@ -50,10 +50,10 @@ bool Crlp6001::init(void)
 
     CPObject::init();
 
-    pMAINCONNECTOR = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins conector",false,QPoint(20,0)); publish(pMAINCONNECTOR);
+    pMAINCONNECTOR = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins conector",true,QPoint(20,0)); publish(pMAINCONNECTOR);
 
     for (int i=0;i<6;i++) {
-        pEXTCONNECTOR[i] = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins conector",true,QPoint(20,0));
+        pEXTCONNECTOR[i] = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins conector",false,QPoint(20,0));
         publish(pEXTCONNECTOR[i]);
 
     }

@@ -7,12 +7,13 @@
 
     [ Cm6502 ]
 */
-#if 1
+
 
 #include "m6502.h"
 #include "pcxxxx.h"
 #include "Inter.h"
 #include "ui/cregsz80widget.h"
+#include "Debug.h"
 
 // vectors
 #define NMI_VEC	0xfffa
@@ -81,10 +82,10 @@
 // branch relative
 
 #define BRA(cond) { \
-    quint8 tmp2 = RDOPARG(); \
+    int8 tmp2 = RDOPARG(); \
     if(cond) { \
         RDMEM(PCW); \
-        EAW = PCW + (quint8)tmp2; \
+        EAW = PCW + (int8)tmp2; \
         if(EAH != PCH) { \
             RDMEM((PCH << 8) | EAL) ; \
             CYCLES(1); \
@@ -218,7 +219,7 @@
 
 // write back a value from tmp to the last EA
 
-#define WB_ACC	A = (quint8)tmp;
+#define WB_ACC	A = (uint8)tmp;
 #define WB_EA	WRMEM(EAD, tmp)
 
 // opcodes
@@ -238,7 +239,7 @@
         if(sum & 0xff00) { \
             P |= F_C; \
         } \
-        A = (quint8)sum; \
+        A = (uint8)sum; \
     } \
     SET_NZ(A)
 #else
@@ -279,18 +280,18 @@
         if(sum & 0xff00) { \
             P |= F_C; \
         } \
-        A = (quint8)sum; \
+        A = (uint8)sum; \
         SET_NZ(A); \
     }
 #endif
 
 #define AND \
-    A = (quint8)(A & tmp); \
+    A = (uint8)(A & tmp); \
     SET_NZ(A)
 
 #define ASL \
     P = (P & ~F_C) | ((tmp >> 7) & F_C); \
-    tmp = (quint8)(tmp << 1); \
+    tmp = (uint8)(tmp << 1); \
     SET_NZ(tmp)
 
 #define BCC BRA(!(P & F_C))
@@ -335,42 +336,42 @@
     if(A >= tmp) { \
         P |= F_C; \
     } \
-    SET_NZ((quint8)(A - tmp))
+    SET_NZ((uint8)(A - tmp))
 #define CPX \
     P &= ~F_C; \
     if(X >= tmp) { \
         P |= F_C; \
     } \
-    SET_NZ((quint8)(X - tmp))
+    SET_NZ((uint8)(X - tmp))
 #define CPY \
     P &= ~F_C; \
     if(Y >= tmp) { \
         P |= F_C; \
     } \
-    SET_NZ((quint8)(Y - tmp))
+    SET_NZ((uint8)(Y - tmp))
 
 #define DEC \
-    tmp = (quint8)(tmp - 1); \
+    tmp = (uint8)(tmp - 1); \
     SET_NZ(tmp)
 #define DEX \
-    X = (quint8)(X - 1); \
+    X = (uint8)(X - 1); \
     SET_NZ(X)
 #define DEY \
-    Y = (quint8)(Y - 1); \
+    Y = (uint8)(Y - 1); \
     SET_NZ(Y)
 
 #define EOR \
-    A = (quint8)(A ^ tmp); \
+    A = (uint8)(A ^ tmp); \
     SET_NZ(A)
 
 #define INC \
-    tmp = (quint8)(tmp + 1); \
+    tmp = (uint8)(tmp + 1); \
     SET_NZ(tmp)
 #define INX \
-    X = (quint8)(X + 1); \
+    X = (uint8)(X + 1); \
     SET_NZ(X)
 #define INY \
-    Y = (quint8)(Y + 1); \
+    Y = (uint8)(Y + 1); \
     SET_NZ(Y)
 
 #define JMP PCD = EAD
@@ -380,27 +381,28 @@
     PUSH(PCH); \
     PUSH(PCL); \
     EAH = RDOPARG(); \
+    CallSubLevel++; \
     PCD = EAD
 
 #define LDA \
-    A = (quint8)tmp; \
+    A = (uint8)tmp; \
     SET_NZ(A)
 #define LDX \
-    X = (quint8)tmp; \
+    X = (uint8)tmp; \
     SET_NZ(X)
 #define LDY \
-    Y = (quint8)tmp; \
+    Y = (uint8)tmp; \
     SET_NZ(Y)
 
 #define LSR \
     P = (P & ~F_C) | (tmp & F_C); \
-    tmp = (quint8)tmp >> 1; \
+    tmp = (uint8)tmp >> 1; \
     SET_NZ(tmp)
 
 #define NOP
 
 #define ORA \
-    A = (quint8)(A | tmp); \
+    A = (uint8)(A | tmp); \
     SET_NZ(A)
 
 #define PHA PUSH(A)
@@ -426,12 +428,12 @@
 #define ROL \
     tmp = (tmp << 1) | (P & F_C); \
     P = (P & ~F_C) | ((tmp >> 8) & F_C); \
-    tmp = (quint8)tmp; \
+    tmp = (uint8)tmp; \
     SET_NZ(tmp)
 #define ROR \
     tmp |= (P & F_C) << 8; \
     P = (P & ~F_C) | (tmp & F_C); \
-    tmp = (quint8)(tmp >> 1); \
+    tmp = (uint8)(tmp >> 1); \
     SET_NZ(tmp)
 
 #define RTI \
@@ -440,6 +442,7 @@
     PULL(P); \
     PULL(PCL); \
     PULL(PCH); \
+    CallSubLevel--; \
     P |= F_T | F_B; \
     if(irq_state && !(P & F_I)) { \
         after_cli = true; \
@@ -450,7 +453,8 @@
     PULL(PCL); \
     PULL(PCH); \
     RDMEM(PCW); \
-    PCW++
+    PCW++; \
+    CallSubLevel--;
 
 #ifdef HAS_N2A03
 #define SBC \
@@ -464,7 +468,7 @@
         if((sum & 0xff00) == 0) { \
             P |= F_C; \
         } \
-        A = (quint8)sum; \
+        A = (uint8)sum; \
     } \
     SET_NZ(A)
 #else
@@ -506,7 +510,7 @@
         if((sum & 0xff00) == 0) { \
             P |= F_C; \
         } \
-        A = (quint8)sum; \
+        A = (uint8)sum; \
         SET_NZ(A); \
     }
 #endif
@@ -538,7 +542,7 @@
 
 #define ANC \
     P &= ~F_C; \
-    A = (quint8)(A & tmp); \
+    A = (uint8)(A & tmp); \
     if(A & 0x80) { \
         P |= F_C; \
     } \
@@ -623,64 +627,64 @@
     if(X >= tmp) { \
         P |= F_C; \
     } \
-    X = (quint8)(X - tmp); \
+    X = (uint8)(X - tmp); \
     SET_NZ(X)
 
 #define AXA \
-    A = (quint8)((A | 0xee) & X & tmp); \
+    A = (uint8)((A | 0xee) & X & tmp); \
     SET_NZ(A)
 
 #define DCP \
-    tmp = (quint8)(tmp - 1); \
+    tmp = (uint8)(tmp - 1); \
     P &= ~F_C; \
     if(A >= tmp) { \
         P |= F_C; \
     } \
-    SET_NZ((quint8)(A - tmp))
+    SET_NZ((uint8)(A - tmp))
 
 #define DOP RDOPARG()
 
 #define ISB \
-    tmp = (quint8)(tmp + 1); \
+    tmp = (uint8)(tmp + 1); \
     SBC
 
 #define LAX \
-    A = X = (quint8)tmp; \
+    A = X = (uint8)tmp; \
     SET_NZ(A)
 
 #ifdef HAS_N2A03
 #define OAL \
-    A = X = (quint8)((A | 0xff) & tmp); \
+    A = X = (uint8)((A | 0xff) & tmp); \
     SET_NZ(A)
 #else
 #define OAL \
-    A = X = (quint8)((A | 0xee) & tmp); \
+    A = X = (uint8)((A | 0xee) & tmp); \
     SET_NZ(A)
 #endif
 
 #define RLA \
     tmp = (tmp << 1) | (P & F_C); \
     P = (P & ~F_C) | ((tmp >> 8) & F_C); \
-    tmp = (quint8)tmp; \
+    tmp = (uint8)tmp; \
     A &= tmp; \
     SET_NZ(A)
 #define RRA \
     tmp |= (P & F_C) << 8; \
     P = (P & ~F_C) | (tmp & F_C); \
-    tmp = (quint8)(tmp >> 1); \
+    tmp = (uint8)(tmp >> 1); \
     ADC
 
 #define SAX tmp = A & X
 
 #define SLO \
     P = (P & ~F_C) | ((tmp >> 7) & F_C); \
-    tmp = (quint8)(tmp << 1); \
+    tmp = (uint8)(tmp << 1); \
     A |= tmp; \
     SET_NZ(A)
 
 #define SRE \
     P = (P & ~F_C) | (tmp & F_C); \
-    tmp = (quint8)tmp >> 1; \
+    tmp = (uint8)tmp >> 1; \
     A ^= tmp; \
     SET_NZ(A)
 
@@ -709,7 +713,7 @@
 #define TOP PCW += 2
 #define KIL PCW--
 
-void Cm6502::OP(quint8 code)
+void Cm6502::OP(uint8 code)
 {
     int tmp;
 
@@ -996,6 +1000,8 @@ inline void Cm6502::update_irq()
 
 bool Cm6502::init(void)
 {
+    Check_Log();
+    pDEBUG->init();
     A = X = Y = P = 0;
     SPD = EAD = ZPD = PCD = 0;
     return true;
@@ -1021,7 +1027,7 @@ void Cm6502::Reset(void)
 Cm6502::Cm6502(CPObject *parent)	: CCPU(parent)
 {				//[constructor]
 
-    //pDEBUG = new Cdebug_z80(parent);
+    pDEBUG = new Cdebug_m6502(parent);
 
     fn_log="m6502.log";
 
@@ -1098,7 +1104,7 @@ void Cm6502::run_one_opecode()
 
 void Cm6502::write_signal(int id, quint32 data, quint32 mask)
 {
-#if 0
+#if 1
     bool state = ((data & mask) != 0);
 
     if(id == SIG_CPU_NMI) {
@@ -1131,4 +1137,41 @@ inline void Cm6502::write_data8( DWORD address, BYTE value)
     ((CpcXXXX *)pPC)->Set_8(address,value);
 }
 
-#endif
+DWORD Cm6502::get_PC(void)
+{
+    return(PCW);
+}
+
+void Cm6502::set_PC(DWORD newpc)
+{
+    PCW = newpc;
+}
+
+void Cm6502::Regs_Info(UINT8 Type)
+{
+    switch(Type)
+    {
+    case 0:			// Monitor Registers Dialog
+        sprintf(Regs_String,"");
+//							lh5801.p.w,lh5801.s.w,lh5801.u.w,
+//							lh5801.x.w,lh5801.y.w,lh5801.t,
+//							lh5801.a,lh5801.tm,pPC->pKEYB->KStrobe,
+//							lh5801.pv,lh5801.pu,lh5801.bf,lh5801.dp,
+//							lh5801.t&0x80?"1":"0",
+//							lh5801.t&0x40?"1":"0",
+//							lh5801.t&0x20?"1":"0",
+//							lh5801.t&0x10?"H":".",
+//							lh5801.t&8?"V":".",
+//							lh5801.t&4?"Z":".",
+//							lh5801.t&2?"I":".",
+//							lh5801.t&1?"C":".");
+        break;
+    case 1:			// For Log File
+        sprintf(Regs_String,	"PC:%.4x A:%02X X:%02X Y:%02X P:%02X SPD:%04X",
+                            PCW,A,X,Y,P,SPD
+                );
+        break;
+    }
+
+}
+

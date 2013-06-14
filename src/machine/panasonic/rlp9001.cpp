@@ -49,7 +49,7 @@ bool Crlp9001::init(void)
 
     CPObject::init();
 
-    pMAINCONNECTOR = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins conector",false,QPoint(20,0)); publish(pMAINCONNECTOR);
+    pMAINCONNECTOR = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins conector",true,QPoint(20,0)); publish(pMAINCONNECTOR);
 
     AddLog(LOG_MASTER,"done.\n");
     return true;
@@ -88,7 +88,7 @@ void Crlp9001::Rotate()
     rotate = ! rotate;
 
     delete BackgroundImageBackup;
-    BackgroundImageBackup = LoadImage(QSize(getDX(), getDY()),BackGroundFname,rotate,false);
+    BackgroundImageBackup = LoadImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
         delete BackgroundImage;
         BackgroundImage = new QImage(*BackgroundImageBackup);
         delete FinalImage;

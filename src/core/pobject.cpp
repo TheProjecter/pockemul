@@ -1087,11 +1087,13 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 	}	
 }
 
-QImage * CPObject::LoadImage(QSize size,QString fname,bool Hmirror,bool Vmirror)
+QImage * CPObject::LoadImage(QSize size,QString fname,bool Hmirror,bool Vmirror,int angle)
 {
 //    qWarning("LoadImage : %s",fname.toAscii().data());
 	QImage *tempImage;
-    QImage loc = QImage(fname).mirrored(Hmirror,Vmirror).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation).convertToFormat(QImage::Format_ARGB32);
+    QMatrix matrix;
+        matrix.rotate(angle);
+    QImage loc = QImage(fname).mirrored(Hmirror,Vmirror).transformed(matrix).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation).convertToFormat(QImage::Format_ARGB32);
 	tempImage = new QImage(loc);
     return tempImage;
 }

@@ -89,6 +89,7 @@
 #include "panasonic/rlh1000.h"
 #include "panasonic/rlp6001.h"
 #include "panasonic/rlp9001.h"
+#include "panasonic/rlp1004a.h"
 
 extern QList<CPObject *> listpPObject;  
 extern QTimer *timer;
@@ -190,6 +191,8 @@ CPObject *pPC=0;
         case RLH1000 : pPC = new Crlh1000;      pPC->setName("Panasonic HHC RL-H1000"); break;
         case RLP6001 : pPC = new Crlp6001;      pPC->setName("Panasonic RL-P6001"); break;
         case RLP9001 : pPC = new Crlp9001;      pPC->setName("Panasonic RL-P9001"); break;
+        case RLP1004A : pPC = new Crlp1004a;      pPC->setName("Panasonic RL-P1004A"); break;
+
 
         default			: return 0;
     }

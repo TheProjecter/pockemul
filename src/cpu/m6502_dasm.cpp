@@ -1,4 +1,4 @@
-#if 0
+#if 1
 
 /** 6502 Disassembler *****************************************/
 /**                                                          **/
@@ -16,13 +16,13 @@
 
 
 #include "Debug.h"
-
+#include "pcxxxx.h"
 
 enum { Ac=0,Il,Im,Ab,Zp,Zx,Zy,Ax,Ay,Rl,Ix,Iy,In,No };
     /* These are the addressation methods used by 6502 CPU.   */
 
 
-static byte *MN[] =
+static char *MN[] =
 {
   "adc","and","asl","bcc","bcs","beq","bit","bmi",
   "bne","bpl","brk","bvc","bvs","clc","cld","cli",
@@ -33,7 +33,7 @@ static byte *MN[] =
   "sed","sei","tax","tay","txa","tya","tsx","txs"
 };
 
-static byte AD[512] =
+static BYTE AD[512] =
 {
   10,Il, 34,Ix, No,No, No,No, No,No, 34,Zp,  2,Zp, No,No,
   36,Il, 34,Im,  2,Ac, No,No, No,No, 34,Ab,  2,Ab, No,No,
@@ -73,9 +73,25 @@ static byte AD[512] =
 /** This function will disassemble a single command and      **/
 /** return the number of bytes disassembled.                 **/
 /**************************************************************/
-DWORD Cdebug_m6502::DisAsm_1(char *S,byte *A,DWORD PC)
+
+DWORD Cdebug_m6502::DisAsm_1(DWORD pc) {
+    unsigned short old_pc;
+    int i, j;
+    char data[1024];
+    char str[1024];
+
+
+        for (j = 0; j < 16;j++)
+            data[j] = pPC->Get_8(pc + j);
+        old_pc = pc;
+        pc += DasmOpe(str, (unsigned char*)data,pc);
+        sprintf(Buffer,"%06X: %s", old_pc, str);
+
+}
+
+int Cdebug_m6502::DasmOpe(char *S,BYTE *A,unsigned long PC)
 {
-  byte *B,J;
+  BYTE *B,J;
   int OP;
 
   B=A;OP=(*B++)*2;
