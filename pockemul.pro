@@ -458,12 +458,14 @@ HEADERS += src/core/Connect.h \
     src/machine/tpc8300.h \
     src/lcd/Lcdc_tpc8300.h \
     src/machine/tp83.h \
-    src/cpu/m6502.h \
     src/machine/panasonic/rlh1000.h \
     src/machine/panasonic/rlp6001.h \
     src/machine/panasonic/rlp9001.h \
     src/machine/panasonic/rlp1004a.h \
-    src/lcd/Lcdc_rlh1000.h
+    src/lcd/Lcdc_rlh1000.h \
+    src/cpu/m6502/m6502.h \
+    src/cpu/m6502/opsc02.h \
+    src/cpu/m6502/ops02.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -681,13 +683,13 @@ SOURCES += src/core/Connect.cpp \
     src/machine/tpc8300.cpp \
     src/lcd/Lcdc_tpc8300.cpp \
     src/machine/tp83.cpp \
-    src/cpu/m6502.cpp \
-    src/cpu/m6502_dasm.cpp \
     src/machine/panasonic/rlh1000.cpp \
     src/machine/panasonic/rlp6001.cpp \
     src/machine/panasonic/rlp9001.cpp \
     src/machine/panasonic/rlp1004a.cpp \
-    src/lcd/Lcdc_rlh1000.cpp
+    src/lcd/Lcdc_rlh1000.cpp \
+    src/cpu/m6502/m6502.cpp \
+    src/cpu/m6502/m6502_dasm.cpp
 
 
 

@@ -28,7 +28,7 @@
 #define EA_IND                                                                                                  \
         EA_ABS;                                                                                                         \
         tmp = RDMEM(EAD);                                                                                       \
-        if (EAL==0xff) m6502_ICount++;                                                          \
+        if (EAL==0xff) CYCLES(1);                                                          \
         EAD++;                                                                                                          \
         EAH = RDMEM(EAD);                                                                                       \
         EAL = tmp
@@ -168,9 +168,9 @@
         PUSH(PCL);                                                                                                      \
         PUSH(P | F_B);                                                                                          \
         P = (P | F_I) & ~F_D;                                                                           \
-        PCL = RDMEM(M6502_IRQ_VEC);                                                             \
-        PCH = RDMEM(M6502_IRQ_VEC+1);                                                           \
-        CHANGE_PC
+        PCL = RDMEM(IRQ_VEC);                                                             \
+        PCH = RDMEM(IRQ_VEC+1);                                                           \
+
 
 
 /* 65C02 *******************************************************

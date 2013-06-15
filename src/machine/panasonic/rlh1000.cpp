@@ -1,6 +1,6 @@
 
 #include "rlh1000.h"
-#include "m6502.h"
+#include "m6502/m6502.h"
 #include "Inter.h"
 #include "Keyb.h"
 #include "Connect.h"
@@ -145,7 +145,18 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                 pLCDC->SetDirtyBuf(*d-0x11800);
                 return(true);
             }
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%04X]=%02X\n",*d-0xC000,data);
+            if ( (*d>=0x107FE) && (*d<=(0x107FC+0xFF0))) {
+                quint8 t = *d-0x107FE;
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",t,data);
+                if (data) {
+                    pKEYB->KStrobe |= t;
+                }
+                else
+                    pKEYB->KStrobe &= ~t;
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM KSTROBE=%02X\n",pKEYB->KStrobe);
+
+            }
+            else if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%04X]=%02X\n",*d-0xC000,data);
             return true;
         }
         return false; /* ROM */
@@ -166,8 +177,8 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD data)
         if ((latchByte & 0x04)==0) {
 
             *d+=0xC000;
-            if ( (*d>=0x107FC) && (*d<=(0x107FC+0x40))) {
-//                mem[*d] = getKey(*d - 0x107FC);
+            if ( (*d>=0x107FC) && (*d<=(0x107FC+0xFF))) {
+                mem[*d] = getKey(pKEYB->KStrobe);
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d-0xC000);
                 return true;
             }
@@ -389,6 +400,6 @@ UINT8 Crlh1000::getKey(quint8 port )
 //        if (fp_log) fprintf(fp_log,"Read key [%02x]: strobe=%02x result=%02x\n",pKEYB->LastKey,ks,data^0xff);
 
     }
-    return (data);//^0xff) & 0x3F;
+    return (data^0xff);
 
 }
