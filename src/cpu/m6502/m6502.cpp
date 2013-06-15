@@ -285,7 +285,7 @@ void Cm6502::OP(uint8 code)
 
 inline void Cm6502::update_irq()
 {
-    if (fp_log) fprintf(fp_log,"\n INT update_irq\n");
+//    if (fp_log) fprintf(fp_log,"\n INT update_irq\n");
 
     if(!(P & F_I)) {
         if (fp_log) fprintf(fp_log,"\n INT update_irq GO\n");
@@ -323,6 +323,7 @@ bool Cm6502::exit()
 
 void Cm6502::Reset(void)
 {
+    if (fp_log) fprintf(fp_log,"\nRESET\n");
     PCL = RDMEM(RST_VEC);
     PCH = RDMEM(RST_VEC + 1);
     SPD = 0x01ff;
@@ -478,11 +479,20 @@ void Cm6502::Regs_Info(UINT8 Type)
 //							lh5801.t&1?"C":".");
         break;
     case 1:			// For Log File
-        sprintf(Regs_String,	"PC:%.4x A:%02X X:%02X Y:%02X P:%02X SPD:%04X",
-                            PCW,A,X,Y,P,SPD
+        sprintf(Regs_String,	"PC:%.4x A:%02X X:%02X Y:%02X P:%02X SPD:%04X  %s%s%s%s%s%s%s%s",
+                            PCW,A,X,Y,P,SPD,
+                P&F_N ? "N":".",
+                P&F_V ? "V":".",
+                P&F_T ? "T":".",
+                P&F_B ? "B":".",
+                P&F_D ? "D":".",
+                P&F_I ? "I":".",
+                P&F_Z ? "Z":".",
+                P&F_C ? "C":"."
+
+
                 );
         break;
     }
 
 }
-

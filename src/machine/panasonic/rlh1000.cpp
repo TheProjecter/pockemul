@@ -84,6 +84,8 @@ pCPU->logsw = true;
     pTIMER->resetTimer(1);
 
     latchByte = 0x00;
+
+    mem[0x118FB]=mem[0x118FC]=mem[0x118FD]=0;
     return true;
 }
 
@@ -94,6 +96,8 @@ bool Crlh1000::run() {
     // 0x5802 : Shift 0x80   ???
     // 0x5820 : 2nd 0x80     ???
     // 0x58FB = timer (1/256 sec)
+
+
 
 #if 1 //ndef QT_NO_DEBUG
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
@@ -109,16 +113,29 @@ bool Crlh1000::run() {
             {
 //                mem[0x1087c] = 0xff;
                 m6502->write_signal(101,1,1);
-                if(pCPU->fp_log) fprintf(pCPU->fp_log,"\nINTERUPT\n");
-                pKEYB->LastKey=0;
+//                if(pCPU->fp_log) fprintf(pCPU->fp_log,"\nINTERUPT\n");
+//                pKEYB->LastKey=0;
             }
         }
     }
 
+//    quint64 deltaState = pTIMER->state - old_state;
 
-    if (pTIMER->usElapsedId(1)>=3906) {
-        mem[0x118FB]++;
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n TIMER: %02X\n",mem[0x118FB]);
+    if (pTIMER->nsElapsedId(1)>=3906) {
+        if (mem[0x118FB]!=0) {
+            mem[0x118FB]--;
+            if ((mem[0x118FB]==0)&&(mem[0x118FC]==0)&&(mem[0x118FD]==0)) {
+                m6502->write_signal(101,1,1);
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n TIMER: %02X\n",mem[0x118FB]);
+            }
+            if (mem[0x118B]==0x0) {
+                mem[0x118FC]--;
+                if (mem[0x118C]==0x00) {
+                    mem[0x118FD]--;
+
+                }
+            }
+        }
         pTIMER->resetTimer(1);
     }
 
@@ -138,11 +155,13 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
     }
 
     if((*d>=0x4000) && (*d < 0x7FFF)) {
-        if ((latchByte & 0x04)==0) {
+//        if ((latchByte & 0x04)==0)
+        {
 
             *d+=0xC000;
             if ((*d>=0x11800)&&(*d<0x118A0)) {
                 pLCDC->SetDirtyBuf(*d-0x11800);
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d-0xC000,data);
                 return(true);
             }
             if ( (*d>=0x107FE) && (*d<=(0x107FC+0xFF0))) {
@@ -178,7 +197,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD data)
 
             *d+=0xC000;
             if ( (*d>=0x107FC) && (*d<=(0x107FC+0xFF))) {
-                mem[*d] = getKey(pKEYB->KStrobe);
+//                mem[*d] = rand()%0x100;//getKey(pKEYB->KStrobe);
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d-0xC000);
                 return true;
             }

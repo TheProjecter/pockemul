@@ -228,7 +228,8 @@ public slots:
     void slotContrast(QAction *);
 
 	void slotPower();
-	void slotReset();
+    void slotResetNow();
+    void slotReset();
     void slotHardReset();
     //void slotDetach();
     void slotLoadSession();

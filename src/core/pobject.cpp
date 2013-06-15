@@ -934,6 +934,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
 	{
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));
 			menupocket->addAction(tr("Turn On"),this,SLOT(slotPower()));
+            menupocket->addAction(tr("Reset"),this,SLOT(slotResetNow()));
             menupocket->addAction(tr("Reset (5s delay)"),this,SLOT(slotReset()));
             menupocket->addAction(tr("Hard Reset (5s delay)"),this,SLOT(slotHardReset()));
             //menupocket->addAction(tr("Detach"),this,SLOT(slotDetach()));
@@ -1185,6 +1186,12 @@ void CPObject::slotPower()
         TurnOFF();
 
     pKEYB->LastKey = 0;
+}
+
+void CPObject::slotResetNow() {
+    resetAt = pTIMER->state;
+
+//    Reset();
 }
 
 void CPObject::slotReset() {
