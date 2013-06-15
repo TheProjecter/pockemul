@@ -156,16 +156,17 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
         return true;
     }
 
-    if((*d>=0x4000) && (*d < 0x7FFF)) {
+    if((*d>=0x4000) && (*d <=0x7FFF)) {
 
         if (latchByte & 0x80){
             if ((*d>=0x5800)&&(*d<0x58A0)) {
                 ((Clcdc_rlh1000*)pLCDC)->mem[*d-0x5800] = data;
                 pLCDC->SetDirtyBuf(*d-0x5800);
 
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d,data);
+
                 return(false);
             }
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d,data);
         }
 
         *d+=0xC000;
