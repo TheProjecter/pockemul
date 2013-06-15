@@ -980,7 +980,11 @@ void Cm6502::OP(uint8 code)
 
 inline void Cm6502::update_irq()
 {
+    if (fp_log) fprintf(fp_log,"\n INT update_irq\n");
+
     if(!(P & F_I)) {
+        if (fp_log) fprintf(fp_log,"\n INT update_irq GO\n");
+
         EAD = IRQ_VEC;
         CYCLES(2);
         PUSH(PCH);
@@ -1094,6 +1098,8 @@ void Cm6502::run_one_opecode()
     if(after_cli) {
         after_cli = false;
         if(irq_state) {
+            if (fp_log) fprintf(fp_log,"\n INT after_cli irq\n");
+
             pending_irq = true;
         }
     }

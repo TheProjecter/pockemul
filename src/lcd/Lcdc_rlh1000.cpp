@@ -86,12 +86,11 @@ On=true;
     {	adr = 0x11800 + ind;
         if ( (DirtyBuf[adr-0x11800]) )
         {
-            qWarning("PAINT");
+
             Refresh = TRUE;
             if (On)
             {
                 data = pPC->Get_8(adr);
-                qWarning()<<adr<<":Plot="<<data;
                 DirtyBuf[adr-0x11800] = 0;
             }
             else

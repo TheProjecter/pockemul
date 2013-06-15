@@ -32,6 +32,7 @@ public:
 
     Cm6502 *m6502;
 
+    UINT8 getKey(quint8 port);
 private:
     quint8 latchByte;
 
