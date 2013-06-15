@@ -83,20 +83,20 @@ void Clcdc_rlh1000::disp(void)
 
 On=true;
     for (ind=0; ind<0xA0; ind++)
-    {	adr = 0x11800 + ind;
-        if ( (DirtyBuf[adr-0x11800]) )
+    {
+        if ( (DirtyBuf[ind]) )
         {
 
             Refresh = TRUE;
             if (On)
             {
-                data = pPC->Get_8(adr);
-                DirtyBuf[adr-0x11800] = 0;
+                data = mem[ind];
+                DirtyBuf[ind] = 0;
             }
             else
             {
                 data = 0;
-                DirtyBuf[adr-0x11800] = 0;
+                DirtyBuf[ind] = 0;
             }
 
             for (b=0; b<8;b++)

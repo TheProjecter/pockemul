@@ -25,10 +25,12 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""                                  , ""	, ROM , "Ext ROM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, ROM , "ROM Capsules"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, ROM , "ROM Capsules 1"));
     SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, RAM , "Ext RAM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, RAM , "I/O Hard"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, ROM , "ROM Capsules 3"));
 
 // Ratio = 3,57
     setDXmm(227);
@@ -149,36 +151,38 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 
     if (*d==0x58FE) {
         latchByte = data;
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n latchByte=%02X\n",data);
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM latchByte=%02X\n",data);
         *d+=0xC000;
         return true;
     }
 
     if((*d>=0x4000) && (*d < 0x7FFF)) {
-//        if ((latchByte & 0x04)==0)
-        {
 
-            *d+=0xC000;
-            if ((*d>=0x11800)&&(*d<0x118A0)) {
-                pLCDC->SetDirtyBuf(*d-0x11800);
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d-0xC000,data);
-                return(true);
-            }
-            if ( (*d>=0x107FE) && (*d<=(0x107FC+0xFF0))) {
-                quint8 t = *d-0x107FE;
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",t,data);
-                if (data) {
-                    pKEYB->KStrobe |= t;
-                }
-                else
-                    pKEYB->KStrobe &= ~t;
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM KSTROBE=%02X\n",pKEYB->KStrobe);
+        if (latchByte & 0x80){
+            if ((*d>=0x5800)&&(*d<0x58A0)) {
+                ((Clcdc_rlh1000*)pLCDC)->mem[*d-0x5800] = data;
+                pLCDC->SetDirtyBuf(*d-0x5800);
 
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d,data);
+                return(false);
             }
-            else if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%04X]=%02X\n",*d-0xC000,data);
-            return true;
         }
-        return false; /* ROM */
+
+        *d+=0xC000;
+        if ( (*d>=0x107FE) && (*d<=(0x107FC+0xFF0))) {
+            quint8 t = *d-0x107FE;
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",t,data);
+            if (data) {
+                pKEYB->KStrobe |= t;
+            }
+            else
+                pKEYB->KStrobe &= ~t;
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM KSTROBE=%02X\n",pKEYB->KStrobe);
+
+        }
+        else if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%04X]=%02X\n",*d-0xC000,data);
+        return true;
+
     }
     if((*d>=0x8000) && (*d < 0xC000)) return false; /* RAM */
 
@@ -205,7 +209,21 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD data)
                 return true;
             }
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM [%04X]\n",*d-0xC000);
+            return true;
         }
+        else {
+            DWORD offset = 0;
+            switch (latchByte & 0x03) {
+            case 0x00 : offset = 0; break;
+            case 0x01 : offset = 0x10000; break;
+            case 0x02 : offset = 0x14000; break;
+            case 0x03 : // External ROM ???? break;
+            default: break;
+            }
+            *d += offset;
+            return true;
+        }
+
         return true; /* ROM */
     }
     return true;

@@ -14,10 +14,13 @@ public:
                             (int) (111*contrast),
                             (int) (117*contrast),
                             (int) (108*contrast));
-    };
+        memset((void *)mem[0],0,sizeof(mem));
+    }
     virtual ~Clcdc_rlh1000()
     {						//[constructor]
     }
+
+    quint8 mem[0xA0];   // Lcd memory
 
 };
 #endif // LCDC_RLH1000_H
