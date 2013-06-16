@@ -20,7 +20,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0x20000;
-    InitMemValue	= 0x00;
+    InitMemValue	= 0xff;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));

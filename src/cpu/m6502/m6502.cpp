@@ -464,19 +464,19 @@ void Cm6502::Regs_Info(UINT8 Type)
     switch(Type)
     {
     case 0:			// Monitor Registers Dialog
-        sprintf(Regs_String,"");
-//							lh5801.p.w,lh5801.s.w,lh5801.u.w,
-//							lh5801.x.w,lh5801.y.w,lh5801.t,
-//							lh5801.a,lh5801.tm,pPC->pKEYB->KStrobe,
-//							lh5801.pv,lh5801.pu,lh5801.bf,lh5801.dp,
-//							lh5801.t&0x80?"1":"0",
-//							lh5801.t&0x40?"1":"0",
-//							lh5801.t&0x20?"1":"0",
-//							lh5801.t&0x10?"H":".",
-//							lh5801.t&8?"V":".",
-//							lh5801.t&4?"Z":".",
-//							lh5801.t&2?"I":".",
-//							lh5801.t&1?"C":".");
+        sprintf(Regs_String,	"PC:%.4x A:%02X\nX:%02X Y:%02X\nP:%02X SPD:%04X\n%s%s%s%s%s%s%s%s",
+                            PCW,A,X,Y,P,SPD,
+                P&F_N ? "N":".",
+                P&F_V ? "V":".",
+                P&F_T ? "T":".",
+                P&F_B ? "B":".",
+                P&F_D ? "D":".",
+                P&F_I ? "I":".",
+                P&F_Z ? "Z":".",
+                P&F_C ? "C":"."
+
+
+                );
         break;
     case 1:			// For Log File
         sprintf(Regs_String,	"PC:%.4x A:%02X X:%02X Y:%02X P:%02X SPD:%04X  %s%s%s%s%s%s%s%s",
