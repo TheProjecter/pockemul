@@ -87,6 +87,13 @@ DWORD Cdebug_m6502::DisAsm_1(DWORD pc) {
         pc += DasmOpe(str, (unsigned char*)data,pc);
         sprintf(Buffer,"%06X: %s", old_pc, str);
 
+        DasmAdr = old_pc;
+
+        NextDasmAdr = pc;
+        debugged = true;
+
+        return NextDasmAdr;
+
 }
 
 int Cdebug_m6502::DasmOpe(char *S,BYTE *A,unsigned long PC)

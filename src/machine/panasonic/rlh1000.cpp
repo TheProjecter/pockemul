@@ -1,3 +1,4 @@
+#include <QDebug>
 
 #include "rlh1000.h"
 #include "m6502/m6502.h"
@@ -108,6 +109,13 @@ bool Crlh1000::run() {
     CpcXXXX::run();
 
     if (pKEYB->LastKey>0) {
+        quint8 fetch = mem[0x207];
+        fetch--;
+
+        if (fetch==0xff) fetch=0x07;
+        mem[0x207]=fetch;
+        mem[0x26C+fetch] = pKEYB->LastKey;
+        qWarning()<<"push key:"<<pKEYB->LastKey<<" at:"<<fetch;
 //        if ((IA & 0x80) != 0)
         {
 //            qWarning()<<"Key INTR";
@@ -116,7 +124,7 @@ bool Crlh1000::run() {
 //                mem[0x1087c] = 0xff;
                 m6502->write_signal(101,1,1);
 //                if(pCPU->fp_log) fprintf(pCPU->fp_log,"\nINTERUPT\n");
-//                pKEYB->LastKey=0;
+                pKEYB->LastKey=0;
             }
         }
     }
@@ -129,7 +137,7 @@ bool Crlh1000::run() {
             timercnt1--;
             if ((timercnt1==0)&&(timercnt2==0)&&(timercnt3==0)) {
                 m6502->write_signal(101,1,1);
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM TIMER\n");
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD TIMER\n");
             }
             if (timercnt1==0xff) {
                 timercnt2--;
@@ -167,26 +175,31 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                 return(false);
             }
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d,data);
+            *d+=0xc000;
+            return true;
         }
         else {
             if (*d==0x58FB) timercnt1=data;
             if (*d==0x58FC) timercnt2=data;
             if (*d==0x58FD) timercnt3=data;
-        }
-
-        *d+=0xC000;
-        if ( (*d>=0x107FE) && (*d<=(0x107FC+0xFF0))) {
-            quint8 t = *d-0x107FE;
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",t,data);
-            if (data) {
-                pKEYB->KStrobe |= t;
+            if ( (*d>=0x47FE) && (*d<=(0x47FC+0xFF))) {
+                quint8 t = *d-0x47FE;
+                if (data) {
+                    pKEYB->KStrobe |= t;
+                }
+                else
+                    pKEYB->KStrobe &= ~t;
+//                pKEYB->KStrobe&=0x7F;
+//                pKEYB->KStrobe = (1<<(pKEYB->KStrobe/8));
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM KSTROBE=%02X\n",pKEYB->KStrobe);
+                return false;
             }
-            else
-                pKEYB->KStrobe &= ~t;
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM KSTROBE=%02X\n",pKEYB->KStrobe);
-
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",*d,data);
+            *d+=0xc000;
+            return true;
         }
-        else if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%04X]=%02X\n",*d-0xC000,data);
+
+
         return true;
 
     }
@@ -214,9 +227,14 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             }
             else {  // KBD mapping
                 if ( (*d>=0x47FC) && (*d<=(0x47FC+0x40))) {
+                    quint8 t=(*d-0x47FC)/8;
+//                    if (pKEYB->KStrobe &0x80) {
+//                        if (t==0x0) *data=1;
 
-                    *data = getKey(pKEYB->KStrobe);
-                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d);
+//                    }
+
+                    //*data = getKey(pKEYB->KStrobe);
+                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X,%02X]=%02x\n",pKEYB->KStrobe,t,*data);
                     return false;
                 }
             }
