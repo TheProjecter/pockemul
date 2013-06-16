@@ -20,7 +20,7 @@ public:
     virtual WORD    Get_16rPC(DWORD adr);
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
 //    virtual void	initExtension(void);
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);

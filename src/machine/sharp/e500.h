@@ -24,7 +24,7 @@ public:
 
 //	bool	Mem_Mirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
 
 
     virtual bool	LoadExtra(QFile *);
@@ -70,7 +70,7 @@ public:
 
     virtual void MemMirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
 
     Ce550(CPObject *parent = 0);
 

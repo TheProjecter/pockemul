@@ -14,7 +14,7 @@ public:
     virtual ~Crlh1000();
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
 
@@ -35,6 +35,7 @@ public:
     UINT8 getKey(quint8 port);
 private:
     quint8 latchByte;
+    quint8 timercnt1,timercnt2,timercnt3;
 
 };
 

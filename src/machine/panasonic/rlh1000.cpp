@@ -71,7 +71,7 @@ Crlh1000::~Crlh1000() {
 bool Crlh1000::init(void)				// initialize
 {
 
-pCPU->logsw = true;
+//pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -87,7 +87,7 @@ pCPU->logsw = true;
 
     latchByte = 0x00;
 
-    mem[0x118FB]=mem[0x118FC]=mem[0x118FD]=0;
+    timercnt1=timercnt2=timercnt3=0;
     return true;
 }
 
@@ -97,11 +97,11 @@ bool Crlh1000::run() {
 
     // 0x5802 : Shift 0x80   ???
     // 0x5820 : 2nd 0x80     ???
-    // 0x58FB = timer (1/256 sec)
+    // timercnt = timer (1/256 sec)
 
 
 
-#if 1 //ndef QT_NO_DEBUG
+#if 0 //ndef QT_NO_DEBUG
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
 //    mem[0x204]=1;
@@ -123,18 +123,18 @@ bool Crlh1000::run() {
 
 //    quint64 deltaState = pTIMER->state - old_state;
 
-    if (pTIMER->nsElapsedId(1)>=3906) {
-        if (mem[0x118FB]!=0) {
-            mem[0x118FB]--;
-            if ((mem[0x118FB]==0)&&(mem[0x118FC]==0)&&(mem[0x118FD]==0)) {
+    if (pTIMER->usElapsedId(1)>=3906) {
+//        if (timercnt1!=0)
+        {
+            timercnt1--;
+            if ((timercnt1==0)&&(timercnt2==0)&&(timercnt3==0)) {
                 m6502->write_signal(101,1,1);
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n TIMER: %02X\n",mem[0x118FB]);
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM TIMER\n");
             }
-            if (mem[0x118B]==0x0) {
-                mem[0x118FC]--;
-                if (mem[0x118C]==0x00) {
-                    mem[0x118FD]--;
-
+            if (timercnt1==0xff) {
+                timercnt2--;
+                if (timercnt2==0xff) {
+                    timercnt3--;
                 }
             }
         }
@@ -168,6 +168,11 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             }
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d,data);
         }
+        else {
+            if (*d==0x58FB) timercnt1=data;
+            if (*d==0x58FC) timercnt2=data;
+            if (*d==0x58FD) timercnt3=data;
+        }
 
         *d+=0xC000;
         if ( (*d>=0x107FE) && (*d<=(0x107FC+0xFF0))) {
@@ -192,24 +197,35 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
     return false;
 }
 
-bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD data)
+bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
 
 
 
     if((*d>=0x4000) && (*d < 0x7FFF)) {
         if ((latchByte & 0x04)==0) {
+            if (latchByte & 0x80){  // LCD mapping
+                if ((*d>=0x5800)&&(*d<0x58A0)) {
+                    *data = ((Clcdc_rlh1000*)pLCDC)->mem[*d-0x5800];
+                    return false;
+                }
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM LCD [%04X]\n",*d);
 
-            *d+=0xC000;
-            if ( (*d>=0x107FC) && (*d<=(0x107FC+0xFF))) {
-//                mem[*d] = rand()%0x100;//getKey(pKEYB->KStrobe);
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d-0xC000);
-                return true;
             }
-            if ((*d>=0x11800)&&(*d<0x118A0)) {
-                return true;
+            else {  // KBD mapping
+                if ( (*d>=0x47FC) && (*d<=(0x47FC+0x40))) {
+
+                    *data = getKey(pKEYB->KStrobe);
+                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d);
+                    return false;
+                }
             }
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM [%04X]\n",*d-0xC000);
+            if (*d==0x58FB) { *data=timercnt1; return false; }
+            if (*d==0x58FC) { *data=timercnt2; return false; }
+            if (*d==0x58FD) { *data=timercnt3; return false; }
+            if (*d==0x58FF) { *data=0x00; return false; }
+
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM [%04X]\n",*d);
             return true;
         }
         else {
@@ -298,9 +314,9 @@ bool Crlh1000::SaveConfig(QXmlStreamWriter *xmlOut)
 UINT8 Crlh1000::getKey(quint8 port )
 {
 
-    quint16 ks;
-    ks =port;
-
+    quint8 ks;
+    ks =port;//0xff^port;//1<<(port/4);
+    AddLog(LOG_KEYBOARD,tr("ks=%1(%2)").arg(ks,4,16,QChar('0')).arg(port));
     UINT8 data=0;
 
     if ((pKEYB->LastKey) && ks )

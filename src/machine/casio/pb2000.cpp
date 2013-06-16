@@ -275,7 +275,7 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
 }
 
 
-bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD data)
+bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
     MemBank(d);
 

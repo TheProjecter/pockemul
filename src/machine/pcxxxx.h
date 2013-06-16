@@ -215,7 +215,7 @@ public:
     void Set_24(DWORD adr,DWORD d);
     void set_mem(DWORD adr, int size, DWORD data);
 	virtual bool	Chk_Adr(DWORD *d,DWORD data) = 0;
-	virtual bool	Chk_Adr_R(DWORD *d,DWORD data) = 0;
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data) = 0;
     virtual UINT8 in(UINT8 address)=0;
     virtual UINT8 out(UINT8 address,UINT8 value)=0;
     virtual UINT8 in8(UINT16 address){return true;}

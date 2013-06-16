@@ -37,7 +37,7 @@ bool Cpc1402::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1402::Chk_Adr_R(DWORD *d,DWORD data)
+bool Cpc1402::Chk_Adr_R(DWORD *d,DWORD *data)
 {
 	return(1);
 }

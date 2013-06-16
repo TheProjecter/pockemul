@@ -114,7 +114,7 @@ bool Cpc1450::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1450::Chk_Adr_R(DWORD *d,DWORD data)
+bool Cpc1450::Chk_Adr_R(DWORD *d,DWORD *data)
 {
     return(1);
 }

@@ -193,7 +193,7 @@ bool Cpc2001::Chk_Adr(DWORD *d, DWORD data)
     return false;
 }
 
-bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD data)
+bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD *data)
 {
 
     return true;

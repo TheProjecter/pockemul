@@ -534,7 +534,7 @@ bool Cpc1500A::Chk_Adr(DWORD *d,DWORD data)
 }
 
 
-bool Cpc15XX::Chk_Adr_R(DWORD *d,DWORD data) 
+bool Cpc15XX::Chk_Adr_R(DWORD *d,DWORD *data)
 { 
 	Mem_Mirror(d);
 	if (*d == 0x4000) AddLog(LOG_MASTER,tr("read 0x04000"));
@@ -552,7 +552,7 @@ bool Cpc15XX::Chk_Adr_R(DWORD *d,DWORD data)
 }
 
  
-bool Cpc1500A::Chk_Adr_R(DWORD *d,DWORD data) 
+bool Cpc1500A::Chk_Adr_R(DWORD *d,DWORD *data)
 { 
 	Cpc15XX::Chk_Adr_R(d,data);
 	return(1); 

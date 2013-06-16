@@ -269,7 +269,7 @@ bool Cz1::Chk_Adr(DWORD *d, DWORD data)
     return false;
 }
 
-bool Cz1::Chk_Adr_R(DWORD *d, DWORD data)
+bool Cz1::Chk_Adr_R(DWORD *d, DWORD *data)
 {
     /*
     if(0x400 <= p && p <= 0x40f)

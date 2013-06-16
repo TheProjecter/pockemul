@@ -207,7 +207,7 @@ bool Ctpc8300::Chk_Adr(DWORD *d, DWORD data)
     return true;
 }
 
-bool Ctpc8300::Chk_Adr_R(DWORD *d, DWORD data)
+bool Ctpc8300::Chk_Adr_R(DWORD *d, DWORD *data)
 {
 
     return true;

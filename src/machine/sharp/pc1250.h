@@ -35,7 +35,7 @@ public:
 
 	bool	Mem_Mirror(DWORD *d);
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
     UINT8 in(UINT8 address){return(1);}
     UINT8 out(UINT8 address,UINT8 value){return(1);}
 

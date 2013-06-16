@@ -230,7 +230,7 @@ bool Clbc1100::Chk_Adr(DWORD *d, DWORD data)
     return true;
 }
 
-bool Clbc1100::Chk_Adr_R(DWORD *d, DWORD data)
+bool Clbc1100::Chk_Adr_R(DWORD *d, DWORD *data)
 {
 
     return true;

@@ -209,7 +209,7 @@ bool Cpc2500::init(void) {
     return true;
 }
 
-bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD data)
+bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD *data)
 {
     if ( (*d >= 0x8000) && (*d<=0xFFFF) && (RomBank & 0x02) ) {
         *d += 0x8000;

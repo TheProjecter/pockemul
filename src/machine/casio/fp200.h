@@ -18,7 +18,7 @@ public:
     virtual ~Cfp200();
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
     virtual UINT8 in8(UINT16 Port);

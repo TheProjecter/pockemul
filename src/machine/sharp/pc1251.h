@@ -10,7 +10,7 @@ public:
 
 
 	bool	Chk_Adr(DWORD *d,DWORD data);
-	bool	Chk_Adr_R(DWORD *d,DWORD data);
+    bool	Chk_Adr_R(DWORD *d, DWORD *data);
 
 
     Cpc1251(CPObject *parent = 0);

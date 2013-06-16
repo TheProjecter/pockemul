@@ -310,7 +310,7 @@ if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
 
 }
 
-bool Cpc1350::Chk_Adr_R(DWORD *d,DWORD data) {
+bool Cpc1350::Chk_Adr_R(DWORD *d,DWORD *data) {
 if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]=%02x (%c)\n",*d,mem[*d],mem[*d]);
     }

@@ -175,7 +175,7 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
 
 }
 
-bool Cpc1403::Chk_Adr_R(DWORD *d,DWORD data)
+bool Cpc1403::Chk_Adr_R(DWORD *d,DWORD *data)
 {
     if ( (*d>=0x4000) && (*d<=0x7FFF) )	{
 //        *d += 0xC000 + (RomBank * 0x4000);
@@ -215,7 +215,7 @@ bool Cpc1403H::Chk_Adr(DWORD *d,DWORD data)
 	return (Cpc1403::Chk_Adr(d,data));
 }
 
-bool Cpc1403H::Chk_Adr_R(DWORD *d,DWORD data)
+bool Cpc1403H::Chk_Adr_R(DWORD *d,DWORD *data)
 {
 	return(Cpc1403::Chk_Adr_R(d,data));	
 }

@@ -243,7 +243,7 @@ bool Cg850v::Chk_Adr(DWORD *d, DWORD data)
     return false;
 }
 
-bool Cg850v::Chk_Adr_R(DWORD *d, DWORD data)
+bool Cg850v::Chk_Adr_R(DWORD *d, DWORD *data)
 {
     Mem_Mirror(d);
     return true;

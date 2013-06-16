@@ -551,7 +551,7 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 /*  ENTRY :DWORD d=Address													 */
 /*  RETURN:bool (1=RAM,0=ROM)												 */
 /*****************************************************************************/
-bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
+bool Ce500::Chk_Adr_R(DWORD *d,DWORD *data)
 {
 #if (TEST_MEMORY_MAPPING)
     quint32 tmp = *d;
@@ -566,7 +566,7 @@ bool Ce500::Chk_Adr_R(DWORD *d,DWORD data)
     if(*d>0x3ffff) return(1);			/* RAM area(40000-7ffff) S2: */
 
     if((*d&0x6000)==0x2000){
-        *d&=0x200f; disp(*d&15,data);//pLCDC->SetDirtyBuf(pLCDC->SetDirtyBuf(*d & 15));
+        *d&=0x200f; disp(*d&15,*data);//pLCDC->SetDirtyBuf(pLCDC->SetDirtyBuf(*d & 15));
         return(1);//-(*d&1));			/* LCDC (0200x) */
     }
 
@@ -828,7 +828,7 @@ bool Ce550::Chk_Adr(DWORD *d, DWORD data)
     return Ce500::Chk_Adr(d,data);
 }
 
-bool Ce550::Chk_Adr_R(DWORD *d, DWORD data)
+bool Ce550::Chk_Adr_R(DWORD *d, DWORD *data)
 {
     return Ce500::Chk_Adr_R(d,data);
 }

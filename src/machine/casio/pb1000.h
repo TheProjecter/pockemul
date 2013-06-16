@@ -18,7 +18,7 @@ public:
     virtual bool init();
     virtual bool run();
     virtual bool Chk_Adr(DWORD *d, DWORD data);
-    virtual bool Chk_Adr_R(DWORD *d, DWORD data);
+    virtual bool Chk_Adr_R(DWORD *d, DWORD *data);
     virtual UINT8 in(UINT8 Port);
     virtual UINT8 out(UINT8 Port, UINT8 Value);
     virtual void TurnOFF();

@@ -86,7 +86,7 @@ public:
     bool	lh5810_read(void);
 
     virtual bool		Chk_Adr(DWORD *d,DWORD data);
-    virtual bool		Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool		Chk_Adr_R(DWORD *d, DWORD *data);
     UINT8		in(UINT8 address);
     UINT8       out(UINT8 address,UINT8 value);
     bool		Set_Connector(void);

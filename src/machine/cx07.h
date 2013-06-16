@@ -62,7 +62,7 @@ public:
     virtual ~Cx07();
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
     UINT8 in(UINT8 address);
     UINT8 out(UINT8 address,UINT8 value);
     bool init();

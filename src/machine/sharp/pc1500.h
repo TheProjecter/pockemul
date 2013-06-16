@@ -71,7 +71,7 @@ public:
 	bool		lh5810_read(void);
 
 	virtual bool		Chk_Adr(DWORD *d,DWORD data);
-	virtual bool		Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool		Chk_Adr_R(DWORD *d, DWORD *data);
     UINT8		in(UINT8 address);
     UINT8 out(UINT8 address,UINT8 value){return(1);}
 	bool		Set_Connector(void);
@@ -131,7 +131,7 @@ public:
 
 
 	bool Chk_Adr(DWORD *d,DWORD data);
-	bool Chk_Adr_R(DWORD *d,DWORD data);
+    bool Chk_Adr_R(DWORD *d, DWORD *data);
 	bool Mem_Mirror(DWORD *d); 
 
     Cpc1500A(CPObject *parent = 0);

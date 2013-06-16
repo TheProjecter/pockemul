@@ -20,7 +20,7 @@ public:
     virtual bool	Set_Connector(void);
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data) {return true;}
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data) {return true;}
+    virtual bool	Chk_Adr_R(DWORD *d,DWORD *data) {return true;}
     virtual UINT8 in(UINT8 address) {return 0;}
     virtual UINT8 out(UINT8 address,UINT8 value) {return 0;}
     void afficheChar(quint8 c);

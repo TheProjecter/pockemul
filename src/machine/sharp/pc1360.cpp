@@ -257,7 +257,7 @@ bool Cpc1360::Chk_Adr(DWORD *d,DWORD data)
 }
 
 
-bool Cpc1360::Chk_Adr_R(DWORD *d,DWORD data)
+bool Cpc1360::Chk_Adr_R(DWORD *d,DWORD *data)
 {
 	// Manage ROM Bank
 	if ( (*d>=0x4000) && (*d<=0x7FFF) )	{ *d += 0xC000 + ( RomBank * 0x4000 ); return (1); }

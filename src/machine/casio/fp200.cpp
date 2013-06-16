@@ -104,7 +104,7 @@ bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
     return true;
 }
 
-bool Cfp200::Chk_Adr_R(DWORD *d, DWORD data)
+bool Cfp200::Chk_Adr_R(DWORD *d, DWORD *data)
 {
     return true;
 }

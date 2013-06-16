@@ -10,7 +10,7 @@ public:
 
 
     virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
 
 
     Cpc1402(CPObject *parent = 0);

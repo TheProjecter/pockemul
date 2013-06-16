@@ -299,37 +299,43 @@ void	CpcXXXX::Set_Port_Bit(PORTS Port, int bit, BYTE data)
 /*****************************************************************************/
 BYTE CpcXXXX::Get_PC(DWORD adr)
 {
-    if (Chk_Adr_R(&adr,bREAD))
+    DWORD extValue = 0;
+    if (Chk_Adr_R(&adr,&extValue))
         return(mem[adr]);
     else
-        return(0);
+        return(extValue);
 }
 BYTE CpcXXXX::Get_8(DWORD adr)
 {
-    if (Chk_Adr_R(&adr,bREAD))
+    DWORD extValue = 0;
+    if (Chk_Adr_R(&adr,&extValue))
         return(mem[adr]);
     else
-        return(0);
+        return(extValue);
 }
 
 WORD CpcXXXX::Get_16(DWORD adr)
 {
+    DWORD extValue1 = 0;
+    DWORD extValue2 = 0;
 	DWORD	a;
 	a=adr+1;
-    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
+    if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2))
         return(mem[adr]+(mem[a]<<8));
     else
-        return(0);
+        return(extValue1+(extValue2<<8));
 }
 
 WORD CpcXXXX::Get_16r(DWORD adr)
 {
+    DWORD extValue1 = 0;
+    DWORD extValue2 = 0;
 	DWORD	a;
 	a=adr+1;
-    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
+    if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2))
         return((mem[adr]<<8)+mem[a]);
     else
-        return(0);
+        return((extValue1<<8)+extValue2);
 }
 
 WORD CpcXXXX::Get_16rPC(DWORD adr)
@@ -935,7 +941,7 @@ QString fileName = QFileDialog::getSaveFileName(
 /*****************************************************************************/
 // Virtual Fonction
 bool CpcXXXX::Chk_Adr(DWORD *d,DWORD data) { return(1); }
-bool CpcXXXX::Chk_Adr_R(DWORD *d,DWORD data) { return(1);}
+bool CpcXXXX::Chk_Adr_R(DWORD *d,DWORD *data) { return(1);}
 
 
 //////////////////////////////////////////////

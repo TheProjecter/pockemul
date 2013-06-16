@@ -18,7 +18,7 @@ public:
     const char*	GetClassName(){ return("Cpc1280");}
 
     bool Chk_Adr(DWORD *d,DWORD data);
-    bool Chk_Adr_R(DWORD *d,DWORD data);
+    bool Chk_Adr_R(DWORD *d, DWORD *data);
 
     virtual bool	init(void);
     virtual bool	Set_Connector(void);

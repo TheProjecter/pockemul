@@ -240,7 +240,7 @@ WORD Cpb1000::Get_16rPC(DWORD adr)
     return((mem[adr]<<8)+mem[a]);
 }
 
-bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD data)
+bool Cpb1000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
     MemBank(d);
     if ( (*d>=0x00C00+0xc00) && (*d<=0x00C0F+0xc00) )	{
