@@ -47,6 +47,8 @@ DialogDasm::DialogDasm(QWidget *parent) :
     this->resize(545,490);
     regwidget->show();
 
+    imem=true;
+
 }
 
 DialogDasm::~DialogDasm()
@@ -160,7 +162,10 @@ void DialogDasm::RefreshDasm()
 void DialogDasm::loadImem()
 {
     if (pPC) {
-        imemHexEditor->setData(pPC->pCPU->getimem());
+        if (imem)
+            imemHexEditor->setData(pPC->pCPU->getimem());
+        else
+            imemHexEditor->setData(pPC->getmem());
     }
     update();
 }

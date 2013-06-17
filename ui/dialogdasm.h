@@ -28,6 +28,7 @@ public:
     int		Index;
     quint32	MaxAdr;
     quint32	NextMaxAdr;
+    bool imem;
 
     void resizeEvent(QResizeEvent *event);
     void selectRow(int index);

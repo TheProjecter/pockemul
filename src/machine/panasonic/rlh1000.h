@@ -31,8 +31,8 @@ public:
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
     Cm6502 *m6502;
-
-    UINT8 getKey(quint8 port);
+    quint64 strobe;
+    UINT8 getKey(quint8 row);
 private:
     quint8 latchByte;
     quint8 timercnt1,timercnt2,timercnt3;

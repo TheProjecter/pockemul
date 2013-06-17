@@ -68,6 +68,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
 
 		dialogkeylist	= 0;
 		dialogdump		= 0;
+        dialogdasm = 0;
 		Power = false;
         audioBuff.clear();
 
