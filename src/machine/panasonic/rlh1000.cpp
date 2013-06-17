@@ -205,12 +205,14 @@ if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM KBD [%04X]=%02X\n",*d,data)
                 quint8 t = (*d-0x47FE)/4;
 
                 if (t<32) {
-                if (data) {
-                    strobe |= (1<<t);
+                    if (data) {
+                        strobe |= (1<<t);
+                    }
+                    else
+                        strobe &= ~(1<<t);
                 }
-                else
-                    strobe &= ~(1<<t);
-}
+                else strobe = 0x1FFFF;
+
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE KEYBOARD [%i]=%i  strobe=%08X\n",t,data,strobe);
 
 //                pKEYB->KStrobe&=0x7F;
@@ -360,6 +362,11 @@ UINT8 Crlh1000::getKey(quint8 row )
 
     quint64 ks;
     ks =strobe;
+    quint32 ligne=0;
+
+    if ( row==32) ligne = 0x1FFFF;
+    else ligne = (1<<row);
+
 //    AddLog(LOG_KEYBOARD,tr("ks=%1(%2)").arg(ks,4,16,QChar('0')).arg(row));
     UINT8 data=0;
 
@@ -370,18 +377,31 @@ UINT8 Crlh1000::getKey(quint8 row )
 
 
         if (ks&0x01) {
-            switch (row) {
-            case 1: data = KEY(K_RET); break;
-            case 2: data = KEY('A'); break;
-            case 3: data = KEY('Z'); break;
-            case 4: data = KEY('E'); break;
-            case 5: data = KEY('R'); break;
-            case 6: data = KEY('T'); break;
-            case 7: data = KEY('Y'); break;
-            }
-            if (data) strobe&=~0x01;
+            if ( (row&0x01) && KEY('A')) data = 1;
+            if ( (row&0x02) && KEY('Z')) data = 1;
+            if ( (row&0x04) && KEY('E')) data = 1;
+            if ( (row&0x08) && KEY('R')) data = 1;
+            if ( (row&0x10) && KEY('T')) data = 1;
+            if ( (row&0x20) && KEY('Y')) data = 1;
+            if ( (row&0x40) && KEY('U')) data = 1;
+            if ( (row&0x80) && KEY('I')) data = 1;
+            if ( (row&0x100) && KEY('O')) data = 1;
         }
-//        if (ks&0x02)
+
+        if (ks&0x8000) {
+            if ( (row&0x01) && KEY('Q')) data = 1;
+            if ( (row&0x02) && KEY('S')) data = 1;
+            if ( (row&0x04) && KEY('D')) data = 1;
+            if ( (row&0x08) && KEY('F')) data = 1;
+            if ( (row&0x10) && KEY('G')) data = 1;
+            if ( (row&0x20) && KEY('H')) data = 1;
+            if ( (row&0x40) && KEY('J')) data = 1;
+            if ( (row&0x80) && KEY('K')) data = 1;
+            if ( (row&0x100) && KEY('L')) data = 1;
+        }
+
+
+        //        if (ks&0x02)
 //        {
 //            switch (row) {
 //            case 1: data = KEY('A'); break;

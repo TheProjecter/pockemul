@@ -1,4 +1,4 @@
-#include <QtGUI>
+#include <QtGui>
 
 
 #include "common.h"
