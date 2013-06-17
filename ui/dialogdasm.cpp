@@ -217,6 +217,11 @@ void DialogDasm::stepOver()
     pPC->DasmFlag = false;
 }
 
+quint16 DialogDasm::getValue()
+{
+    return ui->lineEdit->text().toLong(0,16);
+}
+
 void DialogDasm::addBreakPoint()
 {
     pPC->BreakPoints[ui->breakPointLineEdit->text().toLongLong(0,16)] = Qt::Checked;

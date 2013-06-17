@@ -32,6 +32,7 @@ public:
 
     void resizeEvent(QResizeEvent *event);
     void selectRow(int index);
+    quint16 getValue();
 private:
     Ui::DialogDasm *ui;
     BINEditor::BinEditor *imemHexEditor;
