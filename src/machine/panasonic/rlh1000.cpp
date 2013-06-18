@@ -77,8 +77,8 @@ QMap<quint8,quint8> scandef;
 bool Crlh1000::init(void)				// initialize
 {
 
-//pCPU->logsw = true;
-//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+pCPU->logsw = true;
+    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -130,7 +130,7 @@ bool Crlh1000::run() {
     CpcXXXX::run();
 
     if (pKEYB->LastKey>0) {
-#if 0
+#if 1
         mem[0x207]=7;
         mem[0x206]=6;
         mem[0x26C+7] = pKEYB->LastKey;
@@ -182,6 +182,8 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             // HALT CPU
             pCPU->halt = true;
             AddLog(LOG_CONSOLE,"CPU HALT\n");
+            if (fp_log) fprintf(fp_log,"\nCPU HALT\n");
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nCPU HALT\n");
         }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM latchByte=%02X\n",data);
         *d+=0xC000;
