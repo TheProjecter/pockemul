@@ -78,6 +78,7 @@ bool Crlh1000::init(void)				// initialize
 {
 
 //pCPU->logsw = true;
+//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -133,6 +134,7 @@ bool Crlh1000::run() {
         mem[0x207]=7;
         mem[0x206]=6;
         mem[0x26C+7] = pKEYB->LastKey;
+        mem[0x27B]=0x80;
         qWarning()<<"push key:"<<pKEYB->LastKey;//<<" at:"<<fetch;
         pKEYB->LastKey=0;
 #endif
@@ -156,6 +158,7 @@ bool Crlh1000::run() {
             if (timercnt1==0xff) {
 //                strobe=0;
                 m6502->write_signal(101,1,1);
+                AddLog(LOG_CONSOLE,"INTERRUPT\n");
                 timercnt2--;
                 if (timercnt2==0xff) {
                     timercnt3--;
@@ -175,6 +178,11 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 
     if (*d==0x58FE) {
         latchByte = data;
+        if ((latchByte & 0x40) == 0) {
+            // HALT CPU
+            pCPU->halt = true;
+            AddLog(LOG_CONSOLE,"CPU HALT\n");
+        }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM latchByte=%02X\n",data);
         *d+=0xC000;
         return true;
@@ -198,19 +206,31 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             if (*d==0x58FB) { timercnt1=data; return false; }
             if (*d==0x58FC) { timercnt2=data; return false; }
             if (*d==0x58FD) { timercnt3=data; return false; }
+            if (*d==0x58FF) { return true; }
 
 
-            if ( (*d>=0x47FE) && (*d<=(0x47FC+0x40))) {
+            if ( (*d>=0x47FE) && (*d<=(0x47FC+0xff))) {
 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM KBD [%04X]=%02X\n",*d,data);
                 quint8 t = (*d-0x47FE)/4;
 
-                strobe =t;
-//                if (t<32) {
-//                    if (data) {
-//                        strobe |= (1<<t);
-//                    }
-//                    else
-//                        strobe &= ~(1<<t);
+#if 0
+                    strobe = (data ? t : 0 );
+#else
+                //                if (t<32) {
+                if (t==32){
+                    strobe32= data;
+                }
+                else {
+                    if (data) {
+                        strobe |= (1<<(t&0x07));
+                    }
+                    else {
+                        strobe &= ~(1<<(t&0x07));
+                    }
+                }
+                if (fp_log) fprintf(fp_log,"WRITE KEYBOARD [%04X,%2i]=%i  strobe=%08X ",*d,t,data,strobe);
+if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
+#endif
 //                }
 //                else strobe = (data ? 0x1FFFF : 0);
 
@@ -260,6 +280,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
                     quint8 t=(*d-0x47FC)/4;
 
                     *data = getKey(t);
+
                     if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ KEYBOARD [%i]=%04X\n",t,*data);
                     if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X,%02X]=%02x\n",strobe,t,*data);
                     return false;
@@ -268,7 +289,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             if (*d==0x58FB) { *data=timercnt1; return false; }
             if (*d==0x58FC) { *data=timercnt2; return false; }
             if (*d==0x58FD) { *data=timercnt3; return false; }
-            if (*d==0x58FF) { *data=0x00; return false; }
+            if (*d==0x58FF) { *data = 0; return false; }
 
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM [%04X]\n",*d);
             return true;
@@ -360,56 +381,45 @@ bool Crlh1000::SaveConfig(QXmlStreamWriter *xmlOut)
 
 UINT8 Crlh1000::getKey(quint8 row )
 {
+    row &= 0x07;
+if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
 
-
-    quint64 ks;
+    quint8 ks;
     ks =strobe;
     quint32 ligne=0;
 
-
+    quint8 kr = row;
 
 //    AddLog(LOG_KEYBOARD,tr("ks=%1(%2)").arg(ks,4,16,QChar('0')).arg(row));
-    UINT8 data=1;
+    UINT8 data=0;
 
     if ((pKEYB->LastKey) )
     {
-        if (KEY(K_RET)) {
-            if (strobe ==15) {
-                if(row == 15) {
-                    data = 0x00;
-                }
-                else if( row == 0) {
-                    data = 0x00;
-                }
-            }
+        if (row==32) return 0xFF;
+
+        if (fp_log) fprintf(fp_log," PUSH kr=%i ",kr);
+        if (ks&0x01) {
+            if (KEY(K_RET) && (kr==0)) return 1;
         }
-        if (KEY(K_F1)) {
-int rowId = 12;
-            if (dialogdasm) rowId = dialogdasm->getValue();
-            if (strobe ==7) {
-                if(row == 7) {
-                    data = 0x00;
-                }
-                else if( row == rowId) {
-                    data = 0x00;
-                }
-            }
+
+        if (ks&0x80) {
+
+            if (KEY('A') && (kr==0)) return 1;
+            if (KEY('Z') && (kr==1)) return 1;
+            if (KEY('E') && (kr==2)) return 1;
+            if (KEY('R') && (kr==3)) return 1;
+            if (KEY('T') && (kr==4)) return 1;
+            if (KEY('Y') && (kr==5)) return 1;
+            if (KEY('U') && (kr==6)) return 1;
+
         }
-        if (KEY(K_F2)) {
-            if (strobe ==0) {
-                if(row == 0) {
-                    data = 0x00;
-                }
-                else if( row == 2) {
-                    data = 0x00;
-                }
-            }
-        }
-        if ( /*KEY(' ') || */(data==0)) {
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ KEYBOARD getKey=%04X\n",data);
-            AddLog(LOG_KEYBOARD,tr("strobe=%1, row=%2\n").arg(strobe).arg(row));
+        if (ks&0x02) {
+            if (KEY('Q') && (kr==5)) return 1;
+            if (KEY('S') && (kr==6)) return 1;
         }
     }
-        return (data>0 ? 0:0x01);
+
+    if (fp_log) fprintf(fp_log,"=%i\n",data);
+    return data;
 
 }

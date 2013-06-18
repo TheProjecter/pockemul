@@ -14,6 +14,7 @@
 #include "Inter.h"
 #include "ui/cregsz80widget.h"
 #include "Debug.h"
+#include "Log.h"
 
 #include "ops02.h"
 //#include "opsc02.h"
@@ -286,10 +287,11 @@ void Cm6502::OP(uint8 code)
 inline void Cm6502::update_irq()
 {
 //    if (fp_log) fprintf(fp_log,"\n INT update_irq\n");
-
+AddLog(LOG_CONSOLE,"updateIRQ\n");
     if(!(P & F_I)) {
         if (fp_log) fprintf(fp_log,"\n INT update_irq GO\n");
 
+        AddLog(LOG_CONSOLE,"updateIRQ GOGOGO\n");
         EAD = IRQ_VEC;
         CYCLES(2);
         PUSH(PCH);
@@ -301,6 +303,8 @@ inline void Cm6502::update_irq()
         // call back the cpuintrf to let it clear the line
         //d_pic->intr_reti();
         irq_state = false;
+        halt = false;
+        AddLog(LOG_CONSOLE,"CPU RUNNING\n");
     }
     pending_irq = false;
 }
@@ -332,6 +336,8 @@ void Cm6502::Reset(void)
     icount = 0;
     pending_irq = after_cli = false;
     irq_state = nmi_state = so_state = false;
+    halt = false;
+    AddLog(LOG_CONSOLE,"CPU RUNNING\n");
 }
 
 Cm6502::Cm6502(CPObject *parent)	: CCPU(parent)
@@ -392,10 +398,19 @@ void Cm6502::run_one_opecode()
         PCL = RDMEM(EAD);
         PCH = RDMEM(EAD + 1);
         nmi_state = false;
+        halt=false;
+        AddLog(LOG_CONSOLE,"CPU RUNNING\n");
     }
     else if(pending_irq) {
-        update_irq();
+        if (halt) Reset();
+        else update_irq();
     }
+    if (halt) {
+        CYCLES(10);
+        P &= ~F_I;
+        return;
+    }
+
     prev_pc = pc.w.l;
     quint8 code = RDOP();
     OP(code);
@@ -426,6 +441,7 @@ void Cm6502::write_signal(int id, quint32 data, quint32 mask)
         irq_state = state;
         if(state) {
             pending_irq = true;
+            AddLog(LOG_CONSOLE,"pending IRQ\n");
         }
     }
     else if(id == SIG_CPU_OVERFLOW) {

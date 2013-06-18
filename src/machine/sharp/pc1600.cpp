@@ -26,7 +26,7 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
 #ifndef QT_NO_DEBUG
     if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 #endif
-if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
+//if (!fp_log) fp_log=fopen("pc1600.log","wt");	// Open log file
 
     setfrequency( (int) 3500000);
     ioFreq = 0;
