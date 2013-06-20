@@ -31,7 +31,7 @@ public:
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
     Cm6502 *m6502;
-    quint64 strobe;
+    quint8 strobe[0x100];
     quint8 strobe32;
     UINT8 getKey(quint8 row);
 private:

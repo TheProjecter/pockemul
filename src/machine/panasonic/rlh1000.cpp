@@ -9,8 +9,11 @@
 #include "Lcdc_rlh1000.h"
 #include "ui/dialogdasm.h"
 
-
-
+#if 0
+quint8 map[][] = {
+    /*00*/ { 'A' , 'Z' , 'E' , 'R' , 'T' , 'U' , 'I'},
+}
+#endif
 
 Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -77,7 +80,7 @@ QMap<quint8,quint8> scandef;
 bool Crlh1000::init(void)				// initialize
 {
 
-pCPU->logsw = true;
+//pCPU->logsw = true;
     if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
@@ -95,7 +98,7 @@ pCPU->logsw = true;
     latchByte = 0x00;
 
     timercnt1=timercnt2=timercnt3=0;
-    strobe=0;
+    memset(&strobe,0,sizeof(strobe));
 
 
     scandef[K_RET] = 0xF0;
@@ -127,16 +130,19 @@ bool Crlh1000::run() {
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
 //    mem[0x204]=1;
+
+
+ if ((pCPU->get_PC()==0xc6C5) && fp_log) fprintf(fp_log,"STORE KEY !!!!!!!!!!!!!\n");
     CpcXXXX::run();
 
     if (pKEYB->LastKey>0) {
-#if 1
+#if 0
         mem[0x207]=7;
         mem[0x206]=6;
         mem[0x26C+7] = pKEYB->LastKey;
         mem[0x27B]=0x80;
         qWarning()<<"push key:"<<pKEYB->LastKey;//<<" at:"<<fetch;
-        pKEYB->LastKey=0;
+//        pKEYB->LastKey=0;
 #endif
 
         m6502->write_signal(101,1,1);
@@ -215,8 +221,19 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM KBD [%04X]=%02X\n",*d,data);
                 quint8 t = (*d-0x47FE)/4;
 
-#if 0
-                    strobe = (data ? t : 0 );
+#if 1
+                strobe[t] = data;
+
+                if (fp_log) {
+                    fprintf(fp_log,"WRITE KEYBOARD [%2i]=%i",t,data);
+                    for (int i=0;i<=32;i++) {
+                        if (i%4 == 0) fprintf(fp_log," ");
+                        fprintf(fp_log,"%i",strobe[i]);
+
+                    }
+                    pCPU->Regs_Info(1);
+                    fprintf(fp_log," %s\n",pCPU->Regs_String);
+                }
 #else
                 //                if (t<32) {
                 if (t==32){
@@ -230,7 +247,7 @@ if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM KBD [%04X]=%02X\n",*d,data)
                         strobe &= ~(1<<(t&0x07));
                     }
                 }
-                if (fp_log) fprintf(fp_log,"WRITE KEYBOARD [%04X,%2i]=%i  strobe=%08X ",*d,t,data,strobe);
+                if (fp_log) fprintf(fp_log,"[%06X] WRITE KEYBOARD [%04X,%2i]=%i  strobe=%08X ",pCPU->get_PC(),*d,t,data,strobe);
 if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
 #endif
 //                }
@@ -278,11 +295,15 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             else {
                 // KBD mapping
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d);
-                if ( (*d>=0x47FC) && (*d<=(0x47FC+0x40))) {
+                if ( (*d>=0x47FC) && (*d<=(0x47FC+0xff))) {
                     quint8 t=(*d-0x47FC)/4;
 
                     *data = getKey(t);
-
+                    if (fp_log) {
+                        fprintf(fp_log,"  data=%i ",*data);
+                        pCPU->Regs_Info(1);
+                        fprintf(fp_log," %s\n",pCPU->Regs_String);
+                    }
                     if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ KEYBOARD [%i]=%04X\n",t,*data);
                     if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X,%02X]=%02x\n",strobe,t,*data);
                     return false;
@@ -383,11 +404,20 @@ bool Crlh1000::SaveConfig(QXmlStreamWriter *xmlOut)
 
 UINT8 Crlh1000::getKey(quint8 row )
 {
-    row &= 0x07;
-if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
 
+    if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
+
+    if ((pKEYB->LastKey) ) {
+        if (row==4) {
+            if (strobe[8]==0) return 0;
+            else return 0xff;
+
+        }
+    }
+
+    return 0xff;
     quint8 ks;
-    ks =strobe;
+
     quint32 ligne=0;
 
     quint8 kr = row;
@@ -397,14 +427,12 @@ if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
 
     if ((pKEYB->LastKey) )
     {
-        if (row==32) return 0xFF;
+//        if (strobe32==1) ks= 0xFF;
 
-        if (fp_log) fprintf(fp_log," PUSH kr=%i ",kr);
-        if (ks&0x01) {
-            if (KEY(K_RET) && (kr==0)) return 1;
-        }
 
-        if (ks&0x80) {
+        if (fp_log) fprintf(fp_log," PUSH [%02X] kr=%i ",pKEYB->LastKey,kr);
+
+        if (strobe32==1) {
 
             if (KEY('A') && (kr==0)) return 1;
             if (KEY('Z') && (kr==1)) return 1;
@@ -415,9 +443,26 @@ if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
             if (KEY('U') && (kr==6)) return 1;
 
         }
-        if (ks&0x02) {
-            if (KEY('Q') && (kr==5)) return 1;
-            if (KEY('S') && (kr==6)) return 1;
+        else {
+            quint8 var=0x01;
+            if (dialogdasm) var = dialogdasm->getValue();
+            if (ks & var) {
+
+                if (KEY('A')) data |= 0x01;
+                if (KEY('Z')) data |= 0x02;
+                if (KEY('E')) data |= 0x04;
+                if (KEY('R')) data |= 0x08;
+                if (KEY('T')) data |= 0x10;
+                if (KEY('Y')) data |= 0x20;
+                if (KEY('U')) data |= 0x40;
+                if (KEY('I')) data |= 0x80;
+
+                if (data== (1<<kr)) data=0x00;
+                        else
+                        data = 0xff;
+
+            }
+
         }
     }
 

@@ -337,6 +337,7 @@ void Cm6502::Reset(void)
     pending_irq = after_cli = false;
     irq_state = nmi_state = so_state = false;
     halt = false;
+    CallSubLevel = 0;
     AddLog(LOG_CONSOLE,"CPU RUNNING\n");
 }
 
