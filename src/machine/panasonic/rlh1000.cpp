@@ -408,9 +408,8 @@ UINT8 Crlh1000::getKey(quint8 row )
     if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
 
     if ((pKEYB->LastKey) ) {
-        if (row==4) {
-            if (strobe[8]==0) return 0;
-            else return 0xff;
+        if ((row==0 || row==11) && (strobe[row]==0)) {
+            return 0;
 
         }
     }
