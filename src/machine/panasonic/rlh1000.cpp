@@ -101,16 +101,6 @@ bool Crlh1000::init(void)				// initialize
     memset(&strobe,0,sizeof(strobe));
 
 
-    scandef[K_RET] = 0xF0;
-    scandef['A'] = 0x38;
-    scandef['Z'] = 0x39;
-    scandef['E'] = 0x3A;
-    scandef['R'] = 0x3B;
-    scandef['T'] = 0x3C;
-    scandef['Y'] = 0x3D;
-    scandef['U'] = 0x3E;
-    scandef['I'] = 0x3F;
-
     return true;
 }
 
@@ -431,7 +421,7 @@ UINT8 Crlh1000::getKey(quint8 row )
     if ((pKEYB->LastKey) )
     {
         if (row&0x01) {
-            if (KEY('A')) data |= 0x01;
+            if (KEY(K_F5)) data |= 0x01;
             if (KEY('1')) data |= 0x02;
             if (KEY('2')) data |= 0x04;
             if (KEY('3')) data |= 0x08;
