@@ -74,7 +74,7 @@
         RDMEM(PCW); \
         EAW = PCW + (int8)tmp2; \
         if(EAH != PCH) { \
-            RDMEM((PCH << 8) | EAL) ; \
+            /*RDMEM((PCH << 8) | EAL) ;*/ \
             CYCLES(1); \
         } \
         PCD = EAD; \
@@ -107,27 +107,27 @@
 #define EA_ABX_P \
     EA_ABS; \
     if(EAL + X > 0xff) { \
-        RDMEM((EAH << 8) | ((EAL + X) & 0xff)); \
+        /*RDMEM((EAH << 8) | ((EAL + X) & 0xff));*/ \
         CYCLES(1); \
     } \
     EAW += X;
 
 #define EA_ABX_NP \
     EA_ABS; \
-    RDMEM((EAH << 8) | ((EAL + X) & 0xff)); \
+    /*RDMEM((EAH << 8) | ((EAL + X) & 0xff));*/ \
     EAW += X
 
 #define EA_ABY_P \
     EA_ABS; \
     if(EAL + Y > 0xff) { \
-        RDMEM((EAH << 8) | ((EAL + Y) & 0xff)); \
+        /*RDMEM((EAH << 8) | ((EAL + Y) & 0xff));*/ \
         CYCLES(1); \
     } \
     EAW += Y;
 
 #define EA_ABY_NP \
     EA_ABS; \
-    RDMEM((EAH << 8) | ((EAL + Y) & 0xff)); \
+    /*RDMEM((EAH << 8) | ((EAL + Y) & 0xff));*/ \
     EAW += Y
 
 #define EA_IDX \
@@ -144,7 +144,7 @@
     ZPL++; \
     EAH = RDMEM(ZPD); \
     if(EAL + Y > 0xff) { \
-        RDMEM((EAH << 8) | ((EAL + Y) & 0xff)); \
+        /*RDMEM((EAH << 8) | ((EAL + Y) & 0xff));*/ \
         CYCLES(1); \
     } \
     EAW += Y;
@@ -154,7 +154,7 @@
     EAL = RDMEM(ZPD); \
     ZPL++; \
     EAH = RDMEM(ZPD); \
-    RDMEM((EAH << 8) | ((EAL + Y) & 0xff)); \
+    /*RDMEM((EAH << 8) | ((EAL + Y) & 0xff));*/ \
     EAW += Y
 
 #define EA_ZPI \

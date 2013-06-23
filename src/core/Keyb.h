@@ -225,6 +225,16 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_SEARCH    0x20f
 #define K_ENG       0x210
 
+#define K_HELP      0x220
+#define K_IO        0x221
+#define K_STP       0x222
+#define K_ROTATE    0x223
+#define K_C1        0x224
+#define K_C2        0x225
+#define K_C3        0x226
+#define K_C4        0x227
+#define K_LOCK      0x228
+
 #define K_SHIFT_DOWN_MOD 0x210
 #define K_SHIFT_UP_MOD 0x211
 #define K_CTRL_DOWN_MOD  0x212

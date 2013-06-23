@@ -558,7 +558,7 @@ bool CpcXXXX::run(void)
             if (pCPU->CallSubLevel <0) pCPU->CallSubLevel=0;
             pCPU->prevCallSubLevel = pCPU->CallSubLevel;
 
-            fflush(pCPU->fp_log);
+//            fflush(pCPU->fp_log);
         }
         else {
             if (!off) pCPU->step();

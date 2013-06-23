@@ -8,6 +8,7 @@
     [ Cm6502 ]
 */
 
+#include <QDebug>
 
 #include "m6502.h"
 #include "pcxxxx.h"
@@ -339,6 +340,7 @@ void Cm6502::Reset(void)
     halt = false;
     CallSubLevel = 0;
     AddLog(LOG_CONSOLE,"CPU RUNNING\n");
+//    qWarning()<<"CPU RUNNING";
 }
 
 Cm6502::Cm6502(CPObject *parent)	: CCPU(parent)
@@ -401,13 +403,14 @@ void Cm6502::run_one_opecode()
         nmi_state = false;
         halt=false;
         AddLog(LOG_CONSOLE,"CPU RUNNING\n");
+        qWarning()<<"CPU RUNNING";
     }
     else if(pending_irq) {
         if (halt) Reset();
         else update_irq();
     }
     if (halt) {
-        CYCLES(10);
+        CYCLES(1000);
         P &= ~F_I;
         return;
     }

@@ -81,7 +81,7 @@ bool Crlh1000::init(void)				// initialize
 {
 
 //pCPU->logsw = true;
-    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -129,40 +129,28 @@ bool Crlh1000::run() {
 #if 0 //ndef QT_NO_DEBUG
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
-//    mem[0x204]=1;
 
 
  if ((pCPU->get_PC()==0xc6C5) && fp_log) fprintf(fp_log,"STORE KEY !!!!!!!!!!!!!\n");
     CpcXXXX::run();
 
-    if (pKEYB->LastKey>0) {
-#if 0
-        mem[0x207]=7;
-        mem[0x206]=6;
-        mem[0x26C+7] = pKEYB->LastKey;
-        mem[0x27B]=0x80;
-        qWarning()<<"push key:"<<pKEYB->LastKey;//<<" at:"<<fetch;
-//        pKEYB->LastKey=0;
-#endif
+#define KBSTORE mem[0x206]
+#define KBFETCH mem[0x207]
 
+    if (pKEYB->LastKey>0)
+    {
         m6502->write_signal(101,1,1);
-        //                if(pCPU->fp_log) fprintf(pCPU->fp_log,"\nINTERUPT\n");
     }
-
-
-//    quint64 deltaState = pTIMER->state - old_state;
 
     if (pTIMER->usElapsedId(1)>=3906) {
 //        if (timercnt1!=0)
         {
             timercnt1--;
             if ((timercnt1==0)&&(timercnt2==0)&&(timercnt3==0)) {
-//                strobe=0;
                 m6502->write_signal(101,1,1);
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD TIMER\n");
             }
             if (timercnt1==0xff) {
-//                strobe=0;
                 m6502->write_signal(101,1,1);
                 AddLog(LOG_CONSOLE,"INTERRUPT\n");
                 timercnt2--;
@@ -180,6 +168,9 @@ bool Crlh1000::run() {
 bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 {
 
+    if((*d>=0x206) && (*d <= 0x207)) {
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE 206=%02X , 207=%02X\n",mem[0x206],mem[0x207]);
+    }
     if(*d < 0x2000) return true; /* RAM */
 
     if (*d==0x58FE) {
@@ -187,6 +178,7 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
         if ((latchByte & 0x40) == 0) {
             // HALT CPU
             pCPU->halt = true;
+//            qWarning()<<"CPU HALT";
             AddLog(LOG_CONSOLE,"CPU HALT\n");
             if (fp_log) fprintf(fp_log,"\nCPU HALT\n");
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nCPU HALT\n");
@@ -261,6 +253,11 @@ if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
                 return false;
             }
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",*d,data);
+            if (fp_log) {
+                fprintf(fp_log,"WRITE ROM [%04X]=%02X ",*d,data);
+                pCPU->Regs_Info(1);
+                fprintf(fp_log," %s\n",pCPU->Regs_String);
+            }
             *d+=0xc000;
             return true;
         }
@@ -269,7 +266,7 @@ if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
         return true;
 
     }
-    if((*d>=0x8000) && (*d < 0xC000)) return true; /* RAM */
+    if((*d>=0x8000) && (*d < 0xC000)) return false; /* RAM */
 
 
 
@@ -279,7 +276,9 @@ if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
 bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
 
-
+    if((*d>=0x206) && (*d <= 0x207)) {
+        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ 206=%02X , 207=%02X\n",mem[0x206],mem[0x207]);
+    }
 
     if((*d>=0x4000) && (*d <= 0x7FFF)) {
         if ((latchByte & 0x04)==0) {
@@ -294,27 +293,49 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             }
             else {
                 // KBD mapping
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d);
-                if ( (*d>=0x47FC) && (*d<=(0x47FC+0xff))) {
-                    quint8 t=(*d-0x47FC)/4;
 
+                if ( (*d>=0x5800) && (*d<=(0x5800+0xfa))) {
+                    quint8 t = *d - 0x5800;
                     *data = getKey(t);
                     if (fp_log) {
                         fprintf(fp_log,"  data=%i ",*data);
                         pCPU->Regs_Info(1);
                         fprintf(fp_log," %s\n",pCPU->Regs_String);
                     }
-                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ KEYBOARD [%i]=%04X\n",t,*data);
-                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X,%02X]=%02x\n",strobe,t,*data);
                     return false;
                 }
+
+#if 1
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d);
+                if ( (*d>=0x47FC) && (*d<=(0x47FC+0xff))) {
+                    quint8 t=(*d-0x47FC)/4;
+
+                    //if (t<9)
+                    {
+                        *data = 0;//getKey(t);
+//                        if (fp_log) {
+//                            fprintf(fp_log,"  data=%i ",*data);
+//                            pCPU->Regs_Info(1);
+//                            fprintf(fp_log," %s\n",pCPU->Regs_String);
+//                        }
+                        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ KEYBOARD [%i]=%04X\n",t,*data);
+                        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X,%02X]=%02x\n",strobe,t,*data);
+                        return false;
+                    }
+                }
+#endif
             }
             if (*d==0x58FB) { *data=timercnt1; return false; }
             if (*d==0x58FC) { *data=timercnt2; return false; }
             if (*d==0x58FD) { *data=timercnt3; return false; }
-            if (*d==0x58FF) { *data = 0; return false; }
+            if (*d==0x58FF) {  *data = pKEYB->LastKey; return false; }
 
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM [%04X]\n",*d);
+            if (fp_log) {
+                fprintf(fp_log,"READ ROM [%04X]  ",*d);
+                pCPU->Regs_Info(1);
+                fprintf(fp_log," %s\n",pCPU->Regs_String);
+            }
             return true;
         }
         else {
@@ -404,68 +425,100 @@ bool Crlh1000::SaveConfig(QXmlStreamWriter *xmlOut)
 
 UINT8 Crlh1000::getKey(quint8 row )
 {
+    quint8 data = 0;
 
     if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
-
-    if ((pKEYB->LastKey) ) {
-        if ((row==0 || row==11) && (strobe[row]==0)) {
-            return 0;
-
-        }
-    }
-
-    return 0xff;
-    quint8 ks;
-
-    quint32 ligne=0;
-
-    quint8 kr = row;
-
-//    AddLog(LOG_KEYBOARD,tr("ks=%1(%2)").arg(ks,4,16,QChar('0')).arg(row));
-    UINT8 data=0;
-
     if ((pKEYB->LastKey) )
     {
-//        if (strobe32==1) ks= 0xFF;
-
-
-        if (fp_log) fprintf(fp_log," PUSH [%02X] kr=%i ",pKEYB->LastKey,kr);
-
-        if (strobe32==1) {
-
-            if (KEY('A') && (kr==0)) return 1;
-            if (KEY('Z') && (kr==1)) return 1;
-            if (KEY('E') && (kr==2)) return 1;
-            if (KEY('R') && (kr==3)) return 1;
-            if (KEY('T') && (kr==4)) return 1;
-            if (KEY('Y') && (kr==5)) return 1;
-            if (KEY('U') && (kr==6)) return 1;
-
+        if (row&0x01) {
+            if (KEY('A')) data |= 0x01;
+            if (KEY('1')) data |= 0x02;
+            if (KEY('2')) data |= 0x04;
+            if (KEY('3')) data |= 0x08;
+            if (KEY('4')) data |= 0x10;
+            if (KEY('5')) data |= 0x20;
+            if (KEY('6')) data |= 0x40;
+            if (KEY('7')) data |= 0x80;
         }
-        else {
-            quint8 var=0x01;
-            if (dialogdasm) var = dialogdasm->getValue();
-            if (ks & var) {
-
-                if (KEY('A')) data |= 0x01;
-                if (KEY('Z')) data |= 0x02;
-                if (KEY('E')) data |= 0x04;
-                if (KEY('R')) data |= 0x08;
-                if (KEY('T')) data |= 0x10;
-                if (KEY('Y')) data |= 0x20;
-                if (KEY('U')) data |= 0x40;
-                if (KEY('I')) data |= 0x80;
-
-                if (data== (1<<kr)) data=0x00;
-                        else
-                        data = 0xff;
-
-            }
-
+        if (row&0x02) {
+            if (KEY('8')) data |= 0x01;
+            if (KEY('9')) data |= 0x02;
+            if (KEY('0')) data |= 0x04;
+            if (KEY(K_HELP)) data |= 0x08;
+            if (KEY(K_UA)) data |= 0x10;
+            if (KEY(K_IO)) data |= 0x20;
+            if (KEY('.')) data |= 0x40;
+            if (KEY(K_SHT2)) data |= 0x80;
         }
+
+        if (row&0x04) {
+            if (KEY('M')) data |= 0x01;
+            if (KEY('Q')) data |= 0x02;
+            if (KEY('W')) data |= 0x04;
+            if (KEY('E')) data |= 0x08;
+            if (KEY('R')) data |= 0x10;
+            if (KEY('T')) data |= 0x20;
+            if (KEY('Y')) data |= 0x40;
+            if (KEY('U')) data |= 0x80;
+        }
+
+        if (row&0x08) {
+            if (KEY('I')) data |= 0x01;
+            if (KEY('O')) data |= 0x02;
+            if (KEY('P')) data |= 0x04;
+            if (KEY(K_LA)) data |= 0x08;
+            if (KEY(K_STP)) data |= 0x10;
+            if (KEY(K_RA)) data |= 0x20;
+            if (KEY(K_F2)) data |= 0x40;
+            if (KEY(K_F3)) data |= 0x80;
+        }
+
+        if (row&0x10) {
+            if (KEY('N')) data |= 0x01;
+            if (KEY('A')) data |= 0x02;
+            if (KEY('S')) data |= 0x04;
+            if (KEY('D')) data |= 0x08;
+            if (KEY('F')) data |= 0x10;
+            if (KEY('G')) data |= 0x20;
+            if (KEY('H')) data |= 0x40;
+            if (KEY('J')) data |= 0x80;
+        }
+
+        if (row&0x20) {
+            if (KEY('K')) data |= 0x01;
+            if (KEY('L')) data |= 0x02;
+            if (KEY(K_F1)) data |= 0x04;
+            if (KEY(K_SEARCH)) data |= 0x08;
+            if (KEY(K_DA)) data |= 0x10;
+            if (KEY(K_ROTATE)) data |= 0x20;
+            if (KEY(K_INS)) data |= 0x40;
+            if (KEY(K_SHT)) data |= 0x80;
+        }
+
+        if (row&0x40) {
+            if (KEY('B')) data |= 0x01;
+            if (KEY(K_C1)) data |= 0x02;
+            if (KEY(K_C2)) data |= 0x04;
+            if (KEY(',')) data |= 0x08;
+            if (KEY('?')) data |= 0x10;
+            if (KEY(' ')) data |= 0x20;
+            if (KEY(K_C3)) data |= 0x40;
+            if (KEY(K_C4)) data |= 0x80;
+        }
+
+        if (row&0x80) {
+            if (KEY(K_LOCK)) data |= 0x01;
+            if (KEY('Z')) data |= 0x02;
+            if (KEY('X')) data |= 0x04;
+            if (KEY('C')) data |= 0x08;
+            if (KEY('V')) data |= 0x10;
+            if (KEY(K_OF)) data |= 0x20;
+            if (KEY(K_DEL)) data |= 0x40;
+            if (KEY(K_RET)) data |= 0x80;
+        }
+
     }
 
-    if (fp_log) fprintf(fp_log,"=%i\n",data);
     return data;
 
 }
