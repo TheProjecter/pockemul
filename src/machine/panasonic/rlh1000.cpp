@@ -421,7 +421,7 @@ UINT8 Crlh1000::getKey(quint8 row )
     if ((pKEYB->LastKey) )
     {
         if (row&0x01) {
-            if (KEY(K_F5)) data |= 0x01;
+            if (KEY(K_F5)) data |= 0x01;    // CLEAR
             if (KEY('1')) data |= 0x02;
             if (KEY('2')) data |= 0x04;
             if (KEY('3')) data |= 0x08;
