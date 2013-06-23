@@ -789,7 +789,8 @@ OTHER_FILES += \
     resources/keymap/pc1425.map \
     resources/pockemul/weblinks.xml \
     resources/keymap/tpc8300.map \
-    resources/keymap/tp83.map
+    resources/keymap/tp83.map \
+    resources/keymap/rlh1000.map
 
 
 

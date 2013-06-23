@@ -42,5 +42,6 @@
         <file>keymap/pc1425.map</file>
         <file>keymap/tp83.map</file>
         <file>keymap/tpc8300.map</file>
+        <file>keymap/rlh1000.map</file>
     </qresource>
 </RCC>
