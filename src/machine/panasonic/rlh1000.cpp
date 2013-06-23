@@ -436,7 +436,7 @@ UINT8 Crlh1000::getKey(quint8 row )
             if (KEY('0')) data |= 0x04;
             if (KEY(K_HELP)) data |= 0x08;
             if (KEY(K_UA)) data |= 0x10;
-            if (KEY(K_IO)) data |= 0x20;
+            if (KEY(K_F6)) data |= 0x20; // IO
             if (KEY('.')) data |= 0x40;
             if (KEY(K_SHT2)) data |= 0x80;
         }
