@@ -102,12 +102,19 @@ void DialogVKeyboard::processEscKey(QString word) {
     CKey *k = dict.value(word);
     if (k->MasterScanCode==0x00) final.append(k->ScanCode);
     else {
-        if (k->Modifier.contains("shift")) {
+        if (k->Modifier=="shift") {
             final.append(k->MasterScanCode | 0x2000000);
         }
-        if (k->Modifier.contains("ctrl")) {
+        else
+        if (k->Modifier=="ctrl") {
             final.append(k->MasterScanCode | 0x4000000);
         }
+        else
+        if (k->Modifier=="firstctrl") {
+            final.append(K_CTRL);
+            final.append(k->MasterScanCode);
+        }
+        else
         if (k->Modifier == "2nd") {
             final.append(K_SHT);
             final.append(k->MasterScanCode);

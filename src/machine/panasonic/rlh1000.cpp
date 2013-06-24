@@ -326,7 +326,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             case 0x00 : offset = 0; break;
             case 0x01 : offset = 0x10000; break;
             case 0x02 : offset = 0x14000; break;
-            case 0x03 : // External ROM ???? break;
+            case 0x03 : *data=0xff; return false; // External ROM ????
             default: break;
             }
             *d += offset;
@@ -343,7 +343,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
-        *data=0x00;
+        *data=0xff;
         return false; /* RAM */
     }
 

@@ -65,20 +65,29 @@
     <KEY description="X" height="15" left="124" masterscancode="0x00" modifier="" scancode="0x78" top="244" width="25"/>
     <KEY description="Y" height="15" left="302" masterscancode="0x00" modifier="" scancode="0x79" top="178" width="25"/>
     <KEY description="Z" height="15" left="80" masterscancode="0x00" modifier="" scancode="0x7a" top="245" width="25"/>
-    <KEY description="!" height="0" left="0" masterscancode="0x31" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="@" height="0" left="0" masterscancode="0x32" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="#" height="0" left="0" masterscancode="0x33" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="$" height="0" left="0" masterscancode="0x34" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="%" height="0" left="0" masterscancode="0x35" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="^" height="0" left="0" masterscancode="0x36" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="&amp;" height="0" left="0" masterscancode="0x37" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="(" height="0" left="0" masterscancode="0x39" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description=")" height="0" left="0" masterscancode="0x30" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="_" height="0" left="0" masterscancode="0x2d" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="&quot;" height="0" left="0" masterscancode="0x2c" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="]" height="0" left="0" masterscancode="0xb1" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description=":" height="0" left="0" masterscancode="0x3b" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="&lt;" height="0" left="0" masterscancode="0x2c" modifier="shift" scancode="0x00" top="0" width="25"/>
-    <KEY description="&gt;" height="0" left="0" masterscancode="0x3e" modifier="shift" scancode="0x00" top="0" width="25"/>
+    <KEY description="!" height="0" left="0" masterscancode="0x31" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="&quot;" height="0" left="0" masterscancode="0x32" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="#" height="0" left="0" masterscancode="0x33" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="$" height="0" left="0" masterscancode="0x34" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="%" height="0" left="0" masterscancode="0x35" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="&amp;" height="0" left="0" masterscancode="0x36" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="'" height="0" left="0" masterscancode="0x37" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="(" height="0" left="0" masterscancode="0x38" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description=")" height="0" left="0" masterscancode="0x39" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description="_" height="0" left="0" masterscancode="0x30" modifier="2nd" scancode="0x00" top="0" width="25"/>
+    <KEY description=";" height="0" left="0" masterscancode="0x2c" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description=":" height="0" left="0" masterscancode="0x2e" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="&lt;" height="0" left="0" masterscancode="0x6a" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="&gt;" height="0" left="0" masterscancode="0x6b" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="+" height="0" left="0" masterscancode="0x79" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="-" height="0" left="0" masterscancode="0x75" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="=" height="0" left="0" masterscancode="0x70" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="\\" height="0" left="0" masterscancode="0x73" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="/" height="0" left="0" masterscancode="0x3f" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="{" height="0" left="0" masterscancode="0x64" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="}" height="0" left="0" masterscancode="0x66" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="[" height="0" left="0" masterscancode="0x67" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="]" height="0" left="0" masterscancode="0x68" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="|" height="0" left="0" masterscancode="0x6e" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
 </Keyboard>
 </KEYBMAP>
