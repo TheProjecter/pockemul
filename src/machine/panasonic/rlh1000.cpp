@@ -1,3 +1,5 @@
+// TODO: LCD indicators see SnapFORTH vol 2 12-14
+
 #include <QDebug>
 
 #include "rlh1000.h"
@@ -32,7 +34,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""/*P_RES(":/rlh1000/rlp1004a.bin")*/    , ""	, ROM , "Ext ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, ROM , "Ext ROM"));
     SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, ROM , "ROM Capsules 1"));
     SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, RAM , "Ext RAM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, ROM , "ROM"));
@@ -69,6 +71,8 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     pKEYB		= new Ckeyb(this,"rlh1000.map");
 
     ioFreq = 0;
+
+    extrinsic = 0;
 }
 
 Crlh1000::~Crlh1000() {
@@ -116,16 +120,13 @@ bool Crlh1000::run() {
     if (dialogdasm)
         dialogdasm->imem=false;
 
-#if 0 //ndef QT_NO_DEBUG
+#ifndef QT_NO_DEBUG
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
 
 
- if ((pCPU->get_PC()==0xc6C5) && fp_log) fprintf(fp_log,"STORE KEY !!!!!!!!!!!!!\n");
-    CpcXXXX::run();
+     CpcXXXX::run();
 
-#define KBSTORE mem[0x206]
-#define KBFETCH mem[0x207]
 
     if (pKEYB->LastKey>0)
     {
@@ -158,9 +159,6 @@ bool Crlh1000::run() {
 bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 {
 
-    if((*d>=0x206) && (*d <= 0x207)) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE 206=%02X , 207=%02X\n",mem[0x206],mem[0x207]);
-    }
     if(*d < 0x2000) return true; /* RAM */
 
     if (*d==0x58FE) {
@@ -196,18 +194,18 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             if (*d==0x58FB) { timercnt1=data; return false; }
             if (*d==0x58FC) { timercnt2=data; return false; }
             if (*d==0x58FD) { timercnt3=data; return false; }
-            if (*d==0x58FF) { return true; }
+            if (*d==0x58FF) {                 return false; }
 
 
             if ( (*d>=0x47FE) && (*d<=(0x47FC+0xff))) {
-if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM KBD [%04X]=%02X\n",*d,data);
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LINE [%04X]=%02X\n",*d,data);
                 quint8 t = (*d-0x47FE)/4;
 
-#if 1
                 strobe[t] = data;
+                if (data==1) extrinsic = t;
 
                 if (fp_log) {
-                    fprintf(fp_log,"WRITE KEYBOARD [%2i]=%i",t,data);
+                    fprintf(fp_log,"WRITE LINE [%2i]=%i",t,data);
                     for (int i=0;i<=32;i++) {
                         if (i%4 == 0) fprintf(fp_log," ");
                         fprintf(fp_log,"%i",strobe[i]);
@@ -216,33 +214,12 @@ if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM KBD [%04X]=%02X\n",*d,data)
                     pCPU->Regs_Info(1);
                     fprintf(fp_log," %s\n",pCPU->Regs_String);
                 }
-#else
-                //                if (t<32) {
-                if (t==32){
-                    strobe32= data;
-                }
-                else {
-                    if (data) {
-                        strobe |= (1<<(t&0x07));
-                    }
-                    else {
-                        strobe &= ~(1<<(t&0x07));
-                    }
-                }
-                if (fp_log) fprintf(fp_log,"[%06X] WRITE KEYBOARD [%04X,%2i]=%i  strobe=%08X ",pCPU->get_PC(),*d,t,data,strobe);
-if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
-#endif
-//                }
-//                else strobe = (data ? 0x1FFFF : 0);
 
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE KEYBOARD [%i]=%i  strobe=%08X\n",t,data,strobe);
-
-//                pKEYB->KStrobe&=0x7F;
-//                pKEYB->KStrobe = (1<<(pKEYB->KStrobe/8));
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM KSTROBE=%08X\n",strobe);
                 return false;
             }
+
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",*d,data);
+
             if (fp_log) {
                 fprintf(fp_log,"WRITE ROM [%04X]=%02X ",*d,data);
                 pCPU->Regs_Info(1);
@@ -256,8 +233,14 @@ if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
         return true;
 
     }
-    if((*d>=0x8000) && (*d < 0xC000)) return false; /* RAM */
-
+    if((*d>=0x8000) && (*d < 0xC000)) {
+        if (fp_log) {
+            fprintf(fp_log,"WRITE RAM [%04X]=%02X ",*d,data);
+            pCPU->Regs_Info(1);
+            fprintf(fp_log," %s\n",pCPU->Regs_String);
+        }
+        return false; /* RAM */
+    }
 
 
     return false;
@@ -265,9 +248,20 @@ if (fp_log) fprintf(fp_log,"str32=%i\n",strobe32);
 
 bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
-
-    if((*d>=0x206) && (*d <= 0x207)) {
-        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ 206=%02X , 207=%02X\n",mem[0x206],mem[0x207]);
+    if((*d>=0x2000) && (*d < 0x4000)) {
+        if (fp_log) {
+            fprintf(fp_log,"READ RAM [%04X] ",*d);
+            pCPU->Regs_Info(1);
+            fprintf(fp_log," %s\n",pCPU->Regs_String);
+        }
+//        if ( extrinsic==5 )
+//            return true;
+//        else
+        {
+            *data = 0xff;
+            return false;
+        }
+        return true; /* RAM */
     }
 
     if((*d>=0x4000) && (*d <= 0x7FFF)) {
@@ -283,37 +277,35 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             }
             else {
                 // KBD mapping
-
                 if ( (*d>=0x5800) && (*d<=(0x5800+0xfa))) {
                     quint8 t = *d - 0x5800;
                     *data = getKey(t);
-                    if (fp_log) {
-                        fprintf(fp_log,"  data=%i ",*data);
-                        pCPU->Regs_Info(1);
-                        fprintf(fp_log," %s\n",pCPU->Regs_String);
-                    }
                     return false;
                 }
 
-#if 1
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X]\n",*d);
+                // EXT management
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM LINE [%04X]\n",*d);
                 if ( (*d>=0x47FC) && (*d<=(0x47FC+0xff))) {
-                    quint8 t=(*d-0x47FC)/4;
+                    quint8 t=(*d-0x47FC);
 
-                    //if (t<9)
-                    {
-                        *data = 0;//getKey(t);
-//                        if (fp_log) {
-//                            fprintf(fp_log,"  data=%i ",*data);
-//                            pCPU->Regs_Info(1);
-//                            fprintf(fp_log," %s\n",pCPU->Regs_String);
-//                        }
-                        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ KEYBOARD [%i]=%04X\n",t,*data);
-                        if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM KBD [%04X,%02X]=%02x\n",strobe,t,*data);
-                        return false;
+#if 1
+                    *data = 0;
+#else
+                    if (t==20) {
+                        *data = 0;
                     }
-                }
+                    else {
+                        *data = 1;
+                    }
 #endif
+                    if (fp_log) {
+                        fprintf(fp_log,"READ LINE [%02X](%2i) data=%i ",t,t/4,*data);
+                        pCPU->Regs_Info(1);
+                        fprintf(fp_log," %s\n",pCPU->Regs_String);
+                    }
+                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ LINE [%i]=%04X\n",t,*data);
+                    return false;
+                }
             }
             if (*d==0x58FB) { *data=timercnt1; return false; }
             if (*d==0x58FC) { *data=timercnt2; return false; }
@@ -343,13 +335,25 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 
         return true; /* ROM */
     }
+
+
+    if((*d>=0x8000) && (*d < 0xC000)) {
+        if (fp_log) {
+            fprintf(fp_log,"READ RAM [%04X] ",*d);
+            pCPU->Regs_Info(1);
+            fprintf(fp_log," %s\n",pCPU->Regs_String);
+        }
+        *data=0x00;
+        return false; /* RAM */
+    }
+
+
     return true;
 }
 
 
 UINT8 Crlh1000::in(UINT8 Port)
 {
-
     return 0;
 }
 
@@ -417,7 +421,7 @@ UINT8 Crlh1000::getKey(quint8 row )
 {
     quint8 data = 0;
 
-    if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
+//    if (fp_log) fprintf(fp_log,"READ KEYBOARD [%2i] ",row);
     if ((pKEYB->LastKey) )
     {
         if (row&0x01) {
@@ -438,7 +442,7 @@ UINT8 Crlh1000::getKey(quint8 row )
             if (KEY(K_UA)) data |= 0x10;
             if (KEY(K_F6)) data |= 0x20; // IO
             if (KEY('.')) data |= 0x40;
-            if (KEY(K_SHT2)) data |= 0x80;
+            if (KEY(K_CTRL)) data |= 0x80; // 2nd SFT
         }
 
         if (row&0x04) {

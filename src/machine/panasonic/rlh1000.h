@@ -33,6 +33,7 @@ public:
     Cm6502 *m6502;
     quint8 strobe[0x100];
     quint8 strobe32;
+    quint8 extrinsic;
     UINT8 getKey(quint8 row);
 private:
     quint8 latchByte;
