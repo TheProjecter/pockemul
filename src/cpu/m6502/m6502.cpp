@@ -410,7 +410,7 @@ void Cm6502::run_one_opecode()
         else update_irq();
     }
     if (halt) {
-        CYCLES(1000);
+        CYCLES(50);
         P &= ~F_I;
         return;
     }

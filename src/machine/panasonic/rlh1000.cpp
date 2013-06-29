@@ -11,11 +11,6 @@
 #include "Lcdc_rlh1000.h"
 #include "ui/dialogdasm.h"
 
-#if 0
-quint8 map[][] = {
-    /*00*/ { 'A' , 'Z' , 'E' , 'R' , 'T' , 'U' , 'I'},
-}
-#endif
 
 Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -30,7 +25,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0x20000;
-    InitMemValue	= 0xFF;
+    InitMemValue	= 0x00;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
@@ -102,8 +97,9 @@ bool Crlh1000::init(void)				// initialize
     latchByte = 0x00;
 
     timercnt1=timercnt2=timercnt3=0;
-    memset(&strobe,0,sizeof(strobe));
-
+    memset(&lineFD,0,sizeof(lineFD));
+    memset(&lineFE,0,sizeof(lineFE));
+    memset(&lineFF,0,sizeof(lineFF));
 
     return true;
 }
@@ -124,14 +120,9 @@ bool Crlh1000::run() {
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
 
-
      CpcXXXX::run();
 
-
-    if (pKEYB->LastKey>0)
-    {
-        m6502->write_signal(101,1,1);
-    }
+    if (pKEYB->LastKey>0) { m6502->write_signal(101,1,1); }
 
     if (pTIMER->usElapsedId(1)>=3906) {
 //        if (timercnt1!=0)
@@ -161,6 +152,15 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 
     if(*d < 0x2000) return true; /* RAM */
 
+    if((*d>=0x2000) && (*d < 0x4000)) { // ROM
+        if (fp_log) {
+            fprintf(fp_log,"WRITE ROM [%04X] ",*d);
+            pCPU->Regs_Info(1);
+            fprintf(fp_log," %s\n",pCPU->Regs_String);
+        }
+        return false;
+    }
+
     if (*d==0x58FE) {
         latchByte = data;
         if ((latchByte & 0x40) == 0) {
@@ -172,8 +172,8 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nCPU HALT\n");
         }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM latchByte=%02X\n",data);
-        *d+=0xC000;
-        return true;
+
+        return false;
     }
 
     if((*d>=0x4000) && (*d <=0x7FFF)) {
@@ -186,8 +186,8 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                 return(false);
             }
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LCD [%04X]=%02X\n",*d,data);
-            *d+=0xc000;
-            return true;
+
+            return false;
         }
         else {
             // KBD I/O Mapping
@@ -196,23 +196,40 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             if (*d==0x58FD) { timercnt3=data; return false; }
             if (*d==0x58FF) {                 return false; }
 
+// Write 47FD 47FE 47FF
 
-            if ( (*d>=0x47FE) && (*d<=(0x47FC+0xff))) {
+            // 47FF : write from ext, read by nucleus
+
+            if ( (*d>=0x47Fd) && (*d<=(0x47FF+0xff))) {
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LINE [%04X]=%02X\n",*d,data);
-                quint8 t = (*d-0x47FE)/4;
+                bool islineFD = ((*d-0x47FD)%4==0);
+                bool islineFE = ((*d-0x47FE)%4==0);
+                bool islineFF = ((*d-0x47FF)%4==0);
 
-                strobe[t] = data;
-                if (data==1) extrinsic = t;
+                if (islineFF) {
+                    quint8 t = (*d-0x47FF)/4;
+                    lineFF[t] = data;
+                }
+                if (islineFD) {
+                    quint8 t = (*d-0x47FD)/4;
+                    lineFD[t] = data;
+                }
+                if (islineFE) {
+                    quint8 t = (*d-0x47FE)/4;
+                    lineFE[t] = data;
+                    if (data==1) extrinsic = t;
+    //                else extrinsic = 0xff;
 
-                if (fp_log) {
-                    fprintf(fp_log,"WRITE LINE [%2i]=%i",t,data);
-                    for (int i=0;i<=32;i++) {
-                        if (i%4 == 0) fprintf(fp_log," ");
-                        fprintf(fp_log,"%i",strobe[i]);
+                    if (fp_log) {
+                        fprintf(fp_log,"WRITE LINE [%2i]=%i",t,data);
+                        for (int i=0;i<=32;i++) {
+                            if (i%4 == 0) fprintf(fp_log," ");
+                            fprintf(fp_log,"%i",lineFE[i]);
 
+                        }
+                        pCPU->Regs_Info(1);
+                        fprintf(fp_log," %s\n",pCPU->Regs_String);
                     }
-                    pCPU->Regs_Info(1);
-                    fprintf(fp_log," %s\n",pCPU->Regs_String);
                 }
 
                 return false;
@@ -225,12 +242,11 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                 pCPU->Regs_Info(1);
                 fprintf(fp_log," %s\n",pCPU->Regs_String);
             }
-            *d+=0xc000;
-            return true;
+
+            return false;
         }
 
-
-        return true;
+        return false;
 
     }
     if((*d>=0x8000) && (*d < 0xC000)) {
@@ -248,13 +264,15 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 
 bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
-    if((*d>=0x2000) && (*d < 0x4000)) {
+    if (*d < 0x2000) return true;   // RAM
+
+    if((*d>=0x2000) && (*d < 0x4000)) { // ROM
         if (fp_log) {
-            fprintf(fp_log,"READ RAM [%04X] ",*d);
+            fprintf(fp_log,"READ ROM [%04X] ",*d);
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
-//        if ( extrinsic==5 )
+//        if ( lineFE[15] )
 //            return true;
 //        else
         {
@@ -266,6 +284,8 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 
     if((*d>=0x4000) && (*d <= 0x7FFF)) {
         if ((latchByte & 0x04)==0) {
+            // I/O mapping
+
             if (latchByte & 0x80){
                 // LCD mapping
                 if ((*d>=0x5800)&&(*d<0x58A0)) {
@@ -285,21 +305,37 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 
                 // EXT management
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM LINE [%04X]\n",*d);
-                if ( (*d>=0x47FC) && (*d<=(0x47FC+0xff))) {
-                    quint8 t=(*d-0x47FC);
+                if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
+                    bool islineFC = ((*d-0x47FC)%4==0);
+                    bool islineFD = ((*d-0x47FD)%4==0);
+                    bool islineFE = ((*d-0x47FE)%4==0);
+                    bool islineFF = ((*d-0x47FF)%4==0);
+                    quint8 t=0;
 
-#if 1
-                    *data = 0;
-#else
-                    if (t==20) {
+                    if (islineFC) {
+                        t =(*d-0x47FC)/4;
+
                         *data = 0;
                     }
-                    else {
-                        *data = 1;
+                    if (islineFD) {
+                        t = (*d-0x47FD)/4;
+                        *data = lineFD[t];
+                        return false;
                     }
-#endif
+                    if (islineFE) {
+                        t = (*d-0x47FE)/4;
+                        *data = lineFE[t];
+                        return false;
+                    }
+                    if (islineFF) {
+                        t = (*d-0x47FF)/4;
+                        *data = lineFF[t];
+                        return false;
+                    }
+
+
                     if (fp_log) {
-                        fprintf(fp_log,"READ LINE [%02X](%2i) data=%i ",t,t/4,*data);
+                        fprintf(fp_log,"READ LINE [%02X](%2i) data=%i ",t*4,t,*data);
                         pCPU->Regs_Info(1);
                         fprintf(fp_log," %s\n",pCPU->Regs_String);
                     }
@@ -318,7 +354,8 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
                 pCPU->Regs_Info(1);
                 fprintf(fp_log," %s\n",pCPU->Regs_String);
             }
-            return true;
+
+            return false;
         }
         else {
             DWORD offset = 0;
@@ -326,7 +363,9 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             case 0x00 : offset = 0; break;
             case 0x01 : offset = 0x10000; break;
             case 0x02 : offset = 0x14000; break;
-            case 0x03 : *data=0xff; return false; // External ROM ????
+            case 0x03 :
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE\n");
+                offset = 0; break;//*data=0xff; return false; // External ROM ????
             default: break;
             }
             *d += offset;
