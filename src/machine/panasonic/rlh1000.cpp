@@ -25,7 +25,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0x20000;
-    InitMemValue	= 0x00;
+    InitMemValue	= 0xFF;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
@@ -74,13 +74,12 @@ Crlh1000::~Crlh1000() {
 
 }
 
-QMap<quint8,quint8> scandef;
 
 bool Crlh1000::init(void)				// initialize
 {
 
 //pCPU->logsw = true;
-//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -147,6 +146,8 @@ bool Crlh1000::run() {
     return true;
 }
 
+#define LINEID (islineFC?"FC":islineFD?"FD":islineFE?"FE":islineFF?"FF":"??")
+
 bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 {
 
@@ -205,6 +206,7 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                 bool islineFD = ((*d-0x47FD)%4==0);
                 bool islineFE = ((*d-0x47FE)%4==0);
                 bool islineFF = ((*d-0x47FF)%4==0);
+                bool islineFC=false;
 
                 if (islineFF) {
                     quint8 t = (*d-0x47FF)/4;
@@ -217,11 +219,14 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                 if (islineFE) {
                     quint8 t = (*d-0x47FE)/4;
                     lineFE[t] = data;
-                    if (data==1) extrinsic = t;
-    //                else extrinsic = 0xff;
+                    if (t==5) {
+                        if (data==0x20) extrinsic = t;
+                        if (data==0) extrinsic=0xff;
+                    }
+//                    else extrinsic = 0xff;
 
                     if (fp_log) {
-                        fprintf(fp_log,"WRITE LINE [%2i]=%i",t,data);
+                        fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
                         for (int i=0;i<=32;i++) {
                             if (i%4 == 0) fprintf(fp_log," ");
                             fprintf(fp_log,"%i",lineFE[i]);
@@ -246,6 +251,16 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             return false;
         }
 
+        if (fp_log) {
+            fprintf(fp_log,"WRITE ROM UNHANDLED [%04X]=%i",*d,data);
+            for (int i=0;i<=32;i++) {
+                if (i%4 == 0) fprintf(fp_log," ");
+                fprintf(fp_log,"%i",lineFE[i]);
+
+            }
+            pCPU->Regs_Info(1);
+            fprintf(fp_log," %s\n",pCPU->Regs_String);
+        }
         return false;
 
     }
@@ -255,6 +270,7 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
+        if (extrinsic==5) return true;
         return false; /* RAM */
     }
 
@@ -272,9 +288,9 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
-//        if ( lineFE[15] )
-//            return true;
-//        else
+        if ( lineFE[15] )
+            return true;
+        else
         {
             *data = 0xff;
             return false;
@@ -304,7 +320,6 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
                 }
 
                 // EXT management
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM LINE [%04X]\n",*d);
                 if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
                     bool islineFC = ((*d-0x47FC)%4==0);
                     bool islineFD = ((*d-0x47FD)%4==0);
@@ -313,33 +328,37 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
                     quint8 t=0;
 
                     if (islineFC) {
+                        // return &FF : Scan next line
+                        // return &FB :
+
                         t =(*d-0x47FC)/4;
 
-                        *data = 0;
+                        if (t==5) {
+                            *data = 0xFB;
+                        }
+                        else {
+                            *data = 0xff;
+                        }
                     }
                     if (islineFD) {
                         t = (*d-0x47FD)/4;
                         *data = lineFD[t];
-                        return false;
                     }
                     if (islineFE) {
                         t = (*d-0x47FE)/4;
                         *data = lineFE[t];
-                        return false;
                     }
                     if (islineFF) {
                         t = (*d-0x47FF)/4;
                         *data = lineFF[t];
-                        return false;
                     }
 
-
                     if (fp_log) {
-                        fprintf(fp_log,"READ LINE [%02X](%2i) data=%i ",t*4,t,*data);
+                        fprintf(fp_log,"READ LINE%s (%2i) data=%i ",LINEID,t,*data);
                         pCPU->Regs_Info(1);
                         fprintf(fp_log," %s\n",pCPU->Regs_String);
                     }
-                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ LINE [%i]=%04X\n",t,*data);
+                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ LINE%s [%i]=%04X\n",LINEID,t,*data);
                     return false;
                 }
             }
@@ -348,7 +367,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             if (*d==0x58FD) { *data=timercnt3; return false; }
             if (*d==0x58FF) {  *data = pKEYB->LastKey; return false; }
 
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM [%04X]\n",*d);
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM UNHANDLED[%04X]\n",*d);
             if (fp_log) {
                 fprintf(fp_log,"READ ROM [%04X]  ",*d);
                 pCPU->Regs_Info(1);
@@ -382,6 +401,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
+        if (extrinsic==5) return true;
         *data=0xff;
         return false; /* RAM */
     }
