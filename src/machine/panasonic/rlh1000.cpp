@@ -24,7 +24,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/rlh1000/rlh1000lcd.png");
     SymbFname		= "";
 
-    memsize		= 0x20000;
+    memsize		= 0x30000;
     InitMemValue	= 0xFF;
 
     SlotList.clear();
@@ -36,6 +36,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, RAM , "I/O Hard"));
     SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
     SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, ROM , "ROM Capsules 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	""                                  , ""	, RAM , "Ext RAM"));
 
 // Ratio = 3,57
     setDXmm(227);
@@ -220,7 +221,11 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                     quint8 t = (*d-0x47FE)/4;
                     lineFE[t] = data;
                     if (t==5) {
-                        if (data==0x20) extrinsic = t;
+                        if (data==0x10) extrinsic = t;
+                        if (data==0) extrinsic=0xff;
+                    }
+                    if (t==2) {
+                        if (data==0x02) extrinsic = t;
                         if (data==0) extrinsic=0xff;
                     }
 //                    else extrinsic = 0xff;
@@ -270,7 +275,12 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
-        if (extrinsic==5) return true;
+        if (extrinsic==2) return true;
+
+        if (extrinsic==5){
+            *d+=0x14000;
+            return true;
+        }
         return false; /* RAM */
     }
 
@@ -333,7 +343,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 
                         t =(*d-0x47FC)/4;
 
-                        if (t==5) {
+                        if ((t==2)||(t==5)) {
                             *data = 0xFB;
                         }
                         else {
@@ -401,7 +411,12 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
-        if (extrinsic==5) return true;
+        if (extrinsic==2) return true;
+
+        if (extrinsic==5){
+            *d+=0x14000;
+            return true;
+        }
         *data=0xff;
         return false; /* RAM */
     }
