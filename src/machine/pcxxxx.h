@@ -231,14 +231,7 @@ public:
 	bool	LoadSession_File(QFile *);
     virtual bool	LoadSession_File(QXmlStreamReader *);
 
-	void	Mem_Load(QFile *file,BYTE s);
-    void    Mem_Load(QXmlStreamReader *xmlIn,BYTE s);
-	bool	Mem_Load(BYTE s);
-    bool    Mem_Load(qint32 adr, QByteArray data);
 
-	void	Mem_Save(QFile *file,BYTE s);
-    void    Mem_Save(QXmlStreamWriter *xmlOut,BYTE s);
-	void	Mem_Save(BYTE s);
 
     quint64	old_state;
 

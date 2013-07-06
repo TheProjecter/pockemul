@@ -1271,3 +1271,118 @@ void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight
     mainwindow->router->moveShape(mainwindow->shapeRefList[this], rectangle);
 #endif
 }
+
+//////////////////////////////////////////////
+// Save Memory to file						//
+//  ENTRY :BYTE s=Slot No.(SLOT1-3)			//
+//  RETURN:none								//
+//////////////////////////////////////////////
+void CPObject::Mem_Save(QFile *file,BYTE s)
+{
+    QDataStream out(file);
+    out.writeRawData( (char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+}
+
+void CPObject::Mem_Save(QXmlStreamWriter *xmlOut,BYTE s)
+{
+    xmlOut->writeStartElement("bank");
+        xmlOut->writeAttribute("label",SlotList[s].getLabel());
+        xmlOut->writeAttribute("id",QString("%1").arg(s));
+        int size = SlotList[s].getSize() * 1024;
+        int adr = SlotList[s].getAdr();
+        QByteArray ba((char *) &mem[adr],size );
+//        xmlOut->writeTextElement("data",ba.toBase64());
+        QString outHex = "\n";
+        for (int a=0;a<size;a+=16) {
+            outHex += QString("%1:").arg(a,6,16,QChar('0'))+ba.mid(a,16).toHex()+"\n";
+        }
+        xmlOut->writeTextElement("datahex",outHex);
+    xmlOut->writeEndElement();
+}
+
+void CPObject::Mem_Save(BYTE s)
+{
+    QFile file( SlotList[s].getFileName() );
+
+    if (file.open(QIODevice::WriteOnly))
+    {
+        Mem_Save(&file,s);
+        file.close();
+        return;
+    }
+}
+
+//////////////////////////////////////////////
+// Load Memory from file					//
+//  ENTRY :BYTE s=Slot No.(SLOT1-3)			//
+//  RETURN:1:success, 0:error				//
+//////////////////////////////////////////////
+void CPObject::Mem_Load(QFile *file,BYTE s)
+{
+    QDataStream in(file);
+    in.readRawData ((char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
+}
+
+void CPObject::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
+{
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "bank" && xmlIn->attributes().value("id").toString().toInt() == s) {
+            if (xmlIn->readNextStartElement() ) {
+                if (xmlIn->name()=="data")  {
+                    QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toAscii());
+                    memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+                }
+                if (xmlIn->name()=="datahex")  {
+
+//                    MSG_ERROR(xmlIn->readElementText().replace(QRegExp("......:"),"").toAscii())
+                     QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toAscii());
+                    memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+                }
+            }
+        }
+        xmlIn->skipCurrentElement();
+    }
+}
+
+bool CPObject::Mem_Load(BYTE s)
+{
+    QFile file;
+
+    if (SlotList[s].getFileName() == "EMPTY") return true;
+
+    file.setFileName(SlotList[s].getFileName());
+
+    if (file.exists())
+    {
+        if (file.size() == (SlotList[s].getSize() * 1024) )
+        {
+            file.open(QIODevice::ReadOnly);
+            Mem_Load(&file,s);
+            AddLog(LOG_MASTER,tr("loaded from file : %1").arg(SlotList[s].getFileName()));
+            return true;
+        }
+//		else
+//			AddLog(LOG_MASTER,tr("FileSize[%1] = %2  instead of %3 ").arg(SlotName[s]).arg(file.size().arg((SlotSize[s] * 1024)));
+
+    }
+    else
+    {
+        file.setFileName(SlotList[s].getResID());
+        if (file.exists())
+        {
+            file.open(QIODevice::ReadOnly);
+            Mem_Load(&file,s);
+            AddLog(LOG_MASTER,"Loaded from ressource");
+            return true;
+        }
+    }
+    return false;
+}
+
+bool CPObject::Mem_Load(qint32 adr, QByteArray data ) {
+
+    QDataStream in(data);
+    int p =data.size();
+    in.readRawData ((char *) &mem[adr], p );
+    return true;
+}

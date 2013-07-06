@@ -29,7 +29,7 @@ Crlp9001::Crlp9001(CPObject *parent )	: CPObject(this)
     InitMemValue	= 0xff;
 
     SlotList.clear();
-    SlotList.append(CSlot(16 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(16 , 0x0000 ,	""                                  , ""	, RAM , "RAM 16Ko"));
 
 }
 
@@ -114,6 +114,40 @@ bool Crlp9001::init(void)
 /*****************************************************************************/
 bool Crlp9001::exit(void)
 {
+    return true;
+}
+
+bool Crlp9001::SaveSession_File(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("session");
+        xmlOut->writeAttribute("version", "2.0");
+        xmlOut->writeAttribute("rotate",QString("%1").arg(rotate));
+        xmlOut->writeStartElement("memory");
+            for (int s=0; s<SlotList.size(); s++)				// Save Memory
+            {
+                if (SlotList[s].getType() == RAM)	Mem_Save(xmlOut,s);
+            }
+        xmlOut->writeEndElement();  // memory
+    xmlOut->writeEndElement();  // session
+    return true;
+}
+
+bool Crlp9001::LoadSession_File(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->name()=="session") {
+        bool rot = xmlIn->attributes().value("rotate").toString().toInt(0,16);
+        if (rotate != rot) Rotate();
+        if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
+            AddLog(LOG_MASTER,"Load Memory");
+            for (int s=0; s<SlotList.size(); s++)				// Save Memory
+            {
+                if (SlotList[s].getType() == RAM) {
+                    AddLog(LOG_MASTER,"    Load Slot"+SlotList[s].getLabel());
+                    Mem_Load(xmlIn,s);
+                }
+            }
+        }
+    }
     return true;
 }
 
