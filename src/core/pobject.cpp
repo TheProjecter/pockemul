@@ -60,6 +60,8 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
 		setFocusPolicy(Qt::StrongFocus);	
 		Refresh_Display = false;
 
+        memsize			= 0;
+        InitMemValue	= 0x00;
 		
 		SnapPts = QPoint(0,0);
 		
@@ -208,6 +210,9 @@ bool CPObject::init()
 	move(QPoint(PosX,PosY));
 	setAttribute(Qt::WA_AlwaysShowToolTips,true);
 
+    AddLog(LOG_MASTER,tr("Memory initialisation"));
+    if((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);		/* alloc main ram */
+    ClearRam(InitMemValue);
 	return true;
 }
 

@@ -18,6 +18,8 @@ public:
     Crlp9001(CPObject *parent = 0);
     virtual ~Crlp9001();
 
+    bool Power;
+
 protected:
     void paintEvent(QPaintEvent *);
 protected slots:
@@ -27,6 +29,7 @@ protected slots:
 private:
 
     bool rotate;
+
 };
 
 #endif // RLP9001_H

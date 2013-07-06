@@ -40,8 +40,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     setcfgfname(QString("pcXXXX"));
     SessionHeader	= "PCXXXXPKM";
 
-    memsize			= 0;
-    InitMemValue	= 0x00;
+
     SoundOn			= 1;
     IO_A = IO_B = IO_C = IO_F = 0;
     RomBank=RamBank=ProtectMemory=0;
@@ -457,9 +456,7 @@ bool CpcXXXX::init(void)
 	
 	AddLog(LOG_FUNC,"CpcXXXX::init");
 	
-	AddLog(LOG_MASTER,tr("Memory initialisation"));
-	if((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);		/* alloc main ram */
-	ClearRam(InitMemValue);
+
 
 	AddLog(LOG_MASTER,tr("LCD init"));
     if(pLCDC && !(pLCDC->init())) return(0);

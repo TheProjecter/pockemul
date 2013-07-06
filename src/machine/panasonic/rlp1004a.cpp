@@ -185,7 +185,7 @@ bool Crlp1004a::init(void)
                                  Cconnector::Panasonic_44,
                                  "Printer connector",
                                  true,
-                                 QPoint(386,238),
+                                 QPoint(372,72),
                                  Cconnector::EAST);	publish(pCONNECTOR);
     WatchPoint.add(&pCONNECTOR_value,64,44,this,"Printer connector");
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
@@ -276,6 +276,7 @@ bool Crlp1004a::Set_Connector(void) {
 bool Crlp1004a::run(void)
 {
 
+    return true;
     Get_Connector();
 
 #if 1
@@ -336,7 +337,9 @@ void Crlp1004a::Rotate()
     delete FinalImage;
     FinalImage = new QImage(*BackgroundImageBackup);
 
+    pCONNECTOR->setSnap(rotate?QPoint(30,72):QPoint(372,72));
 
+    pCONNECTOR->setDir(rotate?Cconnector::WEST:Cconnector::EAST);
     mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
     setMask(mask.mask());
 

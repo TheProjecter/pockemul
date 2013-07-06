@@ -7,6 +7,7 @@
 
 //class HexViewer;
 class CpcXXXX;
+class CPObject;
 //
 class DialogDump : public QDialog, public Ui::DialogDump
 {
@@ -32,7 +33,7 @@ protected:
 private:
 //	HexWidget *hexeditor;
 	void LoadSlot(void);
-	CpcXXXX *pPC;	
+    CPObject *pPC;
     int findpos;
 };
 #endif

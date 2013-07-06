@@ -29,6 +29,8 @@ class DialogDasm;
 class DialogVKeyboard;
 class TapAndHoldGesture;
 
+#include "slot.h"
+
 
 
 #define PS_OFF	0
@@ -64,6 +66,8 @@ public:
     virtual bool	LoadSession_File(QXmlStreamReader *);
 
     quint64 runRange(quint64);
+
+    QList<CSlot> SlotList;
 
 	QPoint		SnapPts;
 	qreal		RangeFrom(CPObject * target);
@@ -184,6 +188,10 @@ public:
     QList<Cconnector *> nearConnectors(Cconnector *refConnector,qint8 snaprange);
     void manageStackPos(QList<CPObject *> *);
 
+    BYTE	*mem;
+    int		InitMemValue;
+    int		memsize;
+    void	ClearRam(BYTE data) {	memset((void *)mem ,data,memsize); }	//initialize memory
 
 		
     QString	SessionHeader;

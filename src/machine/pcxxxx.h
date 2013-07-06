@@ -116,7 +116,7 @@ Q_OBJECT
 public:
     virtual const char*	GetClassName(){ return("CpcXXXX");}
 
-	QList<CSlot> SlotList;
+
 	
 	QString	Initial_Session_Fname;
 	bool Initial_Session_Load();
@@ -137,8 +137,7 @@ public:
 	Cconnector	*pSIOCONNECTOR;		qint64 pSIOCONNECTOR_value;
 
 	bool	SoundOn;
-	int		InitMemValue;
-	int		memsize;
+
 
 
 
@@ -195,7 +194,6 @@ public:
 
     virtual void    ExtChanged(void);
 
-	void	ClearRam(BYTE data) {	memset((void *)mem ,data,memsize); }	//initialize memory
 
 	char	Regs_String[1024];
 
@@ -271,7 +269,7 @@ public:
     void		loadExtensionArray(QAction *action);
     void		saveExtensionArray(QAction *action);
 
-	BYTE	*mem;
+
 	
 	bool	Japan;
 	

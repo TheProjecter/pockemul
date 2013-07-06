@@ -17,7 +17,7 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
 {
 	setupUi(this);
 	
-	pPC =  (CpcXXXX *) parent;
+    pPC =  (CPObject *) parent;
 	lbl_connected->setText(tr("Connected to : %1").arg(pPC->getName()));
 
     connect(twSlot, SIGNAL(currentItemChanged ( QTableWidgetItem * , QTableWidgetItem * )), this, SLOT(slotDump( QTableWidgetItem * , QTableWidgetItem * )));
