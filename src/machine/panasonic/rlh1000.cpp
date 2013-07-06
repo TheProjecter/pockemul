@@ -239,7 +239,7 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
                     bus.setData(data);
                     bus.setFunc(BUS_SELECT);
                     manageBus();
-                    if (bus.getFunc()==BUS_READDATA) extrinsic=bus.getData();
+                    if (bus.getFunc()==BUS_READDATA) extrinsic=t;//bus.getDest();
 //                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus.getDest());
 
 #endif

@@ -43,15 +43,31 @@ bool Crlp6001::run(void)
 
     if ( dest >= 0x06) return true;
 
+    bool busSelect = (bus.getFunc()==BUS_SELECT);
+#if 0
+    if (bus.getFunc()==BUS_SELECT) {
+        if (bus.getData()==(1 << (bus.getDest()))) {
+            bus.setData(1);
+        }
+        else {
+            bus.setData(0);
+        }
+        bus.setDest(0);
+    }
+
+
+#endif
+bus.setDest(0);
     // copy MainConnector to Ext Connectors
-    pEXTCONNECTOR[dest]->Set_values(pMAINCONNECTOR->Get_values());
+    pEXTCONNECTOR[dest]->Set_values(bus.toUInt64());
 
     // execute Ext
     mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[dest]);
 
     bus.fromUInt64(pEXTCONNECTOR[dest]->Get_values());
-//    if (bus.getFunc()==BUS_READDATA)
-        pMAINCONNECTOR->Set_values(pEXTCONNECTOR[dest]->Get_values());
+    if (bus.getFunc()==BUS_READDATA)
+        pMAINCONNECTOR->Set_values(bus.toUInt64());
+
 
     return true;
 }

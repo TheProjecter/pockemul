@@ -64,6 +64,10 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
 
     rotate = false;
     internal_device_code = 0x0f;
+
+    SlotList.clear();
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, ROM , "Printer ROM"));
+
 }
 
 Crlp1004a::~Crlp1004a() {

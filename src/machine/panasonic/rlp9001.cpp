@@ -44,6 +44,8 @@ bool Crlp9001::run(void)
 
     bus.fromUInt64(pMAINCONNECTOR->Get_values());
 
+    if (bus.getDest()!=0) return true;
+
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0xFB);
         bus.setFunc(BUS_READDATA);
@@ -52,17 +54,17 @@ bool Crlp9001::run(void)
     }
 
     if (bus.getFunc()==BUS_SELECT) {
-        if (bus.getData()==(1 << (bus.getDest()))) {
+        if (bus.getData()==1){//(1 << (bus.getDest()))) {
             Power=true;
-            bus.setFunc(BUS_READDATA);
-            bus.setData(bus.getDest());
+//            bus.setFunc(BUS_READDATA);
+//            bus.setData(bus.getDest());
         }
         if (bus.getData()==0) {
             Power = false;
-            bus.setFunc(BUS_READDATA);
-            bus.setData(0xff);
+//            bus.setData(0xff);
 
         }
+        bus.setFunc(BUS_READDATA);
         pMAINCONNECTOR->Set_values(bus.toUInt64());
         return true;
     }
