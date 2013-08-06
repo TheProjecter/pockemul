@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>rlh1000/rlh1000.png</file>
+        <file>rlh1000/rlp6001.png</file>
+        <file>rlh1000/rlp1004a.png</file>
+        <file>rlh1000/rlp9002.png</file>
+        <file>rlh1000/HHC-rom-C000-FFFF.bin</file>
+        <file>rlh1000/SnapBasic.bin</file>
+        <file>rlh1000/rlh1000lcd.png</file>
+        <file>rlh1000/HHCbasic.bin</file>
+        <file>rlh1000/SnapForth.bin</file>
+        <file>rlh1000/rlp1004a.bin</file>
+    </qresource>
+</RCC>

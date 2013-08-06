@@ -26,19 +26,17 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/rlh1000/rlh1000lcd.png");
     SymbFname		= "";
 
-    memsize		= 0x30000;
+    memsize		= 0x18000;
     InitMemValue	= 0xFF;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, ROM , "Ext ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""                                  , ""	, ROM , "Ext ROM"));
     SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, ROM , "ROM Capsules 1"));
     SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, RAM , "Ext RAM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, RAM , "I/O Hard"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, ROM , "ROM Capsules 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	""                                  , ""	, RAM , "Ext RAM"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, ROM , "ROM Capsules 3"));
 
 // Ratio = 3,57
     setDXmm(227);
@@ -82,7 +80,7 @@ bool Crlh1000::init(void)				// initialize
 {
 
 //pCPU->logsw = true;
-    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -127,7 +125,8 @@ bool Crlh1000::run() {
 
     if (pKEYB->LastKey>0) { m6502->write_signal(101,1,1); }
 
-    if (pTIMER->usElapsedId(1)>=3906) {
+    quint64 elapsedUS = pTIMER->usElapsedId(1);
+    if (elapsedUS>=3906) {
 //        if (timercnt1!=0)
         {
             timercnt1--;
@@ -144,7 +143,7 @@ bool Crlh1000::run() {
                 }
             }
         }
-        pTIMER->resetTimer(1);
+        pTIMER->resetTimer(1,elapsedUS - 3906);
     }
 
     return true;
@@ -154,8 +153,16 @@ bool Crlh1000::run() {
 
 bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 {
+//    if (*d==0x02DD) {
+//        if (pCPU->fp_log)
+//            fprintf(pCPU->fp_log," WRITE 02DD=%02X ",data);
+//    }
+    if(*d < 0x2000) {
+        if (pCPU->fp_log)
+            fprintf(pCPU->fp_log,"imem WRITE [%04X]=%02X ",*d,data);
 
-    if(*d < 0x2000) return true; /* RAM */
+        return true; /* RAM */
+    }
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
         if (fp_log) {
@@ -182,6 +189,69 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
     }
 
     if((*d>=0x4000) && (*d <=0x7FFF)) {
+        // KBD I/O Mapping
+        if (*d==0x58FB) { timercnt1=data; return false; }
+        if (*d==0x58FC) { timercnt2=data; return false; }
+        if (*d==0x58FD) { timercnt3=data; return false; }
+        if (*d==0x58FF) {                 return false; }
+
+// Write 47FD 47FE 47FF
+
+        // 47FF : write from ext, read by nucleus
+
+        if ( (*d>=0x47Fd) && (*d<=(0x47FF+0xff))) {
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LINE [%04X]=%02X\n",*d,data);
+            bool islineFD = ((*d-0x47FD)%4==0);
+            bool islineFE = ((*d-0x47FE)%4==0);
+            bool islineFF = ((*d-0x47FF)%4==0);
+            bool islineFC=false;
+
+            if (islineFF) {
+                quint8 t = (*d-0x47FF)/4;
+                lineFF[t] = data;
+            }
+            if (islineFD) {
+                quint8 t = (*d-0x47FD)/4;
+                lineFD[t] = data;
+            }
+            if (islineFE) {
+                quint8 t = (*d-0x47FE)/4;
+                lineFE[t] = data;
+#ifndef USEBUS
+                if (t==4) {
+                    if (data==0x10) extrinsic = t;
+                    if (data==0) extrinsic=0xff;
+                }
+                if (t==2) {
+                    if (data==0x04) extrinsic = t;
+                    if (data==0) extrinsic=0xff;
+                }
+//                    else extrinsic = 0xff;
+#else
+                if (t>16) return false;
+                bus.setDest(t);
+                if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus.getDest(),bus.getData());
+                bus.setData(data);
+                bus.setFunc(BUS_SELECT);
+                manageBus();
+                if (bus.getFunc()==BUS_READDATA) extrinsic=t;//bus.getDest();
+//                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus.getDest());
+
+#endif
+                if (fp_log) {
+                    fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
+                    for (int i=0;i<=32;i++) {
+                        if (i%4 == 0) fprintf(fp_log," ");
+                        fprintf(fp_log,"%i",lineFE[i]);
+
+                    }
+                    pCPU->Regs_Info(1);
+                    fprintf(fp_log," %s\n",pCPU->Regs_String);
+                }
+            }
+
+            return false;
+        }
 
         if (latchByte & 0x80){
             // LCD I/O Mapping
@@ -195,70 +265,9 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
             return false;
         }
         else {
-            // KBD I/O Mapping
-            if (*d==0x58FB) { timercnt1=data; return false; }
-            if (*d==0x58FC) { timercnt2=data; return false; }
-            if (*d==0x58FD) { timercnt3=data; return false; }
-            if (*d==0x58FF) {                 return false; }
 
-// Write 47FD 47FE 47FF
 
-            // 47FF : write from ext, read by nucleus
-
-            if ( (*d>=0x47Fd) && (*d<=(0x47FF+0xff))) {
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LINE [%04X]=%02X\n",*d,data);
-                bool islineFD = ((*d-0x47FD)%4==0);
-                bool islineFE = ((*d-0x47FE)%4==0);
-                bool islineFF = ((*d-0x47FF)%4==0);
-                bool islineFC=false;
-
-                if (islineFF) {
-                    quint8 t = (*d-0x47FF)/4;
-                    lineFF[t] = data;
-                }
-                if (islineFD) {
-                    quint8 t = (*d-0x47FD)/4;
-                    lineFD[t] = data;
-                }
-                if (islineFE) {
-                    quint8 t = (*d-0x47FE)/4;
-                    lineFE[t] = data;
-#ifndef USEBUS
-                    if (t==4) {
-                        if (data==0x10) extrinsic = t;
-                        if (data==0) extrinsic=0xff;
-                    }
-                    if (t==2) {
-                        if (data==0x04) extrinsic = t;
-                        if (data==0) extrinsic=0xff;
-                    }
-//                    else extrinsic = 0xff;
-#else
-                    bus.setDest(t);
-                    if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus.getDest(),bus.getData());
-                    bus.setData(data);
-                    bus.setFunc(BUS_SELECT);
-                    manageBus();
-                    if (bus.getFunc()==BUS_READDATA) extrinsic=t;//bus.getDest();
-//                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus.getDest());
-
-#endif
-                    if (fp_log) {
-                        fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
-                        for (int i=0;i<=32;i++) {
-                            if (i%4 == 0) fprintf(fp_log," ");
-                            fprintf(fp_log,"%i",lineFE[i]);
-
-                        }
-                        pCPU->Regs_Info(1);
-                        fprintf(fp_log," %s\n",pCPU->Regs_String);
-                    }
-                }
-
-                return false;
-            }
-
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",*d,data);
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM UNHANDLED [%02X]=%02X\n",*d,data);
 
             if (fp_log) {
                 fprintf(fp_log,"WRITE ROM [%04X]=%02X ",*d,data);
@@ -317,27 +326,103 @@ bool Crlh1000::Chk_Adr(DWORD *d, DWORD data)
 
 bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
 {
-    if (*d < 0x2000) return true;   // RAM
+//    if (*d==0x02DD) {
+//        if (pCPU->fp_log)
+//            fprintf(pCPU->fp_log,"imem READ 02DD=%02X ",mem[0x02DD]);
+//    }
+    if (*d < 0x2000) {
+        if (pCPU->fp_log)
+            fprintf(pCPU->fp_log,"imem READ [%04X]=%02X ",*d,mem[*d]);
+
+        return true;   // RAM
+    }
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
-        if (fp_log) {
-            fprintf(fp_log,"READ ROM [%04X] ",*d);
-            pCPU->Regs_Info(1);
-            fprintf(fp_log," %s\n",pCPU->Regs_String);
-        }
-//        if ( lineFE[15] )
-//            return true;
-//        else
-        {
-            *data = 0xff;
+        if (fp_log) fprintf(fp_log,"BUS_READROM DEST=%i  ",bus.getDest());
+        if (extrinsic!=0xff) {
+            bus.setDest(extrinsic);
+            bus.setAddr(*d-0x2000);
+            bus.setData(0xff);
+            bus.setFunc(BUS_READROM);
+            manageBus();
+            if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus.getData());
+
+            if (bus.getFunc()==BUS_READDATA) {
+
+                *data = bus.getData();
+                if (fp_log) {
+                    fprintf(fp_log,"***READ ROM [%04X]=%02X",*d,*data);
+                    pCPU->Regs_Info(1);
+                    fprintf(fp_log," %s\n",pCPU->Regs_String);
+                }
+            }
+            else *data = 0xff;
             return false;
         }
-        return true; /* RAM */
+        *data = 0xff;
+        return false; /* ROM */
     }
 
     if((*d>=0x4000) && (*d <= 0x7FFF)) {
         if ((latchByte & 0x04)==0) {
             // I/O mapping
+            if (*d==0x58FB) { *data=timercnt1; return false; }
+            if (*d==0x58FC) { *data=timercnt2; return false; }
+            if (*d==0x58FD) { *data=timercnt3; return false; }
+            if (*d==0x58FF) {  *data = pKEYB->LastKey; return false; }
+
+            // EXT management
+            if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
+                bool islineFC = ((*d-0x47FC)%4==0);
+                bool islineFD = ((*d-0x47FD)%4==0);
+                bool islineFE = ((*d-0x47FE)%4==0);
+                bool islineFF = ((*d-0x47FF)%4==0);
+                quint8 t=0;
+
+                if (islineFC) {
+                    // return &FF : Scan next line
+                    // return &FB :
+
+                    t =(*d-0x47FC)/4;
+#ifndef USEBUS
+                    if ((t==2)||(t==5)) {
+                        *data = 0xFB;
+                    }
+                    else {
+                        *data = 0xff;
+                    }
+#else
+                    bus.setDest(t);
+                    if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus.getDest());
+                    bus.setData(0xff);
+                    bus.setFunc(BUS_QUERY);
+                    manageBus();
+                    if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus.getData());
+
+                    *data = bus.getData();
+#endif
+                }
+                if (islineFD) {
+                    t = (*d-0x47FD)/4;
+                    *data = lineFD[t];
+                }
+                if (islineFE) {
+                    t = (*d-0x47FE)/4;
+                    *data = lineFE[t];
+                }
+                if (islineFF) {
+                    t = (*d-0x47FF)/4;
+                    *data = lineFF[t];
+                }
+
+                if (fp_log) {
+                    fprintf(fp_log,"READ LINE%s (%2i) data=%i ",LINEID,t,*data);
+                    pCPU->Regs_Info(1);
+                    fprintf(fp_log," %s\n",pCPU->Regs_String);
+                }
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ LINE%s [%i]=%04X\n",LINEID,t,*data);
+                return false;
+            }
 
             if (latchByte & 0x80){
                 // LCD mapping
@@ -355,64 +440,8 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
                     *data = getKey(t);
                     return false;
                 }
-
-                // EXT management
-                if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
-                    bool islineFC = ((*d-0x47FC)%4==0);
-                    bool islineFD = ((*d-0x47FD)%4==0);
-                    bool islineFE = ((*d-0x47FE)%4==0);
-                    bool islineFF = ((*d-0x47FF)%4==0);
-                    quint8 t=0;
-
-                    if (islineFC) {
-                        // return &FF : Scan next line
-                        // return &FB :
-
-                        t =(*d-0x47FC)/4;
-#ifndef USEBUS
-                        if ((t==2)||(t==5)) {
-                            *data = 0xFB;
-                        }
-                        else {
-                            *data = 0xff;
-                        }
-#else
-                        bus.setDest(t);
-                        if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus.getDest());
-                        bus.setData(0xff);
-                        bus.setFunc(BUS_QUERY);
-                        manageBus();
-                        if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus.getData());
-
-                        *data = bus.getData();
-#endif
-                    }
-                    if (islineFD) {
-                        t = (*d-0x47FD)/4;
-                        *data = lineFD[t];
-                    }
-                    if (islineFE) {
-                        t = (*d-0x47FE)/4;
-                        *data = lineFE[t];
-                    }
-                    if (islineFF) {
-                        t = (*d-0x47FF)/4;
-                        *data = lineFF[t];
-                    }
-
-                    if (fp_log) {
-                        fprintf(fp_log,"READ LINE%s (%2i) data=%i ",LINEID,t,*data);
-                        pCPU->Regs_Info(1);
-                        fprintf(fp_log," %s\n",pCPU->Regs_String);
-                    }
-                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ LINE%s [%i]=%04X\n",LINEID,t,*data);
-                    return false;
-                }
             }
-            if (*d==0x58FB) { *data=timercnt1; return false; }
-            if (*d==0x58FC) { *data=timercnt2; return false; }
-            if (*d==0x58FD) { *data=timercnt3; return false; }
-            if (*d==0x58FF) {  *data = pKEYB->LastKey; return false; }
+
 
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ ROM UNHANDLED[%04X]\n",*d);
             if (fp_log) {
@@ -427,8 +456,8 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             DWORD offset = 0;
             switch (latchByte & 0x03) {
             case 0x00 : offset = 0; break;
-            case 0x01 : offset = 0x10000; break;
-            case 0x02 : offset = 0x14000; break;
+            case 0x01 : offset = 0xC000; break;
+            case 0x02 : offset = 0x10000; break;
             case 0x03 :
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE\n");
                 offset = 0; break;//*data=0xff; return false; // External ROM ????
@@ -438,7 +467,7 @@ bool Crlh1000::Chk_Adr_R(DWORD *d, DWORD *data)
             return true;
         }
 
-        return true; /* ROM */
+        return false; /* ROM */
     }
 
 

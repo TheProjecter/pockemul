@@ -50,9 +50,9 @@ void Ctimer::check(void)
 {
 
 }
-bool Ctimer::resetTimer(int id) {
+bool Ctimer::resetTimer(int id,quint64 reste) {
     if ( (id <10) && (id >=0)) {
-        timerSate[id] = this->state;
+        timerSate[id] = this->state - reste;
         return true;
     }
     return false;

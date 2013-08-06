@@ -211,8 +211,16 @@ bool CPObject::init()
 	setAttribute(Qt::WA_AlwaysShowToolTips,true);
 
     AddLog(LOG_MASTER,tr("Memory initialisation"));
-    if((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);		/* alloc main ram */
-    ClearRam(InitMemValue);
+    if (memsize>0)  {
+        if ((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);		/* alloc main ram */
+        ClearRam(InitMemValue);
+
+        AddLog(LOG_MASTER,tr("Memory loading nb slot:%1").arg(SlotList.size()));
+        for (int s=0; s < SlotList.size(); ++s)
+        {
+            if (SlotList[s].getType() == ROM)	Mem_Load(s);
+        }
+    }
 	return true;
 }
 

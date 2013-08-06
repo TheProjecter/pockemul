@@ -63,7 +63,7 @@ public:
     quint64  usElapsedId(int id);
     quint64  nsElapsedId(int id);
 
-    bool    resetTimer(int);
+    bool    resetTimer(int, quint64 reste=0);
     quint64 currentState(void);
 
     quint64	state;					//state counter

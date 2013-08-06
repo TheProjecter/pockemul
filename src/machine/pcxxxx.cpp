@@ -461,11 +461,7 @@ bool CpcXXXX::init(void)
 	AddLog(LOG_MASTER,tr("LCD init"));
     if(pLCDC && !(pLCDC->init())) return(0);
 
-	AddLog(LOG_MASTER,tr("Memory loading nb slot:%1").arg(SlotList.size()));
-	for (int s=0; s < SlotList.size(); ++s)
-	{
-		if (SlotList[s].getType() == ROM)	Mem_Load(s);
-	}
+
 
     AddLog(LOG_MASTER,tr("CPU init"));
     if (!pCPU) return 0;

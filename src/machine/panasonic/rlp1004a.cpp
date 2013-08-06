@@ -11,6 +11,7 @@
 #include "common.h"
 
 #include "rlp1004a.h"
+#include "rlh1000.h"
 #include "pcxxxx.h"
 #include "Log.h"
 #include "dialoganalog.h"
@@ -65,6 +66,8 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     rotate = false;
     internal_device_code = 0x0f;
 
+    memsize			= 0x2000;
+    InitMemValue	= 0xff;
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, ROM , "Printer ROM"));
 
@@ -76,6 +79,83 @@ Crlp1004a::~Crlp1004a() {
     delete pCONNECTOR;
     delete charTable;
 //    delete bells;
+}
+
+#define PC2021LATENCY (pTIMER->pPC->getfrequency()/3200)
+bool Crlp1004a::run(void)
+{
+
+    Cbus bus;
+
+    bus.fromUInt64(pCONNECTOR->Get_values());
+
+    if (bus.getDest()!=0) return true;
+
+    if (bus.getFunc()==BUS_QUERY) {
+        bus.setData(0x01);
+        bus.setFunc(BUS_READDATA);
+        pCONNECTOR->Set_values(bus.toUInt64());
+        return true;
+    }
+
+    if (bus.getFunc()==BUS_SELECT) {
+        if (bus.getData()==1){
+            Power=true;
+        }
+        if (bus.getData()==0) {
+            Power = false;
+        }
+        bus.setFunc(BUS_READDATA);
+        pCONNECTOR->Set_values(bus.toUInt64());
+        return true;
+    }
+
+    if (!Power) return true;
+
+    switch (bus.getFunc()) {
+    case BUS_SLEEP: break;
+    case BUS_WRITEDATA: break;
+    case BUS_READDATA:  break;
+    case BUS_READROM: bus.setData(mem[bus.getAddr()]);
+        bus.setFunc(BUS_READDATA);
+        break;
+    }
+
+    pCONNECTOR->Set_values(bus.toUInt64());
+    return true;
+
+
+
+    Get_Connector();
+
+#if 1
+// Try to introduce a latency
+    quint64	deltastate = 0;
+
+    if (run_oldstate == -1) run_oldstate = pTIMER->state;
+    deltastate = pTIMER->state - run_oldstate;
+    if (deltastate < PC2021LATENCY ) return true;
+    run_oldstate	= pTIMER->state;
+#endif
+
+    quint8 c = pCONNECTOR->Get_values();
+
+
+    if (c>0)
+    {
+        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
+        SET_PIN(9,1);
+        Printer(c);
+    }
+
+    pCONNECTOR_value = pCONNECTOR->Get_values();
+
+
+
+
+    Set_Connector();
+
+    return true;
 }
 
 void Crlp1004a::ComputeKey(void)
@@ -275,42 +355,9 @@ bool Crlp1004a::Set_Connector(void) {
 }
 
 
-#define PC2021LATENCY (pTIMER->pPC->getfrequency()/3200)
-
-bool Crlp1004a::run(void)
-{
-
-    return true;
-    Get_Connector();
-
-#if 1
-// Try to introduce a latency
-    quint64	deltastate = 0;
-
-    if (run_oldstate == -1) run_oldstate = pTIMER->state;
-    deltastate = pTIMER->state - run_oldstate;
-    if (deltastate < PC2021LATENCY ) return true;
-    run_oldstate	= pTIMER->state;
-#endif
-
-    quint8 c = pCONNECTOR->Get_values();
-
-    if (c>0)
-    {
-        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
-        SET_PIN(9,1);
-        Printer(c);
-    }
-
-    pCONNECTOR_value = pCONNECTOR->Get_values();
 
 
 
-
-    Set_Connector();
-
-    return true;
-}
 void Crlp1004a::paintEvent(QPaintEvent *event)
 {
     CPObject::paintEvent(event);
@@ -322,6 +369,8 @@ void Crlp1004a::contextMenuEvent ( QContextMenuEvent * event )
 
     BuildContextMenu(&menu);
 
+
+    menu.addAction(tr("Dump Memory"),this,SLOT(Dump()));
     menu.addSeparator();
 
     menu.addAction(tr("Rotate 180°"),this,SLOT(Rotate()));

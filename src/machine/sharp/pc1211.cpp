@@ -416,4 +416,5 @@ bool Cpc1211::exit()
 bool Cpc1211::Set_Connector()
 {
     sendToPrinter();
+    return true;
 }

@@ -11,6 +11,7 @@ class Cm6502;
 #define BUS_READDATA 2
 #define BUS_QUERY 3
 #define BUS_SELECT 4
+#define BUS_READROM 5
 
 class Cbus {
 

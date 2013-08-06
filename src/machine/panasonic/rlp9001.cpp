@@ -54,21 +54,16 @@ bool Crlp9001::run(void)
     }
 
     if (bus.getFunc()==BUS_SELECT) {
-        if (bus.getData()==1){//(1 << (bus.getDest()))) {
+        if (bus.getData()==1){
             Power=true;
-//            bus.setFunc(BUS_READDATA);
-//            bus.setData(bus.getDest());
         }
         if (bus.getData()==0) {
             Power = false;
-//            bus.setData(0xff);
-
         }
         bus.setFunc(BUS_READDATA);
         pMAINCONNECTOR->Set_values(bus.toUInt64());
         return true;
     }
-
 
     if (!Power) return true;
 
