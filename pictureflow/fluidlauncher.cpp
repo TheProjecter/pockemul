@@ -194,7 +194,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
              if (xml.readNextStartElement()) {
                  QString elt = xml.name().toString();
                  if (elt=="snapshot")  {
-                     img.loadFromData(QByteArray::fromBase64(xml.readElementText().toAscii()),"PNG");
+                     img.loadFromData(QByteArray::fromBase64(xml.readElementText().toLatin1()),"PNG");
                      break;
                  }
              }
