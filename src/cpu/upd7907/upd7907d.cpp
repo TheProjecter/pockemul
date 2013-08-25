@@ -6154,7 +6154,7 @@ quint16  Cdebug_upd7810::Dasm_upd7810( char *buffer,
 //    return Dasm( buffer, pc, dasmXX_78c05, oprom, opram, 0 );
 //}
 
-DWORD Cdebug_upd7810::DisAsm_1(DWORD oldpc)
+UINT32 Cdebug_upd7810::DisAsm_1(UINT32 oldpc)
 {
 
 

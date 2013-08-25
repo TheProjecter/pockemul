@@ -36,17 +36,17 @@
 #include <QtCore/QFile>
 #include <QtCore/QTemporaryFile>
 
-#include <QtGui/QApplication>
-#include <QtGui/QAction>
-#include <QtGui/QClipboard>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QHelpEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPainter>
-#include <QtGui/QScrollBar>
-#include <QtGui/QToolTip>
-#include <QtGui/QWheelEvent>
+#include <QApplication>
+#include <QAction>
+#include <QClipboard>
+#include <QFontMetrics>
+#include <QHelpEvent>
+#include <QMenu>
+#include <QMessageBox>
+#include <QPainter>
+#include <QScrollBar>
+#include <QToolTip>
+#include <QWheelEvent>
 
 using namespace BINEditor;
 

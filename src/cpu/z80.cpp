@@ -22,79 +22,79 @@
 #define IMEM_LEN    0x200
 
 
-#define A	z->r.a	/* ƒAƒLƒ…ƒ€ƒŒ[ƒ^ */
-#define F	z->r.f	/* ƒtƒ‰ƒO */
-#define B	z->r.b	/* ”Ä—pƒŒƒWƒXƒ^B */
-#define C	z->r.c	/* ”Ä—pƒŒƒWƒXƒ^C */
-#define D	z->r.d	/* ”Ä—pƒŒƒWƒXƒ^D */
-#define E	z->r.e	/* ”Ä—pƒŒƒWƒXƒ^E */
-#define H	z->r.h	/* ”Ä—pƒŒƒWƒXƒ^H */
-#define L	z->r.l	/* ”Ä—pƒŒƒWƒXƒ^L */
-#define R	((rnd = rnd * 8197 + 1) >> 25)	/* ƒŠƒtƒŒƒbƒVƒ…ƒŒƒWƒXƒ^ */
-#define I	z->r.i	/* ƒCƒ“ƒ^ƒ‰ƒvƒgƒŒƒWƒXƒ^I */
-#define IXH	z->r.ixh	/* ƒCƒ“ƒfƒbƒNƒXƒŒƒWƒXƒ^IXh */
-#define IXL	z->r.ixl	/* ƒCƒ“ƒfƒbƒNƒXƒŒƒWƒXƒ^IXl */
-#define IYH	z->r.iyh	/* ƒCƒ“ƒfƒbƒNƒXƒŒƒWƒXƒ^IYh */
-#define IYL	z->r.iyl	/* ƒCƒ“ƒfƒbƒNƒXƒŒƒWƒXƒ^IYl */
-#define AF	z->r16.af	/* ƒyƒAƒŒƒWƒXƒ^AF */
-#define BC	z->r16.bc	/* ƒyƒAƒŒƒWƒXƒ^BC */
-#define DE	z->r16.de	/* ƒyƒAƒŒƒWƒXƒ^DE */
-#define HL	z->r16.hl	/* ƒyƒAƒŒƒWƒXƒ^HL */
-#define IX	z->r16.ix	/* ƒCƒ“ƒfƒbƒNƒXƒŒƒWƒXƒ^IX */
-#define IY	z->r16.iy	/* ƒCƒ“ƒfƒbƒNƒXƒŒƒWƒXƒ^IY */
-#define SP	z->r16.sp	/* ƒXƒ^ƒbƒNƒ|ƒCƒ“ƒ^SP */
-#define PC	z->r16.pc	/* ƒvƒƒOƒ‰ƒ€ƒJƒEƒ“ƒ^PC */
-#define AF_D	z->r16.af_d	/* •â•ƒŒƒWƒXƒ^AF' */
-#define BC_D	z->r16.bc_d	/* •â•ƒŒƒWƒXƒ^BC' */
-#define DE_D	z->r16.de_d	/* •â•ƒŒƒWƒXƒ^DE' */
-#define HL_D	z->r16.hl_d	/* •â•ƒŒƒWƒXƒ^HL' */
+#define A	z->r.a	/* ï¿½Aï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ */
+#define F	z->r.f	/* ï¿½tï¿½ï¿½ï¿½O */
+#define B	z->r.b	/* ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^B */
+#define C	z->r.c	/* ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^C */
+#define D	z->r.d	/* ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^D */
+#define E	z->r.e	/* ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^E */
+#define H	z->r.h	/* ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^H */
+#define L	z->r.l	/* ï¿½Ä—pï¿½ï¿½ï¿½Wï¿½Xï¿½^L */
+#define R	((rnd = rnd * 8197 + 1) >> 25)	/* ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½Xï¿½^ */
+#define I	z->r.i	/* ï¿½Cï¿½ï¿½ï¿½^ï¿½ï¿½ï¿½vï¿½gï¿½ï¿½ï¿½Wï¿½Xï¿½^I */
+#define IXH	z->r.ixh	/* ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Wï¿½Xï¿½^IXh */
+#define IXL	z->r.ixl	/* ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Wï¿½Xï¿½^IXl */
+#define IYH	z->r.iyh	/* ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Wï¿½Xï¿½^IYh */
+#define IYL	z->r.iyl	/* ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Wï¿½Xï¿½^IYl */
+#define AF	z->r16.af	/* ï¿½yï¿½Aï¿½ï¿½ï¿½Wï¿½Xï¿½^AF */
+#define BC	z->r16.bc	/* ï¿½yï¿½Aï¿½ï¿½ï¿½Wï¿½Xï¿½^BC */
+#define DE	z->r16.de	/* ï¿½yï¿½Aï¿½ï¿½ï¿½Wï¿½Xï¿½^DE */
+#define HL	z->r16.hl	/* ï¿½yï¿½Aï¿½ï¿½ï¿½Wï¿½Xï¿½^HL */
+#define IX	z->r16.ix	/* ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Wï¿½Xï¿½^IX */
+#define IY	z->r16.iy	/* ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Wï¿½Xï¿½^IY */
+#define SP	z->r16.sp	/* ï¿½Xï¿½^ï¿½bï¿½Nï¿½|ï¿½Cï¿½ï¿½ï¿½^SP */
+#define PC	z->r16.pc	/* ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½Eï¿½ï¿½ï¿½^PC */
+#define AF_D	z->r16.af_d	/* ï¿½â•ï¿½ï¿½ï¿½Wï¿½Xï¿½^AF' */
+#define BC_D	z->r16.bc_d	/* ï¿½â•ï¿½ï¿½ï¿½Wï¿½Xï¿½^BC' */
+#define DE_D	z->r16.de_d	/* ï¿½â•ï¿½ï¿½ï¿½Wï¿½Xï¿½^DE' */
+#define HL_D	z->r16.hl_d	/* ï¿½â•ï¿½ï¿½ï¿½Wï¿½Xï¿½^HL' */
 
-/* ƒtƒ‰ƒO */
-#define MASK_CY	0x01	/* ƒLƒƒƒŠ[ƒtƒ‰ƒO ƒ}ƒXƒN */
-#define MASK_N	0x02	/* Œ¸ŽZƒtƒ‰ƒO ƒ}ƒXƒN */
-#define MASK_PV	0x04	/* ƒpƒŠƒeƒB/ƒI[ƒo[ƒtƒ[ƒtƒ‰ƒO ƒ}ƒXƒN */
-#define MASK_HC	0x10	/* ƒn[ƒtƒLƒƒƒŠ[ƒtƒ‰ƒO ƒ}ƒXƒN */
-#define MASK_Z	0x40	/* ƒ[ƒƒtƒ‰ƒO ƒ}ƒXƒN */
-#define MASK_S	0x80	/* ƒTƒCƒ“ƒtƒ‰ƒO ƒ}ƒXƒN */
-#define CY	(z->r.f & MASK_CY)	/* ƒLƒƒƒŠ[ƒtƒ‰ƒO */
-#define N	(z->r.f & MASK_N)	/* Œ¸ŽZƒtƒ‰ƒO */
-#define PV	(z->r.f & MASK_PV)	/* ƒpƒŠƒeƒB/ƒI[ƒo[ƒtƒ[ƒtƒ‰ƒO */
-#define HC	(z->r.f & MASK_HC)	/* ƒn[ƒtƒLƒƒƒŠ[ƒtƒ‰ƒO */
-#define Z	(z->r.f & MASK_Z)	/* ƒ[ƒƒtƒ‰ƒO */
-#define S	(z->r.f & MASK_S)	/* ƒTƒCƒ“ƒtƒ‰ƒO */
+/* ï¿½tï¿½ï¿½ï¿½O */
+#define MASK_CY	0x01	/* ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O ï¿½}ï¿½Xï¿½N */
+#define MASK_N	0x02	/* ï¿½ï¿½ï¿½Zï¿½tï¿½ï¿½ï¿½O ï¿½}ï¿½Xï¿½N */
+#define MASK_PV	0x04	/* ï¿½pï¿½ï¿½ï¿½eï¿½B/ï¿½Iï¿½[ï¿½oï¿½[ï¿½tï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O ï¿½}ï¿½Xï¿½N */
+#define MASK_HC	0x10	/* ï¿½nï¿½[ï¿½tï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O ï¿½}ï¿½Xï¿½N */
+#define MASK_Z	0x40	/* ï¿½[ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O ï¿½}ï¿½Xï¿½N */
+#define MASK_S	0x80	/* ï¿½Tï¿½Cï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O ï¿½}ï¿½Xï¿½N */
+#define CY	(z->r.f & MASK_CY)	/* ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O */
+#define N	(z->r.f & MASK_N)	/* ï¿½ï¿½ï¿½Zï¿½tï¿½ï¿½ï¿½O */
+#define PV	(z->r.f & MASK_PV)	/* ï¿½pï¿½ï¿½ï¿½eï¿½B/ï¿½Iï¿½[ï¿½oï¿½[ï¿½tï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O */
+#define HC	(z->r.f & MASK_HC)	/* ï¿½nï¿½[ï¿½tï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O */
+#define Z	(z->r.f & MASK_Z)	/* ï¿½[ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O */
+#define S	(z->r.f & MASK_S)	/* ï¿½Tï¿½Cï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O */
 #define X	(z->r.f & MASK_X)
 #define Y	(z->r.f & MASK_Y)
-#define CC_NZ	!(z->r.f & MASK_Z)	/* ðŒ ƒ[ƒƒtƒ‰ƒO OFF */
-#define CC_Z	(z->r.f & MASK_Z)	/* ðŒ ƒ[ƒƒtƒ‰ƒO ON */
-#define CC_NC	!(z->r.f & MASK_CY)	/* ðŒ ƒLƒƒƒŠ[ƒtƒ‰ƒO OFF */
-#define CC_C	(z->r.f & MASK_CY)	/* ðŒ ƒLƒƒƒŠ[ƒtƒ‰ƒO ON */
-#define CC_PO	!(z->r.f & MASK_PV)	/* ðŒ ƒpƒŠƒeƒB/ƒI[ƒo[ƒtƒ[ƒtƒ‰ƒO OFF */
-#define CC_PE	(z->r.f & MASK_PV)	/* ðŒ ƒpƒŠƒeƒB/ƒI[ƒo[ƒtƒ[ƒtƒ‰ƒO ON */
-#define CC_P	!(z->r.f & MASK_S)	/* ðŒ Œ¸ŽZƒtƒ‰ƒO OFF */
-#define CC_M	(z->r.f & MASK_S)	/* ðŒ Œ¸ŽZƒtƒ‰ƒO ON */
+#define CC_NZ	!(z->r.f & MASK_Z)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½[ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O OFF */
+#define CC_Z	(z->r.f & MASK_Z)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½[ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O ON */
+#define CC_NC	!(z->r.f & MASK_CY)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O OFF */
+#define CC_C	(z->r.f & MASK_CY)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O ON */
+#define CC_PO	!(z->r.f & MASK_PV)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½pï¿½ï¿½ï¿½eï¿½B/ï¿½Iï¿½[ï¿½oï¿½[ï¿½tï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O OFF */
+#define CC_PE	(z->r.f & MASK_PV)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½pï¿½ï¿½ï¿½eï¿½B/ï¿½Iï¿½[ï¿½oï¿½[ï¿½tï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½O ON */
+#define CC_P	!(z->r.f & MASK_S)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Zï¿½tï¿½ï¿½ï¿½O OFF */
+#define CC_M	(z->r.f & MASK_S)	/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Zï¿½tï¿½ï¿½ï¿½O ON */
 
-/* ƒƒ‚ƒŠ */
-#define MEM8(x)	z80read8(z, x)	/* 8bitsƒƒ‚ƒŠ */
-#define IMM8	z80read8(z, z->r16.pc + 1)	/* 8bits‘¦’l */
-#define EQ	((int8 )z80read8(z, z->r16.pc + 1))	/* ‘Š‘ÎƒAƒhƒŒƒX */
-#define STORE8(x, y)	z80write8(z, x, y)	/* 8bits‘‚«ž‚Ý */
-#define MEM16(x)	z80read16(z, x)	/* 16bitsƒƒ‚ƒŠ */
-#define IMM16	z80read16(z, z->r16.pc + 1)	/* 16bits‘¦’l */
-#define STORE16(x, y)	z80write16(z, x, y)	/* 16bits‘‚«ž‚Ý */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+#define MEM8(x)	z80read8(z, x)	/* 8bitsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+#define IMM8	z80read8(z, z->r16.pc + 1)	/* 8bitsï¿½ï¿½ï¿½l */
+#define EQ	((int8 )z80read8(z, z->r16.pc + 1))	/* ï¿½ï¿½ï¿½ÎƒAï¿½hï¿½ï¿½ï¿½X */
+#define STORE8(x, y)	z80write8(z, x, y)	/* 8bitsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+#define MEM16(x)	z80read16(z, x)	/* 16bitsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+#define IMM16	z80read16(z, z->r16.pc + 1)	/* 16bitsï¿½ï¿½ï¿½l */
+#define STORE16(x, y)	z80write16(z, x, y)	/* 16bitsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 
-/* ƒLƒƒƒŠ[ƒtƒ‰ƒOƒZƒbƒg */
+/* ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½Oï¿½Zï¿½bï¿½g */
 #define SET_CY8(acc)	((acc) & 0x00000100L ? MASK_CY: 0)
 #define SET_CY16(acc)	((acc) & 0x00010000L ? MASK_CY: 0)
 #define SET_CYS(acc)	((acc) & 0x80000000L ? MASK_CY: 0)
 
-/* ƒpƒŠƒeƒB/ƒI[ƒo[ƒtƒ[ƒtƒ‰ƒOƒZƒbƒg */
+/* ï¿½pï¿½ï¿½ï¿½eï¿½B/ï¿½Iï¿½[ï¿½oï¿½[ï¿½tï¿½ï¿½ï¿½[ï¿½tï¿½ï¿½ï¿½Oï¿½Zï¿½bï¿½g */
 #define SET_P(acc)	parity[(acc) & 0xff]
 #define SET_V8(acc, a, x)	(((a) ^ (x)) & 0x80   ? 0: (((a) ^ acc) & 0x80   ? MASK_PV: 0))
 #define SET_V16(acc, x, y)	(((x) ^ (y)) & 0x8000 ? 0: (((x) ^ acc) & 0x8000 ? MASK_PV: 0))
 #define SET_VS8(acc, a, x)	(((a) ^ (x)) & 0x80   ? (((a) ^ acc) & 0x80   ? MASK_PV: 0): 0)
 #define SET_VS16(acc, x, y)	(((x) ^ (y)) & 0x8000 ? (((x) ^ acc) & 0x8000 ? MASK_PV: 0): 0)
 
-/* ƒn[ƒtƒLƒƒƒŠ[ƒZƒbƒg */
+/* ï¿½nï¿½[ï¿½tï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Zï¿½bï¿½g */
 #define SET_HC8_CY(a, x, cy)	((((a) & 0x0f) + ((x) & 0x0f) + cy) & 0x10)
 #define SET_HC8(a, x)	SET_HC8_CY(a, x, 0)
 #define SET_HCS8_CY(a, x, cy)	((((a) & 0x0f) - ((x) & 0x0f) - cy) & 0x10)
@@ -104,15 +104,15 @@
 #define SET_HCS16_CY(x, y, cy)	((((x) & 0x0fff) - ((y) & 0x0fff) - cy) & 0x1000 ? MASK_HC: 0)
 #define SET_HCS16(x, y)	SET_HCS16_CY(x, y, 0)
 
-/* ƒ[ƒƒtƒ‰ƒOƒZƒbƒg */
+/* ï¿½[ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½Zï¿½bï¿½g */
 #define SET_Z8(acc)	((acc) & 0x000000ffL ? 0: MASK_Z)
 #define SET_Z16(acc)	((acc) & 0x0000ffffL ? 0: MASK_Z)
 
-/* ƒTƒCƒ“ƒtƒ‰ƒOƒZƒbƒg */
+/* ï¿½Tï¿½Cï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½Zï¿½bï¿½g */
 #define SET_S8(acc)	((acc) & 0x00000080L ? MASK_S: 0)
 #define SET_S16(acc)	((acc) & 0x00008000L ? MASK_S: 0)
 
-/* –½—ßƒtƒFƒbƒ` */
+/* ï¿½ï¿½ï¿½ßƒtï¿½Fï¿½bï¿½` */
 #define FETCH(state_table, len_table, off)	(op = z80read8(z, z->r16.pc + off), _state = state_table[op], _length = len_table[op], op)
 #define FETCH_XX()	FETCH(state_xx, len_xx, 0)
 #define FETCH_CB_XX()	FETCH(state_cb_xx, len_cb_xx, 0)
@@ -122,7 +122,7 @@
 #define FETCH_FD_XX()	FETCH(state_dd_xx, len_dd_xx, 0)
 #define FETCH_FD_CB_XX()	FETCH(state_dd_cb_xx, len_dd_cb_xx, 2)
 
-/* –½—ß */
+/* ï¿½ï¿½ï¿½ï¿½ */
 #define ADC8(x) \
 	{ \
 		uint32 _acc = (uint32 )A + (x) + CY; \
@@ -590,11 +590,11 @@
 		PC += _length
 
 #define RETI() \
-	RET(TRUE)
+    RET(true)
 
 #define RETN() \
 	z->r.iff = (z->r.iff << 1) & 0x03; \
-	RET(TRUE)
+    RET(true)
 
 #define _RL(x) \
 	_acc = ((x) << 1) | CY; \
@@ -752,7 +752,7 @@
 	PC += _length
 
 #define RST(x) \
-	CALL(TRUE, x)
+    CALL(true, x)
 
 #define SBC8(x) \
 	{ \
@@ -927,7 +927,7 @@ const int CZ80::state_xx[] = {
   5, 10, 10,  4, 10, 11,  7, 11,  5,  6, 10,  4, 10,  0,  7, 11
 };
 
-/* ƒXƒe[ƒg”(CB xx) */
+/* ï¿½Xï¿½eï¿½[ï¿½gï¿½ï¿½(CB xx) */
 const int CZ80::state_cb_xx[] = {
   8, 8, 8, 8, 8, 8, 15, 8, 8, 8, 8, 8, 8, 8, 15, 8,
   8, 8, 8, 8, 8, 8, 15, 8, 8, 8, 8, 8, 8, 8, 15, 8,
@@ -947,7 +947,7 @@ const int CZ80::state_cb_xx[] = {
   8, 8, 8, 8, 8, 8, 12, 8, 8, 8, 8, 8, 8, 8, 12, 8
 };
 
-/* ƒXƒe[ƒg”(DD/FD xx) */
+/* ï¿½Xï¿½eï¿½[ï¿½gï¿½ï¿½(DD/FD xx) */
 const int CZ80::state_dd_xx[] = {
    8,  8,  8,  8,  8,  8,  8,  8,  8, 10,  8,  8, 8, 8,  8, 8,
    8,  8,  8,  8,  8,  8,  8,  8,  8, 10,  8,  8, 8, 8,  8, 8,
@@ -967,7 +967,7 @@ const int CZ80::state_dd_xx[] = {
    8,  8,  8,  8,  8,  8,  8,  8,  8, 10,  8,  8, 8, 8,  8, 8
 };
 
-/* ƒXƒe[ƒg”(DD/FD CB xx) */
+/* ï¿½Xï¿½eï¿½[ï¿½gï¿½ï¿½(DD/FD CB xx) */
 const int CZ80::state_dd_cb_xx[] = {
   12, 12, 12, 12, 12, 12, 23, 12, 12, 12, 12, 12, 12, 12, 23, 12,
   12, 12, 12, 12, 12, 12, 23, 12, 12, 12, 12, 12, 12, 12, 23, 12,
@@ -987,7 +987,7 @@ const int CZ80::state_dd_cb_xx[] = {
   12, 12, 12, 12, 12, 12, 23, 12, 12, 12, 12, 12, 12, 12, 23, 12
 };
 
-/* ƒXƒe[ƒg”(ED xx) */
+/* ï¿½Xï¿½eï¿½[ï¿½gï¿½ï¿½(ED xx) */
 const int CZ80::state_ed_xx[] = {
    8,  8,  8,  8, 8,  8, 8,  8,  8,  8,  8,  8, 8,  8, 8,  8,
    8,  8,  8,  8, 8,  8, 8,  8,  8,  8,  8,  8, 8,  8, 8,  8,
@@ -1007,7 +1007,7 @@ const int CZ80::state_ed_xx[] = {
    8,  8,  8,  8, 8,  8, 8,  8,  8,  8,  8,  8, 8,  8, 8,  8
 };
 
-/* –½—ß’·(xx) */
+/* ï¿½ï¿½ï¿½ß’ï¿½(xx) */
 const uint16 CZ80::len_xx[] = {
   1, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
   2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
@@ -1027,7 +1027,7 @@ const uint16 CZ80::len_xx[] = {
   1, 1, 3, 1, 3, 1, 2, 1, 1, 1, 3, 1, 3, 0, 2, 1
 };
 
-/* –½—ß’·(CB xx) */
+/* ï¿½ï¿½ï¿½ß’ï¿½(CB xx) */
 const uint16 CZ80::len_cb_xx[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1047,7 +1047,7 @@ const uint16 CZ80::len_cb_xx[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-/* –½—ß’·(DD/FD xx) */
+/* ï¿½ï¿½ï¿½ß’ï¿½(DD/FD xx) */
 const uint16 CZ80::len_dd_xx[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1067,7 +1067,7 @@ const uint16 CZ80::len_dd_xx[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-/* –½—ß’·(DD/FD CB xx) */
+/* ï¿½ï¿½ï¿½ß’ï¿½(DD/FD CB xx) */
 const uint16 CZ80::len_dd_cb_xx[] = {
   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -1087,7 +1087,7 @@ const uint16 CZ80::len_dd_cb_xx[] = {
   3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
 };
 
-/* –½—ß’·(ED xx) */
+/* ï¿½ï¿½ï¿½ß’ï¿½(ED xx) */
 const uint16 CZ80::len_ed_xx[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1107,7 +1107,7 @@ const uint16 CZ80::len_ed_xx[] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-/* ƒpƒŠƒeƒB */
+/* ï¿½pï¿½ï¿½ï¿½eï¿½B */
 const uint8 CZ80::parity[] = {
   MASK_PV, 0, 0, MASK_PV, 0, MASK_PV, MASK_PV, 0, 0, MASK_PV, MASK_PV, 0, MASK_PV, 0, 0, MASK_PV,
   0, MASK_PV, MASK_PV, 0, MASK_PV, 0, 0, MASK_PV, MASK_PV, 0, 0, MASK_PV, 0, MASK_PV, MASK_PV, 0,
@@ -1134,7 +1134,7 @@ CZ80::CZ80(CPObject *parent)	: CCPU(parent)
     fn_status="Z80.sta";
     fn_log="z80.log";
 
-    Is_Timer_Reached=FALSE;
+    Is_Timer_Reached=false;
     //step_Previous_State = 0;
 
     regwidget = (CregCPU*) new Cregsz80Widget(0,this);
@@ -1152,7 +1152,7 @@ int CZ80::z80retn(Z80stat *z) {
 }
 
 /*
-    DAAŽÀsŽž‚ÉAƒŒƒWƒXƒ^‚É‰ÁŽZ‚³‚ê‚é’l‚ÆCYƒtƒ‰ƒO
+    DAAï¿½ï¿½sï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½É‰ï¿½Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½CYï¿½tï¿½ï¿½ï¿½O
 */
 inline void CZ80::daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f)
 {
@@ -1220,7 +1220,7 @@ inline void CZ80::daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f)
 }
 
 /*
-    RƒŒƒWƒXƒ^—p—”seed‚ðÝ’è‚·‚é
+    Rï¿½ï¿½ï¿½Wï¿½Xï¿½^ï¿½pï¿½ï¿½ï¿½ï¿½seedï¿½ï¿½ï¿½Ý’è‚·ï¿½ï¿½
 */
 void CZ80::z80srand(uint32 seed)
 {
@@ -1228,7 +1228,7 @@ void CZ80::z80srand(uint32 seed)
 }
 
 /*
-    RESETM†‚ð‘—‚é
+    RESETï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½
 */
 int CZ80::z80reset(Z80stat *z)
 {
@@ -1239,11 +1239,11 @@ int CZ80::z80reset(Z80stat *z)
 	z->r16.pc = 0;
 	z->i.states = 0;
 	z->i.total_states = 0;
-	return TRUE;
+    return true;
 }
 
 /*
-    NMIM†‚ð‘—‚é
+    NMIï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½
 */
 int CZ80::z80nmi(Z80stat *z)
 {
@@ -1253,12 +1253,12 @@ int CZ80::z80nmi(Z80stat *z)
 	z->r.halt = 0;
 	z->r.iff &= ~0x01;
 	z->i.states -= 13;
-	CALL(TRUE, 0x0066);
-	return TRUE;
+    CALL(true, 0x0066);
+    return true;
 }
 
 /*
-    INTM†‚ð‘—‚Á‚½‚Æ‚«Š„‚èž‚Ý‚ª”­¶‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é (IM 0)
+    INTï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½èžï¿½Ý‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ (IM 0)
 */
 int CZ80::z80int0chk(const Z80stat *z)
 {
@@ -1266,7 +1266,7 @@ int CZ80::z80int0chk(const Z80stat *z)
 }
 
 /*
-	INTM†‚ð‘—‚é (IM 0)
+	INTï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½ (IM 0)
 */
 int CZ80::z80int0(Z80stat *z, uint8 op)
 {
@@ -1274,7 +1274,7 @@ int CZ80::z80int0(Z80stat *z, uint8 op)
 	uint16 _length = 0;
 
 	if(!z80int0chk(z))
-		return FALSE;
+        return false;
 	
 	z->r.halt = z->r.iff = 0;
 	z->i.states -= 13;
@@ -1296,11 +1296,11 @@ int CZ80::z80int0(Z80stat *z, uint8 op)
 	case 0xff:
 		RST(0x38); break;
 	}
-	return TRUE;
+    return true;
 }
 
 /*
-	INTM†‚ð‘—‚Á‚½‚Æ‚«Š„‚èž‚Ý‚ª”­¶‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é (IM 1)
+	INTï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½èžï¿½Ý‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ (IM 1)
 */
 int CZ80::z80int1chk(const Z80stat *z)
 {
@@ -1308,7 +1308,7 @@ int CZ80::z80int1chk(const Z80stat *z)
 }
 
 /*
-	INTM†‚ð‘—‚é (IM 1)
+	INTï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½ (IM 1)
 */
 int CZ80::z80int1(Z80stat *z)
 {
@@ -1316,16 +1316,16 @@ int CZ80::z80int1(Z80stat *z)
 	uint16 _length = 0;
 
 	if(!z80int1chk(z))
-		return FALSE;
+        return false;
 
 	z->r.halt = z->r.iff = 0;
 	z->i.states -= 13;
 	RST(0x38);
-	return TRUE;
+    return true;
 }
 
 /*
-	INTM†‚ð‘—‚Á‚½‚Æ‚«Š„‚èž‚Ý‚ª”­¶‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é (IM 2)
+	INTï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½èžï¿½Ý‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ (IM 2)
 */
 int CZ80::z80int2chk(const Z80stat *z)
 {
@@ -1333,7 +1333,7 @@ int CZ80::z80int2chk(const Z80stat *z)
 }
 
 /*
-	INTM†‚ð‘—‚é (IM 2)
+	INTï¿½Mï¿½ï¿½ï¿½ð‘—‚ï¿½ (IM 2)
 */
 int CZ80::z80int2(Z80stat *z, uint8 vector)
 {
@@ -1341,7 +1341,7 @@ int CZ80::z80int2(Z80stat *z, uint8 vector)
 	uint16 _length = 0;
 
 	if(!z80int2chk(z))
-		return FALSE;
+        return false;
 
     z80exec(z);
 
@@ -1350,10 +1350,10 @@ int CZ80::z80int2(Z80stat *z, uint8 vector)
 	z->i.states -= 19;
 //    imem[0x32] = 0;
 
-    CALL(TRUE, MEM16((z->r.i << 8U) | (vector & 0x7f)));
+    CALL(true, MEM16((z->r.i << 8U) | (vector & 0x7f)));
 
     pPC->pTIMER->state += _state;
-	return TRUE;
+    return true;
 }
 
 int CZ80::z80nsc800intr(Z80stat *z, uint8 vector)
@@ -1369,10 +1369,10 @@ int CZ80::z80nsc800intr(Z80stat *z, uint8 vector)
     RST(vector);
 
     pPC->pTIMER->state += _state;
-    return TRUE;
+    return true;
 }
 /*
-	–½—ß‚ðŽÀs‚·‚é
+	ï¿½ï¿½ï¿½ß‚ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
 */
 
 
@@ -1428,7 +1428,7 @@ int CZ80::z80exec(Z80stat *z)
 		case 0x16: LD(D, IMM8);     break;	/* ld D, n */
 		case 0x17: RLA();           break;	/* rla */
 
-		case 0x18: JR(TRUE, EQ);    break;	/* jr e */
+        case 0x18: JR(true, EQ);    break;	/* jr e */
 		case 0x19: ADD16(HL, DE);   break;	/* add HL, DE */
 		case 0x1a: LD(A, MEM8(DE)); break;	/* ld A, (DE) */
 		case 0x1b: DEC16(DE);       break;	/* dec DE */
@@ -1625,14 +1625,14 @@ int CZ80::z80exec(Z80stat *z)
 		case 0xc0: RET(CC_NZ);         break;	/* ret NZ */
 		case 0xc1: POP(BC);            break;	/* pop BC */
 		case 0xc2: JP(CC_NZ, IMM16);   break;	/* jp NZ, mn */
-		case 0xc3: JP(TRUE, IMM16);    break;	/* jp mn */
+        case 0xc3: JP(true, IMM16);    break;	/* jp mn */
 		case 0xc4: CALL(CC_NZ, IMM16); break;	/* call NZ, mn */
 		case 0xc5: PUSH(BC);           break;	/* push BC */
 		case 0xc6: ADD8(IMM8);         break;	/* add n */
 		case 0xc7: RST(0x00);          break;	/* rst 00H */
 
 		case 0xc8: RET(CC_Z);         break;	/* ret Z */
-		case 0xc9: RET(TRUE);         break;	/* ret */
+        case 0xc9: RET(true);         break;	/* ret */
 		case 0xca: JP(CC_Z, IMM16);   break;	/* jp Z, mn */
 		case 0xcb:
 			PC++;
@@ -1927,7 +1927,7 @@ int CZ80::z80exec(Z80stat *z)
 			}
 			break;
 		case 0xcc: CALL(CC_Z, IMM16); break;	/* call Z, mn */
-		case 0xcd: CALL(TRUE, IMM16); break;	/* call mn */
+        case 0xcd: CALL(true, IMM16); break;	/* call mn */
 		case 0xce: ADC8(IMM8);        break;	/* adc n */
 		case 0xcf: RST(0x08);         break;	/* rst 08H */
 
@@ -2346,7 +2346,7 @@ int CZ80::z80exec(Z80stat *z)
 			case 0xe3: EX_M(SP, IX); break;	/* ex (SP), IX */
 			case 0xe5: PUSH(IX);     break;	/* push IX */
 
-			case 0xe9: JP(TRUE, IX); break;	/* jp (IX) */
+            case 0xe9: JP(true, IX); break;	/* jp (IX) */
 
 			case 0xf9: LD(SP, IX); break;	/* ld SP, IX */
 			}
@@ -2364,7 +2364,7 @@ int CZ80::z80exec(Z80stat *z)
 		case 0xe7: RST(0x20);          break;	/* rst 20H */
 
 		case 0xe8: RET(CC_PE);          break;	/* ret PE */
-		case 0xe9: JP(TRUE, HL);        break;	/* jp (HL) */
+        case 0xe9: JP(true, HL);        break;	/* jp (HL) */
 		case 0xea: JP(CC_PE, IMM16);    break;	/* jp PE, mn */
 		case 0xeb: EX_R(DE, HL);        break;	/* ex DE, HL */
 		case 0xec: CALL(CC_PE, IMM16);  break;	/* call PE, mn */
@@ -2881,7 +2881,7 @@ int CZ80::z80exec(Z80stat *z)
 			case 0xe3: EX_M(SP, IY); break;	/* ex (SP), IY */
 			case 0xe5: PUSH(IY);     break;	/* push IY */
 
-			case 0xe9: JP(TRUE, IY); break;	/* jp (IY) */
+            case 0xe9: JP(true, IY); break;	/* jp (IY) */
 
 			case 0xf9: LD(SP, IY); break;	/* ld SP, IY */
 			}
@@ -2912,7 +2912,7 @@ inline void CZ80::z80write8(const Z80stat *z, uint16 address, uint8 value)
 //#ifdef Z80_LITTLEENDIAN
 
 /*
-    16bits READ/WRITE (ƒŠƒgƒ‹ƒGƒ“ƒfƒBƒAƒ“)
+    16bits READ/WRITE (ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½fï¿½Bï¿½Aï¿½ï¿½)
 */
 inline uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
 {
@@ -2927,7 +2927,7 @@ inline void CZ80::z80write16(const Z80stat *z, uint16 address, uint16 value)
 #if 0
 
 /*
-    16bits READ/WRITE (ƒGƒ“ƒfƒBƒAƒ“”ñˆË‘¶)
+    16bits READ/WRITE (ï¿½Gï¿½ï¿½ï¿½fï¿½Bï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Ë‘ï¿½)
 */
 inline uint16 CZ80::z80read16(const Z80stat *z, uint16 address)
 {
@@ -2999,9 +2999,9 @@ void CZ80::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "z80")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toLatin1());
             memcpy((char *) &z80,ba_reg.data(),sizeof(z80));
-            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toLatin1());
             memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
         }
         xmlIn->skipCurrentElement();
@@ -3019,7 +3019,7 @@ void CZ80::save_internal(QXmlStreamWriter *xmlOut)
     xmlOut->writeEndElement();
 }
 
-INLINE DWORD	CZ80::get_mem(DWORD adr,int size)
+INLINE UINT32	CZ80::get_mem(UINT32 adr,int size)
 {
     switch(size)
     {
@@ -3031,7 +3031,7 @@ INLINE DWORD	CZ80::get_mem(DWORD adr,int size)
     return(0);
 }
 
-INLINE void	CZ80::set_mem(DWORD adr,int size,DWORD data)
+INLINE void	CZ80::set_mem(UINT32 adr,int size,UINT32 data)
 {
     switch(size)
     {
@@ -3080,7 +3080,7 @@ void	CZ80::Set_Xin(bool){}
 bool	CZ80::Get_Xout(void){return false;}
 void	CZ80::Set_Xout(bool){}
 
-DWORD	CZ80::get_PC(void){ return z80.r16.pc;}					//get Program Counter
+UINT32 CZ80::get_PC(void){ return z80.r16.pc;}					//get Program Counter
 
 void	CZ80::Regs_Info(UINT8)
 {

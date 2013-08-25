@@ -62,8 +62,8 @@ public:
     virtual	bool	Get_Xout(void) { return true;}
     virtual	void	Set_Xout(bool) {}
 
-    virtual	DWORD	get_PC(void);					//get Program Counter
-    virtual void    set_PC(DWORD);
+    virtual	UINT32	get_PC(void);					//get Program Counter
+    virtual void    set_PC(UINT32);
     virtual void	Regs_Info(UINT8);
 
 
@@ -86,8 +86,8 @@ private:
     void run_one_opecode();
     void OP(quint8 code);
     void update_irq();
-    BYTE read_data8( DWORD address);
-    void write_data8( DWORD address, BYTE value);
+    BYTE read_data8( UINT32 address);
+    void write_data8( UINT32 address, BYTE value);
 
 };
 #if 0

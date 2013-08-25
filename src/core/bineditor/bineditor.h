@@ -36,7 +36,7 @@
 #include <QtCore/QStack>
 #include <QtCore/QString>
 
-#include <QtGui/QAbstractScrollArea>
+#include <QAbstractScrollArea>
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextFormat>
 

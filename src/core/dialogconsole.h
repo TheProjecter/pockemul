@@ -11,7 +11,7 @@ class DialogConsole : public QDialog, public Ui::DialogConsole
 {
 Q_OBJECT
 public:
-	DialogConsole( QWidget * parent = 0, Qt::WFlags f = 0 );
+    DialogConsole( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 	
 	void refresh( void);
 

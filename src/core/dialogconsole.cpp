@@ -10,7 +10,7 @@
 #include "sio.h"
 
 //
-DialogConsole::DialogConsole( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
+DialogConsole::DialogConsole(QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 	setupUi(this);
 	setFocusPolicy(Qt::StrongFocus);

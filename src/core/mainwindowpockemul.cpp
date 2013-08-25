@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include <QString>
 #include <QPainter>
 #include <iostream>
@@ -62,7 +62,7 @@ QTimer *timer;
 QList<CPObject *> listpPObject;
 
 
-MainWindowPockemul::MainWindowPockemul( QWidget * parent, Qt::WFlags f) : QMainWindow(parent, f)
+MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QMainWindow(parent, f)
 {
     rawclk = 0;
     setupUi(this);
@@ -929,8 +929,9 @@ void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
 #ifndef EMSCRIPTEN
     downloadManager->resize();
 #endif
+#ifdef EMSCRIPTEN
     zoomSlider->setGeometry(mainwindow->width()-30,20,20,mainwindow->height()-40);
-
+#endif
 }
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)

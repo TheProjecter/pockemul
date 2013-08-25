@@ -4,6 +4,7 @@
 */
 
 #include <QFile>
+#include <QFileDialog>
 
 #include "windowide.h"
 #include "ui_windowide.h"
@@ -122,7 +123,7 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
     QFileInfo fInfo(sourcefname);
 
     if (e->languageDefinition()->language()=="C++") {
-        mapSRC[sourcefname] = source.toAscii();
+        mapSRC[sourcefname] = source.toLatin1();
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText(),false);
         lcpp->pStdLibs->LoadLibs();
         lcpp->run();
@@ -232,7 +233,7 @@ void WindowIDE::compile(void) {
     QFileInfo fInfo(sourcefname);
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
-        mapSRC[sourcefname] = source.toAscii();
+        mapSRC[sourcefname] = source.toLatin1();
         Clcpp *lcpp = new Clcpp(&mapSRC,&mapPP,ui->targetComboBox->currentText());
         lcpp->pStdLibs->LoadLibs();
         lcpp->run();
@@ -252,7 +253,7 @@ void WindowIDE::compile(void) {
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="ASM") {
         CEditorWidget *currentWidget = locEditorWidget;
 
-        mapSRC[sourcefname] = source.toAscii();
+        mapSRC[sourcefname] = source.toLatin1();
         Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
         pasm->run("BAS",mapSRC[sourcefname]);
         pasm->savefile("BAS");

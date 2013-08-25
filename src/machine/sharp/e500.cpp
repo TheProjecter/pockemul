@@ -346,7 +346,7 @@ bool Ce500::Get_Connector(void)
     return(1);
 }
 
-void Ce500::disp(qint8 cmd,DWORD data)
+void Ce500::disp(qint8 cmd,UINT32 data)
 {
     switch(cmd){
     case   6:							/* LCDC 2 write data */
@@ -387,11 +387,11 @@ void Ce500::disp(qint8 cmd,DWORD data)
 /*---------------------------------------------------------------------------*/
 /*****************************************************************************/
 /* Check Address ROM or RAM ?												 */
-/*  ENTRY :DWORD d=Address													 */
+/*  ENTRY :UINT32 d=Address													 */
 /*  RETURN:bool (1=RAM,0=ROM)												 */
 /*****************************************************************************/
 
-void Ce500::MemMirror(DWORD *d) {
+void Ce500::MemMirror(UINT32 *d) {
 
     if ((ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
          ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
@@ -433,7 +433,7 @@ void Ce500::MemMirror(DWORD *d) {
     }
 }
 
-void Ce550::MemMirror(DWORD *d)
+void Ce550::MemMirror(UINT32 *d)
 {
     if ((ext_MemSlot1->ExtArray[ID_CE210M]->IsChecked ||
          ext_MemSlot1->ExtArray[ID_CE211M]->IsChecked ||
@@ -474,7 +474,7 @@ void Ce550::MemMirror(DWORD *d)
     }
 }
 
-bool Ce500::Chk_Adr(DWORD *d,DWORD data)
+bool Ce500::Chk_Adr(UINT32 *d,UINT32 data)
 {
 #if (TEST_MEMORY_MAPPING)
     quint32 tmp = *d;
@@ -548,10 +548,10 @@ bool Ce500::Chk_Adr(DWORD *d,DWORD data)
 
 /*****************************************************************************/
 /* Check Address ROM or RAM ?												 */
-/*  ENTRY :DWORD d=Address													 */
+/*  ENTRY :UINT32 d=Address													 */
 /*  RETURN:bool (1=RAM,0=ROM)												 */
 /*****************************************************************************/
-bool Ce500::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Ce500::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 #if (TEST_MEMORY_MAPPING)
     quint32 tmp = *d;
@@ -664,7 +664,7 @@ BYTE Ce500::getKey()
 {
     UINT8 data=0;
 
-    DWORD ks = (pCPU->imem[IMEM_KOH]<<8)+pCPU->imem[IMEM_KOL];
+    UINT32 ks = (pCPU->imem[IMEM_KOH]<<8)+pCPU->imem[IMEM_KOL];
 
 //    if ((pKEYB->LastKey) )
     {
@@ -823,12 +823,12 @@ Ce550::Ce550(CPObject *parent):Ce500(parent)
 }
 
 
-bool Ce550::Chk_Adr(DWORD *d, DWORD data)
+bool Ce550::Chk_Adr(UINT32 *d, UINT32 data)
 {
     return Ce500::Chk_Adr(d,data);
 }
 
-bool Ce550::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Ce550::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
     return Ce500::Chk_Adr_R(d,data);
 }

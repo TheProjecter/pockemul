@@ -301,7 +301,6 @@ AddLog(LOG_CONSOLE,"updateIRQ\n");
         P |= F_I;
         PCL = RDMEM(EAD);
         PCH = RDMEM(EAD + 1);
-        CallSubLevel++;
         // call back the cpuintrf to let it clear the line
         //d_pic->intr_reti();
         irq_state = false;
@@ -461,21 +460,21 @@ void Cm6502::write_signal(int id, quint32 data, quint32 mask)
 #endif
 }
 
-inline BYTE Cm6502::read_data8( DWORD address)
+inline BYTE Cm6502::read_data8( UINT32 address)
 {
     return (((CpcXXXX *)pPC)->Get_8(address));
 }
-inline void Cm6502::write_data8( DWORD address, BYTE value)
+inline void Cm6502::write_data8( UINT32 address, BYTE value)
 {
     ((CpcXXXX *)pPC)->Set_8(address,value);
 }
 
-DWORD Cm6502::get_PC(void)
+UINT32 Cm6502::get_PC(void)
 {
     return(PCW);
 }
 
-void Cm6502::set_PC(DWORD newpc)
+void Cm6502::set_PC(UINT32 newpc)
 {
     PCW = newpc;
 }
@@ -513,19 +512,6 @@ void Cm6502::Regs_Info(UINT8 Type)
 
 
                 );
-#if 0
-        char	_tmp[1024]="";
-        for (int i=0;i<0x100;i+=16) {
-
-            sprintf(_tmp,"%s %01x(%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x) ",
-                    _tmp,i/16,
-                    pPC->mem[i],pPC->mem[i+1],pPC->mem[i+1],pPC->mem[i+3],
-                    pPC->mem[i+4],pPC->mem[i+5],pPC->mem[i+6],pPC->mem[i+7],
-                    pPC->mem[i+8],pPC->mem[i+9],pPC->mem[i+10],pPC->mem[i+11],
-                    pPC->mem[i+12],pPC->mem[i+13],pPC->mem[i+14],pPC->mem[i+15]);
-        }
-        sprintf(Regs_String,"%s %s",Regs_String,_tmp);
-#endif
         break;
     }
 

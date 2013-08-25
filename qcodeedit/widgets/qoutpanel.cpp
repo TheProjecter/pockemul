@@ -14,6 +14,7 @@
 #include <QApplication>
 #include <QLayout>
 #include <QtGui>
+#include <QTextEdit>
 
 #include "pobject.h"
 #include "pcxxxx.h"

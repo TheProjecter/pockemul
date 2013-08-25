@@ -2561,7 +2561,7 @@ const static char *txtRop[] = {
 
 
 
-DWORD Cdebug_z80::DisAsm_1(DWORD oldpc)
+UINT32 Cdebug_z80::DisAsm_1(UINT32 oldpc)
 //void *z80disasm(char *str, uint8 *mem)
 {
 
@@ -2573,7 +2573,7 @@ DWORD Cdebug_z80::DisAsm_1(DWORD oldpc)
     char LocBuffer[60];
     oldpc &= 0xffff;
     DasmAdr = oldpc;
-    DWORD pc=oldpc;
+    UINT32 pc=oldpc;
     int oper1=pPC->Get_8(pc);
     int oper2=pPC->Get_8(pc+1);
     int oper3=pPC->Get_8(pc+2);

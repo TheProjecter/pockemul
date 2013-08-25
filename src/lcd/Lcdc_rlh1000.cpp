@@ -60,7 +60,7 @@ void Clcdc_rlh1000::disp_symb(void)
         DirtyBuf[SYMB1_ADR_rlh1000-0x7600] = 0;
         DirtyBuf[SYMB2_ADR_rlh1000-0x7600] = 0;
 
-        Refresh = TRUE;
+        Refresh = true;
     }
 
     Clcdc::disp_symb();
@@ -73,9 +73,9 @@ void Clcdc_rlh1000::disp(void)
 
     BYTE b,data,x;
     int ind;
-    DWORD adr;
+    UINT32 adr;
 
-    Refresh = FALSE;
+    Refresh = false;
 
 //	disp_symb();
 
@@ -87,7 +87,7 @@ On=true;
         if ( (DirtyBuf[ind]) )
         {
 
-            Refresh = TRUE;
+            Refresh = true;
             if (On)
             {
                 data = mem[ind];

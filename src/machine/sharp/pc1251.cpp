@@ -25,7 +25,7 @@ Cpc1251::Cpc1251(CPObject *parent)	: Cpc1250(this)
 
 }
 
-bool Cpc1251::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1251::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
 	if ( (*d>=0xB000) && (*d<=0xB7FF) )	{ *d+=0x800;}
@@ -34,7 +34,7 @@ bool Cpc1251::Chk_Adr(DWORD *d,DWORD data)
 	return (Cpc1250::Chk_Adr(d,data));
 }
 
-bool Cpc1251::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1251::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 	if ( (*d>=0xB000) && (*d<=0xB7FF) )	{ *d+=0x800;return(1);	}
 	return(Cpc1250::Chk_Adr_R(d,data));

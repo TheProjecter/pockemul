@@ -270,8 +270,8 @@ bool Cpc15XX::init(void)				// initialize
 
 bool Cpc15XX::run(void) 
 {
-	DWORD previous_pc;
-	DWORD Current_PC;	
+	UINT32 previous_pc;
+	UINT32 Current_PC;	
 
 	previous_pc = pCPU->get_PC();
 
@@ -456,7 +456,7 @@ INLINE bool Cpc15XX::lh5810_read(void)
 	return(1);
 }
 
-bool Cpc15XX::Mem_Mirror(DWORD *d) 
+bool Cpc15XX::Mem_Mirror(UINT32 *d) 
 {
 #if 1
 	if ( (*d>=0x7000) && (*d<=0x71FF) )	{ *d+=0x600; return(1); }
@@ -470,7 +470,7 @@ bool Cpc15XX::Mem_Mirror(DWORD *d)
 	return(1);
 } 
 
-inline bool Cpc1500A::Mem_Mirror(DWORD *d)
+inline bool Cpc1500A::Mem_Mirror(UINT32 *d)
 {
 	if ( (*d>=0x7000) && (*d<=0x71FF) )	{ *d+=0x600; return(1); }
 	if ( (*d>=0x7200) && (*d<=0x73FF) )	{ *d+=0x400; return(1); }
@@ -479,7 +479,7 @@ inline bool Cpc1500A::Mem_Mirror(DWORD *d)
 	return(1);
 }
 
-bool Cpc15XX::Chk_Adr(DWORD *d,DWORD data) 
+bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data) 
 {
 	Mem_Mirror(d);
 
@@ -507,7 +507,7 @@ bool Cpc15XX::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1500A::Chk_Adr(DWORD *d,DWORD data) 
+bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data) 
 {
 	Mem_Mirror(d);
 
@@ -534,7 +534,7 @@ bool Cpc1500A::Chk_Adr(DWORD *d,DWORD data)
 }
 
 
-bool Cpc15XX::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
 { 
 	Mem_Mirror(d);
 	if (*d == 0x4000) AddLog(LOG_MASTER,tr("read 0x04000"));
@@ -552,7 +552,7 @@ bool Cpc15XX::Chk_Adr_R(DWORD *d,DWORD *data)
 }
 
  
-bool Cpc1500A::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1500A::Chk_Adr_R(UINT32 *d,UINT32 *data)
 { 
 	Cpc15XX::Chk_Adr_R(d,data);
 	return(1); 

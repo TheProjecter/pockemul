@@ -45,7 +45,7 @@
 #include <QAction>
 #include <QPointer>
 #include <QPainter>
-#include <QPrinter>
+#include <QtPrintSupport/QPrinter>
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QFileInfo>

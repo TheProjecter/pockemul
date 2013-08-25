@@ -17,8 +17,8 @@ public:
 
     virtual bool init();
     virtual bool run();
-    virtual bool Chk_Adr(DWORD *d, DWORD data);
-    virtual bool Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool Chk_Adr(UINT32 *d, UINT32 data);
+    virtual bool Chk_Adr_R(UINT32 *d, UINT32 *data);
     virtual UINT8 in(UINT8 Port);
     virtual UINT8 out(UINT8 Port, UINT8 Value);
     virtual void TurnOFF();
@@ -37,13 +37,13 @@ public:
     virtual UINT16 getKey();
     virtual void setKey(UINT8 data);
     UINT8 m_kb_matrix;
-    virtual WORD Get_16rPC(DWORD adr);
+    virtual WORD Get_16rPC(UINT32 adr);
     virtual UINT8 readPort(void);
     virtual void writePort(UINT8);
     virtual UINT8 lcdDataRead();
     virtual void lcdDataWrite(UINT8 data);
     virtual void lcdControlWrite(UINT8 data);
-    virtual void MemBank(DWORD *d);
+    virtual void MemBank(UINT32 *d);
 
 
     bool flipping;

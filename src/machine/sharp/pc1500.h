@@ -61,7 +61,7 @@ public:
 	void	Set_Port(PORTS Port,BYTE data);
 	BYTE	Get_Port(PORTS Port);
 
-	virtual bool	Mem_Mirror(DWORD *d); 
+	virtual bool	Mem_Mirror(UINT32 *d); 
 	void	TurnON(void);
 
 	void	Regs_Info(UINT8 Type);
@@ -70,8 +70,8 @@ public:
 	bool		lh5810_write(void);
 	bool		lh5810_read(void);
 
-	virtual bool		Chk_Adr(DWORD *d,DWORD data);
-    virtual bool		Chk_Adr_R(DWORD *d, DWORD *data);
+	virtual bool		Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool		Chk_Adr_R(UINT32 *d, UINT32 *data);
     UINT8		in(UINT8 address);
     UINT8 out(UINT8 address,UINT8 value){return(1);}
 	bool		Set_Connector(void);
@@ -130,9 +130,9 @@ public:
     const char*	GetClassName(){ return("Cpc1500A");}
 
 
-	bool Chk_Adr(DWORD *d,DWORD data);
-    bool Chk_Adr_R(DWORD *d, DWORD *data);
-	bool Mem_Mirror(DWORD *d); 
+	bool Chk_Adr(UINT32 *d,UINT32 data);
+    bool Chk_Adr_R(UINT32 *d, UINT32 *data);
+	bool Mem_Mirror(UINT32 *d); 
 
     Cpc1500A(CPObject *parent = 0);
 

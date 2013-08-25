@@ -45,9 +45,9 @@
 
 
 
-DWORD	BASE_128[]={0x20000, 0x100000, 0x120000, 0x140000};
-DWORD	BASE_64[] ={0x10000, 0x160000, 0x170000, 0x180000};
-DWORD	SlotAdr[]={0x80000,0x40000,0xc0000,0x10000,0x20000};
+UINT32	BASE_128[]={0x20000, 0x100000, 0x120000, 0x140000};
+UINT32	BASE_64[] ={0x10000, 0x160000, 0x170000, 0x180000};
+UINT32	SlotAdr[]={0x80000,0x40000,0xc0000,0x10000,0x20000};
 WORD	SlotSize[]={256,256,256,192,128};
 
 Csc62015::Csc62015(CPObject *parent)	: CCPU(parent)
@@ -159,7 +159,7 @@ inline void Csc62015::Chk_imemAdr_Read(BYTE d,BYTE len)
     }
 }
 
-inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,DWORD data)
+inline void Csc62015::Chk_imemAdr(BYTE d,BYTE len,UINT32 data)
 {
     register BYTE i;
     if (fp_log) fprintf(fp_log,"IMEM access : %02X  l=%d\n",d,len);
@@ -207,14 +207,14 @@ inline WORD Csc62015::Get_i16(BYTE a,bool m)
     Chk_imemAdr_Read(adr,SIZE_16);
 	return(imem[adr]+(imem[adr+1]<<8));
 }
-inline DWORD Csc62015::Get_i20(BYTE a,bool m)
+inline UINT32 Csc62015::Get_i20(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
     Chk_imemAdr_Read(adr,SIZE_20);
 	return((imem[adr]+(imem[adr+1]<<8)+(imem[adr+2]<<16))&MASK_20);
 }
-inline DWORD Csc62015::Get_i24(BYTE a,bool m)
+inline UINT32 Csc62015::Get_i24(BYTE a,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -241,7 +241,7 @@ inline void Csc62015::Set_i16(BYTE a,WORD d,bool m)
 	imem[adr++]=d;
 	imem[adr]=(d>>8);
 }
-inline void Csc62015::Set_i20(BYTE a,DWORD d,bool m)
+inline void Csc62015::Set_i20(BYTE a,UINT32 d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -250,7 +250,7 @@ inline void Csc62015::Set_i20(BYTE a,DWORD d,bool m)
 	imem[adr++]=(d>>8);
 	imem[adr]=(d>>16)&MASK_4;
 }
-inline void Csc62015::Set_i24(BYTE a,DWORD d,bool m)
+inline void Csc62015::Set_i24(BYTE a,UINT32 d,bool m)
 {
 	register BYTE	adr;
 	adr=Conv_imemAdr(a,m);
@@ -265,7 +265,7 @@ inline void Csc62015::Set_i24(BYTE a,DWORD d,bool m)
 /*  ENTRY :BYTE r=register No.(0-7)											 */
 /*  RETURN:(BYTE(8),WORD(16),DWORD(20) data)								 */
 /*****************************************************************************/
-inline DWORD Csc62015::Get_r(BYTE r)
+inline UINT32 Csc62015::Get_r(BYTE r)
 {
 	switch(r&7){
 	case	0:return(reg.r.a ); break;
@@ -285,7 +285,7 @@ inline DWORD Csc62015::Get_r(BYTE r)
 /*  ENTRY :BYTE r=register No.(0-7)											 */
 /*  RETURN:(WORD(16),DWORD(20) data)										 */
 /*****************************************************************************/
-inline DWORD Csc62015::Get_r2(BYTE r)
+inline UINT32 Csc62015::Get_r2(BYTE r)
 {
 	switch(r&7){
 	case	0:return(reg.x.ba); break;
@@ -304,7 +304,7 @@ inline DWORD Csc62015::Get_r2(BYTE r)
 /* Set register data														 */
 /*  ENTRY :BYTE r=register No.(0-7), BYTE(8),WORD(16),DWORD(20) d=data		 */
 /*****************************************************************************/
-inline void Csc62015::Set_r(BYTE r,DWORD d)
+inline void Csc62015::Set_r(BYTE r,UINT32 d)
 {
 	switch(r&7){
 	case	0:reg.r.a = d		  ; break;
@@ -322,7 +322,7 @@ inline void Csc62015::Set_r(BYTE r,DWORD d)
 /* Set register data (modified to r2,r3)									 */
 /*  ENTRY :BYTE r=register No.(0-7), WORD(16),DWORD(20) d=data				 */
 /*****************************************************************************/
-inline void Csc62015::Set_r2(BYTE r,DWORD d)
+inline void Csc62015::Set_r2(BYTE r,UINT32 d)
 {
 	switch(r&7){
 	case	0:reg.x.ba= d		  ; break;
@@ -340,17 +340,17 @@ inline void Csc62015::Set_r2(BYTE r,DWORD d)
 /* Check flags(Zero & Carry)												 */
 /*  ENTRY :DWORD d=data, BYTE len=data length(8bit=1,16bit=2,20bit=3)		 */
 /*****************************************************************************/
-inline void Csc62015::Chk_Flag(DWORD d,BYTE len)
+inline void Csc62015::Chk_Flag(UINT32 d,BYTE len)
 {
-	DWORD	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
-	DWORD	mask_c[]={0,MASK_8+1,MASK_16+1,MASK_20+1,MASK_24+1};
+	UINT32	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
+	UINT32	mask_c[]={0,MASK_8+1,MASK_16+1,MASK_20+1,MASK_24+1};
 //	if(len>4) return;
 	reg.r.z=(d&mask_z[len])==0?1:0;
 	reg.r.c=(d&mask_c[len])==0?0:1;
 }
-inline void Csc62015::Chk_Zero(DWORD d,BYTE len)
+inline void Csc62015::Chk_Zero(UINT32 d,BYTE len)
 {
-	DWORD	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
+	UINT32	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
 //	if(len>4) return;
 	reg.r.z=(d&mask_z[len])==0?1:0;
 }
@@ -359,10 +359,10 @@ inline void Csc62015::Chk_Zero(DWORD d,BYTE len)
 /* Make effective address from current reg.x.p	for MV r,[r3] or MV [r3],r	 */
 /*  RETURN:DWORD address													 */
 /*****************************************************************************/
-inline DWORD Csc62015::Get_d(BYTE len)
+inline UINT32 Csc62015::Get_d(BYTE len)
 {
     register BYTE	t;
-    register DWORD	a;
+    register UINT32	a;
     t=pPC->Get_8(reg.x.p);
     reg.r.pc++;
     a=Get_r(t);												/* a=r3 ([r3]) */
@@ -380,10 +380,10 @@ inline DWORD Csc62015::Get_d(BYTE len)
 /*	for MV (n),[r3] or MV [r3],(n)											 */
 /*  RETURN:DWORD address, BYTE r=i-mem address								 */
 /*****************************************************************************/
-inline DWORD Csc62015::Get_d2(BYTE len, BYTE *r)
+inline UINT32 Csc62015::Get_d2(BYTE len, BYTE *r)
 {
     register BYTE	t;
-    register DWORD	a;
+    register UINT32	a;
     t=pPC->Get_8(reg.x.p);
     reg.r.pc++;
     *r=pPC->Get_8(reg.x.p);								/* r=(i-mem address) */
@@ -402,10 +402,10 @@ inline DWORD Csc62015::Get_d2(BYTE len, BYTE *r)
 /* Make effective address from current reg.x.p	for MV r,[(n)] or MV [(n)],r */
 /*  RETURN:DWORD address													 */
 /*****************************************************************************/
-inline DWORD Csc62015::Get_i(void)
+inline UINT32 Csc62015::Get_i(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     a=Get_i20(pPC->Get_8(reg.x.p),OPR1);								/* a=(n) */
@@ -423,10 +423,10 @@ inline DWORD Csc62015::Get_i(void)
 /*  ENTRY :BYTE r=mode(0:MV (m),[(n)] , 1:MV [(m)],(n) )					 */
 /*  RETURN:DWORD address, BYTE r=i-mem address								 */
 /*****************************************************************************/
-inline DWORD Csc62015::Get_i2(BYTE *r)
+inline UINT32 Csc62015::Get_i2(BYTE *r)
 {
 	register BYTE	t,u,v,w;
-	register DWORD	a;
+	register UINT32	a;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     u=pPC->Get_8(reg.x.p);
@@ -512,7 +512,7 @@ inline void Csc62015::Op_04(void)
 /* CALLF lmn */
 inline void Csc62015::Op_05(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
 	reg.x.s-=SIZE_20;
@@ -971,7 +971,7 @@ inline void Csc62015::Op_3f(void)
 /* ADD A,n */
 inline void Csc62015::Op_40(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a+pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -982,7 +982,7 @@ inline void Csc62015::Op_40(void)
 inline void Csc62015::Op_41(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)+pPC->Get_8(reg.x.p);
@@ -994,7 +994,7 @@ inline void Csc62015::Op_41(void)
 /* ADD A,(n) */
 inline void Csc62015::Op_42(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a+Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1005,7 +1005,7 @@ inline void Csc62015::Op_42(void)
 inline void Csc62015::Op_43(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=reg.r.a+Get_i8(a,OPR1);
@@ -1017,7 +1017,7 @@ inline void Csc62015::Op_43(void)
 inline void Csc62015::Op_44(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=(Get_r(t>>4)&MASK_16)+(Get_r(t)&MASK_16);
@@ -1029,7 +1029,7 @@ inline void Csc62015::Op_44(void)
 inline void Csc62015::Op_45(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=Get_r(t>>4)+Get_r(t);
@@ -1041,7 +1041,7 @@ inline void Csc62015::Op_45(void)
 inline void Csc62015::Op_46(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=(Get_r(t>>4)&MASK_8)+(Get_r(t)&MASK_8);
@@ -1062,7 +1062,7 @@ inline void Csc62015::Op_47(void)
 /* SUB A,n */
 inline void Csc62015::Op_48(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a-pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1073,7 +1073,7 @@ inline void Csc62015::Op_48(void)
 inline void Csc62015::Op_49(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)-pPC->Get_8(reg.x.p);
@@ -1085,7 +1085,7 @@ inline void Csc62015::Op_49(void)
 /* SUB A,(n) */
 inline void Csc62015::Op_4a(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a-Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1096,7 +1096,7 @@ inline void Csc62015::Op_4a(void)
 inline void Csc62015::Op_4b(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=Get_i8(a,OPR1)-reg.r.a;
@@ -1108,7 +1108,7 @@ inline void Csc62015::Op_4b(void)
 inline void Csc62015::Op_4c(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=(Get_r(t>>4)&MASK_16)-(Get_r(t)&MASK_16);
@@ -1120,7 +1120,7 @@ inline void Csc62015::Op_4c(void)
 inline void Csc62015::Op_4d(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=Get_r(t>>4)-Get_r(t);
@@ -1132,7 +1132,7 @@ inline void Csc62015::Op_4d(void)
 inline void Csc62015::Op_4e(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=(Get_r(t>>4)&MASK_8)-(Get_r(t)&MASK_8);
@@ -1150,7 +1150,7 @@ inline void Csc62015::Op_4f(void)
 /* ADC A,n */
 inline void Csc62015::Op_50(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a+pPC->Get_8(reg.x.p)+reg.r.c;
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1161,7 +1161,7 @@ inline void Csc62015::Op_50(void)
 inline void Csc62015::Op_51(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)+pPC->Get_8(reg.x.p)+reg.r.c;
@@ -1173,7 +1173,7 @@ inline void Csc62015::Op_51(void)
 /* ADC A,(n) */
 inline void Csc62015::Op_52(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a+Get_i8(pPC->Get_8(reg.x.p),OPR1)+reg.r.c;
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1184,7 +1184,7 @@ inline void Csc62015::Op_52(void)
 inline void Csc62015::Op_53(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=Get_i8(a,OPR1)+reg.r.a+reg.r.c;
@@ -1196,7 +1196,7 @@ inline void Csc62015::Op_53(void)
 inline void Csc62015::Op_54(void)
 {
 	register BYTE	m,n;
-	register DWORD	t,b;
+	register UINT32	t,b;
     AddState(5);
     m=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -1219,7 +1219,7 @@ inline void Csc62015::Op_54(void)
 inline void Csc62015::Op_55(void)
 {
 	register BYTE	a;
-	register DWORD	t,b;
+	register UINT32	t,b;
     AddState(4);
     a=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -1240,7 +1240,7 @@ inline void Csc62015::Op_55(void)
 inline void Csc62015::Op_56(void)
 {
 	register BYTE	d;
-	register DWORD	s;
+	register UINT32	s;
     AddState(5);
 	s=Get_d2(SIZE_8,&d);
 	d=Conv_imemAdr(d,OPR1);
@@ -1262,7 +1262,7 @@ inline void Csc62015::Op_57(void)
 /* SBC A,n */
 inline void Csc62015::Op_58(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a-pPC->Get_8(reg.x.p)-reg.r.c;
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1273,7 +1273,7 @@ inline void Csc62015::Op_58(void)
 inline void Csc62015::Op_59(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)-pPC->Get_8(reg.x.p)-reg.r.c;
@@ -1285,7 +1285,7 @@ inline void Csc62015::Op_59(void)
 /* SBC A,(n) */
 inline void Csc62015::Op_5a(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a-Get_i8(pPC->Get_8(reg.x.p),OPR1)-reg.r.c;
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1296,7 +1296,7 @@ inline void Csc62015::Op_5a(void)
 inline void Csc62015::Op_5b(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=Get_i8(a,OPR1)-reg.r.a-reg.r.c;
@@ -1308,7 +1308,7 @@ inline void Csc62015::Op_5b(void)
 inline void Csc62015::Op_5c(void)
 {
 	register BYTE	m,n;
-	register DWORD	t,b;
+	register UINT32	t,b;
     AddState(5);
     m=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -1331,7 +1331,7 @@ inline void Csc62015::Op_5c(void)
 inline void Csc62015::Op_5d(void)
 {
 	register BYTE	a;
-	register DWORD	t,b;
+	register UINT32	t,b;
     AddState(4);
     a=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -1352,7 +1352,7 @@ inline void Csc62015::Op_5d(void)
 inline void Csc62015::Op_5e(void)
 {
 	register BYTE	s;
-	register DWORD	d;
+	register UINT32	d;
     AddState(5);
 	d=Get_d2(SIZE_8,&s);
 	s=Conv_imemAdr(s,OPR1);
@@ -1372,7 +1372,7 @@ inline void Csc62015::Op_5f(void)
 /* CMP A,n */
 inline void Csc62015::Op_60(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a-pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Flag(t,SIZE_8);
@@ -1382,7 +1382,7 @@ inline void Csc62015::Op_60(void)
 inline void Csc62015::Op_61(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)-pPC->Get_8(reg.x.p);
@@ -1394,7 +1394,7 @@ inline void Csc62015::Op_61(void)
 inline void Csc62015::Op_62(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(pPC->Get_20(reg.x.p));
 	reg.r.pc+=SIZE_20;
     t=a-pPC->Get_8(reg.x.p);
@@ -1406,7 +1406,7 @@ inline void Csc62015::Op_62(void)
 inline void Csc62015::Op_63(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=Get_i8(a,OPR1)-reg.r.a;
@@ -1416,7 +1416,7 @@ inline void Csc62015::Op_63(void)
 /* TEST A,n */
 inline void Csc62015::Op_64(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a&pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1426,7 +1426,7 @@ inline void Csc62015::Op_64(void)
 inline void Csc62015::Op_65(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)&pPC->Get_8(reg.x.p);
@@ -1437,7 +1437,7 @@ inline void Csc62015::Op_65(void)
 /* TEST [klm],n */
 inline void Csc62015::Op_66(void)
 {
-	register DWORD	t,a;
+	register UINT32	t,a;
     a=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     t=pPC->Get_8(a)&pPC->Get_8(reg.x.p);
@@ -1448,7 +1448,7 @@ inline void Csc62015::Op_66(void)
 /* TEST (n),A */
 inline void Csc62015::Op_67(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a&Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1457,7 +1457,7 @@ inline void Csc62015::Op_67(void)
 /* XOR A,n */
 inline void Csc62015::Op_68(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a^pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1468,7 +1468,7 @@ inline void Csc62015::Op_68(void)
 inline void Csc62015::Op_69(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)^pPC->Get_8(reg.x.p);
@@ -1480,7 +1480,7 @@ inline void Csc62015::Op_69(void)
 /* XOR [klm],n */
 inline void Csc62015::Op_6a(void)
 {
-	register DWORD	t,a;
+	register UINT32	t,a;
     a=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     t=pPC->Get_8(a)^pPC->Get_8(reg.x.p);
@@ -1493,7 +1493,7 @@ inline void Csc62015::Op_6a(void)
 inline void Csc62015::Op_6b(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=reg.r.a^Get_i8(a,OPR1);
@@ -1507,7 +1507,7 @@ inline void Csc62015::Op_6c(void)
 	BYTE	reg_size[]={SIZE_8 ,SIZE_8 ,SIZE_16,SIZE_16,
 						SIZE_20,SIZE_20,SIZE_20,SIZE_20};
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=Get_r(t);
@@ -1519,7 +1519,7 @@ inline void Csc62015::Op_6c(void)
 inline void Csc62015::Op_6d(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=Get_i8(t,OPR1);
@@ -1531,7 +1531,7 @@ inline void Csc62015::Op_6d(void)
 inline void Csc62015::Op_6e(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)^Get_i8(pPC->Get_8(reg.x.p),OPR2);
@@ -1543,7 +1543,7 @@ inline void Csc62015::Op_6e(void)
 /* XOR A,(n) */
 inline void Csc62015::Op_6f(void)
 {
-    DWORD	t;
+    UINT32	t;
     t=reg.r.a^Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1553,7 +1553,7 @@ inline void Csc62015::Op_6f(void)
 /* AND A,n */
 inline void Csc62015::Op_70(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a&pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1564,7 +1564,7 @@ inline void Csc62015::Op_70(void)
 inline void Csc62015::Op_71(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)&pPC->Get_8(reg.x.p);
@@ -1576,7 +1576,7 @@ inline void Csc62015::Op_71(void)
 /* AND [klm],n */
 inline void Csc62015::Op_72(void)
 {
-	register DWORD	t,a;
+	register UINT32	t,a;
     a=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     t=pPC->Get_8(a)&pPC->Get_8(reg.x.p);
@@ -1589,7 +1589,7 @@ inline void Csc62015::Op_72(void)
 inline void Csc62015::Op_73(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=reg.r.a&Get_i8(a,OPR1);
@@ -1613,7 +1613,7 @@ inline void Csc62015::Op_75(void)
 inline void Csc62015::Op_76(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)&Get_i8(pPC->Get_8(reg.x.p),OPR2);
@@ -1625,7 +1625,7 @@ inline void Csc62015::Op_76(void)
 /* AND A,(n) */
 inline void Csc62015::Op_77(void)
 {
-    DWORD	t;
+    UINT32	t;
     t=reg.r.a&Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1635,7 +1635,7 @@ inline void Csc62015::Op_77(void)
 /* OR A,n */
 inline void Csc62015::Op_78(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=reg.r.a|pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -1646,7 +1646,7 @@ inline void Csc62015::Op_78(void)
 inline void Csc62015::Op_79(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)|pPC->Get_8(reg.x.p);
@@ -1658,7 +1658,7 @@ inline void Csc62015::Op_79(void)
 /* OR [klm],n */
 inline void Csc62015::Op_7a(void)
 {
-	register DWORD	t,a;
+	register UINT32	t,a;
     a=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     t=pPC->Get_8(a)|pPC->Get_8(reg.x.p);
@@ -1671,7 +1671,7 @@ inline void Csc62015::Op_7a(void)
 inline void Csc62015::Op_7b(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	t=reg.r.a|Get_i8(a,OPR1);
@@ -1685,7 +1685,7 @@ inline void Csc62015::Op_7c(void)
 	BYTE	reg_size[]={SIZE_8 ,SIZE_8 ,SIZE_16,SIZE_16,
 						SIZE_20,SIZE_20,SIZE_20,SIZE_20};
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=Get_r(t);
@@ -1697,7 +1697,7 @@ inline void Csc62015::Op_7c(void)
 inline void Csc62015::Op_7d(void)
 {
 	register BYTE	t;
-	register DWORD	d;
+	register UINT32	d;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	d=Get_i8(t,OPR1);
@@ -1709,7 +1709,7 @@ inline void Csc62015::Op_7d(void)
 inline void Csc62015::Op_7e(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i8(a,OPR1)|Get_i8(pPC->Get_8(reg.x.p),OPR2);
@@ -1721,7 +1721,7 @@ inline void Csc62015::Op_7e(void)
 /* OR A,(n) */
 inline void Csc62015::Op_7f(void)
 {
-    DWORD	t;
+    UINT32	t;
     t=reg.r.a|Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
 	Chk_Zero(t,SIZE_8);
@@ -2096,7 +2096,7 @@ inline void Csc62015::Op_b6(void)
 /* CMP (m),(n) */
 inline void Csc62015::Op_b7(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=Get_i8(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     t-=Get_i8(pPC->Get_8(reg.x.p),OPR2);
@@ -2180,7 +2180,7 @@ inline void Csc62015::Op_c1(void)
 inline void Csc62015::Op_c2(void)
 {
 	register BYTE	d,s;
-	register DWORD	w;
+	register UINT32	w;
     d=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     s=pPC->Get_8(reg.x.p);
@@ -2253,7 +2253,7 @@ inline void Csc62015::Op_c5(void)
 /* CMPW (m),(n) */
 inline void Csc62015::Op_c6(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=Get_i16(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     t-=Get_i16(pPC->Get_8(reg.x.p),OPR2);
@@ -2264,7 +2264,7 @@ inline void Csc62015::Op_c6(void)
 /* CMPP (m),(n) */
 inline void Csc62015::Op_c7(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=Get_i24(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
     t-=Get_i24(pPC->Get_8(reg.x.p),OPR2);
@@ -2392,7 +2392,7 @@ inline void Csc62015::Op_d2(void)
 inline void Csc62015::Op_d3(void)
 {
 	register BYTE	d;
-	register DWORD	s;
+	register UINT32	s;
     AddState(6);
     d=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -2454,7 +2454,7 @@ inline void Csc62015::Op_d5(void)
 inline void Csc62015::Op_d6(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i16(pPC->Get_8(reg.x.p),OPR1)-(Get_r(a)&MASK_16);
@@ -2466,7 +2466,7 @@ inline void Csc62015::Op_d6(void)
 inline void Csc62015::Op_d7(void)
 {
 	register BYTE	a;
-	register DWORD	t;
+	register UINT32	t;
     a=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
     t=Get_i20(pPC->Get_8(reg.x.p),OPR1)-Get_r(a);
@@ -2477,7 +2477,7 @@ inline void Csc62015::Op_d7(void)
 /* MV [klm],(n) */
 inline void Csc62015::Op_d8(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     pPC->Set_8(t,Get_i8(pPC->Get_8(reg.x.p),OPR1));
@@ -2487,7 +2487,7 @@ inline void Csc62015::Op_d8(void)
 /* MVW [klm],(n) */
 inline void Csc62015::Op_d9(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     pPC->Set_16(t,Get_i16(pPC->Get_8(reg.x.p),OPR1));
@@ -2497,7 +2497,7 @@ inline void Csc62015::Op_d9(void)
 /* MVP [klm],(n) */
 inline void Csc62015::Op_da(void)
 {
-	register DWORD	t;
+	register UINT32	t;
     t=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
     pPC->Set_24(t,Get_i24(pPC->Get_8(reg.x.p),OPR1));
@@ -2508,7 +2508,7 @@ inline void Csc62015::Op_da(void)
 inline void Csc62015::Op_db(void)
 {
 	register BYTE	s;
-	register DWORD	d;
+	register UINT32	d;
     AddState(6);
     d=pPC->Get_20(reg.x.p);
 	reg.r.pc+=SIZE_20;
@@ -2559,7 +2559,7 @@ inline void Csc62015::Op_df(void)
 inline void Csc62015::Op_e0(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_d2(SIZE_8, &t);
     Set_i8(t,pPC->Get_8(a),OPR1);
 	AddState(6);
@@ -2568,7 +2568,7 @@ inline void Csc62015::Op_e0(void)
 inline void Csc62015::Op_e1(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_d2(SIZE_16, &t);
     Set_i16(t,pPC->Get_16(a),OPR1);
 	AddState(7);
@@ -2577,7 +2577,7 @@ inline void Csc62015::Op_e1(void)
 inline void Csc62015::Op_e2(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_d2(SIZE_20, &t);
     Set_i24(t,pPC->Get_24(a),OPR1);
 	AddState(8);
@@ -2586,7 +2586,7 @@ inline void Csc62015::Op_e2(void)
 inline void Csc62015::Op_e3(void)
 {
 	register BYTE	d,t;
-	register DWORD	s;
+	register UINT32	s;
     AddState(10);
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
@@ -2656,7 +2656,7 @@ inline void Csc62015::Op_e7(void)
 inline void Csc62015::Op_e8(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_d2(SIZE_8, &t);
     pPC->Set_8(a,Get_i8(t,OPR1));
 	AddState(6);
@@ -2665,7 +2665,7 @@ inline void Csc62015::Op_e8(void)
 inline void Csc62015::Op_e9(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_d2(SIZE_16, &t);
     pPC->Set_16(a,Get_i16(t,OPR1));
 	AddState(7);
@@ -2674,7 +2674,7 @@ inline void Csc62015::Op_e9(void)
 inline void Csc62015::Op_ea(void)
 {
 	register BYTE	t;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_d2(SIZE_20, &t);
     pPC->Set_24(a,Get_i24(t,OPR1));
 	AddState(8);
@@ -2683,7 +2683,7 @@ inline void Csc62015::Op_ea(void)
 inline void Csc62015::Op_eb(void)
 {
 	register BYTE	s,t;
-	register DWORD	d;
+	register UINT32	d;
     AddState(10);
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
@@ -2701,7 +2701,7 @@ inline void Csc62015::Op_eb(void)
 inline void Csc62015::Op_ec(void)
 {
 	register BYTE	n;
-	register DWORD	s,t,u,b;
+	register UINT32	s,t,u,b;
     AddState(4);
     n=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -2724,7 +2724,7 @@ inline void Csc62015::Op_ec(void)
 inline void Csc62015::Op_ed(void)
 {
 	register BYTE	t;
-	register DWORD	w;
+	register UINT32	w;
     t=pPC->Get_8(reg.x.p);
 	reg.r.pc++;
 	w=Get_r2(t); Set_r2(t,Get_r2(t>>4)); Set_r2(t>>4,w);
@@ -2748,7 +2748,7 @@ inline void Csc62015::Op_ef(void)
 inline void Csc62015::Op_f0(void)
 {
 	register BYTE	t=0;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_i2(&t);
     Set_i8(t,pPC->Get_8(a),OPR1);
 	AddState(11);
@@ -2757,7 +2757,7 @@ inline void Csc62015::Op_f0(void)
 inline void Csc62015::Op_f1(void)
 {
 	register BYTE	t=0;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_i2(&t);
     Set_i16(t,pPC->Get_16(a),OPR1);
 	AddState(12);
@@ -2766,7 +2766,7 @@ inline void Csc62015::Op_f1(void)
 inline void Csc62015::Op_f2(void)
 {
 	register BYTE	t=0;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_i2(&t);
     Set_i24(t,pPC->Get_24(a),OPR1);
 	AddState(13);
@@ -2775,7 +2775,7 @@ inline void Csc62015::Op_f2(void)
 inline void Csc62015::Op_f3(void)
 {
 	register BYTE	d=0;
-	register DWORD	s;
+	register UINT32	s;
     AddState(10);
 	s=Get_i2(&d);
 	d=Conv_imemAdr(d,OPR1);
@@ -2841,7 +2841,7 @@ inline void Csc62015::Op_f7(void)
 inline void Csc62015::Op_f8(void)
 {
 	register BYTE	t=1;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_i2(&t);
     pPC->Set_8(a,Get_i8(t,OPR2));
 	AddState(11);
@@ -2850,7 +2850,7 @@ inline void Csc62015::Op_f8(void)
 inline void Csc62015::Op_f9(void)
 {
 	register BYTE	t=1;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_i2(&t);
     pPC->Set_16(a,Get_i16(t,OPR2));
 	AddState(12);
@@ -2859,7 +2859,7 @@ inline void Csc62015::Op_f9(void)
 inline void Csc62015::Op_fa(void)
 {
 	register BYTE	t=1;
-	register DWORD	a;
+	register UINT32	a;
 	a=Get_i2(&t);
     pPC->Set_24(a,Get_i24(t,OPR2));
 	AddState(13);
@@ -2868,7 +2868,7 @@ inline void Csc62015::Op_fa(void)
 inline void Csc62015::Op_fb(void)
 {
 	register BYTE	s=1;
-	register DWORD	d;
+	register UINT32	d;
     AddState(10);
 	d=Get_i2(&s);
 	s=Conv_imemAdr(s,OPR2);
@@ -2882,7 +2882,7 @@ inline void Csc62015::Op_fb(void)
 inline void Csc62015::Op_fc(void)
 {
 	register BYTE	n;
-	register DWORD	s,t,u,b;
+	register UINT32	s,t,u,b;
     AddState(4);
     n=Conv_imemAdr(pPC->Get_8(reg.x.p),OPR1);
 	reg.r.pc++;
@@ -2935,7 +2935,7 @@ inline void Csc62015::Op_ff(void)
 /* execute one operation code(for after pre byte) */
 void Csc62015::Step_sc62015_(void)
 {
-	register DWORD t;
+	register UINT32 t;
 	t=reg.x.p;
 	reg.r.pc++;
     OpExec(pPC->Get_PC(t));
@@ -3180,7 +3180,7 @@ bool Csc62015::exit(void)
 /*****************************************************************************/
 void Csc62015::step(void)
 {
-	register DWORD t;
+	register UINT32 t;
 
     if (halt) return;
 //	if(timer.state<timer.chkspeed)
@@ -3494,7 +3494,7 @@ inline void Csc62015::OpExec(BYTE Op)
 /*  ENTRY :REGNAME regname=REG_xx											 */
 /*  RETURN:DWORD value														 */
 /*****************************************************************************/
-DWORD Csc62015::get_reg(REGNAME regname)
+UINT32 Csc62015::get_reg(REGNAME regname)
 {
 	switch(regname){
 	case REG_A :return(reg.r.a);
@@ -3517,7 +3517,7 @@ DWORD Csc62015::get_reg(REGNAME regname)
 /*  ENTRY :REGNAME regname=REG_xx, DWORD data=value							 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-void Csc62015::set_reg(REGNAME regname,DWORD data)
+void Csc62015::set_reg(REGNAME regname,UINT32 data)
 {
 	switch(regname){
 	case REG_A :reg.r.a =data; break;
@@ -3541,7 +3541,7 @@ void Csc62015::set_reg(REGNAME regname,DWORD data)
 /*  ENTRY :DOWRD adr=address, OPRMODE opr=OPR_xxx DWORD data=value			 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-inline void Csc62015::opr_mem(DWORD adr,OPRMODE opr,BYTE data)
+inline void Csc62015::opr_mem(UINT32 adr,OPRMODE opr,BYTE data)
 {
 //	switch(opr){
 //	case OPR_AND:mem[adr]&=data; break;
@@ -3556,7 +3556,7 @@ inline void Csc62015::opr_mem(DWORD adr,OPRMODE opr,BYTE data)
 /*  ENTRY :BYTE adr=address													 */
 /*  RETURN:BYTE value														 */
 /*****************************************************************************/
-DWORD Csc62015::get_imem(BYTE adr)
+UINT32 Csc62015::get_imem(BYTE adr)
 {
 	return(imem[adr]);
 }
@@ -3797,12 +3797,12 @@ INLINE void Csc62015::compute_xout(void)
 }
 
 
-DWORD Csc62015::get_PC(void)
+UINT32 Csc62015::get_PC(void)
 {
     return(get_reg(REG_P));
 }
 
-DWORD Cdebug_sc62015::DisAsm_1(DWORD adr)
+UINT32 Cdebug_sc62015::DisAsm_1(UINT32 adr)
 {
     typedef	struct{
         char	len;

@@ -544,9 +544,9 @@ DisAsmTbl	AsmTbl_lh5801[]={
     {		-2,"CAL%02X%02X","CAL"}
     };
 
-DWORD Cdebug::DisAsm_File(DWORD adr,FILE *fp)
+UINT32 Cdebug::DisAsm_File(UINT32 adr,FILE *fp)
 {
-	DWORD Result;
+	UINT32 Result;
 
 	Result = DisAsm_1(adr);
 	fprintf(fp,"%s",Buffer);
@@ -554,7 +554,7 @@ DWORD Cdebug::DisAsm_File(DWORD adr,FILE *fp)
 }
 
 
-void Cdebug::header(DWORD adr,int l) {
+void Cdebug::header(UINT32 adr,int l) {
     sprintf(Buffer,"%05X:",(uint) adr);
     for(int i=0;i<l;i++)
         sprintf(Buffer,"%s%02X",Buffer,(uint)pPC->pCPU->get_mem(adr+i,SIZE_8));
@@ -580,7 +580,7 @@ bool Cdebug::exit(void)
 	return true;
 }
 
-DWORD Cdebug_sc61860::DisAsm_1(DWORD adr)
+UINT32 Cdebug_sc61860::DisAsm_1(UINT32 adr)
 {
 
     //const char	*reg[]={"A","IL","BA","I","X","Y","U","S"};
@@ -1286,7 +1286,7 @@ static const Entry table_fd[0x100]={
 };
 
 
-DWORD Cdebug_lh5801::DisAsm_1(DWORD oldpc)
+UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 {
 	int pc;
 	int oper;

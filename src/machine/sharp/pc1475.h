@@ -10,8 +10,8 @@ Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc1475");}
 
-    virtual bool Chk_Adr(DWORD *d,DWORD data);
-    virtual bool Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool Chk_Adr_R(UINT32 *d, UINT32 *data);
 
     Cpc1475(CPObject *parent = 0);
     virtual ~Cpc1475()

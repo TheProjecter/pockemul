@@ -20,34 +20,34 @@
 
 
 #define PA		(pLH5810->lh5810.r_opa)
-#define PA0		((PA & 0x01) ? TRUE : FALSE )
-#define PA1		((PA & 0x02) ? TRUE : FALSE )
-#define PA2		((PA & 0x04) ? TRUE : FALSE )
-#define PA3		((PA & 0x08) ? TRUE : FALSE )
-#define PA4		((PA & 0x10) ? TRUE : FALSE )
-#define PA5		((PA & 0x20) ? TRUE : FALSE )
-#define PA6		((PA & 0x40) ? TRUE : FALSE )
-#define PA7		((PA & 0x80) ? TRUE : FALSE )
+#define PA0		((PA & 0x01) ? true : false )
+#define PA1		((PA & 0x02) ? true : false )
+#define PA2		((PA & 0x04) ? true : false )
+#define PA3		((PA & 0x08) ? true : false )
+#define PA4		((PA & 0x10) ? true : false )
+#define PA5		((PA & 0x20) ? true : false )
+#define PA6		((PA & 0x40) ? true : false )
+#define PA7		((PA & 0x80) ? true : false )
 
 #define PB		(pLH5810->lh5810.r_opb)
-#define PB0		((PB & 0x01) ? TRUE : FALSE )
-#define PB1		((PB & 0x02) ? TRUE : FALSE )
-#define PB2		((PB & 0x04) ? TRUE : FALSE )
-#define PB3		((PB & 0x08) ? TRUE : FALSE )
-#define PB4		((PB & 0x10) ? TRUE : FALSE )
-#define PB5		((PB & 0x20) ? TRUE : FALSE )
-#define PB6		((PB & 0x40) ? TRUE : FALSE )
-#define PB7		((PB & 0x80) ? TRUE : FALSE )
+#define PB0		((PB & 0x01) ? true : false )
+#define PB1		((PB & 0x02) ? true : false )
+#define PB2		((PB & 0x04) ? true : false )
+#define PB3		((PB & 0x08) ? true : false )
+#define PB4		((PB & 0x10) ? true : false )
+#define PB5		((PB & 0x20) ? true : false )
+#define PB6		((PB & 0x40) ? true : false )
+#define PB7		((PB & 0x80) ? true : false )
 
 #define PC		(pLH5810->lh5810.r_opc)
-#define PC0		((PC & 0x01) ? TRUE : FALSE )
-#define PC1		((PC & 0x02) ? TRUE : FALSE )
-#define PC2		((PC & 0x04) ? TRUE : FALSE )
-#define PC3		((PC & 0x08) ? TRUE : FALSE )
-#define PC4		((PC & 0x10) ? TRUE : FALSE )
-#define PC5		((PC & 0x20) ? TRUE : FALSE )
-#define PC6		((PC & 0x40) ? TRUE : FALSE )
-#define PC7		((PC & 0x80) ? TRUE : FALSE )
+#define PC0		((PC & 0x01) ? true : false )
+#define PC1		((PC & 0x02) ? true : false )
+#define PC2		((PC & 0x04) ? true : false )
+#define PC3		((PC & 0x08) ? true : false )
+#define PC4		((PC & 0x10) ? true : false )
+#define PC5		((PC & 0x20) ? true : false )
+#define PC6		((PC & 0x40) ? true : false )
+#define PC7		((PC & 0x80) ? true : false )
 
 #define PAb(x)	(((PA) >> (x)) & 0x01)
 #define PBb(x)	(((PB) >> (x)) & 0x01)
@@ -198,7 +198,7 @@ bool Cce150::run(void)
 	////////////////////////////////////////////////////////////////////
 	//	VOLTAGE OK :-)
 	//////////////////////////////////////////////////////////////////
-    pLH5810->SetRegBit(CLH5810::OPB,6,FALSE);
+    pLH5810->SetRegBit(CLH5810::OPB,6,false);
 
 	////////////////////////////////////////////////////////////////////
 	//	PRINT MODE
@@ -224,8 +224,8 @@ bool Cce150::run(void)
 	////////////////////////////////////////////////////////////////////
 	//	RMT ON/OFF
 	////////////////////////////////////////////////////////////////////
-	if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = FALSE;	// RMT 0 ON
-	if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = TRUE;	// RMT 0 OFF
+    if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = false;	// RMT 0 ON
+    if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = true;	// RMT 0 OFF
 
 
  
@@ -234,19 +234,19 @@ bool Cce150::run(void)
 	switch (Direction)
 	{
 		case RI_MOVE:	Pen_X++;
-						has_moved=TRUE;
+                        has_moved=true;
                         //MACRO_ADD_LOG;
 						break;
 		case LE_MOVE:	Pen_X--;
-						has_moved=TRUE;
+                        has_moved=true;
 //						MACRO_ADD_LOG;
-						if (Pen_X == -16)	StartRot = TRUE;	// rotation pin engaged
+                        if (Pen_X == -16)	StartRot = true;	// rotation pin engaged
 						if (Pen_X < -45)	Pen_X = -45;		// physical stop at x==-45
 						if ((Pen_X == -45) && StartRot)
 						{
 							// 1/12 rotation more
 							Rot++;
-							StartRot = FALSE;
+                            StartRot = false;
 							// If the third 1/12 rotation, then put next color
 							if (Rot == 3) {	Rot = 0; Next_Color(); }
 						}
@@ -258,11 +258,11 @@ bool Cce150::run(void)
 	switch (Direction)
 	{
 		case UP_MOVE:	Pen_Y--;
-						has_moved=TRUE;
+                        has_moved=true;
 						MACRO_ADD_LOG;
 						break;
 		case DN_MOVE:	Pen_Y++;
-						has_moved=TRUE;
+                        has_moved=true;
 						MACRO_ADD_LOG;
 						break;
 	}
@@ -271,18 +271,18 @@ bool Cce150::run(void)
 	{
 		if	( (Pen_Color==0) && (Rot == 0) && (Pen_X <= -45) )
 		{
-            pLH5810->SetRegBit(CLH5810::OPB,2,TRUE);	// COLOR MAGNET
+            pLH5810->SetRegBit(CLH5810::OPB,2,true);	// COLOR MAGNET
 			AddLog(LOG_PRINTER,"Color Magnet");
 		}
         else
-            pLH5810->SetRegBit(CLH5810::OPB,2,FALSE);	// NO COLOR MAGNET
+            pLH5810->SetRegBit(CLH5810::OPB,2,false);	// NO COLOR MAGNET
 	}
 
 	if (PB0) 
 	{
  		if (Pen_Status==PEN_DOWN) 
 		{
-			has_moved=TRUE;
+            has_moved=true;
 			Pen_Status = PEN_UP;
 //			AddLog(LOG_PRINTER,"PEN UP");
 
@@ -296,7 +296,7 @@ bool Cce150::run(void)
 		if (Pen_Status==PEN_UP) 
 		{
 
-			has_moved=TRUE;
+            has_moved=true;
 			Pen_Status = PEN_DOWN;
 //			AddLog(LOG_PRINTER,"PEN DOWN");
 		}
@@ -325,9 +325,9 @@ bool Cce150::Next_Color(void)
 	if (Pen_Color == 4)
 	{
 		Pen_Color = 0;
-		return(TRUE);
+        return(true);
 	}
-	return(FALSE);
+    return(false);
 }
 
 

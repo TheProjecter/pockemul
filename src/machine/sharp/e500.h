@@ -23,8 +23,8 @@ public:
 
 
 //	bool	Mem_Mirror(DWORD *d);
-    virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool	Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool	Chk_Adr_R(UINT32 *d, UINT32 *data);
 
 
     virtual bool	LoadExtra(QFile *);
@@ -45,12 +45,12 @@ public:
 
 //    CRP5C01         *pRP5C01;
 
-    void disp(qint8 cmd, DWORD data);
+    void disp(qint8 cmd, UINT32 data);
     BYTE getKey();
     bool run();
 
     void computeSound();
-    virtual void MemMirror(DWORD *d);
+    virtual void MemMirror(UINT32 *d);
     virtual void initExtension();
 
 protected:
@@ -68,9 +68,9 @@ Q_OBJECT
 public:
     const char*	GetClassName(){ return("Ce550");}
 
-    virtual void MemMirror(DWORD *d);
-    virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual void MemMirror(UINT32 *d);
+    virtual bool	Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool	Chk_Adr_R(UINT32 *d, UINT32 *data);
 
     Ce550(CPObject *parent = 0);
 

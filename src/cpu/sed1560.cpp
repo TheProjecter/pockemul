@@ -280,7 +280,7 @@ void CSED1560::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "sed1560")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toLatin1());
             memcpy((char *) &info,ba_reg.data(),sizeof(info));
         }
         xmlIn->skipCurrentElement();

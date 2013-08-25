@@ -124,7 +124,7 @@ void Clcdc::SetDirtyBuf(WORD index)
 static const struct {
     int x,y;
     const char *symb;
-    DWORD	addr;
+    UINT32	addr;
     int	bit;
 } pc1350_pos[7]={
     {1, 3,  S_PRINT	,SYMB1_ADR_1350	,0x04},
@@ -146,7 +146,7 @@ void Clcdc_pc1350::disp_symb(void)
 
         DirtyBuf[SYMB1_ADR_1350-0x7000] = 0;
 
-        Refresh = TRUE;
+        Refresh = true;
     }
 
     Clcdc::disp_symb();
@@ -159,7 +159,7 @@ void Clcdc_pc1350::disp(void)
     BYTE co,li,ind,b,data,x,y;
     WORD adr;
 
-    Refresh = FALSE;
+    Refresh = false;
 
     disp_symb();
 
@@ -179,7 +179,7 @@ void Clcdc_pc1350::disp(void)
                 }
                 if (DirtyBuf[adr-0x7000])
                 {
-                    Refresh = TRUE;
+                    Refresh = true;
                     x = ind + (co * 30);
                     y = 8 * li;
 
@@ -210,7 +210,7 @@ void Clcdc_pc1350::disp(void)
 static const struct {
 	int x,y;
 	const char *symb;
-	DWORD	addr;
+	UINT32	addr;
 	int	bit;
 } pc2500_pos[6]={
     {0, 0,  S_BUSY	,SYMB2_ADR_2500	,0x80},
@@ -244,7 +244,7 @@ void Clcdc_pc2500::disp(void)
 	BYTE co,li,ind,b,data,x,y;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 
 	disp_symb();
 
@@ -264,7 +264,7 @@ void Clcdc_pc2500::disp(void)
 				}
 				if (DirtyBuf[adr-0x7000])
 				{
-					Refresh = TRUE;
+                    Refresh = true;
 					x = ind + (co * 30);
 					y = 8 * li;
 
@@ -320,7 +320,7 @@ void Clcdc_pc1360::disp_symb(void)
     disp_one_symb(S_DEF,		COLOR(SYMB1_1360&0x02),	pc1360_pos[5].x,	pc1360_pos[5].y);
     disp_one_symb(S_PRINT,	COLOR(SYMB1_1360&0x04),	pc1360_pos[6].x,	pc1360_pos[6].y);
 	
-	DirtyBuf[SYMB1_ADR_1360-0x2800] = FALSE;				
+    DirtyBuf[SYMB1_ADR_1360-0x2800] = false;
 
     Refresh = true;
 	}
@@ -355,7 +355,7 @@ void Clcdc_pc1360::disp(void)
 				}
 				if (DirtyBuf[adr-0x2800])
 				{
-					Refresh = TRUE;
+                    Refresh = true;
 					x = ind + (co * 30);
 					y = 8 * li;
 					data = ( On ? (BYTE) pPC->Get_8(adr) : 0 );
@@ -425,11 +425,11 @@ void Clcdc_pc1250::disp_symb(void)
         disp_one_symb(S_PRINT,	COLOR(SYMB1_1250&0x02),	pc1250_pos[9].x,	pc1250_pos[9].y);
         disp_one_symb(S_BUSY,	COLOR(SYMB2_1250&0x01),	pc1250_pos[10].x,	pc1250_pos[10].y);
 
-        DirtyBuf[SYMB1_ADR_1250-0xF800] = FALSE;
-        DirtyBuf[SYMB2_ADR_1250-0xF800] = FALSE;
-        DirtyBuf[SYMB3_ADR_1250-0xF800] = FALSE;
+        DirtyBuf[SYMB1_ADR_1250-0xF800] = false;
+        DirtyBuf[SYMB2_ADR_1250-0xF800] = false;
+        DirtyBuf[SYMB3_ADR_1250-0xF800] = false;
 
-        Refresh = TRUE;
+        Refresh = true;
     }
 	
 	Clcdc::disp_symb();
@@ -442,7 +442,7 @@ void Clcdc_pc1250::disp(void)
     int ind;
     WORD adr;
 
-    Refresh = FALSE;
+    Refresh = false;
 
     disp_symb();
 
@@ -541,11 +541,11 @@ void Clcdc_pc1245::disp_symb(void)
     disp_one_symb(S_RAD,		COLOR(SYMB2_1245&0x04),	pc1245_pos[7].x,	pc1245_pos[7].y);
     disp_one_symb(S_PRINT,	COLOR(SYMB1_1245&0x02),	125,	0);
 	
-	DirtyBuf[SYMB1_ADR_1245-0xF800] = FALSE;				
-	DirtyBuf[SYMB2_ADR_1245-0xF800] = FALSE;				
-	DirtyBuf[SYMB3_ADR_1245-0xF800] = FALSE;				
+    DirtyBuf[SYMB1_ADR_1245-0xF800] = false;
+    DirtyBuf[SYMB2_ADR_1245-0xF800] = false;
+    DirtyBuf[SYMB3_ADR_1245-0xF800] = false;
 			
-		Refresh = TRUE;
+        Refresh = true;
 
 	}
 	
@@ -558,7 +558,7 @@ void Clcdc_pc1245::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 
 	disp_symb();
 	
@@ -568,7 +568,7 @@ void Clcdc_pc1245::disp(void)
 	{	adr = 0xF800 + ind;
 		if (DirtyBuf[adr-0xF800])
 		{
-            Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
 			x =ind + (ind/5);			// +1 every 5 cols
@@ -587,7 +587,7 @@ void Clcdc_pc1245::disp(void)
 	{	adr = 0xF800 + 0x40 + ind;
 		if (DirtyBuf[adr-0xF800])
 		{
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
 			x = 142 - ind - (ind/5);			// +1 every 5 cols
@@ -654,11 +654,11 @@ void Clcdc_pc1260::disp_symb(void)
     disp_one_symb(S_SHIFT,	COLOR(SYMB2_1260&0x20),	pc1260_pos[8].x,	pc1260_pos[8].y);
     disp_one_symb(S_DEF,		COLOR(SYMB2_1260&0x40),	pc1260_pos[9].x,	pc1260_pos[9].y);
 	
-	DirtyBuf[SYMB1_ADR_1260-0x2000] = FALSE;				
-	DirtyBuf[SYMB2_ADR_1260-0x2000] = FALSE;				
-	DirtyBuf[SYMB3_ADR_1260-0x2000] = FALSE;				
+    DirtyBuf[SYMB1_ADR_1260-0x2000] = false;
+    DirtyBuf[SYMB2_ADR_1260-0x2000] = false;
+    DirtyBuf[SYMB3_ADR_1260-0x2000] = false;
 
-	Refresh = TRUE;
+    Refresh = true;
 	}
 	
 	Clcdc::disp_symb();
@@ -673,7 +673,7 @@ void Clcdc_pc1260::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 
 	disp_symb();
 
@@ -684,7 +684,7 @@ void Clcdc_pc1260::disp(void)
 	{	adr = 0x2000 + ind;
 		if (DirtyBuf[adr-0x2000])
 		{
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
                         x =(ind*2) + (ind/5)*3;			// +1 every 5 cols
@@ -707,7 +707,7 @@ void Clcdc_pc1260::disp(void)
 	{	adr = 0x2000 + 0x40 + ind;
 		if (DirtyBuf[adr-0x2000])
 		{
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
                         x =(ind*2) + (ind/5)*3;			// +1 every 5 cols
@@ -730,7 +730,7 @@ void Clcdc_pc1260::disp(void)
 	{	adr = 0x2800 + ind;
 		if (DirtyBuf[adr-0x2000])
 		{
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
                         x = (12*2*5+3*12) + (ind*2) + (ind/5)*3;			// +1 every 5 cols
@@ -753,7 +753,7 @@ void Clcdc_pc1260::disp(void)
 	{	adr = 0x2800 + 0x40 + ind;
 		if (DirtyBuf[adr-0x2000])
 		{
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0);
 			
                         x = (12*2*5+3*12) + (ind*2) + (ind/5)*3;			// +1 every 5 cols
@@ -855,7 +855,7 @@ void Clcdc_pc1401::disp_symb(void)
 	DirtyBuf[SYMB2_ADR_1401-0x6000] = 0;				
 	DirtyBuf[SYMB3_ADR_1401-0x6000] = 0;				
 
-	Refresh = TRUE;
+    Refresh = true;
 	}
 
 	Clcdc::disp_symb();
@@ -868,7 +868,7 @@ void Clcdc_pc1401::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 
 	disp_symb();
 
@@ -879,7 +879,7 @@ void Clcdc_pc1401::disp(void)
 		adr = 0x6000 + ind;
 		if ( DirtyBuf[adr-0x6000] )
 		{	
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0 );
 			
 			x =ind + (ind/5);			// +1 every 5 cols
@@ -898,7 +898,7 @@ void Clcdc_pc1401::disp(void)
 		adr = 0x6000 + 0x40 + ind;
 		if ( DirtyBuf[adr-0x6000])
 		{
-			Refresh = TRUE;
+            Refresh = true;
 			data = ( On ? (BYTE) pPC->Get_8(adr) : 0 );
 			
 			x = 94 - ind - (ind/5);			// +1 every 5 cols
@@ -998,7 +998,7 @@ void Clcdc_pc1403::disp_symb(void)
     DirtyBuf[SYMB2_ADR_1403-0x3000] = 0;
     DirtyBuf[SYMB3_ADR_1403-0x3000] = 0;
 
-	Refresh = TRUE;
+    Refresh = true;
 	}
 
 	Clcdc::disp_symb();
@@ -1012,7 +1012,7 @@ void Clcdc_pc1403::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 
 	disp_symb();
 
@@ -1235,7 +1235,7 @@ void Clcdc_pc1425::disp_symb(void)
     DirtyBuf[SYMB2_ADR_1425-0x3000] = 0;
     DirtyBuf[SYMB3_ADR_1425-0x3000] = 0;
 
-    Refresh = TRUE;
+    Refresh = true;
     }
 
     Clcdc::disp_symb();
@@ -1350,7 +1350,7 @@ void Clcdc_pc1450::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 	disp_symb();
 	QPainter painter(pPC->LcdImage);
 
@@ -1466,7 +1466,7 @@ void Clcdc_pc1475::disp_symb(void)
 	DirtyBuf[SYMB3_ADR_1475-0x2800] = 0;				
 	DirtyBuf[SYMB4_ADR_1475-0x2800] = 0;				
 
-	Refresh = TRUE;
+    Refresh = true;
 	}
 
 	Clcdc::disp_symb();
@@ -1675,7 +1675,7 @@ void Clcdc_pc1500::disp_symb(void)
 		DirtyBuf[SYMB1_ADR_1500-0x7600] = 0;				
 		DirtyBuf[SYMB2_ADR_1500-0x7600] = 0;				
 	
-		Refresh = TRUE;
+        Refresh = true;
 	}
 	
 	Clcdc::disp_symb();
@@ -1690,7 +1690,7 @@ void Clcdc_pc1500::disp(void)
 	int ind;
 	WORD adr;
 
-	Refresh = FALSE;
+    Refresh = false;
 
 	disp_symb();
 	
@@ -1701,7 +1701,7 @@ void Clcdc_pc1500::disp(void)
 	{	adr = 0x7600 + ind;
 		if ( (DirtyBuf[adr-0x7600]) || !On)
 		{	
-			Refresh = TRUE;
+            Refresh = true;
 			if (On)
 			{
 				data = (BYTE) ( LOW(pPC->Get_8(adr)) | ( LOW(pPC->Get_8(adr+1)) << 4) );
@@ -1747,7 +1747,7 @@ void Clcdc_pc1500::disp(void)
 	{	adr = 0x7700 + ind;
 		if ( (DirtyBuf[adr-0x7600]) || !On)
 		{	
-			Refresh = TRUE;
+            Refresh = true;
 			if (On)
 			{
 				data = (BYTE) ( LOW(pPC->Get_8(adr)) | ( LOW(pPC->Get_8(adr+1)) << 4) );

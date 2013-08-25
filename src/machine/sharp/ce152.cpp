@@ -74,7 +74,7 @@ Cce152::Cce152(CPObject *parent)	: CPObject(parent)
     Tapein		= 0;				//Tape loaded (0:none, other:access)
     TapeCounter	= 0;
     mode		= EJECT;
-    SoundOn		= FALSE;
+    SoundOn		= false;
     info.ptrFd	= 0;
     pTIMER		= new Ctimer(this);
     setDX(200);//Pc_DX		= 200;
@@ -528,13 +528,13 @@ int Cce152_PC15XX::serial(int bit)
 {
 	QTime time;
     static quint64 last_state = 0;
-	static DWORD last_time=0;
+	static UINT32 last_time=0;
 
 	static int c=0,waitbitstart=1,waitbitstop=0;
 	static long timewait=0,startstate=0;
 	static int bit_number = 0;
-	static DWORD Byte = 0;
-	DWORD	Byte2;
+	static UINT32 Byte = 0;
+	UINT32	Byte2;
 	int		bit_number2;
 	BYTE	t=0;
 
@@ -590,7 +590,7 @@ int Cce152_PC15XX::serial(int bit)
 
 		t=((t>>4)&0x0F) | ((t&0x0F)<<4);
 		
-		DWORD delta_time = time.restart();//-- timeGetTime() - last_time;
+		UINT32 delta_time = time.restart();//-- timeGetTime() - last_time;
 		fprintf(fp_tape,"    %02X=%c  Tape Counter=%d  time=%d   delta_state=%d\n",t,t,TapeCounter,delta_time,pPC->pTIMER->state-last_state);
 //--		AddLog(LOG_TAPE,tr("Lecture K7: 0x%1 = %c",t,t);
 //--		last_time=timeGetTime();

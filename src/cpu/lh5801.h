@@ -70,15 +70,15 @@ public:
     void	save_internal(QXmlStreamWriter *);
 //	void	save_internal(void);
 
-	DWORD	get_mem(DWORD adr,int size);		//get memory
-	void	set_mem(DWORD adr,int size,DWORD data);	//set memory
+	UINT32	get_mem(UINT32 adr,int size);		//get memory
+	void	set_mem(UINT32 adr,int size,UINT32 data);	//set memory
 	
 	bool	Get_Xin(void);
 	void	Set_Xin(bool);
 	bool	Get_Xout(void);	
 	void	Set_Xout(bool);
 
-	DWORD	get_PC(void);					//get Program Counter
+	UINT32	get_PC(void);					//get Program Counter
 	void	Regs_Info(UINT8);
 
 	void	TIMER_INC(void);
@@ -86,7 +86,7 @@ public:
 
 	void	AddState(UINT8);
 
-	UINT8	cpu_readop(DWORD);
+	UINT8	cpu_readop(UINT32);
 
 
 	LH5801REG lh5801;
@@ -106,14 +106,14 @@ public:
 
 private:
 
-	UINT8	cpu_readmem(DWORD);
-	void	cpu_writemem(DWORD, UINT8);
+	UINT8	cpu_readmem(UINT32);
+	void	cpu_writemem(UINT32, UINT8);
 	void	change_pc(UINT16);
 
 	UINT8	add_generic(int, int, int);
 	UINT16	readop_word(void);
 	void	ADC(UINT8);
-	void	ADD_MEM(DWORD, UINT8);
+	void	ADD_MEM(UINT32, UINT8);
 	void	ADR(PAIR *);
 	void	SBC(UINT8);
 	void	CPA(UINT8, UINT8);
@@ -121,11 +121,11 @@ private:
 	void	DCA(UINT8);
 	void	DCS(UINT8);
 	void	AND(UINT8);
-	void	AND_MEM(DWORD, UINT8);
+	void	AND_MEM(UINT32, UINT8);
 	void	BIT(UINT8, UINT8);
 	void	EOR(UINT8);
 	void	ORA(UINT8);
-	void	ORA_MEM(DWORD, UINT8);
+	void	ORA_MEM(UINT32, UINT8);
 	void	LDE(PAIR *);
 	void	SDE(PAIR *);
 	void	LIN(PAIR *);
@@ -137,15 +137,15 @@ private:
 	void	RTI(void);
 	void	PUSH(UINT8);
 	void	PUSH_WORD(UINT16);
-	void	JMP(DWORD);
+	void	JMP(UINT32);
 	void	BRANCH_PLUS(int);
 	void	BRANCH_MINUS(int);
 	void	LOP(void);
 	void	SJP(void);
 	void	VECTOR(int, int);
 	void	AEX(void);
-	void	DRL(DWORD);
-	void	DRR(DWORD);
+	void	DRL(UINT32);
+	void	DRR(UINT32);
 	void	ROL(void);
 	void	ROR(void);
 	void	SHL(void);

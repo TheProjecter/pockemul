@@ -40,7 +40,7 @@ Q_OBJECT
 public:
     QMutex audioMutex,analogMutex;
 
-    MainWindowPockemul( QWidget * parent = 0, Qt::WFlags f = 0 );
+    MainWindowPockemul( QWidget * parent = 0, Qt::WindowFlags f = 0 );
     ~MainWindowPockemul();
 #ifdef P_AVOID
     Avoid::Router *router;

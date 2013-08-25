@@ -145,12 +145,12 @@ bool Cce1600p::run(void)
     {
         case RI_MOVE:   Pen_X++;
         case RI_MOVE_MID:	Pen_X++;
-                        has_moved_X=TRUE;
+                        has_moved_X=true;
                         MACRO_ADD_LOG;
                         break;
         case LE_MOVE:   Pen_X--;
         case LE_MOVE_MID:   Pen_X--;
-                        has_moved_X=TRUE;
+                        has_moved_X=true;
                         MACRO_ADD_LOG;
                         break;
     }
@@ -161,12 +161,12 @@ bool Cce1600p::run(void)
     {
     case UP_MOVE:       Pen_Y--;
     case UP_MOVE_MID:   Pen_Y--;
-                        has_moved_Y=TRUE;
+                        has_moved_Y=true;
                         MACRO_ADD_LOG;
                         break;
     case DN_MOVE:       Pen_Y++;
     case DN_MOVE_MID:	Pen_Y++;
-                        has_moved_Y=TRUE;
+                        has_moved_Y=true;
                         MACRO_ADD_LOG;
                         break;
     }
@@ -182,7 +182,7 @@ bool Cce1600p::run(void)
                         break;
     case DN_MOVE:       Pen_Z++;
     case DN_MOVE_MID:	Pen_Z++;
-                        has_moved_Z=TRUE;
+                        has_moved_Z=true;
                         MACRO_ADD_LOG;
                         break;
     }

@@ -1,6 +1,3 @@
-
-
-
 #include <QtGui>
 #include <QTime>
 #include <QSound>
@@ -19,41 +16,41 @@
 #include "Keyb.h"
 #include "Connect.h"
 
-#define DOWN	0
-#define UP		1
+#define DOWN    0
+#define UP              1
 
 TransMap KeyMaprlp1004a[]={
-    {1,	"FEED  ",	K_PFEED,34,234,	9},
-    {2,	"POWER ON",	K_POW_ON,34,234,	9},
-    {3,	"POWER OFF",K_POW_OFF,34,234,	9}
+    {1, "FEED  ",       K_PFEED,34,234, 9},
+    {2, "POWER ON",     K_POW_ON,34,234,        9},
+    {3, "POWER OFF",K_POW_OFF,34,234,   9}
 };
 int KeyMaprlp1004aLenght = 3;
 
 Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
-{								//[constructor]
+{                                                               //[constructor]
     setfrequency( 0);
-    paperbuf	= 0;
+    paperbuf    = 0;
     paperdisplay= 0;
-    //bells		= 0;
+    //bells             = 0;
     charTable = 0;
     margin = 25;
-    ToDestroy	= false;
-    BackGroundFname	= P_RES(":/rlh1000/rlp1004a.png");
+    ToDestroy   = false;
+    BackGroundFname     = P_RES(":/rlh1000/rlp1004a.png");
     setcfgfname("rlp1004a");
 
     settop(10);
     setposX(0);
 
-    pTIMER		= new Ctimer(this);
+    pTIMER              = new Ctimer(this);
     KeyMap      = KeyMaprlp1004a;
     KeyMapLenght= KeyMaprlp1004aLenght;
-    pKEYB		= new Ckeyb(this,"rlp1004a.map");
+    pKEYB               = new Ckeyb(this,"rlp1004a.map");
     setDXmm(113);
     setDYmm(95);
     setDZmm(51);
  // Ratio = 3,57
-    setDX(403);//Pc_DX	= 75;
-    setDY(340);//Pc_DY	= 20;
+    setDX(403);//Pc_DX  = 75;
+    setDY(340);//Pc_DY  = 20;
     SnapPts = QPoint(594,145);
 
     setPaperPos(QRect(70,-3,275,149));
@@ -66,10 +63,10 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     rotate = false;
     internal_device_code = 0x0f;
 
-    memsize			= 0x2000;
-    InitMemValue	= 0xff;
+    memsize                     = 0x2000;
+    InitMemValue        = 0xff;
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, ROM , "Printer ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,  P_RES(":/rlh1000/rlp1004a.bin")    , "" , ROM , "Printer ROM"));
 
 }
 
@@ -95,14 +92,17 @@ bool Crlp1004a::run(void)
         bus.setData(0x01);
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
+        if (pPC->pTIMER->pPC->fp_log) fprintf(pPC->pTIMER->pPC->fp_log,"RL-P1004A BUS_QUERY\n");
         return true;
     }
 
     if (bus.getFunc()==BUS_SELECT) {
         if (bus.getData()==1){
             Power=true;
+            if (pPC->pTIMER->pPC->fp_log) fprintf(pPC->pTIMER->pPC->fp_log,"RL-P1004A POWER ON\n");
         }
         if (bus.getData()==0) {
+            if (pPC->pTIMER->pPC->fp_log) fprintf(pPC->pTIMER->pPC->fp_log,"RL-P1004A POWER Off\n");
             Power = false;
         }
         bus.setFunc(BUS_READDATA);
@@ -117,6 +117,7 @@ bool Crlp1004a::run(void)
     case BUS_WRITEDATA: break;
     case BUS_READDATA:  break;
     case BUS_READROM: bus.setData(mem[bus.getAddr()]);
+
         bus.setFunc(BUS_READDATA);
         break;
     }
@@ -130,12 +131,12 @@ bool Crlp1004a::run(void)
 
 #if 1
 // Try to introduce a latency
-    quint64	deltastate = 0;
+    quint64     deltastate = 0;
 
     if (run_oldstate == -1) run_oldstate = pTIMER->state;
     deltastate = pTIMER->state - run_oldstate;
     if (deltastate < PC2021LATENCY ) return true;
-    run_oldstate	= pTIMER->state;
+    run_oldstate        = pTIMER->state;
 #endif
 
     quint8 c = pCONNECTOR->Get_values();
@@ -211,7 +212,7 @@ void Crlp1004a::Refresh(qint8 data)
         painter.begin(paperbuf);
         int x = ((data>>4) & 0x0F)*6;
         int y = (data & 0x0F) * 8;
-        painter.drawImage(	QPointF( margin + (7 * posX),top),
+        painter.drawImage(      QPointF( margin + (7 * posX),top),
                             *charTable,
                             QRectF( x , y , 5,7));
         posX++;
@@ -242,7 +243,7 @@ void Crlp1004a::Refresh(qint8 data)
 
 
 /*****************************************************/
-/* Initialize PRINTER								 */
+/* Initialize PRINTER                                                            */
 /*****************************************************/
 void Crlp1004a::clearPaper(void)
 {
@@ -263,30 +264,30 @@ bool Crlp1004a::init(void)
 
     setfrequency( 0);
 
-    pCONNECTOR	= new Cconnector(this,
+    pCONNECTOR  = new Cconnector(this,
                                  44,
                                  0,
                                  Cconnector::Panasonic_44,
                                  "Printer connector",
                                  true,
                                  QPoint(372,72),
-                                 Cconnector::EAST);	publish(pCONNECTOR);
+                                 Cconnector::EAST);     publish(pCONNECTOR);
     WatchPoint.add(&pCONNECTOR_value,64,44,this,"Printer connector");
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
 
-    if(pKEYB)	pKEYB->init();
-    if(pTIMER)	pTIMER->init();
+    if(pKEYB)   pKEYB->init();
+    if(pTIMER)  pTIMER->init();
 
     // Create CE-126 Paper Image
     // The final paper image is 207 x 149 at (277,0) for the ce125
-    paperbuf	= new QImage(QSize(170, 3000),QImage::Format_ARGB32);
+    paperbuf    = new QImage(QSize(170, 3000),QImage::Format_ARGB32);
     paperdisplay= new QImage(QSize(170, 149),QImage::Format_ARGB32);
 
 
 //TODO Update the chartable with upd16343 char table
     charTable = new QImage(P_RES(":/ext/ce126ptable.bmp"));
 
-//	bells	 = new QSound("ce.wav");
+//      bells    = new QSound("ce.wav");
 
 // Create a paper widget
 
@@ -305,7 +306,7 @@ bool Crlp1004a::init(void)
 
 
 /*****************************************************/
-/* Exit PRINTER										 */
+/* Exit PRINTER                                                                          */
 /*****************************************************/
 bool Crlp1004a::exit(void)
 {
@@ -317,7 +318,7 @@ bool Crlp1004a::exit(void)
 
 
 /*****************************************************/
-/* CE-126P PRINTER emulation						 */
+/* CE-126P PRINTER emulation                                             */
 /*****************************************************/
 
 void Crlp1004a::Printer(qint8 d)
@@ -338,11 +339,11 @@ void Crlp1004a::Printer(qint8 d)
 }
 
 
-#define		WAIT ( pPC->frequency / 10000*6)
+#define         WAIT ( pPC->frequency / 10000*6)
 
-#define RECEIVE_MODE	1
-#define SEND_MODE		2
-#define TEST_MODE		3
+#define RECEIVE_MODE    1
+#define SEND_MODE               2
+#define TEST_MODE               3
 
 
 
@@ -384,7 +385,7 @@ void Crlp1004a::Rotate()
     rotate = ! rotate;
 
     delete BackgroundImageBackup;
-    BackgroundImageBackup = LoadImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
+    BackgroundImageBackup = CreateImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
     delete BackgroundImage;
     BackgroundImage = new QImage(*BackgroundImageBackup);
     delete FinalImage;
@@ -400,5 +401,4 @@ void Crlp1004a::Rotate()
 
         // adapt SNAP connector
 }
-
 

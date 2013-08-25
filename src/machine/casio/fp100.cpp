@@ -38,9 +38,9 @@ Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
     printerBUSY = false;
 
 
-    capot = LoadImage(QSize(849,274),P_RES(":/ext/fp100-capot.png"));
-    head = LoadImage(QSize(79,161),P_RES(":/ext/fp100head.png"));
-    cable = LoadImage(QSize(75,10),P_RES(":/ext/fp100cable.png"));
+    capot = CreateImage(QSize(849,274),P_RES(":/ext/fp100-capot.png"));
+    head = CreateImage(QSize(79,161),P_RES(":/ext/fp100head.png"));
+    cable = CreateImage(QSize(75,10),P_RES(":/ext/fp100cable.png"));
 
     margin = 40;
     Paper_DX = 960+2*margin;

@@ -11,7 +11,7 @@ class DialogSimulator : public QDialog, public Ui::DialogSimulator
 {
 Q_OBJECT
 public:
-    DialogSimulator( QWidget * parent = 0, Qt::WFlags f = 0 );
+    DialogSimulator( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 
     void refresh( void);
 

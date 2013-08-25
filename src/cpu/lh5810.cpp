@@ -16,7 +16,7 @@ CLH5810::CLH5810(CPObject *parent)	: CPObject(parent)				//[constructor]
 {
 	lh5810.r_g=lh5810.r_msk=lh5810.r_dda=lh5810.r_ddb=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=lh5810.r_f=0;
 	lh5810.r_if=0;
-	IRQ=INT=FALSE;
+    IRQ=INT=false;
 //	OPA=OPB=0;
 
 }
@@ -48,7 +48,7 @@ void CLH5810::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "lh5810")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toLatin1());
             memcpy((char *) &lh5810,ba_reg.data(),sizeof(lh5810));
         }
         xmlIn->skipCurrentElement();

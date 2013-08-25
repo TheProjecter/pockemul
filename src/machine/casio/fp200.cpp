@@ -93,7 +93,7 @@ Cfp200::~Cfp200() {
 
 
 
-bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
+bool Cfp200::Chk_Adr(UINT32 *d, UINT32 data)
 {
     if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ return(true);	}
@@ -104,7 +104,7 @@ bool Cfp200::Chk_Adr(DWORD *d, DWORD data)
     return true;
 }
 
-bool Cfp200::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Cfp200::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
     return true;
 }
@@ -123,11 +123,11 @@ UINT8 Cfp200::in(UINT8 Port)
         {
         case 0x01 : /* Read 8bits data to LCD left-half */
             Value = pLcd->Read(1);
-            AddLog(LOG_DISPLAY,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("IN [01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toLatin1()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x02 : /* Read 8bits data to LCD right-half */
             Value = pLcd->Read(2);
-            AddLog(LOG_DISPLAY,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("IN [02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toLatin1()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x08 : /* Read 6 bits data : */
             Value = (pLcd->Status << 4) | ((pLcd->Y >> 4) & 0x03);
@@ -178,11 +178,11 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
         {
         case 0x01 : /* Write 8bits data to LCD left-half */
             pLcd->Write(1,Value);
-            AddLog(LOG_DISPLAY,tr("OUT[01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("OUT[01]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toLatin1()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x02 : /* Write 8bits data to LCD right-half */
             pLcd->Write(2,Value);
-            AddLog(LOG_DISPLAY,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_DISPLAY,tr("OUT[02]=[%1]=%2\n").arg(Value,2,16,QChar('0')).arg(QChar(Value).toLatin1()!=0?QChar(Value):QChar(' ')));
             break;
         case 0x08 : /* write 6 bits data : */
 
@@ -210,9 +210,9 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 
         case 0x80: pCENT->newOutChar( Value );
 //            pCPU->logsw=true;pCPU->Check_Log();
-            AddLog(LOG_PRINTER,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+            AddLog(LOG_PRINTER,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toLatin1()!=0?QChar(Value):QChar(' ')));
             break;
-        default: AddLog(LOG_CONSOLE,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toAscii()!=0?QChar(Value):QChar(' ')));
+        default: AddLog(LOG_CONSOLE,tr("OUT[%1]=[%2]=%3\n").arg(Port,2,16,QChar('0')).arg(Value,2,16,QChar('0')).arg(QChar(Value).toLatin1()!=0?QChar(Value):QChar(' ')));
             pCPU->imem[Port] = Value;
             break;
         }

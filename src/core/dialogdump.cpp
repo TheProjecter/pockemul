@@ -12,7 +12,7 @@
 
 //
 
-DialogDump::DialogDump( QWidget * parent, Qt::WFlags f) 
+DialogDump::DialogDump(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
@@ -38,19 +38,19 @@ DialogDump::DialogDump( QWidget * parent, Qt::WFlags f)
 
 void DialogDump::Find(void) {
     QString search = leFind->text();
-    hexeditor->highlightSearchResults(search.toAscii());
-    findpos = hexeditor->find(search.toAscii(),hexeditor->cursorPosition());
+    hexeditor->highlightSearchResults(search.toLatin1());
+    findpos = hexeditor->find(search.toLatin1(),hexeditor->cursorPosition());
 }
 void DialogDump::JumpTo(void) {
     bool ok;
     hexeditor->jumpToAddress(leJump->text().toLongLong(&ok,16));
 }
 void DialogDump::FindPrevious(void) {
-    findpos = hexeditor->find(leFind->text().toAscii(),findpos-1,QTextDocument::FindBackward);
+    findpos = hexeditor->find(leFind->text().toLatin1(),findpos-1,QTextDocument::FindBackward);
 }
 void DialogDump::FindNext(void) {
     //MSG_ERROR("ok");
-    findpos = hexeditor->find(leFind->text().toAscii(),findpos+1);
+    findpos = hexeditor->find(leFind->text().toLatin1(),findpos+1);
     //MSG_ERROR(tr("ok").arg(findpos));
 }
 

@@ -26,7 +26,7 @@ Cpc1402::Cpc1402(CPObject *parent)	: Cpc1401(parent)
 
 }
 
-bool Cpc1402::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1402::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
 	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);			// ROM area(0000-1fff) 
@@ -37,7 +37,7 @@ bool Cpc1402::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1402::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1402::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 	return(1);
 }

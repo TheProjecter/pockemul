@@ -18,7 +18,7 @@ class dialogAnalog : public QDialog, public Ui::DialogAnalog
 {
 Q_OBJECT
 public:
-	dialogAnalog( int nbbits,QWidget * parent = 0, Qt::WFlags f = 0 );
+    dialogAnalog( int nbbits,QWidget * parent = 0, Qt::WindowFlags f = 0 );
 	
 //	CAnalog plotview;
 	

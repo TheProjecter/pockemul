@@ -21,8 +21,8 @@ public:
     virtual bool init();
     virtual void Reset();
     virtual bool run();
-    virtual bool Chk_Adr(DWORD *d, DWORD data);
-    virtual bool Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool Chk_Adr(UINT32 *d, UINT32 data);
+    virtual bool Chk_Adr_R(UINT32 *d, UINT32 *data);
 
     virtual bool Set_Connector(void);
     virtual bool Get_Connector(void);
@@ -33,8 +33,8 @@ public:
     virtual void paintEvent(QPaintEvent *event);
     virtual void TurnCLOSE();
     virtual UINT8 readPort();
-    virtual WORD Get_16rPC(DWORD adr);
-    virtual void MemBank(DWORD *d);
+    virtual WORD Get_16rPC(UINT32 adr);
+    virtual void MemBank(UINT32 *d);
 
 private:
     QImage *overlay;

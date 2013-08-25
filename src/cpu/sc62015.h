@@ -76,7 +76,7 @@ union {
     }r;
     struct b{
         WORD	ba,i;
-        DWORD	p,x,y,u,s;
+        UINT32	p,x,y,u,s;
         BYTE	f;
     }x;
 } SCREG;
@@ -96,16 +96,16 @@ public:
     virtual	void	save_internal(QFile *);
     virtual	void	save_internal(QXmlStreamWriter *);
 
-    DWORD   Get_r(BYTE r);
-    DWORD   Get_r2(BYTE r);
-    void    Set_r(BYTE r,DWORD d);
-    void    Set_r2(BYTE r,DWORD d);
-    DWORD   get_reg(REGNAME regname);			//get register
-    void    set_reg(REGNAME regname,DWORD data);	//set register
+    UINT32   Get_r(BYTE r);
+    UINT32   Get_r2(BYTE r);
+    void    Set_r(BYTE r,UINT32 d);
+    void    Set_r2(BYTE r,UINT32 d);
+    UINT32   get_reg(REGNAME regname);			//get register
+    void    set_reg(REGNAME regname,UINT32 data);	//set register
 //	DWORD get_mem(DWORD adr,int size);		//get memory
 //	void set_mem(DWORD adr,int size,DWORD data);	//set memory
-    void    opr_mem(DWORD adr,OPRMODE opr,BYTE data);	//operation memory
-    DWORD   get_imem(BYTE adr);				//get i-mem
+    void    opr_mem(UINT32 adr,OPRMODE opr,BYTE data);	//operation memory
+    UINT32   get_imem(BYTE adr);				//get i-mem
     void    set_imem(BYTE adr,BYTE data);		//set i-mem
     void    opr_imem(BYTE adr,OPRMODE opr,BYTE data);	//operation i-mem
     bool    check_filesize(FILE *fp,int size,MEMUNIT unit);	//check file size
@@ -113,25 +113,25 @@ public:
     BYTE    Conv_imemAdr(BYTE d, bool m);
     BYTE    Get_i8(BYTE a,bool m);
     WORD    Get_i16(BYTE a,bool m);
-    DWORD   Get_i20(BYTE a,bool m);
-    DWORD   Get_i24(BYTE a,bool m);
+    UINT32   Get_i20(BYTE a,bool m);
+    UINT32   Get_i24(BYTE a,bool m);
     void    Set_i8(BYTE a,BYTE d,bool m);
     void    Set_i16(BYTE a,WORD d,bool m);
-    void    Set_i20(BYTE a,DWORD d,bool m);
-    void    Set_i24(BYTE a,DWORD d,bool m);
+    void    Set_i20(BYTE a,UINT32 d,bool m);
+    void    Set_i24(BYTE a,UINT32 d,bool m);
 
     void    Chk_imemAdr_Read(BYTE d, BYTE len);
-    void    Chk_imemAdr(BYTE d, BYTE len,DWORD data = 0);
-    void    Chk_Flag(DWORD d, BYTE len);
-    void    Chk_Zero(DWORD d, BYTE len);
-    DWORD   Get_i(void);
-    DWORD   Get_i2(BYTE *);
+    void    Chk_imemAdr(BYTE d, BYTE len,UINT32 data = 0);
+    void    Chk_Flag(UINT32 d, BYTE len);
+    void    Chk_Zero(UINT32 d, BYTE len);
+    UINT32   Get_i(void);
+    UINT32   Get_i2(BYTE *);
     void    AddState(BYTE n);
     BYTE    bcd2hex(BYTE d);
     WORD    hex2bcd(BYTE d);
 
-    DWORD   Get_d(BYTE len);
-    DWORD   Get_d2(BYTE len, BYTE *r);
+    UINT32   Get_d(BYTE len);
+    UINT32   Get_d2(BYTE len, BYTE *r);
 
     void Step_sc62015_();
 
@@ -145,7 +145,7 @@ public:
     bool	Get_Xout(void);
     void	Set_Xout(bool);
 
-    DWORD	get_PC(void);
+    UINT32	get_PC(void);
     void    OpExec(BYTE Op);
 
     char *fn_status;					//status file name

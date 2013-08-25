@@ -27,14 +27,14 @@ public:
     void	Set_Port(PORTS Port,BYTE data);
     BYTE	Get_Port(PORTS Port);
 
-    virtual bool Mem_Mirror(DWORD *d);
+    virtual bool Mem_Mirror(UINT32 *d);
     virtual void TurnON(void);
     virtual void TurnOFF();
     void    Reset(void);
 
 
-    virtual bool Chk_Adr(DWORD *d,DWORD data);
-    virtual bool Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool Chk_Adr_R(UINT32 *d, UINT32 *data);
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
     virtual bool Set_Connector(void);

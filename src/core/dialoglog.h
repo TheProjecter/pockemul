@@ -10,7 +10,7 @@ class DialogLog : public QDialog, public Ui::DialogLog
 
 
 public:
-	DialogLog( QWidget * parent = 0, Qt::WFlags f = 0 );
+    DialogLog( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 	int LogLevel;
 
 private slots:

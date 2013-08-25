@@ -999,6 +999,6 @@ void Parser::ConvertBinHex(void) {
         s.replace(f,QString("%1").arg(f.mid(2).toUInt(&ok,2)));
      }
 
-    QByteArray   bytes  = s.toAscii();
+    QByteArray   bytes  = s.toLatin1();
     program_ = bytes.data();
 }

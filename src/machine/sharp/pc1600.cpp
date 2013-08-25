@@ -4,7 +4,7 @@
 //#include	<string.h>
 //#include	<stdlib.h>
 
-#include    <QtGui>
+#include    <QtWidgets>
 
 #include	"common.h"
 #include	"pc1600.h"
@@ -364,8 +364,8 @@ bool Cpc1600::init(void)				// initialize
 
 bool Cpc1600::run(void)
 {
-    DWORD previous_pc;
-    DWORD Current_PC;
+    UINT32 previous_pc;
+    UINT32 Current_PC;
 
     previous_pc = pCPU->get_PC();
 
@@ -435,7 +435,7 @@ bool Cpc1600::run(void)
     return true;
 }
 
-INLINE void Cpc1600::hack(DWORD pc)
+INLINE void Cpc1600::hack(UINT32 pc)
 {
     // HACK Program Counter
     //#define FUNC_CALL(ADDR,LIB) case ADDR: AddLog(LOG_ROM,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')));
@@ -760,7 +760,7 @@ INLINE bool Cpc1600::lh5810_read(void)
     return(1);
 }
 
-bool Cpc1600::Mem_Mirror(DWORD *d)
+bool Cpc1600::Mem_Mirror(UINT32 *d)
 {
     // LH5803 mirror
     if (!masterCPU) {
@@ -772,7 +772,7 @@ bool Cpc1600::Mem_Mirror(DWORD *d)
 }
 
 
-bool Cpc1600::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1600::Chk_Adr(UINT32 *d,UINT32 data)
 {
     Mem_Mirror(d);
 
@@ -874,7 +874,7 @@ bool Cpc1600::Chk_Adr(DWORD *d,DWORD data)
     return (false);
 }
 
-bool Cpc1600::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1600::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
     Mem_Mirror(d);
 

@@ -9,8 +9,8 @@ public:
     const char*	GetClassName(){ return("Cpc1402");}
 
 
-    virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool	Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool	Chk_Adr_R(UINT32 *d, UINT32 *data);
 
 
     Cpc1402(CPObject *parent = 0);

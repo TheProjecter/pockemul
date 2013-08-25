@@ -199,7 +199,7 @@ CpcXXXX::run();
     return true;
 }
 
-void Cpb2000::MemBank(DWORD *d) {
+void Cpb2000::MemBank(UINT32 *d) {
     if ( (*d>=0x00C00) && (*d<=0x00C0F) )	{
         adrBus = *d;
     }
@@ -226,16 +226,16 @@ void Cpb2000::MemBank(DWORD *d) {
 }
 
 
-WORD Cpb2000::Get_16rPC(DWORD adr)
+WORD Cpb2000::Get_16rPC(UINT32 adr)
 {
-    DWORD	a;
+    UINT32	a;
 //    MemBank(&adr);
     adr += 0x20000;
     a=adr+1;
     return((mem[adr]<<8)+mem[a]);
 }
 
-bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
+bool Cpb2000::Chk_Adr(UINT32 *d, UINT32 data)
 {
     MemBank(d);
 //    AddLog(LOG_TEMP,tr("Write %1").arg(*d));
@@ -275,7 +275,7 @@ bool Cpb2000::Chk_Adr(DWORD *d, DWORD data)
 }
 
 
-bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Cpb2000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
     MemBank(d);
 
@@ -303,7 +303,7 @@ bool Cpb2000::Chk_Adr_R(DWORD *d, DWORD *data)
 #define TOUPPER( a )	(  ((a >= 'a' && a <= 'z') ? a-('a'-'A') : a ) )
 #define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 UINT16 Cpb2000::getKey(void) {
-    DWORD ko = 0;
+    UINT32 ko = 0;
     UINT16 data = 0;
 //qWarning("getkey");
 //AddLog(LOG_KEYBOARD,tr("Enter GetKEY PB-2000C"));
@@ -526,7 +526,7 @@ bool Cpb2000::Set_Connector(void)
 //    if (writeIO)
     {
         writeIO = false;
-        DWORD adr = (0xC00 | adrBus);
+        UINT32 adr = (0xC00 | adrBus);
         MemBank(&adr);
         BYTE d=mem[adr];
 //        BYTE d = Get_8(0x0C00|adrBus);
@@ -570,7 +570,7 @@ bool Cpb2000::Get_Connector(void)
                 (PIN(18)<<1) |
                 (PIN( 6)<<2) |
                 (PIN( 3)<<3);
-        DWORD adr = (0xC00 | recv_adrBus);
+        UINT32 adr = (0xC00 | recv_adrBus);
         MemBank(&adr);
         mem[adr] = p;
 //        Set_8(0x0C00 | recv_adrBus,p);

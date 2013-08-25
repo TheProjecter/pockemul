@@ -93,7 +93,7 @@ void	CCPU::setImemBit(WORD adr, int bit, BYTE data)
  \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
  \return DWORD  value
 */
-DWORD CCPU::get_mem(DWORD adr,int size)
+UINT32 CCPU::get_mem(UINT32 adr,int size)
 {
     switch(size)
     {
@@ -109,7 +109,7 @@ DWORD CCPU::get_mem(DWORD adr,int size)
 /*  ENTRY :DOWRD adr=address, int size=SIZE_xx, DWORD data=value			 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-void CCPU::set_mem(DWORD adr,int size,DWORD data)
+void CCPU::set_mem(UINT32 adr,int size,UINT32 data)
 {
     switch(size)
     {

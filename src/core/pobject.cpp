@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include <QMutex>
 
 #ifdef P_AVOID
@@ -20,7 +20,6 @@
 #include "ui/dialogdasm.h"
 #include "ui/dialogvkeyboard.h"
 #include "weblinksparser.h"
-//#include "sc61860.h"
 
 #include "tapandholdgesture.h"
 
@@ -203,25 +202,25 @@ QRect CPObject::rect()
 
 bool CPObject::init()
 {
-	startKeyDrag = false;
-	startPosDrag = false;
-	setMouseTracking(true);
-	resize(Pc_DX,Pc_DY);	
-	move(QPoint(PosX,PosY));
-	setAttribute(Qt::WA_AlwaysShowToolTips,true);
+        startKeyDrag = false;
+        startPosDrag = false;
+        setMouseTracking(true);
+        resize(Pc_DX,Pc_DY);
+        move(QPoint(PosX,PosY));
+        setAttribute(Qt::WA_AlwaysShowToolTips,true);
 
     AddLog(LOG_MASTER,tr("Memory initialisation"));
     if (memsize>0)  {
-        if ((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);		/* alloc main ram */
+        if ((mem=(BYTE *)malloc(memsize*sizeof(BYTE)))==NULL) return(0);                /* alloc main ram */
         ClearRam(InitMemValue);
 
         AddLog(LOG_MASTER,tr("Memory loading nb slot:%1").arg(SlotList.size()));
         for (int s=0; s < SlotList.size(); ++s)
         {
-            if (SlotList[s].getType() == ROM)	Mem_Load(s);
+            if (SlotList[s].getType() == ROM)   Mem_Load(s);
         }
     }
-	return true;
+        return true;
 }
 
 bool CPObject::exit()
@@ -297,8 +296,8 @@ int CPObject::initsound()
     //int BufferSize      = 800;
 #ifndef NO_SOUND
     QAudioDeviceInfo m_device(QAudioDeviceInfo::defaultOutputDevice());
-    m_format.setFrequency(DataFrequencyHz);
-    m_format.setChannels(1);
+    m_format.setSampleRate(DataFrequencyHz);
+    m_format.setChannelCount(1);
     m_format.setSampleSize(8);
     m_format.setCodec("audio/pcm");
     m_format.setByteOrder(QAudioFormat::LittleEndian);
@@ -1102,9 +1101,9 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 	}	
 }
 
-QImage * CPObject::LoadImage(QSize size,QString fname,bool Hmirror,bool Vmirror,int angle)
+QImage * CPObject::CreateImage(QSize size,QString fname,bool Hmirror,bool Vmirror,int angle)
 {
-//    qWarning("LoadImage : %s",fname.toAscii().data());
+//    qWarning("LoadImage : %s",fname.toLatin1().data());
 	QImage *tempImage;
     QMatrix matrix;
         matrix.rotate(angle);
@@ -1136,7 +1135,7 @@ bool CPObject::InitDisplay(void)
     delete BackgroundImageBackup;
 //    qWarning()<<BackGroundFname;
 
-    BackgroundImageBackup = LoadImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
+    BackgroundImageBackup = CreateImage(QSize(Pc_DX, Pc_DY),BackGroundFname);
     delete BackgroundImage;
     BackgroundImage = new QImage(*BackgroundImageBackup);
     delete FinalImage;
@@ -1337,13 +1336,13 @@ void CPObject::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
         if (xmlIn->name() == "bank" && xmlIn->attributes().value("id").toString().toInt() == s) {
             if (xmlIn->readNextStartElement() ) {
                 if (xmlIn->name()=="data")  {
-                    QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toAscii());
+                    QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());
                     memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
                 }
                 if (xmlIn->name()=="datahex")  {
 
-//                    MSG_ERROR(xmlIn->readElementText().replace(QRegExp("......:"),"").toAscii())
-                     QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toAscii());
+//                    MSG_ERROR(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1())
+                     QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1());
                     memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
                 }
             }

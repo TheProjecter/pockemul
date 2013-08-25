@@ -288,7 +288,7 @@ bool Cpc1350::run(void)
 /*****************************************************************************/
 // Virtual Fonction
 
-bool Cpc1350::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1350::Chk_Adr(UINT32 *d,UINT32 data)
 {
 if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE [%04x]=%02x (%c)\n",*d,data,data);
@@ -310,7 +310,7 @@ if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
 
 }
 
-bool Cpc1350::Chk_Adr_R(DWORD *d,DWORD *data) {
+bool Cpc1350::Chk_Adr_R(UINT32 *d,UINT32 *data) {
 if ( (*d>=0x6f00) && (*d<=0x6fff) )	{
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]=%02x (%c)\n",*d,mem[*d],mem[*d]);
     }

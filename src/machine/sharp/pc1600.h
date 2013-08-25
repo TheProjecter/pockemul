@@ -76,7 +76,7 @@ public:
     void	Set_Port(PORTS Port,BYTE data);
     BYTE	Get_Port(PORTS Port);
 
-    virtual bool	Mem_Mirror(DWORD *d);
+    virtual bool	Mem_Mirror(UINT32 *d);
     void	TurnON(void);
     void	TurnOFF(void);
     void    Reset(void);
@@ -85,8 +85,8 @@ public:
     bool	lh5810_write(void);
     bool	lh5810_read(void);
 
-    virtual bool		Chk_Adr(DWORD *d,DWORD data);
-    virtual bool		Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool		Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool		Chk_Adr_R(UINT32 *d, UINT32 *data);
     UINT8		in(UINT8 address);
     UINT8       out(UINT8 address,UINT8 value);
     bool		Set_Connector(void);
@@ -123,7 +123,7 @@ public:
     void		initExtension(void);
     bool	init(void);				// initialize
 
-    void    hack(DWORD pc);
+    void    hack(UINT32 pc);
 
     Cpc1600(CPObject *parent = 0);
     virtual ~Cpc1600();

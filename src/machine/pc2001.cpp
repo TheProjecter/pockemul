@@ -185,7 +185,7 @@ bool Cpc2001::run() {
     return true;
 }
 
-bool Cpc2001::Chk_Adr(DWORD *d, DWORD data)
+bool Cpc2001::Chk_Adr(UINT32 *d, UINT32 data)
 {
 
     if(*d >= 0x6000) return true; /* RAM */
@@ -193,7 +193,7 @@ bool Cpc2001::Chk_Adr(DWORD *d, DWORD data)
     return false;
 }
 
-bool Cpc2001::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Cpc2001::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
 
     return true;

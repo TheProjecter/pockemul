@@ -113,7 +113,7 @@ void Cpc1280::initExtension(void)
 
 }
 
-bool Cpc1280::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1280::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
 
@@ -189,7 +189,7 @@ bool Cpc1280::Chk_Adr(DWORD *d,DWORD data)
     return(0);
 }
 
-bool Cpc1280::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1280::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
     if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(1);	// ROM area(0000-1fff)
 

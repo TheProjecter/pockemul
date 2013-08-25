@@ -116,7 +116,10 @@ class QCE_EXPORT QDocumentLineHandle
 		inline QString& textBuffer() { setFlag(QDocumentLine::LayoutDirty, true); return m_text; }
 		
 		inline void ref() { m_ref.ref(); }
-		inline void deref() { if ( m_ref ) m_ref.deref(); if ( !m_ref ) delete this; }
+        inline void deref() {
+            if ( m_ref.ref() ) m_ref.deref();
+            if ( !m_ref.ref() ) delete this;
+        }
 		
 	protected:
 		~QDocumentLineHandle();

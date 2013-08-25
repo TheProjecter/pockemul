@@ -63,7 +63,7 @@ Cpc1475::Cpc1475(CPObject *parent)	: Cpc1360(parent)
     Lcd_Symb_ratio_X = .9;
 }
 
-bool Cpc1475::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1475::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
 	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);	// ROM area(0000-1fff) 
@@ -129,7 +129,7 @@ bool Cpc1475::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1475::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1475::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 	if ( (*d>=0x4000) && (*d<=0x7FFF) )	{ *d += 0xC000 + ( RomBank * 0x4000 ); }	// Manage ROM Bank
 	if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ *d += 0x28000 + ( RamBank * 0x8000 );}	// Manage ram bank

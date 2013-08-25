@@ -119,7 +119,7 @@ const int CT6834::udk_size[12] = {
 int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 {
     int    Lng_rsp;
-    DWORD  Adresse;
+    UINT32  Adresse;
     UINT8  i;
 
     Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
@@ -802,9 +802,9 @@ void CT6834::Load_Internal(QXmlStreamReader *xmlIn)
              (xmlIn->attributes().value("model").toString() == "t6834")) {
 //            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
 //            memcpy((char *) &r,ba_reg.data(),sizeof(r));
-            QByteArray ba_mem = QByteArray::fromBase64(xmlIn->attributes().value("Mem").toString().toAscii());
+            QByteArray ba_mem = QByteArray::fromBase64(xmlIn->attributes().value("Mem").toString().toLatin1());
             memcpy((char *)mem,ba_mem.data(),ba_mem.size());
-            QByteArray ba_lcd = QByteArray::fromBase64(xmlIn->attributes().value("Lcd").toString().toAscii());
+            QByteArray ba_lcd = QByteArray::fromBase64(xmlIn->attributes().value("Lcd").toString().toLatin1());
             memcpy((char *)&Ram_Video,ba_lcd.data(),ba_lcd.size());
         }
         xmlIn->skipCurrentElement();

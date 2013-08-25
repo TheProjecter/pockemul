@@ -13,7 +13,7 @@ class DialogDump : public QDialog, public Ui::DialogDump
 {
 Q_OBJECT
 public:
-	DialogDump( QWidget * parent = 0, Qt::WFlags f = 0 );
+    DialogDump( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 
 
     BINEditor::BinEditor *hexeditor;

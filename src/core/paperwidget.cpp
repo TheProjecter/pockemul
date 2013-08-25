@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include "paperwidget.h"
 #include "cprinter.h"

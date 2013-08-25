@@ -2481,7 +2481,7 @@ int Ci80x86::i86exec(I86stat *i86)
 
 uint8 Ci80x86::i86read8(const I86stat *cpu, uint16 seg, uint16 off)
 {
-    DWORD p = (((int )seg << 4) + off) & 0xfffff;
+    UINT32 p = (((int )seg << 4) + off) & 0xfffff;
 
     return pPC->Get_8(p);
 
@@ -2489,7 +2489,7 @@ uint8 Ci80x86::i86read8(const I86stat *cpu, uint16 seg, uint16 off)
 
 void Ci80x86::i86write8(I86stat *cpu, uint16 seg, uint16 off, uint8 v)
 {
-    DWORD p = (((int )seg << 4) + off) & 0xfffff;
+    UINT32 p = (((int )seg << 4) + off) & 0xfffff;
 
     pPC->Set_8(p,v);
 
@@ -2598,7 +2598,7 @@ bool Ci80x86::exit()
 }
 
 
-DWORD Ci80x86::get_PC()
+UINT32 Ci80x86::get_PC()
 {
     return (i86stat.r16.cs<<16) | (i86stat.r16.ip);
     //    return (((int )i86->r16.cs << 4) + i86->r16.ip) & 0xfffff;

@@ -36,7 +36,7 @@ Cce140f::Cce140f(CPObject *parent):CPObject(parent)
     setcfgfname("ce140f");
 
     pTIMER		= new Ctimer(this);
-//    pKEYB		= new Ckeyb(this,"ce140f.map");
+    pKEYB		= new Ckeyb(this,"ce140f.map");
     setDX(620);//Pc_DX	= 620;//480;
     setDY(488);//Pc_DY	= 488;//420;
 
@@ -76,13 +76,12 @@ bool Cce140f::init(void)
     CPObject::init();
 
     setfrequency( 0);
-
-
     pCONNECTOR	   = new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",true,QPoint(597,310));	publish(pCONNECTOR);
     pCONNECTOR_Ext = new Cconnector(this,11,1,Cconnector::Sharp_11,"Connector 11 pins Ext.",false,QPoint(6,295));	publish(pCONNECTOR_Ext);
 
     WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
     WatchPoint.add(&pCONNECTOR_Ext_value,64,11,this,"Ext 11pins connector");
+
 
     AddLog(LOG_PRINTER,tr("CE-140F initializing..."));
 
@@ -277,8 +276,6 @@ bool Cce140f::run(void)
 
     Get_Connector();
 
-
-
     bool bit = false;
     ce140f_Mode=RECEIVE_MODE;
 
@@ -292,7 +289,7 @@ bool Cce140f::run(void)
     //pCONNECTOR->Set_pin(PIN_ACK,pCONNECTOR->Get_pin(PIN_ACK) || pCONNECTOR_Ext->Get_pin(PIN_ACK));
 
 
-#if 1
+#if 0
 // Try to introduce a latency
     qint64			deltastate = 0;
 
@@ -836,7 +833,7 @@ void Cce140f::process_CLOSE(int cmd) {
 
 void Cce140f::sendString(QString s) {
     for (int i=0;i<s.size();i++){
-        data_out.append(CheckSum(s.at(i).toAscii()));
+        data_out.append(CheckSum(s.at(i).toLatin1()));
     }
 }
 

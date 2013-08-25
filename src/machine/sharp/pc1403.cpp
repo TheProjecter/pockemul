@@ -140,7 +140,7 @@ bool Cpc1403::Get_Connector(void)
 /*****************************************************************************/
 // Virtual Fonction
 
-bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1403::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
 	if ( (*d>=0x0000) && (*d<=0x1FFF) )	{ return(0); }		// CPU ROM
@@ -175,7 +175,7 @@ bool Cpc1403::Chk_Adr(DWORD *d,DWORD data)
 
 }
 
-bool Cpc1403::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1403::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
     if ( (*d>=0x4000) && (*d<=0x7FFF) )	{
 //        *d += 0xC000 + (RomBank * 0x4000);
@@ -209,13 +209,13 @@ Cpc1403H::Cpc1403H(CPObject *parent) : Cpc1403(parent)
 
 }
 
-bool Cpc1403H::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1403H::Chk_Adr(UINT32 *d,UINT32 data)
 {
 	if ( (*d>=0x8000) && (*d<=0xdFFF) )	{ return(1); }
 	return (Cpc1403::Chk_Adr(d,data));
 }
 
-bool Cpc1403H::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1403H::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 	return(Cpc1403::Chk_Adr_R(d,data));	
 }

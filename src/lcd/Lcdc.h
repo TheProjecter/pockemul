@@ -32,7 +32,7 @@ public:
 
 	void	Update(void){
 					for (int i=0 ; i<0x1000;i++) DirtyBuf[i]=true;
-					Refresh = TRUE;
+                    Refresh = true;
 						}
 									// Set the DirtyBuffer array to 1
 

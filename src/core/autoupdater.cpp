@@ -1,10 +1,16 @@
 // AutoUpdater.cpp: implementation of the CAutoUpdater class.
- #include <QtGui>
- #include <QtNetwork>
+#include <QtWidgets>
+#include <QPushButton>
+#include <QDialogButtonBox>
+#include <QLabel>
+
+#include <QMainWindow>
+
 
 #include "version.h"
 #include "common.h" 
 #include "autoupdater.h"
+#include "qhttp/qhttp.h"
 
 #define POCKEMUL_UPDATE_FILE "http://pockemul.free.fr/update/autoupdater.txt"
 

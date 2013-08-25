@@ -22,7 +22,7 @@ typedef struct {
     UINT8 m_char_width;
     UINT8 m_lcd_on;
     UINT8 m_scroll;
-    DWORD m_contrast;
+    UINT32 m_contrast;
 
     UINT8 m_custom_char[4][8];		// 4 chars * 8 bytes
     UINT8 m_byte_count;

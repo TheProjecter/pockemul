@@ -2,6 +2,7 @@
 #define WINDOWIDE_H
 
 #include <QMainWindow>
+#include <QFileSystemModel>
 
 
 #include "lcc/lcpp.h"

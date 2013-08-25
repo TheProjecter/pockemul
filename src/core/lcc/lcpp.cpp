@@ -214,7 +214,7 @@ QString Clcpp::readline(QStringListIterator *linesIter) {
         c = ' ';
         for (int i = 0 ;i <result.length();i++) {
             if (QString("'\"").contains(result[i])) {
-                if (c == ' ') c = result[i].toAscii();
+                if (c == ' ') c = result[i].toLatin1();
                 else c = ' ';
             }
             if ((c == ' ') && result.mid(i).startsWith("//")) {
@@ -353,7 +353,7 @@ QString Clcpp::parsefile(QString srcName,QString source) {
                 }
             }
             else if(tok.startsWith("#if")) {
-                Parser calc(tok.remove(0,4).toAscii().data());
+                Parser calc(tok.remove(0,4).toLatin1().data());
                 int y = calc.Evaluate();
                 if (y<=0 ) {
                     int level = 1;
@@ -403,7 +403,7 @@ void Clcpp::run() {
 */
 void Clcpp::writeln(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
-    out->insert(srcName,locs+"\r"+s.toAscii());
+    out->insert(srcName,locs+"\r"+s.toLatin1());
 }
 
 /*!

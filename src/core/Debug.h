@@ -20,15 +20,15 @@ class Cdebug:public CPObject
     Q_OBJECT
 public:
 	bool	isdebug, breakf,debugged;			//debug,break point flag
-	DWORD	breakadr;					//break point address
+	UINT32	breakadr;					//break point address
 	char	Buffer[255];
-	DWORD	DasmAdr,NextDasmAdr;
+	UINT32	DasmAdr,NextDasmAdr;
 	bool init(void);					//initialize
 	bool exit(void);					//end
-	DWORD DisAsm_File(DWORD adr,FILE *fp);	//disasm 1 line to File
+	UINT32 DisAsm_File(UINT32 adr,FILE *fp);	//disasm 1 line to File
 
-    void header(DWORD adr,int l);
-	virtual	DWORD	DisAsm_1(DWORD adr) = 0;			//disasm 1 line to Buffer
+    void header(UINT32 adr,int l);
+	virtual	UINT32	DisAsm_1(UINT32 adr) = 0;			//disasm 1 line to Buffer
 
 	DisAsmTbl	*AsmTbl;
 
@@ -50,7 +50,7 @@ private:
 class Cdebug_sc61860:public Cdebug{
     Q_OBJECT
 public:
-	DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+	UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
 		Cdebug_sc61860(CPObject *parent)	: Cdebug(parent)
 		{
@@ -63,7 +63,7 @@ public:
 class Cdebug_sc62015:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_sc62015(CPObject *parent)	: Cdebug(parent)
         {
@@ -76,7 +76,7 @@ public:
 class Cdebug_lh5801:public Cdebug{
     Q_OBJECT
 public:
-	DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+	UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
 		Cdebug_lh5801(CPObject *parent)	: Cdebug(parent)
 		{
@@ -93,7 +93,7 @@ public:
         const void *args;
     };
 
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_upd7810(CPObject *parent)	: Cdebug(parent)
         {
@@ -106,7 +106,7 @@ public:
 class Cdebug_z80:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_z80(CPObject *parent)	: Cdebug(parent)
         {
@@ -118,7 +118,7 @@ public:
 class Cdebug_i80x86:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_i80x86(CPObject *parent)	: Cdebug(parent)
         {
@@ -140,7 +140,7 @@ public:
 class Cdebug_i8085:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_i8085(CPObject *parent)	: Cdebug(parent)
         {
@@ -167,7 +167,7 @@ typedef struct
 class Cdebug_hd61700:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_hd61700(CPObject *parent)	: Cdebug(parent)
         {
@@ -193,7 +193,7 @@ public:
 class Cdebug_m6502:public Cdebug{
     Q_OBJECT
 public:
-    DWORD DisAsm_1(DWORD adr);			//disasm 1 line to Buffer
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
 
         Cdebug_m6502(CPObject *parent)	: Cdebug(parent)
         {

@@ -13,7 +13,7 @@
 extern	MainWindowPockemul* mainwindow;
 
 //
-DialogSimulator::DialogSimulator( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
+DialogSimulator::DialogSimulator( QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
     setupUi(this);
     setFocusPolicy(Qt::StrongFocus);

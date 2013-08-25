@@ -74,25 +74,25 @@ extern QString appDir;
 typedef unsigned char	UINT8;
 typedef quint16	UINT16;
 typedef quint16	WORD;
-typedef quint32	DWORD;
+typedef quint32	UINT32;
 typedef unsigned char	BYTE;
 typedef unsigned int    UINT;
-typedef 		 DWORD	COLORREF;	
+//typedef 		 UINT32	COLORREF;
 
 
-typedef struct tagPOINT
-{
-	long x;
-	long y;
-} POINT,*PPOINT;
+//typedef struct tagPOINT
+//{
+//	long x;
+//	long y;
+//} POINT,*PPOINT;
 
-typedef struct tagRECT
-{
-	long left;
-	long top;
-	long right;
-	long bottom;
-} RECT;
+//typedef struct tagRECT
+//{
+//	long left;
+//	long top;
+//	long right;
+//	long bottom;
+//} RECT;
 
 struct TransMap
 {

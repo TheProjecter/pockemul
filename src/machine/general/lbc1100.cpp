@@ -221,7 +221,7 @@ bool Clbc1100::run() {
     return true;
 }
 
-bool Clbc1100::Chk_Adr(DWORD *d, DWORD data)
+bool Clbc1100::Chk_Adr(UINT32 *d, UINT32 data)
 {
 
     if(*d < 0x8000) return false; /* ROM */
@@ -230,7 +230,7 @@ bool Clbc1100::Chk_Adr(DWORD *d, DWORD data)
     return true;
 }
 
-bool Clbc1100::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Clbc1100::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
 
     return true;

@@ -75,7 +75,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     setPosX(0);
     setPosY(0);
 
-    ioFreq = 24000;
+    ioFreq = 0;//24000;
     DasmFlag = false;
     DasmStep = false;
     BreakPoints.clear();
@@ -105,7 +105,7 @@ bool CpcXXXX::UpdateFinalImage(void)
     QPainter painter;
 
     if (pLCDC) {
-        if (pLCDC->Refresh == FALSE) return false;
+        if (pLCDC->Refresh == false) return false;
     }
     if ( (BackgroundImage) )
     {
@@ -132,16 +132,16 @@ bool CpcXXXX::UpdateFinalImage(void)
         }
         painter.end();
 
-        if (pLCDC) pLCDC->Refresh = FALSE;
+        if (pLCDC) pLCDC->Refresh = false;
     }
     Refresh_Display = false;
 
     return true;
 }
-	
+
 bool CpcXXXX::CompleteDisplay(void)
 {
-	return TRUE;
+    return true;
 }
 
 
@@ -150,17 +150,17 @@ bool CpcXXXX::InitDisplay(void)
     CPObject::InitDisplay();
 
     Refresh_Display = true;
-    UpdateDisplayRunning = FALSE;
+    UpdateDisplayRunning = false;
     global_w = getDX();
     global_h = getDY();
 
     delete LcdImage;
-    LcdImage				= LoadImage(QSize(Lcd_DX, Lcd_DY),LcdFname);
+    LcdImage				= CreateImage(QSize(Lcd_DX, Lcd_DY),LcdFname,false,false,0);
     if (!SymbFname.isEmpty()) {
         delete SymbImage;
-        SymbImage	= LoadImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
+        SymbImage	= CreateImage(QSize(Lcd_Symb_DX, Lcd_Symb_DY),SymbFname);
     }
-    UpdateDisplayRunning = TRUE;
+    UpdateDisplayRunning = true;
     return(1);
 }
 
@@ -245,7 +245,7 @@ void	CpcXXXX::Set_PortB(BYTE data) {	IO_B = data; }
 void	CpcXXXX::Set_PortF(BYTE data) {	IO_F = data; }
 void	CpcXXXX::Set_PortT(BYTE data) {	IO_T = data; }
 void	CpcXXXX::Set_PortC(BYTE data) {	IO_C = data; 
-//										pLCDC->Refresh = ((IO_C & 0x01)?TRUE:FALSE); 
+//										pLCDC->Refresh = ((IO_C & 0x01)?true:false);
 													}
 
 void	CpcXXXX::Set_Port(PORTS Port,BYTE data)
@@ -296,28 +296,28 @@ void	CpcXXXX::Set_Port_Bit(PORTS Port, int bit, BYTE data)
 /*****************************************************************************/
 /* Get data from mem[]														 */
 /*****************************************************************************/
-BYTE CpcXXXX::Get_PC(DWORD adr)
+BYTE CpcXXXX::Get_PC(UINT32 adr)
 {
-    DWORD extValue = 0;
+    UINT32 extValue = 0;
     if (Chk_Adr_R(&adr,&extValue))
         return(mem[adr]);
     else
         return(extValue);
 }
-BYTE CpcXXXX::Get_8(DWORD adr)
+BYTE CpcXXXX::Get_8(UINT32 adr)
 {
-    DWORD extValue = 0;
+    UINT32 extValue = 0;
     if (Chk_Adr_R(&adr,&extValue))
         return(mem[adr]);
     else
         return(extValue);
 }
 
-WORD CpcXXXX::Get_16(DWORD adr)
+WORD CpcXXXX::Get_16(UINT32 adr)
 {
-    DWORD extValue1 = 0;
-    DWORD extValue2 = 0;
-	DWORD	a;
+    UINT32 extValue1 = 0;
+    UINT32 extValue2 = 0;
+	UINT32	a;
 	a=adr+1;
     if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2))
         return(mem[adr]+(mem[a]<<8));
@@ -325,11 +325,11 @@ WORD CpcXXXX::Get_16(DWORD adr)
         return(extValue1+(extValue2<<8));
 }
 
-WORD CpcXXXX::Get_16r(DWORD adr)
+WORD CpcXXXX::Get_16r(UINT32 adr)
 {
-    DWORD extValue1 = 0;
-    DWORD extValue2 = 0;
-	DWORD	a;
+    UINT32 extValue1 = 0;
+    UINT32 extValue2 = 0;
+	UINT32	a;
 	a=adr+1;
     if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2))
         return((mem[adr]<<8)+mem[a]);
@@ -337,9 +337,9 @@ WORD CpcXXXX::Get_16r(DWORD adr)
         return((extValue1<<8)+extValue2);
 }
 
-WORD CpcXXXX::Get_16rPC(DWORD adr)
+WORD CpcXXXX::Get_16rPC(UINT32 adr)
 {
-    DWORD	a;
+    UINT32	a;
     a=adr+1;
     if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
         return((mem[adr]<<8)+mem[a]);
@@ -347,20 +347,20 @@ WORD CpcXXXX::Get_16rPC(DWORD adr)
         return(0);
 }
 
-DWORD CpcXXXX::Get_20(DWORD adr)
+UINT32 CpcXXXX::Get_20(UINT32 adr)
 {
     Chk_Adr_R(&adr,bREAD);
-    DWORD data = (mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_20;
+    UINT32 data = (mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_20;
     return(data);
 }
 
-DWORD CpcXXXX::Get_24(DWORD adr)
+UINT32 CpcXXXX::Get_24(UINT32 adr)
 {
     Chk_Adr_R(&adr,bREAD);
     return((mem[adr]+(mem[adr+1]<<8)+(mem[adr+2]<<16))&MASK_24);
 }
 
-DWORD CpcXXXX::get_mem(DWORD adr,int size)
+UINT32 CpcXXXX::get_mem(UINT32 adr,int size)
 {
     switch(size)
     {
@@ -375,33 +375,33 @@ DWORD CpcXXXX::get_mem(DWORD adr,int size)
 /* Set data to mem[]														 */
 /*  ENTRY :DWORD adr=RAM address, BYTE(8),WORD(16),DWORD(20,24) d=data		 */
 /*****************************************************************************/
-void CpcXXXX::Set_8(DWORD adr,BYTE d)
+void CpcXXXX::Set_8(UINT32 adr,BYTE d)
 {
 	if(Chk_Adr(&adr,d))
 		mem[adr]=d;
 }
 
-void CpcXXXX::Set_16(DWORD adr,WORD d)
+void CpcXXXX::Set_16(UINT32 adr,WORD d)
 {
-	DWORD	a;
+	UINT32	a;
 	a=adr;
 	if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
     a=adr+1;
     if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
 }
  
-void CpcXXXX::Set_16r(DWORD adr,WORD d)
+void CpcXXXX::Set_16r(UINT32 adr,WORD d)
 {
-    DWORD	a;
+    UINT32	a;
     a=adr;
     if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
     a=adr+1;
     if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
 }
 
-void CpcXXXX::Set_20(DWORD adr, DWORD d)
+void CpcXXXX::Set_20(UINT32 adr, UINT32 d)
 {
-    DWORD	a;
+    UINT32	a;
     a=adr;
     if(Chk_Adr(&a,d)) mem[a]=d;
     a=++adr;
@@ -410,9 +410,9 @@ void CpcXXXX::Set_20(DWORD adr, DWORD d)
     if(Chk_Adr(&a,(d>>16)&MASK_4)) mem[a]=(d>>16)&MASK_4;
 }
 
-void CpcXXXX::Set_24(DWORD adr, DWORD d)
+void CpcXXXX::Set_24(UINT32 adr, UINT32 d)
 {
-    DWORD	a;
+    UINT32	a;
     a=adr;
     if(Chk_Adr(&a,d)) mem[a]=d;
     a=++adr;
@@ -421,7 +421,7 @@ void CpcXXXX::Set_24(DWORD adr, DWORD d)
     if(Chk_Adr(&a,(d>>16))) mem[a]=(d>>16);
 }
 
-void CpcXXXX::set_mem(DWORD adr,int size,DWORD data)
+void CpcXXXX::set_mem(UINT32 adr,int size,UINT32 data)
 {
     switch(size)
     {
@@ -460,7 +460,6 @@ bool CpcXXXX::init(void)
 
 	AddLog(LOG_MASTER,tr("LCD init"));
     if(pLCDC && !(pLCDC->init())) return(0);
-
 
 
     AddLog(LOG_MASTER,tr("CPU init"));
@@ -531,6 +530,7 @@ bool CpcXXXX::run(void)
 	if(!pCPU->halt && !off)
 	{
         if ( (pCPU->logsw) && (pCPU->fp_log) ) {
+            sprintf(Log_String,"");
             pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
@@ -539,7 +539,7 @@ bool CpcXXXX::run(void)
             pCPU->step();
             Regs_Info(1);
 
-            fprintf(pCPU->fp_log,"%-40s   %s  \n",pCPU->pDEBUG->Buffer,pCPU->Regs_String);
+            fprintf(pCPU->fp_log,"%-40s   %s  %s\n",pCPU->pDEBUG->Buffer,pCPU->Regs_String,Log_String);
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
                 for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
                 fprintf(pCPU->fp_log,"{\n");
@@ -895,8 +895,8 @@ QString fileName = QFileDialog::getSaveFileName(
 /*  RETURN:bool (1=RAM,0=ROM)												 */
 /*****************************************************************************/
 // Virtual Fonction
-bool CpcXXXX::Chk_Adr(DWORD *d,DWORD data) { return(1); }
-bool CpcXXXX::Chk_Adr_R(DWORD *d,DWORD *data) { return(1);}
+bool CpcXXXX::Chk_Adr(UINT32 *d,UINT32 data) { return(1); }
+bool CpcXXXX::Chk_Adr_R(UINT32 *d,UINT32 *data) { return(1);}
 
 
 

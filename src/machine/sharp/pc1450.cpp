@@ -94,7 +94,7 @@ BYTE	Cpc1450::Get_PortA(void)
 // Virtual Fonction
 
 
-bool Cpc1450::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1450::Chk_Adr(UINT32 *d,UINT32 data)
 {
 	if ( (*d>=0x7000) && (*d<=0x708F) ) {pLCDC->SetDirtyBuf(*d-0x7000);return(1);	}
 	if ( (*d>=0x7E00) && (*d<=0x7FFF) )	{pKEYB->Set_KS( (BYTE) data & 0x7F );return(1);}
@@ -114,7 +114,7 @@ bool Cpc1450::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1450::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1450::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
     return(1);
 }

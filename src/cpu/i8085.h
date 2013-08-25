@@ -74,7 +74,7 @@ public:
     virtual void Set_Xin(bool){}
     virtual bool Get_Xout(){return true;}
     virtual void Set_Xout(bool){}
-    virtual DWORD get_PC();
+    virtual UINT32 get_PC();
     virtual void Regs_Info(quint8);
 
 //    quint8  i85read8(const I85stat *, quint16, quint16);

@@ -396,7 +396,7 @@ UINT8 Cdebug_hd61700::getMem(int adr) {
     return pPC->Get_8(adr);
 }
 
-DWORD Cdebug_hd61700::DisAsm_1(DWORD adr)
+UINT32 Cdebug_hd61700::DisAsm_1(UINT32 adr)
 {
 
     DasmAdr = adr;

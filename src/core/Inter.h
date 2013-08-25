@@ -82,7 +82,7 @@ public:
 		state	= 0;				// state counter
 		chkspeed= 1;				// speed checker
 		CPUSpeed= 1;
-		Suspend = FALSE;
+        Suspend = false;
 
         for (int i=0;i<10;i++)
         {

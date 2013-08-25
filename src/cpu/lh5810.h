@@ -10,7 +10,7 @@
 
 #include "pobject.h"
 
-#define PB7	((lh5810.r_opb & 0x80)?TRUE:FALSE)
+#define PB7	((lh5810.r_opb & 0x80)?true:false)
 
 #define SETREG_LH5810_RESET(p,data)	(p->lh5810.reset	= (data));
 #define SETREG_LH5810_U(p,data)		(p->lh5810.r_u	= (data));

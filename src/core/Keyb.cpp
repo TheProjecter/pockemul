@@ -174,10 +174,10 @@ void Ckeyb::Set_KS(BYTE data)
 
 bool Ckeyb::CheckKon()
 {
-	Kon = FALSE;
+    Kon = false;
 	if ( (LastKey == K_BRK) )
 	{
-		Kon = TRUE;
+        Kon = true;
 		AddLog(2,"Kon TRUE");
 		LastKey = 0;
     }

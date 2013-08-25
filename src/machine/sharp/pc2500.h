@@ -16,11 +16,11 @@ public:
 //    BYTE	Get_PortB(void);
 //    void	Set_PortB(BYTE data);
     virtual void	Set_PortF(BYTE);
-    virtual BYTE    Get_PC(DWORD adr);
-    virtual WORD    Get_16rPC(DWORD adr);
+    virtual BYTE    Get_PC(UINT32 adr);
+    virtual WORD    Get_16rPC(UINT32 adr);
 
-    virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool	Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool	Chk_Adr_R(UINT32 *d, UINT32 *data);
 //    virtual void	initExtension(void);
     virtual bool	Set_Connector(void);
     virtual bool	Get_Connector(void);

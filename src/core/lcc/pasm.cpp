@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QtWidgets>
 
 //FIXME: JPC not working
 
@@ -30,7 +31,7 @@ void Cpasm::writeln(QString srcName,QString s) {
 
 void Cpasm::write(QString srcName,QString s) {
     QByteArray locs = out->value(srcName);
-    out->insert(srcName,locs+s.toAscii());
+    out->insert(srcName,locs+s.toLatin1());
 }
 
 int Cpasm::mathparse(QByteArray s, int w) {
@@ -71,8 +72,8 @@ Fonctions connues:
         //QMessageBox::about(0,"LOG",tr("%1[%2]  - %3").arg(sr).arg(codpos).arg(cout));
     }
     else {
-        Parser op(sr.toAscii().data());
-        //    int y = op.evevaluate_expression(sr.toAscii().data());
+        Parser op(sr.toLatin1().data());
+        //    int y = op.evevaluate_expression(sr.toLatin1().data());
         y = op.Evaluate();
     }
 
@@ -433,8 +434,8 @@ int Cpasm::calcadr(void) {
         i++;
     }
     if (lf) result = 0;
-    else if (param2.isEmpty()) result = mathparse(param1.toAscii(), 16);
-    else result = mathparse(param1.toAscii(), 8) * 256 + mathparse(param2.toAscii(), 8);
+    else if (param2.isEmpty()) result = mathparse(param1.toLatin1(), 16);
+    else result = mathparse(param1.toLatin1(), 8) * 256 + mathparse(param2.toLatin1(), 8);
 
     return result;
 }
@@ -504,21 +505,21 @@ void Cpasm::doasm(void) {
 
             if (nbargu[opp] == 2)
             {
-                int loc1 = mathparse(param1.toAscii(), 8);
+                int loc1 = mathparse(param1.toLatin1(), 8);
                 addcode(opp);
                 addcode(loc1);
             }
             else if (nbargu[opp] == 3) {
                 if (param2.isEmpty()) {
-                    int loc1 = (mathparse(param1.toAscii(), 16) << 8) & 0xFF;
-                    int loc2 = (mathparse(param1.toAscii(), 16)) & 0xFF;
+                    int loc1 = (mathparse(param1.toLatin1(), 16) << 8) & 0xFF;
+                    int loc2 = (mathparse(param1.toLatin1(), 16)) & 0xFF;
                     addcode(opp);
                     addcode(loc1);
                     addcode(loc2);
                 }
                 else {
-                    int loc1 = (mathparse(param1.toAscii(), 8));
-                    int loc2 = (mathparse(param2.toAscii(), 8));
+                    int loc1 = (mathparse(param1.toLatin1(), 8));
+                    int loc2 = (mathparse(param2.toLatin1(), 8));
                     addcode(opp);
                     addcode(loc1);
                     addcode(loc2);
@@ -528,15 +529,15 @@ void Cpasm::doasm(void) {
                 addcode(opp);
 #else
             addcode(opp);
-            if (nbargu[opp] == 2) addcode(mathparse(param1.toAscii(), 8));
+            if (nbargu[opp] == 2) addcode(mathparse(param1.toLatin1(), 8));
             else if (nbargu[opp] == 3) {
                 if (param2.isEmpty()) {
-                    addcode((mathparse(param1.toAscii(), 16) << 8) & 0xFF);
-                    addcode((mathparse(param1.toAscii(), 16)) & 0xFF);
+                    addcode((mathparse(param1.toLatin1(), 16) << 8) & 0xFF);
+                    addcode((mathparse(param1.toLatin1(), 16)) & 0xFF);
                 }
                 else {
-                    addcode(mathparse(param1.toAscii(), 8));
-                    addcode(mathparse(param2.toAscii(), 8));
+                    addcode(mathparse(param1.toLatin1(), 8));
+                    addcode(mathparse(param2.toLatin1(), 8));
                 }
             }
 #endif
@@ -545,8 +546,8 @@ void Cpasm::doasm(void) {
     else {
 
         if (op == "LP") {
-            if (mathparse(param1.toAscii(), 8) > 63) abort("LP comm&& exceeds range!");
-            addcode(128 + mathparse(param1.toAscii(), 8));
+            if (mathparse(param1.toLatin1(), 8) > 63) abort("LP comm&& exceeds range!");
+            addcode(128 + mathparse(param1.toLatin1(), 8));
         }
         else if (op == "RTN") addcode(55);
         else if (op == "SUBW") addcode(0x15);
@@ -555,8 +556,8 @@ void Cpasm::doasm(void) {
         else if (op == "ADDC") addcode(0xC4);
         else if (op == "ADD") {
             if ((param1 == "[P]") && (param2 == "A")) addcode(0x44);
-            else if (param1 == "[P]") { addcode(0x70); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "[P]") { addcode(0x70); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2.toLatin1(), 8)); }
         }
         else if (op == "ADDB") {
             if ((param1 == "[P]") && (param2 == "A")) addcode(0x0C);
@@ -564,8 +565,8 @@ void Cpasm::doasm(void) {
         }
         else if (op == "SUB") {
             if ((param1 == "[P]") && (param2 == "A")) addcode(0x45);
-            else if (param1 == "[P]") { addcode(0x71); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "[P]") { addcode(0x71); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "A") { addcode(0x74); addcode(mathparse(param2.toLatin1(), 8)); }
         }
         else if (op == "SUBB") {
             if ((param1 == "[P]") && (param2 == "A")) addcode(0x0D);
@@ -580,15 +581,15 @@ void Cpasm::doasm(void) {
         else if (op == "SC") addcode(208);
         else if (op == "OR") {
             if ((param1 == "[P]") && (param2 == "A")) addcode(0x47);
-            else if (param1 == "[P]") { addcode(0x61); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "[DP]") { addcode(0xD5); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "A") { addcode(0x65); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "[P]") { addcode(0x61); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "[DP]") { addcode(0xD5); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "A") { addcode(0x65); addcode(mathparse(param2.toLatin1(), 8)); }
         }
         else if (op == "&&") {
             if ((param1 == "[P]") && (param2 == "A")) addcode(0x46);
-            else if (param1 == "[P]") { addcode(0x60); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "[DP]") { addcode(0xD4); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "A") { addcode(0x64); addcode(mathparse(param2.toAscii(), 8)); }
+            else if (param1 == "[P]") { addcode(0x60); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "[DP]") { addcode(0xD4); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "A") { addcode(0x64); addcode(mathparse(param2.toLatin1(), 8)); }
         }
         else if (op == "OUT") {
             if (param1 == "A") addcode(93);
@@ -601,30 +602,30 @@ void Cpasm::doasm(void) {
             else if (param1 == "B") addcode(204);
         }
         else if (op == "INC") {
-            if ((param1 == "A") or (mathparse(param1.toAscii(), 8) == 2)) addcode(66);
-            else if ((param1 == "B") || (mathparse(param1.toAscii(), 8) == 3)) addcode(194);
-            else if ((param1 == "J") || (mathparse(param1.toAscii(), 8) == 1)) addcode(192);
-            else if ((param1 == "K") || (mathparse(param1.toAscii(), 8) == 8)) addcode(72);
-            else if ((param1 == "L") || (mathparse(param1.toAscii(), 8) == 9)) addcode(200);
-            else if ((param1 == "M") || (mathparse(param1.toAscii(), 8) == 10)) addcode(74);
-            else if ((param1 == "N") || (mathparse(param1.toAscii(), 8) == 11)) addcode(202);
+            if ((param1 == "A") or (mathparse(param1.toLatin1(), 8) == 2)) addcode(66);
+            else if ((param1 == "B") || (mathparse(param1.toLatin1(), 8) == 3)) addcode(194);
+            else if ((param1 == "J") || (mathparse(param1.toLatin1(), 8) == 1)) addcode(192);
+            else if ((param1 == "K") || (mathparse(param1.toLatin1(), 8) == 8)) addcode(72);
+            else if ((param1 == "L") || (mathparse(param1.toLatin1(), 8) == 9)) addcode(200);
+            else if ((param1 == "M") || (mathparse(param1.toLatin1(), 8) == 10)) addcode(74);
+            else if ((param1 == "N") || (mathparse(param1.toLatin1(), 8) == 11)) addcode(202);
             else if (param1 == "P") addcode(80);
-            else if ((param1 == "X") || (mathparse(param1.toAscii(), 8) == 4)) addcode(4);
-            else if ((param1 == "Y") || (mathparse(param1.toAscii(), 8) == 6)) addcode(6);
-            else if ((param1 == "I") || (mathparse(param1.toAscii(), 8) == 0)) addcode(64);
+            else if ((param1 == "X") || (mathparse(param1.toLatin1(), 8) == 4)) addcode(4);
+            else if ((param1 == "Y") || (mathparse(param1.toLatin1(), 8) == 6)) addcode(6);
+            else if ((param1 == "I") || (mathparse(param1.toLatin1(), 8) == 0)) addcode(64);
         }
         else if (op == "DEC") {
-            if ((param1 == "A") || (mathparse(param1.toAscii(), 8) == 2)) addcode(67);
-            else if ((param1 == "B") || (mathparse(param1.toAscii(), 8) == 3)) addcode(195);
-            else if ((param1 == "J") || (mathparse(param1.toAscii(), 8) == 1)) addcode(193);
-            else if ((param1 == "K") || (mathparse(param1.toAscii(), 8) == 8)) addcode(73);
-            else if ((param1 == "L") || (mathparse(param1.toAscii(), 8) == 9)) addcode(201);
-            else if ((param1 == "M") || (mathparse(param1.toAscii(), 8) == 10)) addcode(75);
-            else if ((param1 == "N") || (mathparse(param1.toAscii(), 8) == 11)) addcode(203);
+            if ((param1 == "A") || (mathparse(param1.toLatin1(), 8) == 2)) addcode(67);
+            else if ((param1 == "B") || (mathparse(param1.toLatin1(), 8) == 3)) addcode(195);
+            else if ((param1 == "J") || (mathparse(param1.toLatin1(), 8) == 1)) addcode(193);
+            else if ((param1 == "K") || (mathparse(param1.toLatin1(), 8) == 8)) addcode(73);
+            else if ((param1 == "L") || (mathparse(param1.toLatin1(), 8) == 9)) addcode(201);
+            else if ((param1 == "M") || (mathparse(param1.toLatin1(), 8) == 10)) addcode(75);
+            else if ((param1 == "N") || (mathparse(param1.toLatin1(), 8) == 11)) addcode(203);
             else if (param1 == "P") addcode(81);
-            else if ((param1 == "X") || (mathparse(param1.toAscii(), 8) == 4)) addcode(5);
-            else if ((param1 == "Y") || (mathparse(param1.toAscii(), 8) == 6)) addcode(7);
-            else if ((param1 == "I") || (mathparse(param1.toAscii(), 8) == 0)) addcode(65);
+            else if ((param1 == "X") || (mathparse(param1.toLatin1(), 8) == 4)) addcode(5);
+            else if ((param1 == "Y") || (mathparse(param1.toLatin1(), 8) == 6)) addcode(7);
+            else if ((param1 == "I") || (mathparse(param1.toLatin1(), 8) == 0)) addcode(65);
         }
         else if (op == "CALL") {
             adr = calcadr();
@@ -813,7 +814,7 @@ void Cpasm::doasm(void) {
                 codpos = adr;
             } else
             {
-                if (op != "ELSE") { addcode(mathparse(op.toAscii(), 8)); casecnt++; }
+                if (op != "ELSE") { addcode(mathparse(op.toLatin1(), 8)); casecnt++; }
                 codpos--;
                 adr = calcadr();
                 codpos++;
@@ -839,18 +840,18 @@ void Cpasm::doasm(void) {
             else if ((param1 == "[DP]") && (param2 == "A")) addcode(82);
             else if ((param1 == "A") && (param2 == "[P]")) addcode(89);
             else if ((param1 == "[P]") && (param2 == "A")) { addcode(219); addcode(89); }
-            else if (param1 == "A") { addcode(2); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "B") { addcode(3); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "I") { addcode(0); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "J") { addcode(1); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "P") { addcode(18); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "Q") { addcode(19); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "DPL") { addcode(17); addcode(mathparse(param2.toAscii(), 8)); }
-            else if (param1 == "DP") { addcode(16); adr = mathparse(param2.toAscii(), 16); addcode(adr / 256); addcode(adr % 256); }
+            else if (param1 == "A") { addcode(2); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "B") { addcode(3); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "I") { addcode(0); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "J") { addcode(1); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "P") { addcode(18); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "Q") { addcode(19); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "DPL") { addcode(17); addcode(mathparse(param2.toLatin1(), 8)); }
+            else if (param1 == "DP") { addcode(16); adr = mathparse(param2.toLatin1(), 16); addcode(adr / 256); addcode(adr % 256); }
         }
         else if (op == "NOP") {
             if (param1 == "")  addcode(NOP);
-            else { addcode(78); addcode(mathparse(param1.toAscii(), 8)); }
+            else { addcode(78); addcode(mathparse(param1.toLatin1(), 8)); }
         }
         else
             abort("Unknown OP-code: "+op);
@@ -969,7 +970,7 @@ void Cpasm::parsefile(QString fname,QString source) {
     QStringList lines = source.split("\n");
     QStringListIterator linesIter(lines);
 
-    qWarning("start parse: %s",fname.toAscii().data());
+    qWarning("start parse: %s",fname.toLatin1().data());
     tok = readline(&linesIter);
     while ((linesIter.hasNext()) || !tok.isEmpty()) {
 
@@ -977,7 +978,7 @@ void Cpasm::parsefile(QString fname,QString source) {
 
             extractop(tok);
             if (op == ".ORG") {
-                startadr = mathparse(param1.toAscii(), 16);
+                startadr = mathparse(param1.toLatin1(), 16);
             }
             else if (op == ".EQU") {
                 addsymbol(param1, param2);
@@ -986,22 +987,22 @@ void Cpasm::parsefile(QString fname,QString source) {
                 while (params.indexOf(",") >= 0) {
                     s = params.mid(0,params.indexOf(",") );
                     //if s[1] = '''' then addcode(ord(s[2])) else
-                    addcode(mathparse(s.toAscii(), 8));
+                    addcode(mathparse(s.toLatin1(), 8));
                     params.remove(0,params.indexOf(",")+1);
                 }
                 params = params.trimmed();
                 //if params[1] = '''' then addcode(ord(params[2])) else
-                addcode(mathparse(params.toAscii(), 8));
+                addcode(mathparse(params.toLatin1(), 8));
             }
             else if (op == ".DW") {
                 while (params.indexOf(",") >= 0) {
                     s = params.mid(0,params.indexOf(","));
-                    addcode((mathparse(s.toAscii(), 16) << 8) && 0xFF);
-                    addcode(mathparse(s.toAscii(), 16) && 0xFF);
+                    addcode((mathparse(s.toLatin1(), 16) << 8) && 0xFF);
+                    addcode(mathparse(s.toLatin1(), 16) && 0xFF);
                     params.remove(0,params.indexOf(",")+1);
                 }
-                addcode((mathparse(params.toAscii(), 16) << 8) && 0xFF);
-                addcode(mathparse(params.toAscii(), 16) && 0xFF);
+                addcode((mathparse(params.toLatin1(), 16) << 8) && 0xFF);
+                addcode(mathparse(params.toLatin1(), 16) && 0xFF);
             }
             else if (op == ".DS") {
                 params.remove(0,params.indexOf('"'));
@@ -1041,7 +1042,7 @@ void Cpasm::parsefile(QString fname,QString source) {
         }
         tok = readline(&linesIter);
     }
-    qWarning("fin parse : %s",fname.toAscii().data());
+    qWarning("fin parse : %s",fname.toLatin1().data());
 }
 
 #if 0

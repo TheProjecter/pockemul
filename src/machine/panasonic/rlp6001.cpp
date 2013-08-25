@@ -1,5 +1,5 @@
 #include <QPainter>
-
+#include <QDebug>
 
 #include "common.h"
 #include "Log.h"
@@ -11,26 +11,26 @@
 #include "rlh1000.h"
 #include "Connect.h"
 
-Crlp6001::Crlp6001(CPObject *parent )	: CPObject(this)
-{							//[constructor]
+Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
+{                                                       //[constructor]
 
 
     setfrequency( 0);
-    BackGroundFname	= P_RES(":/rlh1000/rlp6001.png");
+    BackGroundFname     = P_RES(":/rlh1000/rlp6001.png");
 
     setDXmm(85);
     setDYmm(318);
     setDZmm(51);
  // Ratio = 3,57
-    setDX(303);//Pc_DX	= 75;
-    setDY(1035);//Pc_DY	= 20;
+    setDX(303);//Pc_DX  = 75;
+    setDY(1035);//Pc_DY = 20;
 
 }
 
 Crlp6001::~Crlp6001(){
     delete(pMAINCONNECTOR);
 
-    for (int i=0;i<6;i++) delete(pEXTCONNECTOR[i]);
+    for (int i=0;i<5;i++) delete(pEXTCONNECTOR[i]);
 }
 
 
@@ -41,7 +41,7 @@ bool Crlp6001::run(void)
     bus.fromUInt64(pMAINCONNECTOR->Get_values());
     quint8 dest = bus.getDest()-1;
 
-    if ( dest >= 0x06) return true;
+    if ( dest >= 0x05) return true;
 
     bus.setDest(0);
     // copy MainConnector to Ext Connectors
@@ -62,12 +62,12 @@ bool Crlp6001::run(void)
 
 
 /*****************************************************************************/
-/* Initialize 															 */
+/* Initialize                                                                                                                    */
 /*****************************************************************************/
 bool Crlp6001::init(void)
 {
 
-    int snap[6][2] = {
+    int snap[5][2] = {
         {0,345+345+72},
         {0,345+72},
         {0,72},
@@ -83,9 +83,9 @@ bool Crlp6001::init(void)
     };
 
     AddLog(LOG_MASTER,"RL-P6001 initializing...");
-
+    qWarning()<<"RL-P6001 initializing...";
     CPObject::init();
-
+qWarning()<<"RL-P6001 initializing...step1";
     pMAINCONNECTOR = new Cconnector(this,44,0,
                                     Cconnector::Panasonic_44,
                                     "44 pins main connector",
@@ -93,19 +93,26 @@ bool Crlp6001::init(void)
                                     QPoint(303,345*2+72),
                                     Cconnector::EAST);
     publish(pMAINCONNECTOR);
+qWarning()<<"RL-P6001 initializing...step2";
 
-    for (int i=0;i<6;i++) {
-        pEXTCONNECTOR[i] = new Cconnector(this,44,0,Cconnector::Panasonic_44,"44 pins Ext. connector",false,QPoint(snap[i][0],snap[i][1]),dir[i]);
+    for (int i=0;i<5;i++) {
+        pEXTCONNECTOR[i] = new Cconnector(this,44,i+1,
+                                          Cconnector::Panasonic_44,
+                                          "44 pins Ext. connector",
+                                          false,
+                                          QPoint(snap[i][0],snap[i][1]),
+                                          dir[i]);
         publish(pEXTCONNECTOR[i]);
-
+        qWarning()<<"RL-P6001 initializing...step2 - "<<i;
     }
 
     AddLog(LOG_MASTER,"done.\n");
+    qWarning()<<"RL-P6001 initializing...DONE";
     return true;
 }
 
 /*****************************************************************************/
-/* Exit 																	 */
+/* Exit                                                                                                                                          */
 /*****************************************************************************/
 bool Crlp6001::exit(void)
 {
@@ -131,4 +138,3 @@ void Crlp6001::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.exec(event->globalPos () );
 }
-

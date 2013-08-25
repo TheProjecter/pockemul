@@ -29,7 +29,7 @@ class Cctronics : public CPObject {
         virtual void Set_BUSY(bool v) { BUSY = v; }
         virtual void Set_ACK(bool v) { ACK = v; }
 
-        virtual void Set_ERROR(bool v) { ERROR = v; }
+        virtual void Set_ERROR(bool v) { sERROR = v; }
 
         void setBufferSize(int s);
 
@@ -51,7 +51,7 @@ class Cctronics : public CPObject {
         }
 
     private:
-        bool	STROBE,INIT,ACK,BUSY,ERROR;
+        bool	STROBE,INIT,ACK,BUSY,sERROR;
         quint8  DATA;
 
         quint64  stateStrobeDelay,stateAckDelay;

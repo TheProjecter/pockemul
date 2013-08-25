@@ -150,7 +150,7 @@ void Clcdc_pc1211::disp_symb(void)
 
 
 
-        Refresh = TRUE;
+        Refresh = true;
 
 
     Clcdc::disp_symb();
@@ -243,7 +243,7 @@ void Clcdc_pc1211::DrawChar(quint8 c, int x)
 
         for (int b=0; b<7;b++)
         {
-            Refresh = TRUE;
+            Refresh = true;
             painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
             painter.drawPoint( off, b);
         }

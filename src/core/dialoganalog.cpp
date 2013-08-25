@@ -18,7 +18,7 @@
 class CPObject;
 extern QList<CPObject *> listpPObject; 
 
-dialogAnalog::dialogAnalog( int nbbits,QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
+dialogAnalog::dialogAnalog( int nbbits,QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 	setupUi(this);
 

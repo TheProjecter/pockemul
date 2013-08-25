@@ -197,29 +197,29 @@ public:
 
 	char	Regs_String[1024];
 
-    virtual BYTE    Get_PC(DWORD adr);
-	BYTE	Get_8(DWORD adr);
-	WORD	Get_16(DWORD adr);
-	WORD	Get_16r(DWORD adr);
-    virtual WORD	Get_16rPC(DWORD adr);
-    DWORD Get_20(DWORD adr);
-    DWORD Get_24(DWORD adr);
-    DWORD get_mem(DWORD adr, int size);
+    virtual BYTE    Get_PC(UINT32 adr);
+	BYTE	Get_8(UINT32 adr);
+	WORD	Get_16(UINT32 adr);
+	WORD	Get_16r(UINT32 adr);
+    virtual WORD	Get_16rPC(UINT32 adr);
+    UINT32 Get_20(UINT32 adr);
+    UINT32 Get_24(UINT32 adr);
+    UINT32 get_mem(UINT32 adr, int size);
 
-	void	Set_8(DWORD adr,BYTE d);
-	void	Set_16(DWORD adr,WORD d);
-    void	Set_16r(DWORD adr,WORD d);
-    void Set_20(DWORD adr,DWORD d);
-    void Set_24(DWORD adr,DWORD d);
-    void set_mem(DWORD adr, int size, DWORD data);
-	virtual bool	Chk_Adr(DWORD *d,DWORD data) = 0;
-    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data) = 0;
+	void	Set_8(UINT32 adr,BYTE d);
+	void	Set_16(UINT32 adr,WORD d);
+    void	Set_16r(UINT32 adr,WORD d);
+    void Set_20(UINT32 adr,UINT32 d);
+    void Set_24(UINT32 adr,UINT32 d);
+    void set_mem(UINT32 adr, int size, UINT32 data);
+	virtual bool	Chk_Adr(UINT32 *d,UINT32 data) = 0;
+    virtual bool	Chk_Adr_R(UINT32 *d, UINT32 *data) = 0;
     virtual UINT8 in(UINT8 address)=0;
     virtual UINT8 out(UINT8 address,UINT8 value)=0;
-    virtual UINT8 in8(UINT16 address){return true;}
-    virtual UINT8 out8(UINT16 address,UINT8 value){return true;}
-    virtual UINT16 in16(UINT16 address){return true;}
-    virtual UINT16 out16(UINT16 address,UINT16 value){return true;}
+    virtual UINT8 in8(UINT16 address){return 0;}
+    virtual UINT8 out8(UINT16 address,UINT8 value){return 0;}
+    virtual UINT16 in16(UINT16 address){return 0;}
+    virtual UINT16 out16(UINT16 address,UINT16 value){return 0;}
 
     QByteArray getmem();
 
@@ -231,7 +231,7 @@ public:
 	bool	LoadSession_File(QFile *);
     virtual bool	LoadSession_File(QXmlStreamReader *);
 
-
+    char	Log_String[1024];
 
     quint64	old_state;
 
@@ -285,8 +285,8 @@ signals:
 public:
     bool DasmStep;
     bool DasmFlag;
-    DWORD DasmLastAdr;
-    QMap<DWORD,Qt::CheckState> BreakPoints;
+    UINT32 DasmLastAdr;
+    QMap<UINT32,Qt::CheckState> BreakPoints;
     int BreakSubLevel;
 
 

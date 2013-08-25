@@ -136,15 +136,15 @@ public:
     void	Load_Internal(QXmlStreamReader *);
     void	save_internal(QXmlStreamWriter *);
 
-    DWORD	get_mem(DWORD adr,int size);		//get memory
-    void	set_mem(DWORD adr,int size,DWORD data);	//set memory
+    UINT32	get_mem(UINT32 adr,int size);		//get memory
+    void	set_mem(UINT32 adr,int size,UINT32 data);	//set memory
 
     bool	Get_Xin(void);
     void	Set_Xin(bool);
     bool	Get_Xout(void);
     void	Set_Xout(bool);
 
-    DWORD	get_PC(void);					//get Program Counter
+    UINT32	get_PC(void);					//get Program Counter
     void	Regs_Info(UINT8);
 
     void	TIMER_INC(void);
@@ -152,7 +152,7 @@ public:
 
 //    void	AddState(UINT8);
 
-    UINT8	cpu_readop(DWORD);
+    UINT8	cpu_readop(UINT32);
 
 
     //LH5801REG lh5801;

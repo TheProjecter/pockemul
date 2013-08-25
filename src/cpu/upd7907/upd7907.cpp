@@ -11202,7 +11202,7 @@ void Cupd7907::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "upd7907")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toLatin1());
             memcpy((char *) &upd7907stat,ba_reg.data(),sizeof(upd7907stat));
             upd7907stat.pPC = pPC;
             upd7907stat.opXX = opXX_7907;
@@ -11214,7 +11214,7 @@ void Cupd7907::Load_Internal(QXmlStreamReader *xmlIn)
             upd7907stat.op70 = op70_7907;
             upd7907stat.op74 = op74_7907;
             upd7907stat.handle_timers = upd78c05_timers;
-//            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+//            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toLatin1());
 //            memcpy((char *) &(upd7907stat.imem),ba_imem.data(),IMEM_LEN);
 
         }
@@ -11804,7 +11804,7 @@ DEFINE_LEGACY_CPU_DEVICE(UPD78C06, upd78c06);
 #endif
 
 
-DWORD Cupd7907::get_PC()
+UINT32 Cupd7907::get_PC()
 {
     upd7907_state *cpustate = &upd7907stat;
     return PC;

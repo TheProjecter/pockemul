@@ -20,15 +20,15 @@ public:
     void fromUInt64(quint64 val);
     UINT8 getData() { return data;}
     void setData(UINT8 val) { data = val;}
-    DWORD getAddr() { return addr;}
-    void setAddr(DWORD val) { addr=val;}
+    UINT32 getAddr() { return addr;}
+    void setAddr(UINT32 val) { addr=val;}
     UINT8 getDest() { return dest;}
     void setDest(UINT8 val) { dest = val;}
     UINT8 getFunc() { return func;}
     void setFunc(UINT8 val) { func = val;}
 
 private:
-    DWORD addr;
+    UINT32 addr;
     UINT8 data;
     UINT8 dest;
     UINT8 func;
@@ -44,13 +44,13 @@ public:
     Crlh1000(CPObject *parent = 0);
     virtual ~Crlh1000();
 
-    virtual bool	Chk_Adr(DWORD *d,DWORD data);
-    virtual bool	Chk_Adr_R(DWORD *d, DWORD *data);
+    virtual bool        Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool        Chk_Adr_R(UINT32 *d, UINT32 *data);
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
 
-    virtual bool	Set_Connector(void);
-    virtual bool	Get_Connector(void);
+    virtual bool        Set_Connector(void);
+    virtual bool        Get_Connector(void);
 
     virtual bool init();
     virtual bool run();

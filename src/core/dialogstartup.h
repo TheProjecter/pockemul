@@ -7,7 +7,7 @@ class DialogStartup : public QDialog, public Ui::DialogStartup
 {
 Q_OBJECT
 public:
-	DialogStartup( QWidget * parent = 0, Qt::WFlags f = 0 );
+    DialogStartup( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 	
 	void create(QString);
 	

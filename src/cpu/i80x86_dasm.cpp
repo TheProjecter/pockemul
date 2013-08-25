@@ -473,7 +473,7 @@ char *Cdebug_i80x86::rm16val(const I86stat *i86, uint8 rm)
     return buf;
 }
 
-DWORD Cdebug_i80x86::DisAsm_1(DWORD oldpc)
+UINT32 Cdebug_i80x86::DisAsm_1(UINT32 oldpc)
 //void *z80disasm(char *str, uint8 *mem)
 {
 

@@ -220,7 +220,7 @@ void Cg850v::Reset()
     Mem_Load(0);
 }
 
-bool Cg850v::Mem_Mirror(DWORD *d)
+bool Cg850v::Mem_Mirror(UINT32 *d)
 {
     if ( (*d>=0x8000) && (*d<=0xbfff) ) {
         if (exBank != 0) {
@@ -236,14 +236,14 @@ bool Cg850v::Mem_Mirror(DWORD *d)
     return true;
 }
 
-bool Cg850v::Chk_Adr(DWORD *d, DWORD data)
+bool Cg850v::Chk_Adr(UINT32 *d, UINT32 data)
 {
     Mem_Mirror(d);
     if (*d<=0x7fff) return true;
     return false;
 }
 
-bool Cg850v::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Cg850v::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
     Mem_Mirror(d);
     return true;

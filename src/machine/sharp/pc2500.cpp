@@ -128,7 +128,7 @@ void	Cpc2500::Set_PortF(BYTE data)
     ProtectMemory = GET_PORT_BIT(PORT_F,1);
 }
 
-BYTE Cpc2500::Get_PC(DWORD adr)
+BYTE Cpc2500::Get_PC(UINT32 adr)
 {
     //Chk_Adr_R(&adr,bREAD);
     if ( (adr >= 0x8000) && (adr<=0xFFFF) && (RomBank & 0x02) ) {
@@ -137,9 +137,9 @@ BYTE Cpc2500::Get_PC(DWORD adr)
     return(mem[adr]);
 }
 
-WORD Cpc2500::Get_16rPC(DWORD adr)
+WORD Cpc2500::Get_16rPC(UINT32 adr)
 {
-    DWORD	a;
+    UINT32	a;
 
     if ( (adr >= 0x8000) && (adr<=0xFFFF) && (RomBank & 0x02) ) {
         adr += 0x8000;
@@ -151,7 +151,7 @@ WORD Cpc2500::Get_16rPC(DWORD adr)
     return((mem[adr]<<8)+mem[a]);
 }
 
-bool Cpc2500::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc2500::Chk_Adr(UINT32 *d,UINT32 data)
 {
     if (ProtectMemory) {
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"ECRITURE EXT [%04x]=%02x (%c)\n",(uint)*d,(BYTE)data,(int)data);
@@ -209,7 +209,7 @@ bool Cpc2500::init(void) {
     return true;
 }
 
-bool Cpc2500::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc2500::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
     if ( (*d >= 0x8000) && (*d<=0xFFFF) && (RomBank & 0x02) ) {
         *d += 0x8000;

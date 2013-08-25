@@ -4,7 +4,7 @@
 #include "Log.h"
 
 
-DialogLog::DialogLog( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
+DialogLog::DialogLog(QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 	setupUi(this);
 	connect(mainwindow,SIGNAL(AddLogItem(QString)),this,SLOT(additem(QString)));

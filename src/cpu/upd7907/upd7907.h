@@ -254,7 +254,7 @@ public:
     virtual void Set_Xin(bool){}
     virtual bool Get_Xout(){ return true;}
     virtual void Set_Xout(bool){}
-    virtual DWORD get_PC();
+    virtual UINT32 get_PC();
     virtual void Regs_Info(UINT8);
 
     upd7907_state upd7907stat;

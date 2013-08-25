@@ -250,7 +250,7 @@ INLINE void CSC61860::Set_i16(BYTE adr,WORD d)
 /*  ENTRY :BYTE r=register No.(0-7)											 */
 /*  RETURN:(BYTE(8),WORD(16),DWORD(20) data)								 */
 /*****************************************************************************/
-INLINE  DWORD CSC61860::Get_r(BYTE r)
+INLINE  UINT32 CSC61860::Get_r(BYTE r)
 {
 	switch(r & 7)
 	{
@@ -271,7 +271,7 @@ INLINE  DWORD CSC61860::Get_r(BYTE r)
 /* Set register data														 */
 /*  ENTRY :BYTE r=register No.(0-7), BYTE(8),WORD(16),DWORD(20) d=data		 */
 /*****************************************************************************/
-INLINE  void CSC61860::Set_r(BYTE r,DWORD d)
+INLINE  void CSC61860::Set_r(BYTE r,UINT32 d)
 {
 	switch(r&7)
 	{
@@ -290,17 +290,17 @@ INLINE  void CSC61860::Set_r(BYTE r,DWORD d)
 /* Check flags(Zero & Carry)												 */
 /*  ENTRY :DWORD d=data, BYTE len=data length(8bit=1,16bit=2,20bit=3)		 */
 /*****************************************************************************/
-DWORD	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
-DWORD	mask_c[]={0,MASK_8+1,MASK_16+1,MASK_20+1,MASK_24+1};
+UINT32	mask_z[]={0,MASK_8,MASK_16,MASK_20,MASK_24};
+UINT32	mask_c[]={0,MASK_8+1,MASK_16+1,MASK_20+1,MASK_24+1};
 
-INLINE void CSC61860::Chk_Flag(DWORD d,BYTE len)
+INLINE void CSC61860::Chk_Flag(UINT32 d,BYTE len)
 {
 
 	reg.r.z = ( (d & mask_z[len])==0 ) ? 1 : 0;
 	reg.r.c = ( (d & mask_c[len])==0 ) ? 0 : 1;
 }
 
-INLINE void CSC61860::Chk_Zero(DWORD d,BYTE len)
+INLINE void CSC61860::Chk_Zero(UINT32 d,BYTE len)
 {
 	reg.r.z = ( (d & mask_z[len])==0 ) ? 1 : 0;
 }
@@ -695,7 +695,7 @@ INLINE void CSC61860::Op_13(void)
 //--------------------------
 INLINE void CSC61860::Op_14(void)
 {	
-	DWORD t;
+	UINT32 t;
 
 	t = Get_i16(reg.r.p) + ( I_REG_A|(I_REG_B<<8) );	
 
@@ -711,7 +711,7 @@ INLINE void CSC61860::Op_14(void)
 //--------------------------
 INLINE void CSC61860::Op_15(void)
 {	
-	DWORD t;
+	UINT32 t;
 
 	t = Get_i16(reg.r.p) - ( I_REG_A|(I_REG_B<<8) );
 	Chk_Flag(t,SIZE_16);
@@ -1250,7 +1250,7 @@ INLINE void CSC61860::Op_37(void)
 //----------------------------
 INLINE void CSC61860::Op_40(BYTE ind)
 {
-	DWORD d;
+	UINT32 d;
 
 	d = ((BYTE) Get_r(ind)) + 1;
 	Chk_Flag(d,SIZE_8);
@@ -1282,7 +1282,7 @@ INLINE void CSC61860::Op_40(BYTE ind)
 //----------------------------
 INLINE void CSC61860::Op_41(BYTE ind)
 {
-	DWORD d;
+	UINT32 d;
 
 	d= ((BYTE) Get_r(ind)) - 1;
 	Chk_Flag(d,SIZE_8);
@@ -1314,7 +1314,7 @@ INLINE void CSC61860::Op_41(BYTE ind)
 //----------------------------
 INLINE void CSC61860::Op_44(void)
 {
-	DWORD t;
+	UINT32 t;
 
 	t = Get_i8(reg.r.p) + I_REG_A;
 	Chk_Flag(t,SIZE_8);
@@ -1328,7 +1328,7 @@ INLINE void CSC61860::Op_44(void)
 //----------------------------
 INLINE void CSC61860::Op_45(void)
 {
-	DWORD t;
+	UINT32 t;
 
 	t = Get_i8(reg.r.p) - I_REG_A;
 	Chk_Flag(t,SIZE_8);
@@ -1342,7 +1342,7 @@ INLINE void CSC61860::Op_45(void)
 //----------------------------
 INLINE void CSC61860::Op_c4(void)
 {
-	DWORD t;
+	UINT32 t;
 
 	t = Get_i8(reg.r.p) + I_REG_A + reg.r.c;
 	Chk_Flag(t,SIZE_8);
@@ -1356,7 +1356,7 @@ INLINE void CSC61860::Op_c4(void)
 //----------------------------
 INLINE void CSC61860::Op_c5(void)
 {
-	DWORD t;
+	UINT32 t;
 
 	t = Get_i8(reg.r.p) - I_REG_A - reg.r.c;
 	Chk_Flag(t,SIZE_8);
@@ -1834,7 +1834,7 @@ INLINE void CSC61860::Op_6b(void)
 //----------------------------
 INLINE void CSC61860::Op_70(void)
 {
-	DWORD t;
+	UINT32 t;
 	BYTE n;
 
     n = pPC->Get_PC(reg.d.pc++);
@@ -1852,7 +1852,7 @@ INLINE void CSC61860::Op_70(void)
 //----------------------------
 INLINE void CSC61860::Op_71(void)
 {
-	DWORD t;
+	UINT32 t;
 	BYTE n;
 
     n = pPC->Get_PC(reg.d.pc++);
@@ -1869,7 +1869,7 @@ INLINE void CSC61860::Op_71(void)
 //----------------------------
 INLINE void CSC61860::Op_74(void)
 {
-	DWORD	t;
+	UINT32	t;
 	BYTE d;
 
     d = pPC->Get_PC(reg.d.pc++);
@@ -1886,7 +1886,7 @@ INLINE void CSC61860::Op_74(void)
 //----------------------------
 INLINE void CSC61860::Op_75(void)
 {
-	DWORD	t;
+	UINT32	t;
 	BYTE	d;
 
     d = pPC->Get_PC(reg.d.pc++);
@@ -2838,9 +2838,9 @@ void CSC61860::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "sc61860")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toLatin1());
             memcpy((char *) &reg,ba_reg.data(),REG_LEN);
-            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toLatin1());
             memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
         }
         xmlIn->skipCurrentElement();
@@ -2882,7 +2882,7 @@ bool CSC61860::exit(void)
 /*****************************************************************************/
 void CSC61860::step(void)
 {
-	DWORD t;
+	UINT32 t;
 
 	if(logsw)
 	{
@@ -2910,7 +2910,7 @@ INLINE void CSC61860::backgroundTasks(void) {
 /*  ENTRY :REGNAME regname=REG_xx											 */
 /*  RETURN:DWORD value														 */
 /*****************************************************************************/
-DWORD CSC61860::get_reg(REGNAME regname)
+UINT32 CSC61860::get_reg(REGNAME regname)
 {
 	switch(regname)
 	{
@@ -2940,7 +2940,7 @@ DWORD CSC61860::get_reg(REGNAME regname)
  \param regname REG_xx
  \param data    value
 */
-void CSC61860::set_reg(REGNAME regname,DWORD data)
+void CSC61860::set_reg(REGNAME regname,UINT32 data)
 {
 	switch(regname)
 	{
@@ -2973,7 +2973,7 @@ void CSC61860::set_reg(REGNAME regname,DWORD data)
  \param size    SIZE_08 or SIZE_16 or SIZE_20 or SIZE_24
  \return DWORD  value
 */
-DWORD CSC61860::get_mem(DWORD adr,int size)
+UINT32 CSC61860::get_mem(UINT32 adr,int size)
 {
 	switch(size)
 	{
@@ -2989,7 +2989,7 @@ DWORD CSC61860::get_mem(DWORD adr,int size)
 /*  ENTRY :DOWRD adr=address, int size=SIZE_xx, DWORD data=value			 */
 /*  RETURN:none																 */
 /*****************************************************************************/
-void CSC61860::set_mem(DWORD adr,int size,DWORD data)
+void CSC61860::set_mem(UINT32 adr,int size,UINT32 data)
 {
 	switch(size)
 	{

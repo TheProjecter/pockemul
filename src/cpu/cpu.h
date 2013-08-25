@@ -71,15 +71,15 @@ public:
     virtual	void	save_internal(QXmlStreamWriter *) =0;
 			void	save(void);
 
-    virtual	DWORD	get_mem(DWORD adr,int size);		//get memory
-    virtual	void	set_mem(DWORD adr,int size,DWORD data);	//set memory
+    virtual	UINT32	get_mem(UINT32 adr,int size);		//get memory
+    virtual	void	set_mem(UINT32 adr,int size,UINT32 data);	//set memory
 	
 	virtual	bool	Get_Xin(void) =0;
 	virtual	void	Set_Xin(bool) =0;
 	virtual	bool	Get_Xout(void) =0;
 	virtual	void	Set_Xout(bool) =0;
 
-	virtual	DWORD	get_PC(void) =0;					//get Program Counter
+	virtual	UINT32	get_PC(void) =0;					//get Program Counter
 	virtual void	Regs_Info(UINT8) =0;
 
     const char	*fn_status;					//status file name

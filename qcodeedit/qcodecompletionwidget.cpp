@@ -433,7 +433,8 @@ void QCodeCompletionModel::clear()
 	setFilter(QCodeCompletionWidget::KeepAll);
 	
 	m_visibles.clear();
-	reset();
+    //FIXME::
+    //reset();
 }
 
 QString QCodeCompletionModel::prefix() const

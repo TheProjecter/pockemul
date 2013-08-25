@@ -9,7 +9,7 @@ public:
 
     virtual BYTE	Get_PortB(void);
 
-    virtual bool	Chk_Adr(DWORD *d,DWORD data);
+    virtual bool	Chk_Adr(UINT32 *d,UINT32 data);
 
     Cpc1260(CPObject *parent = 0);
 
@@ -19,7 +19,7 @@ private:
 class Cpc1261:public Cpc1260{
 public:
     const char*	GetClassName(){ return("Cpc1261");}
-	bool	Chk_Adr(DWORD *d,DWORD data);
+	bool	Chk_Adr(UINT32 *d,UINT32 data);
 
     Cpc1261(CPObject *parent = 0);
 

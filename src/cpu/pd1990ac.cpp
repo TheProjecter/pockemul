@@ -138,18 +138,18 @@ bool CPD1990AC::step(void)
 		// Mode can change
 		mode = c0+(c1<<1)+(c2<<2);
         AddLog(LOG_TIME,tr("Mode:%1").arg(mode));
-		if (mode !=prev_mode) { New_Mode = TRUE; prev_mode=mode; }
-		else					New_Mode = FALSE;
+        if (mode !=prev_mode) { New_Mode = true; prev_mode=mode; }
+        else					New_Mode = false;
 	}
 
-	if (clk != prev_clk) {	flip_clk=TRUE; prev_clk=clk;	}
-	else					flip_clk=FALSE;
+    if (clk != prev_clk) {	flip_clk=true; prev_clk=clk;	}
+    else					flip_clk=false;
 
     if (mode == 4)	{
 //        if (( (CpcXXXX *)pPC)->pCPU->fp_log) fprintf(( (CpcXXXX *)pPC)->pCPU->fp_log,"TP64\n");
         TP_FREQUENCY=64;
     }
-	if (mode == 0)	{ clk = TRUE; flip_clk=TRUE; bitno=0; }
+    if (mode == 0)	{ clk = true; flip_clk=true; bitno=0; }
 
 	if (clk && flip_clk)
 	{
@@ -273,7 +273,7 @@ void	CPD1990AC::Set_vdd(bool bit)		{ vdd			= bit;	}
 
 CPD1990AC::CPD1990AC(CPObject *parent)
 {
-		c0=c1=c2=stb=cs=data_in=gnd=clk=data_out=tp=out_enable=n_xtal=xtal=vdd=FALSE;
+        c0=c1=c2=stb=cs=data_in=gnd=clk=data_out=tp=out_enable=n_xtal=xtal=vdd=false;
 		Current_Bit = 0;
 		pPC = parent;
 		init();

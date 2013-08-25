@@ -26,7 +26,7 @@ Cpc1255::Cpc1255(CPObject *parent)	: Cpc1250(parent)
 
 }
 
-bool Cpc1255::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1255::Chk_Adr(UINT32 *d,UINT32 data)
 {
 	Cpc1250::Mem_Mirror(d);
 	

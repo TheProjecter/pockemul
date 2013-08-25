@@ -43,7 +43,7 @@ void CTinyBasic::Load_Internal(QXmlStreamReader *xmlIn)
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "tinybasic")) {
             program_end = program_start + xmlIn->attributes().value("program_end").toString().toInt(0,16);
-            QByteArray ba_program = QByteArray::fromBase64(xmlIn->attributes().value("memory").toString().toAscii());
+            QByteArray ba_program = QByteArray::fromBase64(xmlIn->attributes().value("memory").toString().toLatin1());
             memcpy((char *) &program,ba_program.data(),kRamSize);
         }
         xmlIn->skipCurrentElement();
@@ -1625,7 +1625,7 @@ qhow:
 qwhat:
     waitForRTN = true;
 
-    printmsgNoNL((unsigned char*)QString("%1................").arg(errorNumber).rightJustified(24,QChar(' ')).toAscii().data());
+    printmsgNoNL((unsigned char*)QString("%1................").arg(errorNumber).rightJustified(24,QChar(' ')).toLatin1().data());
     if(current_line != NULL)
     {
            unsigned char tmp = *txtpos;

@@ -236,9 +236,9 @@ bool Cce515p::Next_Color(void)
     if (Pen_Color == 4)
     {
         Pen_Color = 0;
-        return(TRUE);
+        return(true);
     }
-    return(FALSE);
+    return(false);
 }
 
 
@@ -453,7 +453,7 @@ void Cce515p::Command(quint8 t) {
 void Cce515p::ProcessGraphCommand() {
     bool ok;
     AddLog(LOG_PRINTER,"Graph Command:"+graphCommand);
-    switch (graphCommand.at(0).toAscii()) {
+    switch (graphCommand.at(0).toLatin1()) {
     case 'S':   { //size 0-15 (Canon x-710)
                     qint8 tmpcharSize = graphCommand.mid(1).toInt() +1;
                     if ((tmpcharSize >0) && (tmpcharSize <= 16))
@@ -483,7 +483,7 @@ void Cce515p::ProcessGraphCommand() {
                 break;
     case 'P' : // Print character
                 for (int i=1; i < graphCommand.size(); i++) {
-                    drawChar(graphCommand.at(i).toAscii(),mainRot);
+                    drawChar(graphCommand.at(i).toLatin1(),mainRot);
                 }
                 break;
     case 'Q' : // Main rotation
@@ -543,7 +543,7 @@ void Cce515p::ProcessMultiPointCommand(QString command) {
             //AddLog(LOG_PRINTER,"first param:"+coordList.at(ind));
             //AddLog(LOG_PRINTER,"second param:"+coordList.at(ind+1));
             AddLog(LOG_PRINTER,tr("draw to [%1,%2]").arg(TRANSX(x),4,10,QChar('0')).arg(TRANSY(y),4,10,QChar('0')));
-            switch (command.at(0).toAscii()) {
+            switch (command.at(0).toLatin1()) {
             case 'D' :  penDown = true;
                         DrawLine(TRANSX(Pen_X),TRANSY(Pen_Y),TRANSX(x),TRANSY(y));
                         Pen_X = (x);
@@ -573,11 +573,11 @@ void Cce515p::ProcessMultiPointCommand(QString command) {
 
 void Cce515p::ProcessEscCommand() {
     qint8 tmpcharSize = 0;
-    switch (escCommand.at(0).toAscii()) {
+    switch (escCommand.at(0).toLatin1()) {
     case '?': //size 2 mode a-o or 1- 63 (for ce-140p)
 
-        if ( (escCommand.at(1).toAscii()>=97) && (escCommand.at(1).toAscii()<=111) )
-            charSize = escCommand.at(1).toAscii()-96;
+        if ( (escCommand.at(1).toLatin1()>=97) && (escCommand.at(1).toLatin1()<=111) )
+            charSize = escCommand.at(1).toLatin1()-96;
         else { // CE-140P Mode
             tmpcharSize = escCommand.mid(1).toInt();
             if ((tmpcharSize >0) && (tmpcharSize < 64))

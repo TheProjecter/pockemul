@@ -41,14 +41,14 @@ Cpc1425::Cpc1425(CPObject *parent) : Cpc1403(parent)
 
 }
 
-bool Cpc1425::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1425::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
     if ( (*d>=0x8000) && (*d<=0xdFFF) )	{ return(1); }
     return (Cpc1403::Chk_Adr(d,data));
 }
 
-bool Cpc1425::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1425::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
     return(Cpc1403::Chk_Adr_R(d,data));
 }

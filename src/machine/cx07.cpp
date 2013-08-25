@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include "common.h"
 #include "cx07.h"
@@ -300,7 +300,7 @@ bool Cx07::run() {
     return true;
 }
 
-bool Cx07::Chk_Adr(DWORD *d, DWORD data)
+bool Cx07::Chk_Adr(UINT32 *d, UINT32 data)
 {
     if ( (*d>=0x0000) && (*d<=0x9FFF) )	return(true);		// RAM area()
 
@@ -310,7 +310,7 @@ bool Cx07::Chk_Adr(DWORD *d, DWORD data)
     return false;
 }
 
-bool Cx07::Chk_Adr_R(DWORD *d, DWORD *data)
+bool Cx07::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
     return true;
 }

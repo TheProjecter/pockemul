@@ -174,7 +174,7 @@ bool Cpc1250::Get_Connector(void)
 /*****************************************************************************/
 // Virtual Fonction
 
-bool Cpc1250::Mem_Mirror(DWORD *d) 
+bool Cpc1250::Mem_Mirror(UINT32 *d) 
 {
 	if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ /*AddLog(LOG_RAM,"RAM: Mirror %04X -> %04X",*d,*d+0x2000);*/	*d+=0x2000;return(1);	}
 	if ( (*d>=0xD000) && (*d<=0xD7FF) )	{ /*AddLog(LOG_RAM,"RAM: Mirror %04X -> %04X",*d,*d-0x1000);*/	*d-=0x1000;return(1); }
@@ -192,7 +192,7 @@ bool Cpc1250::Mem_Mirror(DWORD *d)
 }
 
 
-bool Cpc1250::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1250::Chk_Adr(UINT32 *d,UINT32 data)
 {
 //	Mem_Mirror(d);
 
@@ -203,7 +203,7 @@ bool Cpc1250::Chk_Adr(DWORD *d,DWORD data)
 	return(false);
 }
 
-bool Cpc1250::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1250::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 //	Mem_Mirror(d);
 	return(true);

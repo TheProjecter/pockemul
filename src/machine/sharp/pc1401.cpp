@@ -178,7 +178,7 @@ bool Cpc1401::Get_Connector(void)
 /*****************************************************************************/
 // Virtual Fonction
 
-bool Cpc1401::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1401::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
 	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);			// ROM area(0000-1fff) 
@@ -190,7 +190,7 @@ bool Cpc1401::Chk_Adr(DWORD *d,DWORD data)
 	return(0);
 }
 
-bool Cpc1401::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1401::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 	return(1);
 }

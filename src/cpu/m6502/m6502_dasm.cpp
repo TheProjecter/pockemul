@@ -74,7 +74,7 @@ static BYTE AD[512] =
 /** return the number of bytes disassembled.                 **/
 /**************************************************************/
 
-DWORD Cdebug_m6502::DisAsm_1(DWORD pc) {
+UINT32 Cdebug_m6502::DisAsm_1(UINT32 pc) {
     unsigned short old_pc;
     int i, j;
     char data[1024];

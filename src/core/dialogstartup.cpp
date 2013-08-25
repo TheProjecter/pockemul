@@ -8,7 +8,7 @@ extern MainWindowPockemul *mainwindow;
 
 // TODO: populate tabs by parsin config.xml file
 
-DialogStartup::DialogStartup( QWidget * parent, Qt::WFlags f) : QDialog(parent, f)
+DialogStartup::DialogStartup( QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 	setupUi(this);
 	

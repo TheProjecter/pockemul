@@ -104,24 +104,24 @@ public:
 	void	Set_Xout(bool);
 
 
-	DWORD	get_reg(REGNAME regname);			//get register
-	void	set_reg(REGNAME regname,DWORD data);	//set register
-	DWORD	get_mem(DWORD adr,int size);		//get memory
-	void	set_mem(DWORD adr,int size,DWORD data);	//set memory
+	UINT32	get_reg(REGNAME regname);			//get register
+	void	set_reg(REGNAME regname,UINT32 data);	//set register
+	UINT32	get_mem(UINT32 adr,int size);		//get memory
+	void	set_mem(UINT32 adr,int size,UINT32 data);	//set memory
 
-	DWORD	Get_r(BYTE);
-	void	Set_r(BYTE ,DWORD);
+	UINT32	Get_r(BYTE);
+	void	Set_r(BYTE ,UINT32);
 
 
-	void	Chk_Flag(DWORD d,BYTE len);
-	void	Chk_Zero(DWORD d,BYTE len);
+	void	Chk_Flag(UINT32 d,BYTE len);
+	void	Chk_Zero(UINT32 d,BYTE len);
 	void	Chk_imemAdr(BYTE d,BYTE len);
 
 	void	OpExec(BYTE);
 
 	void	Reset(void);
 
-    DWORD	get_PC(void){return(get_reg(REG_PC));}				//get Program Counter
+    UINT32	get_PC(void){return(get_reg(REG_PC));}				//get Program Counter
 	void	Regs_Info(UINT8);
     bool    getDisp() { return disp_on;}
     virtual const char*	GetClassName(){ return("CSC61860");}

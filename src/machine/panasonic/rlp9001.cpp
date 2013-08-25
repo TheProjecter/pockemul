@@ -9,27 +9,27 @@
 #include "rlp9001.h"
 #include "rlh1000.h"
 
-Crlp9001::Crlp9001(CPObject *parent )	: CPObject(this)
-{							//[constructor]
+Crlp9001::Crlp9001(CPObject *parent )   : CPObject(this)
+{                                                       //[constructor]
 
 
     setfrequency( 0);
-    BackGroundFname	= P_RES(":/rlh1000/rlp9002.png");
+    BackGroundFname     = P_RES(":/rlh1000/rlp9002.png");
 
     setDXmm(113);
     setDYmm(95);
     setDZmm(51);
  // Ratio = 3,57
-    setDX(403);//Pc_DX	= 75;
-    setDY(340);//Pc_DY	= 20;
+    setDX(403);//Pc_DX  = 75;
+    setDY(340);//Pc_DY  = 20;
 
     rotate = false;
 
-    memsize			= 0x4000;
-    InitMemValue	= 0xff;
+    memsize                     = 0x4000;
+    InitMemValue        = 0xff;
 
     SlotList.clear();
-    SlotList.append(CSlot(16 , 0x0000 ,	""                                  , ""	, RAM , "RAM 16Ko"));
+    SlotList.append(CSlot(16 , 0x0000 , ""                                  , ""        , RAM , "RAM 16Ko"));
 
 }
 
@@ -83,7 +83,7 @@ bool Crlp9001::run(void)
 
 
 /*****************************************************************************/
-/* Initialize Potar															 */
+/* Initialize Potar                                                                                                                      */
 /*****************************************************************************/
 bool Crlp9001::init(void)
 {
@@ -107,7 +107,7 @@ bool Crlp9001::init(void)
 }
 
 /*****************************************************************************/
-/* Exit Potar																	 */
+/* Exit Potar                                                                                                                                    */
 /*****************************************************************************/
 bool Crlp9001::exit(void)
 {
@@ -120,9 +120,9 @@ bool Crlp9001::SaveSession_File(QXmlStreamWriter *xmlOut)
         xmlOut->writeAttribute("version", "2.0");
         xmlOut->writeAttribute("rotate",QString("%1").arg(rotate));
         xmlOut->writeStartElement("memory");
-            for (int s=0; s<SlotList.size(); s++)				// Save Memory
+            for (int s=0; s<SlotList.size(); s++)                               // Save Memory
             {
-                if (SlotList[s].getType() == RAM)	Mem_Save(xmlOut,s);
+                if (SlotList[s].getType() == RAM)       Mem_Save(xmlOut,s);
             }
         xmlOut->writeEndElement();  // memory
     xmlOut->writeEndElement();  // session
@@ -136,7 +136,7 @@ bool Crlp9001::LoadSession_File(QXmlStreamReader *xmlIn)
         if (rotate != rot) Rotate();
         if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
             AddLog(LOG_MASTER,"Load Memory");
-            for (int s=0; s<SlotList.size(); s++)				// Save Memory
+            for (int s=0; s<SlotList.size(); s++)                               // Save Memory
             {
                 if (SlotList[s].getType() == RAM) {
                     AddLog(LOG_MASTER,"    Load Slot"+SlotList[s].getLabel());
@@ -174,7 +174,7 @@ void Crlp9001::Rotate()
     rotate = ! rotate;
 
     delete BackgroundImageBackup;
-    BackgroundImageBackup = LoadImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
+    BackgroundImageBackup = CreateImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
         delete BackgroundImage;
         BackgroundImage = new QImage(*BackgroundImageBackup);
         delete FinalImage;
@@ -188,5 +188,4 @@ void Crlp9001::Rotate()
 
         // adapt SNAP connector
 }
-
 

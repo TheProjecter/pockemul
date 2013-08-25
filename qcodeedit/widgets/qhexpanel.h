@@ -1,12 +1,13 @@
 #ifndef QHEXPANEL_H
 #define QHEXPANEL_H
 
+#include <QComboBox>
+
 #include "qpanel.h"
 #include "bineditor/bineditor.h"
 
 class QDocumentLine;
 class CPObject;
-class QComboBox;
 class CpcXXXX;
 
 class QCE_EXPORT QHexPanel : public QPanel

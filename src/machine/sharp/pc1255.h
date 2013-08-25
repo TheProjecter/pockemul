@@ -9,7 +9,7 @@ public:
     const char*	GetClassName(){ return("Cpc1255");}
 
 
-	bool	Chk_Adr(DWORD *d,DWORD data);
+	bool	Chk_Adr(UINT32 *d,UINT32 data);
 
 
     Cpc1255(CPObject *parent = 0);

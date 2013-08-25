@@ -76,7 +76,7 @@ protected:
     int			Pen_X,Pen_Y,Pen_Z,prev_Pen_X,prev_Pen_Y,prev_Pen_Z;
 	bool		Pen_Status;			// UP or Down Position
 	int			Pen_Color;			// Color : 0 to 3
-	DWORD		Offset_Paper_View;
+	UINT32		Offset_Paper_View;
 	BYTE		Rot;
 
 

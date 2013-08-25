@@ -11,7 +11,7 @@ class DialogKeyList : public QDialog, public Ui::DialogKeyList
 {
 Q_OBJECT
 public:
-	DialogKeyList( CPObject * parent = 0, Qt::WFlags f = 0 );
+    DialogKeyList( CPObject * parent = 0, Qt::WindowFlags f = 0 );
 	
 	void	InsertKeys(void);
 	void	FindKey(QListWidgetItem * item);

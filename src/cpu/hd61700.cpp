@@ -2939,14 +2939,14 @@ inline UINT8 CHD61700::read_op()
 inline UINT8 CHD61700::mem_readbyte(UINT8 segment, UINT16 offset)
 {
 //    return m_program->read_word(make_18bit_addr(segment, offset)<<1) & 0xff;
-    DWORD adr = make_18bit_addr(segment, offset);
+    UINT32 adr = make_18bit_addr(segment, offset);
     return pPC->get_mem(adr,SIZE_8) & 0xff;
 }
 
 inline void CHD61700::mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data)
 {
 //    m_program->write_word(make_18bit_addr(segment, offset)<<1, data);
-    DWORD adr = make_18bit_addr(segment, offset);
+    UINT32 adr = make_18bit_addr(segment, offset);
     pPC->set_mem(adr,SIZE_8,data);
 }
 
@@ -3171,7 +3171,7 @@ bool CHD61700::exit()
     return true;
 }
 
-DWORD CHD61700::get_PC(void)
+UINT32 CHD61700::get_PC(void)
 {
     return(m_pc);
 }

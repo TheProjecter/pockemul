@@ -90,7 +90,7 @@ public:
     virtual	bool	Get_Xout(void){ return true;}
     virtual	void	Set_Xout(bool){}
 
-    virtual	DWORD	get_PC(void);					//get Program Counter
+    virtual	UINT32	get_PC(void);					//get Program Counter
     virtual void	Regs_Info(UINT8);
 
             UINT8 Get_PD(void);

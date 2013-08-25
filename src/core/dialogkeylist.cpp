@@ -9,7 +9,7 @@
 //
 
 
-DialogKeyList::DialogKeyList( CPObject * parent, Qt::WFlags f) 
+DialogKeyList::DialogKeyList(CPObject * parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);

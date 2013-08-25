@@ -155,7 +155,7 @@ void DialogVKeyboard::senData()
             processEscKey(word);
         }
         else {
-            QByteArray b = word.toAscii();
+            QByteArray b = word.toLatin1();
             for (int j=0;j<b.size();j++) {
                 QString word (b.at(j));
                 if (dict.contains(word))

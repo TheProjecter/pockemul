@@ -52,7 +52,7 @@ BYTE	Cpc1260::Get_PortB(void)
 	return loc;
 }
 
-bool Cpc1260::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1260::Chk_Adr(UINT32 *d,UINT32 data)
 {
 	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);				// ROM area(0000-1fff) 
 	if ( (*d>=0x5800) && (*d<=0x6800) )	return(1);				// ROM area(8000-ffff) 
@@ -87,7 +87,7 @@ Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
     SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1261/bas-1261.rom")	, "" , ROM , "BASIC ROM"));
 
 }
-bool Cpc1261::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1261::Chk_Adr(UINT32 *d,UINT32 data)
 {
 	if ( (*d>=0x4000) && (*d<=0x6800) )	return(1);				// RAM area(4000-6800) 
 

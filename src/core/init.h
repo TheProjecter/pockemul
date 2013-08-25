@@ -11,7 +11,7 @@
 
 #include <QEvent>
 #include <QResizeEvent>
-#include <QCustomEvent>
+//#include <QCustomEvent>
 #include <QThread>
 #include <QTimer>
 #include <QStringList>

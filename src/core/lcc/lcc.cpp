@@ -270,7 +270,7 @@ void Clcc::writln(QString fname,QString s) {
     if (fname !="LOG")
     {
         if (outfile) asmtext.append(s + "\r\n");
-        else addasm(s.toAscii());
+        else addasm(s.toLatin1());
     }
     else writeln(fname,s);
 
@@ -300,7 +300,7 @@ void Clcc::write(QString fname,QString s){
     // or fill an arraybuffer ?
 //    if (fname !="LOG")
     {
-        QByteArray actual = out->value(fname) +s.toAscii();
+        QByteArray actual = out->value(fname) +s.toLatin1();
         out->insert(fname, actual);
     }
 //    emit outputSignal(fname,s);

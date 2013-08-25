@@ -76,7 +76,7 @@ CLH5801::CLH5801(CPObject *parent)	: CCPU(parent)
     fn_status="LH5801.sta";
     fn_log = "lh5801.log";
 
-    Is_Timer_Reached=FALSE;
+    Is_Timer_Reached=false;
     step_Previous_State = 0;
 
     regwidget = (CregCPU*) new Cregslh5801Widget(0,this);
@@ -115,7 +115,7 @@ INLINE void CLH5801::TIMER_INC(void)
 	// Shift right , b9=(b0 xor b4)
 	lh5801.tm = (lh5801.tm >> 1) | (( (lh5801.tm & 0x01) ^ ((lh5801.tm & 0x10)>>4) )<<8 );
 	
-	Is_Timer_Reached=(lh5801.tm == 0x1FF ? TRUE : FALSE);
+    Is_Timer_Reached=(lh5801.tm == 0x1FF ? true : false);
 }
 
 void CLH5801::step(void)
@@ -123,7 +123,7 @@ void CLH5801::step(void)
 
     quint64	Current_State;
 
-	if (Is_Timer_Reached) { lh5801.IR1=1; Is_Timer_Reached = FALSE; }
+    if (Is_Timer_Reached) { lh5801.IR1=1; Is_Timer_Reached = false; }
 
 	if (lh5801.IR0)
 	{
@@ -148,7 +148,7 @@ void CLH5801::step(void)
 		// Maskable Interrupt processing
 		PUSH(lh5801.t);
 		UNSET_IE;
-		lh5801.HLT = FALSE;
+        lh5801.HLT = false;
 		lh5801.IR2=0;
 		PUSH_WORD(P);
 		P = (UINT16) get_mem(0xFFF8,SIZE_16);
@@ -203,9 +203,9 @@ void CLH5801::Load_Internal(QXmlStreamReader *xmlIn)
     if (xmlIn->readNextStartElement()) {
         if ( (xmlIn->name()=="cpu") &&
              (xmlIn->attributes().value("model").toString() == "lh5801")) {
-            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toAscii());
+            QByteArray ba_reg = QByteArray::fromBase64(xmlIn->attributes().value("registers").toString().toLatin1());
             memcpy((char *) &lh5801,ba_reg.data(),sizeof(lh5801));
-            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toAscii());
+            QByteArray ba_imem = QByteArray::fromBase64(xmlIn->attributes().value("iMem").toString().toLatin1());
             memcpy((char *) &imem,ba_imem.data(),IMEM_LEN);
         }
         xmlIn->skipCurrentElement();
@@ -223,7 +223,7 @@ void CLH5801::save_internal(QXmlStreamWriter *xmlOut)
     xmlOut->writeEndElement();
 }
 
-DWORD	CLH5801::get_mem(DWORD adr,int size)
+UINT32	CLH5801::get_mem(UINT32 adr,int size)
 {
 	switch(size)
 	{
@@ -235,7 +235,7 @@ DWORD	CLH5801::get_mem(DWORD adr,int size)
 	return(0);
 };
 
-void	CLH5801::set_mem(DWORD adr,int size,DWORD data)
+void	CLH5801::set_mem(UINT32 adr,int size,UINT32 data)
 {
 	switch(size)
 	{
@@ -264,14 +264,14 @@ void	CLH5801::Set_Xin(bool){}
 bool	CLH5801::Get_Xout(void){return(0);}
 void	CLH5801::Set_Xout(bool){}
 
-DWORD	CLH5801::get_PC(void){return(P);}				//get Program Counter
+UINT32	CLH5801::get_PC(void){return(P);}				//get Program Counter
 
-INLINE UINT8 CLH5801::cpu_readmem(DWORD adr)
+INLINE UINT8 CLH5801::cpu_readmem(UINT32 adr)
 {
     return (pPC->Get_8(adr));
 }
 
-INLINE void CLH5801::cpu_writemem(DWORD addr, UINT8 data)
+INLINE void CLH5801::cpu_writemem(UINT32 addr, UINT8 data)
 {
     pPC->Set_8(addr,data);
 }
@@ -308,7 +308,7 @@ INLINE void CLH5801::AddState(UINT8 n)
     ticks+=(n);
 }
 
-INLINE UINT8 CLH5801::cpu_readop(DWORD adr)
+INLINE UINT8 CLH5801::cpu_readop(UINT32 adr)
 {
     return (pPC->Get_8(adr));
 }
@@ -343,7 +343,7 @@ INLINE void CLH5801::ADC(UINT8 data)
 	lh5801.a = add_generic(lh5801.a,data,bool(F_C));
 }
 
-INLINE void CLH5801::ADD_MEM(DWORD addr, UINT8 data)
+INLINE void CLH5801::ADD_MEM(UINT32 addr, UINT8 data)
 {
 	UINT8 v = add_generic(cpu_readmem(addr),data,0);
 	cpu_writemem(addr,v);
@@ -399,7 +399,7 @@ INLINE void CLH5801::AND(UINT8 data)
 	CHECK_Z(lh5801.a);
 }
 
-INLINE void CLH5801::AND_MEM(DWORD addr, UINT8 data)
+INLINE void CLH5801::AND_MEM(UINT32 addr, UINT8 data)
 {
 	data &= cpu_readmem(addr);
 	CHECK_Z(data);
@@ -423,7 +423,7 @@ INLINE void CLH5801::ORA(UINT8 data)
 	CHECK_Z(lh5801.a);
 }
 
-INLINE void CLH5801::ORA_MEM(DWORD addr, UINT8 data)
+INLINE void CLH5801::ORA_MEM(UINT32 addr, UINT8 data)
 {
 	data |= cpu_readmem(addr);
 	CHECK_Z(data);
@@ -509,7 +509,7 @@ INLINE void CLH5801::POP_WORD(PAIR *reg)
 }
 
 
-INLINE void CLH5801::JMP(DWORD adr)
+INLINE void CLH5801::JMP(UINT32 adr)
 {
 	P = (UINT16) adr;
 	change_pc(P);
@@ -582,7 +582,7 @@ INLINE void CLH5801::AEX(void)
 	lh5801.a = (l<<4) | (l>>4);
 }
 
-INLINE void CLH5801::DRL(DWORD adr)
+INLINE void CLH5801::DRL(UINT32 adr)
 {
 	UINT16 l = lh5801.a | (cpu_readmem(adr)<<8);
 
@@ -590,7 +590,7 @@ INLINE void CLH5801::DRL(DWORD adr)
 	cpu_writemem( adr , l>>4 );
 }
 
-INLINE void CLH5801::DRR(DWORD adr)
+INLINE void CLH5801::DRR(UINT32 adr)
 {
 	UINT16 l = cpu_readmem(adr) | (lh5801.a<<8);
 

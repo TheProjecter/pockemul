@@ -3,7 +3,7 @@
 int g_DasmFlag = 0;
 int g_DasmStep = 0;
 
-DWORD	g_BreakPointAdr = 9999999; //-- MAXDWORD;
+UINT32	g_BreakPointAdr = 9999999; //-- MAXDWORD;
 int		g_BreakSubLevel = -1;
 
 

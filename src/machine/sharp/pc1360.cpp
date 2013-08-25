@@ -189,7 +189,7 @@ void	Cpc1360::Set_PortC(BYTE data)
 	IO_C = data;
 }
 
-bool Cpc1360::Chk_Adr(DWORD *d,DWORD data)
+bool Cpc1360::Chk_Adr(UINT32 *d,UINT32 data)
 {
 	if ( (*d>=0x0000) && (*d<=0x1FFF) )	{ return(0); }	// ROM area(0000-1fff) 
 	if ( (*d>=0x2000) && (*d<=0x27FF) )	{ return(0); }
@@ -257,7 +257,7 @@ bool Cpc1360::Chk_Adr(DWORD *d,DWORD data)
 }
 
 
-bool Cpc1360::Chk_Adr_R(DWORD *d,DWORD *data)
+bool Cpc1360::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
 	// Manage ROM Bank
 	if ( (*d>=0x4000) && (*d<=0x7FFF) )	{ *d += 0xC000 + ( RomBank * 0x4000 ); return (1); }

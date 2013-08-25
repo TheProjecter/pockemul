@@ -17,7 +17,7 @@ Cctronics::Cctronics(CPObject *parent):CPObject(parent)
 bool Cctronics::init()
 {
     CPObject::init();
-    STROBE=INIT=ACK=BUSY=ERROR=false;
+    STROBE=INIT=ACK=BUSY=sERROR=false;
     DATA=0;
     mode = READY_TO_SEND;
     bufferSize = DEFAULT_BUFFERSIZE;

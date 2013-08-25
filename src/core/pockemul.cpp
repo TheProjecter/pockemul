@@ -190,11 +190,13 @@ int main(int argc, char *argv[])
     downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
 #endif
 
+#ifdef EMSCRIPTEN
     mainwindow->zoomSlider = new QSlider(mainwindow->centralwidget);
     mainwindow->zoomSlider->setMinimum(10);
     mainwindow->zoomSlider->setMaximum(300);
     mainwindow->zoomSlider->setTickInterval(10);
     mainwindow->zoomSlider->setValue(100);
+#endif
 
     mainwindow->show();
 

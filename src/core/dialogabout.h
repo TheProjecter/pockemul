@@ -7,7 +7,7 @@ class DialogAbout : public QDialog, public Ui::DialogAbout
 {
 Q_OBJECT
 public:
-	DialogAbout( QWidget * parent = 0, Qt::WFlags f = 0 );
+    DialogAbout( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 private slots:
 };
 #endif

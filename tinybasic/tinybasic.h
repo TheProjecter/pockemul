@@ -92,7 +92,7 @@ public:
        virtual	bool	Get_Xout(void){return true;}
        virtual	void	Set_Xout(bool){}
 
-       virtual	DWORD	get_PC(void){return 0;}					//get Program Counter
+       virtual	UINT32	get_PC(void){return 0;}					//get Program Counter
        virtual void	Regs_Info(UINT8){}
 
        virtual const char*	GetClassName(){ return("CTINYBASIC");}

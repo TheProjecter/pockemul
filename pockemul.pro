@@ -32,7 +32,9 @@ CONFIG += qt \
     warn_on
 CONFIG += rtti
 
-QT += core \
+QT += widgets \
+    printsupport \
+    core \
     gui \
     network \
 #    opengl \
@@ -465,7 +467,10 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_rlh1000.h \
     src/cpu/m6502/m6502.h \
     src/cpu/m6502/opsc02.h \
-    src/cpu/m6502/ops02.h
+    src/cpu/m6502/ops02.h \
+    qhttp/qringbuffer_p.h \
+    qhttp/qhttpauthenticator_p.h \
+    qhttp/qhttp.h
 INCLUDEPATH += . \
     src/core \
     src/cpu \
@@ -689,7 +694,9 @@ SOURCES += src/core/Connect.cpp \
     src/machine/panasonic/rlp1004a.cpp \
     src/lcd/Lcdc_rlh1000.cpp \
     src/cpu/m6502/m6502.cpp \
-    src/cpu/m6502/m6502_dasm.cpp
+    src/cpu/m6502/m6502_dasm.cpp \
+    qhttp/qhttpauthenticator.cpp \
+    qhttp/qhttp.cpp
 
 
 

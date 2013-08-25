@@ -1001,7 +1001,7 @@ void Ci8085::save_internal(QXmlStreamWriter *)
 {
 }
 
-DWORD Ci8085::get_PC()
+UINT32 Ci8085::get_PC()
 {
     return i85stat.regs.PC.d;
 }

@@ -108,7 +108,7 @@ char    Cdebug_i8085::Op_Code_Size[256]  =
    };
 
 
-DWORD Cdebug_i8085::DisAsm_1(DWORD oldpc)
+UINT32 Cdebug_i8085::DisAsm_1(UINT32 oldpc)
 //void *z80disasm(char *str, uint8 *mem)
 {
     //return (oldpc);
@@ -117,7 +117,7 @@ DWORD Cdebug_i8085::DisAsm_1(DWORD oldpc)
 
     oldpc &= 0xffff;
     DasmAdr = oldpc;
-    DWORD pc=oldpc;
+    UINT32 pc=oldpc;
     quint8 op = pPC->Get_8(pc);
 
     Buffer[0] = '\0';
