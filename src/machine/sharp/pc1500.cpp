@@ -17,6 +17,7 @@
 #include	"ce152.h"
 #include	"dialoganalog.h"
 
+
 extern int	g_DasmStep;
 extern bool	UpdateDisplayRunning;
  
@@ -63,9 +64,9 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 
 	DialogExtensionID = 0;//IDD_EXT_PROPERTIES_1500;
 
-	SoundOn			= FALSE;
-	lh5810_Access	= FALSE;
-	ce150_Access	= FALSE;
+    SoundOn			= false;
+    lh5810_Access	= false;
+    ce150_Access	= false;
 
 	pLCDC		= new Clcdc_pc1500(this);
     pCPU		= new CLH5801(this); pCPU->logsw=false;
@@ -140,7 +141,8 @@ Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
 
 void Cpc15XX::TurnON(void)
 {
-    if (!Power && pKEYB->LastKey == K_BRK) {
+//    if (!Power && pKEYB->LastKey == K_BRK)
+    {
 	AddLog(LOG_FUNC,"Cpc1500::TurnOn");
 
 //--	remove(Initial_Session_Fname);
@@ -170,7 +172,7 @@ bool Cpc15XX::CompleteDisplay(void)
 	
 	CpcXXXX::CompleteDisplay();
 	
-	return TRUE;
+    return true;
 }
 
 
@@ -286,19 +288,19 @@ bool Cpc15XX::run(void)
 	if (pKEYB->CheckKon()) 
 		((CLH5801 *)pCPU)->lh5801.bf=1;
 
-	if (pKEYB->Kon) lh5810_Access = TRUE;
+    if (pKEYB->Kon) lh5810_Access = true;
 
 	if (lh5810_Access)
 	{
 		lh5810_write();
 		pLH5810->step();
 		lh5810_read();
-		lh5810_Access = FALSE;
+        lh5810_Access = false;
 	}
 
 
-	if (pLH5810->INT==TRUE) 
-		((CLH5801 *)pCPU)->lh5801.IR2=TRUE;
+    if (pLH5810->INT==true)
+        ((CLH5801 *)pCPU)->lh5801.IR2=true;
 
 #if 0
 	if (((CLH5801 *)pCPU)->lh5801.bf)
@@ -499,9 +501,9 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 		
 	if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
-	if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = TRUE;	return(1); }
+    if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;	return(1); }
 	if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
-	if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = TRUE;if (*d==0x1F006) pLH5810->New_L=TRUE;return(1);}	// I/O area(LH5810)
+    if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;if (*d==0x1F006) pLH5810->New_L=true;return(1);}	// I/O area(LH5810)
 
 	// else it's ROM
 	return(0);
@@ -522,7 +524,7 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0x8000) && (*d<=0x9FFF) ) { return(0); }										// RAM area(4000-7FFFF)
 	if ( (*d>=0xA000) && (*d<=0xBFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
-	if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = TRUE;	return(1); }
+    if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;	return(1); }
 	if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;
 										  if (*d==0x1F006) pLH5810->New_L=true;
 										  return(1);}										// I/O area(LH5810)
@@ -540,8 +542,8 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
 	if (*d == 0x4000) AddLog(LOG_MASTER,tr("read 0x04000"));
 	if (*d == 0x4001) AddLog(LOG_MASTER,tr("read 0x04001"));
 
-	if ( (*d>=0x1B000) && (*d<=0x1B00F) ) {	ce150_Access = TRUE;	return(1);	}
-	if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {	lh5810_Access = TRUE;	return(1);	}
+    if ( (*d>=0x1B000) && (*d<=0x1B00F) ) {	ce150_Access = true;	return(1);	}
+    if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {	lh5810_Access = true;	return(1);	}
 
 	if ( (ce150_connected) && (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
 	{ 
@@ -678,8 +680,8 @@ bool Cpc15XX::Get_Connector(void)
 
 bool	CLH5810_PC1500::init(void)
 {
-    SetRegBit(OPB,3,TRUE);	// Export model vs domestic model
-    SetRegBit(OPB,4,FALSE);	// PB4 to GND
+    SetRegBit(OPB,3,true);	// Export model vs domestic model
+    SetRegBit(OPB,4,false);	// PB4 to GND
 
 	return(1);
 }						//initialize
@@ -721,10 +723,10 @@ bool CLH5810_PC1500::step()
 
     if (pPC->pKEYB->Kon)
     {
-        SetRegBit(OPB,7,TRUE);
+        SetRegBit(OPB,7,true);
     } else
     {
-        SetRegBit(OPB,7,FALSE);
+        SetRegBit(OPB,7,false);
     }
 
 	////////////////////////////////////////////////////////////////////
@@ -759,8 +761,8 @@ bool CLH5810_PC1500::step()
 	}
 
 
-    SetRegBit(OPB,3,TRUE);	// Export model vs domestic model
-    SetRegBit(OPB,4,FALSE);	// PB4 to GND
+    SetRegBit(OPB,3,true);	// Export model vs domestic model
+    SetRegBit(OPB,4,false);	// PB4 to GND
 
 	  //----------------------//
 	 // Standard LH5810 STEP //

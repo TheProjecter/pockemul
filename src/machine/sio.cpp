@@ -62,9 +62,9 @@ Csio::Csio(CPObject *parent)	: CPObject(this)
     Sii_ndx				= 0;
     Sii_wait			= 0;
     Sii_wait_recv       = 0;
-    Sii_startbitsent	= FALSE;
-    Sii_stopbitsent		= TRUE;
-    Sii_TransferStarted = FALSE;
+    Sii_startbitsent	= false;
+    Sii_stopbitsent		= true;
+    Sii_TransferStarted = false;
     Sii_TextLength		= 0;
     Sii_Bit_Nb			= 0;
     Sii_LfWait			= 500;
@@ -460,9 +460,9 @@ bool Csio::transmit(void)
 		// End of file
 //		Sii_ndx				= 0;
 //		Set_Sii_bit(0);
-		Sii_startbitsent	= FALSE;
-		Sii_stopbitsent		= TRUE;
-		Sii_TransferStarted	= FALSE;
+        Sii_startbitsent	= false;
+        Sii_stopbitsent		= true;
+        Sii_TransferStarted	= false;
 		Set_CD(0);
 		clearInput();
 		AddLog(LOG_SIO,tr("END TRANSMISSION"));
@@ -483,7 +483,7 @@ qint8 Csio::byteToBit(qint8 data)
 
 		if (!Start_Bit_Sent)
 		{
-			Start_Bit_Sent = TRUE;
+            Start_Bit_Sent = true;
 
 //            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(1);
 			AddLog(LOG_SIO,tr("START BIT : %1").arg(data,2,16,QChar('0')));
@@ -504,7 +504,7 @@ qint8 Csio::byteToBit(qint8 data)
             outBitNb = 0;
 			AddLog(LOG_SIO,tr("STOP BIT"));
 //            if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(10);
-			Start_Bit_Sent	= FALSE;
+            Start_Bit_Sent	= false;
 			return(2);	// STOPBIT : To be converted to 0
 		}
 	return(3);

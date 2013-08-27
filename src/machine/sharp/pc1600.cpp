@@ -257,7 +257,7 @@ bool Cpc1600::CompleteDisplay(void)
 
     CpcXXXX::CompleteDisplay();
 
-    return TRUE;
+    return true;
 }
 
 bool Cpc1600::InitDisplay(void)
@@ -860,7 +860,7 @@ bool Cpc1600::Chk_Adr(UINT32 *d,UINT32 data)
             if (*d == 0x1A038) cpuSwitchPending = true;
             *d+=0x70000; return (1);
         }
-        if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = TRUE;*d+=0x70000;	return(1); }
+        if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;*d+=0x70000;	return(1); }
         if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ //lh5810_Access = true;
                                               //if (*d==0x1F006) pLH5810->New_L=true;
                                               *d+=0x70000;return(1);}										// I/O area(LH5810)

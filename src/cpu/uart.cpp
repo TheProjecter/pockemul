@@ -50,9 +50,9 @@ Cuart::Cuart(CPObject *parent)	: CPObject(this)
     bitNb = 0;
     Sii_ndx				= 0;
     Sii_wait			= 0;
-    Sii_startbitsent	= FALSE;
-    Sii_stopbitsent		= TRUE;
-    Sii_TransferStarted = FALSE;
+    Sii_startbitsent	= false;
+    Sii_stopbitsent		= true;
+    Sii_TransferStarted = false;
     Sii_TextLength		= 0;
     Sii_Bit_Nb			= 0;
     Sii_LfWait			= 500;

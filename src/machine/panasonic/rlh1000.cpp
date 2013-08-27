@@ -81,8 +81,8 @@ Crlh1000::~Crlh1000() {
 bool Crlh1000::init(void)				// initialize
 {
 
-pCPU->logsw = true;
-    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+//pCPU->logsw = true;
+//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -123,6 +123,8 @@ bool Crlh1000::run() {
     if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
 
+
+
      CpcXXXX::run();
 
     if (pKEYB->LastKey>0) { m6502->write_signal(101,1,1); }
@@ -155,16 +157,14 @@ bool Crlh1000::run() {
 bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 {
 
-    if(*d < 0x1000) {
+    if(*d < 0x2000) {
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Write[%04x]=%02x ",Log_String,*d,data);
         }
         return true; /* RAM */
     }
 
-    if((*d>=0x1000) && (*d < 0x2000)) {
-        return false;
-    }
+
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
         if (fp_log) {
             fprintf(fp_log,"WRITE ROM [%04X] ",*d);
@@ -307,45 +307,15 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
-    if (*d < 0x1000) {
+    if (*d < 0x2000) {
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Read[%04x]=%02x ",Log_String,*d,mem[*d]);
         }
         return true;   // RAM
     }
-    if((*d>=0x1000) && (*d < 0x2000)) {
-        *data=0xff;
-        return false;
-    }
+
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
-        if (fp_log) {
-            fprintf(fp_log,"READ ROM [%04X] ",*d);
-            pCPU->Regs_Info(1);
-            fprintf(fp_log," %s\n",pCPU->Regs_String);
-        }
-        if (fp_log) fprintf(fp_log,"BUS_READDATA DEST=%i  ext=%i ",bus.getDest(),extrinsic);
-        if (extrinsic!=0xff) {
-            bus.setDest(extrinsic);
-            bus.setAddr(*d-0x2000);
-            bus.setData(0xff);
-            bus.setFunc(BUS_READROM);
-            manageBus();
-            if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus.getData());
-
-            if (bus.getFunc()==BUS_READDATA) {
-
-                *data = bus.getData();
-                if (fp_log) {
-                    fprintf(fp_log,"***READ ROM [%04X]=%02X",*d,*data);
-                    pCPU->Regs_Info(1);
-                    fprintf(fp_log," %s\n",pCPU->Regs_String);
-                }
-            }
-            else *data = 0xff;
-            return false;
-        }
-
-        *data=0xff;
+        *data = ReadBusMem(*d-0x2000);
         return false;
     }
 
@@ -451,38 +421,42 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
 
     if((*d>=0x8000) && (*d < 0xC000)) {
-        if (fp_log) {
-            fprintf(fp_log,"BUS=%02X READ RAM [%04X] ",bus.getDest(),*d);
-            pCPU->Regs_Info(1);
-            fprintf(fp_log," %s\n",pCPU->Regs_String);
-        }
-        if (fp_log) fprintf(fp_log,"BUS_READDATA DEST=%i  ",bus.getDest());
-        if (extrinsic!=0xff) {
-            bus.setDest(extrinsic);
-            bus.setAddr(*d-0x8000);
-            bus.setData(0xff);
-            bus.setFunc(BUS_READDATA);
-            manageBus();
-            if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus.getData());
-
-            if (bus.getFunc()==BUS_READDATA) {
-
-                *data = bus.getData();
-                if (fp_log) {
-                    fprintf(fp_log,"***READ RAM [%04X]=%02X",*d,*data);
-                    pCPU->Regs_Info(1);
-                    fprintf(fp_log," %s\n",pCPU->Regs_String);
-                }
-            }
-            else *data = 0xff;
-            return false;
-        }
-        *data=0xff;
+        *data = ReadBusMem(*d-0x8000);
         return false; /* RAM */
     }
 
-
     return true;
+}
+
+UINT8 Crlh1000::ReadBusMem(UINT32 adr) {
+    UINT8 data=0xff;
+
+    if (fp_log) {
+        fprintf(fp_log,"BUS=%02X READ RAM [%04X] ",bus.getDest(),adr);
+        pCPU->Regs_Info(1);
+        fprintf(fp_log," %s\n",pCPU->Regs_String);
+    }
+    if (fp_log) fprintf(fp_log,"BUS_READDATA DEST=%i  ",bus.getDest());
+    if (extrinsic!=0xff) {
+        bus.setDest(extrinsic);
+        bus.setAddr(adr);
+        bus.setData(0xff);
+        bus.setFunc(BUS_READDATA);
+        manageBus();
+        if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus.getData());
+
+        if (bus.getFunc()==BUS_READDATA) {
+
+            data = bus.getData();
+            if (fp_log) {
+                fprintf(fp_log,"***READ RAM [%04X]=%02X",adr,data);
+                pCPU->Regs_Info(1);
+                fprintf(fp_log," %s\n",pCPU->Regs_String);
+            }
+        }
+        else data = 0xff;
+    }
+    return data;
 }
 
 UINT8 Crlh1000::manageBus() {

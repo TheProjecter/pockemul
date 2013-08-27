@@ -82,9 +82,9 @@ int main(int argc, char *argv[])
     d.mkdir("/sdcard/pockemul");
     QDir::setCurrent("/sdcard/pockemul");
 
-    QWindowsStyle *s = new QWindowsStyle();//QAndroidStyle();
+//    QProxyStyle *s = new QProxyStyle();//QAndroidStyle();
 
-    QApplication::setStyle(s);//new QAndroidStyle());
+//    QApplication::setStyle(s);//new QAndroidStyle());
 
 #endif
 
@@ -95,12 +95,12 @@ int main(int argc, char *argv[])
     qWarning()<<app->applicationDirPath();
 
 #ifdef Q_OS_ANDROID
-    QSplashScreen splash;
-    splash.setPixmap(QPixmap(P_RES(":/pockemul/splash.png").scaled(mainwindow->geometry().size()));
-    splash.showFullScreen();
-    splash.showMessage("Loading modules...",Qt::AlignLeft,Qt::white);
-    app->processEvents();
-    splash.finish(mainwindow);
+//    QSplashScreen splash;
+//    splash.setPixmap(QPixmap(P_RES(":/pockemul/splash.png")).scaled(mainwindow->geometry().size()));
+//    splash.showFullScreen();
+//    splash.showMessage("Loading modules...",Qt::AlignLeft,Qt::white);
+//    app->processEvents();
+//    splash.finish(mainwindow);
 
     mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
@@ -112,6 +112,10 @@ int main(int argc, char *argv[])
     mainwindow->centralwidget = cw;
     mainwindow->setWindowIcon ( QIcon(":/core/pockemul.bmp") );
     mainwindow->resize(680,520);
+
+#ifdef Q_OS_ANDROID
+    cw->setStyleSheet("background-color:black;color: white;selection-background-color: grey;");
+#endif
 
 #ifdef EMSCRIPTEN
     mainwindow->setWindowTitle("PockEmul Online");
@@ -199,6 +203,7 @@ int main(int argc, char *argv[])
 #endif
 
     mainwindow->show();
+
 
 #ifndef Q_OS_ANDROID
     mainwindow->initCommandLine();

@@ -935,7 +935,7 @@ void CPObject::contextMenuEvent ( QContextMenuEvent * event )
     QMenu *menu = new QMenu(this);
     BuildContextMenu(menu);
 
-    menu->setStyleSheet("QMenu { color: black }");
+//    menu->setStyleSheet("QMenu { color: black }");
     //menu->exec(event->globalPos () );
 menu->popup(event->globalPos () );
     event->accept();
@@ -1126,6 +1126,7 @@ void CPObject::remove(Cconnector* newConn)
 
 void CPObject::slotExit(void)
 {
+
 	toDestroy = true;
 }
 

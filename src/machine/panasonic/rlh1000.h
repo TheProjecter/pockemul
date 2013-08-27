@@ -69,6 +69,7 @@ public:
     quint8 extrinsic;
     UINT8 getKey(quint8 row);
     UINT8 manageBus();
+    UINT8 ReadBusMem(UINT32 adr);
 private:
     Cbus bus;
     quint8 latchByte;

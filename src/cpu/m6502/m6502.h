@@ -74,7 +74,7 @@ public:
 
     int run(int clock);
     void write_signal(int id, quint32 data, quint32 mask);
-private:
+public:
     PAIR pc, sp, zp, ea;
     quint16 prev_pc;
     quint8 a, x, y, p;
