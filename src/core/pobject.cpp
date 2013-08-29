@@ -1193,8 +1193,8 @@ void CPObject::slotContrast(QAction * action) {
 
 void CPObject::slotPower()
 { 
-	Power = !Power;
-	if (Power)
+//	Power = !Power;
+    if (!Power)
 		TurnON();
 	else
         TurnOFF();

@@ -155,6 +155,10 @@ bool Cg850v::Get_Connector()
 
 void Cg850v::TurnON()
 {
+    pSED1560->updated = true;
+    CpcXXXX::TurnON();
+
+#if 1
     if (!Power && pKEYB->LastKey == K_BRK) {
         AddLog(LOG_MASTER,"TURN ON");
         if (!hardreset) {
@@ -167,7 +171,7 @@ void Cg850v::TurnON()
         if (pLCDC) pLCDC->TurnON();
         this->Reset();
     }
-
+#endif
 //    pSED1560->updated = true;
 }
 

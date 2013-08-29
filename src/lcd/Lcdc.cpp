@@ -82,10 +82,11 @@ void Clcdc::disp_symb(void)
 void	Clcdc::check(void)  {}
 
 void	Clcdc::TurnON(void) {
-    Update();
+
     On = true;
     Refresh = true;
     redraw = true;
+    Update();
 }
 
 void	Clcdc::TurnOFF(void){ On = false; }

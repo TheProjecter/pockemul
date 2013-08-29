@@ -62,7 +62,7 @@ public:
 	BYTE	Get_Port(PORTS Port);
 
 	virtual bool	Mem_Mirror(UINT32 *d); 
-	void	TurnON(void);
+    virtual void	TurnON(void);
 
 	void	Regs_Info(UINT8 Type);
 

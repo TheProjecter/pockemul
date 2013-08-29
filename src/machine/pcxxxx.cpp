@@ -1,5 +1,6 @@
 //#include	<string.h>
 //#include	<stdlib.h>
+#include <QDebug>
 
 #include <QFile>
 #include <QFileDialog>
@@ -195,10 +196,12 @@ void CpcXXXX::TurnOFF(void)
 void CpcXXXX::TurnON(void)
 {
     if (pKEYB->LastKey == 0) pKEYB->LastKey = K_POW_ON;
+    qWarning()<<"power="<<Power;
     if ( (pKEYB->LastKey == K_POW_ON) ||
          (Power && pKEYB->LastKey == K_OF) ||
          (!Power && pKEYB->LastKey == K_BRK))
     {
+         qWarning()<<"power ON";
         AddLog(LOG_MASTER,"Power ON");
         if (!hardreset) {
             Initial_Session_Load();

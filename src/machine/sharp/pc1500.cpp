@@ -141,6 +141,7 @@ Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
 
 void Cpc15XX::TurnON(void)
 {
+    qWarning()<<"turnon pcxx="<<Power;
 //    if (!Power && pKEYB->LastKey == K_BRK)
     {
 	AddLog(LOG_FUNC,"Cpc1500::TurnOn");

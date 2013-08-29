@@ -21,7 +21,7 @@ static SDL_Color *Clcdc_g850::getLcdColors(SDL_Color *colors, int voltage)
     SDL_Color back = { 0 }, on = { 0 }, off = { 0 };
     int c1, c2;
 
-    /* F‚ð“¾‚é */
+
     back.r = (colorBack >> 16) & 0xff;
     back.g = (colorBack >>  8) & 0xff;
     back.b = (colorBack >>  0) & 0xff;
