@@ -80,8 +80,10 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
         hardresetAt = 0;
         hardreset = false;
 		
-        _gestureHandler = new TapAndHoldGesture(this);
-        connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
+//        _gestureHandler = new TapAndHoldGesture(this);
+//        connect(_gestureHandler,SIGNAL(handleTapAndHold(QMouseEvent*)),this,SLOT(tapAndHold(QMouseEvent*)));
+
+        grabGesture(Qt::TapAndHoldGesture);
 
         // ERROR MESSAGE
         connect( this,SIGNAL(msgError(QString)),mainwindow,SLOT(slotMsgError(QString)));
@@ -428,6 +430,27 @@ void CPObject::SwitchFrontBack(QPoint point) {
     Front = ! Front;
 }
 
+bool CPObject::event(QEvent *event)
+ {
+
+     if (event->type() == QEvent::Gesture) {
+         if (QGesture *pinch =  (static_cast<QGestureEvent*>(event))->gesture(Qt::TapAndHoldGesture)) {
+             const QPoint pos = (static_cast<QTapAndHoldGesture *>(pinch))->position().toPoint();
+             QContextMenuEvent *cme = new QContextMenuEvent(
+                         QContextMenuEvent::Mouse,
+                         pos,
+                         mapToGlobal(pos));
+             contextMenuEvent(cme);
+
+             setCursor(Qt::ArrowCursor);
+             event->accept();
+         }
+         return true;
+     }
+     return QWidget::event(event);
+ }
+
+
 void CPObject::wheelEvent(QWheelEvent *event) {
 
     QPoint point;
@@ -571,7 +594,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
     // NO KEY CLICK Global pobject drag mode
 
-    _gestureHandler->handleEvent( event );
+//    _gestureHandler->handleEvent( event );
 
     // raise all connected object and then manage Z-order between them
     raise();
@@ -603,7 +626,7 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
 void CPObject::mouseMoveEvent( QMouseEvent * event )
 {
-    _gestureHandler->handleEvent( event );
+//    _gestureHandler->handleEvent( event );
     if (dialogkeylist)
     {
         if (startKeyDrag)
@@ -678,7 +701,7 @@ QList<Cconnector *> CPObject::nearConnectors(Cconnector *refConnector,qint8 snap
 
 void CPObject::mouseReleaseEvent(QMouseEvent *event)
 {
-    _gestureHandler->handleEvent( event );
+//    _gestureHandler->handleEvent( event );
     // if a connector is free
     // if an object with free connector is "near"
     // propose to autolink

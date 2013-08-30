@@ -210,6 +210,7 @@ public:
 
     void paintEvent(QPaintEvent *);
 
+    bool event(QEvent *event);
     void mouseDoubleClickEvent ( QMouseEvent * event );
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
