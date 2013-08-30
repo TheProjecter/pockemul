@@ -749,6 +749,7 @@ void Cx07::TurnON(void){
 
 
     if (!Power && pKEYB->LastKey == K_BRK) {
+        qWarning()<<"Power ON";
         AddLog(LOG_MASTER,"TURN ON");
         if (!hardreset) {
             Initial_Session_Load();

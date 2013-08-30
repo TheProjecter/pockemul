@@ -1,5 +1,6 @@
 #include "tapandholdgesture.h"
 
+#include <QDebug>
 #include <QMouseEvent>
 #include <QTimer>
 
@@ -11,6 +12,7 @@ TapAndHoldGesture::TapAndHoldGesture( QObject *parent )
 
 void TapAndHoldGesture::handleEvent( QMouseEvent *event)
 {
+//    qWarning()<<"TapAndHoldEvent"<<this;
     if( event->type() == QMouseEvent::MouseButtonPress ) {
 //        qWarning("tapevent\n");
         _e = new QMouseEvent(event->type(),event->pos(),event->globalPos(),event->button(),event->buttons(),event->modifiers());

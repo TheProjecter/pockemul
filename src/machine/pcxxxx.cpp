@@ -171,13 +171,35 @@ void CpcXXXX::TurnOFF(void)
     mainwindow->saveAll=NO;
 #endif
     switch (mainwindow->saveAll) {
-    case ASK:
+    case ASK: {
+#ifdef Q_OS_ANDROID
+        QMessageBox mb( QMessageBox::Question,
+                          tr( "PockEmul" ),
+                          tr( "Do you want to save the session ?"),
+                          QMessageBox::Yes | QMessageBox::No,
+                          this );
+
+          mb.setDefaultButton( QMessageBox::Yes );
+
+          // This is important for Android, first call show() before you move the box.
+
+          mb.show();
+          mb.setGeometry(0,0,width(),height());
+          mb.repaint();
+
+          if( mb.exec() == QMessageBox::Yes )
+            {
+             Initial_Session_Save();
+            }
+#else
         if ( QMessageBox::question(mainwindow, "PockEmul",
                                                          "Do you want to save the session ?",
                                                          "Yes",
                                                          "No", 0, 0, 1) == 0) {
             Initial_Session_Save();
         };
+#endif
+    }
         break;
     case YES: Initial_Session_Save(); break;
     default : break;
@@ -198,7 +220,7 @@ void CpcXXXX::TurnON(void)
     if (pKEYB->LastKey == 0) pKEYB->LastKey = K_POW_ON;
     qWarning()<<"power="<<Power;
     if ( (pKEYB->LastKey == K_POW_ON) ||
-         (Power && pKEYB->LastKey == K_OF) ||
+         (!Power && pKEYB->LastKey == K_OF) ||
          (!Power && pKEYB->LastKey == K_BRK))
     {
          qWarning()<<"power ON";

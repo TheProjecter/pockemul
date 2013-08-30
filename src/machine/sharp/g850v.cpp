@@ -158,7 +158,7 @@ void Cg850v::TurnON()
     pSED1560->updated = true;
     CpcXXXX::TurnON();
 
-#if 1
+#if 0
     if (!Power && pKEYB->LastKey == K_BRK) {
         AddLog(LOG_MASTER,"TURN ON");
         if (!hardreset) {

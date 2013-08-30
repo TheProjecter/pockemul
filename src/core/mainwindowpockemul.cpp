@@ -724,6 +724,7 @@ void MainWindowPockemul::doZoom(QPoint point,float delta,int step) {
 }
 
 void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
+    qWarning()<<"MainWindowPockemul::wheelEvent";
     QPoint point = event->pos();
 
     float delta = event->delta()/12;
@@ -734,6 +735,7 @@ void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
 
 bool MainWindowPockemul::event(QEvent *event)
  {
+//    qWarning()<<"MainWindowPockemul::event "<<event->type();
      if (event->type() == QEvent::Gesture)
          return gestureEvent(static_cast<QGestureEvent*>(event));
      return QWidget::event(event);
@@ -741,6 +743,7 @@ bool MainWindowPockemul::event(QEvent *event)
 
 bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 {
+    qWarning()<<"MainWindowPockemul::gestureEvent";
 //    if (QGesture *swipe = event->gesture(Qt::SwipeGesture))
 //        swipeTriggered(static_cast<QSwipeGesture *>(swipe));
 //    else
@@ -878,8 +881,10 @@ void MainWindowPockemul::updateFrameTimer()
 }
 
 void MainWindowPockemul::mousePressEvent	( QMouseEvent *event){
+    qWarning()<<"MainWindowPockemul::mousePressEvent";
     if (event->button() != Qt::LeftButton) {
         event->ignore();
+        qWarning()<<"ignore event";
         return;
     }
     setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
@@ -922,6 +927,7 @@ void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
 void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
 
 void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
+    qWarning()<<"MainWindowPockemul::keyPressEvent";
     event->ignore();
 }
 

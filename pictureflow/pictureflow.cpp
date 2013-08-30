@@ -1331,6 +1331,7 @@ void PictureFlow::exitSlot(){
 
 void PictureFlow::mouseMoveEvent(QMouseEvent* event)
 {
+    qWarning()<<"mouseMove:"<<this;
   int distanceMovedSinceLastEvent = event->pos().x() - d->previousPos.x();
 
   // Check to see if we need to switch from single press mode to a drag mode
@@ -1414,18 +1415,20 @@ void PictureFlow::mouseMoveEvent(QMouseEvent* event)
 
 void PictureFlow::mousePressEvent(QMouseEvent* event)
 {
+    qWarning()<<"mousepress:"<<this;
   d->firstPress = event->pos();
   d->previousPos = event->pos();
   d->previousPosTimestamp.start();
   d->singlePress = true; // Initially assume a single press
 //  d->dragStartSlide = d->getTarget();
   d->pixelDistanceMoved = 0;
-
+event->accept();
   emit inputReceived();
 }
 
 void PictureFlow::mouseReleaseEvent(QMouseEvent* event)
 {
+    qWarning()<<"mouseRelease:"<<this;
   int sideWidth = (d->buffer.width() - slideSize().width()) /2;
 
   if (d->singlePress)
@@ -1447,6 +1450,7 @@ void PictureFlow::mouseReleaseEvent(QMouseEvent* event)
 
 void PictureFlow::wheelEvent(QWheelEvent * event)
 {
+    qWarning()<<"mouseWheel";
     if (event->delta()>0) {
         showNext();
     }

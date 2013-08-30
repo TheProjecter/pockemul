@@ -460,7 +460,7 @@ void CPObject::tapAndHold(QMouseEvent * event)
 
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 {
-//    qWarning()<<"Dblclick";
+    qWarning()<<"CPObject::mouseDoubleClickEvent";
     // Check if we clic a key
     QPoint pts(event->x() , event->y());
     if ((pKEYB) &&(pKEYB->KeyClick(pts))) {
@@ -517,7 +517,7 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
-
+    qWarning()<<"CPObject::mousePressEvent"<<event;
 
     if (event->button() != Qt::LeftButton) {
         event->ignore();
@@ -563,7 +563,10 @@ void CPObject::mousePressEvent(QMouseEvent *event)
             ComputeKey();
         }
 
-        if (pKEYB->LastKey != 0) return;
+        if (pKEYB->LastKey != 0) {
+            event->accept();
+            return;
+        }
     }
 
     // NO KEY CLICK Global pobject drag mode
