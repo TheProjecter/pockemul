@@ -26,6 +26,8 @@
 #define		bREAD				0
 
 extern bool	UpdateDisplayRunning;
+extern int ask(QWidget *parent,QString msg,int nbButton);
+
 
 CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
 {								//[constructor]
@@ -172,33 +174,19 @@ void CpcXXXX::TurnOFF(void)
 #endif
     switch (mainwindow->saveAll) {
     case ASK: {
-#ifdef Q_OS_ANDROID
-        QMessageBox mb( QMessageBox::Question,
-                          tr( "PockEmul" ),
-                          tr( "Do you want to save the session ?"),
-                          QMessageBox::Yes | QMessageBox::No,
-                          this );
 
-          mb.setDefaultButton( QMessageBox::Yes );
-
-          // This is important for Android, first call show() before you move the box.
-
-          mb.show();
-          mb.setGeometry(0,0,width(),height());
-          mb.repaint();
-
-          if( mb.exec() == QMessageBox::Yes )
+        if (ask(mainwindow,tr( "Do you want to save the session ?"),2)==1)
             {
              Initial_Session_Save();
             }
-#else
-        if ( QMessageBox::question(mainwindow, "PockEmul",
-                                                         "Do you want to save the session ?",
-                                                         "Yes",
-                                                         "No", 0, 0, 1) == 0) {
-            Initial_Session_Save();
-        };
-#endif
+//#else
+//        if ( QMessageBox::question(mainwindow, "PockEmul",
+//                                                         "Do you want to save the session ?",
+//                                                         "Yes",
+//                                                         "No", 0, 0, 1) == 0) {
+//            Initial_Session_Save();
+//        };
+//#endif
     }
         break;
     case YES: Initial_Session_Save(); break;

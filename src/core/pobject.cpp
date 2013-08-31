@@ -30,6 +30,7 @@ FILE	*fp_tmp=NULL;
 
 
 extern MainWindowPockemul* mainwindow;
+extern int ask(QWidget *parent,QString msg,int nbButton);
 
 CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
     {
@@ -537,7 +538,7 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 
 
 }
-
+extern void Vibrate();
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
     qWarning()<<"CPObject::mousePressEvent"<<event;
@@ -574,16 +575,17 @@ void CPObject::mousePressEvent(QMouseEvent *event)
         if (pKEYB->LastKey) pKEYB->keyPressedList.append(pKEYB->LastKey);
 
         switch (pKEYB->LastKey) {
-        case K_OF : slotPower();return; break;
+        case K_OF : Vibrate();slotPower();return; break;
         case K_BRK :
-        case K_POW_ON : TurnON(); break;
-        case K_POW_OFF: Power = false;TurnOFF();return;break;
-        case K_CLOSE: TurnCLOSE();break;
+        case K_POW_ON : Vibrate();TurnON(); break;
+        case K_POW_OFF: Vibrate();Power = false;TurnOFF();return;break;
+        case K_CLOSE: Vibrate();TurnCLOSE();break;
         }
 
         if (pKEYB->LastKey != 0)
         {
             ComputeKey();
+            Vibrate();
         }
 
         if (pKEYB->LastKey != 0) {
@@ -724,11 +726,9 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
                          msgBox->setText(nearList.at(r)->Desc + " linked to ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc);
                          msgBox->show();
 #else
-                        if (QMessageBox::question(mainwindow, "PockEmul",
-                                                  "Do you want to link those two materials ?\n"+
+                        if (ask(mainwindow, "Do you want to link those two materials ?\n"+
                                                   nearList.at(r)->Desc + "--> ["+ listpPObject.at(k)->getName()+"]"+listpPObject.at(k)->ConnList.at(c)->Desc,
-                                                  "Yes",
-                                                  "No", 0, 0, 1) == 0)
+                                                  2) == 1)
 #endif
                         {
                             // The user clicked the Yes button or pressed Enter
@@ -958,6 +958,8 @@ void CPObject::focusOutEvent ( QFocusEvent * event )
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {
 
+    Vibrate();
+
     QMenu *menu = new QMenu(this);
     BuildContextMenu(menu);
 
@@ -1051,13 +1053,13 @@ void CPObject::computeWebLinksMenu(QMenu * menu) {
 #else
     connect(menuDocument, SIGNAL(triggered(QAction*)), mainwindow, SLOT(slotDocument(QAction*)));
     // Does weblinks.xml exists locally ? if not generate one
-    QString weblinksFn = QApplication::applicationDirPath()+"/weblinks.xml";
-    if (!QFile::exists(weblinksFn)) {
-        QFile::copy(P_RES(":/pockemul/weblinks.xml"),weblinksFn);
-        QFile::setPermissions(weblinksFn,QFile::WriteOther);
-    }
+//    QString weblinksFn = QApplication::applicationDirPath()+"/weblinks.xml";
+//    if (!QFile::exists(weblinksFn)) {
+//        QFile::copy(P_RES(":/pockemul/weblinks.xml"),weblinksFn);
+//        QFile::setPermissions(weblinksFn,QFile::WriteOther);
+//    }
 
-    QFile fileRes(weblinksFn);
+    QFile fileRes(P_RES(":/pockemul/weblinks.xml"));
  #endif
     QXmlInputSource sourceRes(&fileRes);
     QXmlSimpleReader reader;

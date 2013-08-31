@@ -1,4 +1,6 @@
-
+#ifdef Q_OS_ANDROID
+#include <jni.h>
+#endif
 
 #include <QApplication>
 #include <QtPlugin>
@@ -27,8 +29,25 @@
 
 
 
+#ifdef Q_OS_ANDROID
+
+static JavaVM* s_javaVM = 0;
+static jclass s_PockemulObjectClassID = 0;
+static jmethodID s_PockemulObjectConstructorMethodID=0;
+static jmethodID s_PockemulObjectDialogMethodID=0;
+static jmethodID s_PockemulObjectVibrateMethodID=0;
+static jmethodID s_HapticObjectPlayMethodID=0;
+static jmethodID s_HapticObjectPauseMethodID=0;
+static jmethodID s_HapticObjectStopMethodID=0;
+static jmethodID s_HapticObjectReleaseMethodID=0;
+jobject m_PockemulObject;
+
+#endif
+
 MainWindowPockemul* mainwindow;
 DownloadManager* downloadManager;
+
+
 
 QString appDir;
 
@@ -80,7 +99,7 @@ int main(int argc, char *argv[])
 
     // Change currentPath to /sdcard/pockemul
     QDir d("/");
-    d.mkdir("/sdcard/pockemul");
+    d.mkpath("/sdcard/pockemul/documents");
     QDir::setCurrent("/sdcard/pockemul");
 
 //    QProxyStyle *s = new QProxyStyle();//QAndroidStyle();
@@ -193,6 +212,9 @@ int main(int argc, char *argv[])
 #ifndef EMSCRIPTEN
     downloadManager = new DownloadManager();
     downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
+#   ifdef Q_OS_ANDROID
+        downloadManager->targetDir = "/sdcard/pockemul/documents";
+#   endif
 #endif
 
 #ifdef EMSCRIPTEN
@@ -204,7 +226,6 @@ int main(int argc, char *argv[])
 #endif
 
     mainwindow->show();
-
 
 #ifndef Q_OS_ANDROID
     mainwindow->initCommandLine();
@@ -218,7 +239,121 @@ int main(int argc, char *argv[])
 
     return app->exec();
 
+}
 
+#ifdef Q_OS_ANDROID
+
+//Convert from QString to Java String
+jstring fromQString	(	JNIEnv * 	env,QString * 	qstring	 )
+{
+      if (qstring == 0) {
+            return 0;
+      }
+
+      return env->NewString((const jchar *) qstring->unicode(), (long) qstring->length());
 }
 
 
+// this method is called immediately after the module is load
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
+{
+    JNIEnv* env;
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        qCritical()<<"Can't get the enviroument";
+        return -1;
+    }
+
+    s_javaVM = vm;
+    // search for our class
+    jclass clazz=env->FindClass("org/qtproject/pockemul/Pockemul");
+    if (!clazz)
+    {
+        qCritical()<<"Can't find Pockemul class";
+        return -1;
+    }
+    // keep a global reference to it
+    s_PockemulObjectClassID = (jclass)env->NewGlobalRef(clazz);
+
+    // search for its contructor
+    s_PockemulObjectConstructorMethodID = env->GetMethodID(s_PockemulObjectClassID, "<init>", "()V");
+    if (!s_PockemulObjectConstructorMethodID)
+    {
+        qCritical()<<"Can't find Pockemul class contructor";
+        return -1;
+    }
+
+    // search for ShowMyModalDialog method
+    s_PockemulObjectDialogMethodID = env->GetMethodID(s_PockemulObjectClassID, "ShowMyModalDialog", "(Ljava/lang/String;I)I");
+    if (!s_PockemulObjectDialogMethodID)
+    {
+        qCritical()<<"Can't find ShowMyModalDialog method";
+        return -1;
+    }
+    // search for Vibrate method
+    s_PockemulObjectVibrateMethodID = env->GetMethodID(s_PockemulObjectClassID, "Vibrate", "()V");
+    if (!s_PockemulObjectVibrateMethodID)
+    {
+        qCritical()<<"Can't find Vibrate method";
+        return -1;
+    }
+
+    qWarning()<<"Yahooo !";
+    return JNI_VERSION_1_6;
+}
+
+#endif
+
+int ask(QWidget *parent, QString msg, int nbButton) {
+#ifdef Q_OS_ANDROID
+    JNIEnv* env;
+        // Qt is running in a different thread than Java UI, so you always Java VM *MUST* be attached to current thread
+        if (s_javaVM->AttachCurrentThread(&env, NULL)<0)
+        {
+            qCritical()<<"AttachCurrentThread failed";
+            return 0;
+        }
+        m_PockemulObject = env->NewGlobalRef(env->NewObject(s_PockemulObjectClassID, s_PockemulObjectConstructorMethodID));
+        jstring parameter = fromQString(env,&msg);
+        jint res = env->CallIntMethod(m_PockemulObject, s_PockemulObjectDialogMethodID,parameter,nbButton);
+
+        qWarning()<<res;
+        // Don't forget to detach from current thread
+            s_javaVM->DetachCurrentThread();
+
+            return res;
+#else
+    if (nbButton==2) {
+        switch (QMessageBox::question(parent, "PockEmul",msg,QMessageBox::Yes|QMessageBox::No)) {
+        case QMessageBox::Yes: return 1;
+        case QMessageBox::No: return 2;
+        }
+    }
+    if (nbButton==3) {
+        switch (QMessageBox::question(parent, "PockEmul",msg,QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel)) {
+        case QMessageBox::Yes: return 1;
+        case QMessageBox::No: return 2;
+        case QMessageBox::Cancel: return 3;
+        }
+    }
+
+#endif
+
+}
+
+void Vibrate() {
+#ifdef Q_OS_ANDROID
+    JNIEnv* env;
+        // Qt is running in a different thread than Java UI, so you always Java VM *MUST* be attached to current thread
+        if (s_javaVM->AttachCurrentThread(&env, NULL)<0)
+        {
+            qCritical()<<"AttachCurrentThread failed";
+
+        }
+        m_PockemulObject = env->NewGlobalRef(env->NewObject(s_PockemulObjectClassID, s_PockemulObjectConstructorMethodID));
+        env->CallVoidMethod(m_PockemulObject, s_PockemulObjectVibrateMethodID);
+
+        // Don't forget to detach from current thread
+        s_javaVM->DetachCurrentThread();
+
+#endif
+}

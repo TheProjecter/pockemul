@@ -33,7 +33,9 @@ QMAKE_CXXFLAGS += -fsigned-char
 CONFIG += qt \
     resources \
     thread \
-    warn_on
+    warn_on \
+
+
 CONFIG += rtti
 
 QT += widgets \
@@ -837,7 +839,8 @@ OTHER_FILES += \
     android/src/org/kde/necessitas/ministro/IMinistro.aidl \
     android/src/org/kde/necessitas/ministro/IMinistroCallback.aidl \
     android/src/org/qtproject/qt5/android/bindings/QtActivity.java \
-    android/src/org/qtproject/qt5/android/bindings/QtApplication.java
+    android/src/org/qtproject/qt5/android/bindings/QtApplication.java \
+    android/src/org/qtproject/pockemul/Pockemul.java
 
 
 

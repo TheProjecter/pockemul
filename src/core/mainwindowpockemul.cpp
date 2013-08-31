@@ -50,7 +50,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 
 extern MainWindowPockemul* mainwindow;
 extern DownloadManager *downloadManager;
-
+extern int ask(QWidget *parent,QString msg,int nbButton);
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
@@ -294,23 +294,23 @@ void MainWindowPockemul::slotDocument(QAction *action) {
     // if yes open it
     // if no propose to download it : display the size ?
 
-    QString fn=QDir::homePath()+"/pockemul/documents/"+QFileInfo(action->data().toString()).fileName();
+    QString homeDir = QDir::homePath();
+#ifdef Q_OS_ANDROID
+    homeDir = "/sdcard";
+#endif
+
+    QString fn=homeDir+"/pockemul/documents/"+QFileInfo(action->data().toString()).fileName();
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly)) {
 
-        switch(QMessageBox::question(
-                   mainwindow,
-                   "PockEmul",
+        if (ask(mainwindow,
                    tr("The document %1 is not available locally. Do you want do download it ?").
-                   arg(action->data().toString()),
-                   QMessageBox::Yes | QMessageBox::No )) {
-        case QMessageBox::Yes: break;
-        case QMessageBox::No: return;
-        default: return;
-        }
+                   arg(action->data().toString()),2)!=1) return;
+
         // Download it
         QUrl url(action->data().toString());
         downloadManager->doDownload(url);
+        return;
     }
     QUrl url(fn);
     QDesktopServices::openUrl(url);
@@ -405,13 +405,10 @@ void MainWindowPockemul::Close_All() {
 #ifdef EMSCRIPTEN
     saveAll = NO;
 #else
-    switch(QMessageBox::question(mainwindow,
-                                 "PockEmul",
-                                 "Do you want to save all sessions ?",
-                               QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel)) {
-    case QMessageBox::Yes: saveAll = YES;break;
-    case QMessageBox::No: saveAll = NO;break;
-    case QMessageBox::Cancel: return;
+    switch (ask(mainwindow,"Do you want to save all sessions ?",3)) {
+    case 1: saveAll = YES;break;
+    case 2: saveAll = NO;break;
+    case 3: return;
     default: return;
     }
 #endif
