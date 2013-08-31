@@ -46,7 +46,7 @@
 
 
 extern MainWindowPockemul *mainwindow;
-
+extern int ask(QWidget *parent,QString msg,int nbButton);
 
  DownloadManager::DownloadManager()
  {
@@ -134,15 +134,20 @@ extern MainWindowPockemul *mainwindow;
  {
      QUrl url = reply->url();
      if (reply->error()) {
-         QMessageBox::warning(mainwindow,tr("Download Manager"),
-                              tr("Download of %1 failed: %2").
-                              arg(url.toEncoded().constData()).arg(reply->errorString()));
+         ask(mainwindow,tr("Download of %1 failed: %2").
+             arg(url.toEncoded().constData()).arg(reply->errorString()),1);
+
+//         QMessageBox::warning(mainwindow,tr("Download Manager"),
+//                              tr("Download of %1 failed: %2").
+//                              arg(url.toEncoded().constData()).arg(reply->errorString()));
      } else {
          QString filename = saveFileName(url);
          if (saveToDisk(filename, reply))
-             QMessageBox::information(mainwindow,tr("Download Manager"),
-                                      tr("Download of %1 succeeded (saved to %2)").
-                                      arg(url.toEncoded().constData()).arg(filename));
+             ask(mainwindow,tr("Download of %1 succeeded (saved to %2)").
+                                      arg(url.toEncoded().constData()).arg(filename),1);
+//             QMessageBox::information(mainwindow,tr("Download Manager"),
+//                                      tr("Download of %1 succeeded (saved to %2)").
+//                                      arg(url.toEncoded().constData()).arg(filename));
      }
 
      currentDownloads.removeAll(reply);

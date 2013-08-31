@@ -100,22 +100,26 @@ private int nbButtons;
     {
         public void run()
         {
+        String butlbl = "Yes";
+        if (nbButtons==1) butlbl="Ok";
             AlertDialog errorDialog = new AlertDialog.Builder( QtActivity.getQtActivityInstance() ).create();
             errorDialog.setMessage(dialogMsg);
-            errorDialog.setButton("Yes", new DialogInterface.OnClickListener() {
+            errorDialog.setButton(butlbl, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     pressedButtonID = 1;
                     dialogSemaphore.release();
                     }
                 });
-            errorDialog.setButton2("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    pressedButtonID = 2;
-                    dialogSemaphore.release();
-                    }
-                });
+             if (nbButtons>1) {
+                    errorDialog.setButton2("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            pressedButtonID = 2;
+                            dialogSemaphore.release();
+                            }
+                        });
+                        }
              if (nbButtons==3) {
                 errorDialog.setButton3("Cancel", new DialogInterface.OnClickListener() {
                     @Override
