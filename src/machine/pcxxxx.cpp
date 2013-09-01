@@ -100,7 +100,7 @@ CpcXXXX::~CpcXXXX()
 bool CpcXXXX::UpdateFinalImage(void)
 {
 
-    qWarning()<<"UpdateFinalImage";
+//    qWarning()<<"UpdateFinalImage";
 //    CPObject::UpdateFinalImage();
     // Paint FinalImage
     QRect                        destRect,srcRect;
@@ -174,21 +174,10 @@ void CpcXXXX::TurnOFF(void)
     mainwindow->saveAll=NO;
 #endif
     switch (mainwindow->saveAll) {
-    case ASK: {
-
-        if (ask(mainwindow,tr( "Do you want to save the session ?"),2)==1)
+    case ASK: if (ask(mainwindow,tr( "Do you want to save the session ?"),2)==1)
             {
              Initial_Session_Save();
             }
-//#else
-//        if ( QMessageBox::question(mainwindow, "PockEmul",
-//                                                         "Do you want to save the session ?",
-//                                                         "Yes",
-//                                                         "No", 0, 0, 1) == 0) {
-//            Initial_Session_Save();
-//        };
-//#endif
-    }
         break;
     case YES: Initial_Session_Save(); break;
     default : break;

@@ -435,12 +435,13 @@ bool CPObject::event(QEvent *event)
  {
 
      if (event->type() == QEvent::Gesture) {
-         if (QGesture *pinch =  (static_cast<QGestureEvent*>(event))->gesture(Qt::TapAndHoldGesture)) {
-             const QPoint pos = (static_cast<QTapAndHoldGesture *>(pinch))->position().toPoint();
+         if (QGesture *tap =  (static_cast<QGestureEvent*>(event))->gesture(Qt::TapAndHoldGesture)) {
+             const QPoint pos = (static_cast<QTapAndHoldGesture *>(tap))->position().toPoint();
+             qWarning()<< (static_cast<QTapAndHoldGesture *>(tap))->timeout();
              QContextMenuEvent *cme = new QContextMenuEvent(
                          QContextMenuEvent::Mouse,
                          pos,
-                         mapToGlobal(pos));
+                         (pos));
              contextMenuEvent(cme);
 
              setCursor(Qt::ArrowCursor);
@@ -571,16 +572,23 @@ void CPObject::mousePressEvent(QMouseEvent *event)
     if (pKEYB)
     {
         pKEYB->LastKey = pKEYB->KeyClick(pts);
+        if (pKEYB->LastKey != 0)  {
+            ungrabGesture(Qt::TapAndHoldGesture);
+        }
+
+
         pKEYB->lastMousePressedKey = pKEYB->LastKey;
         if (pKEYB->LastKey) pKEYB->keyPressedList.append(pKEYB->LastKey);
 
         switch (pKEYB->LastKey) {
-        case K_OF : Vibrate();slotPower();return; break;
+        case K_OF : Vibrate();slotPower();grabGesture(Qt::TapAndHoldGesture);return; break;
         case K_BRK :
         case K_POW_ON : Vibrate();TurnON(); break;
-        case K_POW_OFF: Vibrate();Power = false;TurnOFF();return;break;
+        case K_POW_OFF: Vibrate();Power = false;TurnOFF();grabGesture(Qt::TapAndHoldGesture);return;break;
         case K_CLOSE: Vibrate();TurnCLOSE();break;
         }
+
+        grabGesture(Qt::TapAndHoldGesture);
 
         if (pKEYB->LastKey != 0)
         {
@@ -957,7 +965,7 @@ void CPObject::focusOutEvent ( QFocusEvent * event )
 
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {
-
+    qWarning()<<"contextMenuEvent";
     Vibrate();
 
     QMenu *menu = new QMenu(this);
