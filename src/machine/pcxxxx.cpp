@@ -124,13 +124,13 @@ bool CpcXXXX::UpdateFinalImage(void)
                 z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio_X);
                 t = (int) (Lcd_Symb_DY * Lcd_Symb_ratio_Y);
 
-                painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+                painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::FastTransformation));
             }
             x	= Lcd_X + Pc_Offset_X;
             y	= Lcd_Y + Pc_Offset_Y;
             z	= (int) (Lcd_DX * Lcd_ratio_X);
             t	= (int) (Lcd_DY * Lcd_ratio_Y);
-            painter.drawImage(QRect(x,y,z,t),LcdImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+            painter.drawImage(QRect(x,y,z,t),LcdImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::FastTransformation));
 
         }
         painter.end();

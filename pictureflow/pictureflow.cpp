@@ -762,35 +762,36 @@ void PictureFlowPrivate::render()
   }
   else
   {
-    // the first and last slide must fade in/fade out
-    for(int index = 0; index < nleft; index++)
-    {
-      int alpha = 256;
-      if(index == nleft-1)
-        alpha = (step > 0) ? 0 : 128-fade/2;
-      if(index == nleft-2)
-        alpha = (step > 0) ? 128-fade/2 : 256-fade/2;
-      if(index == nleft-3)
-        alpha = (step > 0) ? 256-fade/2 : 256;
-      QRect rs = renderSlide(leftSlides[index], alpha, 0, c1-1);
-      if(!rs.isEmpty())
-        c1 = rs.left();
+      // the first and last slide must fade in/fade out
+      for(int index = 0; index < nleft; index++)
+      {
+        int alpha = 256;
+        if(index == nleft-1)
+          alpha = (step > 0) ? 0 : 128-fade/2;
+        if(index == nleft-2)
+          alpha = (step > 0) ? 128-fade/2 : 256-fade/2;
+        if(index == nleft-3)
+          alpha = (step > 0) ? 256-fade/2 : 256;
+        QRect rs = renderSlide(leftSlides[index], alpha, 0, c1-1);
+        if(!rs.isEmpty())
+          c1 = rs.left();
 
-      alpha = (step > 0) ? 256-fade/2 : 256;
-    }
-    for(int index = 0; index < nright; index++)
-    {
-      int alpha = (index < nright-2) ? 256 : 128;
-      if(index == nright-1)
-        alpha = (step > 0) ? fade/2 : 0;
-      if(index == nright-2)
-        alpha = (step > 0) ? 128+fade/2 : fade/2;
-      if(index == nright-3)
-        alpha = (step > 0) ? 256 : 128+fade/2;
-      QRect rs = renderSlide(rightSlides[index], alpha, c2+1, buffer.width());
-      if(!rs.isEmpty())
-        c2 = rs.right();
-    }
+        alpha = (step > 0) ? 256-fade/2 : 256;
+      }
+      for(int index = 0; index < nright; index++)
+      {
+        int alpha = (index < nright-2) ? 256 : 128;
+        if(index == nright-1)
+          alpha = (step > 0) ? fade/2 : 0;
+        if(index == nright-2)
+          alpha = (step > 0) ? 128+fade/2 : fade/2;
+        if(index == nright-3)
+          alpha = (step > 0) ? 256 : 128+fade/2;
+        QRect rs = renderSlide(rightSlides[index], alpha, c2+1, buffer.width());
+        if(!rs.isEmpty())
+          c2 = rs.right();
+      }
+
 
 #ifndef EMSCRIPTEN
     QPainter painter;
@@ -1450,7 +1451,7 @@ void PictureFlow::mouseReleaseEvent(QMouseEvent* event)
 
 void PictureFlow::wheelEvent(QWheelEvent * event)
 {
-    qWarning()<<"mouseWheel";
+//    qWarning()<<"mouseWheel";
     if (event->delta()>0) {
         showNext();
     }
