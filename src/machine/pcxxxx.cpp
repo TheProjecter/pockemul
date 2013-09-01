@@ -100,6 +100,7 @@ CpcXXXX::~CpcXXXX()
 bool CpcXXXX::UpdateFinalImage(void)
 {
 
+    qWarning()<<"UpdateFinalImage";
 //    CPObject::UpdateFinalImage();
     // Paint FinalImage
     QRect                        destRect,srcRect;
@@ -124,13 +125,13 @@ bool CpcXXXX::UpdateFinalImage(void)
                 z = (int) (Lcd_Symb_DX * Lcd_Symb_ratio_X);
                 t = (int) (Lcd_Symb_DY * Lcd_Symb_ratio_Y);
 
-                painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::FastTransformation));
+                painter.drawImage(QRect(x,y,z,t),SymbImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
             }
             x	= Lcd_X + Pc_Offset_X;
             y	= Lcd_Y + Pc_Offset_Y;
             z	= (int) (Lcd_DX * Lcd_ratio_X);
             t	= (int) (Lcd_DY * Lcd_ratio_Y);
-            painter.drawImage(QRect(x,y,z,t),LcdImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::FastTransformation));
+            painter.drawImage(QRect(x,y,z,t),LcdImage->scaled(z,t,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 
         }
         painter.end();

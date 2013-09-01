@@ -1700,7 +1700,7 @@ void Clcdc_pc1500::disp(void)
 
 	for (ind=0; ind<0x4D; ind+=2)
 	{	adr = 0x7600 + ind;
-		if ( (DirtyBuf[adr-0x7600]) || !On)
+        if ( (DirtyBuf[adr-0x7600]))
 		{	
             Refresh = true;
 			if (On)
@@ -1746,7 +1746,7 @@ void Clcdc_pc1500::disp(void)
 
 	for (ind=0; ind<0x4D; ind+=2)
 	{	adr = 0x7700 + ind;
-		if ( (DirtyBuf[adr-0x7600]) || !On)
+        if ( (DirtyBuf[adr-0x7600]) )
 		{	
             Refresh = true;
 			if (On)

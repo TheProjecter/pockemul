@@ -831,7 +831,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 	painter.begin(this);	
 	if (FinalImage)
 	{
-        painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::FastTransformation));//,Qt::SmoothTransformation));
+        painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 	}
 
 	if (dialogkeylist)
