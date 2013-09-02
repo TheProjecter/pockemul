@@ -561,7 +561,7 @@ void CT6834::RefreshVideo (void)
 if (!General_Info.LcdOn) return;
     //AffCurseur ();
     if (cursorTimer.elapsed()>500) {
-//        qWarning()<<"Cursor";
+        qWarning()<<"Cursor";
         curOnOff = !curOnOff;
         pPC->pLCDC->redraw = true;
         cursorTimer.restart();

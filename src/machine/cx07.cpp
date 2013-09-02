@@ -844,21 +844,22 @@ void Cx07::SendToSerial(PorT_FX *Port)
 
 void Cx07::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu = new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
-    menu.addSeparator();
+    menu->addSeparator();
 
-    QMenu *menuUart = menu.addMenu(tr("Serial communication"));
+    QMenu *menuUart = menu->addMenu(tr("Serial communication"));
     menuUart->addAction(tr("Show console"),pUART,SLOT(ShowConsole()));
     menuUart->addAction(tr("Hide console"),pUART,SLOT(HideConsole()));
 
-    QMenu *menuTape = menu.addMenu(tr("Tape I/O"));
+    QMenu *menuTape = menu->addMenu(tr("Tape I/O"));
     menuTape->addAction(tr("Load CAS..."),this,SLOT(LoadK7()));
     menuTape->addAction(tr("Save to CAS..."),this,SLOT(LoadNewK7()));
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+        event->accept();
 }
 
 void Cx07::LoadNewK7()

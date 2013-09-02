@@ -283,6 +283,8 @@ void MainWindowPockemul::slotWebLink(QAction *action) {
 }
 #define POCKEMUL_DOCUMENTS_URL "http://pockemul.free.fr/Documents/userguide/"
 
+
+extern void m_openURL(QUrl url);
 void MainWindowPockemul::slotDocument(QAction *action) {
 
 #ifdef EMSCRIPEN
@@ -312,8 +314,12 @@ void MainWindowPockemul::slotDocument(QAction *action) {
         downloadManager->doDownload(url);
         return;
     }
-    QUrl url(fn);
+    QUrl url = QUrl::fromLocalFile(fn);
+#if 0
     QDesktopServices::openUrl(url);
+#else
+    m_openURL(url);
+#endif
 #endif
 }
 

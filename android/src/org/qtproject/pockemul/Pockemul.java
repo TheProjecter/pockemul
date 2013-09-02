@@ -21,14 +21,18 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Context;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.util.Log;
 import android.provider.Settings;
 import android.provider.Settings.System;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
+import java.io.File;
 import java.util.concurrent.Semaphore;
 
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -158,6 +162,19 @@ private int nbButtons;
      Vibrator vibrator = (Vibrator) QtActivity.getQtActivityInstance().getSystemService(Context.VIBRATOR_SERVICE);
      // Vibrate for 50 milliseconds
      vibrator.vibrate(50);
+    }
+
+    public void openURL(String url)
+    {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        File file = new File(url);
+        String ext=file.getName().substring(file.getName().lastIndexOf(".")+1).toLowerCase();
+        String type = mime.getMimeTypeFromExtension(ext);
+        intent.setDataAndType(Uri.fromFile(file),type);
+        QtActivity.getQtActivityInstance().startActivity(intent);
+
     }
 
 }

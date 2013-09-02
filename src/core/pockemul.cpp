@@ -36,6 +36,7 @@ static jclass s_PockemulObjectClassID = 0;
 static jmethodID s_PockemulObjectConstructorMethodID=0;
 static jmethodID s_PockemulObjectDialogMethodID=0;
 static jmethodID s_PockemulObjectVibrateMethodID=0;
+static jmethodID s_PockemulObjectopenURLMethodID=0;
 static jmethodID s_HapticObjectPlayMethodID=0;
 static jmethodID s_HapticObjectPauseMethodID=0;
 static jmethodID s_HapticObjectStopMethodID=0;
@@ -140,6 +141,16 @@ int main(int argc, char *argv[])
 #ifdef EMSCRIPTEN
     mainwindow->setWindowTitle("PockEmul Online");
 #endif
+
+#ifndef EMSCRIPTEN
+    downloadManager = new DownloadManager();
+    downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
+#   ifdef Q_OS_ANDROID
+        downloadManager->targetDir = "/sdcard/pockemul/documents";
+#   endif
+#endif
+
+
     int v_inter = 60;
     int v_pos = 12;
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,
@@ -190,7 +201,7 @@ int main(int argc, char *argv[])
 
     LaunchButtonWidget* bookcase = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::FileBrowser,
-                                                          QStringList()<< (QDir::homePath()+"/pockemul/documents")<<"*.pdf",
+                                                          QStringList()<< (downloadManager->targetDir)<<"*.pdf",
                                                       ":/core/bookcase.png");
 //    mainwindow->connect(load,SIGNAL(clicked()),mainwindow,SLOT(opensession()));
     bookcase->setGeometry(0,v_pos,48,48);
@@ -209,13 +220,7 @@ int main(int argc, char *argv[])
 
 //    CTinyBasic tb;
 //    tb.test();
-#ifndef EMSCRIPTEN
-    downloadManager = new DownloadManager();
-    downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
-#   ifdef Q_OS_ANDROID
-        downloadManager->targetDir = "/sdcard/pockemul/documents";
-#   endif
-#endif
+
 
 #ifdef EMSCRIPTEN
     mainwindow->zoomSlider = new QSlider(mainwindow->centralwidget);
@@ -296,7 +301,13 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         qCritical()<<"Can't find Vibrate method";
         return -1;
     }
-
+    // search for openURL method
+    s_PockemulObjectopenURLMethodID = env->GetMethodID(s_PockemulObjectClassID, "openURL", "(Ljava/lang/String;)V");
+    if (!s_PockemulObjectopenURLMethodID)
+    {
+        qCritical()<<"Can't find Vibrate method";
+        return -1;
+    }
     qWarning()<<"Yahooo !";
     return JNI_VERSION_1_6;
 }
@@ -356,4 +367,30 @@ void Vibrate() {
         s_javaVM->DetachCurrentThread();
 
 #endif
+}
+
+void m_openURL(QUrl url) {
+#ifdef Q_OS_ANDROID
+    if (url.isLocalFile()) {
+        qWarning()<<url;
+        JNIEnv* env;
+            // Qt is running in a different thread than Java UI, so you always Java VM *MUST* be attached to current thread
+            if (s_javaVM->AttachCurrentThread(&env, NULL)<0)
+            {
+                qCritical()<<"AttachCurrentThread failed";
+
+            }
+            m_PockemulObject = env->NewGlobalRef(env->NewObject(s_PockemulObjectClassID, s_PockemulObjectConstructorMethodID));
+            QString fn = url.toLocalFile();
+            jstring parameter = fromQString(env,&fn);
+            env->CallVoidMethod(m_PockemulObject, s_PockemulObjectopenURLMethodID,parameter);
+
+            // Don't forget to detach from current thread
+            s_javaVM->DetachCurrentThread();
+
+            return;
+    }
+
+#endif
+    QDesktopServices::openUrl(url);
 }

@@ -46,6 +46,7 @@
 #include "mainwindowpockemul.h"
 
 extern MainWindowPockemul *mainwindow;
+extern void m_openURL(QUrl url);
 
  #define DEFAULT_INPUT_TIMEOUT 10000
  #define SIZING_FACTOR_HEIGHT 6/10
@@ -327,8 +328,9 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
              }
              if (Config.at(1)=="*.pdf") {
                  qWarning()<<"open pdf:"<<Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index);
-                 QUrl url(Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index));
-                 QDesktopServices::openUrl(url);
+                 QUrl url = QUrl::fromLocalFile(Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index));
+                 //QDesktopServices::openUrl(url);
+                 m_openURL(url);
              }
              close();
          }
