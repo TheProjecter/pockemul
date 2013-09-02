@@ -178,6 +178,7 @@ bool Cx07::run() {
     if (!Power && pT6834->General_Info.Break == 1)
     {
             pT6834->General_Info.Break = 0;
+            pKEYB->LastKey = K_BRK;
             TurnON();
             ((CZ80 *) pCPU)->z80.r16.pc = 0xC3C3;
 
@@ -193,6 +194,8 @@ bool Cx07::run() {
     }
 
     CpcXXXX::run();
+
+    pT6834->RefreshVideo();
 
     //TODO Copy data to UART: Baudrate
 
@@ -740,6 +743,7 @@ void Cx07::TurnOFF(void) {
     mainwindow->saveAll = ASK;
     AddLog(LOG_TEMP,"TURN OFF");
     pT6834->General_Info.LcdOn = false;
+    qWarning()<<"Turn OFF";
 }
 
 void Cx07::TurnON(void){

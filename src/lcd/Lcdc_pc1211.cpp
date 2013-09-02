@@ -222,15 +222,18 @@ void Clcdc_pc1211::disp()
                 blinkState = pPC->pTIMER->state;
             }
         }
-        else
+        else {
             DrawChar(0xfe,_curPos-_start);
+        }
+
+
     }
-    Refresh = true;
+
 }
 
 void Clcdc_pc1211::DrawChar(quint8 c, int x)
 {
-//    Refresh = FALSE;
+    Refresh = true;
     //	disp_symb();
     QPainter painter(pPC->LcdImage);
 

@@ -73,7 +73,7 @@ public:
     void TurnOFF();
 
     GENERAL_INFO General_Info;
-    UINT8 Send_Cmd_T6834 [255];
+    UINT8 Send_Cmd_T6834 [0x200];
     UINT8 Locate_OnOff;
     UINT8 Loc_X;
     UINT8 Loc_Y;

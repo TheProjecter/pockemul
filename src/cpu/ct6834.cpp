@@ -327,7 +327,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
   case 0x1d:
   case 0x1e:
-      for(i = 0; (i < 0x200 && Send_Cmd_T6834[i+1]); i++) {
+      for(i = 0; (i < 0x100 && Send_Cmd_T6834[i+1]); i++) {
           mem[0xE00+i] = Send_Cmd_T6834[12+i];
       }
 
@@ -336,7 +336,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
    case 0x20: // SPOff
                  break;
    case 0x21: // SP Read  0xCE00 -> 0xCFFF
-      for(i = 0; i < 0x200; i++) {
+      for(int i = 0; i < 0x200; i++) {
           UINT8 code = mem[0xE00+i];
           Rsp[i] = code;
           if(!code) {
@@ -558,9 +558,10 @@ void CT6834::RefreshVideo (void)
     int x;
     int y;
 
-
+if (!General_Info.LcdOn) return;
     //AffCurseur ();
     if (cursorTimer.elapsed()>500) {
+//        qWarning()<<"Cursor";
         curOnOff = !curOnOff;
         pPC->pLCDC->redraw = true;
         cursorTimer.restart();
@@ -596,8 +597,10 @@ void CT6834::RefreshVideo (void)
 //    if (General_Info.Curseur && cursorTimer.elapsed()>1000) cursorTimer.restart();
     painter.end();
 
+
     pPC->pLCDC->Refresh = true;
     Refresh_Display = true;
+    pPC->update();
 }
 
 void CT6834::AffCurseur (void)
@@ -676,12 +679,15 @@ void CT6834::ScrollVideo (void)
 void CT6834::LineClear (UINT8 P_y)
 {
  UINT8 x,y;
+// FIXME: Wat is the meaning of P_y=0xff ???? clear full screen ?
+ qWarning()<<"P_Y="<<P_y;
+//  if (P_y==0xff) P_y=0;
 
  /* Effacement de la mémoire video */
  /*--------------------------------*/
  for (x=0;x<MAX_X;x++)
   for (y=P_y*NB_POINT_CAR_Y;y<(P_y+1)*NB_POINT_CAR_Y;y++)
-   Ram_Video[x][y]=0;
+   if (( x<120)&&(y<32)) Ram_Video[x][y]=0;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -847,6 +853,8 @@ bool CT6834::init()
     General_Info.LcdOn        = false;
 
     connect(this,SIGNAL(TurnOFFSig()),pPC,SLOT(TurnOFFSlot()));
+
+    cursorTimer.start();
 
     return true;
 }
