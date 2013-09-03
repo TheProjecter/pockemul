@@ -5,6 +5,11 @@
 #include <QPoint>
 #include <QGesture>
 #include <QGestureEvent>
+
+#ifdef P_ENGINIO
+#include "enginioreply.h"
+#endif
+
 //
 #include "ui_pockemul.h"
 #include "common.h"
@@ -92,8 +97,15 @@ public:
 
     void initObjectTable();
 
+#ifdef P_ENGINIO
+    EnginioReply * _lastReply;
+#endif
+
 public slots:
     void opensession(QString sessionFN=QString());
+#ifdef P_ENGINIO
+    void EnginioFinished(EnginioReply * reply);
+#endif
 
 private slots:
 

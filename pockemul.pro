@@ -14,6 +14,7 @@ PROJECT_MODULE += \
     M_IDE \
     M_EMB_QRC \
     M_LIBAVOID \
+    M_ENGINIO \
 }
 
 
@@ -112,6 +113,30 @@ SOURCES += \
     libavoid/connector.cpp \
     libavoid/connectionpin.cpp \
 
+
+}
+
+contains(PROJECT_MODULE,M_ENGINIO) {
+DEFINES += P_ENGINIO
+
+HEADERS += \
+    enginio_client/enginioreply_p.h \
+    enginio_client/enginioreply.h \
+    enginio_client/enginioobjectadaptor_p.h \
+    enginio_client/enginiomodel.h \
+    enginio_client/enginioidentity.h \
+    enginio_client/enginiofakereply_p.h \
+    enginio_client/enginioclient_p.h \
+    enginio_client/enginioclient_global.h \
+    enginio_client/enginioclient.h \
+    enginio_client/chunkdevice_p.h
+
+SOURCES += \
+    enginio_client/enginioreply.cpp \
+    enginio_client/enginiomodel.cpp \
+    enginio_client/enginioidentity.cpp \
+    enginio_client/enginiofakereply.cpp \
+    enginio_client/enginioclient.cpp
 
 }
 
@@ -476,14 +501,20 @@ HEADERS += src/core/Connect.h \
     src/cpu/m6502/ops02.h \
     qhttp/qringbuffer_p.h \
     qhttp/qhttpauthenticator_p.h \
-    qhttp/qhttp.h
+    qhttp/qhttp.h \
+    image-gallery-cpp/mainwindow.h \
+    image-gallery-cpp/imageobject.h \
+    image-gallery-cpp/imagemodel.h \
+    image-gallery-cpp/applicationconfig.h
+
 INCLUDEPATH += . \
     src/core \
     src/cpu \
     src/machine \
     src/lcd \
     src/qmdilib \
-    pictureflow
+    pictureflow \
+    enginio_client
 
 INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa \
                 libavoid
@@ -702,7 +733,10 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     qhttp/qhttpauthenticator.cpp \
-    qhttp/qhttp.cpp
+    qhttp/qhttp.cpp \
+    image-gallery-cpp/mainwindow.cpp \
+    image-gallery-cpp/imageobject.cpp \
+    image-gallery-cpp/imagemodel.cpp
 
 
 

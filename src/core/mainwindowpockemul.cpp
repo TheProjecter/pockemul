@@ -4,6 +4,11 @@
 #include <iostream>
 #include <QtNetwork>
 
+#ifdef P_ENGINIO
+#include "enginioclient.h"
+#include "enginioreply.h"
+extern EnginioClient *m_client;
+#endif
 
 /** \mainpage
 PockEmul is a Sharp Pocket Computer Emulator.
@@ -126,6 +131,7 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
 server = new ServeurTcp(this);
 #endif
 
+_lastReply =0;
 
 qWarning("create");
 
@@ -446,6 +452,15 @@ void MainWindowPockemul::SelectPocket(QAction * action) {
 
 void MainWindowPockemul::about()
 {
+    QJsonObject city;
+      city.insert("objectType", QString("objects.city")); // an object type is required for all objects in Enginio
+      city.insert("name", QString("Oslo")); // other properties can be chosen freely
+      city.insert("population", 624000);
+
+      const EnginioReply* response = m_client->create(city);
+      qWarning()<<response;
+
+
     DialogAbout *dialogabout = new DialogAbout(this);
     dialogabout->setModal(true);
     dialogabout->show();
@@ -459,6 +474,7 @@ void MainWindowPockemul::Log()
 
 void MainWindowPockemul::IDE()
 {
+
 #ifdef P_IDE
         if (windowide==0) windowide = new WindowIDE(this);
         windowide->show();
@@ -595,6 +611,17 @@ void MainWindowPockemul::opensession(QString sessionFN)
     }
 }
 
+#ifdef P_ENGINIO
+void MainWindowPockemul::EnginioFinished(EnginioReply *reply)
+{
+qWarning()<<"EnginioFinished";
+    _lastReply = reply;
+    qWarning()<<"EnginioFinished";
+}
+#endif
+
+extern void sendAttachedFile(QString fname);
+
 void MainWindowPockemul::saveassession()
 {
     QMap<CPObject*,int> map;
@@ -673,7 +700,12 @@ void MainWindowPockemul::saveassession()
 
     saveAll = ASK;
 
+     sendAttachedFile(fn) ;
+
+
     delete xml;
+
+
 }
 
 
