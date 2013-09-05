@@ -123,9 +123,10 @@ DEFINES += P_ENGINIO
 
 
 HEADERS+= \
-    image-gallery-cpp/imageobject.h \
-    image-gallery-cpp/imagemodel.h \
-    image-gallery-cpp/applicationconfig.h \
+    cloud/imageobject.h \
+    cloud/imagemodel.h \
+    cloud/applicationconfig.h \
+    cloud/cloudwindow.h \
     enginio_client/enginioreply_p.h \
     enginio_client/enginioreply.h \
     enginio_client/enginioobjectadaptor_p.h \
@@ -142,7 +143,10 @@ SOURCES+= \
     enginio_client/enginiomodel.cpp \
     enginio_client/enginioidentity.cpp \
     enginio_client/enginiofakereply.cpp \
-    enginio_client/enginioclient.cpp
+    enginio_client/enginioclient.cpp \
+    cloud/imageobject.cpp \
+    cloud/imagemodel.cpp \
+    cloud/cloudwindow.cpp
 
 
 }
@@ -508,8 +512,7 @@ HEADERS += src/core/Connect.h \
     src/cpu/m6502/ops02.h \
     qhttp/qringbuffer_p.h \
     qhttp/qhttpauthenticator_p.h \
-    qhttp/qhttp.h \
-    image-gallery-cpp/cloudwindow.h
+    qhttp/qhttp.h
 
 
 INCLUDEPATH += . \
@@ -738,10 +741,7 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     qhttp/qhttpauthenticator.cpp \
-    qhttp/qhttp.cpp \
-    image-gallery-cpp/imageobject.cpp \
-    image-gallery-cpp/imagemodel.cpp \
-    image-gallery-cpp/cloudwindow.cpp
+    qhttp/qhttp.cpp
 
 
 OTHER_FILES += \
