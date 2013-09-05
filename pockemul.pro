@@ -23,9 +23,11 @@ DEFINES += NO_SOUND EMSCRIPTEN
 }
 
 contains(PROJECT_TYPE,ANDROID) {
-DEFINES += NO_SOUND Q_OS_ANDROID
+DEFINES += NO_SOUND
+
 PROJECT_MODULE += \
     M_EMB_QRC \
+    M_ENGINIO
 
 }
 
@@ -119,7 +121,11 @@ SOURCES += \
 contains(PROJECT_MODULE,M_ENGINIO) {
 DEFINES += P_ENGINIO
 
-HEADERS += \
+
+HEADERS+= \
+    image-gallery-cpp/imageobject.h \
+    image-gallery-cpp/imagemodel.h \
+    image-gallery-cpp/applicationconfig.h \
     enginio_client/enginioreply_p.h \
     enginio_client/enginioreply.h \
     enginio_client/enginioobjectadaptor_p.h \
@@ -131,12 +137,13 @@ HEADERS += \
     enginio_client/enginioclient.h \
     enginio_client/chunkdevice_p.h
 
-SOURCES += \
+SOURCES+= \
     enginio_client/enginioreply.cpp \
     enginio_client/enginiomodel.cpp \
     enginio_client/enginioidentity.cpp \
     enginio_client/enginiofakereply.cpp \
     enginio_client/enginioclient.cpp
+
 
 }
 
@@ -502,10 +509,8 @@ HEADERS += src/core/Connect.h \
     qhttp/qringbuffer_p.h \
     qhttp/qhttpauthenticator_p.h \
     qhttp/qhttp.h \
-    image-gallery-cpp/mainwindow.h \
-    image-gallery-cpp/imageobject.h \
-    image-gallery-cpp/imagemodel.h \
-    image-gallery-cpp/applicationconfig.h
+    image-gallery-cpp/cloudwindow.h
+
 
 INCLUDEPATH += . \
     src/core \
@@ -734,10 +739,9 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     qhttp/qhttpauthenticator.cpp \
     qhttp/qhttp.cpp \
-    image-gallery-cpp/mainwindow.cpp \
     image-gallery-cpp/imageobject.cpp \
-    image-gallery-cpp/imagemodel.cpp
-
+    image-gallery-cpp/imagemodel.cpp \
+    image-gallery-cpp/cloudwindow.cpp
 
 
 OTHER_FILES += \

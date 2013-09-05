@@ -97,8 +97,8 @@ Ctpc8300::Ctpc8300(CPObject *parent)	: CpcXXXX(parent)
 }
 
 Ctpc8300::~Ctpc8300() {
-    // BUG : crash when deleting those pointers. Need investigation
-    for (int i=0;i<4;i++) {
+
+    for (int i=0;i<3;i++) {
         delete(upd16434[i]);
     }
 }

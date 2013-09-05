@@ -100,7 +100,7 @@ CpcXXXX::~CpcXXXX()
 bool CpcXXXX::UpdateFinalImage(void)
 {
 
-    qWarning()<<"UpdateFinalImage";
+//    qWarning()<<"UpdateFinalImage";
 //    CPObject::UpdateFinalImage();
     // Paint FinalImage
     QRect                        destRect,srcRect;

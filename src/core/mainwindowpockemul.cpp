@@ -4,9 +4,12 @@
 #include <iostream>
 #include <QtNetwork>
 
+
 #ifdef P_ENGINIO
-#include "enginioclient.h"
-#include "enginioreply.h"
+
+#include <enginioclient.h>
+#include <enginioreply.h>
+#include "image-gallery-cpp/cloudwindow.h"
 extern EnginioClient *m_client;
 #endif
 
@@ -51,6 +54,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "clink.h"
 #include "downloadmanager.h"
 #include "servertcp.h"
+#include "image-gallery-cpp/cloudwindow.h"
 
 
 extern MainWindowPockemul* mainwindow;
@@ -76,6 +80,7 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
     setStatusBar(0);
     dialoglog = 0;
     dialoganalogic = 0;
+    cloud = 0;
 #ifdef P_IDE
     windowide = 0;
 #endif
@@ -481,6 +486,18 @@ void MainWindowPockemul::IDE()
 #endif
 }
 
+void MainWindowPockemul::CloudSlot()
+{
+    if (cloud==0) {
+        cloud = new CloudWindow(this);
+    }
+
+    cloud->setGeometry(0,0,width(),height());
+
+    cloud->show();
+    cloud->raise();
+}
+
 void MainWindowPockemul::Analogic()
 {
         dialoganalogic = new dialogAnalog(11,this);
@@ -494,12 +511,100 @@ void MainWindowPockemul::CheckUpdates()
     dialogcheckupdate.show();
 }
 
+void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
+    QMap<int,CPObject*> map;
+    CPObject * firstPC = 0;
+
+    if (xml->readNextStartElement()) {
+        if (xml->name() == "pml" && xml->attributes().value("version") == "1.0") {
+            zoom = xml->attributes().value("zoom").toString().toFloat();
+            if (zoom==0)zoom=100;
+            while (!xml->atEnd()) {
+                while (xml->readNextStartElement()) {
+                    QString eltname = xml->name().toString();
+                    CPObject * locPC;
+                    if (eltname == "object") {
+                        QString name = xml->attributes().value("name").toString();
+                        locPC = LoadPocket(objtable.value(name));
+                        if (firstPC == 0) firstPC = locPC;      // Store the first pocket to manage stack
+                        int id = xml->attributes().value("id").toString().toInt();
+                        map.insert(id,locPC);
+                        locPC->Front = (xml->attributes().value("front")=="true") ?true:false;
+
+                        locPC->Power = (xml->attributes().value("power")=="true") ?true:false;
+                        if (locPC->Power) {
+
+                            locPC->TurnON();
+                        }
+
+                        while (xml->readNextStartElement()) {
+                            QString eltname = xml->name().toString();
+//                            AddLog(LOG_TEMP,eltname);
+                            if (eltname == "position") {
+                                QString posX = xml->attributes().value("x").toString();
+                                QString posY = xml->attributes().value("y").toString();
+                                locPC->setPosX(posX.toFloat());
+                                locPC->setPosY(posY.toFloat());
+                                if (locPC->Front) {
+//                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
+//                                    locPC->setMask(locPC->mask.scaled(locPC->getDX()*zoom/100,locPC->getDY()*zoom/100).mask());
+                                    locPC->changeGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
+                                }
+                                else {
+                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);
+
+                                }
+                                xml->skipCurrentElement();
+
+                            }
+                            else
+                            if (eltname == "session") {
+//                                AddLog(LOG_MASTER,"OK");
+//                                ((CpcXXXX*)locPC)->LoadSession_File(&xml);
+                                locPC->LoadSession_File(xml);
+                                xml->skipCurrentElement();
+                            }
+                            else
+                                xml->skipCurrentElement();
+                        }
+             //           xml->readNextStartElement();
+                     }
+                    else if (eltname == "link") {
+                        int idpc1 = xml->attributes().value("idpcFrom").toString().toInt();
+                        int idco1 = xml->attributes().value("idcoFrom").toString().toInt();
+                        int idpc2 = xml->attributes().value("idpcTo").toString().toInt();
+                        int idco2 = xml->attributes().value("idcoTo").toString().toInt();
+                        bool close= (xml->attributes().value("close")=="false") ?false:true;
+                        CPObject * locpc1 = map.value(idpc1);
+                        CPObject * locpc2 = map.value(idpc2);
+                        Cconnector * locco1 = locpc1->ConnList.value(idco1);
+                        Cconnector * locco2 = locpc2->ConnList.value(idco2);
+                        mainwindow->pdirectLink->addLink(locco1,locco2,close);
+
+                    }
+                    else
+                        xml->skipCurrentElement();
+
+
+                }
+            }
+        }
+        else
+            xml->raiseError(QObject::tr("The file is not a PML version 1.0 file."));
+    }
+    for (int i=0;i <listpPObject.size();i++) {
+        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(listpPObject.at(i), e);
+        QMouseEvent *e2=new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(listpPObject.at(i), e2);
+        delete e;
+        delete e2;
+    }
+
+}
+
 void MainWindowPockemul::opensession(QString sessionFN)
 {
-
-
-
-    QMap<int,CPObject*> map;
 
     if (sessionFN=="") {
         sessionFN = QFileDialog::getOpenFileName(
@@ -518,97 +623,9 @@ void MainWindowPockemul::opensession(QString sessionFN)
             return ;
     }
 
-    QXmlStreamReader xml;
+    QXmlStreamReader *xml = new QXmlStreamReader(&file);
 
-    xml.setDevice(&file);
-
-    CPObject * firstPC = 0;
-
-    if (xml.readNextStartElement()) {
-        if (xml.name() == "pml" && xml.attributes().value("version") == "1.0") {
-            zoom = xml.attributes().value("zoom").toString().toFloat();
-            if (zoom==0)zoom=100;
-            while (!xml.atEnd()) {
-                while (xml.readNextStartElement()) {
-                    QString eltname = xml.name().toString();
-                    CPObject * locPC;
-                    if (eltname == "object") {
-                        QString name = xml.attributes().value("name").toString();
-                        locPC = LoadPocket(objtable.value(name));
-                        if (firstPC == 0) firstPC = locPC;      // Store the first pocket to manage stack
-                        int id = xml.attributes().value("id").toString().toInt();
-                        map.insert(id,locPC);
-                        locPC->Front = (xml.attributes().value("front")=="true") ?true:false;
-
-                        locPC->Power = (xml.attributes().value("power")=="true") ?true:false;
-                        if (locPC->Power) {
-
-                            locPC->TurnON();
-                        }
-
-                        while (xml.readNextStartElement()) {
-                            QString eltname = xml.name().toString();
-//                            AddLog(LOG_TEMP,eltname);
-                            if (eltname == "position") {
-                                QString posX = xml.attributes().value("x").toString();
-                                QString posY = xml.attributes().value("y").toString();
-                                locPC->setPosX(posX.toFloat());
-                                locPC->setPosY(posY.toFloat());
-                                if (locPC->Front) {
-//                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
-//                                    locPC->setMask(locPC->mask.scaled(locPC->getDX()*zoom/100,locPC->getDY()*zoom/100).mask());
-                                    locPC->changeGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
-                                }
-                                else {
-                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);
-
-                                }
-                                xml.skipCurrentElement();
-
-                            }
-                            else
-                            if (eltname == "session") {
-//                                AddLog(LOG_MASTER,"OK");
-//                                ((CpcXXXX*)locPC)->LoadSession_File(&xml);
-                                locPC->LoadSession_File(&xml);
-                                xml.skipCurrentElement();
-                            }
-                            else
-                                xml.skipCurrentElement();
-                        }
-             //           xml.readNextStartElement();
-                     }
-                    else if (eltname == "link") {
-                        int idpc1 = xml.attributes().value("idpcFrom").toString().toInt();
-                        int idco1 = xml.attributes().value("idcoFrom").toString().toInt();
-                        int idpc2 = xml.attributes().value("idpcTo").toString().toInt();
-                        int idco2 = xml.attributes().value("idcoTo").toString().toInt();
-                        bool close= (xml.attributes().value("close")=="false") ?false:true;
-                        CPObject * locpc1 = map.value(idpc1);
-                        CPObject * locpc2 = map.value(idpc2);
-                        Cconnector * locco1 = locpc1->ConnList.value(idco1);
-                        Cconnector * locco2 = locpc2->ConnList.value(idco2);
-                        mainwindow->pdirectLink->addLink(locco1,locco2,close);
-
-                    }
-                    else
-                        xml.skipCurrentElement();
-
-
-                }
-            }
-        }
-        else
-            xml.raiseError(QObject::tr("The file is not a PML version 1.0 file."));
-    }
-    for (int i=0;i <listpPObject.size();i++) {
-        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
-        QApplication::sendEvent(listpPObject.at(i), e);
-        QMouseEvent *e2=new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0,0), Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
-        QApplication::sendEvent(listpPObject.at(i), e2);
-        delete e;
-        delete e2;
-    }
+    opensession(xml);
 }
 
 #ifdef P_ENGINIO
@@ -622,20 +639,15 @@ qWarning()<<"EnginioFinished";
 
 extern void sendAttachedFile(QString fname);
 
-void MainWindowPockemul::saveassession()
+void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
 {
     QMap<CPObject*,int> map;
-
-    // Take a snapshot
-
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
     QPixmap::grabWidget(this).toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
 
-    saveAll = YES;
-    QString s;
-    QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
+
     xml->setAutoFormatting(true);
     xml->writeStartElement("pml");
     xml->writeAttribute("version", "1.0");
@@ -677,6 +689,19 @@ void MainWindowPockemul::saveassession()
     //xml->writeEndElement();  // links
 
     xml->writeEndElement();  // pml
+
+}
+
+QString MainWindowPockemul::saveassession()
+{
+
+
+    // Take a snapshot
+
+        saveAll = YES;
+    QString s;
+    QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
+    saveassession(xml);
     //MSG_ERROR(s)
 
     QString fn = QFileDialog::getSaveFileName(
@@ -700,11 +725,12 @@ void MainWindowPockemul::saveassession()
 
     saveAll = ASK;
 
-     sendAttachedFile(fn) ;
+//     sendAttachedFile(fn) ;
 
 
     delete xml;
 
+    return fn;
 
 }
 

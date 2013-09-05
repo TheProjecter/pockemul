@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <QGesture>
 #include <QGestureEvent>
+#include <QXmlStreamReader>
 
 #ifdef P_ENGINIO
 #include "enginioreply.h"
@@ -31,6 +32,7 @@ class LaunchButtonWidget;
 class QCommandLine;
 class DownloadManager;
 class ServeurTcp;
+class CloudWindow;
 
 #ifdef P_AVOID
 namespace Avoid {
@@ -61,6 +63,7 @@ public:
     WindowIDE       *windowide;
 #endif
     ServeurTcp      *server;
+    CloudWindow     *cloud;
 
 
     //	CpaperWidget	*paperWidget;
@@ -101,8 +104,12 @@ public:
     EnginioReply * _lastReply;
 #endif
 
+
 public slots:
+    QString saveassession();
+    void saveassession(QXmlStreamWriter *xml);
     void opensession(QString sessionFN=QString());
+    void opensession(QXmlStreamReader *xml);
 #ifdef P_ENGINIO
     void EnginioFinished(EnginioReply * reply);
 #endif
@@ -112,6 +119,7 @@ private slots:
     void about();
     void Log();
     void IDE();
+    void CloudSlot();
     void Analogic();
     void CheckUpdates();
     void Minimize_All();
@@ -120,7 +128,6 @@ private slots:
     void SelectPocket(QAction *);
     int  newsession();
 
-        void saveassession();
     void updateTimer();
     void updateFrameTimer();
     void updateTimeTimer();

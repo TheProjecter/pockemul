@@ -14,5 +14,6 @@
         <file>core/pdfthumbnail.png</file>
         <file>core/pocket.png</file>
         <file>core/save.png</file>
+        <file>core/cloud.png</file>
     </qresource>
 </RCC>

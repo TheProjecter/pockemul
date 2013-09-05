@@ -1,6 +1,3 @@
-#ifdef Q_OS_ANDROID
-#include <jni.h>
-#endif
 
 #include <QApplication>
 #include <QtPlugin>
@@ -29,17 +26,17 @@
 #include "version.h"
 
 #ifdef P_ENGINIO
-#include "enginioclient.h"
-#include "enginioidentity.h"
-#include "enginioreply.h"
+#include <enginioclient.h>
+#include <enginioidentity.h>
+#include <enginioreply.h>
 EnginioClient *m_client;
 
-#include "image-gallery-cpp/mainwindow.h"
+#include "image-gallery-cpp/cloudwindow.h"
 
 #endif
 
 #ifdef Q_OS_ANDROID
-
+#include <jni.h>
 static JavaVM* s_javaVM = 0;
 static jclass s_PockemulObjectClassID = 0;
 static jmethodID s_PockemulObjectConstructorMethodID=0;
@@ -162,7 +159,9 @@ int main(int argc, char *argv[])
 #ifdef P_ENGINIO
         QString backendId("5225e18ce5bde52ab5004762");
         QString backendSecret("0083c8faa0b561fd3f22a8af7514e2d1");
-        m_client = new EnginioClient(mainwindow);
+        qWarning()<<"OK1";
+        m_client = new EnginioClient();
+        qWarning()<<"OK2";
         m_client->setBackendId(backendId.toLatin1());
         m_client->setBackendSecret(backendSecret.toLatin1());
 
@@ -174,8 +173,7 @@ int main(int argc, char *argv[])
         mainwindow->connect(m_client,SIGNAL(finished(EnginioReply*)),mainwindow,SLOT(EnginioFinished(EnginioReply*)));
         qWarning() << m_client->authenticationState();
 
-        MainWindow w;
-        w.show();
+
 
 #endif
 
@@ -226,6 +224,17 @@ int main(int argc, char *argv[])
     load->setGeometry(0,v_pos,48,48);
     v_pos += v_inter;
     load->setToolTip("Load an existing session.");
+
+#ifdef P_ENGINIO
+    LaunchButtonWidget* cloudButton = new LaunchButtonWidget(mainwindow->centralwidget,
+                                                     LaunchButtonWidget::Action,
+                                                     QStringList(),
+                                                     ":/core/cloud.png");
+    mainwindow->connect(cloudButton,SIGNAL(clicked()),mainwindow,SLOT(CloudSlot()));
+    cloudButton->setGeometry(0,v_pos,48,48);
+    v_pos += v_inter;
+    cloudButton->setToolTip("Go to the Cloud.");
+#endif
 
     LaunchButtonWidget* bookcase = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::FileBrowser,
@@ -438,7 +447,7 @@ void sendAttachedFile(QString fname) {
       while ( (mainwindow->_lastReply==0) && (timer.remainingTime()>0))
       {
 
-          Sleep(100);
+//          Sleep(100);
           QApplication::processEvents();
       }
 
