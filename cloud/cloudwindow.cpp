@@ -34,9 +34,10 @@ CloudWindow::CloudWindow(QWidget *parent)
 qWarning()<<"E2";
     m_view = new QListView;
     m_view->setModel(m_model);
-    m_view->setViewMode(QListView::IconMode);
+    m_view->setViewMode(QListView::ListMode);
     m_view->setResizeMode(QListView::Adjust);
-    m_view->setGridSize(QSize(304, 204));
+
+//    m_view->setGridSize(QSize(304, 204));
     connect(m_view,SIGNAL(clicked(QModelIndex)),this,SLOT(downloadData(QModelIndex)));
 qWarning()<<"E3";
     m_fileDialog = new QFileDialog(this);
@@ -241,7 +242,8 @@ void CloudWindow::downloadData(QModelIndex index)
 }
 void CloudWindow::replyFinished(EnginioReply *enginioReply)
 {
-    qWarning()<<"replyFinished";
+//    QJsonDocument jdoc(enginioReply->data());
+//    qWarning()<<"replyFinished"<< jdoc.toJson();
     QString url = enginioReply->data().value("expiringUrl").toString();
     qWarning()<<url;
     QNetworkRequest request(url);
@@ -254,7 +256,7 @@ void CloudWindow::downloadFinished()
 {
     qWarning()<<"CloudWindow::downloadFinished - ";
     QByteArray xmlData = m_reply->readAll();
-    qWarning() << "data="<<xmlData.left(200);
+//    qWarning() << "data="<<xmlData.left(200);
     QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
 
     mainwindow->opensession(xml);

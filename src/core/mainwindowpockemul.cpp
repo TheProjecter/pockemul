@@ -4,15 +4,6 @@
 #include <iostream>
 #include <QtNetwork>
 
-
-#ifdef P_ENGINIO
-
-#include <enginioclient.h>
-#include <enginioreply.h>
-#include "image-gallery-cpp/cloudwindow.h"
-extern EnginioClient *m_client;
-#endif
-
 /** \mainpage
 PockEmul is a Sharp Pocket Computer Emulator.
 
@@ -54,7 +45,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 #include "clink.h"
 #include "downloadmanager.h"
 #include "servertcp.h"
-#include "image-gallery-cpp/cloudwindow.h"
+#include "cloud/cloudwindow.h"
 
 
 extern MainWindowPockemul* mainwindow;
@@ -457,15 +448,6 @@ void MainWindowPockemul::SelectPocket(QAction * action) {
 
 void MainWindowPockemul::about()
 {
-    QJsonObject city;
-      city.insert("objectType", QString("objects.city")); // an object type is required for all objects in Enginio
-      city.insert("name", QString("Oslo")); // other properties can be chosen freely
-      city.insert("population", 624000);
-
-      const EnginioReply* response = m_client->create(city);
-      qWarning()<<response;
-
-
     DialogAbout *dialogabout = new DialogAbout(this);
     dialogabout->setModal(true);
     dialogabout->show();
@@ -637,7 +619,7 @@ qWarning()<<"EnginioFinished";
 }
 #endif
 
-extern void sendAttachedFile(QString fname);
+
 
 void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
 {
@@ -653,6 +635,7 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
     xml->writeTextElement("snapshot",ba.toBase64());
+
     // Fetch all objects
     for (int i=0;i<listpPObject.size();i++)
     {
@@ -724,9 +707,6 @@ QString MainWindowPockemul::saveassession()
     }
 
     saveAll = ASK;
-
-//     sendAttachedFile(fn) ;
-
 
     delete xml;
 

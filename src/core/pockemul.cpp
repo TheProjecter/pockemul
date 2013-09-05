@@ -25,15 +25,7 @@
 
 #include "version.h"
 
-#ifdef P_ENGINIO
-#include <enginioclient.h>
-#include <enginioidentity.h>
-#include <enginioreply.h>
-EnginioClient *m_client;
 
-#include "image-gallery-cpp/cloudwindow.h"
-
-#endif
 
 #ifdef Q_OS_ANDROID
 #include <jni.h>
@@ -156,26 +148,6 @@ int main(int argc, char *argv[])
 #   endif
 #endif
 
-#ifdef P_ENGINIO
-        QString backendId("5225e18ce5bde52ab5004762");
-        QString backendSecret("0083c8faa0b561fd3f22a8af7514e2d1");
-        qWarning()<<"OK1";
-        m_client = new EnginioClient();
-        qWarning()<<"OK2";
-        m_client->setBackendId(backendId.toLatin1());
-        m_client->setBackendSecret(backendSecret.toLatin1());
-
-        EnginioAuthentication *m_user = new EnginioAuthentication(mainwindow);
-        m_user->setUser("remy");
-        m_user->setPassword("test");
-        m_client->setIdentity(m_user);
-
-        mainwindow->connect(m_client,SIGNAL(finished(EnginioReply*)),mainwindow,SLOT(EnginioFinished(EnginioReply*)));
-        qWarning() << m_client->authenticationState();
-
-
-
-#endif
 
     int v_inter = 60;
     int v_pos = 12;
@@ -432,42 +404,4 @@ void m_openURL(QUrl url) {
     QDesktopServices::openUrl(url);
 }
 
-void sendAttachedFile(QString fname) {
 
-#ifdef P_ENGINIO
-    QJsonObject pmlFile;
-    pmlFile["objectType"] = QString("objects.pmlFile"); // an object type is required for all objects in Enginio
-      pmlFile["fname"] = fname; // other properties can be chosen freely
-      QUrl url = QUrl::fromLocalFile(fname);
-
-      EnginioReply *responseObjectCreation = m_client->create(pmlFile);
-      qWarning()<<"id="<<responseObjectCreation->data().value("id");
-      QTimer timer;
-      timer.start(5000);
-      while ( (mainwindow->_lastReply==0) && (timer.remainingTime()>0))
-      {
-
-//          Sleep(100);
-          QApplication::processEvents();
-      }
-
-      QJsonObject data = mainwindow->_lastReply->data();
-      qWarning()<<"id="<<data["id"].toString();
-    //![upload]
-    QJsonObject object;
-    object["id"] = data["id"].toString();
-    object["objectType"] =QString("objects.pmlFile");
-    object["propertyName"] = QString("fileRef");
-
-    QJsonObject fileObject;
-    fileObject[QStringLiteral("fileName")] = fname;
-
-    QJsonObject uploadJson;
-    uploadJson[QStringLiteral("targetFileProperty")] = object;
-    uploadJson[QStringLiteral("file")] = fileObject;
-    EnginioReply* responseUpload = m_client->uploadFile(uploadJson, url);
-
-    delete mainwindow->_lastReply;
-
-#endif
-}
