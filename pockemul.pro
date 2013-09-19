@@ -1,4 +1,25 @@
 
+QMAKE_CXXFLAGS += -fsigned-char
+
+CONFIG += qt \
+    resources \
+    thread \
+    warn_on \
+
+
+CONFIG += rtti
+
+QT += widgets \
+    printsupport \
+    core \
+    gui \
+    network \
+#    opengl \
+    xml \
+#    multimedia \
+    script declarative \
+
+
 PROJECT_TYPE = \
     STANDARD \
 #    EMSCRIPTEN \
@@ -10,6 +31,9 @@ PROJECT_TYPE = ANDROID
 }
 
 contains(PROJECT_TYPE,STANDARD) {
+
+QT += multimedia
+
 PROJECT_MODULE += \
     M_IDE \
     M_EMB_QRC \
@@ -31,25 +55,7 @@ PROJECT_MODULE += \
 
 }
 
-QMAKE_CXXFLAGS += -fsigned-char
 
-CONFIG += qt \
-    resources \
-    thread \
-    warn_on \
-
-
-CONFIG += rtti
-
-QT += widgets \
-    printsupport \
-    core \
-    gui \
-    network \
-#    opengl \
-    xml \
-    multimedia \
-    script
 
 TARGET = Pockemul
 TEMPLATE = app
@@ -120,6 +126,8 @@ SOURCES += \
 
 contains(PROJECT_MODULE,M_ENGINIO) {
 DEFINES += P_ENGINIO
+
+#QT += qml quick
 
 
 HEADERS+= \
@@ -582,7 +590,8 @@ RESOURCES +=  \
     resources/asmlibs.qrc \
     resources/core.qrc \
     resources/tpc8300.qrc \
-    resources/rlh1000.qrc
+    resources/rlh1000.qrc \
+    cloud/cloud.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -906,7 +915,13 @@ OTHER_FILES += \
     android/src/org/qtproject/qt5/android/bindings/QtApplication.java \
     android/version.xml \
     android/AndroidManifest.xml \
-    android/res/values/libs.xml
+    android/res/values/libs.xml \
+    cloud/rssnews.qml \
+    cloud/content/ScrollBar.qml \
+    cloud/content/RssFeeds.qml \
+    cloud/content/NewsDelegate.qml \
+    cloud/content/CategoryDelegate.qml \
+    cloud/content/BusyIndicator.qml
 
 
 

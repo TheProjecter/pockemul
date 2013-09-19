@@ -5,8 +5,7 @@
 #include <QDir>
 #include <QSplashScreen>
 #include "enginioclient.h"
-//#include <QAndroidStyle>
-//#include <QFeedbackHapticsEffect>
+
 #include "launchbuttonwidget.h"
 #include "mainwindowpockemul.h"
 
@@ -70,27 +69,15 @@ int main(int argc, char *argv[])
     qWarning()<<QApplication::libraryPaths();
 #endif
 
+    qWarning()<<"OK1";
 
 
     QDir home = QDir::home();
     if (!home.exists("pockemul")) {
         home.mkpath("pockemul/documents");
     }
-#if 0
 
-    QFeedbackHapticsEffect rumble;
-    rumble.setAttackIntensity(0.0);
-    rumble.setAttackTime(250);
-    rumble.setIntensity(1.0);
-    rumble.setDuration(500);
-    rumble.setFadeTime(250);
-    rumble.setFadeIntensity(0.0);
-
-    rumble.start();
-#endif
-
-
-
+qWarning()<<"OK2";
 #ifdef Q_OS_ANDROID
 //    QFont f = app.font();
 //    f.setItalic(true); //bold also works
@@ -106,11 +93,11 @@ int main(int argc, char *argv[])
 //    QApplication::setStyle(s);//new QAndroidStyle());
 
 #endif
-
-    mainwindow = new MainWindowPockemul;
-
+qWarning()<<"OK3";
+mainwindow = new MainWindowPockemul();
+qWarning()<<"OK4";
     appDir = app->applicationDirPath();
-
+qWarning()<<"OK5";
     qWarning()<<app->applicationDirPath();
 
 #ifdef Q_OS_ANDROID
@@ -121,25 +108,27 @@ int main(int argc, char *argv[])
 //    app->processEvents();
 //    splash.finish(mainwindow);
 
-    mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
+//    mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
-
+qWarning()<<"OK6";
     QWidget *cw= new QWidget();
+//    qWarning()<<"OK6.1";
     mainwindow->setCentralWidget(cw);
+//    qWarning()<<"OK6.2";
     delete mainwindow->centralwidget;
-
+qWarning()<<"OK7";
     mainwindow->centralwidget = cw;
     mainwindow->setWindowIcon ( QIcon(":/core/pockemul.bmp") );
     mainwindow->resize(680,520);
-
+qWarning()<<"OK8";
 #ifdef Q_OS_ANDROID
-    cw->setStyleSheet("background-color:black;color: white;selection-background-color: grey;");
+    mainwindow->centralwidget->setStyleSheet("background-color:black;color: white;selection-background-color: grey;");
 #endif
-
+qWarning()<<"OK9";
 #ifdef EMSCRIPTEN
     mainwindow->setWindowTitle("PockEmul Online");
 #endif
-
+qWarning()<<"OK10";
 #ifndef EMSCRIPTEN
     downloadManager = new DownloadManager();
     downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
@@ -148,7 +137,7 @@ int main(int argc, char *argv[])
 #   endif
 #endif
 
-
+        qWarning()<<"OK2";
     int v_inter = 60;
     int v_pos = 12;
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,

@@ -4,6 +4,9 @@
 #include <iostream>
 #include <QtNetwork>
 
+//#include <QQmlApplicationEngine>
+//#include <QQuickWindow>
+
 /** \mainpage
 PockEmul is a Sharp Pocket Computer Emulator.
 
@@ -64,10 +67,17 @@ QList<CPObject *> listpPObject;
 
 MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QMainWindow(parent, f)
 {
+    qWarning()<<" create MainWindowPockemul:"<<this;
+
     rawclk = 0;
+
     setupUi(this);
+
+    qWarning()<<" create MainWindowPockemul   .5";
     setMouseTracking(true);
+    qWarning()<<" create MainWindowPockemul    .6";
     setFocusPolicy(Qt::StrongFocus);
+    qWarning()<<" create MainWindowPockemul   .7";
     setStatusBar(0);
     dialoglog = 0;
     dialoganalogic = 0;
@@ -80,6 +90,7 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
     saveAll = ASK;
     startKeyDrag = false;
     startPosDrag = false;
+qWarning()<<" create MainWindowPockemul 2";
 
     connect(actionAbout_PockEmul,	SIGNAL(triggered()),            this, SLOT(about()));
     connect(actionNew,				SIGNAL(triggered()),            this, SLOT(newsession()));
@@ -94,17 +105,20 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
     connect(menuPockets,            SIGNAL(triggered(QAction *)),   this, SLOT(SelectPocket( QAction *)));
     connect(actionEditor,           SIGNAL(triggered()),            this, SLOT(IDE()));
 
-    pdirectLink = new CDirectLink;
 
+    qWarning()<<" create MainWindowPockemul 3";
+    pdirectLink = new CDirectLink;
+qWarning()<<" create MainWindowPockemul 4";
     // Create a timer for Drawing screen FRAMERATE times per seconds
     FrameTimer = new QTimer(mainwindow);
     connect(FrameTimer, SIGNAL(timeout()), this, SLOT(updateFrameTimer()));
     FrameTimer->start(FRAMERATE);
-
+qWarning()<<" create MainWindowPockemul ";
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
     timer->start(TIMER_RES);
 
+    qWarning()<<"before create thread";
     // Create the Pocket Thread
     PcThread = new CPocketThread(this);
     PcThread->connect(PcThread,SIGNAL(Resize(QSize,CPObject * )),this,SLOT(resizeSlot(QSize,CPObject * )));
@@ -112,6 +126,7 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
 #ifndef EMSCRIPTEN
     PcThread->start();
 #endif
+    qWarning()<<"after create thread";
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
@@ -470,6 +485,7 @@ void MainWindowPockemul::IDE()
 
 void MainWindowPockemul::CloudSlot()
 {
+#if 1
     if (cloud==0) {
         cloud = new CloudWindow(this);
     }
@@ -478,6 +494,17 @@ void MainWindowPockemul::CloudSlot()
 
     cloud->show();
     cloud->raise();
+#else
+    QQmlApplicationEngine *engine= new QQmlApplicationEngine(QUrl("qrc:/rssnews.qml"));
+    QObject *topLevel = engine->rootObjects().value(0);
+    QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
+    if ( !window ) {
+        qWarning("Error: Your root item has to be a Window.");
+        return ;
+    }
+    window->show();
+#endif
+
 }
 
 void MainWindowPockemul::Analogic()
@@ -980,6 +1007,7 @@ void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
 #ifdef EMSCRIPTEN
     zoomSlider->setGeometry(mainwindow->width()-30,20,20,mainwindow->height()-40);
 #endif
+    if (cloud) cloud->resize(this->size());
 }
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)

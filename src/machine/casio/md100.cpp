@@ -8,7 +8,6 @@
 
 #include <QPainter>
 #include <QTime>
-#include <QSound>
 #include <QFileDialog>
 #include <QThread>
 #include <QPixmap>

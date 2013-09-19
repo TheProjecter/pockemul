@@ -4,7 +4,7 @@
 
 
 #include <QTime>
-#ifndef QT_NO_SOUND
+#ifndef NO_SOUND
 #include <QSound>
 #endif
 
@@ -39,7 +39,7 @@ public:
     QImage *paperdisplay;
 
     void Refresh(qint8 data);
-#ifndef QT_NO_SOUND
+#ifndef NO_SOUND
     QSound *bells;
 #endif
 

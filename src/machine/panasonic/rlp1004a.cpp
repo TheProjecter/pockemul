@@ -1,6 +1,5 @@
 #include <QtGui>
 #include <QTime>
-#include <QSound>
 #include <QFileDialog>
 #include <QThread>
 #include <QDebug>

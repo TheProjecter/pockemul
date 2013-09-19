@@ -8,6 +8,13 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QUrl>
+
+#include <QtDeclarative/QDeclarativeView>
+
+//#include <QtQml/QQmlEngine>
+//#include <QtQuick/QQuickView>
+//#include <QQmlApplicationEngine>
 
 #include <enginioclient.h>
 #include <enginioreply.h>
@@ -32,19 +39,46 @@ CloudWindow::CloudWindow(QWidget *parent)
     m_model = new PMLModel(this);
     m_model->setEnginio(m_client);
 qWarning()<<"E2";
-    m_view = new QListView;
+#if 0
+    QQuickView *view = new QQuickView();
+    QWidget *container = QWidget::createWindowContainer(view, this);
+    container->setMinimumSize(200, 200);
+//    container->setMaximumSize(200, 200);
+    container->setFocusPolicy(Qt::TabFocus);
+    view->setSource(QUrl("qrc:/rssnews.qml"));
+#endif
+#if 0
+    QQmlApplicationEngine engine(QUrl("qrc:/rssnews.qml"));
+    QObject *topLevel = engine.rootObjects().value(0);
+    QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
+    if ( !window ) {
+        qWarning("Error: Your root item has to be a Window.");
+        return;
+    }
+    window->show();
+
+
+#endif
+
+#if 1
+    view = new QDeclarativeView;
+    view->setSource(QUrl("qrc:/rssnews.qml"));
+    view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+
+#endif
+m_view = new QListView;
     m_view->setModel(m_model);
     m_view->setViewMode(QListView::ListMode);
     m_view->setResizeMode(QListView::Adjust);
 
 //    m_view->setGridSize(QSize(304, 204));
-    connect(m_view,SIGNAL(clicked(QModelIndex)),this,SLOT(downloadData(QModelIndex)));
+    connect(m_view,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(downloadData(QModelIndex)));
 qWarning()<<"E3";
     m_fileDialog = new QFileDialog(this);
     m_fileDialog->setFileMode(QFileDialog::ExistingFile);
     m_fileDialog->setNameFilter("PockEmul Session files (*.pml)");
     connect(m_fileDialog, SIGNAL(fileSelected(QString)),
-            this, SLOT(fileSelected(QString)));
+            this, SLOT(sendPML(QString)));
 
     m_refreshButton = new QPushButton("Refresh");
     connect(m_refreshButton, SIGNAL(clicked()),
@@ -58,24 +92,34 @@ qWarning()<<"E3";
     connect(m_uploadButton, SIGNAL(clicked()),
             m_fileDialog, SLOT(show()));
 
+    m_removeButton = new QPushButton("Remove file");
+    connect(m_removeButton, SIGNAL(clicked()),
+            this, SLOT(removeItem()));
+
+
     m_quitButton = new QPushButton("Quit");
     connect(m_quitButton, SIGNAL(clicked()),
             this, SLOT(hide()));
 
 //    QFrame *frame = new QFrame(this);
     QVBoxLayout *windowLayout = new QVBoxLayout(this);
-    windowLayout->addWidget(m_view);
+    windowLayout->addWidget(view);
     QHBoxLayout *windowHLayout = new QHBoxLayout(this);
     windowLayout->addLayout(windowHLayout);
     windowHLayout->addWidget(m_refreshButton);
     windowHLayout->addWidget(m_saveButton);
     windowHLayout->addWidget(m_uploadButton);
+    windowHLayout->addWidget(m_removeButton);
     windowHLayout->addWidget(m_quitButton);
 //    setCentralWidget(frame);
 qWarning()<<"E4";
     //queryImages();
-    queryPMLFiles();
+//    queryPMLFiles();
     qWarning()<<"E5";
+}
+
+void CloudWindow::resizeEvent(QResizeEvent *e) {
+//    view->setGeometry(this->geometry());
 }
 
 QSize CloudWindow::sizeHint() const
@@ -90,6 +134,9 @@ void CloudWindow::wheelEvent(QWheelEvent *event)
 
 void CloudWindow::refresh()
 {
+
+
+
     queryPMLFiles(true);
 }
 
@@ -98,7 +145,8 @@ void CloudWindow::save()
     hide();
     QString filePath =mainwindow->saveassession();
 
-    fileSelected(filePath);
+    //fileSelected(filePath);
+    sendPML(filePath);
     show();
     refresh();
 }
@@ -184,6 +232,31 @@ void CloudWindow::fileSelected(const QString &filePath)
     connect(reply, SIGNAL(finished(EnginioReply*)), this, SLOT(beginUpload(EnginioReply*)));
     m_uploads.insert(reply, filePath);
 }
+void CloudWindow::sendPML(const QString &filePath)
+{
+    qWarning()<<"sendPML";
+    if (filePath.isEmpty())
+        return;
+
+    QFile file(filePath);
+
+    file.open(QIODevice::ReadOnly);
+    QByteArray data = file.readAll();
+    file.close();
+    QNetworkAccessManager *mgr = new QNetworkAccessManager();
+    //QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    // the HTTP request
+
+    QUrlQuery qu;
+    qu.addQueryItem("uid","pock+emul");
+    qu.addQueryItem("content",QString(data).replace("+","%2B"));
+    qWarning()<<qu.query(QUrl::FullyEncoded).toUtf8();
+    // some parameters for the HTTP request
+
+    QNetworkRequest req(QString("http://ds409/cloud/savePML"));
+    qWarning()<<req.url();
+    QNetworkReply *reply = mgr->post(req, qu.query(QUrl::FullyEncoded).toUtf8());
+}
 
 
 void CloudWindow::beginUpload(EnginioReply *reply)
@@ -267,3 +340,9 @@ void CloudWindow::downloadFinished()
 
 }
 
+void CloudWindow::removeItem()
+{
+    QModelIndex index = m_view->currentIndex();
+    EnginioReply *reply = m_model->remove(index.row());
+    QObject::connect(reply, &EnginioReply::finished, reply, &EnginioReply::deleteLater);
+}

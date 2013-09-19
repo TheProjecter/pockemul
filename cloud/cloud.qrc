@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>rssnews.qml</file>
+        <file>content/BusyIndicator.qml</file>
+        <file>content/CategoryDelegate.qml</file>
+        <file>content/NewsDelegate.qml</file>
+        <file>content/RssFeeds.qml</file>
+        <file>content/ScrollBar.qml</file>
+        <file>content/images/busy.png</file>
+        <file>content/images/scrollbar.png</file>
+    </qresource>
+</RCC>

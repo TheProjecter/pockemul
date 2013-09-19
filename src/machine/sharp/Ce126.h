@@ -10,7 +10,9 @@
 #define _CE126_H
 
 #include <QTime>
+#ifndef NO_SOUND
 #include <QSound>
+#endif
 
 #include "common.h"
 #include "cprinter.h"
@@ -44,7 +46,7 @@ public:
 	
 	void RefreshCe126(qint8 data);
 
-#ifndef QT_NO_SOUND
+#ifndef NO_SOUND
 	QSound *bells;
 #endif
 	

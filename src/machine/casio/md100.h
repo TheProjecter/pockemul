@@ -3,7 +3,9 @@
 
 
 #include <QTime>
+#ifndef NO_SOUND
 #include <QSound>
+#endif
 #include <QDir>
 
 #include "common.h"
