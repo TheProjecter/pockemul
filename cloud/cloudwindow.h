@@ -28,6 +28,9 @@ public:
 
 
 
+    Q_INVOKABLE void getPML(int id);
+    Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue);
+    Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
 protected:
     void wheelEvent(QWheelEvent *event);
 

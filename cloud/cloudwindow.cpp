@@ -9,8 +9,11 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QUrl>
+#include <QSettings>
 
 #include <QtDeclarative/QDeclarativeView>
+#include <QDeclarativeContext>
+#include <QDeclarativeEngine>
 
 //#include <QtQml/QQmlEngine>
 //#include <QtQuick/QQuickView>
@@ -45,7 +48,7 @@ qWarning()<<"E2";
     container->setMinimumSize(200, 200);
 //    container->setMaximumSize(200, 200);
     container->setFocusPolicy(Qt::TabFocus);
-    view->setSource(QUrl("qrc:/rssnews.qml"));
+    view->setSource(QUrl("qrc:/main.qml"));
 #endif
 #if 0
     QQmlApplicationEngine engine(QUrl("qrc:/rssnews.qml"));
@@ -62,8 +65,10 @@ qWarning()<<"E2";
 
 #if 1
     view = new QDeclarativeView;
-    view->setSource(QUrl("qrc:/rssnews.qml"));
+    view->setSource(QUrl("qrc:/main.qml"));
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    view->rootContext()->setContextProperty("cloud", this);
+    connect(view->engine(), SIGNAL(quit()), this,SLOT(hide()));
 
 #endif
 m_view = new QListView;
@@ -340,9 +345,34 @@ void CloudWindow::downloadFinished()
 
 }
 
+void CloudWindow::getPML(int id) {
+    QNetworkAccessManager *mgr = new QNetworkAccessManager();
+
+
+    QNetworkRequest req(QString("http://ds409/cloud/getPML/%1").arg(id));
+    qWarning()<<req.url();
+    m_reply = mgr->get(req);
+    connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+}
+
 void CloudWindow::removeItem()
 {
     QModelIndex index = m_view->currentIndex();
     EnginioReply *reply = m_model->remove(index.row());
     QObject::connect(reply, &EnginioReply::finished, reply, &EnginioReply::deleteLater);
+}
+
+QString CloudWindow::getValueFor(const QString &objectName, const QString &defaultValue)
+{
+    QSettings settings;
+    if (settings.value(objectName).isNull()) {
+        return defaultValue;
+    }
+    return settings.value(objectName).toString();
+}
+
+void CloudWindow::saveValueFor(const QString &objectName, const QString &inputValue)
+{
+    QSettings settings;
+    settings.setValue(objectName, QVariant(inputValue));
 }

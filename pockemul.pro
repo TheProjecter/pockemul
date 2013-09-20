@@ -750,7 +750,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     qhttp/qhttpauthenticator.cpp \
-    qhttp/qhttp.cpp
+    qhttp/qhttp.cpp \
+    cloud/main.cpp
 
 
 OTHER_FILES += \
@@ -916,12 +917,38 @@ OTHER_FILES += \
     android/version.xml \
     android/AndroidManifest.xml \
     android/res/values/libs.xml \
-    cloud/rssnews.qml \
     cloud/content/ScrollBar.qml \
     cloud/content/RssFeeds.qml \
     cloud/content/NewsDelegate.qml \
     cloud/content/CategoryDelegate.qml \
-    cloud/content/BusyIndicator.qml
+    cloud/content/BusyIndicator.qml \
+    cloud/main.qml \
+    cloud/content/TabWidget.qml \
+    cloud/qmltemplates/CoverFlow/example/main.qml \
+    cloud/qmltemplates/CoverFlow/component/CoverFlowDelegate.qml \
+    cloud/qmltemplates/CoverFlow/component/CoverFlow.qml \
+    cloud/qmltemplates/CoverFlow/component/AlphaGradient.qml \
+    cloud/qmltemplates/CoverFlow/component/gfx/splash_screen.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/splash.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/rotation_icon.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/photo_back.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/media_browser_visuals.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/image_placeholder.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/background.png \
+    cloud/qmltemplates/CoverFlow/component/gfx/accordionlist.png \
+    cloud/qmltemplates/AccordionList/example/AccordionList.qml \
+    cloud/qmltemplates/AccordionList/component/ListItem.qml \
+    cloud/qmltemplates/AccordionList/component/AccordionListModel.qml \
+    cloud/qmltemplates/AccordionList/component/AccordionList.qml \
+    cloud/TabbedQuickApp/TabbedUI.qml \
+    cloud/TabbedQuickApp/Tab.qml \
+    cloud/RatingIndicatorQML/MyRatingIndicator.qml \
+    cloud/RatingIndicatorQML/star.png \
+    cloud/content/TextButton.qml \
+    cloud/content/Settings.qml \
+    cloud/content/SearchBox.qml \
+    cloud/content/LineInput.qml \
+    cloud/PmlView.qml
 
 
 
