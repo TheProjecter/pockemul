@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QDir>
 #include <QSplashScreen>
+#include <QScreen>
+
 #include "enginioclient.h"
 
 #include "launchbuttonwidget.h"
@@ -48,7 +50,7 @@ DownloadManager* downloadManager;
 
 
 QString appDir;
-
+void test();
 int main(int argc, char *argv[])
 {
 
@@ -58,9 +60,10 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setOrganizationDomain("pockemul.free.fr");
     QCoreApplication::setOrganizationName("Remy Corp.");
-    QCoreApplication::setApplicationName("PockEmul ");
+    QCoreApplication::setApplicationName("PockEmul");
     QCoreApplication::setApplicationVersion(POCKEMUL_VERSION);
 
+    test();
 #ifdef Q_OS_MAC
     QDir dir(QApplication::applicationDirPath());
     dir.cdUp();
@@ -394,3 +397,39 @@ void m_openURL(QUrl url) {
 }
 
 
+QString Orientation(Qt::ScreenOrientation orientation)
+{
+    switch (orientation) {
+        case Qt::PrimaryOrientation           : return "Primary";
+        case Qt::LandscapeOrientation         : return "Landscape";
+        case Qt::PortraitOrientation          : return "Portrait";
+        case Qt::InvertedLandscapeOrientation : return "Inverted landscape";
+        case Qt::InvertedPortraitOrientation  : return "Inverted portrait";
+        default                               : return "Unknown";
+    }
+}
+
+void test() {
+    foreach (QScreen *screen, QGuiApplication::screens()) {
+            qWarning() << "Information for screen:" << screen->name();
+            qWarning() << "  Available geometry:" << screen->availableGeometry().x() << screen->availableGeometry().y() << screen->availableGeometry().width() << "x" << screen->availableGeometry().height();
+            qWarning() << "  Available size:" << screen->availableSize().width() << "x" << screen->availableSize().height();
+            qWarning() << "  Available virtual geometry:" << screen->availableVirtualGeometry().x() << screen->availableVirtualGeometry().y() << screen->availableVirtualGeometry().width() << "x" << screen->availableVirtualGeometry().height();
+            qWarning() << "  Available virtual size:" << screen->availableVirtualSize().width() << "x" << screen->availableVirtualSize().height();
+            qWarning() << "  Depth:" << screen->depth() << "bits";
+            qWarning() << "  Geometry:" << screen->geometry().x() << screen->geometry().y() << screen->geometry().width() << "x" << screen->geometry().height();
+            qWarning() << "  Logical DPI:" << screen->logicalDotsPerInch();
+            qWarning() << "  Logical DPI X:" << screen->logicalDotsPerInchX();
+            qWarning() << "  Logical DPI Y:" << screen->logicalDotsPerInchY();
+            qWarning() << "  Orientation:" << Orientation(screen->orientation());
+            qWarning() << "  Physical DPI:" << screen->physicalDotsPerInch();
+            qWarning() << "  Physical DPI X:" << screen->physicalDotsPerInchX();
+            qWarning() << "  Physical DPI Y:" << screen->physicalDotsPerInchY();
+            qWarning() << "  Physical size:" << screen->physicalSize().width() << "x" << screen->physicalSize().height() << "mm";
+            qWarning() << "  Primary orientation:" << Orientation(screen->primaryOrientation());
+            qWarning() << "  Refresh rate:" << screen->refreshRate() << "Hz";
+            qWarning() << "  Size:" << screen->size().width() << "x" << screen->size().height();
+            qWarning() << "  Virtual geometry:" << screen->virtualGeometry().x() << screen->virtualGeometry().y() << screen->virtualGeometry().width() << "x" << screen->virtualGeometry().height();
+            qWarning() << "  Virtual size:" << screen->virtualSize().width() << "x" << screen->virtualSize().height();
+        }
+}

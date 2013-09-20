@@ -750,8 +750,7 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     qhttp/qhttpauthenticator.cpp \
-    qhttp/qhttp.cpp \
-    cloud/main.cpp
+    qhttp/qhttp.cpp
 
 
 OTHER_FILES += \
@@ -948,7 +947,8 @@ OTHER_FILES += \
     cloud/content/Settings.qml \
     cloud/content/SearchBox.qml \
     cloud/content/LineInput.qml \
-    cloud/PmlView.qml
+    cloud/PmlView.qml \
+    cloud/content/SettingsDelegate.qml
 
 
 

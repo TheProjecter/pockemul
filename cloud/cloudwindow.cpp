@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <QUrl>
 #include <QSettings>
+#include <QCryptographicHash>
 
 #include <QtDeclarative/QDeclarativeView>
 #include <QDeclarativeContext>
@@ -349,7 +350,7 @@ void CloudWindow::getPML(int id) {
     QNetworkAccessManager *mgr = new QNetworkAccessManager();
 
 
-    QNetworkRequest req(QString("http://ds409/cloud/getPML/%1").arg(id));
+    QNetworkRequest req(QString("http://ds409/cloud/getPML/%1/%2").arg(getValueFor("apikey","0")).arg(id));
     qWarning()<<req.url();
     m_reply = mgr->get(req);
     connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
@@ -366,8 +367,10 @@ QString CloudWindow::getValueFor(const QString &objectName, const QString &defau
 {
     QSettings settings;
     if (settings.value(objectName).isNull()) {
+        qWarning()<<"getValue("<<objectName<<","<<defaultValue<<")";
         return defaultValue;
     }
+    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<")";
     return settings.value(objectName).toString();
 }
 
@@ -375,4 +378,11 @@ void CloudWindow::saveValueFor(const QString &objectName, const QString &inputVa
 {
     QSettings settings;
     settings.setValue(objectName, QVariant(inputValue));
+    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<")";
+}
+
+QString CloudWindow::generateKey(QString username,QString password) {
+    QString key = QString("!PockEmul"+username+"_"+password+"&éklm!;");
+//    qWarning()<<"KEY:"<<key;
+    return QCryptographicHash::hash ( key.toLatin1(), QCryptographicHash::Md5);
 }

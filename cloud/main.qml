@@ -9,6 +9,10 @@ Rectangle {
 
     id: root
 
+    property string serverURL: "http://ds409/cloud/"
+    property string currentUserid: "pock emul"
+    property string currentApiKey: cloud.getValueFor("apikey","0")
+
     VisualItemModel {
         id: tabsModel
         Tab {
@@ -17,10 +21,11 @@ Rectangle {
 
             color: "yellow"
 
-            Rssnews   {
+            PmlView   {
+                id: privateCloud
                 anchors.fill: parent
                 publicCloud: false
-                currentUserid: "pock emul"
+
             }
 
         }
@@ -29,7 +34,8 @@ Rectangle {
             icon: "pics/tab1.png"
 
             color: "green"
-            Rssnews   {
+            PmlView   {
+                id: publicCloud
                 anchors.fill: parent
                 publicCloud: true
             }
@@ -62,5 +68,21 @@ Rectangle {
             anchors.fill: parent
             onClicked: Qt.quit()
         }
+    }
+
+    // this function is included locally, but you can also include separately via a header definition
+    function request(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = (function(myxhr) {
+//            console.log(xhr.readyState);
+//            if (xhr.readyState == 4 )
+            {
+                return function() {
+                    callback(myxhr);
+                }
+            }
+        })(xhr);
+        xhr.open('GET', url, true);
+        xhr.send('');
     }
 }

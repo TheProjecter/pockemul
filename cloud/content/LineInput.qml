@@ -25,21 +25,25 @@ Rectangle {
         font.pixelSize: 16
     }
     Row {
+        width: parent.width
         y: 10
-        spacing: 10
+        spacing: 20
         Text {
             id: label
             text: "Label"
-            width: 100
-            height: 30
             font: fontstyle.font
+            anchors.verticalCenter: parent.verticalCenter
         }
 
         FocusScope {
-            width: 200
-            height: 30
+            width: parent.width - 30 - label.width
+            height: label.height * 1.3
+            anchors.verticalCenter: parent.verticalCenter
             BorderImage {
-                source: "images/lineedit-bg-focus.png"
+                source: "images/lineedit-bg.png"
+                border { left: 3; top: 3; right: 3; bottom: 3 }
+                     horizontalTileMode: BorderImage.Stretch
+                     verticalTileMode: BorderImage.Stretch
                 anchors.fill: parent
             }
             TextInput {
@@ -51,7 +55,7 @@ Rectangle {
                 text: cloud.getValueFor(input.objectName, "")
                 font: fontstyle.font
 
-                onAccepted: {
+                onTextChanged: {
                     lineinput.inputAccepted(input.objectName, input.text)
                     //Here is where we save the value or string
 //                    cloud.saveValueFor(input.objectName, input.text)

@@ -91,12 +91,12 @@ Item {
         }
         Text {
             id: userText
-            text: uid; width: parent.width; wrapMode: Text.WordWrap
+            text: username; width: parent.width; wrapMode: Text.WordWrap
             font { bold: false; family: "Helvetica"; pointSize: 14 }
         }
         Image {
             id: delegateImage
-            source: window.serverURL+"getPMLthumb/"+pmlid
+            source: serverURL+"getPMLthumb/"+pmlid
             fillMode: Image.PreserveAspectFit;
         }
 //        MyRatingIndicator {

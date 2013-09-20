@@ -49,5 +49,6 @@
         <file>content/images/lineedit-bg-focus.png</file>
         <file>content/images/public.png</file>
         <file>content/images/scrollbar.png</file>
+        <file>content/SettingsDelegate.qml</file>
     </qresource>
 </RCC>

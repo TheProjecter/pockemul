@@ -48,18 +48,16 @@ Rectangle {
     id: window
 
     width: 800; height: 480
-//    width: parent.width
-//    height: parent.height
 
     property string currentObjid: "0"
-    property string currentUserid: "pock emul"
     property bool loading: feedModel.status == XmlListModel.Loading
-    property string serverURL: "http://ds409/cloud/"
     property bool publicCloud: true
+
+    property alias categoryModel: categoryModel
 
     XmlListModel {
         id: categoryModel
-        source: serverURL + "listOBJ/" + (publicCloud?"public":currentUserid)
+        source: serverURL + "listOBJ/" + (publicCloud?"0":currentApiKey)
         query: "/listOBJ/item"
 
         XmlRole { name: "objid"; query: "id/string()" }
@@ -68,11 +66,11 @@ Rectangle {
 
     XmlListModel {
         id: feedModel
-        source: serverURL + "listPML/" + (publicCloud?"public":currentUserid)+"/" + window.currentObjid
+        source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/" + window.currentObjid
         query: "/listPML/item"
 
         XmlRole { name: "pmlid"; query: "pmlid/string()" }
-        XmlRole { name: "uid"; query: "uid/string()" }
+        XmlRole { name: "username"; query: "username/string()" }
         XmlRole { name: "ispublic"; query: "public/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "link"; query: "uid/string()" }
