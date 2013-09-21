@@ -58,11 +58,11 @@ Item {
             }
         }
     }
-    BusyIndicator {
-        scale: 0.6
-        on: delegate.ListView.isCurrentItem && window.loading
-        anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
-    }
+//    BusyIndicator {
+//        scale: 0.6
+//        on: delegate.ListView.isCurrentItem && window.loading
+//        anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
+//    }
 
     Rectangle {
         width: delegate.width; height: 1; color: "#cccccc"

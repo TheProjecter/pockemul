@@ -245,7 +245,7 @@ Item {
         TextButton {
             id: undeleteButton
             text: "UnDelete"
-            visible: (isdeleted ==1)
+            visible: (isdeleted ==1) && ismine
             onClicked: {
                 var url = serverURL + "undelPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
@@ -258,7 +258,7 @@ Item {
         }
         TextButton {
             id: deleteButton
-            visible:true
+            visible: ismine
             text: (isdeleted ==1) ? "Permanently delete" : "Delete"
             onClicked: {
                 var url = serverURL + "delPML/" + currentApiKey +"/" + pmlid;
