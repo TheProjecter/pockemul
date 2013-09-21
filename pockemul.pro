@@ -38,7 +38,7 @@ PROJECT_MODULE += \
     M_IDE \
     M_EMB_QRC \
     M_LIBAVOID \
-    M_ENGINIO \
+    M_CLOUD \
 }
 
 
@@ -51,8 +51,7 @@ DEFINES += NO_SOUND
 
 PROJECT_MODULE += \
     M_EMB_QRC \
-    M_ENGINIO
-
+    M_CLOUD \
 }
 
 
@@ -124,38 +123,15 @@ SOURCES += \
 
 }
 
-contains(PROJECT_MODULE,M_ENGINIO) {
-DEFINES += P_ENGINIO
-
-#QT += qml quick
-
+contains(PROJECT_MODULE,M_CLOUD) {
+DEFINES += P_CLOUD
 
 HEADERS+= \
-    cloud/imageobject.h \
-    cloud/imagemodel.h \
-    cloud/applicationconfig.h \
     cloud/cloudwindow.h \
-    enginio_client/enginioreply_p.h \
-    enginio_client/enginioreply.h \
-    enginio_client/enginioobjectadaptor_p.h \
-    enginio_client/enginiomodel.h \
-    enginio_client/enginioidentity.h \
-    enginio_client/enginiofakereply_p.h \
-    enginio_client/enginioclient_p.h \
-    enginio_client/enginioclient_global.h \
-    enginio_client/enginioclient.h \
-    enginio_client/chunkdevice_p.h
+
 
 SOURCES+= \
-    enginio_client/enginioreply.cpp \
-    enginio_client/enginiomodel.cpp \
-    enginio_client/enginioidentity.cpp \
-    enginio_client/enginiofakereply.cpp \
-    enginio_client/enginioclient.cpp \
-    cloud/imageobject.cpp \
-    cloud/imagemodel.cpp \
     cloud/cloudwindow.cpp
-
 
 }
 
@@ -948,7 +924,8 @@ OTHER_FILES += \
     cloud/content/SearchBox.qml \
     cloud/content/LineInput.qml \
     cloud/PmlView.qml \
-    cloud/content/SettingsDelegate.qml
+    cloud/content/SettingsDelegate.qml \
+    cloud/content/Edit.qml
 
 
 

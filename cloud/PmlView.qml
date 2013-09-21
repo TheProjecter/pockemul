@@ -69,8 +69,9 @@ Rectangle {
         source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/" + window.currentObjid
         query: "/listPML/item"
 
-        XmlRole { name: "pmlid"; query: "pmlid/string()" }
+        XmlRole { name: "pmlid"; query: "pmlid/string()"; isKey: true }
         XmlRole { name: "username"; query: "username/string()" }
+        XmlRole { name: "objects"; query: "objects/string()" }
         XmlRole { name: "ispublic"; query: "public/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "link"; query: "uid/string()" }

@@ -53,6 +53,8 @@ Item {
     // want to fade.
     property real detailsOpacity : 0
 
+    property bool ismine: (username == cloud.getValueFor("username",""))
+
     // A simple rounded rectangle for the background
     Rectangle {
         id: background
@@ -71,44 +73,54 @@ Item {
         id: column
         x: 20; y: 20
         width: parent.width - 40
-
+//        height: background.height
         Row {
             width: parent.width;
-            height: 30
             spacing: 5
+
             Image {
                 source: "images/public.png"
-                width: 30; height: 30;
+                width: 30
+                 height: 30
                 visible: (ispublic==1)
             }
 
-            Text {
+            Edit {
                 id: titleText
-                text: title; wrapMode: Text.WordWrap
-                width: 150
+                text: (title=="")?"No title":title
+                readOnly: !ismine
+                wrapMode: Text.WordWrap
+                width: parent.width - 40 - closeButton.width - 5
+                height: 30
                 font { bold: true; family: "Helvetica"; pointSize: 16 }
             }
         }
+
         Text {
             id: userText
             text: username; width: parent.width; wrapMode: Text.WordWrap
             font { bold: false; family: "Helvetica"; pointSize: 14 }
         }
-        Image {
+        Row {
+            Image {
             id: delegateImage
             source: serverURL+"getPMLthumb/"+pmlid
             fillMode: Image.PreserveAspectFit;
+            }
+            Edit {
+                text: objects
+                readOnly: true
+            }
         }
-//        MyRatingIndicator {
-//            id: myRatingIndicator
-//            width: parent.width;
-//            height: 25
-//            opacity: delegate.detailsOpacity
-//        }
-        Text {
+
+        Edit {
             id: descriptionText
-            width: parent.width; text: description
-            wrapMode: Text.WordWrap; font.family: "Helvetica"; font.pointSize: 14
+            width: parent.width;
+            height:background.height - y - 25
+            text: (description=="")?"No description":description
+            readOnly: !ismine
+            wrapMode: Text.WordWrap;
+            font.family: "Helvetica"; font.pointSize: 14
             opacity: delegate.detailsOpacity
         }
     }
@@ -131,6 +143,7 @@ Item {
     }
     // A button to close the detailed view, i.e. set the state back to default ('').
     TextButton {
+        id: closeButton
         y: 10
         anchors { right: background.right; rightMargin: 10 }
         opacity: delegate.detailsOpacity

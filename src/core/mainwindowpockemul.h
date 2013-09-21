@@ -7,9 +7,6 @@
 #include <QGestureEvent>
 #include <QXmlStreamReader>
 
-#ifdef P_ENGINIO
-#include "enginioreply.h"
-#endif
 
 //
 #include "ui_pockemul.h"
@@ -100,9 +97,6 @@ public:
 
     void initObjectTable();
 
-#ifdef P_ENGINIO
-    EnginioReply * _lastReply;
-#endif
 
 
 public slots:
@@ -110,9 +104,6 @@ public slots:
     void saveassession(QXmlStreamWriter *xml);
     void opensession(QString sessionFN=QString());
     void opensession(QXmlStreamReader *xml);
-#ifdef P_ENGINIO
-    void EnginioFinished(EnginioReply * reply);
-#endif
 
 private slots:
 

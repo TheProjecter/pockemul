@@ -4,8 +4,6 @@
 #include <iostream>
 #include <QtNetwork>
 
-//#include <QQmlApplicationEngine>
-//#include <QQuickWindow>
 
 /** \mainpage
 PockEmul is a Sharp Pocket Computer Emulator.
@@ -142,9 +140,6 @@ qWarning()<<" create MainWindowPockemul ";
 server = new ServeurTcp(this);
 #endif
 
-_lastReply =0;
-
-qWarning("create");
 
 }
 
@@ -637,14 +632,7 @@ void MainWindowPockemul::opensession(QString sessionFN)
     opensession(xml);
 }
 
-#ifdef P_ENGINIO
-void MainWindowPockemul::EnginioFinished(EnginioReply *reply)
-{
-qWarning()<<"EnginioFinished";
-    _lastReply = reply;
-    qWarning()<<"EnginioFinished";
-}
-#endif
+
 
 
 

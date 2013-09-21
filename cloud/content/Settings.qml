@@ -6,6 +6,7 @@ Rectangle {
 
     VisualItemModel {
         id: visualSettingsModel
+        SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; }
         SettingsDelegate { id: username; name: "username"; labelString: "User Name"; type: "input"; }
         SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; }
         SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action";
@@ -14,8 +15,9 @@ Rectangle {
 
                 var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
 //                console.log(username.inputText+'/'+password.inputText+':key:'+key);
+                serverURL = cloud.getValueFor("serverURL","");
                 var url = serverURL+'login?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
-//                console.log('url:'+url);
+                console.log('url:'+url);
                 request(url, function (o) {
 
                     // log the json response

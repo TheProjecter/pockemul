@@ -8,10 +8,7 @@
 #include <QModelIndex>
 #include <QDeclarativeView>
 
-class EnginioClient;
-class ImageModel;
-class PMLModel;
-class EnginioReply;
+
 class ImageDownloader;
 class ImageObject;
 class QFileDialog;
@@ -28,7 +25,6 @@ public:
     virtual QSize sizeHint() const;
 
 
-
     Q_INVOKABLE void getPML(int id);
     Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue);
     Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
@@ -37,44 +33,20 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
 public slots:
-
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void save();
+    Q_INVOKABLE void showFileDialog();
 
 private slots:
-    void refresh();
-    void save();
-    void removeItem();
-    void queryImages();
-    void queryPMLFiles(bool force=false);
-    void error(EnginioReply *error);
-    void beginUpload(EnginioReply *reply);
-    void fileSelected(const QString &file);
+
     void sendPML(const QString &filePath);
-    void uploadFinished(EnginioReply *reply);
-    void downloadData(QModelIndex index);
-    void replyFinished(EnginioReply *enginioReply);
     void downloadFinished();
 
 private:
     QDeclarativeView *view;
 
-    // The Enginio client object used in all enginio operations
-    EnginioClient *m_client;
-
-    // Enginio object model containing image objects
-    PMLModel *m_model;
-
-    // The list view showing contents of m_model
-    QListView *m_view;
-    QPushButton *m_refreshButton;
-    QPushButton *m_removeButton;
-    QPushButton *m_saveButton;
-    QPushButton *m_uploadButton;
-    QPushButton *m_quitButton;
-    QFileDialog *m_fileDialog;
-    QMap<EnginioReply*, QString> m_uploads;
-
     QNetworkReply *m_reply;
-
+    QFileDialog *m_fileDialog;
 
     void resizeEvent(QResizeEvent *e);
 };

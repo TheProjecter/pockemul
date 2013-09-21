@@ -6,8 +6,6 @@
 #include <QSplashScreen>
 #include <QScreen>
 
-#include "enginioclient.h"
-
 #include "launchbuttonwidget.h"
 #include "mainwindowpockemul.h"
 
@@ -115,23 +113,22 @@ qWarning()<<"OK5";
 #endif
 qWarning()<<"OK6";
     QWidget *cw= new QWidget();
-//    qWarning()<<"OK6.1";
     mainwindow->setCentralWidget(cw);
-//    qWarning()<<"OK6.2";
+
     delete mainwindow->centralwidget;
-qWarning()<<"OK7";
+
     mainwindow->centralwidget = cw;
     mainwindow->setWindowIcon ( QIcon(":/core/pockemul.bmp") );
     mainwindow->resize(680,520);
-qWarning()<<"OK8";
+
 #ifdef Q_OS_ANDROID
     mainwindow->centralwidget->setStyleSheet("background-color:black;color: white;selection-background-color: grey;");
 #endif
-qWarning()<<"OK9";
+
 #ifdef EMSCRIPTEN
     mainwindow->setWindowTitle("PockEmul Online");
 #endif
-qWarning()<<"OK10";
+
 #ifndef EMSCRIPTEN
     downloadManager = new DownloadManager();
     downloadManager->targetDir = QDir::homePath()+"/pockemul/documents";
@@ -140,7 +137,6 @@ qWarning()<<"OK10";
 #   endif
 #endif
 
-        qWarning()<<"OK2";
     int v_inter = 60;
     int v_pos = 12;
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,
@@ -189,7 +185,7 @@ qWarning()<<"OK10";
     v_pos += v_inter;
     load->setToolTip("Load an existing session.");
 
-#ifdef P_ENGINIO
+#ifdef P_CLOUD
     LaunchButtonWidget* cloudButton = new LaunchButtonWidget(mainwindow->centralwidget,
                                                      LaunchButtonWidget::Action,
                                                      QStringList(),

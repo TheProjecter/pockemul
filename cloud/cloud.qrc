@@ -50,5 +50,11 @@
         <file>content/images/public.png</file>
         <file>content/images/scrollbar.png</file>
         <file>content/SettingsDelegate.qml</file>
+        <file>TabbedQuickApp/pics/private-cloud-white.png</file>
+        <file>TabbedQuickApp/pics/public-cloud-white.png</file>
+        <file>TabbedQuickApp/pics/settings-white.png</file>
+        <file>TabbedQuickApp/pics/action-white.png</file>
+        <file>TabbedQuickApp/pics/back-white.png</file>
+        <file>content/Edit.qml</file>
     </qresource>
 </RCC>

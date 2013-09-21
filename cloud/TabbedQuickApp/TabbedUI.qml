@@ -10,6 +10,8 @@ Rectangle {
     // the model used to build the tabs
     property VisualItemModel tabsModel
 
+    property int quitIndex : 999999
+
     anchors.fill: parent
 
     // will contain the tab views
@@ -79,12 +81,17 @@ Rectangle {
 		text: tabsModel.children[index].name
 	    }
 
-	    MouseArea {
-		anchors.fill: parent
-		onClicked: {
-		    tabClicked(index);
-		}
-	    }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (index==quitIndex) {
+                    tabClicked(1);
+                    Qt.quit();
+                }
+                else
+                    tabClicked(index);
+            }
+        }
 	}
     }
 
