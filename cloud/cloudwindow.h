@@ -29,6 +29,7 @@ public:
     Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue);
     Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
     Q_INVOKABLE QString generateKey(QString username, QString password);
+
 protected:
     void wheelEvent(QWheelEvent *event);
 
@@ -36,6 +37,7 @@ public slots:
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void save();
     Q_INVOKABLE void showFileDialog();
+    Q_INVOKABLE void warning(QString msg);
 
 private slots:
 

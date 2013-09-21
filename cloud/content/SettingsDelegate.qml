@@ -10,6 +10,8 @@ Item {
     property bool saveInput: true
     property alias buttonElementEnabled: buttonElement.enabled
     property alias inputText: inputElement.text
+    property alias defaultText: inputElement.defaultText
+
     signal buttonClicked
 
     width: delegate.ListView.view.width; height: 60
@@ -24,6 +26,11 @@ Item {
         onInputAccepted: if (saveInput) cloud.saveValueFor(key,value)
         visible: (type == "input")
     }
+    ComboBox {
+
+        visible: (type=="combo")
+    }
+
     Row {
         y: 10
         spacing: 10
@@ -37,7 +44,7 @@ Item {
 //                verticalCenter: parent.verticalCenter
 //            }
             anchors.verticalCenter: parent.verticalCenter
-            visible: ((type == "text") | (type == "action"))
+            visible: ((type == "text") | (type == "action") )
         }
         TextButton {
             id: buttonElement

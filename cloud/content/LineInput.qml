@@ -8,6 +8,7 @@ Rectangle {
     property alias label: label.text
     property alias maximumLength: input.maximumLength
 
+    property string defaultText
 
     property alias font: fontstyle.font
 
@@ -52,7 +53,7 @@ Rectangle {
                 anchors.centerIn: parent
                 id: input
                 objectName: "inputField"
-                text: cloud.getValueFor(input.objectName, "")
+                text: cloud.getValueFor(input.objectName, defaultText)
                 font: fontstyle.font
 
                 onTextChanged: {

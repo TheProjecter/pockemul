@@ -35,6 +35,8 @@ CloudWindow::CloudWindow(QWidget *parent)
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     view->rootContext()->setContextProperty("cloud", this);
     connect(view->engine(), SIGNAL(quit()), this,SLOT(hide()));
+    QObject *object = view->rootObject();
+    QObject::connect(object, SIGNAL(sendWarning(QString)), this, SLOT(warning(QString)));
 
     m_fileDialog = new QFileDialog(this);
     m_fileDialog->setFileMode(QFileDialog::ExistingFile);
@@ -170,4 +172,9 @@ QString CloudWindow::generateKey(QString username,QString password) {
     QString key = QString("!PockEmul"+username+"_"+password+"&éklm!;");
 //    qWarning()<<"KEY:"<<key;
     return QCryptographicHash::hash ( key.toLatin1(), QCryptographicHash::Md5);
+}
+
+extern int ask(QWidget *parent, QString msg, int nbButton);
+void CloudWindow::warning(QString msg) {
+    ask(this, msg, 1);
 }

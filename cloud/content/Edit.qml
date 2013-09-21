@@ -2,13 +2,15 @@ import QtQuick 1.1
 Rectangle {
     property alias text: edit.text
     property alias font: edit.font
+    property alias textColor: edit.color
     property alias wrapMode: edit.wrapMode
     property alias readOnly: edit.readOnly
+    property int nbLine: 0
 
     id: root
 
     width: 200
-    height: 100
+    height: (nbLine==0)? 100 : nbLine* edit.font.pointSize +20
 
     clip: true
     Rectangle {

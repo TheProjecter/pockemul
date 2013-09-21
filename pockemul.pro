@@ -925,7 +925,11 @@ OTHER_FILES += \
     cloud/content/LineInput.qml \
     cloud/PmlView.qml \
     cloud/content/SettingsDelegate.qml \
-    cloud/content/Edit.qml
+    cloud/content/Edit.qml \
+    cloud/content/ComboBox.qml \
+    cloud/content/Switch.qml \
+    cloud/content/knob.svg \
+    cloud/content/background.svg
 
 
 

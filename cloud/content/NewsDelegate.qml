@@ -40,7 +40,7 @@
 ****************************************************************************/
 
 import QtQuick 1.1
-import "../RatingIndicatorQML"
+import ".."
 
 Item {
     id: delegate
@@ -54,6 +54,8 @@ Item {
     property real detailsOpacity : 0
 
     property bool ismine: (username == cloud.getValueFor("username",""))
+    property bool changed: false
+    property int newpublicstatus: ispublic
 
     // A simple rounded rectangle for the background
     Rectangle {
@@ -73,7 +75,7 @@ Item {
         id: column
         x: 20; y: 20
         width: parent.width - 40
-//        height: background.height
+        //        height: background.height
         Row {
             width: parent.width;
             spacing: 5
@@ -81,18 +83,23 @@ Item {
             Image {
                 source: "images/public.png"
                 width: 30
-                 height: 30
+                height: 30
                 visible: (ispublic==1)
             }
 
             Edit {
                 id: titleText
                 text: (title=="")?"No title":title
-                readOnly: !ismine
+                nbLine: 1
+                readOnly: (detailsOpacity==0) || (!ismine)
                 wrapMode: Text.WordWrap
                 width: parent.width - 40 - closeButton.width - 5
-                height: 30
+                //                height: 30
                 font { bold: true; family: "Helvetica"; pointSize: 16 }
+                textColor: changed ? "red" : "black"
+                onTextChanged: {
+                    checkmodif()
+                }
             }
         }
 
@@ -103,13 +110,21 @@ Item {
         }
         Row {
             Image {
-            id: delegateImage
-            source: serverURL+"getPMLthumb/"+pmlid
-            fillMode: Image.PreserveAspectFit;
+                id: delegateImage
+                source: serverURL+"getPMLthumb/"+pmlid
+                fillMode: Image.PreserveAspectFit;
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+//                        root.bigposter.source = serverURL+"getPMLsnap/"+pmlid;
+//                        root.bigposter.visible = true;
+                    }
+                }
             }
-            Edit {
+            TextEdit {
                 text: objects
                 readOnly: true
+                opacity: delegate.detailsOpacity
             }
         }
 
@@ -121,7 +136,9 @@ Item {
             readOnly: !ismine
             wrapMode: Text.WordWrap;
             font.family: "Helvetica"; font.pointSize: 14
+            textColor: changed ? "red" : "black"
             opacity: delegate.detailsOpacity
+            onTextChanged: checkmodif()
         }
     }
 
@@ -134,24 +151,108 @@ Item {
 
 
     }
-    TextButton {
-        y: 50
+    Column {
+        y:40
         anchors { right: background.right; rightMargin: 10 }
-        text: "Download File"
-        font.pointSize: 16
-        onClicked: cloud.getPML(pmlid);
-    }
-    // A button to close the detailed view, i.e. set the state back to default ('').
-    TextButton {
-        id: closeButton
-        y: 10
-        anchors { right: background.right; rightMargin: 10 }
-        opacity: delegate.detailsOpacity
-        text: "Close"
+        spacing: 5
+        TextButton {
+            id: closeButton
+            opacity: delegate.detailsOpacity
+            text: "Close"
+            onClicked: {
+                if (changed) {
+                    root.sendWarning("Cancel changes before closing.");
+                }
+                else {
 
-        onClicked: delegate.state = '';
+                    delegate.state = '';
+                }
+            }
+        }
+        TextButton {
+            text: "Download File"
+            onClicked: cloud.getPML(pmlid);
+        }
+        // A button to close the detailed view, i.e. set the state back to default ('').
+        TextButton {
+            id: saveButton
+            //            y: 75
+            //            anchors { right: background.right; rightMargin: 10 }
+            visible: changed
+            text: "Save"
+            onClicked: {
+                console.log('onClicked');
+                //                if (cloud.askMsg("Are you sure ?",2) == 1)
+                {
+                    // update data
+                    var url = serverURL + "updPML/" + currentApiKey +"/" + pmlid;
+                    console.log('url:'+url);
+                    var data = "<data>";
+                    data += "<title>"+titleText.text+"</title>";
+                    data += "<description>"+descriptionText.text+"</description>";
+                    data += "<ispublic>"+newpublicstatus+"</ispublic>";
+                    data += "</data>";
+                    requestPost(url, data,function (o) {
+                        //                        cloud.askMsg("Ok, saved !",1);
+                        //Reload record
+                        changed = false;
+                        //                    console.log(o.responseText);
+                    });
+                }
+
+            }
+        }
+        TextButton {
+            id: revertButton
+            //            y: 100
+            //            anchors { right: background.right; rightMargin: 10 }
+            visible: changed
+            text: "Cancel changes"
+            onClicked: {
+                titleText.text = (title=="")?"No title":title
+                descriptionText.text = (description=="")?"No description":description
+                newpublicstatus = ispublic
+                switchelt.state = (ispublic==1) ? "on" :"off"
+                checkmodif()
+            }
+        }
+        Row {
+            opacity: delegate.detailsOpacity
+            visible: ismine
+            Text {
+                id: switchLabel
+                text: qsTr("Public ")
+                font.family: "Helvetica"; font.pointSize: 14
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Switch {
+                id:switchelt
+                bwidth: 50
+                bheight: 25
+                state: (ispublic==1) ? "on" :"off"
+                anchors.verticalCenter: parent.verticalCenter
+                onStateChanged: {
+                    if (state != ((ispublic==1) ? "on" :"off"))
+                        root.sendWarning("Do you really want to change the public status ?");
+                    newpublicstatus = (state=="on") ? 1 : 0;
+
+                    checkmodif();
+                }
+            }
+        }
     }
+
+    function checkmodif() {
+        if ( (titleText.text == ((title=="")?"No title":title)) &&
+                (descriptionText.text == ((description=="")?"No description":description)) &&
+                (ispublic == newpublicstatus)) {
+            changed = false;
+        }
+        else { changed = true; }
+    }
+
     states: State {
+        id: viewstate
         name: "Details"
 
         PropertyChanges { target: background; color: "white" }

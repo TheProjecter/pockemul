@@ -8,10 +8,14 @@ Rectangle {
     height: 640
 
     id: root
+    signal sendWarning(string test)
 
     property string serverURL: cloud.getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")
     property string currentUserid: "pock emul"
     property string currentApiKey: cloud.getValueFor("apikey","0")
+
+    property alias bigposter: bigposter
+
 
     VisualItemModel {
         id: tabsModel
@@ -101,19 +105,17 @@ Rectangle {
     }
 
     Image {
-        source: "pics/close.png"
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 10
-
+        id: bigposter
+        visible: false
+        anchors.fill: parent
         MouseArea {
             anchors.fill: parent
-            onClicked: Qt.quit()
+            onClicked: visible=false;
         }
     }
 
     // this function is included locally, but you can also include separately via a header definition
-    function request(url, callback) {
+    function requestGet(url, callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = (function(myxhr) {
             //            console.log(xhr.readyState);
@@ -127,4 +129,23 @@ Rectangle {
         xhr.open('GET', url, true);
         xhr.send('');
     }
+
+    function requestPost(url, data, callback) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = (function(myxhr) {
+                        console.log(xhr.readyState);
+//            if (xhr.readyState == 4 )
+            {
+                return function() {
+                    callback(myxhr);
+                }
+            }
+        })(xhr);
+        xhr.open('POST', url);
+        xhr.send(data);
+
+        }
+
+
 }

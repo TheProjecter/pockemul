@@ -330,6 +330,10 @@ int ask(QWidget *parent, QString msg, int nbButton) {
 
             return res;
 #else
+    if (nbButton==1) {
+        QMessageBox::warning(parent, "PockEmul",msg);
+        return 1;
+    }
     if (nbButton==2) {
         switch (QMessageBox::question(parent, "PockEmul",msg,QMessageBox::Yes|QMessageBox::No)) {
         case QMessageBox::Yes: return 1;

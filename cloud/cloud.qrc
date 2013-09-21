@@ -56,5 +56,10 @@
         <file>TabbedQuickApp/pics/action-white.png</file>
         <file>TabbedQuickApp/pics/back-white.png</file>
         <file>content/Edit.qml</file>
+        <file>content/ComboBox.qml</file>
+        <file>content/Switch.qml</file>
+        <file>content/images/background-off.png</file>
+        <file>content/images/background-on.png</file>
+        <file>content/images/knob.png</file>
     </qresource>
 </RCC>
