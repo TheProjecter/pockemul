@@ -81,12 +81,12 @@ Item {
             spacing: 5
 
             Image {
+                id: publicIcon
                 source: "images/public.png"
                 width: 30
                 height: 30
                 visible: (ispublic==1)
             }
-
             Edit {
                 id: titleText
                 text: (title=="")?"No title":title
@@ -104,13 +104,13 @@ Item {
         }
 
         Text {
-            id: userText
+            id: usernameText
             text: username; width: parent.width; wrapMode: Text.WordWrap
             font { bold: false; family: "Helvetica"; pointSize: 14 }
         }
         Row {
             Image {
-                id: delegateImage
+                id: pmlThumbImage
                 source: serverURL+"getPMLthumb/"+pmlid
                 fillMode: Image.PreserveAspectFit;
                 MouseArea {
@@ -122,6 +122,7 @@ Item {
                 }
             }
             TextEdit {
+                id: objectsText
                 text: objects
                 readOnly: true
                 opacity: delegate.detailsOpacity
@@ -131,7 +132,7 @@ Item {
         Edit {
             id: descriptionText
             width: parent.width;
-            height:background.height - y - 25
+//            height:background.height - y - 25
             text: (description=="")?"No description":description
             readOnly: !ismine
             wrapMode: Text.WordWrap;
@@ -140,16 +141,15 @@ Item {
             opacity: delegate.detailsOpacity
             onTextChanged: checkmodif()
         }
+        Item {
+            id: comments
+        }
     }
 
 
     Item {
         id: details
         opacity: delegate.detailsOpacity
-
-
-
-
     }
     Column {
         y:40
@@ -170,14 +170,12 @@ Item {
             }
         }
         TextButton {
+            id: downloadButton
             text: "Download File"
             onClicked: cloud.getPML(pmlid);
         }
-        // A button to close the detailed view, i.e. set the state back to default ('').
         TextButton {
             id: saveButton
-            //            y: 75
-            //            anchors { right: background.right; rightMargin: 10 }
             visible: changed
             text: "Save"
             onClicked: {
@@ -188,14 +186,17 @@ Item {
                     var url = serverURL + "updPML/" + currentApiKey +"/" + pmlid;
                     console.log('url:'+url);
                     var data = "<data>";
-                    data += "<title>"+titleText.text+"</title>";
-                    data += "<description>"+descriptionText.text+"</description>";
-                    data += "<ispublic>"+newpublicstatus+"</ispublic>";
+                    data +=     "<title>"+titleText.text+"</title>";
+                    data +=     "<description>"+descriptionText.text+"</description>";
+                    data +=     "<ispublic>"+newpublicstatus+"</ispublic>";
                     data += "</data>";
                     requestPost(url, data,function (o) {
                         //                        cloud.askMsg("Ok, saved !",1);
                         //Reload record
                         changed = false;
+                        pmlModel.get(index).title = titleText.text;
+                        pmlModel.get(index).description=descriptionText.text;
+                        pmlModel.get(index).ispublic = newpublicstatus;
                         //                    console.log(o.responseText);
                     });
                 }
@@ -217,6 +218,7 @@ Item {
             }
         }
         Row {
+            id: publicSwitch
             opacity: delegate.detailsOpacity
             visible: ismine
             Text {
@@ -240,6 +242,34 @@ Item {
                 }
             }
         }
+        TextButton {
+            id: undeleteButton
+            text: "UnDelete"
+            visible: (isdeleted ==1)
+            onClicked: {
+                var url = serverURL + "undelPML/" + currentApiKey +"/" + pmlid;
+                requestGet(url,function (o) {
+                    //                        cloud.askMsg("Ok, saved !",1);
+                    //Reload record
+//                    pmlModel.get(index).isdeleted = 0;
+                    pmlModel.remove(index);
+                });
+            }
+        }
+        TextButton {
+            id: deleteButton
+            visible:true
+            text: (isdeleted ==1) ? "Permanently delete" : "Delete"
+            onClicked: {
+                var url = serverURL + "delPML/" + currentApiKey +"/" + pmlid;
+                requestGet(url,function (o) {
+                    //                        cloud.askMsg("Ok, saved !",1);
+                    //Reload record
+                    changed = false;
+                    pmlModel.remove(index);
+                });
+            }
+        }
     }
 
     function checkmodif() {
@@ -256,7 +286,7 @@ Item {
         name: "Details"
 
         PropertyChanges { target: background; color: "white" }
-        PropertyChanges { target: delegateImage; width: 200; height: 200;} // Make picture bigger
+        PropertyChanges { target: pmlThumbImage; width: 200; height: 200;} // Make picture bigger
         PropertyChanges { target: delegate; detailsOpacity: 1; x: 0 } // Make details visible
         PropertyChanges { target: delegate; height: list.height } // Fill the entire list area with the detailed view
 

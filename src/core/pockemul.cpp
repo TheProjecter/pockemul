@@ -189,7 +189,11 @@ qWarning()<<"OK6";
     LaunchButtonWidget* cloudButton = new LaunchButtonWidget(mainwindow->centralwidget,
                                                      LaunchButtonWidget::Action,
                                                      QStringList(),
-                                                     ":/core/cloud.png");
+#   ifdef Q_OS_ANDROID
+                                                     ":/core/cloud-white.png");
+#   else
+                                                      ":/core/cloud.png");
+#   endif
     mainwindow->connect(cloudButton,SIGNAL(clicked()),mainwindow,SLOT(CloudSlot()));
     cloudButton->setGeometry(0,v_pos,48,48);
     v_pos += v_inter;

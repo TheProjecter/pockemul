@@ -50,10 +50,11 @@ Rectangle {
     width: 800; height: 480
 
     property string currentObjid: "0"
-    property bool loading: feedModel.status == XmlListModel.Loading
+    property bool loading: pmlModel.status == XmlListModel.Loading
     property bool publicCloud: true
 
     property alias categoryModel: categoryModel
+    property alias categoryListView: categories
 
     XmlListModel {
         id: categoryModel
@@ -65,7 +66,7 @@ Rectangle {
     }
 
     XmlListModel {
-        id: feedModel
+        id: xmlpmlModel
         source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/" + window.currentObjid
         query: "/listPML/item"
 
@@ -73,9 +74,30 @@ Rectangle {
         XmlRole { name: "username"; query: "username/string()" }
         XmlRole { name: "objects"; query: "objects/string()" }
         XmlRole { name: "ispublic"; query: "public/number()" }
+        XmlRole { name: "isdeleted"; query: "deleted/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "link"; query: "uid/string()" }
         XmlRole { name: "description"; query: "description/string()" }
+        onStatusChanged: {
+                if (status == XmlListModel.Ready) {
+                    pmlModel.clear();
+                    for (var i=0; i<count; i++) {
+                        var item = get(i)
+                        pmlModel.append({pmlid: item.pmlid,
+                                           username: item.username,
+                                            objects: item.objects,
+                                            ispublic: item.ispublic,
+                                            isdeleted: item.isdeleted,
+                                            title: item.title,
+                                            link: item.link,
+                                            description: item.description})
+                    }
+                }
+            }
+    }
+
+    ListModel {
+        id: pmlModel
     }
 
     Row {
@@ -88,7 +110,7 @@ Rectangle {
                 id: categories
                 anchors.fill: parent
                 model: categoryModel
-                footer: quitButtonDelegate
+                footer: refreshButtonDelegate
                 delegate: CategoryDelegate {}
                 highlight: Rectangle { color: "steelblue" }
                 highlightMoveSpeed: 9999999
@@ -101,16 +123,16 @@ Rectangle {
         ListView {
             id: list
             width: window.width - 220; height: window.height
-            model: feedModel
+            model: pmlModel
             delegate: NewsDelegate {}
         }
     }
     Component {
-        id: quitButtonDelegate
+        id: refreshButtonDelegate
         Item {
             width: categories.width; height: 60
             Text {
-                text: "Quit"
+                text: "Refresh"
                 font { family: "Helvetica"; pixelSize: 16; bold: true }
                 anchors {
                     left: parent.left; leftMargin: 15
@@ -119,7 +141,7 @@ Rectangle {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: Qt.quit()
+                onClicked: categoryModel.reload();
             }
         }
     }

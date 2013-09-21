@@ -893,7 +893,6 @@ OTHER_FILES += \
     android/AndroidManifest.xml \
     android/res/values/libs.xml \
     cloud/content/ScrollBar.qml \
-    cloud/content/RssFeeds.qml \
     cloud/content/NewsDelegate.qml \
     cloud/content/CategoryDelegate.qml \
     cloud/content/BusyIndicator.qml \

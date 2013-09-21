@@ -57,6 +57,7 @@ Rectangle {
                     font.pointSize: 16
                     onClicked: {
                         privateCloud.categoryModel.reload();
+
                         publicCloud.categoryModel.reload();
                     }
                 }
@@ -65,6 +66,8 @@ Rectangle {
                     font.pointSize: 16
                     onClicked: {
                         cloud.save();
+                        privateCloud.categoryModel.reload();
+                        publicCloud.categoryModel.reload();
                     }
                 }
                 TextButton {
