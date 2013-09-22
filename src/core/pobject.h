@@ -255,6 +255,7 @@ public slots:
     void slotSaveSession();
 	void Dump();
     void Dasm();
+    void Postit();
     void VirtualKeyboard();
 
 	

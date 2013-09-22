@@ -276,10 +276,8 @@ Item {
             onClicked: {
                 var url = serverURL + "undelPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
-                    //                        cloud.askMsg("Ok, saved !",1);
-                    //Reload record
-//                    pmlModel.get(index).isdeleted = 0;
-                    refpmlModel.setProperty(rowid,"ideleted",0);
+                    refpmlModel.setProperty(rowid,"isdeleted",0);
+                    // compute Obj counts
                 });
             }
         }
@@ -294,6 +292,7 @@ Item {
                     //Reload record
                     changed = false;
                     refpmlModel.setProperty(rowid,"isdeleted",1);
+                    // compute Obj counts
                 });
             }
         }

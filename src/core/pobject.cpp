@@ -542,10 +542,10 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 extern void Vibrate();
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
-    qWarning()<<"CPObject::mousePressEvent"<<event;
+//    qWarning()<<"CPObject::mousePressEvent"<<event;
 
     if (event->button() != Qt::LeftButton) {
-        event->ignore();
+        event->accept();
         return;
     }
 
@@ -1039,6 +1039,8 @@ void CPObject::BuildContextMenu(QMenu * menu)
         menu->addAction(tr("Debug"),this,SLOT(Dasm()));
     }
 
+    menu->addAction(tr("New Post-it"),this,SLOT(Postit()));
+
 	menu->addSeparator();
 	computeLinkMenu(menu);
 	computeUnLinkMenu(menu);
@@ -1276,6 +1278,11 @@ void CPObject::Dasm()
 {
     dialogdasm = new DialogDasm(this);
     dialogdasm->show();
+}
+
+void CPObject::Postit()
+{
+    mainwindow->LoadPocket("Post-it");
 }
 
 void CPObject::VirtualKeyboard()

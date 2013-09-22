@@ -184,7 +184,8 @@ enum Models {
     RLH1000,
     RLP6001,
     RLP9001,
-    RLP1004A
+    RLP1004A,
+    POSTIT
 };
 
 #endif
