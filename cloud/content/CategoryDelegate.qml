@@ -76,7 +76,8 @@ Item {
         anchors.fill: delegate
         onClicked: {
             delegate.ListView.view.currentIndex = index
-            window.currentObjid = objid
+            window.objid = objid
+            //window.currentObjid = objid
         }
     }
 }

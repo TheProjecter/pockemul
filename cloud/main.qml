@@ -13,9 +13,14 @@ Rectangle {
     property string serverURL: cloud.getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")
     property string currentUserid: "pock emul"
     property string currentApiKey: cloud.getValueFor("apikey","0")
-
+    property bool   isPortrait: false
     property alias bigposter: bigposter
+    property alias publicCloudTabName: publicCloudTab.name
 
+    onWidthChanged: {
+        isPortrait = cloud.isPortraitOrientation();
+//        console.log(isPortrait)
+    }
 
     VisualItemModel {
         id: tabsModel
@@ -30,10 +35,12 @@ Rectangle {
                 anchors.fill: parent
                 publicCloud: false
 
+
             }
 
         }
         Tab {
+            id: publicCloudTab
             name: "Public Cloud"
             icon: "pics/public-cloud-white.png"
 
@@ -42,6 +49,7 @@ Rectangle {
                 id: publicCloud
                 anchors.fill: parent
                 publicCloud: true
+
             }
         }
         Tab {

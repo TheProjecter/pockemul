@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
     Q_INVOKABLE QString generateKey(QString username, QString password);
 
+    Q_INVOKABLE bool isPortraitOrientation();
 protected:
     void wheelEvent(QWheelEvent *event);
 

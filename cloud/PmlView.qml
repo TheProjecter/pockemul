@@ -50,11 +50,18 @@ Rectangle {
     width: 800; height: 480
 
     property string currentObjid: "0"
-    property bool loading: pmlModel.status == XmlListModel.Loading
+    property bool loading: xmlpmlModel.status == XmlListModel.Loading
     property bool publicCloud: true
 
     property alias categoryModel: categoryModel
     property alias categoryListView: categories
+
+    property int objid: 0
+    property int ispublic: publicCloud ? 1 : 0
+    property int isdeleted: 0
+
+    onObjidChanged: {populatePMLModel()}
+    onIsdeletedChanged: {populatePMLModel()}
 
     XmlListModel {
         id: categoryModel
@@ -67,41 +74,92 @@ Rectangle {
 
     XmlListModel {
         id: xmlpmlModel
-        source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/" + window.currentObjid
+        source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/0"  // + window.currentObjid
         query: "/listPML/item"
 
         XmlRole { name: "pmlid"; query: "pmlid/string()"; }
         XmlRole { name: "username"; query: "username/string()" }
         XmlRole { name: "objects"; query: "objects/string()" }
-        XmlRole { name: "ispublic"; query: "public/number()" }
+        XmlRole { name: "listobjects"; query: "listobjects/string()" }
+        XmlRole { name: "ispublic"; query: "ispublic/number()" }
         XmlRole { name: "isdeleted"; query: "deleted/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "link"; query: "uid/string()" }
         XmlRole { name: "description"; query: "description/string()" }
         onStatusChanged: {
+
                 if (status == XmlListModel.Ready) {
-                    pmlModel.clear();
+                    refpmlModel.clear();
                     for (var i=0; i<count; i++) {
                         var item = get(i)
-                        pmlModel.append({pmlid: item.pmlid,
+                        console.log(item.listobjects)
+                        refpmlModel.append({pmlid: item.pmlid,
                                            username: item.username,
                                             objects: item.objects,
+                                            listobjects: item.listobjects,
                                             ispublic: item.ispublic,
                                             isdeleted: item.isdeleted,
                                             title: item.title,
                                             link: item.link,
                                             description: item.description})
                     }
+
+                    populatePMLModel();
                 }
             }
     }
 
+    function populatePMLModel() {
+        console.log("REFRESH Model");
+        console.log("public:"+window.ispublic);
+        console.log("deleted:"+window.isdeleted);
+        console.log("objid:"+window.objid);
+        pmlModel.clear();
+        for (var i=0; i<refpmlModel.count; i++) {
+
+            var item = refpmlModel.get(i)
+
+            console.log("Read: "+item.pmlid+"-"+item.title);
+            if (window.publicCloud && (item.ispublic == 0)) continue;
+            console.log("public OK");
+            if ( (window.objid > 0) && !idInArray(window.objid.toString(),item.listobjects)) continue;
+            console.log("object OK");
+            if ( (window.objid == -1) && (item.isdeleted != 1 )) continue;
+            console.log("Deleted OK");
+            pmlModel.append({   rowid : i,
+                                pmlid: item.pmlid,
+                               username: item.username,
+                                objects: item.objects,
+                                ispublic: item.ispublic,
+                                isdeleted: item.isdeleted,
+                                title: item.title,
+                                link: item.link,
+                                description: item.description})
+            console.log("Store: "+item.title);
+        }
+    }
+
+    function idInArray(id, list) {
+        console.log("Search:"+id+" in:"+list);
+
+        console.log("contains:"+String(list).indexOf(","+id+","));
+        return (String(list).indexOf(","+id+",")>=0);
+    }
+
+    ListModel {
+        id: refpmlModel
+    }
+
     ListModel {
         id: pmlModel
+
     }
+
+
 
     Row {
         Rectangle {
+            id: categoriesView
             width: 220; height: window.height
             color: "#efefef"
 
@@ -122,7 +180,7 @@ Rectangle {
         }
         ListView {
             id: list
-            width: window.width - 220; height: window.height
+            width: window.width - categoriesView.width; height: window.height
             model: pmlModel
             delegate: NewsDelegate {}
         }
@@ -146,5 +204,5 @@ Rectangle {
         }
     }
     ScrollBar { scrollArea: list; height: list.height; width: 8; anchors.right: window.right }
-    Rectangle { x: 220; height: window.height; width: 1; color: "#cccccc" }
+    Rectangle { x: categoriesView.width; height: window.height; width: 1; color: "#cccccc" }
 }

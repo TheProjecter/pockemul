@@ -1,3 +1,4 @@
+#include <QApplication>
 #include <QtWidgets>
 #include <QDebug>
 #include <QFrame>
@@ -157,7 +158,7 @@ QString CloudWindow::getValueFor(const QString &objectName, const QString &defau
         qWarning()<<"getValue("<<objectName<<","<<defaultValue<<")";
         return defaultValue;
     }
-    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<")";
+//    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<")";
     return settings.value(objectName).toString();
 }
 
@@ -165,7 +166,7 @@ void CloudWindow::saveValueFor(const QString &objectName, const QString &inputVa
 {
     QSettings settings;
     settings.setValue(objectName, QVariant(inputValue));
-    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<")";
+//    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<")";
 }
 
 QString CloudWindow::generateKey(QString username,QString password) {
@@ -177,4 +178,12 @@ QString CloudWindow::generateKey(QString username,QString password) {
 extern int ask(QWidget *parent, QString msg, int nbButton);
 void CloudWindow::warning(QString msg) {
     ask(this, msg, 1);
+}
+
+bool CloudWindow::isPortraitOrientation() {
+    return  (QGuiApplication::primaryScreen()->orientation() == Qt::PortraitOrientation) ||
+            (QGuiApplication::primaryScreen()->orientation() == Qt::InvertedPortraitOrientation) ||
+             ( (QGuiApplication::primaryScreen()->orientation() == Qt::LandscapeOrientation ||
+              QGuiApplication::primaryScreen()->orientation() == Qt::InvertedLandscapeOrientation) &&
+             (this->height()>this->width())) ;
 }

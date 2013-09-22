@@ -175,6 +175,31 @@ Item {
             onClicked: cloud.getPML(pmlid);
         }
         TextButton {
+            id: importButton
+            visible: ispublic && !ismine
+            text: "Clone to private"
+            onClicked: {
+                console.log('onClicked');
+                //                if (cloud.askMsg("Are you sure ?",2) == 1)
+                {
+                    // update data
+                    var url = serverURL + "clonePML/" + currentApiKey +"/" + pmlid;
+                    console.log('url:'+url);
+                    requestGet(url, function (o) {
+                        //                        cloud.askMsg("Ok, saved !",1);
+                        //Append record to pri
+                        privateCloud.categoryModel.reload();
+//                        changed = false;
+//                        pmlModel.get(index).title = titleText.text;
+//                        pmlModel.get(index).description=descriptionText.text;
+//                        pmlModel.get(index).ispublic = newpublicstatus;
+                        //                    console.log(o.responseText);
+                    });
+                }
+
+            }
+        }
+        TextButton {
             id: saveButton
             visible: changed
             text: "Save"
@@ -194,9 +219,11 @@ Item {
                         //                        cloud.askMsg("Ok, saved !",1);
                         //Reload record
                         changed = false;
-                        pmlModel.get(index).title = titleText.text;
-                        pmlModel.get(index).description=descriptionText.text;
-                        pmlModel.get(index).ispublic = newpublicstatus;
+                        refpmlModel.setProperty(rowid,"title",titleText.text);
+                        refpmlModel.setProperty(rowid,"description",descriptionText.text);
+                        refpmlModel.setProperty(rowid,"ispublic",newpublicstatus);
+                        refpmlModel.setProperty(rowid,"ideleted",newpublicstatus);
+
                         //                    console.log(o.responseText);
                     });
                 }
@@ -252,7 +279,7 @@ Item {
                     //                        cloud.askMsg("Ok, saved !",1);
                     //Reload record
 //                    pmlModel.get(index).isdeleted = 0;
-                    pmlModel.remove(index);
+                    refpmlModel.setProperty(rowid,"ideleted",0);
                 });
             }
         }
@@ -266,7 +293,7 @@ Item {
                     //                        cloud.askMsg("Ok, saved !",1);
                     //Reload record
                     changed = false;
-                    pmlModel.remove(index);
+                    refpmlModel.setProperty(rowid,"isdeleted",1);
                 });
             }
         }
@@ -289,7 +316,7 @@ Item {
         PropertyChanges { target: pmlThumbImage; width: 200; height: 200;} // Make picture bigger
         PropertyChanges { target: delegate; detailsOpacity: 1; x: 0 } // Make details visible
         PropertyChanges { target: delegate; height: list.height } // Fill the entire list area with the detailed view
-
+        PropertyChanges { target: categoriesView; width: root.isPortrait?0:220 }
         // Move the list so that this item is at the top.
         PropertyChanges { target: delegate.ListView.view; explicit: true; contentY: delegate.y }
 
