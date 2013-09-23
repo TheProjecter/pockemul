@@ -127,7 +127,7 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
         xml->writeEndElement(); // position
         this->SaveSession_File(xml);
     xml->writeEndElement(); // object
-
+    qWarning()<<"end serialize";
 }
 
 float	CPObject::posx()

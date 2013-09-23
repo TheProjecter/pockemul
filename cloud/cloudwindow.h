@@ -36,7 +36,7 @@ protected:
 
 public slots:
     Q_INVOKABLE void refresh();
-    Q_INVOKABLE void save();
+    Q_INVOKABLE QString save();
     Q_INVOKABLE void showFileDialog();
     Q_INVOKABLE void warning(QString msg);
 
@@ -44,12 +44,14 @@ private slots:
 
     void sendPML(const QString &filePath);
     void downloadFinished();
+    void finishedSave(QNetworkReply* reply);
 
 private:
     QDeclarativeView *view;
 
     QNetworkReply *m_reply;
     QFileDialog *m_fileDialog;
+    QObject *object;
 
     void resizeEvent(QResizeEvent *e);
 };

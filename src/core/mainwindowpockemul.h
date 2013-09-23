@@ -99,6 +99,7 @@ public:
 
 
 
+    QString saveassessionString();
 public slots:
     QString saveassession();
     void saveassession(QXmlStreamWriter *xml);

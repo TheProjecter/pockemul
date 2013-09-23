@@ -290,8 +290,14 @@ Item {
                 requestGet(url,function (o) {
                     //                        cloud.askMsg("Ok, saved !",1);
                     //Reload record
-                    changed = false;
-                    refpmlModel.setProperty(rowid,"isdeleted",1);
+                    if (isdeleted==1) {
+                        refpmlModel.remove(rowid);
+                    }
+                    else {
+
+                        changed = false;
+                        refpmlModel.setProperty(rowid,"isdeleted",1);
+                    }
                     // compute Obj counts
                 });
             }

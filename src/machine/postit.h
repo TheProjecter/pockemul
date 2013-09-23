@@ -11,6 +11,7 @@
 class QVBoxLayout;
 
 class CpostitTextEdit:public QTextEdit {
+    Q_OBJECT
 public:
     CpostitTextEdit(QWidget * parent):QTextEdit(parent){}
 
@@ -18,8 +19,8 @@ public:
     {
         QMenu *menupocket = QTextEdit::createStandardContextMenu();
         menupocket->addSeparator();
-        menupocket->addAction(tr("Double Size"),parentWidget(),SLOT(slotDblSize()));
-        menupocket->addAction(tr("Reset"));//,this,SLOT(slotResetNow()));
+        menupocket->addAction(tr("Bold"),this,SLOT(boldText()));
+        menupocket->addAction(tr("Link"),this,SLOT(urlText()));
 
 
 
@@ -29,6 +30,47 @@ public:
         event->accept();
     }
 
+public slots:
+    void
+    boldText() //this is the SLOT for the button trigger(bool)
+    {
+        bool isBold= true;
+        QTextCharFormat fmt;
+        fmt.setFontWeight(isBold ? QFont::Bold : QFont::Normal);
+        mergeFormatOnWordOrSelection(fmt);
+    }
+    void
+    urlText() //this is the SLOT for the button trigger(bool)
+    {
+        bool isBold= true;
+        QTextCharFormat fmt;
+        qWarning()<<"url:"<<acceptRichText();
+        QTextCursor cursor = textCursor();
+        if (!cursor.hasSelection())
+            cursor.select(QTextCursor::WordUnderCursor);
+
+        fmt.setAnchor(true);
+        fmt.setAnchorHref("http://pockemul.free.fr");
+        cursor.mergeCharFormat(fmt);
+        mergeCurrentCharFormat(fmt);
+        QString txt = tr("<a href='http://pockemul.free.fr'>%1</a>").arg(cursor.selectedText());
+        cursor.removeSelectedText();
+        cursor.insertHtml(txt);
+
+//        QString text_all(toHtml());
+//        setHtml(text_all);
+    }
+
+public:
+    void
+    mergeFormatOnWordOrSelection(const QTextCharFormat &format)
+     {
+         QTextCursor cursor = textCursor();
+         if (!cursor.hasSelection())
+             cursor.select(QTextCursor::WordUnderCursor);
+         cursor.mergeCharFormat(format);
+         mergeCurrentCharFormat(format);
+     }
 
 };
 

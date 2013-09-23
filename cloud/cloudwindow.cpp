@@ -36,7 +36,7 @@ CloudWindow::CloudWindow(QWidget *parent)
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     view->rootContext()->setContextProperty("cloud", this);
     connect(view->engine(), SIGNAL(quit()), this,SLOT(hide()));
-    QObject *object = view->rootObject();
+    object = view->rootObject();
     QObject::connect(object, SIGNAL(sendWarning(QString)), this, SLOT(warning(QString)));
 
     m_fileDialog = new QFileDialog(this);
@@ -71,15 +71,21 @@ void CloudWindow::refresh()
 }
 
 
-void CloudWindow::save()
+QString CloudWindow::save()
 {
     hide();
-    QString filePath =mainwindow->saveassession();
+    mainwindow->repaint();
 
-    //fileSelected(filePath);
-    sendPML(filePath);
+    QString s = mainwindow->saveassessionString().remove(0,1);
+    qWarning()<<"session saved";
+    qWarning()<<s.left(500);
+    qWarning()<<"session saved";
     show();
-    refresh();
+    return s;
+
+//    sendPML(filePath);
+//    show();
+//    refresh();
 }
 
 
@@ -113,10 +119,51 @@ void CloudWindow::sendPML(const QString &filePath)
 
     QNetworkRequest req(server);
     qWarning()<<req.url();
+    connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(finishedSave(QNetworkReply*)));
     QNetworkReply *reply = mgr->post(req, qu.query(QUrl::FullyEncoded).toUtf8());
 }
 
+void CloudWindow::finishedSave(QNetworkReply *reply)
+{
+    QByteArray xmlData = reply->readAll();
+    qWarning()<<"received id:"<<xmlData;
 
+    QString pmlid,username,ispublic,isdeleted,title,description,objects,listobjects;
+
+    QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
+    if (xml->readNextStartElement()) {
+        if (xml->name() == "item") {
+            while (!xml->atEnd()) {
+                while (xml->readNextStartElement()) {
+                    QString eltname = xml->name().toString();
+                    if (eltname == "pmlid") pmlid = xml->readElementText();
+                    if (eltname == "username") username = xml->readElementText();
+                    if (eltname == "ispublic") ispublic = xml->readElementText();
+                    if (eltname == "isdeleted") isdeleted = xml->readElementText();
+                    if (eltname == "title") title = xml->readElementText();
+                    if (eltname == "description") description = xml->readElementText();
+                    if (eltname == "objects") objects = xml->readElementText();
+                    if (eltname == "listobjects") listobjects = xml->readElementText();
+                }
+            }
+        }
+    }
+    qWarning()<<pmlid<<username<<ispublic<<isdeleted<<title<<description<<objects<<listobjects;
+
+    QMetaObject::invokeMethod(object, "addRefPmlModel",
+                              Q_ARG(QVariant, pmlid),
+                              Q_ARG(QVariant, username),
+                              Q_ARG(QVariant, objects),
+                              Q_ARG(QVariant, listobjects),
+                              Q_ARG(QVariant, ispublic),
+                              Q_ARG(QVariant, isdeleted),
+                              Q_ARG(QVariant, title),
+                              Q_ARG(QVariant, description)
+                              );
+
+
+    reply->deleteLater();
+}
 
 
 void CloudWindow::downloadFinished()
@@ -133,6 +180,8 @@ void CloudWindow::downloadFinished()
     this->hide();
 
 }
+
+
 
 void CloudWindow::showFileDialog()
 {

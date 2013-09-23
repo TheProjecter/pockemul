@@ -71,6 +71,7 @@ bool Cpostit::init(void)
     edit = new CpostitTextEdit(this);
     edit->viewport()->setAutoFillBackground(false);
     edit->setFrameStyle(QFrame::NoFrame);
+    edit->setTabStopWidth(edit->font().pointSize()*4);
     HBL->addWidget(edit);
 
     mainLayout->addLayout(HBL);
@@ -79,6 +80,7 @@ bool Cpostit::init(void)
     mainLayout->addWidget(new CSizeGrip(this,":/core/size-black.png"), 0, Qt::AlignBottom | Qt::AlignRight);
     this->setLayout(mainLayout);
     AddLog(LOG_MASTER,"done.\n");
+
     return true;
 }
 
@@ -120,7 +122,7 @@ bool Cpostit::SaveSession_File(QXmlStreamWriter *xmlOut)
 {
     xmlOut->writeStartElement("session");
         xmlOut->writeAttribute("version", "2.0");
-        QByteArray ba(edit->toPlainText().toLatin1());
+        QByteArray ba(edit->toHtml().toUtf8());
         xmlOut->writeTextElement("text",ba.toBase64());
     xmlOut->writeEndElement();  // session
     return true;
@@ -129,12 +131,12 @@ bool Cpostit::SaveSession_File(QXmlStreamWriter *xmlOut)
 bool Cpostit::LoadSession_File(QXmlStreamReader *xmlIn)
 {
     if (xmlIn->name()=="session") {
-        while (xmlIn->readNextStartElement()) {
+        if (xmlIn->readNextStartElement()) {
             if (xmlIn->name() == "text" ) {
-                QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());
-                edit->setPlainText(QString(ba.data()));
+                QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toUtf8());
+                edit->setHtml(QString(ba.data()));
             }
-            xmlIn->skipCurrentElement();
+//            xmlIn->skipCurrentElement();
         }
     }
     return true;

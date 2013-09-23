@@ -377,7 +377,7 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
     if (result)	{
                 newpPC = InitApp(result);
                 if (! newpPC) {
- //                   MSG_ERROR("pPC is NULL in slotStart")
+                    ask(this,"pPC is NULL in slotStart",1);
                 }
                 else
                 {
@@ -538,6 +538,7 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
                     if (eltname == "object") {
                         QString name = xml->attributes().value("name").toString();
                         locPC = LoadPocket(name);
+                        qWarning()<<"LOCPC :"<<name<<":"<<locPC;
                         if (locPC == 0) continue;
                         if (firstPC == 0) firstPC = locPC;      // Store the first pocket to manage stack
                         int id = xml->attributes().value("id").toString().toInt();
@@ -657,18 +658,20 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
-    QPixmap::grabWidget(this).toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
+    grab().toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
 
 
+    qWarning()<<"screenshot done";
     xml->setAutoFormatting(true);
     xml->writeStartElement("pml");
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
     xml->writeTextElement("snapshot",ba.toBase64());
-
+    qWarning()<<"OK1";
     // Fetch all objects
     for (int i=0;i<listpPObject.size();i++)
     {
+        qWarning()<<"object:"<<i;
         CPObject *po = listpPObject.at(i);
         map.insert(po,i);
         po->serialize(xml,i);
@@ -687,7 +690,7 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
         //int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Id;
         int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Parent->ConnList.indexOf(mainwindow->pdirectLink->BConnList.at(j));
         bool close = mainwindow->pdirectLink->closeList.at(j);
-
+        qWarning()<<"linkks";
         xml->writeStartElement("link");
         xml->writeAttribute("idpcFrom",QString("%1").arg(idpc1));
         xml->writeAttribute("idcoFrom",QString("%1").arg(idco1));
@@ -702,7 +705,16 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     //xml->writeEndElement();  // links
 
     xml->writeEndElement();  // pml
+    qWarning()<<"END";
+}
 
+QString MainWindowPockemul::saveassessionString() {
+    saveAll = YES;
+    QString s;
+    QXmlStreamWriter *xml = new QXmlStreamWriter(&s);
+    saveassession(xml);
+    qWarning()<<"save:"<<s;
+    return s;
 }
 
 QString MainWindowPockemul::saveassession()

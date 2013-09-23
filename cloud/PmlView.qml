@@ -45,7 +45,7 @@ import QtQuick 1.1
 import "content"
 Rectangle {
 
-    id: window
+    id: pmlview
 
     width: 800; height: 480
 
@@ -55,6 +55,7 @@ Rectangle {
 
     property alias categoryModel: categoryModel
     property alias categoryListView: categories
+    property alias refpmlModel: refpmlModel
 
     property int objid: 0
     property int ispublic: publicCloud ? 1 : 0
@@ -84,7 +85,6 @@ Rectangle {
         XmlRole { name: "ispublic"; query: "ispublic/number()" }
         XmlRole { name: "isdeleted"; query: "deleted/number()" }
         XmlRole { name: "title"; query: "title/string()" }
-        XmlRole { name: "link"; query: "uid/string()" }
         XmlRole { name: "description"; query: "description/string()" }
         onStatusChanged: {
 
@@ -93,14 +93,14 @@ Rectangle {
                     for (var i=0; i<count; i++) {
                         var item = get(i)
                         console.log(item.listobjects)
-                        refpmlModel.append({pmlid: item.pmlid,
+                        refpmlModel.append({rowid : i,
+                                            pmlid: item.pmlid,
                                            username: item.username,
                                             objects: item.objects,
                                             listobjects: item.listobjects,
                                             ispublic: item.ispublic,
                                             isdeleted: item.isdeleted,
                                             title: item.title,
-                                            link: item.link,
                                             description: item.description})
                     }
 
@@ -111,20 +111,20 @@ Rectangle {
 
     function populatePMLModel() {
         console.log("REFRESH Model");
-        console.log("public:"+window.ispublic);
-        console.log("deleted:"+window.isdeleted);
-        console.log("objid:"+window.objid);
+        console.log("public:"+pmlview.ispublic);
+        console.log("deleted:"+pmlview.isdeleted);
+        console.log("objid:"+pmlview.objid);
         pmlModel.clear();
         for (var i=0; i<refpmlModel.count; i++) {
 
             var item = refpmlModel.get(i)
 
             console.log("Read: "+item.pmlid+"-"+item.title);
-            if (window.publicCloud && (item.ispublic == 0)) continue;
+            if (pmlview.publicCloud && (item.ispublic == 0)) continue;
             console.log("public OK");
-            if ( (window.objid > 0) && !idInArray(window.objid.toString(),item.listobjects)) continue;
+            if ( (pmlview.objid > 0) && !idInArray(pmlview.objid.toString(),item.listobjects)) continue;
             console.log("object OK");
-            if ( (window.objid == -1) && (item.isdeleted != 1 )) continue;
+            if ( (pmlview.objid == -1) && (item.isdeleted != 1 )) continue;
             console.log("Deleted OK");
             pmlModel.append({   rowid : i,
                                 pmlid: item.pmlid,
@@ -133,7 +133,6 @@ Rectangle {
                                 ispublic: item.ispublic,
                                 isdeleted: item.isdeleted,
                                 title: item.title,
-                                link: item.link,
                                 description: item.description})
             console.log("Store: "+item.title);
         }
@@ -145,6 +144,8 @@ Rectangle {
         console.log("contains:"+String(list).indexOf(","+id+","));
         return (String(list).indexOf(","+id+",")>=0);
     }
+
+
 
     ListModel {
         id: refpmlModel
@@ -160,7 +161,7 @@ Rectangle {
     Row {
         Rectangle {
             id: categoriesView
-            width: 220; height: window.height
+            width: 220; height: pmlview.height
             color: "#efefef"
 
             ListView {
@@ -180,7 +181,7 @@ Rectangle {
         }
         ListView {
             id: list
-            width: window.width - categoriesView.width; height: window.height
+            width: pmlview.width - categoriesView.width; height: pmlview.height
             model: pmlModel
             delegate: NewsDelegate {}
         }
@@ -203,6 +204,6 @@ Rectangle {
             }
         }
     }
-    ScrollBar { scrollArea: list; height: list.height; width: 8; anchors.right: window.right }
-    Rectangle { x: categoriesView.width; height: window.height; width: 1; color: "#cccccc" }
+    ScrollBar { scrollArea: list; height: list.height; width: 8; anchors.right: pmlview.right }
+    Rectangle { x: categoriesView.width; height: pmlview.height; width: 1; color: "#cccccc" }
 }

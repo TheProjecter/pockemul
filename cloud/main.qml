@@ -19,7 +19,7 @@ Rectangle {
 
     onWidthChanged: {
         isPortrait = cloud.isPortraitOrientation();
-//        console.log(isPortrait)
+        //        console.log(isPortrait)
     }
 
     VisualItemModel {
@@ -73,9 +73,50 @@ Rectangle {
                     text: "Save current session"
                     font.pointSize: 16
                     onClicked: {
-                        cloud.save();
+                        var xml = cloud.save();
+                        var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey ;
+
+                        console.log("ok:"+url);
+                        requestPost(url,xml, function(o) {
+                            console.log(o.responseText);
+                            tmpXmlListModel.xml = o.responseText;
+                        });
+
                         privateCloud.categoryModel.reload();
                         publicCloud.categoryModel.reload();
+                    }
+                   XmlListModel {
+                        id: tmpXmlListModel
+                        query: "/item"
+
+                        XmlRole { name: "pmlid"; query: "pmlid/string()"; }
+                        XmlRole { name: "username"; query: "username/string()" }
+                        XmlRole { name: "objects"; query: "objects/string()" }
+                        XmlRole { name: "listobjects"; query: "listobjects/string()" }
+                        XmlRole { name: "ispublic"; query: "ispublic/number()" }
+                        XmlRole { name: "isdeleted"; query: "deleted/number()" }
+                        XmlRole { name: "title"; query: "title/string()" }
+                        XmlRole { name: "description"; query: "description/string()" }
+                        onStatusChanged: {
+
+                            if (status == XmlListModel.Ready) {
+
+                                var ind = privateCloud.refpmlModel.count;
+                                for (var i=0; i<count; i++) {
+                                    var item = get(i)
+                                    console.log(item.listobjects)
+                                    privateCloud.refpmlModel.append({rowid : ind+i,
+                                                           pmlid: item.pmlid,
+                                                           username: item.username,
+                                                           objects: item.objects,
+                                                           listobjects: item.listobjects,
+                                                           ispublic: item.ispublic,
+                                                           isdeleted: item.isdeleted,
+                                                           title: item.title,
+                                                           description: item.description})
+                                }
+                            }
+                        }
                     }
                 }
                 TextButton {
@@ -145,8 +186,8 @@ Rectangle {
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = (function(myxhr) {
-                        console.log(xhr.readyState);
-//            if (xhr.readyState == 4 )
+            console.log(xhr.readyState);
+            //            if (xhr.readyState == 4 )
             {
                 return function() {
                     callback(myxhr);
@@ -156,7 +197,27 @@ Rectangle {
         xhr.open('POST', url);
         xhr.send(data);
 
-        }
+    }
 
+    function addRefPmlModel(_pmlid,
+                            _username,
+                            _objects,
+                            _listobjects,
+                            _ispublic,
+                            _isdeleted,
+                            _title,
+                            _description) {
+        console.log("count before:"+refpmlModel.count());
+        refpmlModel.append({rowid: refpmlModel.count(),
+                               pmlid: _pmlid,
+                               username: _username,
+                               objects: _objects,
+                               listobjects: _listobjects,
+                               ispublic: _ispublic,
+                               isdeleted: _isdeleted,
+                               title: _title,
+                               description: _description});
+        console.log("count after:"+refpmlModel.count());
 
+    }
 }
