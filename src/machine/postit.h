@@ -18,7 +18,7 @@ public:
     {
         QMenu *menupocket = QTextEdit::createStandardContextMenu();
         menupocket->addSeparator();
-        menupocket->addAction(tr("Turn On"));//,this,SLOT(slotPower()));
+        menupocket->addAction(tr("Double Size"),parentWidget(),SLOT(slotDblSize()));
         menupocket->addAction(tr("Reset"));//,this,SLOT(slotResetNow()));
 
 
@@ -28,6 +28,8 @@ public:
     menupocket->popup(event->globalPos () );
         event->accept();
     }
+
+
 };
 
 class Cpostit:public CPObject {
@@ -48,10 +50,12 @@ protected:
     void paintEvent(QPaintEvent *);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
+    void slotDblSize();
 
 private:
     CpostitTextEdit *edit;
     QHBoxLayout *HBL;
+    float size;
 
 };
 

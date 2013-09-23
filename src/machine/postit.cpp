@@ -6,6 +6,8 @@
 #include "postit.h"
 #include "pcxxxx.h"
 
+//FIXME: manage post-it size in savesession and loadession
+
 Cpostit::Cpostit(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]
 
@@ -19,6 +21,9 @@ Cpostit::Cpostit(CPObject *parent )   : CPObject(this)
  // Ratio = 3,57
     setDX(150);//Pc_DX  = 75;
     setDY(150);//Pc_DY = 20;
+
+    size = 1;
+
 
 }
 
@@ -74,7 +79,7 @@ bool Cpostit::exit(void)
 
 void Cpostit::paintEvent(QPaintEvent *event)
 {
-    HBL->setMargin(20*mainwindow->zoom/100);
+    HBL->setMargin(size*20*mainwindow->zoom/100);
     CPObject::paintEvent(event);
 }
 
@@ -112,4 +117,15 @@ bool Cpostit::LoadSession_File(QXmlStreamReader *xmlIn)
         }
     }
     return true;
+}
+
+
+void Cpostit::slotDblSize()
+{
+    size = 2;
+    int w=getDX()*2;
+    int h=getDY()*2;
+    setDX(w);
+    setDY(h);
+    changeGeometry(posx(),posy(),getDX(),getDY());
 }
