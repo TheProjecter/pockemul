@@ -8,7 +8,7 @@
 #include "pobject.h"
 
 
-class QHBoxLayout;
+class QVBoxLayout;
 
 class CpostitTextEdit:public QTextEdit {
 public:
@@ -42,7 +42,6 @@ public:
     bool exit(void);				//end
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
-
     Cpostit(CPObject *parent = 0);
     virtual ~Cpostit();
 
@@ -50,11 +49,12 @@ protected:
     void paintEvent(QPaintEvent *);
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
+
     void slotDblSize();
 
 private:
     CpostitTextEdit *edit;
-    QHBoxLayout *HBL;
+    QVBoxLayout *HBL,*mainLayout;
     float size;
 
 };

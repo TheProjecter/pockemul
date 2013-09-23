@@ -17,5 +17,7 @@
         <file>core/cloud.png</file>
         <file>core/cloud-white.png</file>
         <file>core/PostIt.png</file>
+        <file>core/size-black.png</file>
+        <file>core/size-white.png</file>
     </qresource>
 </RCC>

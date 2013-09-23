@@ -122,6 +122,8 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
         xml->writeStartElement("position");
         xml->writeAttribute("x", QString("%1").arg(PosX));
         xml->writeAttribute("y", QString("%1").arg(PosY));
+        xml->writeAttribute("width", QString("%1").arg(getDX()));
+        xml->writeAttribute("height", QString("%1").arg(getDY()));
         xml->writeEndElement(); // position
         this->SaveSession_File(xml);
     xml->writeEndElement(); // object
@@ -1308,6 +1310,13 @@ bool CPObject::getDisp_on()
     return disp_on;
 }
 
+void CPObject::changeGeometrySize(int newposx,int newposy,int newwidth,int newheight) {
+
+
+    changeGeometry(newposx,newposy,newwidth,newheight);
+    setDX(newwidth);
+    setDY(newheight);
+}
 
 void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight) {
     setPosX(newposx);

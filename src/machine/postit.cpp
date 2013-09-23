@@ -1,16 +1,23 @@
+#include "sizegrip.h"
 #include <QPainter>
 #include <QDebug>
 
-#include "common.h"
-#include "Log.h"
+
 #include "postit.h"
-#include "pcxxxx.h"
+
+//#include "common.h"
+#include "Log.h"
+
+
+
 
 //FIXME: manage post-it size in savesession and loadession
 
 Cpostit::Cpostit(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]
 
+//    setWindowFlags(Qt::SubWindow);
+//    setParent(parent);
 
     setfrequency( 0);
     BackGroundFname     = P_RES(":/core/PostIt.png");
@@ -52,18 +59,25 @@ bool Cpostit::init(void)
     AddLog(LOG_MASTER,"PostIt initializing...");
     qWarning()<<"PostIt initializing...";
     CPObject::init();
+    mainLayout = new QVBoxLayout();
+    mainLayout->setContentsMargins(0,0,1,11);
 
-    HBL = new QHBoxLayout();
-    HBL->setMargin(20);
-    this->setLayout(HBL);
+
+    HBL = new QVBoxLayout();
+    HBL->setContentsMargins(10,20,10,0);
+
+
+
     edit = new CpostitTextEdit(this);
-//    edit->setTextBackgroundColor(Qt::transparent);
-//    edit->setStyleSheet("background-color: rgba(255,0,0,0);");
     edit->viewport()->setAutoFillBackground(false);
     edit->setFrameStyle(QFrame::NoFrame);
-//    edit->setContextMenuPolicy(Qt::CustomContextMenu);
     HBL->addWidget(edit);
 
+    mainLayout->addLayout(HBL);
+    // The QSizeGrip position (here Bottom Right Corner) determines its
+    // orientation too
+    mainLayout->addWidget(new CSizeGrip(this,":/core/size-black.png"), 0, Qt::AlignBottom | Qt::AlignRight);
+    this->setLayout(mainLayout);
     AddLog(LOG_MASTER,"done.\n");
     return true;
 }
@@ -79,7 +93,11 @@ bool Cpostit::exit(void)
 
 void Cpostit::paintEvent(QPaintEvent *event)
 {
-    HBL->setMargin(size*20*mainwindow->zoom/100);
+    float coeffx = getDX()*mainwindow->zoom/100/150.0;
+    float coeffy = getDY()*mainwindow->zoom/100/150.0;
+//    qWarning()<<"new margin:"<<newmargin<<"dx="<<getDX();
+    mainLayout->setContentsMargins(0,0,1*coeffx,11*coeffy);
+    HBL->setContentsMargins(coeffx*10,coeffy*20,coeffx*10,coeffy*0);
     CPObject::paintEvent(event);
 }
 
@@ -97,11 +115,11 @@ void Cpostit::contextMenuEvent ( QContextMenuEvent * event )
     menu.exec(event->globalPos () );
 }
 
+
 bool Cpostit::SaveSession_File(QXmlStreamWriter *xmlOut)
 {
     xmlOut->writeStartElement("session");
         xmlOut->writeAttribute("version", "2.0");
-
         QByteArray ba(edit->toPlainText().toLatin1());
         xmlOut->writeTextElement("text",ba.toBase64());
     xmlOut->writeEndElement();  // session
@@ -111,13 +129,17 @@ bool Cpostit::SaveSession_File(QXmlStreamWriter *xmlOut)
 bool Cpostit::LoadSession_File(QXmlStreamReader *xmlIn)
 {
     if (xmlIn->name()=="session") {
-        if (xmlIn->readNextStartElement() && xmlIn->name() == "text" ) {
-            QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());
-            edit->setPlainText(QString(ba.data()));
+        while (xmlIn->readNextStartElement()) {
+            if (xmlIn->name() == "text" ) {
+                QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());
+                edit->setPlainText(QString(ba.data()));
+            }
+            xmlIn->skipCurrentElement();
         }
     }
     return true;
 }
+
 
 
 void Cpostit::slotDblSize()

@@ -220,13 +220,14 @@ public:
 	void focusOutEvent ( QFocusEvent * event ); 
 
     void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
-
+    void changeGeometrySize(int newposx, int newposy, int newwidth, int newheight);
     virtual void raise();
 
     virtual void TurnCLOSE(void);
 
     int mapKey(QKeyEvent *event);
     QRect RectWithLinked();
+
 
 
 signals:

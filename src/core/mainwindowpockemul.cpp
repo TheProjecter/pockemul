@@ -361,6 +361,13 @@ int MainWindowPockemul::newsession()
 }
 
 CPObject * MainWindowPockemul::LoadPocket(QString Id) {
+
+    int pocketId = objtable.value(Id);
+    qWarning()<<"Load:"<<pocketId;
+    if (pocketId == 0) {
+        ask(this,tr("the '%1' model is not available (try to upgrade PockEmul)").arg(Id),1);
+        return 0;
+    }
     return LoadPocket(objtable.value(Id));
 }
 
@@ -400,7 +407,7 @@ CPObject * MainWindowPockemul::LoadPocket(int result) {
 
         }
         else
-                QMessageBox::about(this, tr("Attention"),"Please choose a pocket model or Cancel");
+                ask(this, tr("Please choose a pocket model or Cancel"),1);
 
         return 0;
 
@@ -530,7 +537,8 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
                     CPObject * locPC;
                     if (eltname == "object") {
                         QString name = xml->attributes().value("name").toString();
-                        locPC = LoadPocket(objtable.value(name));
+                        locPC = LoadPocket(name);
+                        if (locPC == 0) continue;
                         if (firstPC == 0) firstPC = locPC;      // Store the first pocket to manage stack
                         int id = xml->attributes().value("id").toString().toInt();
                         map.insert(id,locPC);
@@ -546,17 +554,23 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
                             QString eltname = xml->name().toString();
 //                            AddLog(LOG_TEMP,eltname);
                             if (eltname == "position") {
-                                QString posX = xml->attributes().value("x").toString();
-                                QString posY = xml->attributes().value("y").toString();
-                                locPC->setPosX(posX.toFloat());
-                                locPC->setPosY(posY.toFloat());
+                                int posX = xml->attributes().value("x").toInt();
+                                int posY = xml->attributes().value("y").toInt();
+                                int width = xml->attributes().value("width").toInt();
+                                int height = xml->attributes().value("height").toInt();
+                                locPC->setPosX(posX);
+                                locPC->setPosY(posY);
+                                if ((width>0) && (height>0)) {
+                                    locPC->setDX(width);
+                                    locPC->setDY(height);
+                                }
                                 if (locPC->Front) {
 //                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
 //                                    locPC->setMask(locPC->mask.scaled(locPC->getDX()*zoom/100,locPC->getDY()*zoom/100).mask());
-                                    locPC->changeGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
+                                    locPC->changeGeometry(posX,posY,locPC->getDX()*zoom/100,locPC->getDY()*zoom/100);
                                 }
                                 else {
-                                    locPC->setGeometry(posX.toFloat(),posY.toFloat(),locPC->getDX()/4,locPC->getDY()/4);
+                                    locPC->setGeometry(posX,posY,locPC->getDX()/4,locPC->getDY()/4);
 
                                 }
                                 xml->skipCurrentElement();

@@ -497,7 +497,8 @@ HEADERS += src/core/Connect.h \
     qhttp/qringbuffer_p.h \
     qhttp/qhttpauthenticator_p.h \
     qhttp/qhttp.h \
-    src/machine/postit.h
+    src/machine/postit.h \
+    src/core/sizegrip.h
 
 
 INCLUDEPATH += . \
@@ -728,7 +729,8 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     qhttp/qhttpauthenticator.cpp \
     qhttp/qhttp.cpp \
-    src/machine/postit.cpp
+    src/machine/postit.cpp \
+    src/core/sizegrip.cpp
 
 
 OTHER_FILES += \
