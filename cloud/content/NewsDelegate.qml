@@ -40,6 +40,8 @@
 ****************************************************************************/
 
 import QtQuick 1.1
+import "counter.js" as Counter
+
 import ".."
 
 Item {
@@ -111,8 +113,9 @@ Item {
         Row {
             Image {
                 id: pmlThumbImage
-                source: serverURL+"getPMLthumb/"+pmlid
+                source: serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid)
                 fillMode: Image.PreserveAspectFit;
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
@@ -186,18 +189,42 @@ Item {
                     var url = serverURL + "clonePML/" + currentApiKey +"/" + pmlid;
                     console.log('url:'+url);
                     requestGet(url, function (o) {
-                        //                        cloud.askMsg("Ok, saved !",1);
-                        //Append record to pri
-                        privateCloud.categoryModel.reload();
-//                        changed = false;
-//                        pmlModel.get(index).title = titleText.text;
-//                        pmlModel.get(index).description=descriptionText.text;
-//                        pmlModel.get(index).ispublic = newpublicstatus;
-                        //                    console.log(o.responseText);
+                        tmpXmlListModel.xml = o.responseText;
+//
                     });
                 }
 
             }
+        }
+        TextButton {
+            id: saveCurrentSessionButtonIn
+            text: "Save current session"
+            visible: ismine
+            onClicked: {
+                var xml = cloud.save();
+                var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey +"/"+pmlid;
+
+                console.log("ok:"+url);
+                requestPost(url,xml, function(o) {
+                    if (o.readyState == 4) {
+                        console.log("status:"+o.status);
+                        if (o.status==200) {
+                            console.log(o.responseText);
+                            console.log("saveCurrentSessionButtonIn");
+                            tmpXmlListModel.xml = o.responseText;
+                            // Trick to reload the thumbnail
+                            console.log("thumb url="+pmlThumbImage.source);
+                            updThumbId(pmlid);
+//                            pmlThumbImage.source = serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid);
+                            console.log("thumb url="+pmlThumbImage.source);
+                        }
+                    }
+                });
+
+//                        privateCloud.categoryModel.reload();
+//                        publicCloud.categoryModel.reload();
+            }
+
         }
         TextButton {
             id: saveButton
@@ -225,6 +252,7 @@ Item {
                         refpmlModel.setProperty(rowid,"ideleted",newpublicstatus);
 
                         //                    console.log(o.responseText);
+                        populatePMLModel();
                     });
                 }
 
@@ -277,6 +305,7 @@ Item {
                 var url = serverURL + "undelPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
                     refpmlModel.setProperty(rowid,"isdeleted",0);
+                    populatePMLModel();
                     // compute Obj counts
                 });
             }
@@ -298,6 +327,7 @@ Item {
                         changed = false;
                         refpmlModel.setProperty(rowid,"isdeleted",1);
                     }
+                    populatePMLModel();
                     // compute Obj counts
                 });
             }
@@ -345,4 +375,7 @@ Item {
         width: parent.width; height: 1; color: "#cccccc"
         anchors.bottom: parent.bottom
     }
+
+
+
 }

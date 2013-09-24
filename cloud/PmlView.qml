@@ -122,6 +122,8 @@ Rectangle {
             console.log("Read: "+item.pmlid+"-"+item.title);
             if (pmlview.publicCloud && (item.ispublic == 0)) continue;
             console.log("public OK");
+            if ( (pmlview.objid > 0) && (item.isdeleted == 1)) continue;
+
             if ( (pmlview.objid > 0) && !idInArray(pmlview.objid.toString(),item.listobjects)) continue;
             console.log("object OK");
             if ( (pmlview.objid == -1) && (item.isdeleted != 1 )) continue;
@@ -206,4 +208,37 @@ Rectangle {
     }
     ScrollBar { scrollArea: list; height: list.height; width: 8; anchors.right: pmlview.right }
     Rectangle { x: categoriesView.width; height: pmlview.height; width: 1; color: "#cccccc" }
+
+
+    ListModel {
+        id: pmlThumbModel
+
+    }
+    function updThumbId(refpmlid) {
+        // search pmlid and increment
+        console.log("update counter for :"+refpmlid);
+        for (var i=0; i< pmlThumbModel.count;i++){
+            var item = pmlThumbModel.get(i);
+            if (item.pmlid == refpmlid) {
+                console.log("updThumbId - Found:"+item.counter);
+                pmlThumbModel.setProperty(i,"counter",item.counter+1);
+                console.log("Found, updated:"+item.counter);
+                return 0;
+            }
+        }
+        pmlThumbModel.append({pmlid: refpmlid,counter:1});
+        console.log("updThumbId - NOT Found, created:" +pmlThumbModel.count);
+    }
+    function getThumbId(refpmlid) {
+        console.log("getThumbId:"+refpmlid+" count:"+pmlThumbModel.count);
+        for (var i=0; i< pmlThumbModel.count;i++){
+            var item = pmlThumbModel.get(i);
+            console.log("getThumbId - Fetch:"+item.pmlid);
+            if (item.pmlid == refpmlid) {
+                console.log("getThumbId - Found:"+item.counter);
+                return item.counter;
+            }
+        }
+        return 0;
+    }
 }

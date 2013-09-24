@@ -70,6 +70,7 @@ Rectangle {
                     }
                 }
                 TextButton {
+                    id: saveCurrentSessionButton
                     text: "Save current session"
                     font.pointSize: 16
                     onClicked: {
@@ -82,42 +83,10 @@ Rectangle {
                             tmpXmlListModel.xml = o.responseText;
                         });
 
-                        privateCloud.categoryModel.reload();
-                        publicCloud.categoryModel.reload();
+//                        privateCloud.categoryModel.reload();
+//                        publicCloud.categoryModel.reload();
                     }
-                   XmlListModel {
-                        id: tmpXmlListModel
-                        query: "/item"
 
-                        XmlRole { name: "pmlid"; query: "pmlid/string()"; }
-                        XmlRole { name: "username"; query: "username/string()" }
-                        XmlRole { name: "objects"; query: "objects/string()" }
-                        XmlRole { name: "listobjects"; query: "listobjects/string()" }
-                        XmlRole { name: "ispublic"; query: "ispublic/number()" }
-                        XmlRole { name: "isdeleted"; query: "deleted/number()" }
-                        XmlRole { name: "title"; query: "title/string()" }
-                        XmlRole { name: "description"; query: "description/string()" }
-                        onStatusChanged: {
-
-                            if (status == XmlListModel.Ready) {
-
-                                var ind = privateCloud.refpmlModel.count;
-                                for (var i=0; i<count; i++) {
-                                    var item = get(i)
-                                    console.log(item.listobjects)
-                                    privateCloud.refpmlModel.append({rowid : ind+i,
-                                                           pmlid: item.pmlid,
-                                                           username: item.username,
-                                                           objects: item.objects,
-                                                           listobjects: item.listobjects,
-                                                           ispublic: item.ispublic,
-                                                           isdeleted: item.isdeleted,
-                                                           title: item.title,
-                                                           description: item.description})
-                                }
-                            }
-                        }
-                    }
                 }
                 TextButton {
                     text: "upload Session File"
@@ -166,18 +135,75 @@ Rectangle {
         }
     }
 
+    XmlListModel {
+         id: tmpXmlListModel
+         query: "/item"
+
+         XmlRole { name: "insert"; query: "insert/string()"; }
+         XmlRole { name: "pmlid"; query: "pmlid/string()"; }
+         XmlRole { name: "username"; query: "username/string()" }
+         XmlRole { name: "objects"; query: "objects/string()" }
+         XmlRole { name: "listobjects"; query: "listobjects/string()" }
+         XmlRole { name: "ispublic"; query: "ispublic/number()" }
+         XmlRole { name: "isdeleted"; query: "deleted/number()" }
+         XmlRole { name: "title"; query: "title/string()" }
+         XmlRole { name: "description"; query: "description/string()" }
+         onStatusChanged: {
+
+             if (status == XmlListModel.Ready) {
+
+                 var ind = privateCloud.refpmlModel.count;
+                 for (var i=0; i<count; i++) {
+                     var item = get(i)
+                     console.log(item.listobjects)
+                     if (item.insert == 1) {
+                         console.log("INSERT MODE");
+                         privateCloud.refpmlModel.append({rowid : ind+i,
+                                                             pmlid: item.pmlid,
+                                                             username: item.username,
+                                                             objects: item.objects,
+                                                             listobjects: item.listobjects,
+                                                             ispublic: item.ispublic,
+                                                             isdeleted: item.isdeleted,
+                                                             title: item.title,
+                                                             description: item.description})
+                     }
+                     if (item.insert == 0) {
+                         console.log("UPDATE MODE");
+                         // fetch refpmlModel and find pmlid
+                         for (var j=0; j<privateCloud.refpmlModel.count; j++) {
+                             var existingitem = privateCloud.refpmlModel.get(j);
+                             if (existingitem.pmlid == item.pmlid) {
+                                 // update record
+                                 privateCloud.refpmlModel.set(j,
+                                                              {objects: item.objects,listobjects: item.listobjects})
+
+                             }
+                         }
+
+
+                     }
+
+                 }
+                 privateCloud.populatePMLModel();
+             }
+         }
+     }
+
     // this function is included locally, but you can also include separately via a header definition
     function requestGet(url, callback) {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = (function(myxhr) {
+        xhr.onreadystatechange = (function() {
             //            console.log(xhr.readyState);
-            //            if (xhr.readyState == 4 )
+            if (xhr.readyState == 4 )
             {
-                return function() {
-                    callback(myxhr);
+                if (xhr.status==200) {
+                    return function() {
+                        callback(xhr);
+                    }
                 }
             }
-        })(xhr);
+        });
         xhr.open('GET', url, true);
         xhr.send('');
     }
@@ -185,15 +211,19 @@ Rectangle {
     function requestPost(url, data, callback) {
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = (function(myxhr) {
-            console.log(xhr.readyState);
-            //            if (xhr.readyState == 4 )
-            {
-                return function() {
-                    callback(myxhr);
-                }
-            }
-        })(xhr);
+
+        xhr.onreadystatechange = function() { callback(xhr);}
+//            console.log("state:"+xhr.readyState);
+//            if (xhr.readyState == 4) {
+//                console.log("status:"+xhr.status);
+//                if (xhr.status==200) {
+//                    console.log("call callback");
+//                    return function() {
+//                        callback(xhr);
+//                    }
+//                }
+//            }
+//        });
         xhr.open('POST', url);
         xhr.send(data);
 
