@@ -21,13 +21,16 @@ Rectangle {
                 console.log('url:'+url);
                 requestGet(url, function (o) {
 
-                    // log the json response
-//                    console.log(o.responseText);
-                    buttonElementEnabled = true;
-                    cloud.saveValueFor(name,o.responseText);
-                    currentApiKey = o.responseText;
-                    apikey.inputText = o.responseText;
-                    privateCloud.categoryModel.reload();
+                    if (o.readyState == 4 ) {
+                        if (o.status==200) {
+                            buttonElementEnabled = true;
+                            cloud.saveValueFor(name,o.responseText);
+                            currentApiKey = o.responseText;
+                            apikey.inputText = o.responseText;
+                            privateCloud.refresh();
+                            publicCloud.refresh();
+                        }
+                    }
                 });
             }
         }

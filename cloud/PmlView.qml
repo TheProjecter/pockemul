@@ -53,17 +53,15 @@ Rectangle {
     property bool loading: xmlpmlModel.status == XmlListModel.Loading
     property bool publicCloud: true
 
-//    property alias xmlcategoryModel: xmlcategoryModel
     property alias categoryListView: categories
     property alias pmlListView: list
     property alias refpmlModel: refpmlModel
 
+
     property int objid: 0
     property int ispublic: publicCloud ? 1 : 0
-//    property int isdeleted: 0
 
     onObjidChanged: {populatePMLModel()}
-//    onIsdeletedChanged: {populatePMLModel()}
 
     ListModel {
         id: categoryModel
@@ -88,7 +86,7 @@ Rectangle {
 
         onStatusChanged: {
                 if (status == XmlListModel.Ready) {
-                    console.log("xmlpmlModel onStatusChanged: START");
+//                    console.log("xmlpmlModel onStatusChanged: START");
                     refpmlModel.clear();
                     for (var i=0; i<count; i++) {
                         var item = get(i)
@@ -106,7 +104,7 @@ Rectangle {
 
                     populatePMLModel();
                     populateCategoryModel();
-                    console.log("xmlpmlModel onStatusChanged: END");
+//                    console.log("xmlpmlModel onStatusChanged: END");
                 }
 
             }
@@ -140,17 +138,17 @@ Rectangle {
             if (item.isdeleted) { isdeletedCount++; continue; }
 
             // fetch all item's objects
-            console.log("XML:"+item.objects);
+//            console.log("XML:"+item.objects);
             var x=item.objects
 
 
             var tableau=x.split(';');
             for (var j=0; j<tableau.length; j++) {
-                console.log("j="+j)
+//                console.log("j="+j)
                 var obj = tableau[j].split('|');
                 insertorupdatecategoryModel(obj[0],obj[1]);
             }
-            console.log("populateCategoryModel : END");
+//            console.log("populateCategoryModel : END");
         }
         categoryModel.clear();
         categoryModel.append({objid: 0,name: "All", counter: (refpmlModel.count-isdeletedCount)});
@@ -163,7 +161,7 @@ Rectangle {
     }
 
     function populatePMLModel() {
-        console.log("REFRESH Model");
+//        console.log("REFRESH Model");
         pmlModel.clear();
         for (var i=0; i<refpmlModel.count; i++) {
             var item = refpmlModel.get(i)
@@ -213,7 +211,6 @@ Rectangle {
                 id: categories
                 focus: true
                 anchors.fill: parent
-                // We should compute locally this model instead of a REST Call
                 model: categoryModel //xmlcategoryModel
                 footer: refreshButtonDelegate
                 delegate: CategoryDelegate {}
@@ -254,15 +251,12 @@ Rectangle {
     Rectangle { x: categoriesView.width; height: pmlview.height; width: 1; color: "#cccccc" }
 
 
-    ListModel {
-        id: pmlThumbModel
-
-    }
+    ListModel { id: pmlThumbModel; }
 
     function focusPml(pmlid) {
         for (var i=0; i<pmlModel.count;i++) {
             if (pmlModel.get(i).pmlid == pmlid) {
-                console.log("***found***");
+//                console.log("***found***");
                 list.currentIndex = i;
             }
         }
@@ -294,5 +288,9 @@ Rectangle {
             }
         }
         return 0;
+    }
+
+    function refresh() {
+        xmlpmlModel.reload();
     }
 }

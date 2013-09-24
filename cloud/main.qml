@@ -75,7 +75,7 @@ Rectangle {
                         var xml = cloud.save();
                         var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey ;
 
-                        console.log("ok:"+url);
+//                        console.log("ok:"+url);
                         requestPost(url,xml, function(o) {
                             console.log(o.responseText);
                             tmpXmlListModel.xml = o.responseText;
@@ -153,9 +153,9 @@ Rectangle {
                  var ind = privateCloud.refpmlModel.count;
                  for (var i=0; i<count; i++) {
                      var item = get(i)
-                     console.log(item.listobjects)
+//                     console.log(item.listobjects)
                      if (item.insert == 1) {
-                         console.log("INSERT MODE");
+//                         console.log("INSERT MODE");
                          privateCloud.refpmlModel.append({rowid : ind+i,
                                                              pmlid: item.pmlid,
                                                              username: item.username,
@@ -167,7 +167,7 @@ Rectangle {
                                                              description: item.description})
                      }
                      if (item.insert == 0) {
-                         console.log("UPDATE MODE");
+//                         console.log("UPDATE MODE");
                          // fetch refpmlModel and find pmlid
                          for (var j=0; j<privateCloud.refpmlModel.count; j++) {
                              var existingitem = privateCloud.refpmlModel.get(j);
