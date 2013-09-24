@@ -64,9 +64,7 @@ Rectangle {
                     text: "Refresh all"
                     font.pointSize: 16
                     onClicked: {
-                        privateCloud.categoryModel.reload();
-
-                        publicCloud.categoryModel.reload();
+                        PmlView.populateCategoryModel();
                     }
                 }
                 TextButton {
@@ -193,17 +191,8 @@ Rectangle {
     // this function is included locally, but you can also include separately via a header definition
     function requestGet(url, callback) {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = (function() {
-            //            console.log(xhr.readyState);
-            if (xhr.readyState == 4 )
-            {
-                if (xhr.status==200) {
-                    return function() {
-                        callback(xhr);
-                    }
-                }
-            }
-        });
+        xhr.onreadystatechange = function() { callback(xhr);}
+
         xhr.open('GET', url, true);
         xhr.send('');
     }
@@ -213,17 +202,7 @@ Rectangle {
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function() { callback(xhr);}
-//            console.log("state:"+xhr.readyState);
-//            if (xhr.readyState == 4) {
-//                console.log("status:"+xhr.status);
-//                if (xhr.status==200) {
-//                    console.log("call callback");
-//                    return function() {
-//                        callback(xhr);
-//                    }
-//                }
-//            }
-//        });
+
         xhr.open('POST', url);
         xhr.send(data);
 

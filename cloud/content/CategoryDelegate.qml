@@ -47,7 +47,7 @@ Item {
     width: delegate.ListView.view.width; height: 60
 
     Text {
-        text: name
+        text: name+" ("+counter+")"
         color: delegate.ListView.isCurrentItem ? "white" : "black"
         font { family: "Helvetica"; pixelSize: 16; bold: true }
         anchors {

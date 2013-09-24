@@ -189,8 +189,11 @@ Item {
                     var url = serverURL + "clonePML/" + currentApiKey +"/" + pmlid;
                     console.log('url:'+url);
                     requestGet(url, function (o) {
-                        tmpXmlListModel.xml = o.responseText;
-//
+                        if (o.readyState == 4 ) {
+                            if (o.status==200) {
+                                tmpXmlListModel.xml = o.responseText;
+                            }
+                        }
                     });
                 }
 
@@ -220,6 +223,9 @@ Item {
                         }
                     }
                 });
+
+                populateCategoryModel();
+
 
 //                        privateCloud.categoryModel.reload();
 //                        publicCloud.categoryModel.reload();
@@ -304,9 +310,18 @@ Item {
             onClicked: {
                 var url = serverURL + "undelPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
-                    refpmlModel.setProperty(rowid,"isdeleted",0);
-                    populatePMLModel();
-                    // compute Obj counts
+                    if (o.readyState == 4 ) {
+                        if (o.status==200) {
+                            refpmlModel.setProperty(rowid,"isdeleted",0);
+                            pmlview.categoryListView.currentIndex = 0;
+                            pmlview.objid = 0;
+                            populatePMLModel();
+                            populateCategoryModel();
+                            // Position at the just undeleted item
+                            console.log("****search pmlid:"+pmlid)
+                            pmlview.focusPml(pmlid);
+
+                        }}
                 });
             }
         }
@@ -317,18 +332,25 @@ Item {
             onClicked: {
                 var url = serverURL + "delPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
-                    //                        cloud.askMsg("Ok, saved !",1);
-                    //Reload record
-                    if (isdeleted==1) {
-                        refpmlModel.remove(rowid);
-                    }
-                    else {
+                    if (o.readyState == 4 ) {
+                        if (o.status==200) {
+                            if (isdeleted==1) {
+                                refpmlModel.remove(rowid);
+                            }
+                            else {
 
-                        changed = false;
-                        refpmlModel.setProperty(rowid,"isdeleted",1);
+                                console.log("DELETE");
+                                changed = false;
+                                refpmlModel.setProperty(rowid,"isdeleted",1);
+
+                            }
+                            populateCategoryModel();
+                            pmlview.categoryListView.currentIndex = pmlview.categoryListView.count-1;
+                            pmlview.objid = -1;
+                            populatePMLModel();
+
+                        }
                     }
-                    populatePMLModel();
-                    // compute Obj counts
                 });
             }
         }

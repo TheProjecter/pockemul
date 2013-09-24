@@ -53,29 +53,28 @@ Rectangle {
     property bool loading: xmlpmlModel.status == XmlListModel.Loading
     property bool publicCloud: true
 
-    property alias categoryModel: categoryModel
+//    property alias xmlcategoryModel: xmlcategoryModel
     property alias categoryListView: categories
+    property alias pmlListView: list
     property alias refpmlModel: refpmlModel
 
     property int objid: 0
     property int ispublic: publicCloud ? 1 : 0
-    property int isdeleted: 0
+//    property int isdeleted: 0
 
     onObjidChanged: {populatePMLModel()}
-    onIsdeletedChanged: {populatePMLModel()}
+//    onIsdeletedChanged: {populatePMLModel()}
 
-    XmlListModel {
+    ListModel {
         id: categoryModel
-        source: serverURL + "listOBJ/" + (publicCloud?"0":currentApiKey)
-        query: "/listOBJ/item"
-
-        XmlRole { name: "objid"; query: "id/string()" }
-        XmlRole { name: "name"; query: "name/string()" }
+    }
+    ListModel {
+        id: tmpcategoryModel
     }
 
     XmlListModel {
         id: xmlpmlModel
-        source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/0"  // + window.currentObjid
+        source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/0"
         query: "/listPML/item"
 
         XmlRole { name: "pmlid"; query: "pmlid/string()"; }
@@ -86,13 +85,14 @@ Rectangle {
         XmlRole { name: "isdeleted"; query: "deleted/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "description"; query: "description/string()" }
-        onStatusChanged: {
 
+        onStatusChanged: {
                 if (status == XmlListModel.Ready) {
+                    console.log("xmlpmlModel onStatusChanged: START");
                     refpmlModel.clear();
                     for (var i=0; i<count; i++) {
                         var item = get(i)
-                        console.log(item.listobjects)
+//                        console.log(item.objects)
                         refpmlModel.append({rowid : i,
                                             pmlid: item.pmlid,
                                            username: item.username,
@@ -105,29 +105,77 @@ Rectangle {
                     }
 
                     populatePMLModel();
+                    populateCategoryModel();
+                    console.log("xmlpmlModel onStatusChanged: END");
                 }
+
             }
+    }
+
+    function insertorupdatecategoryModel(object_id,object_name) {
+//        console.log("insertorupdatecategoryModel:"+object_id+"-"+object_name);
+        for (var i=0; i<tmpcategoryModel.count;i++) {
+            var item = tmpcategoryModel.get(i);
+            if (item.objid == object_id) {
+                // found, increment
+                item.counter++;
+                return;
+            }
+        }
+        // not found, create a record
+        tmpcategoryModel.append({objid: object_id,
+                                 name: object_name,
+                                 counter: 1});
+    }
+
+    function populateCategoryModel() {
+//        console.log("populateCategoryModel");
+        tmpcategoryModel.clear();
+        var isdeletedCount = 0;
+        for (var i=0; i<refpmlModel.count; i++) {
+            var item = refpmlModel.get(i)
+//            console.log("Read: "+item.pmlid+"-"+item.title);
+            if (pmlview.publicCloud && (item.ispublic == 0)) continue;
+
+            if (item.isdeleted) { isdeletedCount++; continue; }
+
+            // fetch all item's objects
+            console.log("XML:"+item.objects);
+            var x=item.objects
+
+
+            var tableau=x.split(';');
+            for (var j=0; j<tableau.length; j++) {
+                console.log("j="+j)
+                var obj = tableau[j].split('|');
+                insertorupdatecategoryModel(obj[0],obj[1]);
+            }
+            console.log("populateCategoryModel : END");
+        }
+        categoryModel.clear();
+        categoryModel.append({objid: 0,name: "All", counter: (refpmlModel.count-isdeletedCount)});
+        // copy tmpcategoryModel to categoryModel with SORT
+        for (var i=0; i<tmpcategoryModel.count;i++){
+            categoryModel.append(tmpcategoryModel.get(i));
+        }
+        categoryModel.append({objid: -1,name: "Recycle Bin", counter: (isdeletedCount)});
+        tmpcategoryModel.clear();
     }
 
     function populatePMLModel() {
         console.log("REFRESH Model");
-        console.log("public:"+pmlview.ispublic);
-        console.log("deleted:"+pmlview.isdeleted);
-        console.log("objid:"+pmlview.objid);
         pmlModel.clear();
         for (var i=0; i<refpmlModel.count; i++) {
-
             var item = refpmlModel.get(i)
-
-            console.log("Read: "+item.pmlid+"-"+item.title);
+//            console.log("Read: "+item.pmlid+"-"+item.title);
             if (pmlview.publicCloud && (item.ispublic == 0)) continue;
-            console.log("public OK");
-            if ( (pmlview.objid > 0) && (item.isdeleted == 1)) continue;
+//            console.log("public OK");
+            if ( (pmlview.objid >= 0) && (item.isdeleted == 1)) continue;
 
             if ( (pmlview.objid > 0) && !idInArray(pmlview.objid.toString(),item.listobjects)) continue;
-            console.log("object OK");
+//            console.log("object OK");
             if ( (pmlview.objid == -1) && (item.isdeleted != 1 )) continue;
-            console.log("Deleted OK");
+//            console.log("Deleted OK");
             pmlModel.append({   rowid : i,
                                 pmlid: item.pmlid,
                                username: item.username,
@@ -136,29 +184,24 @@ Rectangle {
                                 isdeleted: item.isdeleted,
                                 title: item.title,
                                 description: item.description})
-            console.log("Store: "+item.title);
+//            console.log("Store: "+item.title);
         }
+
     }
 
     function idInArray(id, list) {
-        console.log("Search:"+id+" in:"+list);
-
-        console.log("contains:"+String(list).indexOf(","+id+","));
+//        console.log("Search:"+id+" in:"+list+"  contains:"+String(list).indexOf(","+id+","));
         return (String(list).indexOf(","+id+",")>=0);
     }
 
 
+    // Reference List Model. Contains all record
+    // it might be valuable to dump it on disk when the application close
+    // and load the cache at startup
+    ListModel { id: refpmlModel; }
 
-    ListModel {
-        id: refpmlModel
-    }
-
-    ListModel {
-        id: pmlModel
-
-    }
-
-
+    // Filtered ListModel
+    ListModel { id: pmlModel; }
 
     Row {
         Rectangle {
@@ -167,10 +210,11 @@ Rectangle {
             color: "#efefef"
 
             ListView {
-                focus: true
                 id: categories
+                focus: true
                 anchors.fill: parent
-                model: categoryModel
+                // We should compute locally this model instead of a REST Call
+                model: categoryModel //xmlcategoryModel
                 footer: refreshButtonDelegate
                 delegate: CategoryDelegate {}
                 highlight: Rectangle { color: "steelblue" }
@@ -202,7 +246,7 @@ Rectangle {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: categoryModel.reload();
+                onClicked: populateCategoryModel();//xmlcategoryModel.reload();
             }
         }
     }
@@ -214,28 +258,38 @@ Rectangle {
         id: pmlThumbModel
 
     }
+
+    function focusPml(pmlid) {
+        for (var i=0; i<pmlModel.count;i++) {
+            if (pmlModel.get(i).pmlid == pmlid) {
+                console.log("***found***");
+                list.currentIndex = i;
+            }
+        }
+    }
+
     function updThumbId(refpmlid) {
         // search pmlid and increment
-        console.log("update counter for :"+refpmlid);
+//        console.log("update counter for :"+refpmlid);
         for (var i=0; i< pmlThumbModel.count;i++){
             var item = pmlThumbModel.get(i);
             if (item.pmlid == refpmlid) {
-                console.log("updThumbId - Found:"+item.counter);
+//                console.log("updThumbId - Found:"+item.counter);
                 pmlThumbModel.setProperty(i,"counter",item.counter+1);
-                console.log("Found, updated:"+item.counter);
+//                console.log("Found, updated:"+item.counter);
                 return 0;
             }
         }
         pmlThumbModel.append({pmlid: refpmlid,counter:1});
-        console.log("updThumbId - NOT Found, created:" +pmlThumbModel.count);
+//        console.log("updThumbId - NOT Found, created:" +pmlThumbModel.count);
     }
     function getThumbId(refpmlid) {
-        console.log("getThumbId:"+refpmlid+" count:"+pmlThumbModel.count);
+//        console.log("getThumbId:"+refpmlid+" count:"+pmlThumbModel.count);
         for (var i=0; i< pmlThumbModel.count;i++){
             var item = pmlThumbModel.get(i);
-            console.log("getThumbId - Fetch:"+item.pmlid);
+//            console.log("getThumbId - Fetch:"+item.pmlid);
             if (item.pmlid == refpmlid) {
-                console.log("getThumbId - Found:"+item.counter);
+//                console.log("getThumbId - Found:"+item.counter);
                 return item.counter;
             }
         }
