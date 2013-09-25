@@ -49,7 +49,7 @@ Item {
     Text {
         text: name+" ("+counter+")"
         color: delegate.ListView.isCurrentItem ? "white" : "black"
-        font { family: "Helvetica"; pixelSize: 16; bold: true }
+        font { family: "Helvetica"; pointSize: 12; bold: true }
         anchors {
             left: parent.left; leftMargin: 15
             verticalCenter: parent.verticalCenter

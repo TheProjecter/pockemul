@@ -105,6 +105,7 @@ public slots:
     void saveassession(QXmlStreamWriter *xml);
     void opensession(QString sessionFN=QString());
     void opensession(QXmlStreamReader *xml);
+    void quitPockEmul();
 
 private slots:
 

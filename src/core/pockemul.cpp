@@ -214,7 +214,7 @@ qWarning()<<"OK6";
                                                       LaunchButtonWidget::Action,
                                                       QStringList(),
                                                       ":/core/exit.png");
-    mainwindow->connect(exit,SIGNAL(clicked()),qApp, SLOT(quit()));//closeAllWindows()));
+    mainwindow->connect(exit,SIGNAL(clicked()),mainwindow, SLOT(quitPockEmul()));//closeAllWindows()));
     exit->setGeometry(0,v_pos,48,48);
     v_pos += v_inter;
     exit->setToolTip("Exit PockEmul.");

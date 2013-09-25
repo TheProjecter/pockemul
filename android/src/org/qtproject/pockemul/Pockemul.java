@@ -161,7 +161,7 @@ private int nbButtons;
     // Get instance of the Vibrator
      Vibrator vibrator = (Vibrator) QtActivity.getQtActivityInstance().getSystemService(Context.VIBRATOR_SERVICE);
      // Vibrate for 50 milliseconds
-     vibrator.vibrate(50);
+     vibrator.vibrate(20);
     }
 
     public void openURL(String url)

@@ -47,6 +47,7 @@
 
 extern MainWindowPockemul *mainwindow;
 extern void m_openURL(QUrl url);
+extern void Vibrate();
 
  #define DEFAULT_INPUT_TIMEOUT 10000
  #define SIZING_FACTOR_HEIGHT 6/10
@@ -271,7 +272,7 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
  void FluidLauncher::launchApplication(int index)
  {
 
-
+Vibrate();
      // NOTE: Clearing the caches will free up more memory for the demo but will cause
      // a delay upon returning, as items are reloaded.
      //pictureFlowWidget->clearCaches();

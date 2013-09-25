@@ -77,14 +77,13 @@ Rectangle {
 
 //                        console.log("ok:"+url);
                         requestPost(url,xml, function(o) {
-                            console.log(o.responseText);
-                            tmpXmlListModel.xml = o.responseText;
+                            if (o.readyState == 4) {
+                                if (o.status==200) {
+                                    tmpXmlListModel.xml = o.responseText;
+                                }
+                            }
                         });
-
-//                        privateCloud.categoryModel.reload();
-//                        publicCloud.categoryModel.reload();
                     }
-
                 }
                 TextButton {
                     text: "upload Session File"
@@ -117,6 +116,7 @@ Rectangle {
     }
 
     TabbedUI {
+        id: tabbedui
         tabsHeight: 72
         tabIndex: 1
         tabsModel: tabsModel
@@ -181,9 +181,13 @@ Rectangle {
 
 
                      }
-
+                     tabbedui.tabClicked(0);
+                     privateCloud.populateCategoryModel();
+                     privateCloud.objid = 0;
+                     privateCloud.populatePMLModel();
+                     privateCloud.focusPml(item.pmlid);
                  }
-                 privateCloud.populatePMLModel();
+
              }
          }
      }

@@ -5,7 +5,7 @@
 #include "mainwindowpockemul.h"
 
 extern MainWindowPockemul* mainwindow;
-
+extern void Vibrate();
 
 
 
@@ -34,6 +34,7 @@ LaunchButtonWidget::~LaunchButtonWidget() {
 void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 {
 
+    Vibrate();
     emit clicked();
 
     if ((type == PictureFlow) || (type == FileBrowser))

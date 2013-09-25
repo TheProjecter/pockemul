@@ -8,14 +8,17 @@ Rectangle {
 
     signal clicked
 
-    width: label.width + 20; height: label.height + 6
+    width: label.width + 20;
+    height: label.height + 6
+    border.color: "orange"
+    radius: 5
     //antialiasing: true
-    radius: 10
+//    radius: 10
 
-    gradient: Gradient {
-        GradientStop { id: gradientStop; position: 0.0; color: "#eeeeee" }
-        GradientStop { position: 1.0; color: "#888888" }
-    }
+//    gradient: Gradient {
+//        GradientStop { id: gradientStop; position: 0.0; color: "#666666" }
+//        GradientStop { position: 1.0; color: "#000000" }
+//    }
 
     MouseArea {
         id: mouseArea
@@ -25,12 +28,13 @@ Rectangle {
 
     Text {
         id: label
+//        color: "white"
         anchors.centerIn: parent
     }
 
     states: State {
         name: "pressed"
         when: mouseArea.pressed
-        PropertyChanges { target: gradientStop; color: "#333333" }
+        PropertyChanges { target: container; color: "#333333" }
     }
 }

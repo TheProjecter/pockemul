@@ -439,15 +439,19 @@ bool CPObject::event(QEvent *event)
      if (event->type() == QEvent::Gesture) {
          if (QGesture *tap =  (static_cast<QGestureEvent*>(event))->gesture(Qt::TapAndHoldGesture)) {
              const QPoint pos = (static_cast<QTapAndHoldGesture *>(tap))->position().toPoint();
-             qWarning()<< (static_cast<QTapAndHoldGesture *>(tap))->timeout();
+//             qWarning()<< (static_cast<QTapAndHoldGesture *>(tap))->timeout()<<pos<<tap->gestureType()<<tap->state();
+             if (tap->state() == Qt::GestureStarted) {
              QContextMenuEvent *cme = new QContextMenuEvent(
                          QContextMenuEvent::Mouse,
                          pos,
                          (pos));
-             contextMenuEvent(cme);
+             //contextMenuEvent(cme);
+             QApplication::sendEvent(this,cme);
 
              setCursor(Qt::ArrowCursor);
+
              event->accept();
+             }
          }
          return true;
      }
@@ -474,6 +478,7 @@ void CPObject::wheelEvent(QWheelEvent *event) {
 
 void CPObject::tapAndHold(QMouseEvent * event)
 {
+#if 0
 #ifdef Q_OS_ANDROIS
     QContextMenuEvent *cme = new QContextMenuEvent(QContextMenuEvent::Mouse,QPoint(0,0),QPoint(0,0));
 #else
@@ -483,6 +488,7 @@ void CPObject::tapAndHold(QMouseEvent * event)
     contextMenuEvent(cme);
     startPosDrag = false;
     setCursor(Qt::ArrowCursor);
+#endif
 }
 
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
@@ -968,7 +974,7 @@ void CPObject::focusOutEvent ( QFocusEvent * event )
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {
     qWarning()<<"contextMenuEvent";
-    Vibrate();
+//    Vibrate();
 
     QMenu *menu = new QMenu(this);
     BuildContextMenu(menu);
@@ -981,6 +987,7 @@ menu->popup(event->globalPos () );
 
 void CPObject::BuildContextMenu(QMenu * menu)
 {
+    Vibrate();
 	if ( dynamic_cast<CpcXXXX *>(this) )
 	{
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));

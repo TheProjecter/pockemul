@@ -85,8 +85,8 @@ Item {
             Image {
                 id: publicIcon
                 source: "images/public.png"
-                width: 30
-                height: 30
+                width: 40
+                height: 40
                 visible: (ispublic==1)
             }
             Edit {
@@ -94,10 +94,11 @@ Item {
                 text: (title=="")?"No title":title
                 nbLine: 1
                 readOnly: (detailsOpacity==0) || (!ismine)
+
                 wrapMode: Text.WordWrap
                 width: parent.width - 40 - closeButton.width - 5
                 //                height: 30
-                font { bold: true; family: "Helvetica"; pointSize: 16 }
+                font { bold: true; family: "Helvetica"; pointSize: 14 }
                 textColor: changed ? "red" : "black"
                 onTextChanged: {
                     checkmodif()
@@ -155,6 +156,7 @@ Item {
         opacity: delegate.detailsOpacity
     }
     Column {
+//        width: 150
         y:40
         anchors { right: background.right; rightMargin: 10 }
         spacing: 5
@@ -210,7 +212,7 @@ Item {
                 console.log("ok:"+url);
                 requestPost(url,xml, function(o) {
                     if (o.readyState == 4) {
-                        console.log("status:"+o.status);
+//                        console.log("status:"+o.status);
                         if (o.status==200) {
                             console.log(o.responseText);
                             console.log("saveCurrentSessionButtonIn");
@@ -278,31 +280,6 @@ Item {
                 checkmodif()
             }
         }
-        Row {
-            id: publicSwitch
-            opacity: delegate.detailsOpacity
-            visible: ismine
-            Text {
-                id: switchLabel
-                text: qsTr("Public ")
-                font.family: "Helvetica"; font.pointSize: 14
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Switch {
-                id:switchelt
-                bwidth: 50
-                bheight: 25
-                state: (ispublic==1) ? "on" :"off"
-                anchors.verticalCenter: parent.verticalCenter
-                onStateChanged: {
-                    if (state != ((ispublic==1) ? "on" :"off"))
-                        root.sendWarning("Do you really want to change the public status ?");
-                    newpublicstatus = (state=="on") ? 1 : 0;
-
-                    checkmodif();
-                }
-            }
-        }
         TextButton {
             id: undeleteButton
             text: "UnDelete"
@@ -352,6 +329,31 @@ Item {
                         }
                     }
                 });
+            }
+        }
+        Row {
+            id: publicSwitch
+            opacity: delegate.detailsOpacity
+            visible: ismine
+            Text {
+                id: switchLabel
+                text: qsTr("Public ")
+                font.family: "Helvetica"; font.pointSize: 14
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Switch {
+                id:switchelt
+                bwidth: 50
+                bheight: 25
+                state: (ispublic==1) ? "on" :"off"
+                anchors.verticalCenter: parent.verticalCenter
+                onStateChanged: {
+                    if (state != ((ispublic==1) ? "on" :"off"))
+                        root.sendWarning("Do you really want to change the public status ?");
+                    newpublicstatus = (state=="on") ? 1 : 0;
+
+                    checkmodif();
+                }
             }
         }
     }

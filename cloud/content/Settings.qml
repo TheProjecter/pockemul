@@ -6,7 +6,7 @@ Rectangle {
 
     VisualItemModel {
         id: visualSettingsModel
-        SettingsDelegate { id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
+        SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
         SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://ds409/cloud/"}
         SettingsDelegate { id: username; name: "username"; labelString: "User Name"; type: "input"; }
         SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; }

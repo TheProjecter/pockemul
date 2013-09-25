@@ -623,6 +623,11 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
 
 }
 
+void MainWindowPockemul::quitPockEmul()
+{
+    if (ask(this,"Do you really want to quit ?",2)==1) QApplication::quit();
+}
+
 void MainWindowPockemul::opensession(QString sessionFN)
 {
 

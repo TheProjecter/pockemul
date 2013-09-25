@@ -40,14 +40,22 @@ Rectangle {
             width: parent.width - 30 - label.width
             height: label.height * 1.3
             anchors.verticalCenter: parent.verticalCenter
-            BorderImage {
-                source: "images/lineedit-bg.png"
-                border { left: 3; top: 3; right: 3; bottom: 3 }
-                     horizontalTileMode: BorderImage.Stretch
-                     verticalTileMode: BorderImage.Stretch
+
+//            BorderImage {
+//                source: "images/lineedit-bg.png"
+//                border { left: 3; top: 3; right: 3; bottom: 3 }
+//                     horizontalTileMode: BorderImage.Stretch
+//                     verticalTileMode: BorderImage.Stretch
+//                anchors.fill: parent
+//            }
+            Rectangle {
+//                border { left: 3; top: 3; right: 3; bottom: 3 }
                 anchors.fill: parent
+                border.color: "orange"
+                radius: 5
             }
             TextInput {
+
                 width: parent.width - 20
                 height: parent.height - 10
                 anchors.centerIn: parent
