@@ -3,7 +3,7 @@ import QtQuick 1.1
 
 Rectangle {
     width: 800; height: 480
-    border.width: 3
+
     VisualItemModel {
         id: visualSettingsModel
 
@@ -13,13 +13,12 @@ Rectangle {
         SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
         SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action";
             onButtonClicked: {
-                buttonElementEnabled = false;
+//                buttonElementEnabled = false;
 
                 var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
-//                console.log(username.inputText+'/'+password.inputText+':key:'+key);
                 serverURL = cloud.getValueFor("serverURL","");
                 var url = serverURL+'login?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
-                console.log('url:'+url);
+//                console.log('url:'+url);
                 requestGet(url, function (o) {
 
                     if (o.readyState == 4 ) {
@@ -30,6 +29,35 @@ Rectangle {
                             apikey.inputText = o.responseText;
                             privateCloud.refresh();
                             publicCloud.refresh();
+                        }
+                        else {
+                            apikey.inputText = "Authentification failed !";
+                        }
+                    }
+                });
+            }
+        }
+        SettingsDelegate { name: "apikey"; labelString: "Register new user"; type: "action";
+            onButtonClicked: {
+//                buttonElementEnabled = false;
+
+                var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
+                serverURL = cloud.getValueFor("serverURL","");
+                var url = serverURL+'register?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
+//                console.log('url:'+url);
+                requestGet(url, function (o) {
+
+                    if (o.readyState == 4 ) {
+                        if (o.status==200) {
+                            buttonElementEnabled = true;
+                            cloud.saveValueFor(name,o.responseText);
+                            currentApiKey = o.responseText;
+                            apikey.inputText = o.responseText;
+                            privateCloud.refresh();
+                            publicCloud.refresh();
+                        }
+                        else {
+                            apikey.inputText = "Registration failed. Try an other username.";
                         }
                     }
                 });
@@ -42,6 +70,7 @@ Rectangle {
         focus: true
         id: categories
         anchors.fill: parent
+
         model: visualSettingsModel
         //            footer: quitButtonDelegate
         //        highlight: Rectangle { color: "steelblue" }

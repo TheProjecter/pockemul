@@ -24,7 +24,7 @@ ListModel {
         var store=begin;
         var ix;
         for(ix=begin; ix<end-1; ++ix) {
-            if(get(ix)[sortColumnName] <= piv) {
+            if(get(ix)[sortColumnName] < piv) {
                 swap(store,ix);
                 ++store;
             }
