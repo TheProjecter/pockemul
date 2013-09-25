@@ -11,6 +11,7 @@ Item {
     property alias buttonElementEnabled: buttonElement.enabled
     property alias inputText: inputElement.text
     property alias defaultText: inputElement.defaultText
+    property alias echoMode: inputElement.echoMode
 
     signal buttonClicked
 

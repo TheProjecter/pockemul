@@ -66,8 +66,9 @@ Rectangle {
     ListModel {
         id: categoryModel
     }
-    ListModel {
+    SortListModel {
         id: tmpcategoryModel
+        sortColumnName: "name"
     }
 
     XmlListModel {
@@ -150,6 +151,11 @@ Rectangle {
             }
 //            console.log("populateCategoryModel : END");
         }
+
+        // sort tmpcategoryModel
+        console.log("***"+tmpcategoryModel.count);
+        tmpcategoryModel.quick_sort();
+        console.log("***"+tmpcategoryModel.count);
         categoryModel.clear();
         categoryModel.append({objid: 0,name: "All", counter: (refpmlModel.count-isdeletedCount)});
         // copy tmpcategoryModel to categoryModel with SORT
@@ -159,6 +165,8 @@ Rectangle {
         categoryModel.append({objid: -1,name: "Recycle Bin", counter: (isdeletedCount)});
         tmpcategoryModel.clear();
     }
+
+
 
     function populatePMLModel() {
 //        console.log("REFRESH Model");

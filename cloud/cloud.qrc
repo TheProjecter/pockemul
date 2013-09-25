@@ -61,5 +61,6 @@
         <file>content/images/background-on.png</file>
         <file>content/images/knob.png</file>
         <file>content/counter.js</file>
+        <file>content/SortListModel.qml</file>
     </qresource>
 </RCC>

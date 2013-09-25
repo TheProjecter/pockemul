@@ -933,7 +933,8 @@ OTHER_FILES += \
     cloud/content/Switch.qml \
     cloud/content/knob.svg \
     cloud/content/background.svg \
-    cloud/content/counter.js
+    cloud/content/counter.js \
+    cloud/content/SortListModel.qml
 
 
 

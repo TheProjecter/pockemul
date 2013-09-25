@@ -3,13 +3,14 @@ import QtQuick 1.1
 
 Rectangle {
     width: 800; height: 480
-
+    border.width: 3
     VisualItemModel {
         id: visualSettingsModel
+
         SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
         SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://ds409/cloud/"}
         SettingsDelegate { id: username; name: "username"; labelString: "User Name"; type: "input"; }
-        SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; }
+        SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
         SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action";
             onButtonClicked: {
                 buttonElementEnabled = false;

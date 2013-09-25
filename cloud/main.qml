@@ -17,6 +17,13 @@ Rectangle {
     property alias bigposter: bigposter
     property alias publicCloudTabName: publicCloudTab.name
 
+    property color backGroundColor: "white"
+    property color textColor : "black"
+    property color inputBorderColor: "black"
+    property color buttonBorderColor: "orange"
+    property color textButtonColor: "black"
+
+
     onWidthChanged: {
         isPortrait = cloud.isPortraitOrientation();
         //        console.log(isPortrait)
@@ -63,6 +70,7 @@ Rectangle {
                 TextButton {
                     text: "Refresh all"
                     font.pointSize: 16
+                    expand: false
                     onClicked: {
                         PmlView.populateCategoryModel();
                     }
@@ -70,6 +78,7 @@ Rectangle {
                 TextButton {
                     id: saveCurrentSessionButton
                     text: "Save current session"
+                    expand: false
                     font.pointSize: 16
                     onClicked: {
                         var xml = cloud.save();
@@ -87,11 +96,13 @@ Rectangle {
                 }
                 TextButton {
                     text: "upload Session File"
+                    expand: false
                     font.pointSize: 16
                     onClicked: {
                         cloud.showFileDialog();
                     }
                 }
+
             }
         }
         Tab {
@@ -104,6 +115,8 @@ Rectangle {
                 anchors.fill: parent
             }
         }
+
+
         Tab {
             name: ""
             icon: "pics/back-white.png"
@@ -118,7 +131,7 @@ Rectangle {
     TabbedUI {
         id: tabbedui
         tabsHeight: 72
-        tabIndex: 1
+        tabIndex: 0
         tabsModel: tabsModel
         quitIndex: 4
     }

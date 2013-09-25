@@ -157,6 +157,7 @@ Item {
     }
     Column {
 //        width: 150
+//        width: childrenRect.width
         y:40
         anchors { right: background.right; rightMargin: 10 }
         spacing: 5
@@ -335,10 +336,11 @@ Item {
             id: publicSwitch
             opacity: delegate.detailsOpacity
             visible: ismine
+            anchors.horizontalCenter: parent.horizontalCenter
             Text {
                 id: switchLabel
                 text: qsTr("Public ")
-                font.family: "Helvetica"; font.pointSize: 14
+//                font.family: "Helvetica"; font.pointSize: 14
                 anchors.verticalCenter: parent.verticalCenter
             }
             Switch {

@@ -7,6 +7,7 @@ Rectangle {
     property alias text: input.text
     property alias label: label.text
     property alias maximumLength: input.maximumLength
+    property alias echoMode: input.echoMode
 
     property string defaultText
 
@@ -49,11 +50,19 @@ Rectangle {
 //                anchors.fill: parent
 //            }
             Rectangle {
-//                border { left: 3; top: 3; right: 3; bottom: 3 }
+                id: borderTextInput
                 anchors.fill: parent
-                border.color: "orange"
+                border.color: root.inputBorderColor
                 radius: 5
             }
+            Rectangle {
+                width: borderTextInput.width
+                height: borderTextInput.height*0.75
+                border.color: root.backGroundColor
+                radius: 5
+
+            }
+
             TextInput {
 
                 width: parent.width - 20

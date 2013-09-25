@@ -7,7 +7,7 @@ Rectangle {
     property alias readOnly: edit.readOnly
     property int nbLine: 0
 
-    id: root
+    id: rootEdit
 
     width: 200
     height: (nbLine==0)? 100 : nbLine* edit.font.pointSize +20
@@ -16,7 +16,7 @@ Rectangle {
     Rectangle {
         anchors.fill: parent
     border.width: (readOnly) ? 0 : 1
-    border.color: "#4b4b4b"
+    border.color: root.inputBorderColor
     radius: 2
     }
 
@@ -49,7 +49,7 @@ Rectangle {
         TextEdit {
             id: edit
 
-            width: root.width-10
+            width: rootEdit.width-10
 //            height: root.height-10
 //            anchors.centerIn: root
             //focus: true
