@@ -1,4 +1,10 @@
-#include <QtWidgets>
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#   include <QtWidgets>
+#else
+#   include <QtCore>
+#   include <QtGui>
+#endif
 #include <QMutex>
 
 #ifdef P_AVOID

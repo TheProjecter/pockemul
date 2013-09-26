@@ -2,6 +2,7 @@ import QtQuick 1.0
 import "TabbedQuickApp"
 import "content"
 import "."
+//import QtSensors 5.0
 
 Rectangle {
     width: 360
@@ -23,6 +24,11 @@ Rectangle {
     property color buttonBorderColor: "orange"
     property color textButtonColor: "black"
 
+
+//    TiltSensor {
+//        id: tilt
+//        active: false
+//    }
 
     onWidthChanged: {
         isPortrait = cloud.isPortraitOrientation();
@@ -102,6 +108,7 @@ Rectangle {
                         cloud.showFileDialog();
                     }
                 }
+
 
             }
         }

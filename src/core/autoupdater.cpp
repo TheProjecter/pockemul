@@ -1,5 +1,15 @@
 // AutoUpdater.cpp: implementation of the CAutoUpdater class.
-#include <QtWidgets>
+
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#   include <QtWidgets>
+#   include <QVBoxLayout>
+#else
+#   include <QtCore>
+#   include <QtGui>
+
+#endif
+
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QLabel>

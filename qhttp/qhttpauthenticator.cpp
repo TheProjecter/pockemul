@@ -282,6 +282,7 @@ void QHttpAuthenticator::detach()
     if (!d) {
         d = new QHttpAuthenticatorPrivate;
         d->ref.store(1);
+
         return;
     }
 

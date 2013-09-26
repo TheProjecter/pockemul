@@ -42,7 +42,13 @@
  #ifndef FLUID_LAUNCHER_H
  #define FLUID_LAUNCHER_H
 
- #include <QtWidgets>
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+#   include <QtWidgets>
+#else
+#   include <QtCore>
+#   include <QtGui>
+#endif
  #include <QTimer>
  #include <QStringRef>
 

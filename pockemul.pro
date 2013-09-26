@@ -9,7 +9,7 @@ CONFIG += qt \
 
 CONFIG += rtti
 
-QT += widgets \
+QT += \
     printsupport \
     core \
     gui \
@@ -17,8 +17,9 @@ QT += widgets \
 #    opengl \
     xml \
 #    multimedia \
-    script declarative \
+    script declarative  \
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 PROJECT_TYPE = \
     STANDARD \
@@ -494,12 +495,13 @@ HEADERS += src/core/Connect.h \
     src/cpu/m6502/m6502.h \
     src/cpu/m6502/opsc02.h \
     src/cpu/m6502/ops02.h \
-    qhttp/qringbuffer_p.h \
-    qhttp/qhttpauthenticator_p.h \
-    qhttp/qhttp.h \
     src/machine/postit.h \
     src/core/sizegrip.h
 
+greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
+    qhttp/qringbuffer_p.h \
+    qhttp/qhttpauthenticator_p.h \
+    qhttp/qhttp.h \
 
 INCLUDEPATH += . \
     src/core \
@@ -727,10 +729,12 @@ SOURCES += src/core/Connect.cpp \
     src/lcd/Lcdc_rlh1000.cpp \
     src/cpu/m6502/m6502.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
-    qhttp/qhttpauthenticator.cpp \
-    qhttp/qhttp.cpp \
     src/machine/postit.cpp \
     src/core/sizegrip.cpp
+
+greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
+    qhttp/qhttpauthenticator.cpp \
+    qhttp/qhttp.cpp \
 
 
 OTHER_FILES += \

@@ -1,5 +1,14 @@
 #include <QApplication>
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
+// Qt5 code
+#   include <QtWidgets>
+#else
+// Qt4 code
+#   include <QtCore>
+#   include <QFileDialog>
+#   include <QGraphicsObject>
+#   include <QtGui>
+#endif
 #include <QDebug>
 #include <QFrame>
 #include <QLabel>
@@ -15,14 +24,14 @@
 #include <QSettings>
 #include <QCryptographicHash>
 
+
 #include <QtDeclarative/QDeclarativeView>
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
 
 #include "applicationconfig.h"
-#include "imageobject.h"
 #include "cloudwindow.h"
-#include "imagemodel.h"
+
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
@@ -111,6 +120,8 @@ void CloudWindow::sendPML(const QString &filePath)
     QString server = getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")+"savePML";
     // Check if apikey exists
 
+#if QT_VERSION >= 0x050000
+// Qt5 code
     QUrlQuery qu;
     qu.addQueryItem("apikey",apikey);
     qu.addQueryItem("content",QString(data).replace("+","%2B"));
@@ -121,6 +132,9 @@ void CloudWindow::sendPML(const QString &filePath)
     qWarning()<<req.url();
     connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(finishedSave(QNetworkReply*)));
     QNetworkReply *reply = mgr->post(req, qu.query(QUrl::FullyEncoded).toUtf8());
+#else
+// Qt4 code
+#endif
 }
 
 void CloudWindow::finishedSave(QNetworkReply *reply)
@@ -230,9 +244,13 @@ void CloudWindow::warning(QString msg) {
 }
 
 bool CloudWindow::isPortraitOrientation() {
+#if QT_VERSION >= 0x050000
+
     return  (QGuiApplication::primaryScreen()->orientation() == Qt::PortraitOrientation) ||
             (QGuiApplication::primaryScreen()->orientation() == Qt::InvertedPortraitOrientation) ||
              ( (QGuiApplication::primaryScreen()->orientation() == Qt::LandscapeOrientation ||
               QGuiApplication::primaryScreen()->orientation() == Qt::InvertedLandscapeOrientation) &&
              (this->height()>this->width())) ;
+
+#endif
 }

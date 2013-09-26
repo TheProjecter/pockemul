@@ -1,4 +1,10 @@
-#include <QtWidgets>
+#if QT_VERSION >= 0x050000
+#   include <QtWidgets>
+#else
+#   include <QtCore>
+#   include <QtGui>
+#   include <QStringRef>
+#endif
 #include <QString>
 #include <QPainter>
 #include <iostream>
@@ -555,10 +561,10 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
                             QString eltname = xml->name().toString();
 //                            AddLog(LOG_TEMP,eltname);
                             if (eltname == "position") {
-                                int posX = xml->attributes().value("x").toInt();
-                                int posY = xml->attributes().value("y").toInt();
-                                int width = xml->attributes().value("width").toInt();
-                                int height = xml->attributes().value("height").toInt();
+                                int posX = xml->attributes().value("x").toLatin1().toInt();
+                                int posY = xml->attributes().value("y").toLatin1().toInt();
+                                int width = xml->attributes().value("width").toLatin1().toInt();
+                                int height = xml->attributes().value("height").toLatin1().toInt();
                                 locPC->setPosX(posX);
                                 locPC->setPosY(posY);
                                 if ((width>0) && (height>0)) {
@@ -663,7 +669,11 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
+#if QT_VERSION >= 0x050000
     grab().toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
+#else
+    QPixmap::grabWidget(this).toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
+#endif
 
 
     qWarning()<<"screenshot done";

@@ -1,4 +1,12 @@
-#include <QtWidgets>
+#include <qglobal.h>
+#if QT_VERSION >= 0x050000
+// Qt5 code
+#   include <QtWidgets>
+#else
+// Qt4 code
+#   include <QtCore>
+#   include <QtGui>
+#endif
 
 #include "common.h"
 #include "cx07.h"

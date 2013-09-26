@@ -53,6 +53,7 @@ private:
     QFileDialog *m_fileDialog;
     QObject *object;
 
+
     void resizeEvent(QResizeEvent *e);
 };
 

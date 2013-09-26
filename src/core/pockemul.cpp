@@ -54,14 +54,18 @@ int main(int argc, char *argv[])
 
     QApplication *app = new QApplication(argc, argv);
      app->setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+#if QT_VERSION >= 0x050000
      app->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents,false);
+     test();
+#else
+
+#endif
 
     QCoreApplication::setOrganizationDomain("pockemul.free.fr");
     QCoreApplication::setOrganizationName("Remy Corp.");
     QCoreApplication::setApplicationName("PockEmul");
     QCoreApplication::setApplicationVersion(POCKEMUL_VERSION);
 
-    test();
 #ifdef Q_OS_MAC
     QDir dir(QApplication::applicationDirPath());
     dir.cdUp();
@@ -400,7 +404,7 @@ void m_openURL(QUrl url) {
     QDesktopServices::openUrl(url);
 }
 
-
+#if QT_VERSION >= 0x050000
 QString Orientation(Qt::ScreenOrientation orientation)
 {
     switch (orientation) {
@@ -437,3 +441,4 @@ void test() {
             qWarning() << "  Virtual size:" << screen->virtualSize().width() << "x" << screen->virtualSize().height();
         }
 }
+#endif
