@@ -36,7 +36,7 @@
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
 extern int ask(QWidget *parent, QString msg, int nbButton);
-extern void m_addShortcut(QString param);
+extern void m_addShortcut(QString name,QString param);
 
 CloudWindow::CloudWindow(QWidget *parent)
     : QWidget(parent)
@@ -223,7 +223,7 @@ QString CloudWindow::getValueFor(const QString &objectName, const QString &defau
         qWarning()<<"getValue("<<objectName<<","<<defaultValue<<")";
         return defaultValue;
     }
-//    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<")";
+    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<")";
     return settings.value(objectName).toString();
 }
 
@@ -231,7 +231,7 @@ void CloudWindow::saveValueFor(const QString &objectName, const QString &inputVa
 {
     QSettings settings;
     settings.setValue(objectName, QVariant(inputValue));
-//    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<")";
+    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<")";
 }
 
 QString CloudWindow::generateKey(QString username,QString password) {
@@ -246,7 +246,7 @@ void CloudWindow::warning(QString msg) {
 }
 
 void CloudWindow::addShortcut(QString param) {
-    m_addShortcut(param);
+    m_addShortcut("test",param);
 }
 
 bool CloudWindow::isPortraitOrientation() {

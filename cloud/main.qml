@@ -120,7 +120,7 @@ Rectangle {
                 }
                 TextButton {
                     text: "Create shortcut"
-                    onClicked: cloud.addShortcut("");
+                    onClicked: cloud.addShortcut("-r PC-1475");
                 }
 
 

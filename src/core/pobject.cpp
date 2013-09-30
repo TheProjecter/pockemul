@@ -181,6 +181,15 @@ QRect CPObject::RectWithLinked(void) {
     return r;
 }
 
+
+extern void m_addShortcut(QString name,QString param);
+
+void CPObject::createShortcut() {
+#ifdef Q_OS_ANDROID
+    m_addShortcut(getName(),"-r "+getName());
+#endif
+}
+
 void CPObject::maximizeHeight()
 {
     if (mainwindow->zoom <= 100) {
@@ -1105,6 +1114,9 @@ void CPObject::BuildContextMenu(QMenu * menu)
     Vibrate();
     menu->addAction(tr("Maximize width"),this,SLOT(maximizeWidth()));
     menu->addAction(tr("Maximize height"),this,SLOT(maximizeHeight()));
+#ifdef Q_OS_ANDROID
+     menu->addAction(tr("Create desktop Shortcut"),this,SLOT(createShortcut()));
+#endif
 
 	if ( dynamic_cast<CpcXXXX *>(this) )
 	{

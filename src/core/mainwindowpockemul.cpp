@@ -62,6 +62,7 @@ PockEmul is a Sharp Pocket Computer Emulator.
 extern MainWindowPockemul* mainwindow;
 extern DownloadManager *downloadManager;
 extern int ask(QWidget *parent,QString msg,int nbButton);
+extern QString m_getArgs();
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
@@ -1103,13 +1104,26 @@ void MainWindowPockemul::initCommandLine(void) {
 //          { QCommandLine::Param, NULL, "source", "The sources", QCommandLine::MandatoryMultiple },
 //          { QCommandLine::None, NULL, NULL, NULL, QCommandLine::Default }
 //        };
-       cmdline = new QCommandLine(this);
+#ifdef Q_OS_ANDROID
+    QString args = m_getArgs();
+    qWarning()<<args;
+    if ( ! args.isEmpty()) {
+        cmdline = new QCommandLine(args.prepend("pockemul ").split(' '));
+    }
+    else return;
+
+#else
+    QStringList sl;
+    sl << "pockemul"<<"-r"<<"PC-1262";
+        cmdline = new QCommandLine(sl);
+#endif
 //       cmdline->addOption(QChar('v'), "verbose", "verbose level (0-3)");
 //       cmdline->addSwitch(QChar('l'), "list", "show a list");
 //       cmdline->addParam("source", "the sources", QCommandLine::MandatoryMultiple);
 //       cmdline->addParam("target", "the target", QCommandLine::Mandatory);
 
        cmdline->addOption('l',"load","Load a .pml session file");
+       cmdline->addOption('r',"run","Run a pocket");
        cmdline->addSwitch('v', "version", "show current version");
 
 
@@ -1139,6 +1153,12 @@ void MainWindowPockemul::optionFound(const QString & name, const QVariant & valu
 {
   qDebug() << "Option:" << name << value;
   if (name == "load") { opensession(value.toString()); }
+  if (name == "run") {
+      CPObject * pPC =LoadPocket(value.toString());
+#ifdef Q_OS_ANDROID
+      pPC->maximizeWidth();
+#endif
+  }
 }
 
 void MainWindowPockemul::paramFound(const QString & name, const QVariant & value)

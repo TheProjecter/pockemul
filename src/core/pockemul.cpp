@@ -36,6 +36,7 @@ static jmethodID s_PockemulObjectDialogMethodID=0;
 static jmethodID s_PockemulObjectVibrateMethodID=0;
 static jmethodID s_PockemulObjectopenURLMethodID=0;
 static jmethodID s_PockemulObjectaddShortcutMethodID=0;
+static jmethodID s_PockemulObjectgetArgsMethodID=0;
 static jmethodID s_HapticObjectPlayMethodID=0;
 static jmethodID s_HapticObjectPauseMethodID=0;
 static jmethodID s_HapticObjectStopMethodID=0;
@@ -54,11 +55,12 @@ void test();
 int main(int argc, char *argv[])
 {
 
+
     QApplication *app = new QApplication(argc, argv);
      app->setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 #if QT_VERSION >= 0x050000
      app->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents,false);
-     test();
+//     test();
 #else
 
 #endif
@@ -239,9 +241,10 @@ qWarning()<<"OK6";
 
     mainwindow->show();
 
-#ifndef Q_OS_ANDROID
+//#ifndef Q_OS_ANDROID
+    qWarning()<<"OK7";
     mainwindow->initCommandLine();
-#endif
+//#endif
 
 //    mainwindow->LoadPocket(PC1211);
 #ifdef EMSCRIPTEN
@@ -265,8 +268,21 @@ jstring fromQString	(	JNIEnv * 	env,QString * 	qstring	 )
       return env->NewString((const jchar *) qstring->unicode(), (long) qstring->length());
 }
 
+// converting jstring to QString
+QString toQString(JNIEnv * env,jstring 	str)
+{
+    if (str == 0L) {
+        return "";
+    }
+    // converting jstring to QString
+    const char *strResult = env->GetStringUTFChars( str, 0 );
+    QString strres(strResult);
+    env->ReleaseStringUTFChars( str, strResult);
 
-// this method is called immediately after the module is load
+    return strres;
+}
+
+      // this method is called immediately after the module is load
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 {
     JNIEnv* env;
@@ -317,10 +333,18 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
     }
 
     // search for openURL method
-    s_PockemulObjectaddShortcutMethodID = env->GetMethodID(s_PockemulObjectClassID, "addShortcut", "(Ljava/lang/String;)V");
+    s_PockemulObjectaddShortcutMethodID = env->GetMethodID(s_PockemulObjectClassID, "addShortcut", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!s_PockemulObjectaddShortcutMethodID)
     {
-        qCritical()<<"Can't find Vibrate method";
+        qCritical()<<"Can't find openURL method";
+        return -1;
+    }
+
+    // search for getArgs method
+    s_PockemulObjectgetArgsMethodID = env->GetMethodID(s_PockemulObjectClassID, "getArgs", "()Ljava/lang/String;");
+    if (!s_PockemulObjectgetArgsMethodID)
+    {
+        qCritical()<<"Can't find openURL method";
         return -1;
     }
     qWarning()<<"Yahooo !";
@@ -328,6 +352,34 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 }
 
 #endif
+
+QString m_getArgs() {
+#ifdef Q_OS_ANDROID
+    JNIEnv* env;
+        // Qt is running in a different thread than Java UI, so you always Java VM *MUST* be attached to current thread
+        if (s_javaVM->AttachCurrentThread(&env, NULL)<0)
+        {
+            qCritical()<<"AttachCurrentThread failed";
+            return 0;
+        }
+        m_PockemulObject = env->NewGlobalRef(env->NewObject(s_PockemulObjectClassID, s_PockemulObjectConstructorMethodID));
+
+        jstring res = (jstring) env->CallObjectMethod(m_PockemulObject, s_PockemulObjectgetArgsMethodID);
+
+        qWarning()<<"return:"<<res;
+
+
+
+            QString s= toQString(env,res);
+            qWarning()<<"s="<<s;
+
+            // Don't forget to detach from current thread
+            s_javaVM->DetachCurrentThread();
+            return s;
+
+#endif
+
+}
 
 int ask(QWidget *parent, QString msg, int nbButton) {
 #ifdef Q_OS_ANDROID
@@ -414,7 +466,7 @@ void m_openURL(QUrl url) {
     QDesktopServices::openUrl(url);
 }
 
-void m_addShortcut(QString param) {
+void m_addShortcut(QString name, QString param) {
 #ifdef Q_OS_ANDROID
 
     qWarning()<<"assShortcut";
@@ -428,7 +480,8 @@ void m_addShortcut(QString param) {
             m_PockemulObject = env->NewGlobalRef(env->NewObject(s_PockemulObjectClassID, s_PockemulObjectConstructorMethodID));
 
             jstring parameter = fromQString(env,&param);
-            env->CallVoidMethod(m_PockemulObject, s_PockemulObjectaddShortcutMethodID,parameter);
+            jstring nameparam = fromQString(env,&name);
+            env->CallVoidMethod(m_PockemulObject, s_PockemulObjectaddShortcutMethodID,nameparam,parameter);
 
             // Don't forget to detach from current thread
             s_javaVM->DetachCurrentThread();

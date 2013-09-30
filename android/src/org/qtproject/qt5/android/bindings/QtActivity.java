@@ -73,6 +73,8 @@ import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import dalvik.system.DexClassLoader;
 
+import org.qtproject.pockemul.Pockemul;
+
 //@ANDROID-11
 //QtCreator import android.app.Fragment;
 //QtCreator import android.view.ActionMode;
@@ -147,9 +149,14 @@ public class QtActivity extends Activity
     private String[] m_qtLibs = null; // required qt libs
 
     private static QtActivity QtActivityInstance;
+    private static String args;
     public static QtActivity getQtActivityInstance()
     {
         return QtActivity.QtActivityInstance;
+    }
+    public static String getQtActivityArgs()
+    {
+        return QtActivity.args;
     }
 
     // this function is used to load and start the loader
@@ -414,6 +421,24 @@ public class QtActivity extends Activity
     private void startApp(final boolean firstStart)
     {
         try {
+        //get the received intent
+        Intent receivedIntent = getIntent();
+        //get the action
+        String receivedAction = receivedIntent.getAction();
+        args = receivedIntent.getStringExtra("args");
+Log.i("Qt", "*******************************");
+        if (receivedAction != null) {
+            Log.i("Qt", receivedAction);
+
+            // and get whatever type user account id is
+        }
+        if (args != null) {
+            Log.i("Qt", args);
+
+
+            // and get whatever type user account id is
+        }
+
             if (m_activityInfo.metaData.containsKey("android.app.qt_sources_resource_id")) {
                 int resourceId = m_activityInfo.metaData.getInt("android.app.qt_sources_resource_id");
                 m_sources = getResources().getStringArray(resourceId);

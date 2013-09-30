@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.Intent.ShortcutIconResource;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Looper;
@@ -178,23 +179,29 @@ private int nbButtons;
 
     }
 
-    public void addShortcut(String param) {
+    public String getArgs() {
+        return QtActivity.getQtActivityArgs();
+    }
+
+    public void addShortcut(String name,String param) {
     //Adding shortcut for MainActivity
     //on Home screen
     Log.i("Qt", "***** AddShortcut");
     Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
 
     // Shortcut name
-    shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "PockEmul");
+    shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
     shortcut.putExtra("duplicate", false);  // Just create once
 
     // Setup current activity shoud be shortcut object
-    ComponentName comp = new ComponentName("org.qtproject.example.pockemul","org.qtproject.qt5.android.bindings.QtApplication");
-    shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_MAIN).setComponent(comp));
+    ComponentName comp = new ComponentName("org.qtproject.pockemul","org.qtproject.qt5.android.bindings.QtActivity");
+    Intent intent = new Intent(Intent.ACTION_MAIN).setComponent(comp);
+    intent.putExtra("args",param);
+    shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
 
     // Set shortcut icon
-//    ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
-//    shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
+    ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(QtActivity.getQtActivityInstance(), R.drawable.icon);
+    shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
 
     QtActivity.getQtActivityInstance().sendBroadcast(shortcut);
     }

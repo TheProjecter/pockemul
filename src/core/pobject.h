@@ -264,7 +264,8 @@ public slots:
     void Postit();
     void VirtualKeyboard();
 
-	
+
+    void createShortcut();
 private:
     QRect rect();
 
