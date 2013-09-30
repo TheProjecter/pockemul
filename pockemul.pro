@@ -17,7 +17,7 @@ QT += \
 #    opengl \
     xml \
 #    multimedia \
-    script declarative  \
+    script declarative sensors \
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -938,7 +938,8 @@ OTHER_FILES += \
     cloud/content/knob.svg \
     cloud/content/background.svg \
     cloud/content/counter.js \
-    cloud/content/SortListModel.qml
+    cloud/content/SortListModel.qml \
+    cloud/content/Test.qml
 
 
 

@@ -5,12 +5,13 @@ Rectangle {
     property alias textColor: edit.color
     property alias wrapMode: edit.wrapMode
     property alias readOnly: edit.readOnly
+    property alias interactive: flick.interactive
     property int nbLine: 0
 
     id: rootEdit
 
     width: 200
-    height: (nbLine==0)? 100 : nbLine* edit.font.pointSize +20
+    height: (nbLine==0)? 100 : nbLine * edit.font.pointSize * 1.3 +20
 
     clip: true
     Rectangle {

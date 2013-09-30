@@ -2,7 +2,7 @@ import QtQuick 1.0
 import "TabbedQuickApp"
 import "content"
 import "."
-//import QtSensors 5.0
+//import QtSensors 5.0 as Sensors
 
 Rectangle {
     width: 360
@@ -107,6 +107,20 @@ Rectangle {
                     onClicked: {
                         cloud.showFileDialog();
                     }
+                }
+                TextButton {
+                    text: "analyse sensors"
+                    expand: true
+                    font.pointSize: 16
+                    onClicked: {
+                        var types = Sensors.sensorTypes();
+                        text = types.join(", ");
+
+                    }
+                }
+                TextButton {
+                    text: "Create shortcut"
+                    onClicked: cloud.addShortcut("");
                 }
 
 

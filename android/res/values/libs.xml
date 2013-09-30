@@ -23,6 +23,10 @@
         <item>lib--Managed_by_Qt_Creator--plugins_imageformats_libqtiff.so:plugins/imageformats/libqtiff.so</item>
         <item>lib--Managed_by_Qt_Creator--plugins_imageformats_libqwbmp.so:plugins/imageformats/libqwbmp.so</item>
         <item>lib--Managed_by_Qt_Creator--plugins_bearer_libqgenericbearer.so:plugins/bearer/libqgenericbearer.so</item>
+        <item>lib--Managed_by_Qt_Creator--plugins_sensors_libqtsensors_android.so:plugins/sensors/libqtsensors_android.so</item>
+        <item>lib--Managed_by_Qt_Creator--plugins_sensors_libqtsensors_generic.so:plugins/sensors/libqtsensors_generic.so</item>
+        <item>lib--Managed_by_Qt_Creator--plugins_sensorgestures_libqtsensorgestures_plugin.so:plugins/sensorgestures/libqtsensorgestures_plugin.so</item>
+        <item>lib--Managed_by_Qt_Creator--plugins_sensorgestures_libqtsensorgestures_shakeplugin.so:plugins/sensorgestures/libqtsensorgestures_shakeplugin.so</item>
         <item>lib--Managed_by_Qt_Creator--plugins_sqldrivers_libqsqlite.so:plugins/sqldrivers/libqsqlite.so</item>
         <item>lib--Managed_by_Qt_Creator--plugins_accessible_libqtaccessiblequick.so:plugins/accessible/libqtaccessiblequick.so</item>
         <item>lib--Managed_by_Qt_Creator--plugins_accessible_libqtaccessiblewidgets.so:plugins/accessible/libqtaccessiblewidgets.so</item>
@@ -44,6 +48,7 @@
         <item>Qt5Gui</item>
         <item>Qt5Network</item>
         <item>Qt5Script</item>
+        <item>Qt5Sensors</item>
         <item>Qt5Sql</item>
         <item>Qt5Xml</item>
         <item>Qt5Widgets</item>

@@ -30,6 +30,7 @@ class QCommandLine;
 class DownloadManager;
 class ServeurTcp;
 class CloudWindow;
+class QSensor;
 
 #ifdef P_AVOID
 namespace Avoid {
@@ -97,7 +98,7 @@ public:
 
     void initObjectTable();
 
-
+QSensor *sensor;
 
     QString saveassessionString();
 public slots:

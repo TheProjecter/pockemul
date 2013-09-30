@@ -215,12 +215,13 @@ Rectangle {
             width: 220; height: pmlview.height
             color: "#efefef"
 
+
             ListView {
                 id: categories
                 focus: true
                 anchors.fill: parent
                 model: categoryModel //xmlcategoryModel
-                footer: refreshButtonDelegate
+                header: refreshButtonDelegate
                 delegate: CategoryDelegate {}
                 highlight: Rectangle { color: "steelblue" }
                 highlightMoveSpeed: 9999999
@@ -242,7 +243,8 @@ Rectangle {
         Item {
             width: categories.width; height: 60
             Text {
-                text: "Refresh"
+                id: expandcollapsebutton
+                text: "<"
                 font { family: "Helvetica"; pixelSize: 16; bold: true }
                 anchors {
                     left: parent.left; leftMargin: 15
@@ -251,7 +253,12 @@ Rectangle {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: populateCategoryModel();//xmlcategoryModel.reload();
+                onClicked: {
+
+                   categoriesView.width = (expandcollapsebutton.text=="<")? 50 : 220;
+                    expandcollapsebutton.text = (expandcollapsebutton.text=="<")? ">" : "<";
+                 //   populateCategoryModel();//xmlcategoryModel.reload();
+                }
             }
         }
     }

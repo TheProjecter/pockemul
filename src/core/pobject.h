@@ -29,6 +29,7 @@ class DialogDump;
 class DialogDasm;
 class DialogVKeyboard;
 class TapAndHoldGesture;
+class QSwipeGesture;
 
 #include "slot.h"
 
@@ -155,6 +156,7 @@ public:
 	int		KeyMapLenght;
 	BYTE	LastKey;
     bool	Front;
+    bool fullscreenMode;
 	
 	void fillSoundBuffer(BYTE val);
 
@@ -230,6 +232,7 @@ public:
 
 
 
+    void swipeTriggered(QSwipeGesture *gesture);
 signals:
     void msgError(QString);
 
@@ -238,6 +241,8 @@ public slots:
     void audioStateChanged(QAudio::State state);
 #endif
 
+    void maximizeWidth();
+    void maximizeHeight();
     void tapAndHold(QMouseEvent *);
     void contextMenuEvent ( QContextMenuEvent * event );
 	void slotExit();

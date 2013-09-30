@@ -1,6 +1,7 @@
 #include <qglobal.h>
 #if QT_VERSION >= 0x050000
 #   include <QtWidgets>
+#   include <QSensorReading>
 #else
 #   include <QtCore>
 #   include <QtGui>
@@ -72,6 +73,7 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
 		SnapPts = QPoint(0,0);
 		
 		Front = true;
+        fullscreenMode = false;
 		fillSoundBuffer_old_state = -1;
 
 		dialogkeylist	= 0;
@@ -179,6 +181,56 @@ QRect CPObject::RectWithLinked(void) {
     return r;
 }
 
+void CPObject::maximizeHeight()
+{
+    if (mainwindow->zoom <= 100) {
+        // Compute global rect
+        QRect rs = RectWithLinked();
+        int rw= 100*mainwindow->centralwidget->rect().width()/rs.width();
+        int rh= 100*mainwindow->centralwidget->rect().height()/rs.height();
+        int r = MAX(rw,rh);
+        if (r>100) {
+            mainwindow->doZoom(QPoint(0,0),1,r-mainwindow->zoom);
+            //move to upper left
+            // Fetch all_object and move them
+            rs = RectWithLinked();
+            mainwindow->MoveAll(- rs.topLeft());
+            fullscreenMode = true;
+            grabGesture(Qt::SwipeGesture);
+            qWarning()<<"GrabGesture SwipeGesture";
+        }
+    }
+    else {
+        mainwindow->doZoom(QPoint(0,0),-1,mainwindow->zoom-100);
+        fullscreenMode = false;
+        ungrabGesture(Qt::SwipeGesture);
+        qWarning()<<"unGrab Gesture SwipeGesture";
+    }
+}
+
+void CPObject::maximizeWidth()
+{
+    if (mainwindow->zoom <= 100) {
+        // Compute global rect
+        QRect rs = RectWithLinked();
+        int rw= 100*mainwindow->centralwidget->rect().width()/rs.width();
+        int rh= 100*mainwindow->centralwidget->rect().height()/rs.height();
+        int r = MIN(rw,rh);
+        if (r>100) {
+            mainwindow->doZoom(QPoint(0,0),1,r-mainwindow->zoom);
+            //move to upper left
+            // Fetch all_object and move them
+            rs = RectWithLinked();
+            mainwindow->MoveAll(- rs.topLeft());
+            fullscreenMode = true;
+        }
+    }
+    else {
+        mainwindow->doZoom(QPoint(0,0),-1,mainwindow->zoom-100);
+        fullscreenMode = false;
+    }
+}
+
 void CPObject::MoveWithLinked(QPoint p) {
     // Search all conected objects then move them
     QList<CPObject *> ConList;
@@ -275,6 +327,32 @@ quint64 CPObject::runRange(quint64 step) {
 }
 
 bool CPObject::run(void){
+//    if (fullscreenMode) {
+//        if (QSensorReading *reading = mainwindow->sensor->reading()) {
+//            qreal x = reading->property("x").value<qreal>();
+//            qreal y = reading->property("y").value<qreal>();
+//            qreal z = reading->property("z").value<qreal>();
+//            //qreal y = reading->value(1).value<qreal>();
+//            //                    qWarning()<<"x="<<x<<"  y="<<y<<"  z="<<z;
+//            if (abs((int)x)>5) {
+//                if (x<0) {
+//                    // move left
+//                    if (posx()<50) {
+//                        MoveWithLinked(QPoint(10,0));//centralwidget->rect().width() - CurrentpPC->width()*zoom/100,0));
+//                        update();
+//                    }
+//                }
+//                else {
+//                    // move right
+//                    if ((posx()+width()) > mainwindow->centralWidget()->rect().width()) {
+//                        MoveWithLinked(QPoint( -10,0));//CurrentpPC->width()*zoom/100 - centralwidget->rect().width(),0));
+//                        update();
+//                    }
+//                }
+//            }
+//        }
+//    }
+
     if ((resetAt>0) && (pTIMER->state >= resetAt)) {
         Reset();
         resetAt = 0;
@@ -443,6 +521,9 @@ bool CPObject::event(QEvent *event)
  {
 
      if (event->type() == QEvent::Gesture) {
+         if (QGesture *swipe = (static_cast<QGestureEvent*>(event))->gesture(Qt::SwipeGesture))
+             swipeTriggered(static_cast<QSwipeGesture *>(swipe));
+         else
          if (QGesture *tap =  (static_cast<QGestureEvent*>(event))->gesture(Qt::TapAndHoldGesture)) {
              const QPoint pos = (static_cast<QTapAndHoldGesture *>(tap))->position().toPoint();
 //             qWarning()<< (static_cast<QTapAndHoldGesture *>(tap))->timeout()<<pos<<tap->gestureType()<<tap->state();
@@ -464,6 +545,23 @@ bool CPObject::event(QEvent *event)
      return QWidget::event(event);
  }
 
+void CPObject::swipeTriggered(QSwipeGesture *gesture)
+{
+    qWarning()<<"SWIPE:";
+    if (gesture->state() == Qt::GestureFinished) {
+        if (fullscreenMode) {
+            if (gesture->horizontalDirection() == QSwipeGesture::Left) {
+                // move to left;
+                qWarning()<<"SWIPE LEFT";
+            }
+            else {
+                // move to right
+                qWarning()<<"SWIPE LEFT";
+            }
+            update();
+        }
+    }
+}
 
 void CPObject::wheelEvent(QWheelEvent *event) {
 
@@ -639,9 +737,12 @@ void CPObject::mousePressEvent(QMouseEvent *event)
     }
     else
     {
-        setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
-        startPosDrag = true;
-        PosDrag = event->globalPos();
+//        if (!fullscreenMode)
+        {
+            setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
+            startPosDrag = true;
+            PosDrag = event->globalPos();
+        }
     }
 
     event->accept();
@@ -650,26 +751,34 @@ void CPObject::mousePressEvent(QMouseEvent *event)
 
 void CPObject::mouseMoveEvent( QMouseEvent * event )
 {
-//    _gestureHandler->handleEvent( event );
-    if (dialogkeylist)
+//    if (!fullscreenMode)
     {
-        if (startKeyDrag)
+        //    _gestureHandler->handleEvent( event );
+        if (dialogkeylist)
         {
-            QPoint delta(event->globalPos() - KeyDrag);
-            dialogkeylist->i->Rect.adjust(delta.x(),delta.y(),delta.x(),delta.y());
-            pKEYB->modified = true;
-            KeyDrag = event->globalPos();
-                        update();
-            event->accept();
-            return;
+            if (startKeyDrag)
+            {
+                QPoint delta(event->globalPos() - KeyDrag);
+                dialogkeylist->i->Rect.adjust(delta.x(),delta.y(),delta.x(),delta.y());
+                pKEYB->modified = true;
+                KeyDrag = event->globalPos();
+                update();
+                event->accept();
+                return;
+            }
         }
-    }
 
         if (startPosDrag)
         {
             // Move all conected objects
             QPoint delta(event->globalPos() - PosDrag);
             if (delta.manhattanLength() > 5) {
+                if (fullscreenMode) {
+                    delta.setY(0);
+                    if (delta.x()>0) delta.setX(MIN(delta.x(),50-posx()));
+                    if (delta.x()<0) delta.setX(MAX(delta.x(),mainwindow->centralwidget->width()- (posx()+width())));
+
+                }
                 MoveWithLinked(delta);
                 PosDrag = event->globalPos();
                 update();
@@ -679,28 +788,28 @@ void CPObject::mouseMoveEvent( QMouseEvent * event )
         }
 
 #ifndef Q_OS_ANDROID
-    if (pKEYB)
-    {
-        QPoint pts(event->x() , event->y());
-        if (pKEYB->KeyClick(pts))
+        if (pKEYB)
         {
-            setCursor(Qt::PointingHandCursor);
-            setToolTip(pKEYB->KeyString(pts));
-                        event->accept();
+            QPoint pts(event->x() , event->y());
+            if (pKEYB->KeyClick(pts))
+            {
+                setCursor(Qt::PointingHandCursor);
+                setToolTip(pKEYB->KeyString(pts));
+                event->accept();
+            }
+            else
+            {
+                setCursor(Qt::ArrowCursor);
+            }
         }
-        else
-        {
-            setCursor(Qt::ArrowCursor);
-        }
-    }
 #endif
 
-    if ( (parentWidget() != mainwindow->centralwidget)
-        && (parentWidget() != 0))
-    {
-        QApplication::sendEvent(parentWidget(), event);
+        if ( (parentWidget() != mainwindow->centralwidget)
+             && (parentWidget() != 0))
+        {
+            QApplication::sendEvent(parentWidget(), event);
+        }
     }
-
 }
 
 #define SNAPRANGE 20
@@ -994,6 +1103,9 @@ menu->popup(event->globalPos () );
 void CPObject::BuildContextMenu(QMenu * menu)
 {
     Vibrate();
+    menu->addAction(tr("Maximize width"),this,SLOT(maximizeWidth()));
+    menu->addAction(tr("Maximize height"),this,SLOT(maximizeHeight()));
+
 	if ( dynamic_cast<CpcXXXX *>(this) )
 	{
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));

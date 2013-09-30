@@ -1,5 +1,9 @@
+#include <qglobal.h>
 #if QT_VERSION >= 0x050000
 #   include <QtWidgets>
+#   include <QSensor>
+#   include <QSensorReading>
+#   include <QOrientationSensor>
 #else
 #   include <QtCore>
 #   include <QtGui>
@@ -146,6 +150,8 @@ qWarning()<<" create MainWindowPockemul ";
 server = new ServeurTcp(this);
 #endif
 
+sensor = new QSensor("QRotationSensor");//QGyroscope");
+    sensor->start();
 
 }
 
@@ -842,9 +848,7 @@ bool MainWindowPockemul::event(QEvent *event)
 bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 {
     qWarning()<<"MainWindowPockemul::gestureEvent";
-//    if (QGesture *swipe = event->gesture(Qt::SwipeGesture))
-//        swipeTriggered(static_cast<QSwipeGesture *>(swipe));
-//    else
+
 //    if (QGesture *pan = event->gesture(Qt::PanGesture))
 //        panTriggered(static_cast<QPanGesture *>(pan));
     if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
@@ -872,6 +876,8 @@ bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 //     verticalOffset += delta.y();
 //     update();
 // }
+
+
 
  void MainWindowPockemul::pinchTriggered(QPinchGesture *gesture)
  {
@@ -926,6 +932,7 @@ void MainWindowPockemul::updateFrameTimer()
     for (int i = 0;i < listpPObject.size(); i++)
     {
             CPObject* CurrentpPC = listpPObject.at(i);
+
             if (CurrentpPC && CurrentpPC->pTIMER) {
                 Current_State = CurrentpPC->pTIMER->state;
 
@@ -936,6 +943,8 @@ void MainWindowPockemul::updateFrameTimer()
                 // Update ToolTip only one time per second
                 if ( deltaTime >= 1000)
                 {
+                    // later
+
                     QString str;
                     if (CurrentpPC->getfrequency()) {
                         //	AddLog(LOG_TIME,tr("Time Frame elapsed : %1 ms  nb=%2 cur=%3 last=%4").arg(deltaTime).arg(CurrentpPC->pTIMER->nb_state).arg(Current_State).arg(CurrentpPC->pTIMER->last_state));

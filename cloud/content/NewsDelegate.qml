@@ -94,9 +94,10 @@ Item {
                 text: (title=="")?"No title":title
                 nbLine: 1
                 readOnly: (detailsOpacity==0) || (!ismine)
+                interactive: !readOnly
 
                 wrapMode: Text.WordWrap
-                width: parent.width - 40 - closeButton.width - 5
+                width: parent.width - 40 - (buttonColumn.visible? buttonColumn.width:0) - 5
                 //                height: 30
                 font { bold: true; family: "Helvetica"; pointSize: 14 }
                 textColor: changed ? "red" : "black"
@@ -117,13 +118,13 @@ Item {
                 source: serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid)
                 fillMode: Image.PreserveAspectFit;
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-//                        root.bigposter.source = serverURL+"getPMLsnap/"+pmlid;
-//                        root.bigposter.visible = true;
-                    }
-                }
+//                MouseArea {
+//                    anchors.fill: parent
+////                    onClicked: {
+////                        root.bigposter.source = serverURL+"getPMLsnap/"+pmlid;
+////                        root.bigposter.visible = true;
+////                    }
+//                }
             }
             TextEdit {
                 id: objectsText
@@ -156,6 +157,8 @@ Item {
         opacity: delegate.detailsOpacity
     }
     Column {
+        id: buttonColumn
+        visible: (delegate.detailsOpacity==1) || ((width+pmlThumbImage.width)<column.width)
 //        width: 150
 //        width: childrenRect.width
         y:40
@@ -377,7 +380,7 @@ Item {
         PropertyChanges { target: pmlThumbImage; width: 200; height: 200;} // Make picture bigger
         PropertyChanges { target: delegate; detailsOpacity: 1; x: 0 } // Make details visible
         PropertyChanges { target: delegate; height: list.height } // Fill the entire list area with the detailed view
-        PropertyChanges { target: categoriesView; width: root.isPortrait?0:220 }
+        PropertyChanges { target: categoriesView; width: root.isPortrait?0:categoriesView.width }
         // Move the list so that this item is at the top.
         PropertyChanges { target: delegate.ListView.view; explicit: true; contentY: delegate.y }
 

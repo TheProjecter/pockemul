@@ -35,15 +35,17 @@
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
+extern int ask(QWidget *parent, QString msg, int nbButton);
+extern void m_addShortcut(QString param);
 
 CloudWindow::CloudWindow(QWidget *parent)
     : QWidget(parent)
 {
 
     view = new QDeclarativeView(this);
+    view->rootContext()->setContextProperty("cloud", this);
     view->setSource(QUrl("qrc:/main.qml"));
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    view->rootContext()->setContextProperty("cloud", this);
     connect(view->engine(), SIGNAL(quit()), this,SLOT(hide()));
     object = view->rootObject();
     QObject::connect(object, SIGNAL(sendWarning(QString)), this, SLOT(warning(QString)));
@@ -238,9 +240,13 @@ QString CloudWindow::generateKey(QString username,QString password) {
     return QCryptographicHash::hash ( key.toLatin1(), QCryptographicHash::Md5);
 }
 
-extern int ask(QWidget *parent, QString msg, int nbButton);
+
 void CloudWindow::warning(QString msg) {
     ask(this, msg, 1);
+}
+
+void CloudWindow::addShortcut(QString param) {
+    m_addShortcut(param);
 }
 
 bool CloudWindow::isPortraitOrientation() {

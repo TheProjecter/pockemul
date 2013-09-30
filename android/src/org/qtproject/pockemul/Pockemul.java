@@ -19,6 +19,7 @@ package org.qtproject.pockemul;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -175,6 +176,27 @@ private int nbButtons;
         intent.setDataAndType(Uri.fromFile(file),type);
         QtActivity.getQtActivityInstance().startActivity(intent);
 
+    }
+
+    public void addShortcut(String param) {
+    //Adding shortcut for MainActivity
+    //on Home screen
+    Log.i("Qt", "***** AddShortcut");
+    Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+
+    // Shortcut name
+    shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "PockEmul");
+    shortcut.putExtra("duplicate", false);  // Just create once
+
+    // Setup current activity shoud be shortcut object
+    ComponentName comp = new ComponentName("org.qtproject.example.pockemul","org.qtproject.qt5.android.bindings.QtApplication");
+    shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_MAIN).setComponent(comp));
+
+    // Set shortcut icon
+//    ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
+//    shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
+
+    QtActivity.getQtActivityInstance().sendBroadcast(shortcut);
     }
 
 }

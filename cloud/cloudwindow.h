@@ -31,6 +31,7 @@ public:
     Q_INVOKABLE QString generateKey(QString username, QString password);
 
     Q_INVOKABLE bool isPortraitOrientation();
+    Q_INVOKABLE void addShortcut(QString param);
 protected:
     void wheelEvent(QWheelEvent *event);
 

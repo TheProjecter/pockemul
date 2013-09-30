@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QSplashScreen>
 #include <QScreen>
+#include <QSensor>
 
 #include "launchbuttonwidget.h"
 #include "mainwindowpockemul.h"
@@ -34,6 +35,7 @@ static jmethodID s_PockemulObjectConstructorMethodID=0;
 static jmethodID s_PockemulObjectDialogMethodID=0;
 static jmethodID s_PockemulObjectVibrateMethodID=0;
 static jmethodID s_PockemulObjectopenURLMethodID=0;
+static jmethodID s_PockemulObjectaddShortcutMethodID=0;
 static jmethodID s_HapticObjectPlayMethodID=0;
 static jmethodID s_HapticObjectPauseMethodID=0;
 static jmethodID s_HapticObjectStopMethodID=0;
@@ -313,6 +315,14 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         qCritical()<<"Can't find Vibrate method";
         return -1;
     }
+
+    // search for openURL method
+    s_PockemulObjectaddShortcutMethodID = env->GetMethodID(s_PockemulObjectClassID, "addShortcut", "(Ljava/lang/String;)V");
+    if (!s_PockemulObjectaddShortcutMethodID)
+    {
+        qCritical()<<"Can't find Vibrate method";
+        return -1;
+    }
     qWarning()<<"Yahooo !";
     return JNI_VERSION_1_6;
 }
@@ -402,6 +412,29 @@ void m_openURL(QUrl url) {
 
 #endif
     QDesktopServices::openUrl(url);
+}
+
+void m_addShortcut(QString param) {
+#ifdef Q_OS_ANDROID
+
+    qWarning()<<"assShortcut";
+        JNIEnv* env;
+            // Qt is running in a different thread than Java UI, so you always Java VM *MUST* be attached to current thread
+            if (s_javaVM->AttachCurrentThread(&env, NULL)<0)
+            {
+                qCritical()<<"AttachCurrentThread failed";
+
+            }
+            m_PockemulObject = env->NewGlobalRef(env->NewObject(s_PockemulObjectClassID, s_PockemulObjectConstructorMethodID));
+
+            jstring parameter = fromQString(env,&param);
+            env->CallVoidMethod(m_PockemulObject, s_PockemulObjectaddShortcutMethodID,parameter);
+
+            // Don't forget to detach from current thread
+            s_javaVM->DetachCurrentThread();
+            qWarning()<<"End addShortcut";
+
+#endif
 }
 
 #if QT_VERSION >= 0x050000

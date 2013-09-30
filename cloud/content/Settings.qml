@@ -11,14 +11,14 @@ Rectangle {
         SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://ds409/cloud/"}
         SettingsDelegate { id: username; name: "username"; labelString: "User Name"; type: "input"; }
         SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
-        SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action";
+        SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
 
                 var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
                 serverURL = cloud.getValueFor("serverURL","");
                 var url = serverURL+'login?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
-//                console.log('url:'+url);
+                console.log('url:'+url);
                 requestGet(url, function (o) {
 
                     if (o.readyState == 4 ) {
@@ -37,20 +37,20 @@ Rectangle {
                 });
             }
         }
-        SettingsDelegate { name: "apikey"; labelString: "Register new user"; type: "action";
+        SettingsDelegate { name: "register"; labelString: "Register new user"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
 
                 var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
                 serverURL = cloud.getValueFor("serverURL","");
                 var url = serverURL+'register?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
-//                console.log('url:'+url);
+                console.log('url:'+url);
                 requestGet(url, function (o) {
 
                     if (o.readyState == 4 ) {
                         if (o.status==200) {
                             buttonElementEnabled = true;
-                            cloud.saveValueFor(name,o.responseText);
+                            cloud.saveValueFor("apikey",o.responseText);
                             currentApiKey = o.responseText;
                             apikey.inputText = o.responseText;
                             privateCloud.refresh();
