@@ -214,14 +214,27 @@ void Cpc1600::Reset(void)
 void Cpc1600::TurnON(void)
 {
     AddLog(LOG_FUNC,"Cpc1600::TurnOn");
-
+    if (pKEYB->LastKey == 0) pKEYB->LastKey = K_POW_ON;
+    qWarning()<<"power="<<Power;
+    if ( (pKEYB->LastKey == K_POW_ON) ||
+         (!Power && pKEYB->LastKey == K_OF) ||
+         (!Power && pKEYB->LastKey == K_BRK))
+    {
+         qWarning()<<"power ON";
+        AddLog(LOG_MASTER,"Power ON");
+        if (!hardreset) {
+            Initial_Session_Load();
+        }
+        else hardreset = false;
+        off = 0;
+        Power = true;
+        PowerSwitch = PS_RUN;
+        pHD61102_1->updated = pHD61102_2->updated = true;
+        Reset();
+        if (pLCDC) pLCDC->TurnON();
+    }
     //remove(Initial_Session_Fname.toStdString().c_str());
     //pCPU->Reset();
-    pHD61102_1->updated = pHD61102_2->updated = true;
-    Reset();
-    hardreset = true;
-    CpcXXXX::TurnON();
-Reset();
 }
 
 void Cpc1600::TurnOFF()
@@ -1165,12 +1178,7 @@ bool Cpc1600::Get_Connector(void)
     ce1600_connected = pCONNECTOR->Get_pin(1);
 
     // MANAGE SERIAL CONNECTOR
-    // TO DO
-//    PUT_BIT(pCPU->imem[0x23],2,pSIOCONNECTOR->Get_pin(SIO_DS));
-//    PUT_BIT(pCPU->imem[0x23],1,pSIOCONNECTOR->Get_pin(SIO_CD));
-//    PUT_BIT(pCPU->imem[0x23],0,!pSIOCONNECTOR->Get_pin(SIO_CS));
 
-//    PUT_BIT(pCPU->imem[0x23],5,!pSIOCONNECTOR->Get_pin(SIO_CI));
 
     PUT_BIT(pCPU->imem[0x23],2,pSIOCONNECTOR->Get_pin(SIO_DS));
     PUT_BIT(pCPU->imem[0x23],1,pSIOCONNECTOR->Get_pin(SIO_CD));
@@ -1187,24 +1195,25 @@ bool Cpc1600::Get_Connector(void)
 
 void Cpc1600::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
-    menu.addSeparator();
+    BuildContextMenu(menu);
+    menu->addSeparator();
 
         //-----------------------------------------------//
        // Specific Tape menu for the PC1500				//
       // I use a hack to manage tape read and write	   //
      // as i need to improve LH5810 serial emulation  //
     //-----------------------------------------------//
-    QMenu * menuTape = menu.addMenu(tr("SIO"));
+    QMenu * menuTape = menu->addMenu(tr("SIO"));
         menuTape->addAction(tr("Load..."),this,SLOT(LoadSIO()));
         menuTape->addAction(tr("Play"),pce152,SLOT(Play()));
         menuTape->addAction(tr("Stop"),pce152,SLOT(StopPlay()));
         menuTape->addAction(tr("Record"),pce152,SLOT(RecTape()));
     //--------------------------------------------------
 
-    menu.exec(event->globalPos () );
+        menu->popup(event->globalPos () );
+        event->accept();
 }
 
 bool	CLH5810_PC1600::init(void)

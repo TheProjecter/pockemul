@@ -13,8 +13,8 @@ Clcdc_x07::Clcdc_x07(CPObject *parent)	: Clcdc(parent){						//[constructor]
 void Clcdc_x07::disp()
 {
 
-    if (((Cx07 *)pPC)->pT6834)
-        ((Cx07 *)pPC)->pT6834->RefreshVideo();
+//    if (((Cx07 *)pPC)->pT6834)
+//        ((Cx07 *)pPC)->pT6834->RefreshVideo();
     redraw = false;
 }
 

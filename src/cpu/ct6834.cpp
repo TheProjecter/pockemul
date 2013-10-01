@@ -1,3 +1,4 @@
+// FIXME: UDKRead broken
 
 #include <math.h>
 
@@ -124,6 +125,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
 
     Lng_rsp = Cmd_T6834[Ordre].lng_rsp;
 
+    AddLog (LOG_TEMP,tr("*** ORDRE = %1").arg(Ordre,2,16,QChar('0')));
 //    if (fp_tmp3)  fprintf(fp_tmp3,"ORDER %02X\n",Ordre);
  switch (Ordre & 0x7F)
   {
@@ -303,6 +305,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
                   //val = Send_Cmd_T6834[1];
                   for(i = 0; i < 42; i++) {
                       UINT8 code = mem[0x800+udk_ofs[Send_Cmd_T6834[1]] + i];//General_Info.F_Key [Send_Cmd_T6834[1]-1][i];
+                      qWarning()<<"udkread("<<i<<"="<<code;
                       Rsp[i] = code;
                       if(!code) {
                           return (i+1);
@@ -561,7 +564,7 @@ void CT6834::RefreshVideo (void)
 if (!General_Info.LcdOn) return;
     //AffCurseur ();
     if (cursorTimer.elapsed()>500) {
-        qWarning()<<"Cursor";
+//        qWarning()<<"Cursor";
         curOnOff = !curOnOff;
         pPC->pLCDC->redraw = true;
         cursorTimer.restart();
@@ -710,8 +713,7 @@ void CT6834::Preset (int x, int y)
 #if AFF_CMD_T6834
     fprintf (stderr,"Preset %d,%d ",x,y);
 #endif
-    if ( x>=0 && x <120 && y>=0 && y<32)
-        Ram_Video[x][y]=0;
+    setRamVideo(x,y,0);
 }
 
 void CT6834::Line (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
@@ -811,7 +813,7 @@ void CT6834::Load_Internal(QXmlStreamReader *xmlIn)
             QByteArray ba_mem = QByteArray::fromBase64(xmlIn->attributes().value("Mem").toString().toLatin1());
             memcpy((char *)mem,ba_mem.data(),ba_mem.size());
             QByteArray ba_lcd = QByteArray::fromBase64(xmlIn->attributes().value("Lcd").toString().toLatin1());
-            memcpy((char *)&Ram_Video,ba_lcd.data(),ba_lcd.size());
+            memcpy((char *)&Ram_Video,ba_lcd.data(),MIN(ba_lcd.size(),sizeof(Ram_Video)));
         }
         xmlIn->skipCurrentElement();
     }
@@ -1015,10 +1017,11 @@ void CT6834::TurnOFF() {
 
 void CT6834::setRamVideo(int x, int y,UINT8 val)
 {
-    if ((x<120) && ( y<32)) {
+    if ((x>=0) && (x<120) && (y>=0) && ( y<32)) {
         Ram_Video[x][y] = val;
     }
 }
+
 #define KEY(a) (Clavier.contains(a) || Clavier.contains(TOUPPER(a)))
 
 quint8 CT6834::getKey(quint16 strobe) {

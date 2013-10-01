@@ -127,14 +127,15 @@ void Crlp6001::paintEvent(QPaintEvent *event)
 
 void Crlp6001::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
 //    menu.addSeparator();
 
 //    menu.addAction(tr("Show console"),this,SLOT(ShowConsole()));
 //    menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+    event->accept();
 }

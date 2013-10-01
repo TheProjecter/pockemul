@@ -154,15 +154,16 @@ bool Cmd100::init(void)
 
 void Cmd100::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
-    menu.addSeparator();
+    menu->addSeparator();
 
-    menu.addAction(QString("Load Disk ("+fdd.filename+")"),this,SLOT(definePath()));
+    menu->addAction(QString("Load Disk ("+fdd.filename+")"),this,SLOT(definePath()));
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+    event->accept();
 }
 
 void Cmd100::definePath(void){

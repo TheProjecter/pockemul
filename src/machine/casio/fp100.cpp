@@ -137,17 +137,18 @@ bool Cfp100::Change(int pin) {
 
 void Cfp100::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
-    QMenu * menuPaper = menu.addMenu(tr("Paper"));
+    QMenu * menuPaper = menu->addMenu(tr("Paper"));
     menuPaper->addAction(tr("Copy"),paperWidget,SLOT(paperCopy()));
     menuPaper->addAction(tr("Cut"),paperWidget,SLOT(paperCut()));
     menuPaper->addAction(tr("Save Image ..."),paperWidget,SLOT(paperSaveImage()));
     menuPaper->addAction(tr("Save Text ..."),paperWidget,SLOT(paperSaveText()));
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+    event->accept();
 }
 
 void Cfp100::ComputeKey(void)

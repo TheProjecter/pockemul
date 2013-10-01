@@ -117,12 +117,13 @@ AddLog(LOG_PRINTER,tr("Initial value for PIN_BUSY %1").arg(GET_PIN(PIN_BUSY)?"1"
 
 void Cce140f::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
-    menu.addSeparator();
-    menu.addAction(tr("Define Directory"),this,SLOT(definePath()));
-    menu.exec(event->globalPos () );
+    BuildContextMenu(menu);
+    menu->addSeparator();
+    menu->addAction(tr("Define Directory"),this,SLOT(definePath()));
+    menu->popup(event->globalPos () );
+    event->accept();
 }
 
 void Cce140f::definePath(void){

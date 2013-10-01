@@ -1,4 +1,5 @@
 //TODO Migrate sound to QMultimedia
+//TODO: Save session with Pen position and paper image
 
 #include <QPainter>
 #include <QResource>

@@ -39,18 +39,19 @@ Ccesimu::~Ccesimu() {
 
 void Ccesimu::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
-    menu.addSeparator();
+    menu->addSeparator();
 
-    menu.addAction(tr("Show console"),this,SLOT(ShowDialog()));
-    menu.addAction(tr("Hide console"),this,SLOT(HideDialog()));
-    menu.addAction(tr("Help"),this,SLOT(HelpDialog()));
+    menu->addAction(tr("Show console"),this,SLOT(ShowDialog()));
+    menu->addAction(tr("Hide console"),this,SLOT(HideDialog()));
+    menu->addAction(tr("Help"),this,SLOT(HelpDialog()));
 
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+    event->accept();
 }
 
 void Ccesimu::ShowDialog(void) {

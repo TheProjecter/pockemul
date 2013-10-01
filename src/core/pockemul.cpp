@@ -51,6 +51,8 @@ DownloadManager* downloadManager;
 
 
 QString appDir;
+QString workDir;
+
 void test();
 int main(int argc, char *argv[])
 {
@@ -86,7 +88,8 @@ int main(int argc, char *argv[])
         home.mkpath("pockemul/documents");
     }
 
-qWarning()<<"OK2";
+    workDir = QDir::homePath()+"/pockemul/";
+
 #ifdef Q_OS_ANDROID
 //    QFont f = app.font();
 //    f.setItalic(true); //bold also works
@@ -96,15 +99,15 @@ qWarning()<<"OK2";
     QDir d("/");
     d.mkpath("/sdcard/pockemul/documents");
     QDir::setCurrent("/sdcard/pockemul");
+    workDir = "/sdcard/pockemul/";
 
 //    QProxyStyle *s = new QProxyStyle();//QAndroidStyle();
 
 //    QApplication::setStyle(s);//new QAndroidStyle());
 
 #endif
-qWarning()<<"OK3";
 mainwindow = new MainWindowPockemul();
-qWarning()<<"OK4";
+
     appDir = app->applicationDirPath();
 qWarning()<<"OK5";
     qWarning()<<app->applicationDirPath();

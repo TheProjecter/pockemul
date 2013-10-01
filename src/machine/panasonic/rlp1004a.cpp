@@ -365,18 +365,19 @@ void Crlp1004a::paintEvent(QPaintEvent *event)
 
 void Crlp1004a::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
 
-    menu.addAction(tr("Dump Memory"),this,SLOT(Dump()));
-    menu.addSeparator();
+    menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
+    menu->addSeparator();
 
-    menu.addAction(tr("Rotate 180°"),this,SLOT(Rotate()));
+    menu->addAction(tr("Rotate 180°"),this,SLOT(Rotate()));
 //    menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+    event->accept();
 }
 
 void Crlp1004a::Rotate()

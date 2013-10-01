@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "hd61102.h"
 #include "pcxxxx.h"
 #include "cpu.h"
@@ -83,12 +85,17 @@ BYTE CHD61102::instruction(qint16 cmd)
 
 void CHD61102::cmd_on_off(qint16 cmd)
 {
+    qWarning()<<"LCD "<<(info.on_off?"ON":"OFF")<< "  cmd:"<<cmd;
+
     BYTE newon_off = cmd & 0x01;
     if (newon_off != info.on_off) {
         info.on_off = newon_off;
         updated = true;
         AddLog(LOG_DISPLAY,tr("UPDATED on_off"));
     }
+
+    info.on_off = 1;
+
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"LCD :%s\n",on_off?"on":"off");
 }
 

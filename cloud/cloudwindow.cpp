@@ -215,23 +215,24 @@ void CloudWindow::getPML(int id) {
     connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
 }
 
+extern QString workDir;
 
 QString CloudWindow::getValueFor(const QString &objectName, const QString &defaultValue)
 {
-    QSettings settings;
+    QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     if (settings.value(objectName).isNull()) {
         qWarning()<<"getValue("<<objectName<<","<<defaultValue<<")";
         return defaultValue;
     }
-    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<")";
+    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<") in "<<workDir+"config.ini";
     return settings.value(objectName).toString();
 }
 
 void CloudWindow::saveValueFor(const QString &objectName, const QString &inputValue)
 {
-    QSettings settings;
+    QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     settings.setValue(objectName, QVariant(inputValue));
-    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<")";
+    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<") in "<<workDir+"config.ini";
 }
 
 QString CloudWindow::generateKey(QString username,QString password) {

@@ -278,13 +278,13 @@ int  Csio::Get_BaudRate(void) {return baudrate;}
 
 void Csio::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(&menu);
+    BuildContextMenu(menu);
 
-    menu.addSeparator();
+    menu->addSeparator();
 
-    QMenu * menuConnectorType = menu.addMenu(tr("Connector Type"));
+    QMenu * menuConnectorType = menu->addMenu(tr("Connector Type"));
         menuConnectorType->addAction(tr("Sharp 11 pins"));
         menuConnectorType->addAction(tr("Sharp 15 pins"));
         menuConnectorType->addAction(tr("Canon 9 pins"));
@@ -294,10 +294,11 @@ void Csio::contextMenuEvent ( QContextMenuEvent * event )
 
         connect(menuConnectorType, SIGNAL(triggered(QAction*)), this, SLOT(slotConnType(QAction*)));
 
-    menu.addAction(tr("Show console"),this,SLOT(ShowConsole()));
-    menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
+    menu->addAction(tr("Show console"),this,SLOT(ShowConsole()));
+    menu->addAction(tr("Hide console"),this,SLOT(HideConsole()));
 
-    menu.exec(event->globalPos () );
+    menu->popup(event->globalPos () );
+    event->accept();
 }
 
 void Csio::initConnectorType(QString type) {
