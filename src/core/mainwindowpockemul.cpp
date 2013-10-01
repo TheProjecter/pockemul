@@ -1108,14 +1108,15 @@ void MainWindowPockemul::initCommandLine(void) {
     QString args = m_getArgs();
     qWarning()<<args;
     if ( ! args.isEmpty()) {
-        cmdline = new QCommandLine(args.prepend("pockemul ").split(' '));
+        cmdline = new QCommandLine(args.prepend("pockemul ").
+                                   split( QRegExp(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)") ).
+                                   replaceInStrings("\"",""));
     }
     else return;
 
 #else
-    QStringList sl;
-    sl << "pockemul"<<"-r"<<"PC-1262";
-        cmdline = new QCommandLine(sl);
+
+        cmdline = new QCommandLine(this);
 #endif
 //       cmdline->addOption(QChar('v'), "verbose", "verbose level (0-3)");
 //       cmdline->addSwitch(QChar('l'), "list", "show a list");

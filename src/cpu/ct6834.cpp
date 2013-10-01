@@ -280,7 +280,7 @@ int CT6834::InitReponseT6834 (UINT8 Ordre, UINT8 *Rsp, PorT_FX *Port)
   case 0x13:	// Peor
               pPC->pLCDC->redraw = true;
               if(Send_Cmd_T6834[1] < 120 && Send_Cmd_T6834[2] < 32) {
-                  Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]] = ~(Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]]);
+                  setRamVideo(Send_Cmd_T6834[1],Send_Cmd_T6834[2], ~(Ram_Video[Send_Cmd_T6834[1]][Send_Cmd_T6834[2]]));
               }
               break;
 
@@ -613,7 +613,7 @@ void CT6834::AffCurseur (void)
             UINT8 x =   Loc_X    * General_Info.size_point_x * NB_POINT_CAR_X;
 
             for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-                Ram_Video[x+i][y-1] = 0xff;
+                setRamVideo(x+i,y-1,0xff);
 
         }
     }
@@ -626,7 +626,7 @@ void CT6834::AffCurseur (void)
         UINT8 y = ((Loc_Y+1) * General_Info.size_point_y * NB_POINT_CAR_Y) - General_Info.size_point_y;
         UINT8 x =   Loc_X    * General_Info.size_point_x * NB_POINT_CAR_X;
         for (int i=0;i<=NB_POINT_CAR_X*General_Info.size_point_x;i++)
-            Ram_Video[x+i][y-1] = 0xff;
+            setRamVideo(x+i,y-1, 0xff);
     }
 }
 
@@ -651,7 +651,7 @@ void CT6834::AffCar(UINT8 x, UINT8 y, UINT8 Car)
 
             /* Positionnement de la mémoire video */
             /*------------------------------------*/
-            Ram_Video[offsetX+P_x][offsetY+P_y] = color;
+            setRamVideo(offsetX+P_x,offsetY+P_y, color);
 
             Mask >>=1;
         }
@@ -669,9 +669,9 @@ void CT6834::ScrollVideo (void)
              y < (General_Info.Scroll_Max_Y * NB_POINT_CAR_Y);
              y++)
             if (y<((General_Info.Scroll_Max_Y - 1)*NB_POINT_CAR_Y))
-                Ram_Video [x][y] = Ram_Video[x][y+8];
+                setRamVideo(x,y, Ram_Video[x][y+8]);
             else
-                Ram_Video [x][y] = 0;
+                setRamVideo(x,y,0);
 //    RefreshVideo ();
     pPC->Refresh_Display=true;
 }
@@ -687,7 +687,7 @@ void CT6834::LineClear (UINT8 P_y)
  /*--------------------------------*/
  for (x=0;x<MAX_X;x++)
   for (y=P_y*NB_POINT_CAR_Y;y<(P_y+1)*NB_POINT_CAR_Y;y++)
-   if (( x<120)&&(y<32)) Ram_Video[x][y]=0;
+   setRamVideo(x,y,0);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -697,7 +697,7 @@ void CT6834::Pset (int x, int y)
     fprintf (stderr,"Pset %d,%d ",x,y);
 #endif
     if ( x>=0 && x <120 && y>=0 && y<32)
-        Ram_Video[x][y]=0xff;
+        setRamVideo(x,y,0xff);
 
 }
 
@@ -1010,7 +1010,14 @@ void CT6834::TurnOFF() {
     mem[0x0006] |= 0x01;      // bit 0 to 1 for OFF
     General_Info.LcdOn = false;
     emit TurnOFFSig();
-//    pPC->TurnOFF();
+    //    pPC->TurnOFF();
+}
+
+void CT6834::setRamVideo(int x, int y,UINT8 val)
+{
+    if ((x<120) && ( y<32)) {
+        Ram_Video[x][y] = val;
+    }
 }
 #define KEY(a) (Clavier.contains(a) || Clavier.contains(TOUPPER(a)))
 

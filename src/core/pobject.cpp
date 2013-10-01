@@ -186,7 +186,7 @@ extern void m_addShortcut(QString name,QString param);
 
 void CPObject::createShortcut() {
 #ifdef Q_OS_ANDROID
-    m_addShortcut(getName(),"-r "+getName());
+    m_addShortcut(getName(),"-r \""+getName()+"\"");
 #endif
 }
 

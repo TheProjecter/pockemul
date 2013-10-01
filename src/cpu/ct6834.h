@@ -83,6 +83,7 @@ public:
     UINT8 R5;
     Cx07 *pPC;
     UINT8 Ram_Video[120][32];
+    void setRamVideo(int x, int y, UINT8 val);
     QTime cursorTimer;
     UINT8 First;
 

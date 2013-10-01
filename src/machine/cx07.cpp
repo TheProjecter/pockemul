@@ -756,10 +756,6 @@ void Cx07::TurnOFF(void) {
 
 void Cx07::TurnON(void){
 
-
-
-
-
     if (!Power && pKEYB->LastKey == K_BRK) {
         qWarning()<<"Power ON";
         AddLog(LOG_MASTER,"TURN ON");
