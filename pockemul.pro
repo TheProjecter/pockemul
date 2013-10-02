@@ -496,7 +496,9 @@ HEADERS += src/core/Connect.h \
     src/cpu/m6502/opsc02.h \
     src/cpu/m6502/ops02.h \
     src/machine/postit.h \
-    src/core/sizegrip.h
+    src/core/sizegrip.h \
+    src/cpu/nut.h \
+    src/machine/hp/hp41.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -730,7 +732,9 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/m6502/m6502.cpp \
     src/cpu/m6502/m6502_dasm.cpp \
     src/machine/postit.cpp \
-    src/core/sizegrip.cpp
+    src/core/sizegrip.cpp \
+    src/cpu/nut.cpp \
+    src/machine/hp/hp41.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \

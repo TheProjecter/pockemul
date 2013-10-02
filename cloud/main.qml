@@ -254,9 +254,10 @@ Rectangle {
 
                      }
                      tabbedui.tabClicked(0);
-                     privateCloud.populateCategoryModel();
+                     cloud.saveCache(privateCloud.cacheFileName,privateCloud.serializerefpmlModel());
+                     privateCloud.populateCategoryModel("");
                      privateCloud.objid = 0;
-                     privateCloud.populatePMLModel();
+                     privateCloud.populatePMLModel("");
                      privateCloud.focusPml(item.pmlid);
                  }
 

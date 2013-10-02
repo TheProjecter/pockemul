@@ -221,10 +221,10 @@ QString CloudWindow::getValueFor(const QString &objectName, const QString &defau
 {
     QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     if (settings.value(objectName).isNull()) {
-        qWarning()<<"getValue("<<objectName<<","<<defaultValue<<")";
+//        qWarning()<<"getValue("<<objectName<<","<<defaultValue<<")";
         return defaultValue;
     }
-    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<") in "<<workDir+"config.ini";
+//    qWarning()<<"getValue("<<objectName<<","<<settings.value(objectName).toString()<<") in "<<workDir+"config.ini";
     return settings.value(objectName).toString();
 }
 
@@ -232,7 +232,7 @@ void CloudWindow::saveValueFor(const QString &objectName, const QString &inputVa
 {
     QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     settings.setValue(objectName, QVariant(inputValue));
-    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<") in "<<workDir+"config.ini";
+//    qWarning()<<"saveValue("<<objectName<<","<<inputValue<<") in "<<workDir+"config.ini";
 }
 
 QByteArray CloudWindow::generateKey(QString username,QString password) {

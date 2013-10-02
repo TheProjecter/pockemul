@@ -61,6 +61,7 @@ bool Cce140p::init(void) {
 
     if (pSIO) pSIO->init();
     if (pSIO) pSIO->dialogconsole->hide();
+    pSIO->Set_BaudRate(1200);
 
 
     connect(pSIO,SIGNAL(newByteRecv(qint8)),this,SLOT(CommandSlot(qint8)));
