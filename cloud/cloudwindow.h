@@ -30,6 +30,8 @@ public:
     Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
     Q_INVOKABLE QByteArray generateKey(QString username, QString password);
 
+    Q_INVOKABLE void saveCache(QString fileName,QString xml);
+    Q_INVOKABLE QString loadCache(QString fileName);
     Q_INVOKABLE bool isPortraitOrientation();
     Q_INVOKABLE void addShortcut(QString param);
 protected:

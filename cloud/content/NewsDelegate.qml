@@ -265,6 +265,7 @@ Item {
 
                         //                    console.log(o.responseText);
                         populatePMLModel();
+                        cloud.saveCache(cacheFileName,serializerefpmlModel());
                     });
                 }
 
@@ -294,6 +295,7 @@ Item {
                     if (o.readyState == 4 ) {
                         if (o.status==200) {
                             refpmlModel.setProperty(rowid,"isdeleted",0);
+                            cloud.saveCache(cacheFileName,serializerefpmlModel());
                             pmlview.categoryListView.currentIndex = 0;
                             pmlview.objid = 0;
                             populatePMLModel();
@@ -317,13 +319,14 @@ Item {
                         if (o.status==200) {
                             if (isdeleted==1) {
                                 refpmlModel.remove(rowid);
+                                cloud.saveCache(cacheFileName,serializerefpmlModel());
                             }
                             else {
 
                                 console.log("DELETE");
                                 changed = false;
                                 refpmlModel.setProperty(rowid,"isdeleted",1);
-
+                                cloud.saveCache(cacheFileName,serializerefpmlModel());
                             }
                             populateCategoryModel();
                             pmlview.categoryListView.currentIndex = pmlview.categoryListView.count-1;

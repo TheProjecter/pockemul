@@ -241,6 +241,25 @@ QByteArray CloudWindow::generateKey(QString username,QString password) {
     return QCryptographicHash::hash ( key.toUtf8(), QCryptographicHash::Sha1).toBase64();
 }
 
+void CloudWindow::saveCache(QString fileName, QString xml)
+{
+    QFile file(workDir+fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+             return;
+    file.write(xml.toUtf8());
+    file.close();
+}
+
+QString CloudWindow::loadCache(QString fileName)
+{
+    QFile file(workDir+fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return"";
+    QString xml(file.readAll());
+    file.close();
+    return xml;
+}
+
 
 void CloudWindow::warning(QString msg) {
     ask(this, msg, 1);

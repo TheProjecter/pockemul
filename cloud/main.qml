@@ -50,7 +50,8 @@ Rectangle {
                 width: parent.width
                 publicCloud: false
                 searchText: privateSearchItem.text
-
+                cacheFileName: "privateCloud.xml"
+                xml: cloud.loadCache(cacheFileName)
             }
             LineInput {
                 id: privateSearchItem
@@ -82,7 +83,7 @@ Rectangle {
                     width: parent.width
                     publicCloud: true
                     searchText: searchItem.text
-
+                    cacheFileName: "publicCloud.xml"
                 }
 
 

@@ -53,6 +53,7 @@ Rectangle {
     property bool loading: xmlpmlModel.status == XmlListModel.Loading
     property bool publicCloud: true
 
+    property alias xml: xmlpmlModel.xml
     property alias categoryListView: categories
     property alias pmlListView: list
     property alias refpmlModel: refpmlModel
@@ -60,6 +61,7 @@ Rectangle {
 
     property int objid: 0
     property int ispublic: publicCloud ? 1 : 0
+    property string cacheFileName:""
 
     onObjidChanged: {populatePMLModel(searchText)}
 
@@ -103,6 +105,7 @@ Rectangle {
                                             description: item.description})
                     }
 
+                    cloud.saveCache(cacheFileName,serializerefpmlModel());
                     populatePMLModel("");
                     populateCategoryModel("");
 //                    console.log("xmlpmlModel onStatusChanged: END");
@@ -172,9 +175,9 @@ Rectangle {
         }
 
         // sort tmpcategoryModel
-        console.log("***"+tmpcategoryModel.count);
+//        console.log("***"+tmpcategoryModel.count);
         tmpcategoryModel.quick_sort();
-        console.log("***"+tmpcategoryModel.count);
+//        console.log("***"+tmpcategoryModel.count);
         categoryModel.clear();
         categoryModel.append({objid: 0,name: "All", counter: (totalCount-isdeletedCount)});
         // copy tmpcategoryModel to categoryModel with SORT
@@ -185,7 +188,26 @@ Rectangle {
         tmpcategoryModel.clear();
     }
 
+    function serializerefpmlModel() {
+        var xml = "<listPML>";
+        for (var i=0; i< refpmlModel.count; i++) {
+            var pmlItem = refpmlModel.get(i);
+            xml += "<item>";
+            xml += "<pmlid>"+pmlItem.pmlid+"</pmlid>";
+            xml += "<username>"+pmlItem.username+"</username>";
+            xml += "<objects>"+pmlItem.objects+"</objects>";
+            xml += "<listobjects>"+pmlItem.listobjects+"</listobjects>";
+            xml += "<ispublic>"+pmlItem.ispublic+"</ispublic>";
+            xml += "<deleted>"+pmlItem.isdeleted+"</deleted>";
+            xml += "<title>"+pmlItem.title+"</title>";
+            xml += "<description>"+pmlItem.description+"</description>";
+            xml += "</item>";
 
+        }
+        xml += "</listPML>";
+
+        return xml;
+    }
 
     function populatePMLModel(searchText) {
 //        console.log("REFRESH Model");
@@ -213,6 +235,8 @@ Rectangle {
                                 description: item.description})
 //            console.log("Store: "+item.title);
         }
+
+
 
     }
 
