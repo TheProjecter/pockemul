@@ -9,16 +9,17 @@ Rectangle {
 
         SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
         SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://ds409/cloud/"}
-        SettingsDelegate { id: username; name: "username"; labelString: "User Name"; type: "input"; }
-        SettingsDelegate { id: password; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
+        SettingsDelegate { id: usernameFld; name: "username"; labelString: "User Name"; type: "input"; }
+        SettingsDelegate { id: passwordFld; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
         SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
 
-                var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
+                var key = cloud.generateKey(usernameFld.inputText,passwordFld.inputText);
                 serverURL = cloud.getValueFor("serverURL","");
-                var url = serverURL+'login?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
+                var url = serverURL+'login?username='+encodeURIComponent(usernameFld.inputText)+'&key='+encodeURIComponent(key);
                 console.log('url:'+url);
+                console.log('Test:'+cloud.generateKey("ABC","DEF"));
                 requestGet(url, function (o) {
 
                     if (o.readyState == 4 ) {
@@ -41,9 +42,9 @@ Rectangle {
             onButtonClicked: {
 //                buttonElementEnabled = false;
 
-                var key = Qt.btoa(cloud.generateKey(username.inputText,password.inputText));
+                var key = cloud.generateKey(usernameFld.inputText,passwordFld.inputText);
                 serverURL = cloud.getValueFor("serverURL","");
-                var url = serverURL+'register?username='+encodeURIComponent(username.inputText)+'&key='+encodeURIComponent(key);
+                var url = serverURL+'register?username='+encodeURIComponent(usernameFld.inputText)+'&key='+encodeURIComponent(key);
                 console.log('url:'+url);
                 requestGet(url, function (o) {
 

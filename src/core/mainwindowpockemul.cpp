@@ -151,8 +151,10 @@ qWarning()<<" create MainWindowPockemul ";
 server = new ServeurTcp(this);
 #endif
 
+#if QT_VERSION >= 0x050000
 sensor = new QSensor("QRotationSensor");//QGyroscope");
     sensor->start();
+#endif
 
 }
 

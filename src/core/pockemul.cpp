@@ -5,7 +5,6 @@
 #include <QDir>
 #include <QSplashScreen>
 #include <QScreen>
-#include <QSensor>
 
 #include "launchbuttonwidget.h"
 #include "mainwindowpockemul.h"

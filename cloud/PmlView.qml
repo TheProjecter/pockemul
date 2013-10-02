@@ -56,12 +56,12 @@ Rectangle {
     property alias categoryListView: categories
     property alias pmlListView: list
     property alias refpmlModel: refpmlModel
-
+    property string searchText: ""
 
     property int objid: 0
     property int ispublic: publicCloud ? 1 : 0
 
-    onObjidChanged: {populatePMLModel()}
+    onObjidChanged: {populatePMLModel(searchText)}
 
     ListModel {
         id: categoryModel
@@ -103,8 +103,8 @@ Rectangle {
                                             description: item.description})
                     }
 
-                    populatePMLModel();
-                    populateCategoryModel();
+                    populatePMLModel("");
+                    populateCategoryModel("");
 //                    console.log("xmlpmlModel onStatusChanged: END");
                 }
 
@@ -127,10 +127,24 @@ Rectangle {
                                  counter: 1});
     }
 
-    function populateCategoryModel() {
+    function pmlContain(pmlitem,searchText) {
+        if (typeof(searchText)=='undefined') return true;
+        if (searchText == "") return true;
+
+        var searchString = "";
+        searchString = pmlitem.title+" "+pmlitem.description+" "+pmlitem.username+" "+pmlitem.objects;
+        var tableau=searchText.toUpperCase().split(" ");
+        for (var i=0; i<tableau.length; i++) {
+            if ( (tableau[i]!="") && (searchString.toUpperCase().indexOf(tableau[i])>=0) ) return true;
+        }
+        return false;
+    }
+
+    function populateCategoryModel(searchText) {
 //        console.log("populateCategoryModel");
         tmpcategoryModel.clear();
         var isdeletedCount = 0;
+        var totalCount = 0;
         for (var i=0; i<refpmlModel.count; i++) {
             var item = refpmlModel.get(i)
 //            console.log("Read: "+item.pmlid+"-"+item.title);
@@ -138,6 +152,11 @@ Rectangle {
 
             if (item.isdeleted) { isdeletedCount++; continue; }
 
+            // Apply seacrh !text is defined
+
+            if ( (searchText != "") && !pmlContain(item,searchText)) continue;
+
+            totalCount++;
             // fetch all item's objects
 //            console.log("XML:"+item.objects);
             var x=item.objects
@@ -157,7 +176,7 @@ Rectangle {
         tmpcategoryModel.quick_sort();
         console.log("***"+tmpcategoryModel.count);
         categoryModel.clear();
-        categoryModel.append({objid: 0,name: "All", counter: (refpmlModel.count-isdeletedCount)});
+        categoryModel.append({objid: 0,name: "All", counter: (totalCount-isdeletedCount)});
         // copy tmpcategoryModel to categoryModel with SORT
         for (var i=0; i<tmpcategoryModel.count;i++){
             categoryModel.append(tmpcategoryModel.get(i));
@@ -168,7 +187,7 @@ Rectangle {
 
 
 
-    function populatePMLModel() {
+    function populatePMLModel(searchText) {
 //        console.log("REFRESH Model");
         pmlModel.clear();
         for (var i=0; i<refpmlModel.count; i++) {
@@ -182,6 +201,8 @@ Rectangle {
 //            console.log("object OK");
             if ( (pmlview.objid == -1) && (item.isdeleted != 1 )) continue;
 //            console.log("Deleted OK");
+            if ( (searchText != "") && !pmlContain(item,searchText)) continue;
+
             pmlModel.append({   rowid : i,
                                 pmlid: item.pmlid,
                                username: item.username,
@@ -208,6 +229,8 @@ Rectangle {
 
     // Filtered ListModel
     ListModel { id: pmlModel; }
+
+
 
     Row {
         Rectangle {
@@ -263,7 +286,8 @@ Rectangle {
         }
     }
     ScrollBar { scrollArea: list; height: list.height; width: 8; anchors.right: pmlview.right }
-    Rectangle { x: categoriesView.width; height: pmlview.height; width: 1; color: "#cccccc" }
+    Rectangle {
+        x: categoriesView.width; height: pmlview.height; width: 1; color: "#cccccc" }
 
 
     ListModel { id: pmlThumbModel; }
@@ -307,5 +331,10 @@ Rectangle {
 
     function refresh() {
         xmlpmlModel.reload();
+    }
+
+    function populate(searchText) {
+        populateCategoryModel(searchText);
+        populatePMLModel(searchText);
     }
 }

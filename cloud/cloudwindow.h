@@ -28,7 +28,7 @@ public:
     Q_INVOKABLE void getPML(int id);
     Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue);
     Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
-    Q_INVOKABLE QString generateKey(QString username, QString password);
+    Q_INVOKABLE QByteArray generateKey(QString username, QString password);
 
     Q_INVOKABLE bool isPortraitOrientation();
     Q_INVOKABLE void addShortcut(QString param);

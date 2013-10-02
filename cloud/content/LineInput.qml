@@ -39,7 +39,7 @@ Rectangle {
 
         FocusScope {
             width: parent.width - 30 - label.width
-            height: label.height * 1.3
+            height: label.height * 1.5
             anchors.verticalCenter: parent.verticalCenter
 
 //            BorderImage {

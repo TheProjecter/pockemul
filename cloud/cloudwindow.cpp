@@ -235,10 +235,10 @@ void CloudWindow::saveValueFor(const QString &objectName, const QString &inputVa
     qWarning()<<"saveValue("<<objectName<<","<<inputValue<<") in "<<workDir+"config.ini";
 }
 
-QString CloudWindow::generateKey(QString username,QString password) {
-    QString key = QString("!PockEmul"+username+"_"+password+"&éklm!;");
+QByteArray CloudWindow::generateKey(QString username,QString password) {
+    QString key = QString("PockEmul"+username+"A"+password+"TRFGHUIJ");
 //    qWarning()<<"KEY:"<<key;
-    return QCryptographicHash::hash ( key.toLatin1(), QCryptographicHash::Md5);
+    return QCryptographicHash::hash ( key.toUtf8(), QCryptographicHash::Sha1).toBase64();
 }
 
 

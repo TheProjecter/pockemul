@@ -30,8 +30,9 @@ class QCommandLine;
 class DownloadManager;
 class ServeurTcp;
 class CloudWindow;
+#if QT_VERSION >= 0x050000
 class QSensor;
-
+#endif
 #ifdef P_AVOID
 namespace Avoid {
         class Router;
@@ -98,8 +99,9 @@ public:
 
     void initObjectTable();
 
-QSensor *sensor;
-
+#if QT_VERSION >= 0x050000
+    QSensor *sensor;
+#endif
     QString saveassessionString();
 public slots:
     QString saveassession();

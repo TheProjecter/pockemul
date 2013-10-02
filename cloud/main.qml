@@ -45,12 +45,25 @@ Rectangle {
 
             PmlView   {
                 id: privateCloud
-                anchors.fill: parent
+                anchors.top: privateSearchItem.bottom
+                anchors.bottom: parent.bottom
+                width: parent.width
                 publicCloud: false
-
+                searchText: privateSearchItem.text
 
             }
+            LineInput {
+                id: privateSearchItem
+                width: parent.width
+                height: 50
+                label: "Search :"
+                objectName: "searchFld"
+                onInputAccepted: {
+                    privateCloud.populate(text)
 
+                }
+
+            }
         }
         Tab {
             id: publicCloudTab
@@ -58,12 +71,36 @@ Rectangle {
             icon: "pics/public-cloud-white.png"
 
             color: "green"
-            PmlView   {
-                id: publicCloud
-                anchors.fill: parent
-                publicCloud: true
 
-            }
+
+                anchors.fill: parent
+
+                PmlView   {
+                    id: publicCloud
+                    anchors.top: searchItem.bottom
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    publicCloud: true
+                    searchText: searchItem.text
+
+                }
+
+
+                LineInput {
+                    id: searchItem
+                    width: parent.width
+                    height: 50
+                    label: "Search :"
+                    objectName: "searchFld"
+                    onInputAccepted: {
+                        publicCloud.populate(text)
+
+                    }
+
+                }
+
+
+
         }
         Tab {
             name: "Action"
