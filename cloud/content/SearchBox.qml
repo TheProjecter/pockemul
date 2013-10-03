@@ -44,6 +44,10 @@ FocusScope {
     id: focusScope
     width: 250; height: 28
 
+    signal textChanged(string value)
+
+    property alias text: textInput.text
+
     BorderImage {
         source: "images/lineedit-bg.png"
         width: parent.width; height: parent.height
@@ -68,7 +72,7 @@ FocusScope {
 
     MouseArea { 
         anchors.fill: parent
-        onClicked: { focusScope.focus = true; textInput.openSoftwareInputPanel(); } 
+        onClicked: { focusScope.focus = true;  }
     }
 
     TextInput {
@@ -76,6 +80,9 @@ FocusScope {
         anchors { left: parent.left; leftMargin: 8; right: clear.left; rightMargin: 8; verticalCenter: parent.verticalCenter }
         focus: true
         selectByMouse: true
+        onTextChanged: {
+            focusScope.textChanged(text)
+        }
     }
 
     Image {
@@ -86,7 +93,7 @@ FocusScope {
 
         MouseArea { 
             anchors.fill: parent
-            onClicked: { textInput.text = ''; focusScope.focus = true; textInput.openSoftwareInputPanel(); }
+            onClicked: { textInput.text = ''; focusScope.focus = true;  }
         }
     }
 

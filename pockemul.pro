@@ -498,7 +498,9 @@ HEADERS += src/core/Connect.h \
     src/machine/postit.h \
     src/core/sizegrip.h \
     src/cpu/nut.h \
-    src/machine/hp/hp41.h
+    src/machine/hp/hp41.h \
+    src/cpu/ti57cpu.h \
+    src/machine/ti/ti57.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -573,7 +575,8 @@ RESOURCES +=  \
     resources/core.qrc \
     resources/tpc8300.qrc \
     resources/rlh1000.qrc \
-    cloud/cloud.qrc
+    cloud/cloud.qrc \
+    resources/ti57.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -734,7 +737,9 @@ SOURCES += src/core/Connect.cpp \
     src/machine/postit.cpp \
     src/core/sizegrip.cpp \
     src/cpu/nut.cpp \
-    src/machine/hp/hp41.cpp
+    src/machine/hp/hp41.cpp \
+    src/cpu/ti57cpu.cpp \
+    src/machine/ti/ti57.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \
@@ -943,7 +948,8 @@ OTHER_FILES += \
     cloud/content/background.svg \
     cloud/content/counter.js \
     cloud/content/SortListModel.qml \
-    cloud/content/Test.qml
+    cloud/content/Test.qml \
+    cloud/content/Grid.qml
 
 
 

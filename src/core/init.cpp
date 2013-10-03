@@ -91,6 +91,8 @@
 #include "panasonic/rlp9001.h"
 #include "panasonic/rlp1004a.h"
 
+#include "ti/ti57.h"
+
 #include "postit.h"
 
 extern QList<CPObject *> listpPObject;  
@@ -196,6 +198,8 @@ CPObject *pPC=0;
         case RLP1004A : pPC = new Crlp1004a;      pPC->setName("Panasonic RL-P1004A"); break;
 
         case POSTIT : pPC = new Cpostit;      pPC->setName("Post-it"); break;
+
+        case TI57 : pPC = new Cti57;      pPC->setName("TI-57"); break;
 
 
         default			: return 0;

@@ -15,7 +15,7 @@ Rectangle {
     property string currentUserid: "pock emul"
     property string currentApiKey: cloud.getValueFor("apikey","0")
     property bool   isPortrait: false
-    property alias bigposter: bigposter
+//    property alias bigposter: bigposter
     property alias publicCloudTabName: publicCloudTab.name
 
     property color backGroundColor: "white"
@@ -25,10 +25,6 @@ Rectangle {
     property color textButtonColor: "black"
 
 
-//    TiltSensor {
-//        id: tilt
-//        active: false
-//    }
 
     onWidthChanged: {
         isPortrait = cloud.isPortraitOrientation();
@@ -53,13 +49,22 @@ Rectangle {
                 cacheFileName: "privateCloud.xml"
                 xml: cloud.loadCache(cacheFileName)
             }
-            LineInput {
+//            LineInput {
+//                id: privateSearchItem
+//                width: parent.width
+//                height: 50
+//                label: "Search :"
+//                objectName: "searchFld"
+//                onInputAccepted: {
+//                    privateCloud.populate(text)
+
+//                }
+            SearchBox {
                 id: privateSearchItem
                 width: parent.width
                 height: 50
-                label: "Search :"
                 objectName: "searchFld"
-                onInputAccepted: {
+                onTextChanged: {
                     privateCloud.populate(text)
 
                 }
@@ -87,13 +92,23 @@ Rectangle {
                 }
 
 
-                LineInput {
+//                LineInput {
+//                    id: searchItem
+//                    width: parent.width
+//                    height: 50
+//                    label: "Search :"
+//                    objectName: "searchFld"
+//                    onInputAccepted: {
+//                        publicCloud.populate(text)
+
+//                    }
+//                }
+                SearchBox {
                     id: searchItem
                     width: parent.width
                     height: 50
-                    label: "Search :"
                     objectName: "searchFld"
-                    onInputAccepted: {
+                    onTextChanged: {
                         publicCloud.populate(text)
 
                     }
@@ -195,15 +210,10 @@ Rectangle {
         quitIndex: 4
     }
 
-    Image {
-        id: bigposter
-        visible: false
-        anchors.fill: parent
-        MouseArea {
-            anchors.fill: parent
-            onClicked: visible=false;
-        }
-    }
+//    Grid{
+//        anchors.fill: parent
+//    }
+
 
     XmlListModel {
          id: tmpXmlListModel

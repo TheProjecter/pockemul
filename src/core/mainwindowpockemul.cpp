@@ -251,6 +251,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["Panasonic RL-P9001"]=RLP9001;
     objtable["Panasonic RL-P1004A"]=RLP1004A;
     objtable["Post-it"]=POSTIT;
+    objtable["TI-57"]=TI57;
 }
 
 //

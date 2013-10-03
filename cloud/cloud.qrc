@@ -63,5 +63,6 @@
         <file>content/counter.js</file>
         <file>content/SortListModel.qml</file>
         <file>content/Test.qml</file>
+        <file>content/Grid.qml</file>
     </qresource>
 </RCC>
