@@ -80,7 +80,7 @@ extern MainWindowPockemul *mainwindow;
  QImage* Launcher::getImage()
  {
 //     return new QImage();
-     qWarning()<<"Image:"<<imagePath;
+//     qWarning()<<"Image:"<<imagePath;
      return new QImage(P_RES(imagePath));
  }
 

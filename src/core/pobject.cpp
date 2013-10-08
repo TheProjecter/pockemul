@@ -983,9 +983,9 @@ painter.begin(this);
 	}
 
 
-    if (getfrequency()>0) {
-        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
-    }
+//    if (getfrequency()>0) {
+//        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
+//    }
 	painter.end();
 
 }
@@ -1098,7 +1098,7 @@ void CPObject::focusOutEvent ( QFocusEvent * event )
 
 void CPObject::contextMenuEvent ( QContextMenuEvent * event )
 {
-    qWarning()<<"contextMenuEvent";
+//    qWarning()<<"contextMenuEvent";
 //    Vibrate();
 
     QMenu *menu = new QMenu(this);

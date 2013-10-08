@@ -31,7 +31,7 @@ LaunchButtonWidget::~LaunchButtonWidget() {
 }
 
 void LaunchButtonWidget::resizeEvent(QResizeEvent * event) {
-    qWarning()<<"resize******";
+//    qWarning()<<"resize******";
 //    launcher->computeresize();
 }
 

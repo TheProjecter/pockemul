@@ -457,7 +457,7 @@ QSize PictureFlowPrivate::slideSize() const
 
 void PictureFlowPrivate::setSlideSize(QSize size)
 {
-    qWarning()<<"SETsLIDEsIZE"<<size;
+//    qWarning()<<"SETsLIDEsIZE"<<size;
   slideWidth = size.width();
   slideHeight = size.height();
   recalc(buffer.width(), buffer.height());
@@ -1419,7 +1419,7 @@ void PictureFlow::mouseMoveEvent(QMouseEvent* event)
 
 void PictureFlow::mousePressEvent(QMouseEvent* event)
 {
-    qWarning()<<"mousepress:"<<this;
+//    qWarning()<<"mousepress:"<<this;
   d->firstPress = event->pos();
   d->previousPos = event->pos();
   d->previousPosTimestamp.start();
@@ -1432,7 +1432,7 @@ event->accept();
 
 void PictureFlow::mouseReleaseEvent(QMouseEvent* event)
 {
-    qWarning()<<"mouseRelease:"<<this;
+//    qWarning()<<"mouseRelease:"<<this;
   int sideWidth = (d->buffer.width() - slideSize().width()) /2;
 
   if (d->singlePress)

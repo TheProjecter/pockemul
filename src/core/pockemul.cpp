@@ -79,9 +79,6 @@ int main(int argc, char *argv[])
     qWarning()<<QApplication::libraryPaths();
 #endif
 
-    qWarning()<<"OK1";
-
-
     QDir home = QDir::home();
     if (!home.exists("pockemul")) {
         home.mkpath("pockemul/documents");
@@ -108,8 +105,6 @@ int main(int argc, char *argv[])
 mainwindow = new MainWindowPockemul();
 
     appDir = app->applicationDirPath();
-qWarning()<<"OK5";
-    qWarning()<<app->applicationDirPath();
 
 #ifdef Q_OS_ANDROID
 //    QSplashScreen splash;
@@ -121,7 +116,7 @@ qWarning()<<"OK5";
 
 //    mainwindow->menuBar()->setVisible(false);//->menuAction()->setVisible( false );
 #endif
-qWarning()<<"OK6";
+
     QWidget *cw= new QWidget();
     mainwindow->setCentralWidget(cw);
 
@@ -146,7 +141,7 @@ qWarning()<<"OK6";
         downloadManager->targetDir = "/sdcard/pockemul/documents";
 #   endif
 #endif
-qWarning()<<"OK6.1";
+
     int v_inter = 60;
     int v_pos = 12;
     LaunchButtonWidget* launch1 = new LaunchButtonWidget(mainwindow->centralwidget,
@@ -156,7 +151,7 @@ qWarning()<<"OK6.1";
     launch1->setGeometry(0,v_pos,48,48);
     v_pos += v_inter;
     launch1->setToolTip("Start a new Pocket Emulation.");
-qWarning()<<"OK6.2";
+
 #ifndef EMSCRIPTEN
     LaunchButtonWidget* launch2 = new LaunchButtonWidget(mainwindow->centralwidget,
                                                  LaunchButtonWidget::PictureFlow,
@@ -166,7 +161,7 @@ qWarning()<<"OK6.2";
     v_pos += v_inter;
     launch2->setToolTip("Start a new Extension Emulation.");
 #endif
-qWarning()<<"OK6.3";
+
 #ifdef P_IDE
     LaunchButtonWidget* dev = new LaunchButtonWidget(mainwindow->centralwidget,
                                                      LaunchButtonWidget::Action,
@@ -178,7 +173,6 @@ qWarning()<<"OK6.3";
     dev->setToolTip("Start the Integrated development Environment.");
 #endif
 
-    qWarning()<<"OK6.4";
     LaunchButtonWidget* save = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::Action,
                                                       QStringList(),
@@ -188,7 +182,6 @@ qWarning()<<"OK6.3";
     v_pos += v_inter;
     save->setToolTip("Save the current session.");
 
-    qWarning()<<"OK6.5";
     LaunchButtonWidget* load = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::FileBrowser,
                                                       QStringList()<<"."<<"*.pml",
@@ -198,7 +191,6 @@ qWarning()<<"OK6.3";
     v_pos += v_inter;
     load->setToolTip("Load an existing session.");
 
-    qWarning()<<"OK6.6";
 #ifdef P_CLOUD
     LaunchButtonWidget* cloudButton = new LaunchButtonWidget(mainwindow->centralwidget,
                                                      LaunchButtonWidget::Action,
@@ -214,7 +206,6 @@ qWarning()<<"OK6.3";
     cloudButton->setToolTip("Go to the Cloud.");
 #endif
 
-    qWarning()<<"OK6.7";
     LaunchButtonWidget* bookcase = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::FileBrowser,
                                                           QStringList()<< (downloadManager->targetDir)<<"*.pdf",
@@ -224,7 +215,6 @@ qWarning()<<"OK6.3";
     v_pos += v_inter;
     bookcase->setToolTip("Browse the bookcase.");
 
-qWarning()<<"OK6.8";
     LaunchButtonWidget* exit = new LaunchButtonWidget(mainwindow->centralwidget,
                                                       LaunchButtonWidget::Action,
                                                       QStringList(),
@@ -237,7 +227,6 @@ qWarning()<<"OK6.8";
 //    CTinyBasic tb;
 //    tb.test();
 
-qWarning()<<"OK6.9";
 #ifdef EMSCRIPTEN
     mainwindow->zoomSlider = new QSlider(mainwindow->centralwidget);
     mainwindow->zoomSlider->setMinimum(10);
@@ -249,11 +238,9 @@ qWarning()<<"OK6.9";
     mainwindow->show();
 
 //#ifndef Q_OS_ANDROID
-    qWarning()<<"OK7";
     mainwindow->initCommandLine();
 //#endif
 
-//    mainwindow->LoadPocket(PC1211);
 #ifdef EMSCRIPTEN
     app->exec();
     return 0;

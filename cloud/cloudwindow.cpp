@@ -88,9 +88,9 @@ QString CloudWindow::save()
     mainwindow->repaint();
 
     QString s = mainwindow->saveassessionString().remove(0,1);
-    qWarning()<<"session saved";
-    qWarning()<<s.left(500);
-    qWarning()<<"session saved";
+//    qWarning()<<"session saved";
+//    qWarning()<<s.left(500);
+//    qWarning()<<"session saved";
     show();
     return s;
 
@@ -106,7 +106,7 @@ QString CloudWindow::save()
 
 void CloudWindow::sendPML(const QString &filePath)
 {
-    qWarning()<<"sendPML";
+//    qWarning()<<"sendPML";
     if (filePath.isEmpty())
         return;
 
@@ -119,7 +119,7 @@ void CloudWindow::sendPML(const QString &filePath)
     // the HTTP request
 
     QString apikey = getValueFor("apikey","");
-    QString server = getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")+"savePML";
+    QString server = getValueFor("serverURL","")+"savePML";
     // Check if apikey exists
 
 #if QT_VERSION >= 0x050000
@@ -127,11 +127,11 @@ void CloudWindow::sendPML(const QString &filePath)
     QUrlQuery qu;
     qu.addQueryItem("apikey",apikey);
     qu.addQueryItem("content",QString(data).replace("+","%2B"));
-    qWarning()<<qu.query(QUrl::FullyEncoded).toUtf8();
+//    qWarning()<<qu.query(QUrl::FullyEncoded).toUtf8();
     // some parameters for the HTTP request
 
     QNetworkRequest req(server);
-    qWarning()<<req.url();
+//    qWarning()<<req.url();
     connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(finishedSave(QNetworkReply*)));
     QNetworkReply *reply = mgr->post(req, qu.query(QUrl::FullyEncoded).toUtf8());
 #else
@@ -142,7 +142,7 @@ void CloudWindow::sendPML(const QString &filePath)
 void CloudWindow::finishedSave(QNetworkReply *reply)
 {
     QByteArray xmlData = reply->readAll();
-    qWarning()<<"received id:"<<xmlData;
+//    qWarning()<<"received id:"<<xmlData;
 
     QString pmlid,username,ispublic,isdeleted,title,description,objects,listobjects;
 
@@ -164,7 +164,7 @@ void CloudWindow::finishedSave(QNetworkReply *reply)
             }
         }
     }
-    qWarning()<<pmlid<<username<<ispublic<<isdeleted<<title<<description<<objects<<listobjects;
+//    qWarning()<<pmlid<<username<<ispublic<<isdeleted<<title<<description<<objects<<listobjects;
 
     QMetaObject::invokeMethod(object, "addRefPmlModel",
                               Q_ARG(QVariant, pmlid),
@@ -184,7 +184,7 @@ void CloudWindow::finishedSave(QNetworkReply *reply)
 
 void CloudWindow::downloadFinished()
 {
-    qWarning()<<"CloudWindow::downloadFinished - ";
+//    qWarning()<<"CloudWindow::downloadFinished - ";
     QByteArray xmlData = m_reply->readAll();
 //    qWarning() << "data="<<xmlData.left(200);
     QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
@@ -210,7 +210,7 @@ void CloudWindow::getPML(int id) {
     QString apikey = getValueFor("apikey","");
     QString server = getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")+"getPML";
     QNetworkRequest req(server+QString("/%1/%2").arg(getValueFor("apikey","0")).arg(id));
-    qWarning()<<req.url();
+//    qWarning()<<req.url();
     m_reply = mgr->get(req);
     connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
 }

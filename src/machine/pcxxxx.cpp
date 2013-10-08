@@ -99,8 +99,8 @@ CpcXXXX::~CpcXXXX()
 
 bool CpcXXXX::UpdateFinalImage(void)
 {
-#define TRANSFORM Qt::FastTransformation
-//#define TRANSFORM Qt::SmoothTransformation
+//#define TRANSFORM Qt::FastTransformation
+#define TRANSFORM Qt::SmoothTransformation
 
     //    qWarning()<<"UpdateFinalImage";
 //    CPObject::UpdateFinalImage();

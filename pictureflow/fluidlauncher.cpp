@@ -70,11 +70,11 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
     QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
 
     parentWidget = pictureFlowWidget;
-    qWarning()<<"computeResise:"<<parent->size();
+//    qWarning()<<"computeResise:"<<parent->size();
     QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
     resize(parent->size());
 
-    qWarning()<<screen_size;
+//    qWarning()<<screen_size;
     //    qWarning()<<mainwindow->centralwidget->geometry();
 
     const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
@@ -88,13 +88,13 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
 
     if (type == PictureFlowType) {
         bool success;
-qWarning()<<"Berfore LoadConfig";
+//qWarning()<<"Berfore LoadConfig";
         success = loadConfig(Config);
-qWarning()<<"After LoadConfig";
+//qWarning()<<"After LoadConfig";
         if (success) {
-qWarning()<<"Berfore PopulatePictureFlow";
+//qWarning()<<"Berfore PopulatePictureFlow";
             populatePictureFlow();
-qWarning()<<"After PopulatePictureFlow";
+//qWarning()<<"After PopulatePictureFlow";
             //        qWarning("CFL 4\n");
             //        show();
         }else { pictureFlowWidget->close();  }
@@ -121,12 +121,12 @@ qWarning()<<"After PopulatePictureFlow";
  void FluidLauncher::computeresize() {
 
      if (pictureFlowWidget) {
-         qWarning()<<"computeResise:"<<pictureFlowWidget->size();
+//         qWarning()<<"computeResise:"<<pictureFlowWidget->size();
          QRect screen_size = mainwindow->geometry();//QApplication::desktop()->screenGeometry();
          this->resize(mainwindow->size());
          pictureFlowWidget->resize(mainwindow->size());
 
-         qWarning()<<screen_size;
+//         qWarning()<<screen_size;
          //    qWarning()<<mainwindow->centralwidget->geometry();
 
 
@@ -287,9 +287,9 @@ qWarning()<<"After PopulatePictureFlow";
      pictureFlowWidget->setSlideCount(demoList.count());
 
      for (int i=demoList.count()-1; i>=0; --i) {
-         qWarning()<<"Before reading image:";
+//         qWarning()<<"Before reading image:";
          QImage *img = demoList[i]->getImage();
-         qWarning()<<"After reading image:";
+//         qWarning()<<"After reading image:";
          pictureFlowWidget->setSlide(i, *img);
          pictureFlowWidget->setSlideCaption(i, demoList[i]->getCaption());
          pictureFlowWidget->setSlideDescription(i,demoList[i]->getDescription());
@@ -359,7 +359,7 @@ Vibrate();
                  mainwindow->opensession(pictureFlowWidget->getSlideCaption(index));
              }
              if (Config.at(1)=="*.pdf") {
-                 qWarning()<<"open pdf:"<<Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index);
+//                 qWarning()<<"open pdf:"<<Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index);
                  QUrl url = QUrl::fromLocalFile(Config.at(0)+"/"+pictureFlowWidget->getSlideCaption(index));
                  //QDesktopServices::openUrl(url);
                  m_openURL(url);

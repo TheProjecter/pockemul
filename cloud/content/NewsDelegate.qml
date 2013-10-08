@@ -188,7 +188,7 @@ Item {
             visible: ispublic && !ismine
             text: "Clone to private"
             onClicked: {
-                console.log('onClicked');
+//                console.log('onClicked');
                 //                if (cloud.askMsg("Are you sure ?",2) == 1)
                 {
                     // update data
@@ -213,19 +213,16 @@ Item {
                 var xml = cloud.save();
                 var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey +"/"+pmlid;
 
-                console.log("ok:"+url);
+//                console.log("ok:"+url);
                 requestPost(url,xml, function(o) {
                     if (o.readyState == 4) {
-//                        console.log("status:"+o.status);
                         if (o.status==200) {
-                            console.log(o.responseText);
-                            console.log("saveCurrentSessionButtonIn");
                             tmpXmlListModel.xml = o.responseText;
                             // Trick to reload the thumbnail
-                            console.log("thumb url="+pmlThumbImage.source);
+                            //console.log("thumb url="+pmlThumbImage.source);
                             updThumbId(pmlid);
 //                            pmlThumbImage.source = serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid);
-                            console.log("thumb url="+pmlThumbImage.source);
+                            ///console.log("thumb url="+pmlThumbImage.source);
                         }
                     }
                 });
@@ -362,6 +359,7 @@ Item {
                 requestGet(url,function (o) {
                     if (o.readyState == 4 ) {
                         if (o.status==200) {
+                            delegate.state="";
                             if (isdeleted==1) {
                                 refpmlModel.remove(rowid);
                                 cloud.saveCache(cacheFileName,serializerefpmlModel());

@@ -47,7 +47,7 @@ Rectangle {
                 ispublicCloud: false
                 searchText: privateSearchItem.text
                 cacheFileName: "privateCloud.xml"
-                xml: cloud.loadCache(cacheFileName)
+                //xml: cloud.loadCache(cacheFileName)
             }
 //            LineInput {
 //                id: privateSearchItem
@@ -148,7 +148,7 @@ Rectangle {
                             if (o.readyState == 4) {
                                 if (o.status==200) {
                                     tmpXmlListModel.xml = o.responseText;
-                                    console.log(tmpXmlListModel.xml);
+//                                    console.log(tmpXmlListModel.xml);
                                 }
                             }
                         });
@@ -308,7 +308,7 @@ Rectangle {
                             _isdeleted,
                             _title,
                             _description) {
-        console.log("count before:"+refpmlModel.count());
+//        console.log("count before:"+refpmlModel.count());
         refpmlModel.append({rowid: refpmlModel.count(),
                                pmlid: _pmlid,
                                username: _username,
@@ -318,7 +318,7 @@ Rectangle {
                                isdeleted: _isdeleted,
                                title: _title,
                                description: _description});
-        console.log("count after:"+refpmlModel.count());
+//        console.log("count after:"+refpmlModel.count());
 
     }
 

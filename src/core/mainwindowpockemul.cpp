@@ -64,7 +64,7 @@ extern DownloadManager *downloadManager;
 extern int ask(QWidget *parent,QString msg,int nbButton);
 extern QString m_getArgs();
 
-#define NBFRAMEPERSEC		120
+#define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
 #define TIMER_RES			20
 
@@ -76,17 +76,12 @@ QList<CPObject *> listpPObject;
 
 MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QMainWindow(parent, f)
 {
-    qWarning()<<" create MainWindowPockemul:"<<this;
-
     rawclk = 0;
 
     setupUi(this);
 
-    qWarning()<<" create MainWindowPockemul   .5";
     setMouseTracking(true);
-    qWarning()<<" create MainWindowPockemul    .6";
     setFocusPolicy(Qt::StrongFocus);
-    qWarning()<<" create MainWindowPockemul   .7";
     setStatusBar(0);
     dialoglog = 0;
     dialoganalogic = 0;
@@ -99,7 +94,6 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
     saveAll = ASK;
     startKeyDrag = false;
     startPosDrag = false;
-qWarning()<<" create MainWindowPockemul 2";
 
     connect(actionAbout_PockEmul,	SIGNAL(triggered()),            this, SLOT(about()));
     connect(actionNew,				SIGNAL(triggered()),            this, SLOT(newsession()));
@@ -115,19 +109,15 @@ qWarning()<<" create MainWindowPockemul 2";
     connect(actionEditor,           SIGNAL(triggered()),            this, SLOT(IDE()));
 
 
-    qWarning()<<" create MainWindowPockemul 3";
     pdirectLink = new CDirectLink;
-qWarning()<<" create MainWindowPockemul 4";
     // Create a timer for Drawing screen FRAMERATE times per seconds
     FrameTimer = new QTimer(mainwindow);
     connect(FrameTimer, SIGNAL(timeout()), this, SLOT(updateFrameTimer()));
     FrameTimer->start(FRAMERATE);
-qWarning()<<" create MainWindowPockemul ";
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
     timer->start(TIMER_RES);
 
-    qWarning()<<"before create thread";
     // Create the Pocket Thread
     PcThread = new CPocketThread(this);
     PcThread->connect(PcThread,SIGNAL(Resize(QSize,CPObject * )),this,SLOT(resizeSlot(QSize,CPObject * )));
@@ -135,7 +125,6 @@ qWarning()<<" create MainWindowPockemul ";
 #ifndef EMSCRIPTEN
     PcThread->start();
 #endif
-    qWarning()<<"after create thread";
 
     grabGesture(Qt::PanGesture);
     grabGesture(Qt::PinchGesture);
@@ -159,7 +148,6 @@ sensor = new QSensor("QRotationSensor");//QGyroscope");
 }
 
 MainWindowPockemul::~MainWindowPockemul() {
-    qWarning("DELETE dialoglog");
     delete dialoglog;
     delete dialoganalogic;
 #ifdef P_IDE
@@ -692,7 +680,7 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
     xml->writeTextElement("snapshot",ba.toBase64());
-    qWarning()<<"OK1";
+//    qWarning()<<"OK1";
     // Fetch all objects
     for (int i=0;i<listpPObject.size();i++)
     {
@@ -832,7 +820,7 @@ void MainWindowPockemul::doZoom(QPoint point,float delta,int step) {
 }
 
 void MainWindowPockemul::wheelEvent(QWheelEvent *event) {
-    qWarning()<<"MainWindowPockemul::wheelEvent";
+//    qWarning()<<"MainWindowPockemul::wheelEvent";
     QPoint point = event->pos();
 
     float delta = event->delta()/12;
@@ -851,7 +839,7 @@ bool MainWindowPockemul::event(QEvent *event)
 
 bool MainWindowPockemul::gestureEvent(QGestureEvent *event)
 {
-    qWarning()<<"MainWindowPockemul::gestureEvent";
+//    qWarning()<<"MainWindowPockemul::gestureEvent";
 
 //    if (QGesture *pan = event->gesture(Qt::PanGesture))
 //        panTriggered(static_cast<QPanGesture *>(pan));
@@ -1003,7 +991,7 @@ void MainWindowPockemul::mousePressEvent	( QMouseEvent *event){
     qWarning()<<"MainWindowPockemul::mousePressEvent";
     if (event->button() != Qt::LeftButton) {
         event->ignore();
-        qWarning()<<"ignore event";
+//        qWarning()<<"ignore event";
         return;
     }
     setCursor(Qt::ClosedHandCursor);	// Change mouse pointer
@@ -1046,7 +1034,7 @@ void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
 void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
 
 void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
-    qWarning()<<"MainWindowPockemul::keyPressEvent";
+//    qWarning()<<"MainWindowPockemul::keyPressEvent";
     event->ignore();
 }
 
@@ -1058,7 +1046,7 @@ void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
     zoomSlider->setGeometry(mainwindow->width()-30,20,20,mainwindow->height()-40);
 #endif
     if (cloud) cloud->resize(this->size());
-    qWarning()<<"Mainwindow resize";
+//    qWarning()<<"Mainwindow resize";
 
     emit resizeSignal();
 }

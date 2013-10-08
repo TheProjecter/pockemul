@@ -89,8 +89,8 @@ Rectangle {
 
         onStatusChanged: {
                 if (status == XmlListModel.Ready) {
-                    console.log("url ("+(ispublicCloud?"public":"private")+"):"+source);
-                    console.log("xmlpmlModel onStatusChanged: START found rows:"+count);
+//                    console.log("url ("+(ispublicCloud?"public":"private")+"):"+source);
+//                    console.log("xmlpmlModel onStatusChanged: START found rows:"+count);
                     refpmlModel.clear();
                     for (var i=0; i<count; i++) {
                         var item = get(i)
@@ -109,7 +109,7 @@ Rectangle {
                     cloud.saveCache(cacheFileName,serializerefpmlModel());
                     populatePMLModel("");
                     populateCategoryModel("");
-                    console.log("xmlpmlModel onStatusChanged: END");
+//                    console.log("xmlpmlModel onStatusChanged: END");
                 }
 
             }
