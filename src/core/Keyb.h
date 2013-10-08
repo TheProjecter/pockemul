@@ -235,6 +235,20 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_C4        0x227
 #define K_LOCK      0x228
 
+// TI57
+#define K_GTO       0x230
+#define K_SBR       0x231
+#define K_RST       0x232
+#define K_RS        0x233
+#define K_LRN       0x234
+#define K_XT        0x235
+#define K_SST       0x236
+#define K_STL       0x238
+#define K_SUM       0x239
+#define K_BST       0x23a
+#define K_EE        0x23b
+#define K_CE        0x23c
+
 #define K_SHIFT_DOWN_MOD 0x210
 #define K_SHIFT_UP_MOD 0x211
 #define K_CTRL_DOWN_MOD  0x212

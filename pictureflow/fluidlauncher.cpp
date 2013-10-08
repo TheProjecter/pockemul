@@ -50,8 +50,8 @@ extern void m_openURL(QUrl url);
 extern void Vibrate();
 
  #define DEFAULT_INPUT_TIMEOUT 10000
- #define SIZING_FACTOR_HEIGHT 6/10
- #define SIZING_FACTOR_WIDTH 6/10
+ #define SIZING_FACTOR_HEIGHT 6/12
+ #define SIZING_FACTOR_WIDTH 6/12
 
 
 FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType type):QStackedWidget(parent)
@@ -67,14 +67,15 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
 
     setCurrentWidget(pictureFlowWidget);
     pictureFlowWidget->setFocus();
+    QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
 
+    parentWidget = pictureFlowWidget;
+    qWarning()<<"computeResise:"<<parent->size();
     QRect screen_size = parent->geometry();//QApplication::desktop()->screenGeometry();
     resize(parent->size());
 
-//    qWarning()<<screen_size;
-//    qWarning()<<mainwindow->centralwidget->geometry();
-
-    QObject::connect(pictureFlowWidget, SIGNAL(itemActivated(int)), this, SLOT(launchApplication(int)));
+    qWarning()<<screen_size;
+    //    qWarning()<<mainwindow->centralwidget->geometry();
 
     const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
     const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
@@ -83,12 +84,17 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
     const int ww = hh / 3 * 4;
     pictureFlowWidget->setSlideSize(QSize(ww, hh));
 
+    connect(mainwindow,SIGNAL(resizeSignal()),this,SLOT(computeresize()));
+
     if (type == PictureFlowType) {
         bool success;
+qWarning()<<"Berfore LoadConfig";
         success = loadConfig(Config);
-
+qWarning()<<"After LoadConfig";
         if (success) {
+qWarning()<<"Berfore PopulatePictureFlow";
             populatePictureFlow();
+qWarning()<<"After PopulatePictureFlow";
             //        qWarning("CFL 4\n");
             //        show();
         }else { pictureFlowWidget->close();  }
@@ -109,6 +115,29 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
      // Delete demolist
      for (int i=0;i<demoList.count();i++) {
          delete demoList.at(i);
+     }
+ }
+
+ void FluidLauncher::computeresize() {
+
+     if (pictureFlowWidget) {
+         qWarning()<<"computeResise:"<<pictureFlowWidget->size();
+         QRect screen_size = mainwindow->geometry();//QApplication::desktop()->screenGeometry();
+         this->resize(mainwindow->size());
+         pictureFlowWidget->resize(mainwindow->size());
+
+         qWarning()<<screen_size;
+         //    qWarning()<<mainwindow->centralwidget->geometry();
+
+
+
+         const int h = screen_size.height() * SIZING_FACTOR_HEIGHT;
+         const int w = screen_size.width() * SIZING_FACTOR_WIDTH;
+
+         const int hh = qMin(h, w);
+         const int ww = hh / 3 * 4;
+         if (pictureFlowWidget)
+             pictureFlowWidget->setSlideSize(QSize(ww, hh));
      }
  }
 
@@ -258,7 +287,9 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
      pictureFlowWidget->setSlideCount(demoList.count());
 
      for (int i=demoList.count()-1; i>=0; --i) {
+         qWarning()<<"Before reading image:";
          QImage *img = demoList[i]->getImage();
+         qWarning()<<"After reading image:";
          pictureFlowWidget->setSlide(i, *img);
          pictureFlowWidget->setSlideCaption(i, demoList[i]->getCaption());
          pictureFlowWidget->setSlideDescription(i,demoList[i]->getDescription());

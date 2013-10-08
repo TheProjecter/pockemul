@@ -30,6 +30,10 @@ LaunchButtonWidget::~LaunchButtonWidget() {
 //    qWarning("test");
 }
 
+void LaunchButtonWidget::resizeEvent(QResizeEvent * event) {
+    qWarning()<<"resize******";
+//    launcher->computeresize();
+}
 
 void LaunchButtonWidget::mousePressEvent(QMouseEvent *event)
 {

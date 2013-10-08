@@ -500,7 +500,8 @@ HEADERS += src/core/Connect.h \
     src/cpu/nut.h \
     src/machine/hp/hp41.h \
     src/cpu/ti57cpu.h \
-    src/machine/ti/ti57.h
+    src/machine/ti/ti57.h \
+    src/lcd/Lcdc_ti57.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -739,7 +740,9 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/nut.cpp \
     src/machine/hp/hp41.cpp \
     src/cpu/ti57cpu.cpp \
-    src/machine/ti/ti57.cpp
+    src/machine/ti/ti57.cpp \
+    src/cpu/ti57cpu_dasm.cpp \
+    src/lcd/Lcdc_ti57.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \
@@ -949,7 +952,8 @@ OTHER_FILES += \
     cloud/content/counter.js \
     cloud/content/SortListModel.qml \
     cloud/content/Test.qml \
-    cloud/content/Grid.qml
+    cloud/content/Grid.qml \
+    resources/keymap/ti57.map
 
 
 

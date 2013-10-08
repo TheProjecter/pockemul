@@ -13,8 +13,9 @@
 class CpcXXXX;
 class CPObject;
 
-class Clcdc:public QObject
-{
+class Clcdc:public QObject{
+Q_OBJECT
+
 public:
 	CpcXXXX *pPC;
 	

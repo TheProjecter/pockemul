@@ -64,7 +64,7 @@ extern DownloadManager *downloadManager;
 extern int ask(QWidget *parent,QString msg,int nbButton);
 extern QString m_getArgs();
 
-#define NBFRAMEPERSEC		20
+#define NBFRAMEPERSEC		120
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
 #define TIMER_RES			20
 
@@ -918,6 +918,7 @@ void MainWindowPockemul::updateFrameTimer()
     int statepersec;
     int rate=0;
     static int OneSecTimer=0;
+    static int nbframe = 0;
     quint64 Current_State;
 
 // Calculate emulation speed
@@ -955,7 +956,12 @@ void MainWindowPockemul::updateFrameTimer()
                         statepersec = (int) ( CurrentpPC->getfrequency());
                         rate = (int) ((100L*CurrentpPC->pTIMER->nb_state)/((statepersec/1000)*deltaTime));
                         CurrentpPC->pTIMER->nb_state=0;
-                        CurrentpPC->rate = rate;
+#ifndef Q_OS_ANDROID
+                        CurrentpPC->rate = nbframe;//rate;
+#else
+                        CurrentpPC->rate = nbframe;
+#endif
+                        nbframe = 0;
                         str.setNum((int)rate);
                         str = ": "+str+tr("% original speed");
                     }
@@ -974,6 +980,7 @@ void MainWindowPockemul::updateFrameTimer()
 //                        CpcXXXX *tmpPC = (CpcXXXX*)CurrentpPC;
                         //if (tmpPC->getDisp_on())
                         {
+                            nbframe++;
                             CurrentpPC->pLCDC->disp();
                             if (CurrentpPC->pLCDC->Refresh) CurrentpPC->Refresh_Display = true;
                         }
@@ -1051,6 +1058,9 @@ void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
     zoomSlider->setGeometry(mainwindow->width()-30,20,20,mainwindow->height()-40);
 #endif
     if (cloud) cloud->resize(this->size());
+    qWarning()<<"Mainwindow resize";
+
+    emit resizeSignal();
 }
 
 void MainWindowPockemul::resizeSlot( QSize size , CPObject *pObject)
@@ -1159,8 +1169,11 @@ void MainWindowPockemul::optionFound(const QString & name, const QVariant & valu
   if (name == "load") { opensession(value.toString()); }
   if (name == "run") {
       CPObject * pPC =LoadPocket(value.toString());
-#ifdef Q_OS_ANDROID
-      pPC->maximizeWidth();
+#if 1 //def Q_OS_ANDROID
+      if (pPC->getDX()> pPC->getDY())
+          pPC->maximizeWidth();
+      else
+          pPC->maximizeHeight();
 #endif
   }
 }

@@ -157,6 +157,7 @@ signals:
     void AddLogConsole(QString);
     void DestroySignal(CPObject *pObject);
     void NewPObjectsSignal(CPObject *pObject);
+    void resizeSignal();
 
 private:
     QList<CKey>::iterator keyIterator;

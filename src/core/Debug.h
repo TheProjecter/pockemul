@@ -21,7 +21,7 @@ class Cdebug:public CPObject
 public:
 	bool	isdebug, breakf,debugged;			//debug,break point flag
 	UINT32	breakadr;					//break point address
-	char	Buffer[255];
+    char	Buffer[1024];
 	UINT32	DasmAdr,NextDasmAdr;
 	bool init(void);					//initialize
 	bool exit(void);					//end
@@ -190,6 +190,8 @@ public:
 
 };
 
+#include "ti57cpu.h"
+
 class Cdebug_m6502:public Cdebug{
     Q_OBJECT
 public:
@@ -201,5 +203,30 @@ public:
         virtual ~Cdebug_m6502(){}
 
         int DasmOpe(char *S,BYTE *A,unsigned long PC);
+};
+
+class Cdebug_ti57cpu:public Cdebug{
+    Q_OBJECT
+public:
+    UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
+
+        Cdebug_ti57cpu(CPObject *parent)	: Cdebug(parent)
+        {
+        }
+        virtual ~Cdebug_ti57cpu(){}
+
+
+        QString IntToHex(int val, int nb = 3);
+        QString BranchOP(TI57regs *r);
+        QString CallOP(TI57regs *r);
+        QString FlagOP(TI57regs *r);
+        QString MaskOP(TI57regs *r);
+        QString MiscOP(TI57regs *r);
+        QString Decode(TI57regs *r);
+        QString Reg(TRegister R);
+        void Analyze(TI57regs *r);
+        void Disassemble(TI57regs *r);
+        QString Debugging(TI57regs *r);
+        QString Tracing(TI57regs *r);
 };
 #endif

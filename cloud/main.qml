@@ -190,7 +190,6 @@ Rectangle {
             }
         }
 
-
         Tab {
             name: ""
             icon: "pics/back-white.png"
@@ -199,6 +198,11 @@ Rectangle {
                 onClicked: Qt.quit()
             }
 
+        }
+        Tab {
+            name: "test"
+            icon: "pics/back-white.png"
+            Test { anchors.fill: parent}
         }
     }
 

@@ -118,7 +118,7 @@ public:
     int     getDZ() {return 0;}
     void    setDX(int v) {Pc_DX = v;}
     void    setDY(int v) {Pc_DY = v;}
-    void    setDZ(int v) {}
+    void    setDZ(int v) {Q_UNUSED(v)}
 
     int     getDXmm() {return Pc_DX_mm;}
     int     getDYmm() {return Pc_DY_mm;}

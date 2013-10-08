@@ -457,6 +457,7 @@ QSize PictureFlowPrivate::slideSize() const
 
 void PictureFlowPrivate::setSlideSize(QSize size)
 {
+    qWarning()<<"SETsLIDEsIZE"<<size;
   slideWidth = size.width();
   slideHeight = size.height();
   recalc(buffer.width(), buffer.height());
@@ -762,6 +763,7 @@ void PictureFlowPrivate::render()
   }
   else
   {
+#if 1
       // the first and last slide must fade in/fade out
       for(int index = 0; index < nleft; index++)
       {
@@ -812,6 +814,7 @@ void PictureFlowPrivate::render()
                       Qt::AlignCenter, captions[leftTextIndex+1]);
 
     painter.end();
+#endif
 #endif
   }
 //  qWarning("end render\n");
@@ -1332,7 +1335,7 @@ void PictureFlow::exitSlot(){
 
 void PictureFlow::mouseMoveEvent(QMouseEvent* event)
 {
-    qWarning()<<"mouseMove:"<<this;
+//    qWarning()<<"mouseMove:"<<this;
   int distanceMovedSinceLastEvent = event->pos().x() - d->previousPos.x();
 
   // Check to see if we need to switch from single press mode to a drag mode

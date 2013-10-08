@@ -9,6 +9,7 @@ class Cconnector;
 #include "pcxxxx.h"
 
 
+
 class Cti57 : public CpcXXXX
 {
     Q_OBJECT
@@ -36,10 +37,11 @@ public:
     bool SaveConfig(QXmlStreamWriter *xmlOut);
     bool LoadConfig(QXmlStreamReader *xmlIn);
 
-    UINT16 getKey();
+    UINT8 getKey();
 
     Cti57cpu *ti57cpu;
 
+    QString Display();
 private:
 
 };

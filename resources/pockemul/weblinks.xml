@@ -178,4 +178,7 @@
         <url desc="MyCalcDB" link="http://casio.ledudu.com/pockets.asp?type=169"/>
         <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/Sanco_TPC-8300_e.pdf"/>
     </model>
+    <model value="ti57">
+       <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/TI-57LCD_QRG_US.pdf"/>
+    </model>
 </weblinks>

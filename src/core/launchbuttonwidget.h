@@ -35,6 +35,7 @@ public:
     QString image;
     LaunchType type;
 
+    void resizeEvent(QResizeEvent *event);
 signals:
     void clicked();
 

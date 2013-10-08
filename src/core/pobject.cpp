@@ -968,9 +968,10 @@ void CPObject::paintEvent(QPaintEvent *event)
 
 	UpdateFinalImage();
 		
-	painter.begin(this);	
+painter.begin(this);
 	if (FinalImage)
 	{
+
         painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 	}
 
@@ -982,9 +983,9 @@ void CPObject::paintEvent(QPaintEvent *event)
 	}
 
 
-//    if (getfrequency()>0) {
-//        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
-//    }
+    if (getfrequency()>0) {
+        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
+    }
 	painter.end();
 
 }
@@ -1280,12 +1281,17 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 
 QImage * CPObject::CreateImage(QSize size,QString fname,bool Hmirror,bool Vmirror,int angle)
 {
-//    qWarning("LoadImage : %s",fname.toLatin1().data());
-	QImage *tempImage;
+    //    qWarning("LoadImage : %s",fname.toLatin1().data());
+    QImage *tempImage;
     QMatrix matrix;
-        matrix.rotate(angle);
-    QImage loc = QImage(fname).mirrored(Hmirror,Vmirror).transformed(matrix).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation).convertToFormat(QImage::Format_ARGB32);
-	tempImage = new QImage(loc);
+    matrix.rotate(angle);
+    QImage loc;
+    if (fname.isEmpty()) {
+        loc = QImage(size,QImage::Format_ARGB32);
+    }
+    else
+        loc = QImage(fname).mirrored(Hmirror,Vmirror).transformed(matrix).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation).convertToFormat(QImage::Format_ARGB32);
+    tempImage = new QImage(loc);
     return tempImage;
 }
 
@@ -1331,11 +1337,11 @@ bool CPObject::UpdateFinalImage(void)
 	QPainter painter;
 	if ( (BackgroundImage) )
 	{
-		painter.begin(FinalImage);
-        painter.drawImage(QPoint(0,0),*BackgroundImage);
+//		painter.begin(FinalImage);
+//        painter.drawImage(QPoint(0,0),*BackgroundImage);
 
 
-        painter.end();
+//        painter.end();
 	}
 	Refresh_Display = false;
     return true;

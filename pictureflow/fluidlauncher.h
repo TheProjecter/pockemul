@@ -72,10 +72,13 @@
 
      void populateFileBrowser(QStringList param);
      QImage ExtractImage(QFileInfo fileInfo);
+     QWidget *parentWidget;
+
  public slots:
      void launchApplication(int index);
      void demoFinished();
      void exitSlot();
+     void computeresize();
 
  private:
 
