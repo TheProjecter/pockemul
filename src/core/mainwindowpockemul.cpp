@@ -1169,7 +1169,7 @@ void MainWindowPockemul::optionFound(const QString & name, const QVariant & valu
   if (name == "load") { opensession(value.toString()); }
   if (name == "run") {
       CPObject * pPC =LoadPocket(value.toString());
-#if 1 //def Q_OS_ANDROID
+#ifdef Q_OS_ANDROID
       if (pPC->getDX()> pPC->getDY())
           pPC->maximizeWidth();
       else

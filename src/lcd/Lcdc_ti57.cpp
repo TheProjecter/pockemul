@@ -42,7 +42,7 @@ void Clcdc_ti57::disp(void)
         s.remove(0,1);  // Remove the error
         // Start Blinking timer
         if (!blinkTimer->isActive()) {
-            blinkTimer->start(1000);
+            blinkTimer->start(500);
             blinkState = true;
 //            qWarning()<<"start timer";
         }

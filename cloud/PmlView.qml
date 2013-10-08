@@ -51,7 +51,7 @@ Rectangle {
 
     property string currentObjid: "0"
     property bool loading: xmlpmlModel.status == XmlListModel.Loading
-    property bool publicCloud: true
+    property bool ispublicCloud: true
 
     property alias xml: xmlpmlModel.xml
     property alias categoryListView: categories
@@ -60,7 +60,7 @@ Rectangle {
     property string searchText: ""
 
     property int objid: 0
-    property int ispublic: publicCloud ? 1 : 0
+    property int ispublic: ispublicCloud ? 1 : 0
     property string cacheFileName:""
 
     onObjidChanged: {populatePMLModel(searchText)}
@@ -75,7 +75,7 @@ Rectangle {
 
     XmlListModel {
         id: xmlpmlModel
-        source: serverURL + "listPML/" + (publicCloud?"0":currentApiKey)+"/0"
+        source: serverURL + "listPML/" + (ispublicCloud?"0":currentApiKey)+"/0"
         query: "/listPML/item"
 
         XmlRole { name: "pmlid"; query: "pmlid/string()"; }
@@ -89,26 +89,27 @@ Rectangle {
 
         onStatusChanged: {
                 if (status == XmlListModel.Ready) {
-//                    console.log("xmlpmlModel onStatusChanged: START");
+                    console.log("url ("+(ispublicCloud?"public":"private")+"):"+source);
+                    console.log("xmlpmlModel onStatusChanged: START found rows:"+count);
                     refpmlModel.clear();
                     for (var i=0; i<count; i++) {
                         var item = get(i)
 //                        console.log(item.objects)
                         refpmlModel.append({rowid : i,
                                             pmlid: item.pmlid,
-                                           username: item.username,
-                                            objects: item.objects,
-                                            listobjects: item.listobjects,
+                                            username: decodeXml(item.username),
+                                            objects: decodeXml(item.objects),
+                                            listobjects: decodeXml(item.listobjects),
                                             ispublic: item.ispublic,
                                             isdeleted: item.isdeleted,
-                                            title: item.title,
-                                            description: item.description})
+                                            title: decodeXml(item.title),
+                                            description: decodeXml(item.description)})
                     }
 
                     cloud.saveCache(cacheFileName,serializerefpmlModel());
                     populatePMLModel("");
                     populateCategoryModel("");
-//                    console.log("xmlpmlModel onStatusChanged: END");
+                    console.log("xmlpmlModel onStatusChanged: END");
                 }
 
             }
@@ -151,7 +152,7 @@ Rectangle {
         for (var i=0; i<refpmlModel.count; i++) {
             var item = refpmlModel.get(i)
 //            console.log("Read: "+item.pmlid+"-"+item.title);
-            if (pmlview.publicCloud && (item.ispublic == 0)) continue;
+            if (pmlview.ispublicCloud && (item.ispublic == 0)) continue;
 
             if (item.isdeleted) { isdeletedCount++; continue; }
 
@@ -194,13 +195,13 @@ Rectangle {
             var pmlItem = refpmlModel.get(i);
             xml += "<item>";
             xml += "<pmlid>"+pmlItem.pmlid+"</pmlid>";
-            xml += "<username>"+pmlItem.username+"</username>";
-            xml += "<objects>"+pmlItem.objects+"</objects>";
-            xml += "<listobjects>"+pmlItem.listobjects+"</listobjects>";
+            xml += "<username>"+encodeXml(pmlItem.username)+"</username>";
+            xml += "<objects>"+encodeXml(pmlItem.objects)+"</objects>";
+            xml += "<listobjects>"+encodeXml(pmlItem.listobjects)+"</listobjects>";
             xml += "<ispublic>"+pmlItem.ispublic+"</ispublic>";
             xml += "<deleted>"+pmlItem.isdeleted+"</deleted>";
-            xml += "<title>"+pmlItem.title+"</title>";
-            xml += "<description>"+pmlItem.description+"</description>";
+            xml += "<title>"+encodeXml(pmlItem.title)+"</title>";
+            xml += "<description>"+encodeXml(pmlItem.description)+"</description>";
             xml += "</item>";
 
         }
@@ -215,7 +216,7 @@ Rectangle {
         for (var i=0; i<refpmlModel.count; i++) {
             var item = refpmlModel.get(i)
 //            console.log("Read: "+item.pmlid+"-"+item.title);
-            if (pmlview.publicCloud && (item.ispublic == 0)) continue;
+            if (pmlview.ispublicCloud && (item.ispublic == 0)) continue;
 //            console.log("public OK");
             if ( (pmlview.objid >= 0) && (item.isdeleted == 1)) continue;
 
@@ -249,7 +250,29 @@ Rectangle {
     // Reference List Model. Contains all record
     // it might be valuable to dump it on disk when the application close
     // and load the cache at startup
-    ListModel { id: refpmlModel; }
+    ListModel { id: refpmlModel;
+
+        function appendPml(item) {
+            append({rowid : refpmlModel.count,
+                       pmlid: item.pmlid,
+                       username: item.username,
+                       objects: item.objects,
+                       listobjects: item.listobjects,
+                       ispublic: item.ispublic,
+                       isdeleted: item.isdeleted,
+                       title: item.title,
+                       description: item.description});
+        }
+
+        function removePml(pmlid) {
+            for (var i=0; i<count;i++) {
+                if (get(i).pmlid == pmlid) {
+                    //                console.log("***found***");
+                    remove(i);
+                }
+            }
+        }
+    }
 
     // Filtered ListModel
     ListModel { id: pmlModel; }
@@ -325,6 +348,7 @@ Rectangle {
         }
     }
 
+
     function updThumbId(refpmlid) {
         // search pmlid and increment
 //        console.log("update counter for :"+refpmlid);
@@ -354,6 +378,7 @@ Rectangle {
     }
 
     function refresh() {
+        xmlpmlModel.xml = "";
         xmlpmlModel.reload();
     }
 

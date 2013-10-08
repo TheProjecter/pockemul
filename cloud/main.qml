@@ -44,7 +44,7 @@ Rectangle {
                 anchors.top: privateSearchItem.bottom
                 anchors.bottom: parent.bottom
                 width: parent.width
-                publicCloud: false
+                ispublicCloud: false
                 searchText: privateSearchItem.text
                 cacheFileName: "privateCloud.xml"
                 xml: cloud.loadCache(cacheFileName)
@@ -86,7 +86,7 @@ Rectangle {
                     anchors.top: searchItem.bottom
                     anchors.bottom: parent.bottom
                     width: parent.width
-                    publicCloud: true
+                    ispublicCloud: true
                     searchText: searchItem.text
                     cacheFileName: "publicCloud.xml"
                 }
@@ -148,6 +148,7 @@ Rectangle {
                             if (o.readyState == 4) {
                                 if (o.status==200) {
                                     tmpXmlListModel.xml = o.responseText;
+                                    console.log(tmpXmlListModel.xml);
                                 }
                             }
                         });
@@ -199,11 +200,11 @@ Rectangle {
             }
 
         }
-        Tab {
-            name: "test"
-            icon: "pics/back-white.png"
-            Test { anchors.fill: parent}
-        }
+//        Tab {
+//            name: "test"
+//            icon: "pics/back-white.png"
+//            Test { anchors.fill: parent}
+//        }
     }
 
     TabbedUI {
@@ -319,5 +320,32 @@ Rectangle {
                                description: _description});
         console.log("count after:"+refpmlModel.count());
 
+    }
+
+
+
+    function encodeXml(s) {
+        return s.replace(/([\&"<>])/g, function(str, item) {
+            var xml_special_to_escaped_one_map = {
+                '&': '&amp;',
+                '"': '&quot;',
+                '<': '&lt;',
+                '>': '&gt;'
+            };
+            return xml_special_to_escaped_one_map[item];
+        });
+    }
+
+    function decodeXml(s) {
+        return s.replace(/(&quot;|&lt;|&gt;|&amp;)/g,
+            function(str, item) {
+                var escaped_one_to_xml_special_map = {
+                    '&amp;': '&',
+                    '&quot;': '"',
+                    '&lt;': '<',
+                    '&gt;': '>'
+                };
+                return escaped_one_to_xml_special_map[item];
+        });
     }
 }

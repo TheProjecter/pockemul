@@ -7,11 +7,11 @@ Rectangle {
     VisualItemModel {
         id: visualSettingsModel
 
-        SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
+//        SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
         SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://ds409/cloud/"}
         SettingsDelegate { id: usernameFld; name: "username"; labelString: "User Name"; type: "input"; }
         SettingsDelegate { id: passwordFld; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
-        SettingsDelegate { name: "apikey"; labelString: "Get your APIKey"; type: "action"; saveInput:false;
+        SettingsDelegate { name: "apikey"; labelString: "Login"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
 
@@ -38,9 +38,14 @@ Rectangle {
                 });
             }
         }
+        SettingsDelegate { id: passwordFld2; name: "password2"; labelString: "Confirm Password"; type: "input"; echoMode: TextInput.Password; saveInput:false;}
         SettingsDelegate { name: "register"; labelString: "Register new user"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
+                if (passwordFld.inputText != passwordFld2.inputText) {
+                    apikey.inputText = "Passwords mismatch !.";
+                    return;
+                }
 
                 var key = cloud.generateKey(usernameFld.inputText,passwordFld.inputText);
                 serverURL = cloud.getValueFor("serverURL","");

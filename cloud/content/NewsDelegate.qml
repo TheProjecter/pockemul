@@ -230,7 +230,7 @@ Item {
                     }
                 });
 
-                populateCategoryModel();
+                populateCategoryModel("");
 
 
 //                        privateCloud.categoryModel.reload();
@@ -248,24 +248,69 @@ Item {
                 {
                     // update data
                     var url = serverURL + "updPML/" + currentApiKey +"/" + pmlid;
-                    console.log('url:'+url);
+//                    console.log('url:'+url);
                     var data = "<data>";
-                    data +=     "<title>"+titleText.text+"</title>";
-                    data +=     "<description>"+descriptionText.text+"</description>";
+                    data +=     "<title>"+encodeXml(titleText.text)+"</title>";
+                    data +=     "<description>"+encodeXml(descriptionText.text)+"</description>";
                     data +=     "<ispublic>"+newpublicstatus+"</ispublic>";
                     data += "</data>";
                     requestPost(url, data,function (o) {
-                        //                        cloud.askMsg("Ok, saved !",1);
-                        //Reload record
-                        changed = false;
-                        refpmlModel.setProperty(rowid,"title",titleText.text);
-                        refpmlModel.setProperty(rowid,"description",descriptionText.text);
-                        refpmlModel.setProperty(rowid,"ispublic",newpublicstatus);
-                        refpmlModel.setProperty(rowid,"ideleted",newpublicstatus);
+                        if (o.readyState == 4) {
+                            //                        console.log("status:"+o.status);
+                            if (o.status==200) {
+                                //                        cloud.askMsg("Ok, saved !",1);
+                                //Reload record
+                                changed = false;
+                                var publicstatuschanged = false;
+                                refpmlModel.setProperty(rowid,"title",titleText.text);
+                                refpmlModel.setProperty(rowid,"description",descriptionText.text);
+                                if (refpmlModel.get(rowid).ispublic != newpublicstatus) {
+                                    refpmlModel.setProperty(rowid,"ispublic",newpublicstatus);
+                                    publicstatuschanged = true;
+                                }
+                                refpmlModel.setProperty(rowid,"ideleted",newpublicstatus);
 
-                        //                    console.log(o.responseText);
-                        populatePMLModel();
-                        cloud.saveCache(cacheFileName,serializerefpmlModel());
+                                //                    console.log(o.responseText);
+                                if (publicstatuschanged) {
+                                    delegate.state="";
+                                    if (newpublicstatus) {
+                                        // copy item from private to public refpmlModel
+                                        publicCloud.refpmlModel.appendPml(privateCloud.refpmlModel.get(rowid));
+                                    }
+                                    else  {
+                                        // remove item from public refpmlModel
+                                        publicCloud.refpmlModel.removePml(pmlid);
+                                    }
+
+                                    privateCloud.populateCategoryModel("");
+                                    privateCloud.objid = 0;
+                                    privateCloud.populatePMLModel("");
+                                    publicCloud.populateCategoryModel("");
+                                    publicCloud.objid = 0;
+                                    publicCloud.populatePMLModel("");
+                                    if (newpublicstatus) {
+                                        tabbedui.tabClicked(1);
+                                        publicCloud.focusPml(pmlid);
+                                    }
+                                    else  {
+                                        tabbedui.tabClicked(0);
+                                        privateCloud.focusPml(pmlid);
+                                    }
+
+                                    cloud.saveCache(privateCloud.cacheFileName,privateCloud.serializerefpmlModel());
+                                    cloud.saveCache(publicCloud.cacheFileName,publicCloud.serializerefpmlModel());
+                                }
+                                else {
+                                    delegate.state="";
+                                    publicCloud.refpmlModel.removePml(pmlid);
+                                    publicCloud.refpmlModel.appendPml(privateCloud.refpmlModel.get(rowid));
+                                    publicCloud.populatePMLModel("");
+                                    populatePMLModel("");
+                                    cloud.saveCache(cacheFileName,serializerefpmlModel());
+                                }
+
+                            }
+                        }
                     });
                 }
 
@@ -298,8 +343,8 @@ Item {
                             cloud.saveCache(cacheFileName,serializerefpmlModel());
                             pmlview.categoryListView.currentIndex = 0;
                             pmlview.objid = 0;
-                            populatePMLModel();
-                            populateCategoryModel();
+                            populatePMLModel("");
+                            populateCategoryModel("");
                             // Position at the just undeleted item
                             console.log("****search pmlid:"+pmlid)
                             pmlview.focusPml(pmlid);
