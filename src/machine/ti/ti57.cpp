@@ -45,7 +45,7 @@ Cti57::Cti57(CPObject *parent)	: CpcXXXX(parent)
     setDY(529);
 
     Lcd_X		= 30;
-    Lcd_Y		= 38;
+    Lcd_Y		= 43;
     Lcd_DX		= 220;//168;//144 ;
     Lcd_DY		= 40;
     Lcd_ratio_X	= 1;
@@ -73,7 +73,7 @@ Cti57::~Cti57() {
 bool Cti57::init(void)				// initialize
 {
 
-//pCPU->logsw = true;
+pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
 //    pCPU->logsw = true;
 //    if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
@@ -257,8 +257,8 @@ UINT8 Cti57::getKey()
         if (KEY(K_GTO))			code = 20;
         if (KEY(K_SBR))			code = 21;
         if (KEY(K_RST))			code = 22;
-        if (KEY(K_SHT))			code = 16;  // 2nd
-        if (KEY(K_DEF))			code = 32;  // INV
+        if (KEY(K_SHT))			code = 0x10;  // 2nd
+        if (KEY(K_DEF))			code = 0x20;  // INV
         if (KEY(K_RS))			code = 23;
         if (KEY(K_SIGN))		code = 71;
         if (KEY(K_LRN))			code = 17;

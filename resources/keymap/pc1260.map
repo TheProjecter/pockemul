@@ -7,7 +7,7 @@
     <KEY description="/" height="16" left="438" scancode="0x2f" top="146" width="25"/>
     <KEY description="+" height="16" left="394" scancode="0x2b" top="215" width="25"/>
     <KEY description="CLS" height="16" left="436" scancode="0xc" top="112" width="25"/>
-    <KEY description="DEF" height="13" left="18" scancode="0xde" top="114" width="21"/>
+    <KEY description="DEF" height="13" left="18" scancode="0xb" top="114" width="21"/>
     <KEY description="Down Arrow" height="13" left="102" scancode="0x4" top="114" width="21"/>
     <KEY description="ENTER" height="14" left="248" scancode="0xd" top="216" width="44"/>
     <KEY description="Equal" height="13" left="278" scancode="0x3d" top="181" width="13"/>

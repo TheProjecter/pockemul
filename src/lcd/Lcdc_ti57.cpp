@@ -54,29 +54,37 @@ void Clcdc_ti57::disp(void)
 
 //    qWarning()<<"display:"<<s;
 
+#define YOFFSET 5
+
     if (!error || blinkState) {
-//        qWarning()<<"print text";
+        //        qWarning()<<"print text";
         painter.setPen(QColor(255,0,0));
-        painter.drawText(pPC->LcdImage->rect(),Qt::AlignCenter,s);
-    }
 #if 0
-    int pos = 0;
-    int charSpace = 18;
-    for (int i =0;i<s.length();i++) {
-        int code = s.at(i).digitValue();
+        painter.drawText(pPC->LcdImage->rect(),Qt::AlignCenter,s);
+#else
+        int pos = 0;
+        int charSpace = 18;
+        for (int i =0;i<s.length();i++) {
+            int code = s.at(i).digitValue();
+            if (s.at(i) == '-') code = 16;
+            if (s.at(i) == '.') code = 17;
+            if (s.at(i) == ' ') pos+=charSpace;
 
-        if (s.at(i) == ' ') pos+=charSpace;
+            if (code == 17) {
+                QRect rect(pos- charSpace + 10,12,1,1);
+                painter.drawRect(rect);
+            }
+            else
+                if (code >=0) {
 
-        if (code >=0) {
-//            qWarning()<<s.at(i)<<":"<<s.at(i).digitValue();
+                    QRect rect(pos,0,8,13);
 
-            QRect rect(pos,0,8,12);
-            Clcd7::draw(code,&painter,rect,1,1);
-            pos += charSpace;
+                    Clcd7::draw(code,&painter,rect,1,0);
+                    pos += charSpace;
+                }
         }
-    }
 #endif
-
+    }
     //On=true;
     Refresh = true;
     redraw = 0;
@@ -152,6 +160,7 @@ bool seg1, seg2, seg3, seg4, seg5, seg6, seg7;
         case 13: seg3 = seg5 = seg2 = seg7 = seg6 = true; break;  // d
         case 14: seg1 = seg4 = seg3 = seg5 = seg2 = true; break;  // e
         case 15: seg1 = seg4 = seg3 = seg5 = true; break;  // f
+        case 16: seg3 = true; break;  // -
     }
 
 

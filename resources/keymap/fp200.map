@@ -30,7 +30,7 @@
     <KEY description=";" height="58" left="711" masterscancode="0x00" modifier="" scancode="0x3b" top="456" width="58"/>
     <KEY description="?" height="58" left="746" masterscancode="0x00" modifier="" scancode="0x3f" top="517" width="58"/>
     <KEY description="RETURN" height="122" left="907" masterscancode="0x00" modifier="" scancode="0x0d" top="396" width="76"/>
-    <KEY description="GRPH" height="58" left="696" masterscancode="0x00" modifier="" scancode="0xde" top="583" width="58"/>
+    <KEY description="GRPH" height="58" left="696" masterscancode="0x00" modifier="" scancode="0x0b" top="583" width="58"/>
     <KEY description="CAPS" height="58" left="180" masterscancode="0x00" modifier="" scancode="0x14" top="586" width="58"/>
     <KEY description="NUM" height="20" left="0" masterscancode="0x00" modifier="" scancode="0x15" top="0" width="20"/>
     <KEY description="Space" height="58" left="245" masterscancode="0x00" modifier="" scancode="0x20" top="584" width="446"/>

@@ -9,7 +9,7 @@
     <KEY description="/" height="20" left="216" masterscancode="0x00" modifier="" scancode="0x2f" top="334" width="20"/>
     <KEY description="+" height="20" left="217" masterscancode="0x00" modifier="" scancode="0x2b" top="446" width="20"/>
     <KEY description="CLR" height="20" left="220" masterscancode="0x00" modifier="" scancode="0xef" top="222" width="20"/>
-    <KEY description="INV" height="16" left="81" masterscancode="0x00" modifier="" scancode="0xde" top="224" width="25"/>
+    <KEY description="INV" height="16" left="81" masterscancode="0x00" modifier="" scancode="0x0b" top="224" width="25"/>
     <KEY description="Equal" height="20" left="214" masterscancode="0x00" modifier="" scancode="0x3d" top="481" width="20"/>
     <KEY description="On/Off" height="21" left="204" masterscancode="0x00" modifier="" scancode="0x3e" top="121" width="31"/>
     <KEY description="SHIFT1" height="20" left="37" masterscancode="0x00" modifier="" scancode="0x11" top="220" width="20"/>
