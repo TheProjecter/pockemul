@@ -73,7 +73,7 @@ Cti57::~Cti57() {
 bool Cti57::init(void)				// initialize
 {
 
-pCPU->logsw = true;
+//pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
 //    pCPU->logsw = true;
 //    if (!fp_log) fp_log=fopen("pc2001.log","wt");	// Open log file
@@ -112,43 +112,12 @@ bool Cti57::run() {
     return true;
 }
 
-bool Cti57::Chk_Adr(UINT32 *d, UINT32 data)
-{
-    if(*d >= 0x6000) return true; /* RAM */
-
-    return false;
-}
-
-bool Cti57::Chk_Adr_R(UINT32 *d, UINT32 *data)
-{
-
-    return true;
-}
-
-
-UINT8 Cti57::in(UINT8 Port)
-{
-
-    return 0;
-}
-
-
-
-UINT8 Cti57::out(UINT8 Port, UINT8 x)
-{
-
-    return 0;
-}
-
-bool Cti57::Set_Connector()
-{
-    return true;
-}
-
-bool Cti57::Get_Connector()
-{
-    return true;
-}
+bool Cti57::Chk_Adr(UINT32 *d, UINT32 data) { return false; }
+bool Cti57::Chk_Adr_R(UINT32 *d, UINT32 *data) { return true; }
+UINT8 Cti57::in(UINT8 Port) { return 0;}
+UINT8 Cti57::out(UINT8 Port, UINT8 x) { return 0; }
+bool Cti57::Set_Connector() { return true; }
+bool Cti57::Get_Connector() { return true; }
 
 
 void Cti57::TurnOFF(void) {
@@ -280,79 +249,4 @@ UINT8 Cti57::getKey()
     return code;
 
 }
-#if 0
-Keys: array [0..91] of record Key: Char; Shift: TShiftState; Code: Byte end=
-({00} (Key: ' '; Shift: []; Code: $17),
- {11} (Key: #189; Shift: []; Code: $55),
 
- {23} (Key: #190; Shift: []; Code: $37),
- {24} (Key: Chr(VK_Add); Shift: []; Code: $56),
- {25} (Key: #187; Shift: [ssShift]; Code: $56),
- {26} (Key: Chr(VK_Subtract); Shift: []; Code: $55),
- {27} (Key: Chr(VK_Multiply); Shift: []; Code: $54),
- {28} (Key: '8'; Shift: [ssShift]; Code: $54),
- {29} (Key: Chr(VK_Divide); Shift: []; Code: $53),
- {30} (Key: #191; Shift: []; Code: $53),
- {31} (Key: #220; Shift: []; Code: $51),
- {32} (Key: Chr(VK_Return); Shift: []; Code: $57),
- {33} (Key: #187; Shift: []; Code: $57),
- {34} (Key: '9'; Shift: [ssShift]; Code: $33),
- {35} (Key: '0'; Shift: [ssShift]; Code: $43),
- {36} (Key: #219; Shift: []; Code: $00),
- {37} (Key: #221; Shift: []; Code: $00),
- {38} (Key: 'A'; Shift: []; Code: $00),
- {39} (Key: 'B'; Shift: []; Code: $15),
- {40} (Key: 'C'; Shift: []; Code: $00),
- {41} (Key: 'D'; Shift: []; Code: $00),
- {42} (Key: 'E'; Shift: []; Code: $23),
- {43} (Key: 'F'; Shift: []; Code: $00),
- {44} (Key: 'G'; Shift: []; Code: $14),
- {45} (Key: 'H'; Shift: []; Code: $00),
- {46} (Key: 'I'; Shift: []; Code: $00),
- {47} (Key: 'J'; Shift: []; Code: $00),
- {48} (Key: 'K'; Shift: []; Code: $00),
- {49} (Key: 'L'; Shift: []; Code: $11),
- {50} (Key: 'M'; Shift: []; Code: $42),
- {51} (Key: 'N'; Shift: []; Code: $30),
- {52} (Key: 'O'; Shift: []; Code: $00),
- {53} (Key: 'P'; Shift: []; Code: $47),
- {54} (Key: 'Q'; Shift: []; Code: $41),
- {55} (Key: 'R'; Shift: []; Code: $32),
- {56} (Key: 'S'; Shift: []; Code: $22),
- {57} (Key: 'T'; Shift: []; Code: $16),
- {58} (Key: 'U'; Shift: []; Code: $31),
- {59} (Key: 'V'; Shift: []; Code: $00),
- {60} (Key: 'W'; Shift: []; Code: $00),
- {61} (Key: 'X'; Shift: []; Code: $21),
- {62} (Key: 'Y'; Shift: []; Code: $00),
- {63} (Key: 'Z'; Shift: []; Code: $00),
- {64} (Key: #191; Shift: [ssShift]; Code: $00),
- {65} (Key: #188; Shift: []; Code: $37),
- {66} (Key: #186; Shift: []; Code: $00),
- {67} (Key: #222; Shift: []; Code: $00),
- {68} (Key: Chr(VK_Back); Shift: []; Code: $40),
- {69} (Key: Chr(VK_Left); Shift: []; Code: $13),
- {70} (Key: Chr(VK_Right); Shift: []; Code: $12),
- {71} (Key: Chr(VK_F1); Shift: []; Code: $20),
- {72} (Key: Chr(VK_Home); Shift: []; Code: $00),
- {73} (Key: Chr(VK_F2); Shift: []; Code: $10),
- {74} (Key: Chr(VK_Prior); Shift: []; Code: $00),
- {75} (Key: Chr(VK_F3); Shift: []; Code: $00),
- {76} (Key: Chr(VK_Next); Shift: []; Code: $00),
- {77} (Key: Chr(VK_F4); Shift: []; Code: $00),
- {78} (Key: Chr(VK_F5); Shift: []; Code: $00),
- {79} (Key: Chr(VK_F8); Shift: []; Code: $00),
- {80} (Key: Chr(VK_F9); Shift: []; Code: $00),
- {81} (Key: Chr(VK_F10); Shift: []; Code: $00),
- {82} (Key: Chr(VK_F11); Shift: []; Code: $00),
- {83} (Key: Chr(VK_F7); Shift: []; Code: $00),
- {84} (Key: '6'; Shift: [ssShift]; Code: $52),
- {85} (Key: Chr(VK_Delete); Shift: []; Code: $50),
- {86} (Key: Chr(VK_Insert); Shift: []; Code: $20),
- {87} (Key: Chr(VK_Control); Shift: [ssCtrl]; Code: $10),
- {88} (Key: Chr(VK_Up); Shift: []; Code: $13),
- {89} (Key: Chr(VK_Down); Shift: []; Code: $12),
- {90} (Key: 'E'; Shift: [ssShift]; Code: $00),
- {91} (Key: Chr(VK_End); Shift: []; Code: $00)
-);
-#endif
