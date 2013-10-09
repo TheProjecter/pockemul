@@ -48,25 +48,25 @@ typedef signed   long	int32;
 typedef struct {
     uint8 *m;
 #if defined(Z80_LITTLEENDIAN)
-    uint8 f, a;	/* フラグ, アキュムレータ */
-    uint8 c, b;	/* 汎用レジスタC, B */
-    uint8 e, d;	/* 汎用レジスタE, D */
-    uint8 l, h;	/* 汎用レジスタL, H */
-    uint8 ixl, ixh;	/* インデックスレジスタIXl, IXh */
-    uint8 iyl, iyh;	/* インデックスレジスタIYl, IYh */
-    uint8 i;	/* インタラプトレジスタI */
+    uint8 f, a;
+    uint8 c, b;
+    uint8 e, d;
+    uint8 l, h;
+    uint8 ixl, ixh;
+    uint8 iyl, iyh;
+    uint8 i;
     uint8 pad1;
-    uint8 f_d, a_d;	/* 補助レジスタF', A' */
+    uint8 f_d, a_d;
 #elif defined(Z80_BIGENDIAN)
-    uint8 a, f;	/* アキュムレータ, フラグ */
-    uint8 b, c;	/* 汎用レジスタB, C */
-    uint8 d, e;	/* 汎用レジスタD, E */
-    uint8 h, l;	/* 汎用レジスタH, L */
-    uint8 ixh, ixl;	/* インデックスレジスタIXh, IXl */
-    uint8 iyh, iyl;	/* インデックスレジスタIYh, IYl */
+    uint8 a, f;
+    uint8 b, c;
+    uint8 d, e;
+    uint8 h, l;
+    uint8 ixh, ixl;
+    uint8 iyh, iyl;
     uint8 pad2;
-    uint8 i;	/* インタラプトレジスタI */
-    uint8 a_d, f_d;	/* 補助レジスタA', F' */
+    uint8 i;
+    uint8 a_d, f_d;
 #endif
     uint8 pad3, pad4;
     uint8 pad5, pad6;
@@ -74,48 +74,46 @@ typedef struct {
     uint8 pad9, pad10;
     uint8 pad11, pad12;
     uint8 iff;	/* IFF1, IFF2 */
-    uint8 im;	/* 割り込みモード */
-    uint8 halt;	/* HALTか? */
+    uint8 im;
+    uint8 halt;	/* HALT*/
     uint8 pad13;
     uint8 pad14, pad15;
 } Z80regs;
 
-/* 16bitsレジスタ */
 typedef struct {
     uint8 *m;
-    uint16 af;	/* ペアレジスタAF */
-    uint16 bc;	/* ペアレジスタBC */
-    uint16 de;	/* ペアレジスタDE */
-    uint16 hl;	/* ペアレジスタHL */
-    uint16 ix;	/* インデックスレジスタIX */
-    uint16 iy;	/* インデックスレジスタIY */
+    uint16 af;
+    uint16 bc;
+    uint16 de;
+    uint16 hl;
+    uint16 ix;
+    uint16 iy;
     uint16 pad2;
-    uint16 af_d;	/* 補助レジスタAF' */
-    uint16 bc_d;	/* 補助レジスタBC' */
-    uint16 de_d;	/* 補助レジスタDE' */
-    uint16 hl_d;	/* 補助レジスタHL' */
-    uint16 sp;	/* スタックポインタSP */
-    uint16 pc;	/* プログラムカウンタPC */
+    uint16 af_d;
+    uint16 bc_d;
+    uint16 de_d;
+    uint16 hl_d;
+    uint16 sp;
+    uint16 pc;
 } Z80regs16;
 
-/* オプション・その他の情報 */
+
 typedef struct {
     Z80regs pad1;
-    int states;	/* 実行するステート数 */
-    uint16 stack_under;	/* スタック下限 */
+    int states;
+    uint16 stack_under;
     uint16 pad2;
-    int total_states;	/* 累積ステート数 */
-    int trace;	/* トレースモードか? */
-    int emulate_subroutine;	/* サブルーチンをエミュレートするか? */
-    void *tag;	/* その他の情報 */
+    int total_states;
+    int trace;
+    int emulate_subroutine;
+    void *tag;
 } Z80info;
 
-/* レジスタ */
 typedef union {
-    uint8     *m;	/* メモリ */
-    Z80regs   r;	/* 8bitsレジスタ */
-    Z80regs16 r16;	/* 16bitsレジスタ */
-    Z80info   i;	/* オプション・その他の状態 */
+    uint8     *m;
+    Z80regs   r;
+    Z80regs16 r16;
+    Z80info   i;
 } Z80stat;
 
 
@@ -191,7 +189,7 @@ public:
     void z80write8(const Z80stat *z, uint16 address, uint8 value);
 
     /*
-        16bits READ/WRITE (リトルエンディアン)
+        16bits READ/WRITE
     */
     uint16 z80read16(const Z80stat *z, uint16 address);
     void z80write16(const Z80stat *z, uint16 address, uint16 value);
@@ -203,29 +201,17 @@ public:
     //int z80subroutine(Z80stat *, uint16);
     void z80log(const Z80stat *);
 
-    /* Rレジスタ用乱数 */
     static uint32 rnd;
-    /* ステート数(xx) */
     static const int state_xx[];
-    /* ステート数(CB xx) */
     const static int state_cb_xx[];
-    /* ステート数(DD/FD xx) */
     const static int state_dd_xx[] ;
-    /* ステート数(DD/FD CB xx) */
     const static int state_dd_cb_xx[];
-    /* ステート数(ED xx) */
     const static int state_ed_xx[] ;
-    /* 命令長(xx) */
     const static uint16 len_xx[];
-    /* 命令長(CB xx) */
     const static uint16 len_cb_xx[];
-    /* 命令長(DD/FD xx) */
     const static uint16 len_dd_xx[];
-    /* 命令長(DD/FD CB xx) */
     const static uint16 len_dd_cb_xx[];
-    /* 命令長(ED xx) */
     const static uint16 len_ed_xx[];
-    /* パリティ */
     const static uint8 parity[];
 
     static void daa_result(uint8 *x, uint8 *c, uint8 a, uint8 f);

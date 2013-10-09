@@ -80,6 +80,7 @@ public:
 	virtual	void	Set_Xout(bool) =0;
 
 	virtual	UINT32	get_PC(void) =0;					//get Program Counter
+    virtual	void	set_PC(UINT32 ) {}					//set Program Counter
 	virtual void	Regs_Info(UINT8) =0;
 
     const char	*fn_status;					//status file name

@@ -186,7 +186,8 @@ enum Models {
     RLP9001,
     RLP1004A,
     POSTIT,
-    TI57
+    TI57,
+    HP41
 };
 
 #endif

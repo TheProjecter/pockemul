@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>hp41/hp41.png</file>
+    </qresource>
+</RCC>

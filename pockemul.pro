@@ -501,7 +501,9 @@ HEADERS += src/core/Connect.h \
     src/machine/hp/hp41.h \
     src/cpu/ti57cpu.h \
     src/machine/ti/ti57.h \
-    src/lcd/Lcdc_ti57.h
+    src/lcd/Lcdc_ti57.h \
+    src/machine/hp/hp41Cpu.h \
+    src/machine/hp/hp41mod.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -577,7 +579,8 @@ RESOURCES +=  \
     resources/tpc8300.qrc \
     resources/rlh1000.qrc \
     cloud/cloud.qrc \
-    resources/ti57.qrc
+    resources/ti57.qrc \
+    resources/hp41.qrc
 
 SOURCES += src/core/Connect.cpp \
     src/core/Dasm.cpp \
@@ -742,7 +745,14 @@ SOURCES += src/core/Connect.cpp \
     src/cpu/ti57cpu.cpp \
     src/machine/ti/ti57.cpp \
     src/cpu/ti57cpu_dasm.cpp \
-    src/lcd/Lcdc_ti57.cpp
+    src/lcd/Lcdc_ti57.cpp \
+    src/machine/hp/hp41trace.cpp \
+    src/machine/hp/hp41display.cpp \
+    src/machine/hp/hp41Keyboard.cpp \
+    src/machine/hp/hp41Timer.cpp \
+    src/machine/hp/hp41File.cpp \
+    src/machine/hp/hp41Cpu.cpp \
+    src/machine/hp/hp41mod.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \

@@ -92,6 +92,7 @@
 #include "panasonic/rlp1004a.h"
 
 #include "ti/ti57.h"
+#include "hp/hp41.h"
 
 #include "postit.h"
 
@@ -200,6 +201,7 @@ CPObject *pPC=0;
         case POSTIT : pPC = new Cpostit;      pPC->setName("Post-it"); break;
 
         case TI57 : pPC = new Cti57;      pPC->setName("TI-57"); break;
+        case HP41 : pPC = new Chp41;      pPC->setName("HP-41"); break;
 
 
         default			: return 0;

@@ -38,43 +38,50 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "util.h"
-#include "charmap.h"
-#include "mfrm.h"
 #include "nut.h"
-#include "asm.h"
-#include "disasm.h"
-#include "page.h"
-#include "module.h"
-#include "fat.h"
-#include "cardrdr.h"
-#include "display.h"
-#include "phineas.h"
-#include "printer.h"
-#include "wand.h"
-#include "hpil.h"
-#include "xio.h"
-#include "nsim.h"
-#include "focal.h"
+
+//#include "util.h"
+//#include "charmap.h"
+//#include "mfrm.h"
+//#include "nut.h"
+//#include "asm.h"
+//#include "disasm.h"
+//#include "page.h"
+//#include "module.h"
+//#include "fat.h"
+//#include "cardrdr.h"
+//#include "display.h"
+//#include "phineas.h"
+//#include "printer.h"
+//#include "wand.h"
+//#include "hpil.h"
+//#include "xio.h"
+//#include "nsim.h"
+//#include "focal.h"
+
+#define DISASM2( inst, fmt, ... )
+#define DISASM( fmt, ... ) DISASM2( {}, fmt, ## __VA_ARGS__ )
+
 
 // map from high opcode bits to register index
-static int tmap[] = { 3, 4, 5, 10, 8, 6, 11, -1, 2, 9, 7, 13, 1, 12, 0, -1 };
+int tmap[] = { 3, 4, 5, 10, 8, 6, 11, -1, 2, 9, 7, 13, 1, 12, 0, -1 };
 
 // map from register index to high opcode bits
-static int itmap[] = { 0xE, 0xC, 0x8, 0x0, 0x1, 0x2, 0x5,
-                       0xA, 0x4, 0x9, 0x3, 0x6, 0xD, 0xB };
+int itmap[] = { 0xE, 0xC, 0x8, 0x0, 0x1, 0x2, 0x5, 0xA, 0x4, 0x9, 0x3, 0x6, 0xD, 0xB };
 
-static char *ext_flagmap[] = { "?PF\t3", "?PF\t4", "?EDAV",  "?ORAV",
+char *ext_flagmap[] = { "?PF\t3", "?PF\t4", "?EDAV",  "?ORAV",
                                "?FRAV",  "?IFCR",  "?TFAIL", "#1EC",
                                "?WNDB",  "?FRNS",  "?SRQR",  "?SERV",
                                "?CRDR",  "?ALM",   "?PBSY",  "#3EC" };
 
-static char *fieldmap[] = { "PT", "X", "WPT", "ALL", "PQ", "XS", "M", "S" };
+char *fieldmap[] = { "PT", "X", "WPT", "ALL", "PQ", "XS", "M", "S" };
 
-static char regmap[] = "TZYXLMNOPQtabcde";
+char regmap[] = "TZYXLMNOPQtabcde";
 
-s_nut nut = {
-    .regs = {
+Cnut::Cnut::Cnut()
+{
+
+nut.regs = {
        { "a",         56, (void*)(&nut.a), },
        { "b",         56, (void*)(&nut.b), },
        { "c",         56, (void*)(&nut.c), },
@@ -90,8 +97,9 @@ s_nut nut = {
        { "stk[3]",    16, (void*)(&nut.stack[3]), },
        { "carry",      1, (void*)(&nut.carry), },
        { "stat",   SSIZE, (void*)(&nut.s), },
-    },
-};
+    };
+
+}
 
 int display_timer;
 
@@ -100,9 +108,9 @@ void (*op_fcn[ 1024 ])( int );
 int  pf_addr;
 bool pf_exists[ MAX_PFAD ];
 
-static void (*rd_n_fcn[ MAX_PFAD ])( int );
-static void (*wr_n_fcn[ MAX_PFAD ])( int );
-static void (*wr_fcn[ MAX_PFAD ])( void );
+void (*rd_n_fcn[ MAX_PFAD ])( int );
+void (*wr_n_fcn[ MAX_PFAD ])( int );
+void (*wr_fcn[ MAX_PFAD ])( void );
 
 void (*save_fcn[ MAX_PFAD ])( FILE *f, char *prefix );
 bool (*load_fcn[ MAX_PFAD ])( char *buf );
@@ -110,8 +118,8 @@ bool (*load_fcn[ MAX_PFAD ])( char *buf );
 int    peraddr = -1;
 void (*op_selper_fcn[ MAX_PER ])(int);
 
-static void (*op_selper_take_fcn[ MAX_PER ])( void );
-static void (*op_selper_give_fcn[ MAX_PER ])( void );
+void (*op_selper_take_fcn[ MAX_PER ])( void );
+void (*op_selper_give_fcn[ MAX_PER ])( void );
 static bool (*op_selper_has_fcn[ MAX_PER ])( void );
 
 #if 0
@@ -157,12 +165,12 @@ short get_code_with_bank( int a, int b )
   return( unmake_code41( w ) );
 }
 
-short get_code( int a )
+short Cnut::get_code( int a )
 {
   return get_code_with_bank( a, nsim.activebank[a / PAGE_SIZE] );
 }
 
-void put_code_with_bank( int a, int b, short w )
+void Cnut::put_code_with_bank( int a, int b, short w )
 {
   int p = a/PAGE_SIZE;
 
@@ -177,27 +185,27 @@ void put_code_with_bank( int a, int b, short w )
     Ooops( "Putting code on an unexisting page %X[ %04X/%X %03X ]\n", p, a, b, w );
 }
 
-void put_code( int a, short w )
+void Cnut::put_code( int a, short w )
 {
   put_code_with_bank( a, nsim.activebank[a / PAGE_SIZE], w );
 }
 
-int get_active_bank( int p )
+int Cnut::get_active_bank( int p )
 {
   return nsim.activebank[p];
 }
 
-void set_active_bank( int p, int b )
+void Cnut::set_active_bank( int p, int b )
 {
   nsim.activebank[p] = nsim.atpage[p][b] ? b : 0;
 }
 
-void reset_bank( void )
+void Cnut::reset_bank( void )
 {
   memset( nsim.activebank, 0, sizeof(nsim.activebank) );
 }
 
-void select_bank( int a, int b )
+void Cnut::select_bank( int a, int b )
 {
   // change active bank only if requested bank actually exists
   int p = a / PAGE_SIZE;
@@ -245,7 +253,7 @@ void select_bank( int a, int b )
     Ooops( "No page %X bank %X <== %04x\n", p, b, a );
 }
 
-static void print_reg( reg r )
+void Cnut::print_reg( reg r )
 {
   int i;
 
@@ -254,7 +262,7 @@ static void print_reg( reg r )
 }
 
 
-static void print_stat( void )
+void Cnut::print_stat( void )
 {
   int i;
 
@@ -263,7 +271,7 @@ static void print_stat( void )
 }
 
 
-void show_trace( void )
+void Cnut::show_trace( void )
 {
   int is;
   int opc = nut.pc;
@@ -302,7 +310,9 @@ void show_trace( void )
 }
 
 
-void reg_copy( reg dest, reg src )
+
+
+void Cnut::reg_copy( reg dest, reg src )
 {
   int i;
 
@@ -310,7 +320,7 @@ void reg_copy( reg dest, reg src )
     dest[i] = src[i];
 }
 
-void reg_zero( reg dest )
+void Cnut::reg_zero( reg dest )
 {
   int i;
 
@@ -318,7 +328,7 @@ void reg_zero( reg dest )
     dest[i] = 0;
 }
 
-void bad_op( int opcode )
+void Cnut::bad_op( int opcode )
 {
   DISASM( "#%03X\t; Illegal opcode", opcode );
   Ooops( "%04X/%X ILLEGAL OPCODE %03X\n",
@@ -328,7 +338,7 @@ void bad_op( int opcode )
   dbg.run = dbg.step = dbg.next = 0;
 }
 
-digit do_add( digit x, digit y )
+digit Cnut::do_add( digit x, digit y )
 {
   int res;
 
@@ -343,7 +353,7 @@ digit do_add( digit x, digit y )
   return( res );
 }
 
-digit do_sub( digit x, digit y )
+digit Cnut::do_sub( digit x, digit y )
 {
   int res;
 
@@ -358,7 +368,7 @@ digit do_sub( digit x, digit y )
   return( res );
 }
 
-static void op_arith( int opcode )
+void Cnut::op_arith( int opcode )
 {
   uchar op, field;
   int   first, last;
@@ -558,7 +568,7 @@ static void op_arith( int opcode )
 // stack operations
 
 
-static int pop( void )
+static int Cnut::pop( void )
 {
   int i;
   int ret;
@@ -570,7 +580,7 @@ static int pop( void )
   return( ret );
 }
 
-static void push( int a )
+void Cnut::push( int a )
 {
   int i;
 
@@ -579,7 +589,7 @@ static void push( int a )
   nut.stack[0] = a;
 }
 
-static void op_return( int opcode )
+void Cnut::op_return( int opcode )
 {
   DISASM( "RTN" );
 
@@ -593,7 +603,7 @@ static void op_return( int opcode )
   nut.pc = pop();
 }
 
-static void op_return_if_carry( int opcode )
+void Cnut::op_return_if_carry( int opcode )
 {
   DISASM( "CRTN" );
 
@@ -610,7 +620,7 @@ static void op_return_if_carry( int opcode )
     }
 }
 
-static void op_return_if_no_carry( int opcode )
+void Cnut::op_return_if_no_carry( int opcode )
 {
   DISASM( "NCRTN" );
 
@@ -627,14 +637,14 @@ static void op_return_if_no_carry( int opcode )
     }
 }
 
-static void op_pop( int opcode )
+void Cnut::op_pop( int opcode )
 {
   DISASM( "CLRRTN" );
 
   (void)pop();
 }
 
-static void op_pop_c( int opcode )
+void Cnut::op_pop_c( int opcode )
 {
   DISASM( "C=STK" );
 
@@ -647,7 +657,7 @@ static void op_pop_c( int opcode )
   nut.c[3] = a & 0x0F;
 }
 
-static void op_push_c( int opcode )
+void Cnut::op_push_c( int opcode )
 {
   DISASM( "STK=C" );
 
@@ -658,7 +668,7 @@ static void op_push_c( int opcode )
 // branch operations
 
 
-static void op_short_branch( int opcode )
+void Cnut::op_short_branch( int opcode )
 {
   int offset;
 
@@ -696,7 +706,7 @@ static void op_short_branch( int opcode )
     nut.pc = nut.pc + offset - 1;
 }
 
-static void op_long_branch( int opcode )
+void Cnut::op_long_branch( int opcode )
 {
   short  word2;
   int    target;
@@ -805,14 +815,14 @@ NCXQ         [GOL0]      [GOL1]     [GOL2]     [GOL3]     [GOLONG]
     }
 }
 
-static void op_goto_c( int opcode )
+void Cnut::op_goto_c( int opcode )
 {
   DISASM( "GTOC" );
 
   nut.pc = (nut.c[6] << 12) | (nut.c[5] << 8) | (nut.c[4] << 4) | nut.c[3];
 }
 
-static void op_romblk( int opcode )
+void Cnut::op_romblk( int opcode )
 {
   int dp, ps;
 
@@ -845,7 +855,7 @@ static void op_romblk( int opcode )
     bad_op( opcode );
 }
 
-static void op_write_mldl( int opcode )
+void Cnut::op_write_mldl( int opcode )
 {
   int   addr;
   int   bank, page;
@@ -874,7 +884,7 @@ static void op_write_mldl( int opcode )
 //
 // Bank selection used in 41CX, Advantage ROM, HEPAX, WWRAMBOX and perhaps others
 
-static void op_enbank( int opcode )
+void Cnut::op_enbank( int opcode )
 {
   int bank = (opcode >> 6) & 3;
 
@@ -890,7 +900,7 @@ static void op_enbank( int opcode )
 //
 // M operations
 
-static void op_c_to_m( int opcode )
+void Cnut::op_c_to_m( int opcode )
 {
   int i;
 
@@ -900,7 +910,7 @@ static void op_c_to_m( int opcode )
     nut.m[i] = nut.c[i];
 }
 
-static void op_m_to_c( int opcode )
+void Cnut::op_m_to_c( int opcode )
 {
   int i;
 
@@ -910,7 +920,7 @@ static void op_m_to_c( int opcode )
     nut.c[i] = nut.m[i];
 }
 
-static void op_c_exch_m( int opcode )
+void Cnut::op_c_exch_m( int opcode )
 {
   int i, t;
 
@@ -928,7 +938,7 @@ static void op_c_exch_m( int opcode )
 //
 // N operations
 
-static void op_c_to_n( int opcode )
+void Cnut::op_c_to_n( int opcode )
 {
   int i;
 
@@ -938,7 +948,7 @@ static void op_c_to_n( int opcode )
     nut.n[i] = nut.c[i];
 }
 
-static void op_n_to_c( int opcode )
+void Cnut::op_n_to_c( int opcode )
 {
   int i;
 
@@ -948,7 +958,7 @@ static void op_n_to_c( int opcode )
     nut.c[i] = nut.n[i];
 }
 
-static void op_c_exch_n( int opcode )
+void Cnut::op_c_exch_n( int opcode )
 {
   int i, t;
 
@@ -966,21 +976,21 @@ static void op_c_exch_n( int opcode )
 //
 // RAM and peripheral operations
 
-static void op_c_to_dadd( int opcode )
+void Cnut::op_c_to_dadd( int opcode )
 {
   DISASM( "RAMSLCT" );
 
   ram_addr = ((nut.c[2] << 8) | (nut.c[1] << 4) | nut.c[0]) & 0x3FF;
 }
 
-static void op_c_to_pfad( int opcode )
+void Cnut::op_c_to_pfad( int opcode )
 {
   DISASM( "PERSLCT");
 
   pf_addr = (nut.c[1] << 4) | nut.c[0];
 }
 
-static void op_read_reg_n( int opcode )
+void Cnut::op_read_reg_n( int opcode )
 {
   int i;
   int is_ram, is_pf;
@@ -1024,7 +1034,7 @@ static void op_read_reg_n( int opcode )
     }
 }
 
-static void op_write_reg_n( int opcode )
+void Cnut::op_write_reg_n( int opcode )
 {
   int i;
   int is_ram, is_pf;
@@ -1064,7 +1074,7 @@ static void op_write_reg_n( int opcode )
     }
 }
 
-static void op_c_to_data( int opcode )
+void Cnut::op_c_to_data( int opcode )
 {
   int i;
   int is_ram, is_pf;
@@ -1103,7 +1113,7 @@ static void op_c_to_data( int opcode )
     }
 }
 
-static void op_test_ext_flag( int opcode )
+void Cnut::op_test_ext_flag( int opcode )
 {
   DISASM( "%s", ext_flagmap[opcode >> 6] );
 
@@ -1124,28 +1134,28 @@ static void op_test_ext_flag( int opcode )
 //
 // S operations
 
-static void op_set_s( int opcode )
+void Cnut::op_set_s( int opcode )
 {
   DISASM( "SF\t%u", tmap[opcode >> 6] );
 
   nut.s[tmap[opcode >> 6]] = 1;
 }
 
-static void op_clr_s( int opcode )
+void Cnut::op_clr_s( int opcode )
 {
   DISASM( "CF\t%u", tmap[opcode >> 6] );
 
   nut.s[tmap[opcode >> 6]] = 0;
 }
 
-static void op_test_s( int opcode )
+void Cnut::op_test_s( int opcode )
 {
   DISASM( "?FS\t%u", tmap[opcode >> 6] );
 
   nut.carry = nut.s[tmap[opcode >> 6]];
 }
 
-static int get_s_bits( int first, int count )
+static int Cnut::get_s_bits( int first, int count )
 {
   int i, mask = 1, r = 0;
 
@@ -1158,7 +1168,7 @@ static int get_s_bits( int first, int count )
   return r;
 }
 
-static void set_s_bits( int first, int count, int v )
+void Cnut::set_s_bits( int first, int count, int v )
 {
   int i, mask = 1;
 
@@ -1169,14 +1179,14 @@ static void set_s_bits( int first, int count, int v )
     }
 }
 
-static void op_clear_all_s( int opcode )
+void Cnut::op_clear_all_s( int opcode )
 {
   DISASM( "ST=0" );
 
   set_s_bits( 0, 8, 0 );
 }
 
-static void op_c_to_s( int opcode )
+void Cnut::op_c_to_s( int opcode )
 {
   DISASM( "ST=C" );
 
@@ -1184,7 +1194,7 @@ static void op_c_to_s( int opcode )
   set_s_bits( 4, 4, nut.c[1] );
 }
 
-static void op_s_to_c( int opcode )
+void Cnut::op_s_to_c( int opcode )
 {
   DISASM( "C=ST" );
 
@@ -1192,7 +1202,7 @@ static void op_s_to_c( int opcode )
   nut.c[1] = get_s_bits( 4, 4 );
 }
 
-static void op_c_exch_s( int opcode )
+void Cnut::op_c_exch_s( int opcode )
 {
   int t;
 
@@ -1206,21 +1216,21 @@ static void op_c_exch_s( int opcode )
   nut.c[1] = t;
 }
 
-static void op_sb_to_f( int opcode )
+void Cnut::op_sb_to_f( int opcode )
 {
   DISASM( "F=ST" );
 
   nut.fo = get_s_bits( 0, 8 );
 }
 
-static void op_f_to_sb( int opcode )
+void Cnut::op_f_to_sb( int opcode )
 {
   DISASM( "ST=F" );
 
   set_s_bits( 0, 8, nut.fo );
 }
 
-static void op_f_exch_sb( int opcode )
+void Cnut::op_f_exch_sb( int opcode )
 {
   int t;
 
@@ -1235,7 +1245,7 @@ static void op_f_exch_sb( int opcode )
 //
 // POINTER operations
 
-static void op_dec_pt( int opcode )
+void Cnut::op_dec_pt( int opcode )
 {
   DISASM( "-PT" );
 
@@ -1244,7 +1254,7 @@ static void op_dec_pt( int opcode )
     (*nut.pt) = WSIZE - 1;
 }
 
-static void op_inc_pt( int opcode )
+void Cnut::op_inc_pt( int opcode )
 {
   DISASM( "+PT" );
 
@@ -1253,35 +1263,35 @@ static void op_inc_pt( int opcode )
     (*nut.pt) = 0;
 }
 
-static void op_set_pt( int opcode )
+void Cnut::op_set_pt( int opcode )
 {
   DISASM( "PT=\t%u", tmap[opcode >> 6] );
 
   (*nut.pt) = tmap[opcode >> 6];
 }
 
-static void op_test_pt( int opcode )
+void op_test_pt( int opcode )
 {
   DISASM( "?PT=\t%u", tmap[opcode >> 6] );
 
   nut.carry = ((*nut.pt) == tmap[opcode >> 6]);
 }
 
-static void op_sel_p( int opcode )
+void Cnut::op_sel_p( int opcode )
 {
   DISASM( "PT=P" );
 
   nut.pt = & nut.p;
 }
 
-static void op_sel_q( int opcode )
+void Cnut::op_sel_q( int opcode )
 {
   DISASM( "PT=Q" );
 
   nut.pt = & nut.q;
 }
 
-static void op_test_pq( int opcode )
+void Cnut::op_test_pq( int opcode )
 {
   DISASM( "?P=Q" );
 
@@ -1289,7 +1299,7 @@ static void op_test_pq( int opcode )
     nut.carry = 1;
 }
 
-static void op_lc( int opcode )
+void Cnut::op_lc( int opcode )
 {
   DISASM( "LC\t%X", opcode>>6 );
 
@@ -1298,7 +1308,7 @@ static void op_lc( int opcode )
     (*nut.pt) = WSIZE - 1;
 }
 
-static void op_c_to_g( int opcode )
+void Cnut::op_c_to_g( int opcode )
 {
   DISASM( "G=C" );
 
@@ -1314,7 +1324,7 @@ static void op_c_to_g( int opcode )
     nut.g[1] = nut.c[(*nut.pt) + 1];
 }
 
-static void op_g_to_c( int opcode )
+void Cnut::op_g_to_c( int opcode )
 {
   DISASM( "C=G" );
 
@@ -1330,7 +1340,7 @@ static void op_g_to_c( int opcode )
     nut.c[(*nut.pt) + 1] = nut.g[1];
 }
 
-static void op_c_exch_g( int opcode )
+void Cnut::op_c_exch_g( int opcode )
 {
   int t;
 
@@ -1378,7 +1388,7 @@ static int keymap[100] =
 };
 
 
-void handle_keyboard( void )
+void Cnut::handle_keyboard( void )
 {
   int key;
 
@@ -1397,13 +1407,13 @@ void handle_keyboard( void )
   return;
 }
 
-static void op_keys_to_pc( int opcode )
+void Cnut::op_keys_to_pc( int opcode )
 {
   DISASM( "GTOKEY" );
   nut.pc = (nut.pc & 0xFF00) | nut.key_buf;
 }
 
-static void op_keys_to_c( int opcode )
+void Cnut::op_keys_to_c( int opcode )
 {
   DISASM( "C=KEY" );
 
@@ -1411,14 +1421,14 @@ static void op_keys_to_c( int opcode )
   nut.c[3] = nut.key_buf & 0x0F;
 }
 
-static void op_test_kb( int opcode )
+void Cnut::op_test_kb( int opcode )
 {
   DISASM( "?KEY" );
 
   nut.carry = nut.key_flag;
 }
 
-static void op_reset_kb( int opcode )
+void Cnut::op_reset_kb( int opcode )
 {
   DISASM( "CLRKEY" );
 
@@ -1430,14 +1440,14 @@ static void op_reset_kb( int opcode )
 //
 // misc. operations
 
-static void op_nop( int opcode )
+void Cnut::op_nop( int opcode )
 {
   DISASM( "NOP" );
 
   (void)opcode;
 }
 
-static void op_set_hex( int opcode )
+void Cnut::op_set_hex( int opcode )
 {
   DISASM( "SETHEX" );
 
@@ -1445,7 +1455,7 @@ static void op_set_hex( int opcode )
   nut.arith_base = 16;
 }
 
-static void op_set_dec( int opcode )
+void Cnut::op_set_dec( int opcode )
 {
   DISASM( "SETDEC" );
 
@@ -1453,7 +1463,7 @@ static void op_set_dec( int opcode )
   nut.arith_base = 10;
 }
 
-static void op_rom_to_c( int opcode )
+void Cnut::op_rom_to_c( int opcode )
 {
   int addr, tyte;
 
@@ -1467,7 +1477,7 @@ static void op_rom_to_c( int opcode )
   nut.c[0] = tyte & 0x0F;
 }
 
-static void op_clear_abc( int opcode )
+void Cnut::op_clear_abc( int opcode )
 {
   int i;
 
@@ -1477,7 +1487,7 @@ static void op_clear_abc( int opcode )
     nut.a[i] = nut.b[i] = nut.c[i] = 0;
 }
 
-static void op_ldi( int opcode )
+void Cnut::op_ldi( int opcode )
 {
   int tyte = (disasm.is ?
               get_code_with_bank( ++disasm.pc, disasm.bank ) :
@@ -1489,8 +1499,7 @@ static void op_ldi( int opcode )
   nut.c[1] = (tyte >> 4) & 0x0F;
   nut.c[0] = tyte & 0x0F;
 }
-
-static void op_or( int opcode )
+ void Cnut::op_or( int opcode )
 {
   int i;
 
@@ -1500,7 +1509,7 @@ static void op_or( int opcode )
     nut.c[i] = nut.c[i] | nut.a[i];
 }
 
-static void op_and( int opcode )
+void Cnut::op_and( int opcode )
 {
   int i;
 
@@ -1510,7 +1519,7 @@ static void op_and( int opcode )
     nut.c[i] = nut.c[i] & nut.a[i];
 }
 
-static void op_rcr( int opcode )
+void Cnut::op_rcr( int opcode )
 {
   int count, i, j;
   reg t;
@@ -1528,19 +1537,19 @@ static void op_rcr( int opcode )
     nut.c[i] = t[i];
 }
 
-static void op_wtog( int opcode )
+void Cnut::op_wtog( int opcode )
 {
   DISASM( "?WTOG" );
 }
 
-static void op_lld( int opcode )
+void Cnut::op_lld( int opcode )
 {
   DISASM( "?BAT" );
 
   nut.carry = 0;  // "batteries" are fine
 }
 
-static void op_powoff( int opcode )
+void Cnut::op_powoff( int opcode )
 {
   DISASM( "POWOFF" );
 
@@ -1567,7 +1576,7 @@ static void op_powoff( int opcode )
     }
 }
 
-static void op_c_to_hpil( int opcode )
+void Cnut::op_c_to_hpil( int opcode )
 {
   int reg = (opcode >> 6) & 0x007;
 
@@ -1577,7 +1586,7 @@ static void op_c_to_hpil( int opcode )
     hpil_from_c( reg );
 }
 
-static void op_hpil_to_c( int opcode )
+void Cnut::op_hpil_to_c( int opcode )
 {
   int reg = (opcode >> 6) & 0x007;
   short  word2, word3;
@@ -1612,7 +1621,7 @@ static void op_hpil_to_c( int opcode )
     hpil_to_c( reg, word2, word3 );
 }
 
-static void op_selprf( int opcode )
+void Cnut::op_selprf( int opcode )
 {
   int per = (opcode >> 6);
 
@@ -1622,7 +1631,7 @@ static void op_selprf( int opcode )
   peraddr = per;
 }
 
-static void op_selper_nofcn( int opcode )
+void Cnut::op_selper_nofcn( int opcode )
 {
   int per = (opcode >> 6);
 
@@ -1631,20 +1640,20 @@ static void op_selper_nofcn( int opcode )
     peraddr = -1;
   return;
 }
-static void op_selper_no_give_fcn( void )
+void Cnut::op_selper_no_give_fcn( void )
 {
   return;
 }
-static void op_selper_no_take_fcn( void )
+void Cnut::op_selper_no_take_fcn( void )
 {
   return;
 }
-static bool op_selper_no_has_fcn( void )
+static bool Cnut::op_selper_no_has_fcn( void )
 {
   return 0;
 }
 
-void register_selper_ops( int    per,
+void Cnut::register_selper_ops( int    per,
                           void (*perfcn)( int ),
                           void (*take)( void ),
                           void (*give)( void ),
@@ -1656,7 +1665,7 @@ void register_selper_ops( int    per,
   op_selper_has_fcn[per]  = has;
 }
 
-void unregister_selper_ops( int per )
+void Cnut::unregister_selper_ops( int per )
 {
   op_selper_fcn[per]      = op_selper_nofcn;
   op_selper_give_fcn[per] = op_selper_no_give_fcn;
@@ -1664,7 +1673,7 @@ void unregister_selper_ops( int per )
   op_selper_has_fcn[per]  = op_selper_no_has_fcn;
 }
 
-void register_pf_ops( int    pf,
+void Cnut::register_pf_ops( int    pf,
                       void (*read_pf)( int ),
                       void (*write_pf)( int ),
                       void (*write_data_pf)( void ),
@@ -1684,7 +1693,7 @@ void register_pf_ops( int    pf,
     Ooops( "PF %02X ALREADY EXISTS.\n", pf);
 }
 
-void unregister_pf_ops( int pf )
+void Cnut::unregister_pf_ops( int pf )
 {
   if( pf_exists[pf] )
     {
@@ -1697,7 +1706,7 @@ void unregister_pf_ops( int pf )
     }
 }
 
-void init_pf( void )
+void Cnut::init_pf( void )
 {
   int i;
 
@@ -1705,13 +1714,13 @@ void init_pf( void )
     pf_exists[i] = 0;
 }
 
-void register_op( int opcode, void (*op)( int ) )
+void Cnut::register_op( int opcode, void (*op)( int ) )
 {
   if( bad_op == op_fcn[opcode] )
     op_fcn[opcode] = op;
 }
 
-void unregister_op( int opcode )
+void Cnut::unregister_op( int opcode )
 {
   op_fcn[opcode] = bad_op;
 }
@@ -1720,16 +1729,15 @@ void unregister_op( int opcode )
 // initialization
 
 
-void init_ops( void )
+void Cnut::init_ops( void )
 {
   int i;
-  for( i = 0; i < 1024; i += 4)
-    {
-    op_fcn[i + 0] = bad_op;
-    op_fcn[i + 1] = op_long_branch;
-    op_fcn[i + 2] = op_arith;
-    op_fcn[i + 3] = op_short_branch;
-    }
+  for( i = 0; i < 1024; i += 4) {
+      op_fcn[i + 0] = bad_op;
+      op_fcn[i + 1] = op_long_branch;
+      op_fcn[i + 2] = op_arith;
+      op_fcn[i + 3] = op_short_branch;
+  }
 
   op_fcn[0x000] = op_nop;
 
@@ -1743,29 +1751,28 @@ void init_ops( void )
   op_fcn[0x1C0] = op_enbank;
   op_fcn[0x1F0] = op_wtog;   //WTOG
 
-  for( i = 0; i < WSIZE; i++)
-    {
-    op_fcn[0x004 + (itmap[i] << 6)] = op_clr_s;
-    op_fcn[0x008 + (itmap[i] << 6)] = op_set_s;
-    op_fcn[0x00C + (itmap[i] << 6)] = op_test_s;
-    op_fcn[0x014 + (itmap[i] << 6)] = op_test_pt;
-    op_fcn[0x01C + (itmap[i] << 6)] = op_set_pt;
-    op_fcn[0x02C + (itmap[i] << 6)] = op_test_ext_flag;
-    op_fcn[0x03C + (itmap[i] << 6)] = op_rcr;
-    }
+  for( i = 0; i < WSIZE; i++) {
+      op_fcn[0x004 + (itmap[i] << 6)] = op_clr_s;
+      op_fcn[0x008 + (itmap[i] << 6)] = op_set_s;
+      op_fcn[0x00C + (itmap[i] << 6)] = op_test_s;
+      op_fcn[0x014 + (itmap[i] << 6)] = op_test_pt;
+      op_fcn[0x01C + (itmap[i] << 6)] = op_set_pt;
+      op_fcn[0x02C + (itmap[i] << 6)] = op_test_ext_flag;
+      op_fcn[0x03C + (itmap[i] << 6)] = op_rcr;
+  }
+
   op_fcn[0x3C4] = op_clear_all_s;
   op_fcn[0x3C8] = op_reset_kb;
   op_fcn[0x3CC] = op_test_kb;
   op_fcn[0x3D4] = op_dec_pt;
   op_fcn[0x3Dc] = op_inc_pt;
 
-  for( i = 0; i < 16; i++)
-    {
-    op_fcn[0x010 + (i << 6)] = op_lc;
-    op_fcn[0x024 + (i << 6)] = op_selprf;
-    op_fcn[0x028 + (i << 6)] = op_write_reg_n;
-    op_fcn[0x038 + (i << 6)] = op_read_reg_n;
-    }
+  for( i = 0; i < 16; i++) {
+      op_fcn[0x010 + (i << 6)] = op_lc;
+      op_fcn[0x024 + (i << 6)] = op_selprf;
+      op_fcn[0x028 + (i << 6)] = op_write_reg_n;
+      op_fcn[0x038 + (i << 6)] = op_read_reg_n;
+  }
 
   op_fcn[0x058] = op_c_to_g;
   op_fcn[0x098] = op_g_to_c;
@@ -1813,28 +1820,26 @@ void init_ops( void )
   op_fcn[0x3B0] = op_and;
   op_fcn[0x3F0] = op_c_to_pfad;
 
-  for( i = 0; i < 16; i++ )
-    {
-    op_selper_fcn[i]      = op_selper_nofcn;
-    op_selper_give_fcn[i] = op_selper_no_give_fcn;
-    op_selper_take_fcn[i] = op_selper_no_take_fcn;
-    op_selper_has_fcn[i]  = op_selper_no_has_fcn;
-    }
+  for( i = 0; i < 16; i++ ) {
+      op_selper_fcn[i]      = op_selper_nofcn;
+      op_selper_give_fcn[i] = op_selper_no_give_fcn;
+      op_selper_take_fcn[i] = op_selper_no_take_fcn;
+      op_selper_has_fcn[i]  = op_selper_no_has_fcn;
+  }
 
   // HPIL : Not supported. For disassembler only
-  for( i = 0; i < 8; i++ )
-    {
-    op_fcn[0x200 | (i << 6)] = op_c_to_hpil;
-    op_fcn[0x024 | (i << 6)] = op_hpil_to_c;
-    }
+  for( i = 0; i < 8; i++ ) {
+      op_fcn[0x200 | (i << 6)] = op_c_to_hpil;
+      op_fcn[0x024 | (i << 6)] = op_hpil_to_c;
+  }
 }
 
-void nut_push( int a )
+void Cnut::nut_push( int a )
 {
   push( a );
 }
 
-void init_cpu_registers( void )
+void Cnut::init_cpu_registers( void )
 {
   int i;
 
@@ -1862,12 +1867,12 @@ void init_cpu_registers( void )
   nut.cycle = 0;
 }
 
-void nut_awake()
+void Cnut::nut_awake()
 {
   nut.awake = 1;
 }
 
-void nut_sim( void )
+void Cnut::nut_sim( void )
 {
   int opcode;
 
@@ -1891,7 +1896,7 @@ void nut_sim( void )
   nut.cycle++;
 }
 
-void open_nut( void *pmod )
+void Cnut::open_nut( void *pmod )
 {
 static bool xio = 0;
   extern void open_xio( void * );
@@ -1903,7 +1908,7 @@ if( !xio )
   open_display( pmod );
 }
 
-void close_nut( void *pmod )
+void Cnut::close_nut( void *pmod )
 {
   extern void close_xio( void * );
 
@@ -1912,7 +1917,7 @@ void close_nut( void *pmod )
   close_xio( pmod );
 }
 
-void poll_nut( void *pmod )
+void Cnut::poll_nut( void *pmod )
 {
   (void)pmod;
 
@@ -1920,7 +1925,7 @@ void poll_nut( void *pmod )
   handle_keyboard();
 }
 
-void notify_nut_poweron( void )
+void Cnut::notify_nut_poweron( void )
 {
   nut.awake = 1;
   display_enable = 1;

@@ -8,7 +8,7 @@ Rectangle {
         id: visualSettingsModel
 
 //        SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
-        SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://rrouvin.dyndns.org/pocketcloud"}
+        SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://rrouvin.dyndns.org/pocketcloud/"}
         SettingsDelegate { id: usernameFld; name: "username"; labelString: "User Name"; type: "input"; }
         SettingsDelegate { id: passwordFld; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
         SettingsDelegate { name: "apikey"; labelString: "Login"; type: "action"; saveInput:false;

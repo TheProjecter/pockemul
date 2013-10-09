@@ -27,15 +27,6 @@ Cti57::Cti57(CPObject *parent)	: CpcXXXX(parent)
 
     SlotList.clear();
     SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/ti57/ti57.bin"), ""	, ROM , "ROM"));
-//    SlotList.append(CSlot(16, 0x2000 ,	P_RES(":/pc2001/rom-2000-5FFF.bin"), ""	, ROM , "ROM"));
-//    SlotList.append(CSlot(40 ,0x6000 ,	""	, ""	, RAM , "RAM"));
-
-
-//    KeyMap		= KeyMap1250;
-//    KeyMapLenght= KeyMap1250Lenght;
-
-    PowerSwitch	= 0;
-    Pc_Offset_X = Pc_Offset_Y = 0;
 
     setDXmm(78);
     setDYmm(148);
@@ -46,18 +37,16 @@ Cti57::Cti57(CPObject *parent)	: CpcXXXX(parent)
 
     Lcd_X		= 30;
     Lcd_Y		= 43;
-    Lcd_DX		= 220;//168;//144 ;
+    Lcd_DX		= 220;
     Lcd_DY		= 40;
     Lcd_ratio_X	= 1;
     Lcd_ratio_Y	= 1;
 
-    Lcd_Symb_X	= 55;//(int) (45 * 1.18);
-    Lcd_Symb_Y	= 41;//(int) (35 * 1.18);
+    Lcd_Symb_X	= 55;
+    Lcd_Symb_Y	= 41;
     Lcd_Symb_DX	= 339;
     Lcd_Symb_DY	= 5;
-    Lcd_Symb_ratio_X	= 1;//1.18;
-
-    PowerSwitch = 0;
+    Lcd_Symb_ratio_X	= 1;
 
     pTIMER		= new Ctimer(this);
     pLCDC		= new Clcdc_ti57(this);
@@ -189,7 +178,7 @@ QString Cti57::Display() {
       s.prepend('E');
   }
 
-  qWarning()<<"DISPLAY:"<<s;
+//  qWarning()<<"DISPLAY:"<<s;
   return s;
 }
 

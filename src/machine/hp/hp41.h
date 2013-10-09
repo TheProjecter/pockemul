@@ -24,7 +24,12 @@
 // HP41.h: header file
 // *********************************************************************
 
-#include "cpu.h"
+
+#include "pcxxxx.h"
+
+class Chp41Cpu;
+
+#define LOG(x)
 
 typedef unsigned char flag;
 typedef unsigned char byte;
@@ -33,14 +38,9 @@ typedef unsigned long dword;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
 typedef unsigned int uint;
+typedef quint64 UINT64;
 
-// ram registers each have 7 bytes
-struct RAM_REG
-  {
-  byte Reg[7];
-  };
 
-extern word TypeA[];
 enum {eSoundNone=0,eSoundSpeaker,eSoundWave};       // sound modes
 
 #define NORMAL 0                      // for keys - normal position
@@ -112,21 +112,31 @@ struct ModulePage
   };
 
 // functions
-flag LoadBMP(char *pszFile,BITMAPINFOHEADER *&pBM,LOGPALETTE *&pPalette,BITMAPINFO *&pPaletteIndex);
-void FreeBMP(BITMAPINFOHEADER *&pBM,LOGPALETTE *&pPalette,BITMAPINFO *&pPaletteIndex);
 //void ConvertASCIItoLCD(char *szASCII,char *dis_str,flag fLCD4);
 
 /****************************/
 // The HP-41 class
 /****************************/
-class Chp41:public CCPU{
-  {
-  friend class CMcodeDlg;
-  friend class CBreakPointsDlg;
+class Chp41:public CpcXXXX{
+
+//  friend class CMcodeDlg;
+//  friend class CBreakPointsDlg;
 public:
-  Chp41();
+  Chp41(CPObject *parent=0);
   ~Chp41();
-  static Chp41 *pThis;      // to give callback procs a this pointer
+
+  Chp41Cpu *hp41cpu;
+
+  bool Chk_Adr(UINT32 *d, UINT32 data);
+  bool Chk_Adr_R(UINT32 *d, UINT32 *data);
+
+  virtual bool	init(void);				// initialize
+  virtual bool	run(void);					// emulator main
+  virtual bool	exit(void);					// exit
+  virtual UINT8 in(UINT8 address);
+  virtual UINT8 out(UINT8 address,UINT8 value);
+
+
   enum {eAwake=0,eLightSleep=1,eDeepSleep=2};       // sleep modes
   void Wakeup(void);
   void Sleep(int eNewMode);
@@ -134,26 +144,25 @@ public:
   void MemoryLost(void);
   void EnableRun(void);
   void DisableRun(void);
-  void Run(void);
   void Halt(void);
   void SetProcParams(int ProcIntervalIn,int ProcCyclesIn);
   void GetProcParams(int &ProcIntervalOut,int &ProcCyclesOut);
-  static void CALLBACK ExecuteProc(HWND hwnd,UINT uMsg,UINT idEvent,DWORD dwTime);
-  static void CALLBACK TimerProc(UINT uId,UINT uMsg,DWORD dwUser,DWORD dw1,DWORD dw2);
+  void ExecuteProc();
+  void TimerProc();
 
   // HP41Graphics.cpp:
-  void Draw(CDC *pCDC);
+//  void Draw(CDC *pCDC);
   void GetLCD(char *str);
   void GetDisplay(char *str);
   void GetAnnunciator(char *str);
   void GetShortAnnunciator(char *str);
   int GetContrast(void);
-  void SetContrast(int ContrastVal);
+  void SetContrast(int ContrastVal){}
   void SetFontColor(int ColorVal);
   int GetFontColor(void);
   int GetIndicator() {return(Indicator);}
   void SetIndicator(int IndicatorIn) {Indicator=IndicatorIn;}
-  LOGPALETTE *GetPalKeyboard(void);
+//  LOGPALETTE *GetPalKeyboard(void);
 
   // HP41File.cpp:
   int LoadMOD(ModuleHeader *&pModuleOut,char *pszFullPath);
@@ -173,8 +182,8 @@ public:
   void SetKeyUp(void);
   void SetKeyboard(int eKbd,flag fTrueType,flag fShowTitle,flag fShowMenu);
   int GetKeyboard(void);
-  byte MapPointToKey(CPoint pt);
-  byte MapKeyToKey(flag fAlt,flag fExtended,int PCKey);
+//  byte MapPointToKey(CPoint pt);
+//  byte MapKeyToKey(flag fAlt,flag fExtended,int PCKey);
   void MoveKey(byte Key,int State);
 
   // HP41Trace.cpp
@@ -186,9 +195,9 @@ public:
   char *GetTEFName(uint tef);
   void PrintRegisters(void);
   void StartTrace(void);
-  void StopTrace(void);
+  void StopTrace(void){}
   void SwitchTrace(void);
-  flag GetTrace(void);
+  flag GetTrace(void){}
   void TraceOut(void);
   void trace(void);
   void trace_class0(void);
@@ -214,7 +223,7 @@ public:
 
   void SetSoundMode(int val);
   int GetSoundMode(void);
-  CFont *GetFontLCD(void) { return(&CFontLCD); }
+//  CFont *GetFontLCD(void) { return(&CFontLCD); }
 
   // trace
   FILE *hLogFile;
@@ -227,58 +236,38 @@ public:
   word TraceTyte1;        // same as Tyte1 but for tracing use only
 
   // graphics
-  BITMAPINFOHEADER *pBMKeyboard;
-  CBitmap CBMKeyboard;
-  LOGPALETTE *pPalKeyboard;
-  BITMAPINFO *pPalIndexKeyboard;
-  CPalette CPalKeyboard;
-  flag fUsePal;
-  RECT ActiveRect;       //Clicks outside this area used for dragging if !MainWindow.ShowTitle
+//  BITMAPINFOHEADER *pBMKeyboard;
+//  CBitmap CBMKeyboard;
+//  LOGPALETTE *pPalKeyboard;
+//  BITMAPINFO *pPalIndexKeyboard;
+//  CPalette CPalKeyboard;
+//  flag fUsePal;
+//  RECT ActiveRect;       //Clicks outside this area used for dragging if !MainWindow.ShowTitle
 
   // keyboard and font
-  CFont CFontLCD;
-  CFont CFontAnnun;
-  RECT *pRectKeyboard;
-  RECT *pRectLCD;
-  RECT *pRectAnnun;
+//  CFont CFontLCD;
+//  CFont CFontAnnun;
+//  RECT *pRectKeyboard;
+//  RECT *pRectLCD;
+//  RECT *pRectAnnun;
   int eKeyboard;                         // current keyboard
   int eFont;                             // current font
   int UseAltPunc;                        // use alternate punc chars (for ttf wider punc chars only)
 
   // activity dot
   word Indicator;                        // enables activity indicator
-  RECT RectIndicator;
-  CBrush brushRed,brushGray;
+  QRect RectIndicator;
+//  CBrush brushRed,brushGray;
 
   // ROM variables
-  CPtrList ModuleList;                   // pointers to the loaded modules
+  QList<ModuleHeader*> ModuleList;       // pointers to the loaded modules
   ModulePage *PageMatrix[16][4];         // matrix of page pointers
   ModulePage *pCurPage;                  // current page pointer
   word CurPage;                          // current page number
   byte active_bank[16];                  // array[page] of banks that are enabled
   word NextActualBankGroup;              // counter for loading actual bank groups
 
-  // CPU registers
-  RAM_REG *pRAM;
-  byte A_REG[14],B_REG[14],C_REG[14],M_REG[14],N_REG[14];
-  word G_REG,F_REG,ST_REG,Q_REG,P_REG,KEY_REG,XST_REG;
-  word *PT_REG;                          // set to address of Q_REG or P_REG
-  word PT_PREV;                          // set to value of previous PT
-  word FI_REG;                           //14 bits used - there is no actual physical register - this is just an input stream from peripherals
-  word CARRY,KEYDOWN,BATTERY;
-  word PC_REG,RET_STK0,RET_STK1,RET_STK2,RET_STK3;
-  word BASE;                             // ==10 for decimal mode, ==16 for hex mode
 
-  // CPU variables
-  unsigned short eSleepMode;
-  word perph_in_control,perph_selected,asdf,ram_selected,wqer;    // modes dependant on previous instructions that set modes
-  word control_perph;              // number of perph in control
-  word Tyte1;                      // current instruction (ten bit byte)
-  word Tyte2;                      // valid only if tyte1 is two byte instruction
-  word TytePrev;                   // previous instruction code
-  word Modifier;                   // instruction modifier
-  word FirstTEF,LastTEF;           // starting and ending tef pointers (always starting at least significant digit)
-  word Boost;                      // boost the main loop by this many more cycles if it is near completion
 
   // display registers and variables
   byte DIS_C_REG[12];              // bit 8 for chars 1-12 (lower bit)
@@ -289,7 +278,7 @@ public:
   word UpdateAnnun;                // set to 1 when annunciators need to be updated
   word DisplayOn;                  // set to 1 when LCD is turned on
   word Contrast;                   // 0-15 value for contrast (half nut)
-  COLORREF FontColor;              // RBG font color value
+//  COLORREF FontColor;              // RBG font color value
 
   // timer registers
   word TimerSelA;                  // ==1 if TIMER=A, ==0 if TIMER=B
@@ -302,10 +291,10 @@ public:
   byte INTV_CNT[14], INTV_TV[14];  // interval timer - only low 20 bits used - INTV_CNT is counter, INTV_TV is terminal value
   byte ACC_F[14];                  // accuracy factor - only low 13 bits used
   byte TMR_S[14];                  // status bits - only low 13 bits used
-  MMRESULT TimerEvent;             // ==NULL if no timer, higher precision multimedia timers used for callbacks
+//  MMRESULT TimerEvent;             // ==NULL if no timer, higher precision multimedia timers used for callbacks
 
   // instruction delay
-  LARGE_INTEGER PCPerf, PCCount[2];
+  UINT64 PCPerf, PCCount[2];
   UINT64 InstrNSec;
 
   // control and state variables
@@ -327,43 +316,13 @@ public:
   word BreakPts[100];             // ordered list of breakpoints
 
   word inline GetNextTyte(void);
-  void SetPC(word addr);
+
   int RamExist(word addr);
   void Execute(void);
 
-  void Class0(void);
-  void Subclass0(void);
-  void Enbank(int BankSet);
-  void Subclass1(void);
-  void Subclass2(void);
-  void Subclass3(void);
-  void Subclass4(void);
-  void Subclass5(void);
-  void Subclass6(void);
-  void Subclass7(void);
-  void Subclass8(void);
-  void Subclass9(void);
-  void SubclassA(void);
-  void SubclassB(void);
-  void SubclassC(void);
-  void SubclassD(void);
-  void SubclassE(void);
-  void SubclassF(void);
   void wdata(void);
   void rdata(void);
 
-  void Class1(void);
-  void PushReturn(word addr);
-  word PopReturn(void);
-  void LongJump(word addr,flag fPush);
-
-  void Class2(void);
-  int ArithCarry(unsigned short tyte);
-  void ConvertTEF(void);
-  byte Adder(byte nib1,byte nib2);
-  byte Subtractor(byte nib1,byte nib2);
-
-  void Class3(void);
 
   void DisplayRead(void);
   void DisplayWrite(void);
@@ -385,15 +344,16 @@ public:
   void TimerWrite(void);
   void TimerRead(void);
 
-  void exec_perph_printer(void);
-  void error_message(short num);
+  void exec_perph_printer(void) {}
+
   void Speaker(short Freq, int Duration);
 
   // user code support
   int DecodeUCByte(int PrevType,byte CurrByte);
   void CalcOffset(int LowReg,int LowByte,int HighReg,int HighByte,int &RegOff,int &ByteOff);
   void PrevGlobal(int CurrReg,int CurrByte,int &PrevReg,int &PrevByte,int &RegOff,int &ByteOff);
-  };
+
+};
 
 
 #endif // HP41_H
