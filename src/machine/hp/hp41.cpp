@@ -200,6 +200,8 @@ bool Chp41::init()
 
 bool Chp41::run()
 {
+
+    SetKeyDown();
 //    qWarning()<<"hp41::run";
     //    if (!fRunEnable)
     //        return;
@@ -497,5 +499,212 @@ void Chp41::Speaker(short Freq, int Duration)
 #endif
 }
 
+
+void Chp41::SetKeyDown(byte KeyCode) {
+
+//  if (eKeyboard==eKeyboardNone)
+//    return;
+    if (pKEYB->LastKey)
+        fEnableCLRKEY=false;           // disable CLRKEY instruction
+    else {
+        fEnableCLRKEY=true;
+        MinCLRKEY=3;                   // the key will be held down for this minimum number of CLRKEY instructions to avoid debounce code
+    }
+  hp41cpu->KEY_REG= KeyCode ? KeyCode : getKey();
+  if (hp41cpu->KEY_REG) {
+      qWarning()<<"Key Pressed:"<<hp41cpu->KEY_REG;
+      hp41cpu->KEYDOWN=true;
+  }
+//  if ( (eLightSleep==IsSleeping()) ||                 // light sleep and any key pressed or
+//    ((eDeepSleep==IsSleeping())&&(KeyCode==0x18)) )   // deep sleep and ON key pressed
+//    Wakeup();
+
+
+  }
+
+/**********************************/
+// Simulates a key release
+/**********************************/
+void Chp41::SetKeyUp()
+  {
+//  if (eKeyboard==eKeyboardNone)
+//    return;
+  fEnableCLRKEY=true;
+  }
+
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
+
+UINT8 Chp41::getKey()
+{
+    UINT8 code = 0;
+    if (pKEYB->LastKey)
+    {
+        if (KEY(K_F1))			code = 0x18;
+        if (KEY(K_F2))			code = 0xC6;
+        if (KEY(K_F3))			code = 0xC5;
+        if (KEY(K_F4))			code = 0xC4;
+
+        if (KEY('A'))			code = 0x10;
+        if (KEY('B'))			code = 0x30;
+        if (KEY('C'))			code = 0x70;
+        if (KEY('D'))			code = 0x80;
+        if (KEY('E'))			code = 0xC0;
+        if (KEY('F'))			code = 0x11;
+        if (KEY('G'))			code = 0x31;
+        if (KEY('H'))			code = 0x71;
+        if (KEY('I'))			code = 0x81;
+        if (KEY('J'))			code = 0xC1;
+        if (KEY(K_SHT))			code = 0x12;
+        if (KEY('K'))			code = 0x32;
+        if (KEY('L'))			code = 0x72;
+        if (KEY('M'))			code = 0x82;
+        if (KEY(K_SST))			code = 0xC2;
+        if (KEY('N'))			code = 0x13;
+        if (KEY('O'))			code = 0x73;
+        if (KEY('P'))			code = 0x82;
+        if (KEY(K_LA))			code = 0xC3;
+        if (KEY('Q'))			code = 0x14;
+        if (KEY('R'))			code = 0x34;
+        if (KEY('S'))			code = 0x74;
+        if (KEY('T'))			code = 0x84;
+        if (KEY('U'))			code = 0x15;
+        if (KEY('V'))			code = 0x35;
+        if (KEY('W'))			code = 0x75;
+        if (KEY('X'))			code = 0x85;
+        if (KEY('Y'))			code = 0x16;
+        if (KEY('Z'))			code = 0x36;
+        if (KEY('='))			code = 0x76;
+        if (KEY('?'))			code = 0x86;
+
+        if (KEY(':'))			code = 0x17;
+        if (KEY(' '))			code = 0x37;
+        if (KEY('.'))			code = 0x77;
+        if (KEY(K_RS))			code = 0x87;
+
+    }
+
+    return code;
+
+}
+#if 0
+byte Chp41::MapKeyToKey(
+  flag fAlt,                  // true if this is an alt key
+  flag fExtended,             // true if this is an extended PC keycode
+  int PCKey)                  // PC keycode
+  {
+  if (fAlt)
+    return(0);
+
+  if (fExtended)
+    {
+    switch (PCKey)
+      {
+      case VK_ENTER:
+        return(0x13);
+      case VK_DIVIDE:
+        return(0x17);
+      }
+    return(0);
+    }
+
+  if ( (PCKey>=VK_A) && (PCKey<=VK_Z) )
+    return(UnshiftAlphaTable[PCKey-VK_A]);
+
+  switch (PCKey)
+    {
+    case VK_F1:
+      return(0);        // HELP
+    case VK_F2:
+      return(0x18);     // ON
+    case VK_F3:
+      return(0xc6);     // USER
+    case VK_F4:
+      return(0xc5);     // PRGM
+    case VK_F5:
+      return(0xc4);     // ALPHA
+    case VK_F6:
+      return(0xc2);     // SST
+    case VK_F7:
+      return(0x87);     // R/S
+    case VK_F8:
+    case VK_F9:
+    case VK_F10:
+    case VK_F11:
+    case VK_F12:
+      return(0);
+    case VK_SHIFT:
+      return(0x12);     // SHIFT
+    case VK_CONTROL:
+      return(1);        // COPY LCD
+    case VK_TAB:
+      return(3);        // TURBO
+    case VK_BACK:
+    case VK_ESCAPE:
+      return(0xc3);     // BACKARROW
+    case VK_OEM_MINUS:  // -_ KEY
+    case VK_SUBTRACT:
+      return(0x14);
+    case VK_OEM_PLUS:   // += KEY
+    case VK_ADD:
+      return(0x15);
+    case VK_MULTIPLY:
+    case VK_OEM_QUOTE:  // '"
+      return(0x16);
+    case VK_OEM_2:      // /? KEY
+    case VK_DIVIDE:
+      return(0x17);
+    case VK_0:
+    case VK_NUMPAD0:
+    case VK_INSERT:
+      return(0x37);
+    case VK_1:
+    case VK_NUMPAD1:
+    case VK_END:
+      return(0x36);
+    case VK_2:
+    case VK_NUMPAD2:
+    case VK_DOWN:
+      return(0x76);
+    case VK_3:
+    case VK_NUMPAD3:
+    case VK_NEXT:
+      return(0x86);
+    case VK_4:
+    case VK_NUMPAD4:
+    case VK_LEFT:
+      return(0x35);
+    case VK_5:
+    case VK_NUMPAD5:
+    case VK_CLEAR:
+      return(0x75);
+    case VK_6:
+    case VK_NUMPAD6:
+    case VK_RIGHT:
+      return(0x85);
+    case VK_7:
+    case VK_NUMPAD7:
+    case VK_HOME:
+      return(0x34);
+    case VK_8:
+    case VK_NUMPAD8:
+    case VK_UP:
+      return(0x74);
+    case VK_9:
+    case VK_NUMPAD9:
+    case VK_PRIOR:
+      return(0x84);
+    case VK_DELETE:
+    case VK_OEM_PERIOD:
+    case VK_DECIMAL:
+    case VK_OEM_COMMA:
+      return(0x77);
+    case VK_SPACE:
+      return(0x37);
+    case VK_ENTER:
+      return(0x13);
+    }
+  return(0);
+  }
+#endif
 
 #endif

@@ -714,32 +714,7 @@ int Chp41::GetKeyboard(void)
 /**********************************/
 // Simulates a key press
 /**********************************/
-void Chp41::SetKeyDown(byte KeyCode) {
-#if 0
-  if (eKeyboard==eKeyboardNone)
-    return;
 
-  fEnableCLRKEY=FALSE;           // disable CLRKEY instruction
-  MinCLRKEY=3;                   // the key will be held down for this minimum number of CLRKEY instructions to avoid debounce code
-
-  KEY_REG=KeyCode;
-  KEYDOWN=TRUE;
-  if ( (eLightSleep==IsSleeping()) ||                 // light sleep and any key pressed or
-    ((eDeepSleep==IsSleeping())&&(KeyCode==0x18)) )   // deep sleep and ON key pressed
-    Wakeup();
-
-#endif
-  }
-
-/**********************************/
-// Simulates a key release
-/**********************************/
-void Chp41::SetKeyUp()
-  {
-//  if (eKeyboard==eKeyboardNone)
-//    return;
-//  fEnableCLRKEY=TRUE;
-  }
 
 
 #if 0

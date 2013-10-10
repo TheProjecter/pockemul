@@ -193,8 +193,6 @@ public:
   UINT64 PCPerf, PCCount[2];
   UINT64 InstrNSec;
 
-  int MinCLRKEY;                  // a counter for keeping a key pressed for a minimum number of CLRKEY instructions
-
 
 
   // breakpoint control

@@ -180,7 +180,7 @@ public:
   // HP41Keyboard.cpp:
   enum {eKeyboardNone=0,eKeyboardTiny=4,eKeyboardSmall=1,eKeyboardMedium=2,eKeyboardLarge=3};
   enum {eFontLCD1,eFontLCD2,eFontLCD3,eFontLCD4};
-  void SetKeyDown(byte KeyCode);
+  void SetKeyDown(byte KeyCode = 0);
   void SetKeyUp(void);
   void SetKeyboard(int eKbd,flag fTrueType,flag fShowTitle,flag fShowMenu);
   int GetKeyboard(void);
@@ -355,6 +355,7 @@ public:
   void CalcOffset(int LowReg,int LowByte,int HighReg,int HighByte,int &RegOff,int &ByteOff);
   void PrevGlobal(int CurrReg,int CurrByte,int &PrevReg,int &PrevByte,int &RegOff,int &ByteOff);
 
+  UINT8 getKey();
 };
 
 

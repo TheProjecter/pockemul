@@ -547,9 +547,9 @@ void Chp41Cpu::Subclass2()
     }
   else if (Modifier==15)             /* CLRKEY */
     {
-    if (MinCLRKEY)
-      MinCLRKEY--;
-    if (hp41->fEnableCLRKEY && (MinCLRKEY==0))   // dont 0 key until enabled and this minimum number of CLRKEY instructions has passed
+    if (hp41->MinCLRKEY)
+      hp41->MinCLRKEY--;
+    if (hp41->fEnableCLRKEY && (hp41->MinCLRKEY==0))   // dont 0 key until enabled and this minimum number of CLRKEY instructions has passed
       {
       KEYDOWN=0;
       KEY_REG=0;
