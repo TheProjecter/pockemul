@@ -21,8 +21,11 @@
 // *********************************************************************
 #if 1
 #include <math.h>
+#include <QDebug>
+
 #include "hp41.h"
 #include "hp41Cpu.h"
+#include "hp41mod.h"
 #include "Keyb.h"
 #include "Inter.h"
 #include "init.h"
@@ -177,6 +180,12 @@ bool Chp41::init()
     fBreakPtsEnable=false;
     fBreak=false;
     nBreakPts=0;
+
+    ModuleHeader *pModuleNew;
+    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-C.MOD"));
+
+    Chp41Mod(this,P_RES(QString(":/hp41/MOD/NUT-C.MOD"))).output_mod_info(stdout,1,1);
+    qWarning()<<"Load Module:"<<nRes;
 
    return true;
 }

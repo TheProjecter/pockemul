@@ -88,15 +88,83 @@ their page number hardcoded.
 #include<memory.h>
 
 #include <QFile>
+#include <QDebug>
 
 #include"hp41mod.h"
+#include "hp41.h"
 
 
-
-Chp41Mod::Chp41Mod()
+Chp41Mod::Chp41Mod(Chp41 * hp41)
 {
-
+    this->hp41 = hp41;
+    pModule = new ModuleHeader;
 }
+Chp41Mod::Chp41Mod(Chp41 * hp41,QString pszFullPath)
+{
+    this->hp41 = hp41;
+    pModule = new ModuleHeader;
+    status = LoadMOD( pszFullPath);
+}
+
+/****************************/
+// Returns 0 for success, 1 for open fail, 2 for read fail, 3 for invalid file, 4 for load conflict or no space
+/****************************/
+int Chp41Mod::LoadMOD( QString pszFullPath)
+  {
+#if 1
+  uint page,hep_page=0,ww_page=0;
+
+  // open file and read its contents into a buffer
+  QFile file(pszFullPath);
+  if (! file.open(QIODevice::ReadOnly)) return(1);
+
+  qint64 FileSize=file.size();
+  if ((FileSize-sizeof(ModuleFileHeader))%sizeof(ModuleFilePage))
+    return(3);
+
+
+  pBuff = file.readAll();
+
+  if (FileSize!=pBuff.size()) {
+      return(2);
+  }
+
+  // validate module header
+  ModuleFileHeader *pMFH=(ModuleFileHeader*)pBuff.data();
+  if (FileSize != sizeof(ModuleFileHeader)+pMFH->NumPages*sizeof(ModuleFilePage) ||
+    0!=strcmp(pMFH->FileFormat,MOD_FORMAT) || pMFH->MemModules>4 || pMFH->XMemModules>3 ||
+    pMFH->Original>1 || pMFH->AppAutoUpdate>1 || pMFH->Category>CATEGORY_MAX || pMFH->Hardware>HARDWARE_MAX)    /* out of range */
+    {
+    return(3);
+    }
+
+
+  // info strings
+  strncpy(pModule->szFullFileName,pszFullPath.toLatin1().data(),sizeof(pModule->szFullFileName));
+  strcpy(pModule->szFileFormat,pMFH->FileFormat);
+  strcpy(pModule->szTitle,pMFH->Title);
+  strcpy(pModule->szVersion,pMFH->Version);
+  strcpy(pModule->szPartNumber,pMFH->PartNumber);
+  strcpy(pModule->szAuthor,pMFH->Author);
+  strcpy(pModule->szCopyright,pMFH->Copyright);
+  strcpy(pModule->szLicense,pMFH->License);
+  strcpy(pModule->szComments,pMFH->Comments);
+  // special module characteristics
+  pModule->MemModules=pMFH->MemModules;
+  //MemModules+=pMFH->MemModules;
+  pModule->XMemModules=pMFH->XMemModules;
+  //XMemModules+=pMFH->XMemModules;
+  pModule->Category=pMFH->Category;
+  pModule->Hardware=pMFH->Hardware;
+  pModule->Original=pMFH->Original;
+  pModule->AppAutoUpdate=pMFH->AppAutoUpdate;
+  pModule->NumPages=pMFH->NumPages;
+//  ModuleList.append(pModuleNew);
+
+#endif
+  return(0);
+  }
+
 
 /******************************/
 word * Chp41Mod::read_rom_file(QString FullFileName)
@@ -185,7 +253,7 @@ word * Chp41Mod::read_bin_file(char *FullFileName,int Page)
   FILE *File;
   long FileSize,SizeRead;
   byte *BIN;
-  word *ROM;
+  word *Rom;
 
   File=fopen(FullFileName,"rb");
   if (File==NULL)
@@ -218,15 +286,15 @@ word * Chp41Mod::read_bin_file(char *FullFileName,int Page)
     return(NULL);
     }
 
-  ROM=(word*)malloc(sizeof(word)*0x1000);
-  if (ROM==NULL)
+  Rom=(word*)malloc(sizeof(word)*0x1000);
+  if (Rom==NULL)
     {
     fprintf(stderr,"ERROR: Memory Allocation\n");
     return(NULL);
     }
-  unpack_image(ROM,BIN+Page*5120);
+  unpack_image(Rom,BIN+Page*5120);
   free(BIN);
-  return(ROM);
+  return(Rom);
   }
 
 /*******************************/
@@ -382,100 +450,48 @@ void Chp41Mod::pack_image(
 /******************************/
 int Chp41Mod::output_mod_info(
   FILE *OutFile,         /* output file or set to stdout */
-  char *FullFileName,
   int Verbose,           /* generate all info except FAT */
   int DecodeFat)         /* decode fat if it exists */
   {
   char drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
-  FILE *MODFile;
-  unsigned long FileSize,SizeRead;
-  byte *pBuff;
-  ModuleFileHeader *pMFH;
+  QFile *MODFile;
+  unsigned long FileSize;
+
+
   int i;
   word page_addr;
 
   if (DecodeFat)
     Verbose=1;
 
-  /* open and read MOD file into a buffer */
-  _splitpath(FullFileName,drive,dir,fname,ext);
-  MODFile=fopen(FullFileName,"rb");
-  if (MODFile==NULL)
-    {
-    if (Verbose)
-      fprintf(OutFile,"ERROR: File open failed: %s\n",FullFileName);
-    return(1);
-    }
-  fseek(MODFile,0,SEEK_END);
-  FileSize=ftell(MODFile);
-  fseek(MODFile,0,SEEK_SET);
-  if ((FileSize-sizeof(ModuleFileHeader))%sizeof(ModuleFilePage))
-    {
-    fclose(MODFile);
-    if (Verbose)
-      fprintf(OutFile,"ERROR: File size invalid: %s\n",FullFileName);
-    return(3);
-    }
-  pBuff=(byte*)malloc(FileSize);
-  if (pBuff==NULL)
-    {
-    fclose(MODFile);
-    if (Verbose)
-      fprintf(OutFile,"ERROR: Memory allocation\n");
-    return(4);
-    }
-  SizeRead=fread(pBuff,1,FileSize,MODFile);
-  fclose(MODFile);
-  if (SizeRead!=FileSize)
-    {
-    if (Verbose)
-      fprintf(OutFile,"ERROR: File read failed: %s\n",FullFileName);
-    free(pBuff);
-    return(2);
-    }
-
   /* check header */
-  pMFH=(ModuleFileHeader*)pBuff;
-  if (FileSize!=sizeof(ModuleFileHeader)+pMFH->NumPages*sizeof(ModuleFilePage))
+//  ModuleFileHeader *pMFH=(ModuleFileHeader*)(pBuff.data());
+
+  if (pModule->MemModules>4 || pModule->XMemModules>3 || pModule->Original>1 || pModule->AppAutoUpdate>1 ||
+    pModule->Category>CATEGORY_MAX || pModule->Hardware>HARDWARE_MAX)    /* out of range */
     {
     if (Verbose)
-      fprintf(OutFile,"ERROR: File size invalid: %s\n",FullFileName);
-    free(pBuff);
-    return(3);
-    }
-  if (0!=strcmp(pMFH->FileFormat,MOD_FORMAT))
-    {
-    if (Verbose)
-      fprintf(OutFile,"ERROR: File type unknown: %s\n",FullFileName);
-    free(pBuff);
-    return(3);
-    }
-  if (pMFH->MemModules>4 || pMFH->XMemModules>3 || pMFH->Original>1 || pMFH->AppAutoUpdate>1 ||
-    pMFH->Category>CATEGORY_MAX || pMFH->Hardware>HARDWARE_MAX)    /* out of range */
-    {
-    if (Verbose)
-      fprintf(OutFile,"ERROR: llegal value(s) in header: %s\n",FullFileName);
-    free(pBuff);
+      fprintf(OutFile,"ERROR: llegal value(s) in header: %s\n",pModule->szFullFileName);
     return(3);
     }
 
   if (!Verbose)
     {
-    fprintf(OutFile,"%-20s %-30s %-20s\n",FullFileName,pMFH->Title,pMFH->Author);
+    fprintf(OutFile,"%-20s %-30s %-20s\n",pModule->szFullFileName,pModule->szTitle,pModule->szAuthor);
     return(0);
     }
 
   /* output header info */
-  fprintf(OutFile,"FILE NAME: %s\n",FullFileName);
-  fprintf(OutFile,"FILE FORMAT: %s\n",pMFH->FileFormat);
-  fprintf(OutFile,"TITLE: %s\n",pMFH->Title);
-  fprintf(OutFile,"VERSION: %s\n",pMFH->Version);
-  fprintf(OutFile,"PART NUMBER: %s\n",pMFH->PartNumber);
-  fprintf(OutFile,"AUTHOR: %s\n",pMFH->Author);
-  fprintf(OutFile,"COPYRIGHT (c) %s\n",pMFH->Copyright);
-  fprintf(OutFile,"LICENSE: %s\n",pMFH->License);
-  fprintf(OutFile,"COMMENTS: %s\n",pMFH->Comments);
-  switch (pMFH->Category)
+  fprintf(OutFile,"FILE NAME: %s\n",pModule->szFullFileName);
+  fprintf(OutFile,"FILE FORMAT: %s\n",pModule->szFileFormat);
+  fprintf(OutFile,"TITLE: %s\n",pModule->szTitle);
+  fprintf(OutFile,"VERSION: %s\n",pModule->szVersion);
+  fprintf(OutFile,"PART NUMBER: %pModule",pModule->szPartNumber);
+  fprintf(OutFile,"AUTHOR: %s\n",pModule->szAuthor);
+  fprintf(OutFile,"COPYRIGHT (c) %s\n",pModule->szCopyright);
+  fprintf(OutFile,"LICENSE: %s\n",pModule->szLicense);
+  fprintf(OutFile,"COMMENTS: %s\n",pModule->szComments);
+  switch (pModule->Category)
     {
     case CATEGORY_UNDEF:
       fprintf(OutFile,"CATEGORY: Not categorized\n");
@@ -502,7 +518,7 @@ int Chp41Mod::output_mod_info(
       fprintf(OutFile,"CATEGORY: Test programs not meant for normal usage\n");
       break;
     }
-  switch (pMFH->Hardware)
+  switch (pModule->Hardware)
     {
     case HARDWARE_NONE:
       fprintf(OutFile,"HARDWARE: None\n");
@@ -538,19 +554,19 @@ int Chp41Mod::output_mod_info(
       fprintf(OutFile,"HARDWARE: CLONIX-41 Module\n");
       break;
     }
-  fprintf(OutFile,"MEMORY MODULES: %d\n",pMFH->MemModules);
-  fprintf(OutFile,"EXENDED MEMORY MODULES: %d\n",pMFH->XMemModules);
-  fprintf(OutFile,"ORIGINAL: %s\n",pMFH->Original?"Yes - unaltered":"No - this file has been updated by a user application");
-  fprintf(OutFile,"APPLICATION AUTO UPDATE: %s\n",pMFH->AppAutoUpdate?"Yes - update this file when saving other data (for MLDL/RAM)":"No - do not update this file");
-  fprintf(OutFile,"NUMBER OF PAGES: %d\n",pMFH->NumPages);
+  fprintf(OutFile,"MEMORY MODULES: %d\n",pModule->MemModules);
+  fprintf(OutFile,"EXENDED MEMORY MODULES: %d\n",pModule->XMemModules);
+  fprintf(OutFile,"ORIGINAL: %s\n",pModule->Original?"Yes - unaltered":"No - this file has been updated by a user application");
+  fprintf(OutFile,"APPLICATION AUTO UPDATE: %s\n",pModule->AppAutoUpdate?"Yes - update this file when saving other data (for MLDL/RAM)":"No - do not update this file");
+  fprintf(OutFile,"NUMBER OF PAGES: %d\n",pModule->NumPages);
 
   /* go through each page */
-  for (i=0;i<pMFH->NumPages;i++)
+  for (i=0;i<pModule->NumPages;i++)
     {
     ModuleFilePage *pMFP;
     word Rom[0x1000];
     char ID[10];
-    pMFP=(ModuleFilePage*)(pBuff+sizeof(ModuleFileHeader)+sizeof(ModuleFilePage)*i);
+    pMFP=(ModuleFilePage*)(pBuff.data()+sizeof(ModuleFileHeader)+sizeof(ModuleFilePage)*i);
 
     /* output page info */
     fprintf(OutFile,"\n");
@@ -565,7 +581,7 @@ int Chp41Mod::output_mod_info(
       pMFP->Bank==0 || pMFP->Bank>4 || pMFP->BankGroup>8 || pMFP->Ram>1 || pMFP->WriteProtect>1 || pMFP->FAT>1 ||  /* out of range values */
       (pMFP->PageGroup && pMFP->Page<=POSITION_ANY) ||    /* group pages cannot use non-grouped position codes */
       (!pMFP->PageGroup && pMFP->Page>POSITION_ANY))      /* non-grouped pages cannot use grouped position codes */
-      fprintf(OutFile,"WARNING: Page info invalid: %s\n",FullFileName);
+      fprintf(OutFile,"WARNING: Page info invalid: %s\n",pModule->szFullFileName);
     if (pMFP->Page<=0x0f)
       {
       fprintf(OutFile,"PAGE: %X - must be in this location\n",pMFP->Page);
@@ -736,21 +752,20 @@ int Chp41Mod::output_mod_info(
     else
       fprintf(OutFile," (Incorrect - Computed Value: %03X)\n",compute_checksum(Rom));
 
-  {
-  int i;
-  word *ROM2;
-  ROM2=read_rom_file("..\\rom\\41ZL.rom");
-  for (i=0;i<=0xfff;i++)
-    {
-    if (Rom[i]!=ROM2[i])
-      fprintf(OutFile," error on byte %03X)\n",i);
-    }
-  }
+//  {
+//  int i;
+//  word *ROM2;
+//  ROM2=read_rom_file("..\\rom\\41ZL.rom");
+//  for (i=0;i<=0xfff;i++)
+//    {
+//    if (Rom[i]!=ROM2[i])
+//      fprintf(OutFile," error on byte %03X)\n",i);
+//    }
+//  }
 
     }
 
   fprintf(OutFile,"\n");
-  free(pBuff);
   return(0);
   }
 

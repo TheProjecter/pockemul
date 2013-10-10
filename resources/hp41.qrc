@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>hp41/hp41.png</file>
+        <file>hp41/MOD/NUT-C.MOD</file>
     </qresource>
 </RCC>

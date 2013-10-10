@@ -27,6 +27,8 @@ would make no sense and not represent any actual hardware.
 File size=sizeof(ModuleFileHeader)+NumPages*sizeof(ModuleFilePage)
 =======================================================================*/
 
+#include <QString>
+
 typedef unsigned char byte;
 typedef unsigned short word;
 
@@ -68,6 +70,8 @@ typedef unsigned short word;
 #define POSITION_ORDERED  0x6f   /* position sequentially in order of MOD file loading, one image per page regardless of bank */
 #define POSITION_MAX      0x6f   /* maximum POSITION_ define value */
 
+
+
 /* Module header */
 typedef struct
   {
@@ -106,14 +110,22 @@ typedef struct
   byte PageCustom[32]; /* for special hardware attributes */
   } ModuleFilePage;
 
-
-
+class Chp41;
+class ModuleHeader;
 
 class Chp41Mod {
 
 public:
-    Chp41Mod();
-    ~Chp41Mod();
+    Chp41Mod(Chp41 * hp41);
+    Chp41Mod(Chp41 *hp41, QString pszFullPath);
+    ~Chp41Mod() {}
+
+    Chp41 *hp41;
+    ModuleHeader *pModule;
+    QByteArray pBuff;
+
+
+    int getStatus() { return status;}
 
     word *read_rom_file(QString FullFileName);
     int write_rom_file(char *FullFileName, word *Rom);
@@ -122,9 +134,9 @@ public:
     word *read_lst_file(char *FullFileName);
     int write_lst_file(char *FullFileName, word *Rom, int Page);
     int compare_rom_files(char *FullFileName1,char *FullFileName2);
-    static void unpack_image(word *Rom, byte *Bin);
+     static void unpack_image(word *Rom, byte *Bin);
     void pack_image(word *rom, byte *BIN);
-    int output_mod_info(FILE *OutFile,char *FullFileName,int Verbose,int DecodeFat);
+    int output_mod_info(FILE *OutFile, int Verbose, int DecodeFat);
     int extract_roms(char *FullFileName);
     static word compute_checksum(word *Rom);
     void get_rom_id(word *Rom, char *ID);
@@ -133,6 +145,9 @@ public:
 
 
 
+    int LoadMOD(QString pszFullPath);
+private:
+    int status;
 
 };
 

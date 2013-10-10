@@ -70,7 +70,6 @@ struct Cat1Label
   };
 
 /****************************/
-
 // Module Memory Structures - see MOD file structures for field descriptions
 struct ModuleHeader
   {
@@ -91,6 +90,7 @@ struct ModuleHeader
   byte AppAutoUpdate;
   byte NumPages;
   };
+
 struct ModulePage
   {
   ModuleHeader *pModule;          // pointer to module that this page is a part of, or NULL if none
@@ -110,6 +110,8 @@ struct ModulePage
   flag fWWRAMBOX;                 // if a W&W RAMBOX page
   word Image[4096];
   };
+
+
 
 // functions
 //void ConvertASCIItoLCD(char *szASCII,char *dis_str,flag fLCD4);
