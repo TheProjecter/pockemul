@@ -432,7 +432,7 @@ int Chp41::SaveMOD(
 /****************************/
 void Chp41::UnloadMOD(ModuleHeader *pModule)
   {
-#if 0
+#if 1
   if (pModule==NULL)
     return;
   // free associated ROM pages
@@ -479,17 +479,15 @@ void Chp41::UnloadMOD(ModuleHeader *pModule)
       break;
     }
   // delete pointer from list
-  POSITION pos=ModuleList.GetHeadPosition();
-  while (pos!=NULL)
-    {
-    if (pModule==(ModuleHeader *)ModuleList.GetAt(pos))
+  for (int i = 0; i< ModuleList.size(); i++)
+  {
+      if (pModule==(ModuleHeader *)ModuleList.at(i));
       {
-      ModuleList.RemoveAt(pos);
-      delete pModule;
-      return;
+          ModuleList.removeAt(i);
+          delete pModule;
+          return;
       }
-    ModuleList.GetNext(pos);
-    }
+  }
 #endif
   }
 
@@ -498,17 +496,17 @@ void Chp41::UnloadMOD(ModuleHeader *pModule)
 // Frees memory used by page and sets page pointer
 /****************************/
 void Chp41::FreePage(
-  uint page,
-  uint bank)
-  {
-  if (PageMatrix[page][bank-1]==NULL)
-    return;
-  if (PageMatrix[page][bank-1]->pAltPage!=NULL)
-    delete PageMatrix[page][bank-1]->pAltPage;
-  delete PageMatrix[page][bank-1];
-  PageMatrix[page][bank-1]=NULL;
-  pCurPage=PageMatrix[CurPage][active_bank[CurPage]-1];
-  }
+        uint page,
+        uint bank)
+{
+    if (PageMatrix[page][bank-1]==NULL)
+        return;
+    if (PageMatrix[page][bank-1]->pAltPage!=NULL)
+        delete PageMatrix[page][bank-1]->pAltPage;
+    delete PageMatrix[page][bank-1];
+    PageMatrix[page][bank-1]=NULL;
+    pCurPage=PageMatrix[CurPage][active_bank[CurPage]-1];
+}
 
 
 /****************************/

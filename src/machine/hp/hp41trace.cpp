@@ -19,7 +19,7 @@
 // *********************************************************************
 // Chp41Trace.cpp : implementation file
 // *********************************************************************
-#if 0
+#if 1
 #include "hp41.h"
 #include "hp41Cpu.h"
 
@@ -1602,51 +1602,51 @@ void Chp41::PrintRegisters(void)
 
   fprintf(hLogFile, "\n  A=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", A_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->A_REG[i] & 0xF);
 
   fprintf(hLogFile, " B=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", B_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->B_REG[i] & 0xF);
 
   fprintf(hLogFile, " C=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", C_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->C_REG[i] & 0xF);
 
   fprintf(hLogFile, " Stack=");
-  fprintf(hLogFile, "%04X ", RET_STK0);
-  fprintf(hLogFile, "%04X ", RET_STK1);
-  fprintf(hLogFile, "%04X ", RET_STK2);
-  fprintf(hLogFile, "%04X\n", RET_STK3);
+  fprintf(hLogFile, "%04X ", hp41cpu->RET_STK0);
+  fprintf(hLogFile, "%04X ", hp41cpu->RET_STK1);
+  fprintf(hLogFile, "%04X ", hp41cpu->RET_STK2);
+  fprintf(hLogFile, "%04X\n", hp41cpu->RET_STK3);
 
   fprintf(hLogFile, "  M=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", M_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->M_REG[i] & 0xF);
 
   fprintf(hLogFile, " N=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", N_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->N_REG[i] & 0xF);
 
   fprintf(hLogFile, " Cr=");
-  fprintf(hLogFile, "%1X", CARRY & 0xF);
+  fprintf(hLogFile, "%1X", hp41cpu->CARRY & 0xF);
 
-  fprintf(hLogFile, " %cP=",(PT_REG==&P_REG)?'>':' ');
-  fprintf(hLogFile, "%1X", P_REG & 0xF);
+  fprintf(hLogFile, " %cP=",(hp41cpu->PT_REG==&hp41cpu->P_REG)?'>':' ');
+  fprintf(hLogFile, "%1X", hp41cpu->P_REG & 0xF);
 
-  fprintf(hLogFile, " %cQ=",(PT_REG==&Q_REG)?'>':' ');
-  fprintf(hLogFile, "%1X", Q_REG & 0xF);
+  fprintf(hLogFile, " %cQ=",(hp41cpu->PT_REG==&hp41cpu->Q_REG)?'>':' ');
+  fprintf(hLogFile, "%1X", hp41cpu->Q_REG & 0xF);
 
   fprintf(hLogFile, " G=");
-  fprintf(hLogFile, "%02X", G_REG & 0xFF);
+  fprintf(hLogFile, "%02X", hp41cpu->G_REG & 0xFF);
 
   fprintf(hLogFile, " F0=");
-  fprintf(hLogFile, "%02X", F_REG & 0xFF);
+  fprintf(hLogFile, "%02X", hp41cpu->F_REG & 0xFF);
 
   fprintf(hLogFile, " ST=");
   for(i=5; i>=0; i--)
-    fprintf(hLogFile, "%1X", (XST_REG & (1 << i)) >> i);
+    fprintf(hLogFile, "%1X", (hp41cpu->XST_REG & (1 << i)) >> i);
   fprintf(hLogFile, " ");
   for(i=7; i>=0; i--)
-    fprintf(hLogFile, "%1X", (ST_REG & (1 << i)) >> i);
+    fprintf(hLogFile, "%1X", (hp41cpu->ST_REG & (1 << i)) >> i);
   fprintf(hLogFile, "\n");
 
   fprintf(hLogFile, "  CLK_A=");
@@ -1699,21 +1699,21 @@ void Chp41::PrintRegisters(void)
 
   fprintf(hLogFile, " FI=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", (FI_REG & (1 << i)) >> i);
+    fprintf(hLogFile, "%1X", (hp41cpu->FI_REG & (1 << i)) >> i);
   fprintf(hLogFile, "\n");
 
   fprintf(hLogFile, "  RAM Addr=");
-  fprintf(hLogFile, "%03X", ram_selected);
+  fprintf(hLogFile, "%03X", hp41cpu->ram_selected);
 
   fprintf(hLogFile, "  Perph Addr=");
-  fprintf(hLogFile, "%02X", perph_selected);
+  fprintf(hLogFile, "%02X", hp41cpu->perph_selected);
 
-  if (BASE==16)
+  if (hp41cpu->BASE==16)
     fprintf(hLogFile, "  Base=16");
   else
     fprintf(hLogFile, "  Base=10");
   //RB++ 090821 KEY and DisplayOn
-  fprintf(hLogFile, "  KEY DWN=%04X %02X", KEYDOWN, KEY_REG);
+  fprintf(hLogFile, "  KEY DWN=%04X %02X", hp41cpu->KEYDOWN, hp41cpu->KEY_REG);
   fprintf(hLogFile, "  DSP=%X", DisplayOn);
   //RB-- 090821 KEY and DisplayOn
   fprintf(hLogFile, "\n");
@@ -1722,7 +1722,7 @@ void Chp41::PrintRegisters(void)
 /***********************/
 void Chp41::StartTrace(void)
 {
-  hLogFile=fopen("trace.log","wt");
+  hLogFile=fopen("hp41.log","wt");
   if (hLogFile == NULL)
   {
     LOG("Unable to create trace.log file.");
@@ -1771,7 +1771,7 @@ void SafeLog(char *psz)
 /****************************/
 void Chp41::TraceOut()
   {
-  PC_TRACE=PC_REG;
+  PC_TRACE=hp41cpu->PC_REG;
   PrintRegisters();
   fprintf(hLogFile, "%04X  ",PC_TRACE);
   trace();
@@ -1801,7 +1801,7 @@ void Chp41::trace()
     TraceTyte1=0;
   else
     TraceTyte1=pPage->Image[PC_TRACE&0xfff];
-  if (perph_in_control)
+  if (hp41cpu->perph_in_control)
     {
     }
   else              /* execute mcode */
@@ -1836,7 +1836,7 @@ void Chp41::trace()
 /****************************/
 void  Chp41::trace_class0()
   {
-  Modifier=(TraceTyte1&0x03c0)>>6;
+  hp41cpu->Modifier=(TraceTyte1&0x03c0)>>6;
   switch ((TraceTyte1&0x003c)>>2)
     {
     case 0:
@@ -1926,7 +1926,7 @@ void  Chp41::trace_class0()
 /****************************/
 void  Chp41::trace_subclass0()
   {
-  switch(Modifier)
+  switch(hp41cpu->Modifier)
     {
     case 0:  /* NOP */
     case 1:  /* WMLDL */
@@ -1937,12 +1937,12 @@ void  Chp41::trace_subclass0()
     case 2:  /* NOT USED */
     case 3:
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(16+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(16+hp41cpu->Modifier));
       break;
       }
     default:  /* HPIL=C 0-7 */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(121), Modifier-8);
+      sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(121), hp41cpu->Modifier-8);
       break;
       }
     }
@@ -1952,17 +1952,17 @@ void  Chp41::trace_subclass0()
 /****************************/
 void  Chp41::trace_subclass1()
   {
-  if (Modifier==7)                 /* not used */
+  if (hp41cpu->Modifier==7)                 /* not used */
     {
     sprintf(szTraceOut, "%03X", TraceTyte1);
     }
-  else if (Modifier==15)            /* ST=0 */
+  else if (hp41cpu->Modifier==15)            /* ST=0 */
     {
     sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(122));
     }
   else                             /* CF 0-13 */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(1), TypeA[Modifier]);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(1), TypeA[hp41cpu->Modifier]);
     }
   }
 
@@ -1970,17 +1970,17 @@ void  Chp41::trace_subclass1()
 /****************************/
 void  Chp41::trace_subclass2()
   {
-  if (Modifier==7)                   /* not used */
+  if (hp41cpu->Modifier==7)                   /* not used */
     {
     sprintf(szTraceOut, "%03X", TraceTyte1);
     }
-  else if (Modifier==15)             /* CLRKEY */
+  else if (hp41cpu->Modifier==15)             /* CLRKEY */
     {
     sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(123));
     }
   else                             /* SF 0-13 */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(2), TypeA[Modifier]);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(2), TypeA[hp41cpu->Modifier]);
     }
   }
 
@@ -1988,17 +1988,17 @@ void  Chp41::trace_subclass2()
 /****************************/
 void  Chp41::trace_subclass3()
   {
-  if (Modifier==7)                         /* not used */
+  if (hp41cpu->Modifier==7)                         /* not used */
     {
     sprintf(szTraceOut, "%03X\t%s", TraceTyte1, szTraceLabel);
     }
-  else if (Modifier==15)                   /* ?KEY */
+  else if (hp41cpu->Modifier==15)                   /* ?KEY */
     {
     sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(124));
     }
   else                                     /* ?FS 0-13 */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(3), TypeA[Modifier]);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(3), TypeA[hp41cpu->Modifier]);
     }
   }
 
@@ -2009,26 +2009,26 @@ void  Chp41::trace_subclass3()
 void  Chp41::trace_subclass4()
   {
   if(InstSetIndex)
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(4), Modifier);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(4), hp41cpu->Modifier);
   else
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(4), Modifier);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(4), hp41cpu->Modifier);
   }
 
 
 /****************************/
 void  Chp41::trace_subclass5()
   {
-  if (Modifier==7)
+  if (hp41cpu->Modifier==7)
     {
     sprintf(szTraceOut, "%03X\t%s", TraceTyte1, szTraceLabel);
     }
-  else if (Modifier==15)                   /* -PT */
+  else if (hp41cpu->Modifier==15)                   /* -PT */
     {
     sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(125));
     }
   else                                    /* ?PT 0-15 */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(5), TypeA[Modifier]);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(5), TypeA[hp41cpu->Modifier]);
     }
   }
 
@@ -2036,24 +2036,24 @@ void  Chp41::trace_subclass5()
 /****************************/
 void  Chp41::trace_subclass6()
   {
-  sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(24+Modifier));
+  sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(24+hp41cpu->Modifier));
   }
 
 
 /****************************/
 void  Chp41::trace_subclass7()
   {
-  if (Modifier==7)                         /* LITERAL */
+  if (hp41cpu->Modifier==7)                         /* LITERAL */
     {
     sprintf(szTraceOut, "%03X\t%s", TraceTyte1, szTraceLabel);
     }
-  else if (Modifier==15)                   /* +PT */
+  else if (hp41cpu->Modifier==15)                   /* +PT */
     {
     sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(126));
     }
   else                                    /* PT 0-15 */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(7), TypeA[Modifier]);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(7), TypeA[hp41cpu->Modifier]);
     }
   }
 
@@ -2063,7 +2063,7 @@ void  Chp41::trace_subclass7()
 /****************************/
 void  Chp41::trace_subclass8()
   {
-  sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(40+Modifier));
+  sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(40+hp41cpu->Modifier));
   }
 
 
@@ -2073,38 +2073,38 @@ void  Chp41::trace_subclass8()
 void  Chp41::trace_subclass9()
   {
   if(InstSetIndex)
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(9), Modifier);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(9), hp41cpu->Modifier);
   else
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(9), Modifier);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(9), hp41cpu->Modifier);
   }
 
 
 /****************************/
 void  Chp41::trace_subclassA()
   {
-  if (perph_selected==0)   /* ram */
+  if (hp41cpu->perph_selected==0)   /* ram */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(10), Modifier);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(10), hp41cpu->Modifier);
     return;
     }
-  switch(perph_selected)
+  switch(hp41cpu->perph_selected)
     {
     case 0xfb:   /* timer write */
       {
-      if((ram_selected > 0x39) || (ram_selected < 0x10))
-        sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(10), Modifier);
+      if((hp41cpu->ram_selected > 0x39) || (hp41cpu->ram_selected < 0x10))
+        sprintf(szTraceOut, "%03X\t%s\t%s\t%X", TraceTyte1, szTraceLabel, GetOpcodeName(10),hp41cpu-> Modifier);
       else
-        sprintf(szTraceOut, "%03X\t%s\t%s\tmodif=%d", TraceTyte1, szTraceLabel, GetOpcodeName(134+Modifier), Modifier);
+        sprintf(szTraceOut, "%03X\t%s\t%s\tmodif=%d", TraceTyte1, szTraceLabel, GetOpcodeName(134+hp41cpu->Modifier), hp41cpu->Modifier);
       break;
       }
     case 0xfc:  /* card reader */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(156+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(156+hp41cpu->Modifier));
       break;
       }
     case 0xfd: /* main display */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(56+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(56+hp41cpu->Modifier));
       break;
       }
     case 0xfe:   /* wand */
@@ -2129,28 +2129,28 @@ void  Chp41::trace_subclassA()
 /****************************/
 void  Chp41::trace_subclassB()
   {
-  sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(72+Modifier));
+  sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(72+hp41cpu->Modifier));
   }
 
 
 /****************************/
 void  Chp41::trace_subclassC()
   {
-  switch(Modifier)
+  switch(hp41cpu->Modifier)
     {
     case 1:  /* N=C */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 2:  /* C=N */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 3:  /* C<>N */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 4:  /* LDI */
@@ -2159,32 +2159,32 @@ void  Chp41::trace_subclassC()
       word page=(PC_TRACE&0xf000)>>12;
       ModulePage *pPage=PageMatrix[page][active_bank[page]-1];
       word tyte2=pPage->Image[(PC_TRACE+1)&0xfff];
-      sprintf(szTraceOut, "%03X%03X\t%s\t%s\t%03X", TraceTyte1, tyte2, szTraceLabel, GetOpcodeName(88+Modifier), tyte2);
+      sprintf(szTraceOut, "%03X%03X\t%s\t%s\t%03X", TraceTyte1, tyte2, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier), tyte2);
       break;
       }
     case 5:  /* STK=C */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 6:  /* C=STK */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 8:  /* GTOKEY */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 9:  /* RAMSLCT */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 11:  /* WDATA */
       {
-      switch(perph_selected)
+      switch(hp41cpu->perph_selected)
         {
         case 0:   /* ram */
           {
@@ -2211,22 +2211,22 @@ void  Chp41::trace_subclassC()
       }
     case 12:  /* RDROM */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 13:  /* C=CORA */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 14:  /* C=CANDA */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 15:  /* PERSLCT */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(88+hp41cpu->Modifier));
       break;
       }
     case 0:  /* NOT USED  */
@@ -2250,29 +2250,29 @@ void  Chp41::trace_subclassD()
 /****************************/
 void  Chp41::trace_subclassE()
   {
-  if (perph_selected==0)   /* ram */
+  if (hp41cpu->perph_selected==0)   /* ram */
     {
-    if (Modifier==0)
+    if (hp41cpu->Modifier==0)
       {
       sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(127));
       }
     else
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(14), Modifier);
+      sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(14), hp41cpu->Modifier);
       }
     return;
     }
-  switch(perph_selected)
+  switch(hp41cpu->perph_selected)
     {
     case 0xfb:   /* timer */
       {
-      if (Modifier>5)
+      if (hp41cpu->Modifier>5)
         {
-        sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(14), Modifier);
+        sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(14), hp41cpu->Modifier);
         }
       else
         {
-        sprintf(szTraceOut, "%03X\t%s\t%s\tmodif=%d", TraceTyte1, szTraceLabel, GetOpcodeName(150+Modifier), Modifier);
+        sprintf(szTraceOut, "%03X\t%s\t%s\tmodif=%d", TraceTyte1, szTraceLabel, GetOpcodeName(150+hp41cpu->Modifier), hp41cpu->Modifier);
         }
       break;
       }
@@ -2283,7 +2283,7 @@ void  Chp41::trace_subclassE()
       }
     case 0xfd: /* main display */
       {
-      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(104+Modifier));
+      sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(104+hp41cpu->Modifier));
       break;
       }
     case 0xfe:   /* wand */
@@ -2308,13 +2308,13 @@ void  Chp41::trace_subclassE()
 /****************************/
 void  Chp41::trace_subclassF()
   {
-  if ((Modifier==7) || (Modifier==15))        /* LITERAL */
+  if ((hp41cpu->Modifier==7) || (hp41cpu->Modifier==15))        /* LITERAL */
     {
     sprintf(szTraceOut, "%03X\t%s\t%s", TraceTyte1, szTraceLabel, "unknown");
     }
   else                                   /* RCR 0-13 */
     {
-    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(15), TypeA[Modifier]);
+    sprintf(szTraceOut, "%03X\t%s\t%s\t%d", TraceTyte1, szTraceLabel, GetOpcodeName(15), TypeA[hp41cpu->Modifier]);
     }
   }
 
@@ -2378,9 +2378,9 @@ void  Chp41::trace_class2()
   {
   word subclass;
 
-  Modifier=(TraceTyte1&0x001c)>>2;
+  hp41cpu->Modifier=(TraceTyte1&0x001c)>>2;
   subclass=(TraceTyte1&0x03e0)>>5;
-  sprintf(szTraceOut, "%03X\t%s\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(172+subclass), GetTEFName(Modifier));
+  sprintf(szTraceOut, "%03X\t%s\t%s\t%s", TraceTyte1, szTraceLabel, GetOpcodeName(172+subclass), GetTEFName(hp41cpu->Modifier));
   }
 
 /****************************/

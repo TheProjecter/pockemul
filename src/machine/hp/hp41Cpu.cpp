@@ -22,9 +22,12 @@
 // *********************************************************************
 #if 1
 #include <math.h>
+#include <QDebug>
+
 #include "hp41Cpu.h"
 #include "pcxxxx.h"
 #include "hp41.h"
+#include "Lcdc.h"
 
 // Class 0 Type A Parameter, Zenrom Pg 83
 //            0 1 2  3 4 5  6 7 8 9 a  b c  d e f
@@ -50,47 +53,9 @@ Chp41Cpu::Chp41Cpu(CPObject *parent):CCPU(parent)
 
   // ram registers
   pRAM=(RAM_REG*)malloc(sizeof(RAM_REG)*MAX_RAM);
-  memset(pRAM,0,sizeof(RAM_REG)*MAX_RAM);
 
-  // CPU registers
-  memset(A_REG,0,sizeof(A_REG));
-  memset(B_REG,0,sizeof(B_REG));
-  memset(C_REG,0,sizeof(C_REG));
-  memset(M_REG,0,sizeof(M_REG));
-  memset(N_REG,0,sizeof(N_REG));
-  G_REG=0;
-  F_REG=0;
-  ST_REG=0;
-  Q_REG=0;
-  P_REG=0;
-  PT_REG=&P_REG;
-  PT_PREV=0;
-  KEY_REG=0;
-  XST_REG=0;
-  FI_REG=0;
-  CARRY=0;
-  KEYDOWN=0;
-  BATTERY=0;
-  PC_LAST=0;
-  PC_TRACE=0;
-  PC_REG=0;
-  RET_STK0=0;
-  RET_STK1=0;
-  RET_STK2=0;
-  RET_STK3=0;
-  BASE=16;
 
-  // CPU variables
-  eSleepMode=eDeepSleep;
-  perph_in_control=0;
-  perph_selected=0;
-  ram_selected=0;
-  control_perph=0;
-  TytePrev=0;
-  Tyte1=0;
-  Modifier=0;
-  FirstTEF=0;
-  LastTEF=0;
+
 
 
   // instruction delay
@@ -117,22 +82,65 @@ Chp41Cpu::~Chp41Cpu()
 
 bool Chp41Cpu::init()
 {
-
+    Reset();
+    return true;
 }
 
 bool Chp41Cpu::exit()
 {
-
+return true;
 }
 
 void Chp41Cpu::step()
 {
-
+    Execute();
 }
 
 void Chp41Cpu::Reset()
 {
+    memset(pRAM,0,sizeof(RAM_REG)*MAX_RAM);
 
+    // CPU registers
+    memset(A_REG,0,sizeof(A_REG));
+    memset(B_REG,0,sizeof(B_REG));
+    memset(C_REG,0,sizeof(C_REG));
+    memset(M_REG,0,sizeof(M_REG));
+    memset(N_REG,0,sizeof(N_REG));
+    G_REG=0;
+    F_REG=0;
+    ST_REG=0;
+    Q_REG=0;
+    P_REG=0;
+    PT_REG=&P_REG;
+    PT_PREV=0;
+    KEY_REG=0;
+    XST_REG=0;
+    FI_REG=0;
+    CARRY=0;
+    KEYDOWN=0;
+    BATTERY=0;
+    PC_LAST=0;
+    PC_TRACE=0;
+    PC_REG=0;
+    RET_STK0=0;
+    RET_STK1=0;
+    RET_STK2=0;
+    RET_STK3=0;
+    BASE=16;
+
+    // CPU variables
+    eSleepMode=eDeepSleep;
+    perph_in_control=0;
+    perph_selected=0;
+    ram_selected=0;
+    control_perph=0;
+    TytePrev=0;
+    Tyte1=0;
+    Modifier=0;
+    FirstTEF=0;
+    LastTEF=0;
+
+    MemoryLost();
 }
 
 void Chp41Cpu::Load_Internal(QXmlStreamReader *)
@@ -154,7 +162,7 @@ void Chp41Cpu::Wakeup()
 //  if ((hp41->hp41->PageMatrix[0][0]==NULL)||(eKeyboard==eKeyboardNone))     // not fully initialized yet
 //    return;
 //  if (pCurPage==NULL)
-//    MemoryLost();
+    MemoryLost();
 
 //  eSleepMode=eAwake;
   }
@@ -184,18 +192,12 @@ void Chp41Cpu::MemoryLost()
   {
 //  if (eKeyboard==eKeyboardNone)
 //    return;
-//  BASE=16;
-//  for (int page=1;page<=0xf;page++)
-//    hp41->active_bank[page]=1;
-//  set_PC(0x0232);
+  BASE=16;
+  for (int page=1;page<=0xf;page++)
+    hp41->active_bank[page]=1;
+  set_PC(0x0232);
 //  ResetTimer();
   }
-
-
-
-
-
-
 
 
 /*****************************/
@@ -312,8 +314,8 @@ void Chp41Cpu::error_message(short num)
 /****************************/
 void Chp41Cpu::Execute()
   {
-//  if (GetTrace())
-//    TraceOut();
+  if (hp41->GetTrace())
+    hp41->TraceOut();
   PC_LAST=PC_REG;
 
   PT_PREV=*PT_REG;
@@ -828,19 +830,19 @@ void Chp41Cpu::Subclass8()
       }
     case 1:  /* POWOFF */
       {
-//      for (int page=0;page<=0xf;page++)      // thanks to Antonio Lagana for this which fixed a problem with Hepax
-//        hp41->active_bank[page]=1;
+      for (int page=0;page<=0xf;page++)      // thanks to Antonio Lagana for this which fixed a problem with Hepax
+        hp41->active_bank[page]=1;
       set_PC(0);
-//      if (DisplayOn)              // display is on, go into light sleep
-//        {
-//        CARRY=0;
+      if (hp41->DisplayOn)              // display is on, go into light sleep
+        {
+        CARRY=0;
 //        Sleep(eLightSleep);
-//        }
-//      else                        // display is off, go into deep sleep
-//        {
-//        CARRY=1;
+        }
+      else                        // display is off, go into deep sleep
+        {
+        CARRY=1;
 //        Sleep(eDeepSleep);        // deep sleep
-//        }
+        }
       break;
       }
     case 2:  /* PT=P */
@@ -900,8 +902,9 @@ void Chp41Cpu::Subclass8()
       }
     case 11:  /* DISOFF */
       {
-//      DisplayOn=0;
+      hp41->DisplayOn=0;
 //      UpdateDisplay=1;
+      hp41->pLCDC->updated=true;
       Boost=DISPLAY_BOOST;
 //      UpdateAnnun=1;
       CARRY=0;
@@ -909,8 +912,9 @@ void Chp41Cpu::Subclass8()
       }
     case 12:  /* DISTOG */
       {
-//      DisplayOn^=1;
-//      UpdateDisplay=1;
+      hp41->DisplayOn^=1;
+      hp41->UpdateDisplay=1;
+      hp41->pLCDC->updated=true;
 //      UpdateAnnun=1;
       CARRY=0;
       break;
@@ -1343,10 +1347,12 @@ void Chp41Cpu::rdata()
 word Chp41Cpu::GetNextTyte()
 {
     // inc PC
-    UINT32 _pc = get_PC();
-    _pc++;
-    set_PC(_pc);
-    return(hp41->pCurPage->Image[ _pc & 0xfff]);
+//    UINT32 _pc = get_PC();
+//    _pc++;
+//    set_PC(_pc);
+//    return(hp41->pCurPage->Image[ _pc & 0xfff]);
+//    qWarning()<<"PC_REG="<<PC_REG;
+    return(hp41->pCurPage->Image[PC_REG++&0xfff]);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1442,9 +1448,9 @@ void Chp41Cpu::Class2(void)
   {
   int i;
   CARRY=0;
-  Modifier=(Tyte1&0x001c)>>2;
+  Modifier = (Tyte1>>2) & 0x07;
   ConvertTEF();
-  switch ((Tyte1&0x03e0)>>5)
+  switch (( Tyte1 & 0x03e0)>>5)
     {
     case 0:              // A=0
       {
@@ -1741,8 +1747,8 @@ void Chp41Cpu::ConvertTEF()
     {
     case 0:   /* PT */
       {
-      FirstTEF=*PT_REG;
-      LastTEF=*PT_REG;
+      FirstTEF = *PT_REG;
+      LastTEF  = *PT_REG;
       break;
       }
     case 1:   /* X */
@@ -1797,42 +1803,33 @@ void Chp41Cpu::ConvertTEF()
 /****************************/
 // digit Adder
 /****************************/
-byte Chp41Cpu::Adder(
-  byte nib1,
-  byte nib2)
-  {
-  byte result=nib1+nib2+CARRY;
-  if (result>=BASE)
+byte Chp41Cpu::Adder(byte nib1,byte nib2) {
+    byte result = nib1 + nib2 + CARRY;
+    if (result >= BASE)
     {
-    result-=BASE;
-    CARRY=1;
+        result -= BASE;
+        CARRY = 1;
     }
-  else
-    {
-    CARRY=0;
+    else {
+        CARRY = 0;
     }
-  return(result&=0x0f);
-  }
+    return(result &= 0x0f);
+}
 
 
 /****************************/
 // digit subtractor
 /****************************/
-byte Chp41Cpu::Subtractor(
-        byte nib1,
-        byte nib2)
-{
-    char result=nib1-nib2-CARRY;
-    if (result<0)
-    {
-        result+=BASE;
-        CARRY=1;
+byte Chp41Cpu::Subtractor( byte nib1, byte nib2) {
+    char result = nib1 - nib2 - CARRY;
+    if (result < 0) {
+        result += BASE;
+        CARRY = 1;
     }
-    else
-    {
-        CARRY=0;
+    else {
+        CARRY = 0;
     }
-    return(result&0x0f);
+    return(result & 0x0f);
 }
 
 

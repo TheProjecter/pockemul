@@ -136,7 +136,7 @@ public:
     int compare_rom_files(char *FullFileName1,char *FullFileName2);
      static void unpack_image(word *Rom, byte *Bin);
     void pack_image(word *rom, byte *BIN);
-    int output_mod_info(FILE *OutFile, int Verbose, int DecodeFat);
+    QString output_mod_info(int Verbose, int DecodeFat);
     int extract_roms(char *FullFileName);
     static word compute_checksum(word *Rom);
     void get_rom_id(word *Rom, char *ID);

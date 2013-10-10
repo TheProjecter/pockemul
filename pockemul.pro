@@ -503,7 +503,8 @@ HEADERS += src/core/Connect.h \
     src/machine/ti/ti57.h \
     src/lcd/Lcdc_ti57.h \
     src/machine/hp/hp41Cpu.h \
-    src/machine/hp/hp41mod.h
+    src/machine/hp/hp41mod.h \
+    src/lcd/Lcdc_hp41.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -752,7 +753,8 @@ SOURCES += src/core/Connect.cpp \
     src/machine/hp/hp41Timer.cpp \
     src/machine/hp/hp41File.cpp \
     src/machine/hp/hp41Cpu.cpp \
-    src/machine/hp/hp41mod.cpp
+    src/machine/hp/hp41mod.cpp \
+    src/lcd/Lcdc_hp41.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \

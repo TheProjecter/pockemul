@@ -448,117 +448,110 @@ void Chp41Mod::pack_image(
 /******************************/
 /* Returns 0 for success, 1 for open fail, 2 for read fail, 3 for invalid file, 4 for allocation error */
 /******************************/
-int Chp41Mod::output_mod_info(
-  FILE *OutFile,         /* output file or set to stdout */
+QString Chp41Mod::output_mod_info(
   int Verbose,           /* generate all info except FAT */
   int DecodeFat)         /* decode fat if it exists */
   {
-  char drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
-  QFile *MODFile;
-  unsigned long FileSize;
-
-
-  int i;
+    QString output;
+    int i;
   word page_addr;
 
   if (DecodeFat)
     Verbose=1;
 
-  /* check header */
-//  ModuleFileHeader *pMFH=(ModuleFileHeader*)(pBuff.data());
 
   if (pModule->MemModules>4 || pModule->XMemModules>3 || pModule->Original>1 || pModule->AppAutoUpdate>1 ||
     pModule->Category>CATEGORY_MAX || pModule->Hardware>HARDWARE_MAX)    /* out of range */
     {
     if (Verbose)
-      fprintf(OutFile,"ERROR: llegal value(s) in header: %s\n",pModule->szFullFileName);
-    return(3);
+        output.append(QString("ERROR: llegal value(s) in header: %1\n").arg(pModule->szFullFileName));
+    return(output);
     }
 
   if (!Verbose)
     {
-    fprintf(OutFile,"%-20s %-30s %-20s\n",pModule->szFullFileName,pModule->szTitle,pModule->szAuthor);
-    return(0);
+      output.append(pModule->szFullFileName).append(" ").append(pModule->szTitle).append(" ").append(pModule->szAuthor);
+    return(output);
     }
 
   /* output header info */
-  fprintf(OutFile,"FILE NAME: %s\n",pModule->szFullFileName);
-  fprintf(OutFile,"FILE FORMAT: %s\n",pModule->szFileFormat);
-  fprintf(OutFile,"TITLE: %s\n",pModule->szTitle);
-  fprintf(OutFile,"VERSION: %s\n",pModule->szVersion);
-  fprintf(OutFile,"PART NUMBER: %pModule",pModule->szPartNumber);
-  fprintf(OutFile,"AUTHOR: %s\n",pModule->szAuthor);
-  fprintf(OutFile,"COPYRIGHT (c) %s\n",pModule->szCopyright);
-  fprintf(OutFile,"LICENSE: %s\n",pModule->szLicense);
-  fprintf(OutFile,"COMMENTS: %s\n",pModule->szComments);
+  output.append(QString("FILE NAME: %1\n").arg(pModule->szFullFileName));
+  output.append(QString("FILE FORMAT: %1\n").arg(pModule->szFileFormat));
+  output.append(QString("TITLE: %1\n").arg(pModule->szTitle));
+  output.append(QString("VERSION: %1\n").arg(pModule->szVersion));
+  output.append(QString("PART NUMBER: %1").arg(pModule->szPartNumber));
+  output.append(QString("AUTHOR: %1\n").arg(pModule->szAuthor));
+  output.append(QString("COPYRIGHT (c)%1\n").arg(pModule->szCopyright));
+  output.append(QString("LICENSE: %1\n").arg(pModule->szLicense));
+  output.append(QString("COMMENTS: %1\n").arg(pModule->szComments));
   switch (pModule->Category)
     {
     case CATEGORY_UNDEF:
-      fprintf(OutFile,"CATEGORY: Not categorized\n");
+      output.append("CATEGORY: Not categorized\n");
       break;
     case CATEGORY_OS:
-      fprintf(OutFile,"CATEGORY: Operating system\n");
+      output.append("CATEGORY: Operating system\n");
       break;
     case CATEGORY_APP_PAC:
-      fprintf(OutFile,"CATEGORY: HP Application Pac\n");
+      output.append("CATEGORY: HP Application Pac\n");
       break;
     case CATEGORY_HPIL_PERPH:
-      fprintf(OutFile,"CATEGORY: HP-IL related modules and devices\n");
+      output.append("CATEGORY: HP-IL related modules and devices\n");
       break;
     case CATEGORY_STD_PERPH:
-      fprintf(OutFile,"CATEGORY: HP Standard peripheral\n");
+      output.append("CATEGORY: HP Standard peripheral\n");
       break;
     case CATEGORY_CUSTOM_PERPH:
-      fprintf(OutFile,"CATEGORY: Custom peripheral\n");
+      output.append("CATEGORY: Custom peripheral\n");
       break;
     case CATEGORY_BETA:
-      fprintf(OutFile,"CATEGORY: BETA releases not fully debugged and finished\n");
+      output.append("CATEGORY: BETA releases not fully debugged and finished\n");
       break;
     case CATEGORY_EXPERIMENTAL:
-      fprintf(OutFile,"CATEGORY: Test programs not meant for normal usage\n");
+      output.append("CATEGORY: Test programs not meant for normal usage\n");
       break;
     }
   switch (pModule->Hardware)
     {
     case HARDWARE_NONE:
-      fprintf(OutFile,"HARDWARE: None\n");
+      output.append("HARDWARE: None\n");
       break;
     case HARDWARE_PRINTER:
-      fprintf(OutFile,"HARDWARE: 82143A Printer\n");
+      output.append("HARDWARE: 82143A Printer\n");
       break;
     case HARDWARE_CARDREADER:
-      fprintf(OutFile,"HARDWARE: 82104A Card Reader\n");
+      output.append("HARDWARE: 82104A Card Reader\n");
       break;
     case HARDWARE_TIMER:
-      fprintf(OutFile,"HARDWARE: 82182A Time Module or HP-41CX built in timer\n");
+      output.append("HARDWARE: 82182A Time Module or HP-41CX built in timer\n");
       break;
     case HARDWARE_WAND:
-      fprintf(OutFile,"HARDWARE: 82153A Barcode Wand\n");
+      output.append("HARDWARE: 82153A Barcode Wand\n");
       break;
     case HARDWARE_HPIL:
-      fprintf(OutFile,"HARDWARE: 82160A HP-IL Module\n");
+      output.append("HARDWARE: 82160A HP-IL Module\n");
       break;
     case HARDWARE_INFRARED:
-      fprintf(OutFile,"HARDWARE: 82242A Infrared Printer Module\n");
+      output.append("HARDWARE: 82242A Infrared Printer Module\n");
       break;
     case HARDWARE_HEPAX:
-      fprintf(OutFile,"HARDWARE: HEPAX Module\n");
+      output.append("HARDWARE: HEPAX Module\n");
       break;
     case HARDWARE_WWRAMBOX:
-      fprintf(OutFile,"HARDWARE: W&W RAMBOX Device\n");
+      output.append("HARDWARE: W&W RAMBOX Device\n");
       break;
     case HARDWARE_MLDL2000:
-      fprintf(OutFile,"HARDWARE: MLDL2000 Device\n");
+      output.append("HARDWARE: MLDL2000 Device\n");
       break;
     case HARDWARE_CLONIX:
-      fprintf(OutFile,"HARDWARE: CLONIX-41 Module\n");
+      output.append("HARDWARE: CLONIX-41 Module\n");
       break;
     }
-  fprintf(OutFile,"MEMORY MODULES: %d\n",pModule->MemModules);
-  fprintf(OutFile,"EXENDED MEMORY MODULES: %d\n",pModule->XMemModules);
-  fprintf(OutFile,"ORIGINAL: %s\n",pModule->Original?"Yes - unaltered":"No - this file has been updated by a user application");
-  fprintf(OutFile,"APPLICATION AUTO UPDATE: %s\n",pModule->AppAutoUpdate?"Yes - update this file when saving other data (for MLDL/RAM)":"No - do not update this file");
-  fprintf(OutFile,"NUMBER OF PAGES: %d\n",pModule->NumPages);
+  output.append(QString("MEMORY MODULES: %1\n").arg(pModule->MemModules));
+  output.append(QString("EXENDED MEMORY MODULES: %1\n").arg(pModule->XMemModules));
+  output.append(QString("ORIGINAL: %1\n").arg(pModule->Original?"Yes - unaltered":"No - this file has been updated by a user application"));
+  output.append(QString("APPLICATION AUTO UPDATE: %1\n").arg(pModule->AppAutoUpdate?"Yes - update this file when saving other data (for MLDL/RAM)":"No - do not update this file"));
+  output.append(QString("NUMBER OF PAGES: %1\n").arg(pModule->NumPages));
 
   /* go through each page */
   for (i=0;i<pModule->NumPages;i++)
@@ -569,71 +562,71 @@ int Chp41Mod::output_mod_info(
     pMFP=(ModuleFilePage*)(pBuff.data()+sizeof(ModuleFileHeader)+sizeof(ModuleFilePage)*i);
 
     /* output page info */
-    fprintf(OutFile,"\n");
+    output.append("\n");
     unpack_image(Rom,pMFP->Image);
-    fprintf(OutFile,"ROM NAME: %s\n",pMFP->Name);
+    output.append(QString("ROM NAME: %1\n").arg(pMFP->Name));
     get_rom_id(Rom,ID);
     if (0==strcmp(pMFP->ID,ID))
-      fprintf(OutFile,"ROM ID: %s\n",pMFP->ID);
+      output.append(QString("ROM ID: %1\n").arg(pMFP->ID));
     else
-      fprintf(OutFile,"ROM ID: \"%s\" (ACTUAL ID: \"%s\")\n",pMFP->ID,ID);
+      output.append(QString("ROM ID: \"%1\" (ACTUAL ID: \"%2\")\n").arg(pMFP->ID).arg(ID));
     if ((pMFP->Page>0x0f && pMFP->Page<POSITION_MIN) || pMFP->Page>POSITION_MAX || pMFP->PageGroup>8 ||
       pMFP->Bank==0 || pMFP->Bank>4 || pMFP->BankGroup>8 || pMFP->Ram>1 || pMFP->WriteProtect>1 || pMFP->FAT>1 ||  /* out of range values */
       (pMFP->PageGroup && pMFP->Page<=POSITION_ANY) ||    /* group pages cannot use non-grouped position codes */
       (!pMFP->PageGroup && pMFP->Page>POSITION_ANY))      /* non-grouped pages cannot use grouped position codes */
-      fprintf(OutFile,"WARNING: Page info invalid: %s\n",pModule->szFullFileName);
+      output.append(QString("WARNING: Page info invalid: %1\n").arg(pModule->szFullFileName));
     if (pMFP->Page<=0x0f)
       {
-      fprintf(OutFile,"PAGE: %X - must be in this location\n",pMFP->Page);
+      output.append(QString("PAGE: %1 - must be in this location\n").arg(pMFP->Page));
       page_addr=pMFP->Page*0x1000;
       }
     else
       {
-      fprintf(OutFile,"PAGE: May be in more than one location\n");
+      output.append("PAGE: May be in more than one location\n");
       switch (pMFP->Page)
         {
         case POSITION_ANY:
-          fprintf(OutFile,"POSITION: Any page 8-F\n");
+          output.append("POSITION: Any page 8-F\n");
           break;
         case POSITION_LOWER:
-          fprintf(OutFile,"POSITION: In lower relative to upper page\n");
+          output.append("POSITION: In lower relative to upper page\n");
           break;
         case POSITION_UPPER:
-          fprintf(OutFile,"POSITION: In upper page relative to lower page\n");
+          output.append("POSITION: In upper page relative to lower page\n");
           break;
         case POSITION_ODD:
-          fprintf(OutFile,"POSITION: Any odd page (9,B,D,F)\n");
+          output.append("POSITION: Any odd page (9,B,D,F)\n");
           break;
         case POSITION_EVEN:
-          fprintf(OutFile,"POSITION: Any even page (8,A,C,E)\n");
+          output.append("POSITION: Any even page (8,A,C,E)\n");
           break;
         case POSITION_ORDERED:
-          fprintf(OutFile,"POSITION: Sequentially in MOD file order\n");
+          output.append("POSITION: Sequentially in MOD file order\n");
           break;
         }
        }
     if (pMFP->PageGroup==0)
-      fprintf(OutFile,"PAGE GROUP: 0 - not grouped\n");
+      output.append("PAGE GROUP: 0 - not grouped\n");
     else
-      fprintf(OutFile,"PAGE GROUP: %d\n",pMFP->PageGroup);
-    fprintf(OutFile,"BANK: %d\n",pMFP->Bank);
+      output.append(QString("PAGE GROUP: %1\n").arg(pMFP->PageGroup));
+    output.append(QString("BANK: %1\n").arg(pMFP->Bank));
     if (pMFP->BankGroup==0)
-      fprintf(OutFile,"BANK GROUP: 0 - not grouped\n");
+      output.append("BANK GROUP: 0 - not grouped\n");
     else
-      fprintf(OutFile,"BANK GROUP: %d\n",pMFP->BankGroup);
-    fprintf(OutFile,"RAM: %s\n",pMFP->Ram?"Yes":"No");
-    fprintf(OutFile,"WRITE PROTECTED: %s\n",pMFP->WriteProtect?"Yes":"No or Not Applicable");
+        output.append(QString("BANK GROUP: %1\n").arg(pMFP->BankGroup));
+    output.append(QString("RAM: %1\n").arg(pMFP->Ram?"Yes":"No"));
+    output.append(QString("WRITE PROTECTED: %1\n").arg(pMFP->WriteProtect?"Yes":"No or Not Applicable"));
     if (!pMFP->Ram && pMFP->WriteProtect)
-      fprintf(OutFile,"WARNING: ROM pages should not have WriteProtect set\n");
-    fprintf(OutFile,"FAT: %s\n",pMFP->FAT?"Yes":"No");
+      output.append("WARNING: ROM pages should not have WriteProtect set\n");
+    output.append(QString("FAT: %1\n").arg(pMFP->FAT?"Yes":"No"));
 
     /* output FAT */
     if (pMFP->FAT)
       {
-      fprintf(OutFile,"XROM: %d\n",Rom[0]);
-      fprintf(OutFile,"FCNS: %d\n",Rom[1]);
+      output.append(QString("XROM: %1\n").arg(Rom[0]));
+      output.append(QString("FCNS: %1\n").arg(Rom[1]));
       if (!DecodeFat)
-        fprintf(OutFile,"(FAT Not Decoded)\n");
+        output.append("(FAT Not Decoded)\n");
       }
     if (pMFP->FAT && DecodeFat)
       {
@@ -645,14 +638,14 @@ int Chp41Mod::output_mod_info(
       else
         page_start=0x8000;
 
-      fprintf(OutFile,"XROM  Addr Function    Type\n");
+      output.append("XROM  Addr Function    Type\n");
       addr=2;
       while (entry_num<=Rom[1] && !(Rom[addr]==0 && Rom[addr+1]==0))  /* while entry number is less then number of entries and fat terminator not found */
         {
         jmp_addr=((Rom[addr]&0x0ff)<<8) | (Rom[addr+1]&0x0ff);
-        fprintf(OutFile,"%02d,%02d %04X ",Rom[0],entry_num,jmp_addr+page_addr);
+        output.append(QString("%1,%2 %3 ").arg(Rom[0]).arg(entry_num).arg(jmp_addr+page_addr));
         if (Rom[addr]&0x200)
-          fprintf(OutFile,"            USER CODE");
+          output.append("            USER CODE");
         else if (jmp_addr<0x1000)                               /* 4K MCODE def */
           {
           int addr2=jmp_addr;
@@ -662,26 +655,26 @@ int Chp41Mod::output_mod_info(
             {
             addr2--;
             decode_fatchar(Rom[addr2],&ch,&punct,&end);
-            fprintf(OutFile,"%c",ch);
+            output.append(ch);
             }
           while (!end && addr2>jmp_addr-11);
           while (addr2>jmp_addr-11)                             /* pad it out */
             {
-            fprintf(OutFile," ");
+            output.append(" ");
             addr2--;
             }
-          fprintf(OutFile," 4K MCODE");
+          output.append(" 4K MCODE");
           /* function type */
           if (Rom[jmp_addr]==0)
             {
-            fprintf(OutFile," Nonprogrammable");
+            output.append(" Nonprogrammable");
             if (Rom[jmp_addr+1]==0)
-              fprintf(OutFile," Immediate");
+              output.append(" Immediate");
             else
-              fprintf(OutFile," NULLable");
+              output.append(" NULLable");
             }
           else
-            fprintf(OutFile," Programmable");
+            output.append(" Programmable");
           /* prompt type -high two bits of first two chars */
           prompt=(Rom[jmp_addr-1]&0x300)>>8;
           if (prompt && !(Rom[jmp_addr-2]&0x0080))
@@ -691,66 +684,66 @@ int Chp41Mod::output_mod_info(
             case 0:     /* no prompt */
               break;
             case 1:
-              fprintf(OutFile," Prompt: Alpha (null input valid)");
+              output.append(" Prompt: Alpha (null input valid)");
               break;
             case 2:
-              fprintf(OutFile," Prompt: 2 Digits, ST, INF, IND ST, +, -, * or /");
+              output.append(" Prompt: 2 Digits, ST, INF, IND ST, +, -, * or /");
               break;
             case 3:
-              fprintf(OutFile," Prompt: 2 Digits or non-null Alpha");
+              output.append(" Prompt: 2 Digits or non-null Alpha");
               break;
             case 11:
-              fprintf(OutFile," Prompt: 3 Digits");
+              output.append(" Prompt: 3 Digits");
               break;
             case 12:
-              fprintf(OutFile," Prompt: 2 Digits, ST, IND or IND ST");
+              output.append(" Prompt: 2 Digits, ST, IND or IND ST");
               break;
             case 13:
-              fprintf(OutFile," Prompt: 2 Digits, IND, IND ST or non-null Alpha");
+              output.append(" Prompt: 2 Digits, IND, IND ST or non-null Alpha");
               break;
             case 21:
-              fprintf(OutFile," Prompt: non-null Alpha");
+              output.append(" Prompt: non-null Alpha");
               break;
             case 22:
-              fprintf(OutFile," Prompt: 2 Digits, IND or IND ST");
+              output.append(" Prompt: 2 Digits, IND or IND ST");
               break;
             case 23:
-              fprintf(OutFile," Prompt: 2 digits or non-null Alpha");
+              output.append(" Prompt: 2 digits or non-null Alpha");
               break;
             case 31:
-              fprintf(OutFile," Prompt: 1 Digit, IND or IND ST");
+              output.append(" Prompt: 1 Digit, IND or IND ST");
               break;
             case 32:
-              fprintf(OutFile," Prompt: 2 Digits, IND or IND ST");
+              output.append(" Prompt: 2 Digits, IND or IND ST");
               break;
             case 33:
-              fprintf(OutFile," Prompt: 2 Digits, IND, IND ST, non-null Alpha . or ..");
+              output.append(" Prompt: 2 Digits, IND, IND ST, non-null Alpha . or ..");
               break;
             }
           }
         else
-          fprintf(OutFile,"            8K MCODE (Not decoded)");
-        fprintf(OutFile,"\n");
+          output.append("            8K MCODE (Not decoded)");
+        output.append("\n");
         entry_num++;
         addr+=2;
         }
 
       /* interrupt vectors */
-      fprintf(OutFile,"INTERRUPT VECTORS:\n");
-      fprintf(OutFile,"Pause loop:                      %03X\n",Rom[0x0ff4]);
-      fprintf(OutFile,"Main running loop:               %03X\n",Rom[0x0ff5]);
-      fprintf(OutFile,"Deep sleep wake up, no key down: %03X\n",Rom[0x0ff6]);
-      fprintf(OutFile,"Off:                             %03X\n",Rom[0x0ff7]);
-      fprintf(OutFile,"I/O service:                     %03X\n",Rom[0x0ff8]);
-      fprintf(OutFile,"Deep sleep wake up:              %03X\n",Rom[0x0ff9]);
-      fprintf(OutFile,"Cold start:                      %03X\n",Rom[0x0ffa]);
+      output.append("INTERRUPT VECTORS:\n");
+      output.append(QString("Pause loop:                      %1\n").arg(Rom[0x0ff4],3,16));
+      output.append(QString("Main running loop:               %1\n").arg(Rom[0x0ff5],3,16));
+      output.append(QString("Deep sleep wake up, no key down: %1\n").arg(Rom[0x0ff6],3,16));
+      output.append(QString("Off:                             %1\n").arg(Rom[0x0ff7],3,16));
+      output.append(QString("I/O service:                     %1\n").arg(Rom[0x0ff8],3,16));
+      output.append(QString("Deep sleep wake up:              %1\n").arg(Rom[0x0ff9],3,16));
+      output.append(QString("Cold start:                      %1\n").arg(Rom[0x0ffa],3,16));
       }
 
-    fprintf(OutFile,"CHECKSUM:                        %03X",Rom[0x0fff]);
+    output.append(QString("CHECKSUM:                        %1").arg(Rom[0x0fff],3,16));
     if (compute_checksum(Rom)==Rom[0x0fff])
-      fprintf(OutFile," (Correct - Same as Computed Value)\n");
+      output.append(" (Correct - Same as Computed Value)\n");
     else
-      fprintf(OutFile," (Incorrect - Computed Value: %03X)\n",compute_checksum(Rom));
+        output.append(QString(" (Incorrect - Computed Value: %1)\n").arg(compute_checksum(Rom),3,16));
 
 //  {
 //  int i;
@@ -765,8 +758,8 @@ int Chp41Mod::output_mod_info(
 
     }
 
-  fprintf(OutFile,"\n");
-  return(0);
+//  fprintf(OutFile,"\n");
+  return output;
   }
 
 /******************************/

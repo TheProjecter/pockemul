@@ -26,6 +26,7 @@
 #include "hp41.h"
 #include "hp41Cpu.h"
 #include "hp41mod.h"
+#include "Lcdc_hp41.h"
 #include "Keyb.h"
 #include "Inter.h"
 #include "init.h"
@@ -75,7 +76,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     Lcd_Symb_ratio_X	= 1;
 
     pTIMER		= new Ctimer(this);
-    //    pLCDC		= new Clcdc_ti57(this);
+    pLCDC		= new Clcdc_hp41(this);
     pCPU		= new Chp41Cpu(this);    hp41cpu = (Chp41Cpu*)pCPU;
     pKEYB		= new Ckeyb(this,"ti57.map");
 
@@ -111,6 +112,10 @@ Chp41::~Chp41()
 
 bool Chp41::init()
 {
+    //pCPU->logsw = true;
+
+
+
     CpcXXXX::init();
 
     WatchPoint.remove(this);
@@ -184,14 +189,18 @@ bool Chp41::init()
     ModuleHeader *pModuleNew;
     int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-C.MOD"));
 
-    Chp41Mod(this,P_RES(QString(":/hp41/MOD/NUT-C.MOD"))).output_mod_info(stdout,1,1);
+    hp41cpu->set_PC(0);
+    qWarning()<<Chp41Mod(this,P_RES(QString(":/hp41/MOD/NUT-C.MOD"))).output_mod_info(1,1);
     qWarning()<<"Load Module:"<<nRes;
+
+    StartTrace();
 
    return true;
 }
 
 bool Chp41::run()
 {
+//    qWarning()<<"hp41::run";
     //    if (!fRunEnable)
     //        return;
     //    if (ExecuteEvent)

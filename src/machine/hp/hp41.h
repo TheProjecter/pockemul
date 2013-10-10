@@ -197,9 +197,9 @@ public:
   char *GetTEFName(uint tef);
   void PrintRegisters(void);
   void StartTrace(void);
-  void StopTrace(void){}
+  void StopTrace(void);
   void SwitchTrace(void);
-  flag GetTrace(void){}
+  flag GetTrace(void);
   void TraceOut(void);
   void trace(void);
   void trace_class0(void);

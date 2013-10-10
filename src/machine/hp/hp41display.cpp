@@ -24,6 +24,7 @@
 #if 1
 #include "hp41.h"
 #include "hp41Cpu.h"
+#include "Lcdc.h"
 
 /****************************/
 /* called from subclass A - perph 0xfd */
@@ -238,6 +239,8 @@ void Chp41::DisplayWrite()
       }
     }
   UpdateDisplay=true;
+  pLCDC->updated = true;
+
   hp41cpu->Boost=DISPLAY_BOOST;
   }
 
@@ -317,6 +320,7 @@ void Chp41::DisplayRead()
       DisplayRotRight(DIS_A_REG,6);
       DisplayRotRight(DIS_B_REG,6);
       UpdateDisplay=true;
+      pLCDC->updated = true;
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -339,6 +343,8 @@ void Chp41::DisplayRead()
       DisplayRotRight(DIS_B_REG,4);
       DisplayRotRight(DIS_C_REG,4);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -356,6 +362,8 @@ void Chp41::DisplayRead()
       hp41cpu->C_REG[0]=DIS_C_REG[11];
       DisplayRotRight(DIS_C_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -365,6 +373,8 @@ void Chp41::DisplayRead()
       hp41cpu->C_REG[0]=DIS_A_REG[0];
       DisplayRotLeft(DIS_A_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -374,6 +384,8 @@ void Chp41::DisplayRead()
       hp41cpu->C_REG[0]=DIS_B_REG[0];
       DisplayRotLeft(DIS_B_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -383,6 +395,8 @@ void Chp41::DisplayRead()
       hp41cpu->C_REG[0]=DIS_C_REG[0];
       DisplayRotLeft(DIS_C_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -392,6 +406,8 @@ void Chp41::DisplayRead()
       hp41cpu->C_REG[0]=DIS_A_REG[11];
       DisplayRotRight(DIS_A_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -401,6 +417,8 @@ void Chp41::DisplayRead()
       hp41cpu->C_REG[0]=DIS_B_REG[11];
       DisplayRotRight(DIS_B_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -412,6 +430,8 @@ void Chp41::DisplayRead()
       DisplayRotLeft(DIS_A_REG,1);
       DisplayRotLeft(DIS_B_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -423,6 +443,8 @@ void Chp41::DisplayRead()
       DisplayRotRight(DIS_A_REG,1);
       DisplayRotRight(DIS_B_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -436,6 +458,8 @@ void Chp41::DisplayRead()
       DisplayRotLeft(DIS_B_REG,1);
       DisplayRotLeft(DIS_C_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -449,6 +473,8 @@ void Chp41::DisplayRead()
       DisplayRotRight(DIS_B_REG,1);
       DisplayRotRight(DIS_C_REG,1);
       UpdateDisplay=true;
+      pLCDC->updated = true;
+
       hp41cpu->Boost=DISPLAY_BOOST;
       break;
       }
@@ -497,6 +523,8 @@ void Chp41::HalfnutWrite()
     {
     SetContrast(hp41cpu->C_REG[0]);
     UpdateDisplay=true;
+    pLCDC->updated = true;
+
     UpdateAnnun=1;
     }
   }

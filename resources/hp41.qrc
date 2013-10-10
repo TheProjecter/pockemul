@@ -2,5 +2,8 @@
     <qresource prefix="/">
         <file>hp41/hp41.png</file>
         <file>hp41/MOD/NUT-C.MOD</file>
+        <file>hp41/hp41lcd.png</file>
+        <file>hp41/LCD4.ttf</file>
+        <file>hp41/41chrset.ttf</file>
     </qresource>
 </RCC>

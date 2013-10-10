@@ -71,6 +71,11 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("PockEmul");
     QCoreApplication::setApplicationVersion(POCKEMUL_VERSION);
 
+
+    int loadedFontID = QFontDatabase::addApplicationFont(":/hp41/41chrset.ttf");
+  QStringList loadedFontFamilies = QFontDatabase::applicationFontFamilies(loadedFontID);
+  qWarning()<<loadedFontFamilies;
+
 #ifdef Q_OS_MAC
     QDir dir(QApplication::applicationDirPath());
     dir.cdUp();
