@@ -149,15 +149,15 @@ void Chp41::TimerProc()  {
       {
       this->ClockA=0;
       this->TMR_S[0]|=0x02;      // set bit 1 - overflow in clock A
-      hp41cpu->FI_REG|=0x2000;      // set flag 13 - general service request flag
-      hp41cpu->FI_REG|=0x1000;      // set flag 12 - timer request
+      hp41cpu->r->FI_REG|=0x2000;      // set flag 13 - general service request flag
+      hp41cpu->r->FI_REG|=0x1000;      // set flag 12 - timer request
       hp41cpu->Wakeup();
       }
     if (this->TMR_S[2]&0x01 && this->ClockA==this->AlarmA)  // if bit 8 set - enable ClockA & AlarmA comparator
       {
       this->TMR_S[0]|=0x01;      // set bit 0 - valid compare
-      hp41cpu->FI_REG|=0x2000;      // set flag 13
-      hp41cpu->FI_REG|=0x1000;      // set flag 12
+      hp41cpu->r->FI_REG|=0x2000;      // set flag 13
+      hp41cpu->r->FI_REG|=0x1000;      // set flag 12
       hp41cpu->Wakeup();
       fAlert=1;
       }
@@ -170,15 +170,15 @@ void Chp41::TimerProc()  {
       {
       this->ClockB=0;
       this->TMR_S[0]|=0x08;      // set bit 3 - overflow in clock B
-      hp41cpu->FI_REG|=0x2000;      // set flag 13
-      hp41cpu->FI_REG|=0x1000;      // set flag 12
+      hp41cpu->r->FI_REG|=0x2000;      // set flag 13
+      hp41cpu->r->FI_REG|=0x1000;      // set flag 12
       hp41cpu->Wakeup();
       }
     if (this->TMR_S[2]&0x02 && this->ClockB==this->AlarmB)  // if bit 9 set - enable ClockB & AlarmB comparator
       {
       this->TMR_S[0]|=0x04;      // set bit 2 - valid compare
-      hp41cpu->FI_REG|=0x2000;      // set flag 13
-      hp41cpu->FI_REG|=0x1000;      // set flag 12
+      hp41cpu->r->FI_REG|=0x2000;      // set flag 13
+      hp41cpu->r->FI_REG|=0x1000;      // set flag 12
       hp41cpu->Wakeup();
       fAlert=1;
       }
@@ -191,8 +191,8 @@ void Chp41::TimerProc()  {
       {
       this->IntTimer=0;          // reset interval timer to zero
       this->TMR_S[1]|=0x01;      // set bit 4 - DTZIT - Decrement Through Zero Interval timer
-      hp41cpu->FI_REG|=0x2000;      // set flag 13
-      hp41cpu->FI_REG|=0x1000;      // set flag 12
+      hp41cpu->r->FI_REG|=0x2000;      // set flag 13
+      hp41cpu->r->FI_REG|=0x1000;      // set flag 12
       hp41cpu->Wakeup();
       }
     }
@@ -249,12 +249,12 @@ void Chp41::TimerWrite()
       {
       if (TimerSelA)
         {
-        memcpy(CLK_A,hp41cpu->C_REG,14);
+        memcpy(CLK_A,hp41cpu->r->C_REG,14);
         ConvertToUINT64(&ClockA,CLK_A);
         }
       else
         {
-        memcpy(CLK_B,hp41cpu->C_REG,14);
+        memcpy(CLK_B,hp41cpu->r->C_REG,14);
         ConvertToUINT64(&ClockB,CLK_B);
         }
       break;
@@ -263,12 +263,12 @@ void Chp41::TimerWrite()
       {
       if (TimerSelA)
         {
-        memcpy(CLK_A,hp41cpu->C_REG,14);
+        memcpy(CLK_A,hp41cpu->r->C_REG,14);
         ConvertToUINT64(&ClockA,CLK_A);
         }
       else
         {
-        memcpy(CLK_B,hp41cpu->C_REG,14);
+        memcpy(CLK_B,hp41cpu->r->C_REG,14);
         ConvertToUINT64(&ClockB,CLK_B);
         }
       break;
@@ -277,12 +277,12 @@ void Chp41::TimerWrite()
       {
       if (TimerSelA)
         {
-        memcpy(ALM_A,hp41cpu->C_REG,14);
+        memcpy(ALM_A,hp41cpu->r->C_REG,14);
         ConvertToUINT64(&AlarmA,ALM_A);
         }
       else
         {
-        memcpy(ALM_B,hp41cpu->C_REG,14);
+        memcpy(ALM_B,hp41cpu->r->C_REG,14);
         ConvertToUINT64(&AlarmB,ALM_B);
         }
       break;
@@ -291,36 +291,36 @@ void Chp41::TimerWrite()
       {
       if (TimerSelA)     // first 6 status bits may only be cleared
         {
-        TMR_S[0]&=hp41cpu->C_REG[0];
-        TMR_S[1]&=(0x0C|(hp41cpu->C_REG[1]&0x03));
+        TMR_S[0]&=hp41cpu->r->C_REG[0];
+        TMR_S[1]&=(0x0C|(hp41cpu->r->C_REG[1]&0x03));
         //RB++ check for bits 0 to 5 to be zero and clear flag 12 & 13
         // all flags should be buffered for each peripheral and ORed at the beginning of each instruction.
         // flag 12 should only indicate 1, if flag 13 is set AND Perph Addr=FB
         // see: 1LF6 detailed description -> pg. 6 -> 2.7 FLAG and System Interrupt
         if ((TMR_S[0]||(TMR_S[1]&0x03))==0)
-          hp41cpu->FI_REG&=0xcfff;    // clear flag 12, 13
+          hp41cpu->r->FI_REG&=0xcfff;    // clear flag 12, 13
         //RB--
         }
       else
         {
-        ACC_F[3]=hp41cpu->C_REG[4]&0x1;
-        ACC_F[2]=hp41cpu->C_REG[3];
-        ACC_F[1]=hp41cpu->C_REG[2];
-        ACC_F[0]=hp41cpu->C_REG[1];
+        ACC_F[3]=hp41cpu->r->C_REG[4]&0x1;
+        ACC_F[2]=hp41cpu->r->C_REG[3];
+        ACC_F[1]=hp41cpu->r->C_REG[2];
+        ACC_F[0]=hp41cpu->r->C_REG[1];
         }
       break;
       }
     case 4:              // WSCR
       {
       if (TimerSelA)
-        memcpy(SCR_A,hp41cpu->C_REG,14);
+        memcpy(SCR_A,hp41cpu->r->C_REG,14);
       else
-        memcpy(SCR_B,hp41cpu->C_REG,14);
+        memcpy(SCR_B,hp41cpu->r->C_REG,14);
       break;
       }
     case 5:              // WINTST - set and start interval time
       {
-      memcpy(INTV_TV,hp41cpu->C_REG,5);            // set terminal count value
+      memcpy(INTV_TV,hp41cpu->r->C_REG,5);            // set terminal count value
       ConvertToUINT64((UINT64*)&IntTimerEnd,INTV_TV);
       IntTimer=0;
       TMR_S[2]|=0x04;					// set bit 10- ITEN - Interval Timer Enable
@@ -403,12 +403,12 @@ void Chp41::TimerRead()
       if (TimerSelA)
         {
         ConvertToReg14(CLK_A,ClockA);
-        memcpy(hp41cpu->C_REG,CLK_A,14);
+        memcpy(hp41cpu->r->C_REG,CLK_A,14);
         }
       else
         {
         ConvertToReg14(CLK_B,ClockB);
-        memcpy(hp41cpu->C_REG,CLK_B,14);
+        memcpy(hp41cpu->r->C_REG,CLK_B,14);
         }
       break;
       }
@@ -417,47 +417,47 @@ void Chp41::TimerRead()
       if (TimerSelA)
         {
         ConvertToReg14(CLK_A,ClockA);
-        memcpy(hp41cpu->C_REG,CLK_A,14);
+        memcpy(hp41cpu->r->C_REG,CLK_A,14);
         }
       else
         {
         ConvertToReg14(CLK_B,ClockB);
-        memcpy(hp41cpu->C_REG,CLK_B,14);
+        memcpy(hp41cpu->r->C_REG,CLK_B,14);
         }
       break;
       }
     case 2:             // RALM
       {
       if (TimerSelA)
-        memcpy(hp41cpu->C_REG,ALM_A,14);
+        memcpy(hp41cpu->r->C_REG,ALM_A,14);
       else
-        memcpy(hp41cpu->C_REG,ALM_B,14);
+        memcpy(hp41cpu->r->C_REG,ALM_B,14);
       break;
       }
     case 3:             // RSTS
       {
       if (TimerSelA)
-        memcpy(hp41cpu->C_REG,TMR_S,14);
+        memcpy(hp41cpu->r->C_REG,TMR_S,14);
       else
         {
-        memset(hp41cpu->C_REG,0,14);
+        memset(hp41cpu->r->C_REG,0,14);
         for (int i=0;i<4;i++)
-          hp41cpu->C_REG[i+1]=ACC_F[i];
+          hp41cpu->r->C_REG[i+1]=ACC_F[i];
         }
       break;
       }
     case 4:             // RSCR
       {
       if (TimerSelA)
-        memcpy(hp41cpu->C_REG,SCR_A,14);
+        memcpy(hp41cpu->r->C_REG,SCR_A,14);
       else
-        memcpy(hp41cpu->C_REG,SCR_B,14);
+        memcpy(hp41cpu->r->C_REG,SCR_B,14);
       break;
       }
     case 5:             // RINT
       {
-      memset(hp41cpu->C_REG,0,14);
-      memcpy(hp41cpu->C_REG,INTV_TV,5);
+      memset(hp41cpu->r->C_REG,0,14);
+      memcpy(hp41cpu->r->C_REG,INTV_TV,5);
       break;
       }
     default:

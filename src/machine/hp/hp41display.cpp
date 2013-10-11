@@ -36,52 +36,52 @@ void Chp41::DisplayWrite()
     // 028          SRLDA    WRA12L   SRLDA
     case 0:
       {
-      DIS_A_REG[0]=hp41cpu->C_REG[0];
-      DIS_A_REG[1]=hp41cpu->C_REG[1];
-      DIS_A_REG[2]=hp41cpu->C_REG[2];
-      DIS_A_REG[3]=hp41cpu->C_REG[3];
-      DIS_A_REG[4]=hp41cpu->C_REG[4];
-      DIS_A_REG[5]=hp41cpu->C_REG[5];
-      DIS_A_REG[6]=hp41cpu->C_REG[6];
-      DIS_A_REG[7]=hp41cpu->C_REG[7];
-      DIS_A_REG[8]=hp41cpu->C_REG[8];
-      DIS_A_REG[9]=hp41cpu->C_REG[9];
-      DIS_A_REG[10]=hp41cpu->C_REG[10];
-      DIS_A_REG[11]=hp41cpu->C_REG[11];
+      DIS_A_REG[0]=hp41cpu->r->C_REG[0];
+      DIS_A_REG[1]=hp41cpu->r->C_REG[1];
+      DIS_A_REG[2]=hp41cpu->r->C_REG[2];
+      DIS_A_REG[3]=hp41cpu->r->C_REG[3];
+      DIS_A_REG[4]=hp41cpu->r->C_REG[4];
+      DIS_A_REG[5]=hp41cpu->r->C_REG[5];
+      DIS_A_REG[6]=hp41cpu->r->C_REG[6];
+      DIS_A_REG[7]=hp41cpu->r->C_REG[7];
+      DIS_A_REG[8]=hp41cpu->r->C_REG[8];
+      DIS_A_REG[9]=hp41cpu->r->C_REG[9];
+      DIS_A_REG[10]=hp41cpu->r->C_REG[10];
+      DIS_A_REG[11]=hp41cpu->r->C_REG[11];
       break;
       }
     // 068          SRLDB    WRB12L   SRLDB
     case 1:
       {
-      DIS_B_REG[0]=hp41cpu->C_REG[0];
-      DIS_B_REG[1]=hp41cpu->C_REG[1];
-      DIS_B_REG[2]=hp41cpu->C_REG[2];
-      DIS_B_REG[3]=hp41cpu->C_REG[3];
-      DIS_B_REG[4]=hp41cpu->C_REG[4];
-      DIS_B_REG[5]=hp41cpu->C_REG[5];
-      DIS_B_REG[6]=hp41cpu->C_REG[6];
-      DIS_B_REG[7]=hp41cpu->C_REG[7];
-      DIS_B_REG[8]=hp41cpu->C_REG[8];
-      DIS_B_REG[9]=hp41cpu->C_REG[9];
-      DIS_B_REG[10]=hp41cpu->C_REG[10];
-      DIS_B_REG[11]=hp41cpu->C_REG[11];
+      DIS_B_REG[0]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[1]=hp41cpu->r->C_REG[1];
+      DIS_B_REG[2]=hp41cpu->r->C_REG[2];
+      DIS_B_REG[3]=hp41cpu->r->C_REG[3];
+      DIS_B_REG[4]=hp41cpu->r->C_REG[4];
+      DIS_B_REG[5]=hp41cpu->r->C_REG[5];
+      DIS_B_REG[6]=hp41cpu->r->C_REG[6];
+      DIS_B_REG[7]=hp41cpu->r->C_REG[7];
+      DIS_B_REG[8]=hp41cpu->r->C_REG[8];
+      DIS_B_REG[9]=hp41cpu->r->C_REG[9];
+      DIS_B_REG[10]=hp41cpu->r->C_REG[10];
+      DIS_B_REG[11]=hp41cpu->r->C_REG[11];
       break;
       }
     // 0A8          SRLDC    WRC12L   SRLDC
     case 2:
       {
-      DIS_C_REG[0]=hp41cpu->C_REG[0];
-      DIS_C_REG[1]=hp41cpu->C_REG[1];
-      DIS_C_REG[2]=hp41cpu->C_REG[2];
-      DIS_C_REG[3]=hp41cpu->C_REG[3];
-      DIS_C_REG[4]=hp41cpu->C_REG[4];
-      DIS_C_REG[5]=hp41cpu->C_REG[5];
-      DIS_C_REG[6]=hp41cpu->C_REG[6];
-      DIS_C_REG[7]=hp41cpu->C_REG[7];
-      DIS_C_REG[8]=hp41cpu->C_REG[8];
-      DIS_C_REG[9]=hp41cpu->C_REG[9];
-      DIS_C_REG[10]=hp41cpu->C_REG[10];
-      DIS_C_REG[11]=hp41cpu->C_REG[11];
+      DIS_C_REG[0]=hp41cpu->r->C_REG[0];
+      DIS_C_REG[1]=hp41cpu->r->C_REG[1];
+      DIS_C_REG[2]=hp41cpu->r->C_REG[2];
+      DIS_C_REG[3]=hp41cpu->r->C_REG[3];
+      DIS_C_REG[4]=hp41cpu->r->C_REG[4];
+      DIS_C_REG[5]=hp41cpu->r->C_REG[5];
+      DIS_C_REG[6]=hp41cpu->r->C_REG[6];
+      DIS_C_REG[7]=hp41cpu->r->C_REG[7];
+      DIS_C_REG[8]=hp41cpu->r->C_REG[8];
+      DIS_C_REG[9]=hp41cpu->r->C_REG[9];
+      DIS_C_REG[10]=hp41cpu->r->C_REG[10];
+      DIS_C_REG[11]=hp41cpu->r->C_REG[11];
       break;
       }
     // 0E8          SRLDAB   WRAB6L   SRLDAB
@@ -89,18 +89,18 @@ void Chp41::DisplayWrite()
       {
       DisplayRotLeft(DIS_A_REG,6);
       DisplayRotLeft(DIS_B_REG,6);
-      DIS_A_REG[6]=hp41cpu->C_REG[0];
-      DIS_B_REG[6]=hp41cpu->C_REG[1];
-      DIS_A_REG[7]=hp41cpu->C_REG[2];
-      DIS_B_REG[7]=hp41cpu->C_REG[3];
-      DIS_A_REG[8]=hp41cpu->C_REG[4];
-      DIS_B_REG[8]=hp41cpu->C_REG[5];
-      DIS_A_REG[9]=hp41cpu->C_REG[6];
-      DIS_B_REG[9]=hp41cpu->C_REG[7];
-      DIS_A_REG[10]=hp41cpu->C_REG[8];
-      DIS_B_REG[10]=hp41cpu->C_REG[9];
-      DIS_A_REG[11]=hp41cpu->C_REG[10];
-      DIS_B_REG[11]=hp41cpu->C_REG[11];
+      DIS_A_REG[6]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[6]=hp41cpu->r->C_REG[1];
+      DIS_A_REG[7]=hp41cpu->r->C_REG[2];
+      DIS_B_REG[7]=hp41cpu->r->C_REG[3];
+      DIS_A_REG[8]=hp41cpu->r->C_REG[4];
+      DIS_B_REG[8]=hp41cpu->r->C_REG[5];
+      DIS_A_REG[9]=hp41cpu->r->C_REG[6];
+      DIS_B_REG[9]=hp41cpu->r->C_REG[7];
+      DIS_A_REG[10]=hp41cpu->r->C_REG[8];
+      DIS_B_REG[10]=hp41cpu->r->C_REG[9];
+      DIS_A_REG[11]=hp41cpu->r->C_REG[10];
+      DIS_B_REG[11]=hp41cpu->r->C_REG[11];
       break;
       }
     // 128          SRLABC   WRABC4L  SRLABC                       ;also HP:SRLDABC
@@ -109,18 +109,18 @@ void Chp41::DisplayWrite()
       DisplayRotLeft(DIS_A_REG,4);
       DisplayRotLeft(DIS_B_REG,4);
       DisplayRotLeft(DIS_C_REG,4);
-      DIS_A_REG[8]=hp41cpu->C_REG[0];
-      DIS_B_REG[8]=hp41cpu->C_REG[1];
-      DIS_C_REG[8]=hp41cpu->C_REG[2]&0x01;
-      DIS_A_REG[9]=hp41cpu->C_REG[3];
-      DIS_B_REG[9]=hp41cpu->C_REG[4];
-      DIS_C_REG[9]=hp41cpu->C_REG[5]&0x01;
-      DIS_A_REG[10]=hp41cpu->C_REG[6];
-      DIS_B_REG[10]=hp41cpu->C_REG[7];
-      DIS_C_REG[10]=hp41cpu->C_REG[8]&0x01;
-      DIS_A_REG[11]=hp41cpu->C_REG[9];
-      DIS_B_REG[11]=hp41cpu->C_REG[10];
-      DIS_C_REG[11]=hp41cpu->C_REG[11]&0x01;
+      DIS_A_REG[8]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[8]=hp41cpu->r->C_REG[1];
+      DIS_C_REG[8]=hp41cpu->r->C_REG[2]&0x01;
+      DIS_A_REG[9]=hp41cpu->r->C_REG[3];
+      DIS_B_REG[9]=hp41cpu->r->C_REG[4];
+      DIS_C_REG[9]=hp41cpu->r->C_REG[5]&0x01;
+      DIS_A_REG[10]=hp41cpu->r->C_REG[6];
+      DIS_B_REG[10]=hp41cpu->r->C_REG[7];
+      DIS_C_REG[10]=hp41cpu->r->C_REG[8]&0x01;
+      DIS_A_REG[11]=hp41cpu->r->C_REG[9];
+      DIS_B_REG[11]=hp41cpu->r->C_REG[10];
+      DIS_C_REG[11]=hp41cpu->r->C_REG[11]&0x01;
       break;
       }
     // 168          SLLDAB   WRAB6R   SLLDAB
@@ -128,18 +128,18 @@ void Chp41::DisplayWrite()
       {
       DisplayRotRight(DIS_A_REG,6);
       DisplayRotRight(DIS_B_REG,6);
-      DIS_A_REG[5]=hp41cpu->C_REG[0];
-      DIS_B_REG[5]=hp41cpu->C_REG[1];
-      DIS_A_REG[4]=hp41cpu->C_REG[2];
-      DIS_B_REG[4]=hp41cpu->C_REG[3];
-      DIS_A_REG[3]=hp41cpu->C_REG[4];
-      DIS_B_REG[3]=hp41cpu->C_REG[5];
-      DIS_A_REG[2]=hp41cpu->C_REG[6];
-      DIS_B_REG[2]=hp41cpu->C_REG[7];
-      DIS_A_REG[1]=hp41cpu->C_REG[8];
-      DIS_B_REG[1]=hp41cpu->C_REG[9];
-      DIS_A_REG[0]=hp41cpu->C_REG[10];
-      DIS_B_REG[0]=hp41cpu->C_REG[11];
+      DIS_A_REG[5]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[5]=hp41cpu->r->C_REG[1];
+      DIS_A_REG[4]=hp41cpu->r->C_REG[2];
+      DIS_B_REG[4]=hp41cpu->r->C_REG[3];
+      DIS_A_REG[3]=hp41cpu->r->C_REG[4];
+      DIS_B_REG[3]=hp41cpu->r->C_REG[5];
+      DIS_A_REG[2]=hp41cpu->r->C_REG[6];
+      DIS_B_REG[2]=hp41cpu->r->C_REG[7];
+      DIS_A_REG[1]=hp41cpu->r->C_REG[8];
+      DIS_B_REG[1]=hp41cpu->r->C_REG[9];
+      DIS_A_REG[0]=hp41cpu->r->C_REG[10];
+      DIS_B_REG[0]=hp41cpu->r->C_REG[11];
       break;
       }
     // 1A8          SLLABC   WRABC4R  SLLABC                       ;also HP:SLLDABC
@@ -148,53 +148,53 @@ void Chp41::DisplayWrite()
       DisplayRotRight(DIS_A_REG,4);
       DisplayRotRight(DIS_B_REG,4);
       DisplayRotRight(DIS_C_REG,4);
-      DIS_A_REG[3]=hp41cpu->C_REG[0];
-      DIS_B_REG[3]=hp41cpu->C_REG[1];
-      DIS_C_REG[3]=hp41cpu->C_REG[2]&0x01;
-      DIS_A_REG[2]=hp41cpu->C_REG[3];
-      DIS_B_REG[2]=hp41cpu->C_REG[4];
-      DIS_C_REG[2]=hp41cpu->C_REG[5]&0x01;
-      DIS_A_REG[1]=hp41cpu->C_REG[6];
-      DIS_B_REG[1]=hp41cpu->C_REG[7];
-      DIS_C_REG[1]=hp41cpu->C_REG[8]&0x01;
-      DIS_A_REG[0]=hp41cpu->C_REG[9];
-      DIS_B_REG[0]=hp41cpu->C_REG[10];
-      DIS_C_REG[0]=hp41cpu->C_REG[11]&0x01;
+      DIS_A_REG[3]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[3]=hp41cpu->r->C_REG[1];
+      DIS_C_REG[3]=hp41cpu->r->C_REG[2]&0x01;
+      DIS_A_REG[2]=hp41cpu->r->C_REG[3];
+      DIS_B_REG[2]=hp41cpu->r->C_REG[4];
+      DIS_C_REG[2]=hp41cpu->r->C_REG[5]&0x01;
+      DIS_A_REG[1]=hp41cpu->r->C_REG[6];
+      DIS_B_REG[1]=hp41cpu->r->C_REG[7];
+      DIS_C_REG[1]=hp41cpu->r->C_REG[8]&0x01;
+      DIS_A_REG[0]=hp41cpu->r->C_REG[9];
+      DIS_B_REG[0]=hp41cpu->r->C_REG[10];
+      DIS_C_REG[0]=hp41cpu->r->C_REG[11]&0x01;
       break;
       }
     // 1E8          SRSDA    WRA1L    SRSDA
     case 7:
       {
       DisplayRotLeft(DIS_A_REG,1);
-      DIS_A_REG[11]=hp41cpu->C_REG[0];
+      DIS_A_REG[11]=hp41cpu->r->C_REG[0];
       break;
       }
     // 228          SRSDB    WRB1L    SRSDB
     case 8:
       {
       DisplayRotLeft(DIS_B_REG,1);
-      DIS_B_REG[11]=hp41cpu->C_REG[0];
+      DIS_B_REG[11]=hp41cpu->r->C_REG[0];
       break;
       }
     // 268          SRSDC    WRC1L    SRSDC
     case 9:
       {
       DisplayRotLeft(DIS_C_REG,1);
-      DIS_C_REG[11]=hp41cpu->C_REG[0]&0x01;
+      DIS_C_REG[11]=hp41cpu->r->C_REG[0]&0x01;
       break;
       }
     // 2A8          SLSDA    WRA1R    SLSDA
     case 0xA:
       {
       DisplayRotRight(DIS_A_REG,1);
-      DIS_A_REG[0]=hp41cpu->C_REG[0];
+      DIS_A_REG[0]=hp41cpu->r->C_REG[0];
       break;
       }
     // 2E8          SLSDB    WRB1R    SLSDB
     case 0xB:
       {
       DisplayRotRight(DIS_B_REG,1);
-      DIS_B_REG[0]=hp41cpu->C_REG[0];
+      DIS_B_REG[0]=hp41cpu->r->C_REG[0];
       break;
       }
     // 328          SRSDAB   WRAB1L   SRSDAB                        ;Zenrom manual incorrectly says this is WRC1R
@@ -202,8 +202,8 @@ void Chp41::DisplayWrite()
       {                 //
       DisplayRotLeft(DIS_A_REG,1);
       DisplayRotLeft(DIS_B_REG,1);
-      DIS_A_REG[11]=hp41cpu->C_REG[0];
-      DIS_B_REG[11]=hp41cpu->C_REG[1];
+      DIS_A_REG[11]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[11]=hp41cpu->r->C_REG[1];
       break;
       }
     // 368          SLSDAB   WRAB1R   SLSDAB
@@ -211,8 +211,8 @@ void Chp41::DisplayWrite()
       {
       DisplayRotRight(DIS_A_REG,1);
       DisplayRotRight(DIS_B_REG,1);
-      DIS_A_REG[0]=hp41cpu->C_REG[0];
-      DIS_B_REG[0]=hp41cpu->C_REG[1];
+      DIS_A_REG[0]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[0]=hp41cpu->r->C_REG[1];
       break;
       }
     // 3A8          SRSABC   WRABC1L  SRSABC                        ;also HP:SRSDABC
@@ -221,9 +221,9 @@ void Chp41::DisplayWrite()
       DisplayRotLeft(DIS_A_REG,1);
       DisplayRotLeft(DIS_B_REG,1);
       DisplayRotLeft(DIS_C_REG,1);
-      DIS_A_REG[11]=hp41cpu->C_REG[0];
-      DIS_B_REG[11]=hp41cpu->C_REG[1];
-      DIS_C_REG[11]=hp41cpu->C_REG[2]&0x01;
+      DIS_A_REG[11]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[11]=hp41cpu->r->C_REG[1];
+      DIS_C_REG[11]=hp41cpu->r->C_REG[2]&0x01;
       break;
       }
     // 3E8          SLSABC   WRABC1R  SLSABC                        ;also HP:SLSDABC
@@ -232,9 +232,9 @@ void Chp41::DisplayWrite()
       DisplayRotRight(DIS_A_REG,1);
       DisplayRotRight(DIS_B_REG,1);
       DisplayRotRight(DIS_C_REG,1);
-      DIS_A_REG[0]=hp41cpu->C_REG[0];
-      DIS_B_REG[0]=hp41cpu->C_REG[1];
-      DIS_C_REG[0]=hp41cpu->C_REG[2]&0x01;
+      DIS_A_REG[0]=hp41cpu->r->C_REG[0];
+      DIS_B_REG[0]=hp41cpu->r->C_REG[1];
+      DIS_C_REG[0]=hp41cpu->r->C_REG[2]&0x01;
       break;
       }
     }
@@ -254,69 +254,69 @@ void Chp41::DisplayRead()
     // 038          FLLDA    RDA12L   FLLDA
     case 0:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[11];
-      hp41cpu->C_REG[1]=DIS_A_REG[10];
-      hp41cpu->C_REG[2]=DIS_A_REG[9];
-      hp41cpu->C_REG[3]=DIS_A_REG[8];
-      hp41cpu->C_REG[4]=DIS_A_REG[7];
-      hp41cpu->C_REG[5]=DIS_A_REG[6];
-      hp41cpu->C_REG[6]=DIS_A_REG[5];
-      hp41cpu->C_REG[7]=DIS_A_REG[4];
-      hp41cpu->C_REG[8]=DIS_A_REG[3];
-      hp41cpu->C_REG[9]=DIS_A_REG[2];
-      hp41cpu->C_REG[10]=DIS_A_REG[1];
-      hp41cpu->C_REG[11]=DIS_A_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_A_REG[10];
+      hp41cpu->r->C_REG[2]=DIS_A_REG[9];
+      hp41cpu->r->C_REG[3]=DIS_A_REG[8];
+      hp41cpu->r->C_REG[4]=DIS_A_REG[7];
+      hp41cpu->r->C_REG[5]=DIS_A_REG[6];
+      hp41cpu->r->C_REG[6]=DIS_A_REG[5];
+      hp41cpu->r->C_REG[7]=DIS_A_REG[4];
+      hp41cpu->r->C_REG[8]=DIS_A_REG[3];
+      hp41cpu->r->C_REG[9]=DIS_A_REG[2];
+      hp41cpu->r->C_REG[10]=DIS_A_REG[1];
+      hp41cpu->r->C_REG[11]=DIS_A_REG[0];
       break;
       }
     // 078          FLLDB    RDB12L   FLLDB
     case 1:
       {
-      hp41cpu->C_REG[0]=DIS_B_REG[11];
-      hp41cpu->C_REG[1]=DIS_B_REG[10];
-      hp41cpu->C_REG[2]=DIS_B_REG[9];
-      hp41cpu->C_REG[3]=DIS_B_REG[8];
-      hp41cpu->C_REG[4]=DIS_B_REG[7];
-      hp41cpu->C_REG[5]=DIS_B_REG[6];
-      hp41cpu->C_REG[6]=DIS_B_REG[5];
-      hp41cpu->C_REG[7]=DIS_B_REG[4];
-      hp41cpu->C_REG[8]=DIS_B_REG[3];
-      hp41cpu->C_REG[9]=DIS_B_REG[2];
-      hp41cpu->C_REG[10]=DIS_B_REG[1];
-      hp41cpu->C_REG[11]=DIS_B_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_B_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[10];
+      hp41cpu->r->C_REG[2]=DIS_B_REG[9];
+      hp41cpu->r->C_REG[3]=DIS_B_REG[8];
+      hp41cpu->r->C_REG[4]=DIS_B_REG[7];
+      hp41cpu->r->C_REG[5]=DIS_B_REG[6];
+      hp41cpu->r->C_REG[6]=DIS_B_REG[5];
+      hp41cpu->r->C_REG[7]=DIS_B_REG[4];
+      hp41cpu->r->C_REG[8]=DIS_B_REG[3];
+      hp41cpu->r->C_REG[9]=DIS_B_REG[2];
+      hp41cpu->r->C_REG[10]=DIS_B_REG[1];
+      hp41cpu->r->C_REG[11]=DIS_B_REG[0];
       break;
       }
     // 0B8          FLLDC    RDC12L   FLLDC
     case 2:
       {
-      hp41cpu->C_REG[0]=DIS_C_REG[11];
-      hp41cpu->C_REG[1]=DIS_C_REG[10];
-      hp41cpu->C_REG[2]=DIS_C_REG[9];
-      hp41cpu->C_REG[3]=DIS_C_REG[8];
-      hp41cpu->C_REG[4]=DIS_C_REG[7];
-      hp41cpu->C_REG[5]=DIS_C_REG[6];
-      hp41cpu->C_REG[6]=DIS_C_REG[5];
-      hp41cpu->C_REG[7]=DIS_C_REG[4];
-      hp41cpu->C_REG[8]=DIS_C_REG[3];
-      hp41cpu->C_REG[9]=DIS_C_REG[2];
-      hp41cpu->C_REG[10]=DIS_C_REG[1];
-      hp41cpu->C_REG[11]=DIS_C_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_C_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_C_REG[10];
+      hp41cpu->r->C_REG[2]=DIS_C_REG[9];
+      hp41cpu->r->C_REG[3]=DIS_C_REG[8];
+      hp41cpu->r->C_REG[4]=DIS_C_REG[7];
+      hp41cpu->r->C_REG[5]=DIS_C_REG[6];
+      hp41cpu->r->C_REG[6]=DIS_C_REG[5];
+      hp41cpu->r->C_REG[7]=DIS_C_REG[4];
+      hp41cpu->r->C_REG[8]=DIS_C_REG[3];
+      hp41cpu->r->C_REG[9]=DIS_C_REG[2];
+      hp41cpu->r->C_REG[10]=DIS_C_REG[1];
+      hp41cpu->r->C_REG[11]=DIS_C_REG[0];
       break;
       }
     // 0F8          FLLDAB   RDAB6L   FLLDAB
     case 3:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[11];
-      hp41cpu->C_REG[1]=DIS_B_REG[11];
-      hp41cpu->C_REG[2]=DIS_A_REG[10];
-      hp41cpu->C_REG[3]=DIS_B_REG[10];
-      hp41cpu->C_REG[4]=DIS_A_REG[9];
-      hp41cpu->C_REG[5]=DIS_B_REG[9];
-      hp41cpu->C_REG[6]=DIS_A_REG[8];
-      hp41cpu->C_REG[7]=DIS_B_REG[8];
-      hp41cpu->C_REG[8]=DIS_A_REG[7];
-      hp41cpu->C_REG[9]=DIS_B_REG[7];
-      hp41cpu->C_REG[10]=DIS_A_REG[6];
-      hp41cpu->C_REG[11]=DIS_B_REG[6];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[11];
+      hp41cpu->r->C_REG[2]=DIS_A_REG[10];
+      hp41cpu->r->C_REG[3]=DIS_B_REG[10];
+      hp41cpu->r->C_REG[4]=DIS_A_REG[9];
+      hp41cpu->r->C_REG[5]=DIS_B_REG[9];
+      hp41cpu->r->C_REG[6]=DIS_A_REG[8];
+      hp41cpu->r->C_REG[7]=DIS_B_REG[8];
+      hp41cpu->r->C_REG[8]=DIS_A_REG[7];
+      hp41cpu->r->C_REG[9]=DIS_B_REG[7];
+      hp41cpu->r->C_REG[10]=DIS_A_REG[6];
+      hp41cpu->r->C_REG[11]=DIS_B_REG[6];
       DisplayRotRight(DIS_A_REG,6);
       DisplayRotRight(DIS_B_REG,6);
       UpdateDisplay=true;
@@ -327,18 +327,18 @@ void Chp41::DisplayRead()
     // 138          FLLABC   RDABC4L  FLLABC                        ;also HP:FLLDABC
     case 4:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[11];
-      hp41cpu->C_REG[1]=DIS_B_REG[11];
-      hp41cpu->C_REG[2]=DIS_C_REG[11];
-      hp41cpu->C_REG[3]=DIS_A_REG[10];
-      hp41cpu->C_REG[4]=DIS_B_REG[10];
-      hp41cpu->C_REG[5]=DIS_C_REG[10];
-      hp41cpu->C_REG[6]=DIS_A_REG[9];
-      hp41cpu->C_REG[7]=DIS_B_REG[9];
-      hp41cpu->C_REG[8]=DIS_C_REG[9];
-      hp41cpu->C_REG[9]=DIS_A_REG[8];
-      hp41cpu->C_REG[10]=DIS_B_REG[8];
-      hp41cpu->C_REG[11]=DIS_C_REG[8];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[11];
+      hp41cpu->r->C_REG[2]=DIS_C_REG[11];
+      hp41cpu->r->C_REG[3]=DIS_A_REG[10];
+      hp41cpu->r->C_REG[4]=DIS_B_REG[10];
+      hp41cpu->r->C_REG[5]=DIS_C_REG[10];
+      hp41cpu->r->C_REG[6]=DIS_A_REG[9];
+      hp41cpu->r->C_REG[7]=DIS_B_REG[9];
+      hp41cpu->r->C_REG[8]=DIS_C_REG[9];
+      hp41cpu->r->C_REG[9]=DIS_A_REG[8];
+      hp41cpu->r->C_REG[10]=DIS_B_REG[8];
+      hp41cpu->r->C_REG[11]=DIS_C_REG[8];
       DisplayRotRight(DIS_A_REG,4);
       DisplayRotRight(DIS_B_REG,4);
       DisplayRotRight(DIS_C_REG,4);
@@ -351,15 +351,15 @@ void Chp41::DisplayRead()
     // 178          READEN   READAN   READEN                        ;copy annunciators into C[2:0]
     case 5:
       {
-      hp41cpu->C_REG[0]=(byte)(DIS_ANNUN_REG&0x00f);
-      hp41cpu->C_REG[1]=(byte)((DIS_ANNUN_REG&0x0f0)>>4);
-      hp41cpu->C_REG[2]=(byte)((DIS_ANNUN_REG&0xf00)>>8);
+      hp41cpu->r->C_REG[0]=(byte)(DIS_ANNUN_REG&0x00f);
+      hp41cpu->r->C_REG[1]=(byte)((DIS_ANNUN_REG&0x0f0)>>4);
+      hp41cpu->r->C_REG[2]=(byte)((DIS_ANNUN_REG&0xf00)>>8);
       break;
       }
     // 1B8          FLSDC    RDC1L    FLSDC
     case 6:
       {
-      hp41cpu->C_REG[0]=DIS_C_REG[11];
+      hp41cpu->r->C_REG[0]=DIS_C_REG[11];
       DisplayRotRight(DIS_C_REG,1);
       UpdateDisplay=true;
       pLCDC->updated = true;
@@ -370,7 +370,7 @@ void Chp41::DisplayRead()
     // 1F8          FRSDA    RDA1R    FRSDA
     case 7:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[0];
       DisplayRotLeft(DIS_A_REG,1);
       UpdateDisplay=true;
       pLCDC->updated = true;
@@ -381,7 +381,7 @@ void Chp41::DisplayRead()
     // 238          FRSDB    RDB1R    FRSDB
     case 8:
       {
-      hp41cpu->C_REG[0]=DIS_B_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_B_REG[0];
       DisplayRotLeft(DIS_B_REG,1);
       UpdateDisplay=true;
       pLCDC->updated = true;
@@ -392,7 +392,7 @@ void Chp41::DisplayRead()
     // 278          FRSDC    RDC1R    FRSDC
     case 9:
       {
-      hp41cpu->C_REG[0]=DIS_C_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_C_REG[0];
       DisplayRotLeft(DIS_C_REG,1);
       UpdateDisplay=true;
       pLCDC->updated = true;
@@ -403,7 +403,7 @@ void Chp41::DisplayRead()
     // 2B8          FLSDA    RDA1L    FLSDA
     case 0xA:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[11];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[11];
       DisplayRotRight(DIS_A_REG,1);
       UpdateDisplay=true;
       pLCDC->updated = true;
@@ -414,7 +414,7 @@ void Chp41::DisplayRead()
     // 2F8          FLSDB    RDB1L    FLSDB
     case 0xB:
       {
-      hp41cpu->C_REG[0]=DIS_B_REG[11];
+      hp41cpu->r->C_REG[0]=DIS_B_REG[11];
       DisplayRotRight(DIS_B_REG,1);
       UpdateDisplay=true;
       pLCDC->updated = true;
@@ -425,8 +425,8 @@ void Chp41::DisplayRead()
     // 338          FRSDAB   RDAB1R   FRSDAB
     case 0xC:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[0];
-      hp41cpu->C_REG[1]=DIS_B_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[0];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[0];
       DisplayRotLeft(DIS_A_REG,1);
       DisplayRotLeft(DIS_B_REG,1);
       UpdateDisplay=true;
@@ -438,8 +438,8 @@ void Chp41::DisplayRead()
     // 378          FLSDAB   RDAB1L   FLSDAB
     case 0xD:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[11];
-      hp41cpu->C_REG[1]=DIS_B_REG[11];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[11];
       DisplayRotRight(DIS_A_REG,1);
       DisplayRotRight(DIS_B_REG,1);
       UpdateDisplay=true;
@@ -451,9 +451,9 @@ void Chp41::DisplayRead()
     // 3B8          RABCR    RDABC1R  RABCR				;also HP:FRSDABC, FRSABC
     case 0xE:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[0];
-      hp41cpu->C_REG[1]=DIS_B_REG[0];
-      hp41cpu->C_REG[2]=DIS_C_REG[0];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[0];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[0];
+      hp41cpu->r->C_REG[2]=DIS_C_REG[0];
       DisplayRotLeft(DIS_A_REG,1);
       DisplayRotLeft(DIS_B_REG,1);
       DisplayRotLeft(DIS_C_REG,1);
@@ -466,9 +466,9 @@ void Chp41::DisplayRead()
     // 3F8          RABCL    RDABC1L  RABCL				;also HP:FLSDABC, FLSABC
     case 0xF:
       {
-      hp41cpu->C_REG[0]=DIS_A_REG[11];
-      hp41cpu->C_REG[1]=DIS_B_REG[11];
-      hp41cpu->C_REG[2]=DIS_C_REG[11];
+      hp41cpu->r->C_REG[0]=DIS_A_REG[11];
+      hp41cpu->r->C_REG[1]=DIS_B_REG[11];
+      hp41cpu->r->C_REG[2]=DIS_C_REG[11];
       DisplayRotRight(DIS_A_REG,1);
       DisplayRotRight(DIS_B_REG,1);
       DisplayRotRight(DIS_C_REG,1);
@@ -509,7 +509,7 @@ void Chp41::DisplayRotLeft(
 void Chp41::AnnunWrite()
   {
   // 2F0          WRTEN    WRITAN   WRTEN                         ;copy bits from C[2:0] into annunciators
-  DIS_ANNUN_REG=(hp41cpu->C_REG[2]<<8) | (hp41cpu->C_REG[1]<<4) | hp41cpu->C_REG[0];
+  DIS_ANNUN_REG=(hp41cpu->r->C_REG[2]<<8) | (hp41cpu->r->C_REG[1]<<4) | hp41cpu->r->C_REG[0];
   UpdateAnnun=1;
   }
 
@@ -521,7 +521,7 @@ void Chp41::HalfnutWrite()
   // REG=C 5
   if (hp41cpu->Modifier==5)
     {
-    SetContrast(hp41cpu->C_REG[0]);
+    SetContrast(hp41cpu->r->C_REG[0]);
     UpdateDisplay=true;
     pLCDC->updated = true;
 
@@ -536,7 +536,7 @@ void Chp41::HalfnutRead()
   {
   // C=REG 5
   if (hp41cpu->Modifier==5)
-    hp41cpu->C_REG[0]=(byte)Contrast;
+    hp41cpu->r->C_REG[0]=(byte)Contrast;
   }
 
 #endif

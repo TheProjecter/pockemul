@@ -73,7 +73,7 @@ struct Cat1Label
 // Module Memory Structures - see MOD file structures for field descriptions
 struct ModuleHeader
   {
-  char szFullFileName[_MAX_PATH];
+  char szFullFileName[260];
   char szFileFormat[5];
   char szTitle[50];
   char szVersion[10];
@@ -134,9 +134,9 @@ public:
 
   virtual bool	init(void);				// initialize
   virtual bool	run(void);					// emulator main
-  virtual bool	exit(void);					// exit
   virtual UINT8 in(UINT8 address);
   virtual UINT8 out(UINT8 address,UINT8 value);
+  virtual void TurnOFF();
 
 
   enum {eAwake=0,eLightSleep=1,eDeepSleep=2};       // sleep modes
@@ -356,6 +356,7 @@ public:
   void PrevGlobal(int CurrReg,int CurrByte,int &PrevReg,int &PrevByte,int &RegOff,int &ByteOff);
 
   UINT8 getKey();
+
 };
 
 

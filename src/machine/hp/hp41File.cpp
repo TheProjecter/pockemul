@@ -296,7 +296,7 @@ int Chp41::LoadMOD(
         pNewPage->fWWRAMBOX=(pMFH->Hardware==HARDWARE_WWRAMBOX);
         Chp41Mod::unpack_image(&(pNewPage->Image[0]),&(pMFP->Image[0]));
         // patch the NULL timeout value to be longer - not known if this works for all revisions
-        if (page==0 && (0==strcmpi(pNewPage->szName,"NUT0-D") || 0==strcmpi(pNewPage->szName,"NUT0-G") || 0==strcmpi(pNewPage->szName,"NUT0-N")))
+        if (page==0 && (0==strcmp(pNewPage->szName,"NUT0-D") || 0==strcmp(pNewPage->szName,"NUT0-G") || 0==strcmp(pNewPage->szName,"NUT0-N")))
           {
           pNewPage->Image[0x0ec7]=0x3ff;                               // original value =0x240
           pNewPage->Image[0x0fff]=Chp41Mod::compute_checksum(&(pNewPage->Image[0]));   // fix the checksum so service rom wont report error

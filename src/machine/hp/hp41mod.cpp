@@ -768,6 +768,7 @@ QString Chp41Mod::output_mod_info(
 int Chp41Mod::extract_roms(
   char *FullFileName)
   {
+#if 0
   char drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
   FILE *MODFile;
   unsigned long FileSize,SizeRead;
@@ -834,6 +835,7 @@ int Chp41Mod::extract_roms(
     write_rom_file(ROMFileName,Rom);
     }
   free(pBuff);
+#endif
   return(0);
   }
 

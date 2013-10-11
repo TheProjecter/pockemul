@@ -1559,7 +1559,7 @@ uint Chp41::FindGlobalAddr(char *name)
   sprintf(name2,"[%s]",name);
   for(int i=0; i<Globals; i++)
   {
-    if(0==strcmpi(GlobalName[i].name,name2))
+    if(0==strcmp(GlobalName[i].name,name2))
       return(GlobalName[i].addr);
   }
   return(0);
@@ -1602,51 +1602,51 @@ void Chp41::PrintRegisters(void)
 
   fprintf(hLogFile, "\n  A=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", hp41cpu->A_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->r->A_REG[i] & 0xF);
 
   fprintf(hLogFile, " B=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", hp41cpu->B_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->r->B_REG[i] & 0xF);
 
   fprintf(hLogFile, " C=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", hp41cpu->C_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->r->C_REG[i] & 0xF);
 
   fprintf(hLogFile, " Stack=");
-  fprintf(hLogFile, "%04X ", hp41cpu->RET_STK0);
-  fprintf(hLogFile, "%04X ", hp41cpu->RET_STK1);
-  fprintf(hLogFile, "%04X ", hp41cpu->RET_STK2);
-  fprintf(hLogFile, "%04X\n", hp41cpu->RET_STK3);
+  fprintf(hLogFile, "%04X ", hp41cpu->r->RET_STK0);
+  fprintf(hLogFile, "%04X ", hp41cpu->r->RET_STK1);
+  fprintf(hLogFile, "%04X ", hp41cpu->r->RET_STK2);
+  fprintf(hLogFile, "%04X\n", hp41cpu->r->RET_STK3);
 
   fprintf(hLogFile, "  M=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", hp41cpu->M_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->r->M_REG[i] & 0xF);
 
   fprintf(hLogFile, " N=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", hp41cpu->N_REG[i] & 0xF);
+    fprintf(hLogFile, "%1X", hp41cpu->r->N_REG[i] & 0xF);
 
   fprintf(hLogFile, " Cr=");
-  fprintf(hLogFile, "%1X", hp41cpu->CARRY & 0xF);
+  fprintf(hLogFile, "%1X", hp41cpu->r->CARRY & 0xF);
 
-  fprintf(hLogFile, " %cP=",(hp41cpu->PT_REG==&hp41cpu->P_REG)?'>':' ');
-  fprintf(hLogFile, "%1X", hp41cpu->P_REG & 0xF);
+  fprintf(hLogFile, " %cP=",(hp41cpu->PT_REG==&hp41cpu->r->P_REG)?'>':' ');
+  fprintf(hLogFile, "%1X", hp41cpu->r->P_REG & 0xF);
 
-  fprintf(hLogFile, " %cQ=",(hp41cpu->PT_REG==&hp41cpu->Q_REG)?'>':' ');
-  fprintf(hLogFile, "%1X", hp41cpu->Q_REG & 0xF);
+  fprintf(hLogFile, " %cQ=",(hp41cpu->PT_REG==&hp41cpu->r->Q_REG)?'>':' ');
+  fprintf(hLogFile, "%1X", hp41cpu->r->Q_REG & 0xF);
 
   fprintf(hLogFile, " G=");
-  fprintf(hLogFile, "%02X", hp41cpu->G_REG & 0xFF);
+  fprintf(hLogFile, "%02X", hp41cpu->r->G_REG & 0xFF);
 
   fprintf(hLogFile, " F0=");
-  fprintf(hLogFile, "%02X", hp41cpu->F_REG & 0xFF);
+  fprintf(hLogFile, "%02X", hp41cpu->r->F_REG & 0xFF);
 
   fprintf(hLogFile, " ST=");
   for(i=5; i>=0; i--)
-    fprintf(hLogFile, "%1X", (hp41cpu->XST_REG & (1 << i)) >> i);
+    fprintf(hLogFile, "%1X", (hp41cpu->r->XST_REG & (1 << i)) >> i);
   fprintf(hLogFile, " ");
   for(i=7; i>=0; i--)
-    fprintf(hLogFile, "%1X", (hp41cpu->ST_REG & (1 << i)) >> i);
+    fprintf(hLogFile, "%1X", (hp41cpu->r->ST_REG & (1 << i)) >> i);
   fprintf(hLogFile, "\n");
 
   fprintf(hLogFile, "  CLK_A=");
@@ -1699,7 +1699,7 @@ void Chp41::PrintRegisters(void)
 
   fprintf(hLogFile, " FI=");
   for(i=13; i>=0; i--)
-    fprintf(hLogFile, "%1X", (hp41cpu->FI_REG & (1 << i)) >> i);
+    fprintf(hLogFile, "%1X", (hp41cpu->r->FI_REG & (1 << i)) >> i);
   fprintf(hLogFile, "\n");
 
   fprintf(hLogFile, "  RAM Addr=");
@@ -1708,12 +1708,12 @@ void Chp41::PrintRegisters(void)
   fprintf(hLogFile, "  Perph Addr=");
   fprintf(hLogFile, "%02X", hp41cpu->perph_selected);
 
-  if (hp41cpu->BASE==16)
+  if (hp41cpu->r->BASE==16)
     fprintf(hLogFile, "  Base=16");
   else
     fprintf(hLogFile, "  Base=10");
   //RB++ 090821 KEY and DisplayOn
-  fprintf(hLogFile, "  KEY DWN=%04X %02X", hp41cpu->KEYDOWN, hp41cpu->KEY_REG);
+  fprintf(hLogFile, "  KEY DWN=%04X %02X", hp41cpu->r->KEYDOWN, hp41cpu->r->KEY_REG);
   fprintf(hLogFile, "  DSP=%X", DisplayOn);
   //RB-- 090821 KEY and DisplayOn
   fprintf(hLogFile, "\n");
@@ -1771,7 +1771,7 @@ void SafeLog(char *psz)
 /****************************/
 void Chp41::TraceOut()
   {
-  PC_TRACE=hp41cpu->PC_REG;
+  PC_TRACE=hp41cpu->r->PC_REG;
   PrintRegisters();
   fprintf(hLogFile, "%04X  ",PC_TRACE);
   trace();

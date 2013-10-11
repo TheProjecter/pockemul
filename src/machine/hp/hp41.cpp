@@ -31,6 +31,9 @@
 #include "Inter.h"
 #include "init.h"
 
+#include "mainwindowpockemul.h"
+extern MainWindowPockemul *mainwindow;
+
 
 
 /****************************/
@@ -49,11 +52,11 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     LcdFname		= P_RES(":/hp41/hp41lcd.png");
     SymbFname		= "";
 
-    memsize		= 0xFFFF;
-    InitMemValue	= 0xFF;
+    memsize		= 0x2000;
+    InitMemValue	= 0x00;
 
     SlotList.clear();
-    //    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/ti57/ti57.bin"), ""	, ROM , "ROM"));
+        SlotList.append(CSlot(8 , 0x0000 ,"", ""	, RAM , "RAM"));
 
     setDXmm(78);
     setDYmm(142);
@@ -78,7 +81,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pLCDC		= new Clcdc_hp41(this);
     pCPU		= new Chp41Cpu(this);    hp41cpu = (Chp41Cpu*)pCPU;
-    pKEYB		= new Ckeyb(this,"ti57.map");
+    pKEYB		= new Ckeyb(this,"hp41.map");
 
 
 }
@@ -193,9 +196,17 @@ bool Chp41::init()
     qWarning()<<Chp41Mod(this,P_RES(QString(":/hp41/MOD/NUT-C.MOD"))).output_mod_info(1,1);
     qWarning()<<"Load Module:"<<nRes;
 
-    StartTrace();
+//    StartTrace();
 
    return true;
+}
+
+void Chp41::TurnOFF()
+{
+    ASKYN _save = mainwindow->saveAll;
+    mainwindow->saveAll = YES;
+    CpcXXXX::TurnOFF();
+    mainwindow->saveAll = _save;
 }
 
 bool Chp41::run()
@@ -227,14 +238,12 @@ bool Chp41::run()
 
     CpcXXXX::run();
 
+    pTIMER->state++;
     return true;
 
 }
 
-bool Chp41::exit()
-{
-    return true;
-}
+
 
 UINT8 Chp41::in(UINT8 address)
 {
@@ -510,10 +519,10 @@ void Chp41::SetKeyDown(byte KeyCode) {
         fEnableCLRKEY=true;
         MinCLRKEY=3;                   // the key will be held down for this minimum number of CLRKEY instructions to avoid debounce code
     }
-  hp41cpu->KEY_REG= KeyCode ? KeyCode : getKey();
-  if (hp41cpu->KEY_REG) {
-      qWarning()<<"Key Pressed:"<<hp41cpu->KEY_REG;
-      hp41cpu->KEYDOWN=true;
+  hp41cpu->r->KEY_REG= KeyCode ? KeyCode : getKey();
+  if (hp41cpu->r->KEY_REG) {
+      qWarning()<<"Key Pressed:"<<hp41cpu->r->KEY_REG;
+      hp41cpu->r->KEYDOWN=true;
   }
 //  if ( (eLightSleep==IsSleeping()) ||                 // light sleep and any key pressed or
 //    ((eDeepSleep==IsSleeping())&&(KeyCode==0x18)) )   // deep sleep and ON key pressed
@@ -539,6 +548,7 @@ UINT8 Chp41::getKey()
     UINT8 code = 0;
     if (pKEYB->LastKey)
     {
+        if (KEY(K_OF))			code = 0x18;
         if (KEY(K_F1))			code = 0x18;
         if (KEY(K_F2))			code = 0xC6;
         if (KEY(K_F3))			code = 0xC5;
@@ -561,7 +571,7 @@ UINT8 Chp41::getKey()
         if (KEY(K_SST))			code = 0xC2;
         if (KEY('N'))			code = 0x13;
         if (KEY('O'))			code = 0x73;
-        if (KEY('P'))			code = 0x82;
+        if (KEY('P'))			code = 0x83;
         if (KEY(K_LA))			code = 0xC3;
         if (KEY('Q'))			code = 0x14;
         if (KEY('R'))			code = 0x34;

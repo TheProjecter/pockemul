@@ -75,6 +75,18 @@ extern word TypeA[];
 
 class Chp41;
 
+// CPU registers
+typedef struct {
+    byte A_REG[14],B_REG[14],C_REG[14],M_REG[14],N_REG[14];
+    word G_REG,F_REG,ST_REG,Q_REG,P_REG,KEY_REG,XST_REG;
+    word PT_PREV;                          // set to value of previous PT
+    word FI_REG;                           //14 bits used - there is no actual physical register - this is just an input stream from peripherals
+    word CARRY,KEYDOWN,BATTERY;
+    word PC_REG,RET_STK0,RET_STK1,RET_STK2,RET_STK3;
+    word BASE;
+} HP41regs;
+
+
 /****************************/
 // The HP-41 class
 /****************************/
@@ -168,14 +180,17 @@ public:
 
   // CPU registers
   RAM_REG *pRAM;
-  byte A_REG[14],B_REG[14],C_REG[14],M_REG[14],N_REG[14];
-  word G_REG,F_REG,ST_REG,Q_REG,P_REG,KEY_REG,XST_REG;
+  HP41regs *r;
   word *PT_REG;                          // set to address of Q_REG or P_REG
-  word PT_PREV;                          // set to value of previous PT
-  word FI_REG;                           //14 bits used - there is no actual physical register - this is just an input stream from peripherals
-  word CARRY,KEYDOWN,BATTERY;
-  word PC_REG,RET_STK0,RET_STK1,RET_STK2,RET_STK3;
-  word BASE;                             // ==10 for decimal mode, ==16 for hex mode
+
+//  byte A_REG[14],B_REG[14],C_REG[14],M_REG[14],N_REG[14];
+//  word G_REG,F_REG,ST_REG,Q_REG,P_REG,KEY_REG,XST_REG;
+//  word *PT_REG;                          // set to address of Q_REG or P_REG
+//  word PT_PREV;                          // set to value of previous PT
+//  word FI_REG;                           //14 bits used - there is no actual physical register - this is just an input stream from peripherals
+//  word CARRY,KEYDOWN,BATTERY;
+//  word PC_REG,RET_STK0,RET_STK1,RET_STK2,RET_STK3;
+//  word BASE;                             // ==10 for decimal mode, ==16 for hex mode
 
   // CPU variables
   unsigned short eSleepMode;

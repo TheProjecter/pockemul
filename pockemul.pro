@@ -965,7 +965,8 @@ OTHER_FILES += \
     cloud/content/SortListModel.qml \
     cloud/content/Test.qml \
     cloud/content/Grid.qml \
-    resources/keymap/ti57.map
+    resources/keymap/ti57.map \
+    resources/keymap/hp41.map
 
 
 

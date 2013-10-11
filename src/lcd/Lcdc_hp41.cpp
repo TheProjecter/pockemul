@@ -79,7 +79,7 @@ void Clcdc_hp41::disp(void)
 //    painter.drawText(pPC->LcdImage->rect(),ba);
     painter.drawText(pPC->LcdImage->rect(),GetLCD());
 
-    qWarning()<<"Display:"<<GetLCD()<<" : ";
+//    qWarning()<<"Display:"<<GetLCD()<<" : ";
 
     Refresh = true;
     redraw = 0;
@@ -108,23 +108,26 @@ QString Clcdc_hp41::GetLCD()
 //    if (eFont==eFontLCD4)
 //      *(ptr++)=ch;
 //    else
-    qWarning()<<"char:"<<ch;
+//    qWarning()<<"char:"<<ch;
     if (ch==0x20) out.append(ch);
-    else if ((ch>=0x30) && (ch<=0x3F)) out.append(ch);
-    else if ((ch>=0x00) && (ch<=0x2F)) out.append(0x40 + ch);
+    else if (ch==0x2E) out.append(0xFE);
+    else if ((ch>=0x00) && (ch<=0x1F)) out.append(0x40 + ch);
+    else if ((ch>=0x20) && (ch<=0x3F)) out.append(ch);
+    else if ((ch>=0x40) && (ch<=0x4F)) out.append(ch+0x19);
+//    else if ((ch>=0x61) && (ch<=0x6F)) out.append(ch - 0x40);
     switch (punct)
       {
       case 0:     // none
 //        out.append(QChar(0xF020));
         break;
       case 1:     // period
-//        out.append(QChar(0xE000 + 162));
+        out.append(0x2e);
         break;
       case 2:     // colon
-//        out.append(QChar(0xE000 + 161));
+        out.append(0x3a);
         break;
       case 3:     // comma
-//        out.append(QChar(0xE000 + 163));
+        out.append(0x2c);
         break;
       }
 //    if (UseAltPunc)     // slightly narrower punc chars
