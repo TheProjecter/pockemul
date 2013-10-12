@@ -43,7 +43,8 @@ public:
         DB_25,
         DIN_8,
         General_20,
-        Panasonic_44
+        Panasonic_44,
+        hp41
     };
 
     enum ConnectorDir

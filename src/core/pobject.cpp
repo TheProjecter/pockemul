@@ -1113,8 +1113,8 @@ menu->popup(event->globalPos () );
 void CPObject::BuildContextMenu(QMenu * menu)
 {
     Vibrate();
-    menu->addAction(tr("Maximize width"),this,SLOT(maximizeWidth()));
-    menu->addAction(tr("Maximize height"),this,SLOT(maximizeHeight()));
+    menu->addAction(tr("Fit width"),this,SLOT(maximizeWidth()));
+    menu->addAction(tr("fit height"),this,SLOT(maximizeHeight()));
 #ifdef Q_OS_ANDROID
      menu->addAction(tr("Create desktop Shortcut"),this,SLOT(createShortcut()));
 #endif

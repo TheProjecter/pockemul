@@ -30,6 +30,7 @@
 #include "Keyb.h"
 #include "Inter.h"
 #include "init.h"
+#include "Connect.h"
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
@@ -42,7 +43,7 @@ extern MainWindowPockemul *mainwindow;
 Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
 {
 
-    setfrequency( (int) 12500);  // 80µs per cycle
+    setfrequency( (int) 6262*56);  // 80µs per cycle
     setcfgfname(QString("hp41"));
 
     SessionHeader	= "HP41PKM";
@@ -138,6 +139,22 @@ bool Chp41::init()
     Indicator=0;
     RectIndicator = QRect(3,3,7,7);
 
+    // Connectors
+    pConnector0 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 0",false,QPoint(715,50));
+    publish(pConnector0);
+    pConnector1 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
+    publish(pConnector1);
+    pConnector2 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
+    publish(pConnector2);
+    pConnector3 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
+    publish(pConnector3);
+
+    WatchPoint.remove(this);
+    WatchPoint.add(&pConnector0_value,64,15,this,"HP-41 Module 0");
+    WatchPoint.add(&pConnector1_value,64,15,this,"HP-41 Module 1");
+    WatchPoint.add(&pConnector2_value,64,15,this,"HP-41 Module 2");
+    WatchPoint.add(&pConnector3_value,64,15,this,"HP-41 Module 3");
+
     // ROM variables
     for (int page=0;page<=0xf;page++)
     {
@@ -190,13 +207,15 @@ bool Chp41::init()
     nBreakPts=0;
 
     ModuleHeader *pModuleNew;
-    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-C.MOD"));
-
+    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
+//    LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
     hp41cpu->set_PC(0);
-    qWarning()<<Chp41Mod(this,P_RES(QString(":/hp41/MOD/NUT-C.MOD"))).output_mod_info(1,1);
+    qWarning()<<Chp41Mod(P_RES(QString(":/hp41/MOD/NUT-CX.MOD"))).output_mod_info(1,1);
     qWarning()<<"Load Module:"<<nRes;
 
 //    StartTrace();
+
+    pTIMER->resetTimer(0);
 
    return true;
 }
@@ -212,6 +231,11 @@ void Chp41::TurnOFF()
 bool Chp41::run()
 {
 
+
+    if (pTIMER->usElapsedId(0)>=10000) {
+        pTIMER->resetTimer(0);
+        TimerProc();
+    }
     SetKeyDown();
 //    qWarning()<<"hp41::run";
     //    if (!fRunEnable)
@@ -238,7 +262,7 @@ bool Chp41::run()
 
     CpcXXXX::run();
 
-    pTIMER->state++;
+    pTIMER->state+=56;
     return true;
 
 }
@@ -470,6 +494,77 @@ void Chp41::ExecuteProc() {
 
 
 
+/****************************/
+// executes intelligent printer instructions
+/****************************/
+#define PRINTER_TRACE       (1 << 15)
+#define PRINTER_NORM        (1 << 14)
+#define PRINTER_PRINTDOWN   (1 << 13)
+#define PRINTER_ADVDOWN     (1 << 12)
+#define PRINTER_OUTPAPER    (1 << 11)
+#define PRINTER_BATLOW      (1 << 10)
+#define PRINTER_IDLE        (1 << 9)
+#define PRINTER_BUFEMPTY    (1 << 8)
+#define PRINTER_LOWERCASE   (1 << 7)
+#define PRINTER_GRAPHIC     (1 << 6)
+#define PRINTER_DOUBLE      (1 << 5)
+#define PRINTER_RIGHTJUST   (1 << 4)
+#define PRINTER_EOLSENT     (1 << 3)
+#define PRINTER_NOADV       (1 << 2)
+#define PRINTER_NOTUSED_1   (1 << 1)
+#define PRINTER_NOTUSED_0   (1 << 0)
+
+void Chp41::exec_perph_printer(void)
+  {
+  hp41cpu->r->CARRY=0;
+//  qWarning()<<"exec_perph_printer";
+  if (PageMatrix[6][0]==NULL)  // if no printer ROM
+    return;
+//  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
+
+  switch(hp41cpu->Tyte1)
+    {
+    case 0x003:       /* ?XF 0 or BUSY? */
+      {
+      hp41cpu->r->CARRY = 0;
+      break;
+      }
+    case 0x083:       /* ?XF 2 or ERROR? */
+      {
+      hp41cpu->r->CARRY = 1;
+      break;
+      }
+    case 0x043:       /* ?XF 1 or POWON? */
+      {
+      hp41cpu->r->CARRY = 1;
+      break;
+      }
+    case 0x007:       /* PRshort or BUF=BUF+C */
+      {
+      qWarning() << QString("%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),2,16,QChar('0'));
+      break;
+      }
+    case 0x03a:       /* RPREG 0 or C=STATUS */
+      {
+      UINT16 PRINT_STATUS= PRINTER_IDLE | PRINTER_BUFEMPTY; // | 0x3;
+      memset(hp41cpu->r->C_REG,0,sizeof(hp41cpu->r->C_REG));
+      hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS&0xf000)>>12);
+      hp41cpu->r->C_REG[12]=(byte)((PRINT_STATUS&0x0f00)>>8);
+      hp41cpu->r->C_REG[11]=(byte)((PRINT_STATUS&0x00f0)>>4);
+      hp41cpu->r->C_REG[10]=(byte)(PRINT_STATUS&0x000f);
+      break;
+      }
+    case 0x005:       /* RTNCPU or WPREG 01, RTN */
+      {
+      break;
+      }
+    default:
+      {
+      LOG(30);
+      break;
+      }
+    }
+  }
 
 
 
@@ -521,7 +616,7 @@ void Chp41::SetKeyDown(byte KeyCode) {
     }
   hp41cpu->r->KEY_REG= KeyCode ? KeyCode : getKey();
   if (hp41cpu->r->KEY_REG) {
-      qWarning()<<"Key Pressed:"<<hp41cpu->r->KEY_REG;
+//      qWarning()<<"Key Pressed:"<<hp41cpu->r->KEY_REG;
       hp41cpu->r->KEYDOWN=true;
   }
 //  if ( (eLightSleep==IsSleeping()) ||                 // light sleep and any key pressed or

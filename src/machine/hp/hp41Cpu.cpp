@@ -79,7 +79,7 @@ Chp41Cpu::~Chp41Cpu()
 //  if (GetTrace())
 //    StopTrace();
 
-    //  DeInitTimer();
+      hp41->DeInitTimer();
 }
 
 bool Chp41Cpu::init()
@@ -217,7 +217,7 @@ void Chp41Cpu::MemoryLost()
   for (int page=1;page<=0xf;page++)
     hp41->active_bank[page]=1;
   set_PC(0x0232);
-//  ResetTimer();
+  hp41->ResetTimer();
   }
 
 
@@ -349,7 +349,7 @@ void Chp41Cpu::Execute()
     switch (control_perph)
       {
       case 9:    // printer
-        exec_perph_printer();
+        hp41->exec_perph_printer();
         break;
       default:
         error_message(30);
@@ -1001,8 +1001,8 @@ void Chp41Cpu::SubclassA()
       }
     case 0xfb:   /* timer write */
       {
-//      if (fTimer)
-//        TimerWrite();
+      if (hp41->fTimer)
+        hp41->TimerWrite();
       break;
       }
     case 0xfc:   /* card reader */
@@ -1272,8 +1272,8 @@ void Chp41Cpu::SubclassE()
       }
     case 0xfb:   /* timer */
       {
-//      if (fTimer)
-//        TimerRead();
+      if (hp41->fTimer)
+        hp41->TimerRead();
       break;
       }
     case 0xfc:  /* card reader */

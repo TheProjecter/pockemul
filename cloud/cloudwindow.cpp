@@ -208,7 +208,7 @@ void CloudWindow::getPML(int id) {
     QNetworkAccessManager *mgr = new QNetworkAccessManager();
 
     QString apikey = getValueFor("apikey","");
-    QString server = getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")+"getPML";
+    QString server = getValueFor("serverURL","http://pockemul.dscloud.me/pocketcloud/")+"getPML";
     QNetworkRequest req(server+QString("/%1/%2").arg(getValueFor("apikey","0")).arg(id));
 //    qWarning()<<req.url();
     m_reply = mgr->get(req);

@@ -116,11 +116,10 @@ class ModuleHeader;
 class Chp41Mod {
 
 public:
-    Chp41Mod(Chp41 * hp41);
-    Chp41Mod(Chp41 *hp41, QString pszFullPath);
+    Chp41Mod();
+    Chp41Mod(QString pszFullPath);
     ~Chp41Mod() {}
 
-    Chp41 *hp41;
     ModuleHeader *pModule;
     QByteArray pBuff;
 

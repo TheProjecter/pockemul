@@ -94,14 +94,12 @@ their page number hardcoded.
 #include "hp41.h"
 
 
-Chp41Mod::Chp41Mod(Chp41 * hp41)
+Chp41Mod::Chp41Mod()
 {
-    this->hp41 = hp41;
     pModule = new ModuleHeader;
 }
-Chp41Mod::Chp41Mod(Chp41 * hp41,QString pszFullPath)
+Chp41Mod::Chp41Mod(QString pszFullPath)
 {
-    this->hp41 = hp41;
     pModule = new ModuleHeader;
     status = LoadMOD( pszFullPath);
 }

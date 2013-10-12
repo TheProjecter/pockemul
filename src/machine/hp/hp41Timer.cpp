@@ -27,6 +27,9 @@
 
 #if 1
 
+#include <QDateTime>
+#include <QDebug>
+
 #include "hp41.h"
 #include "hp41Cpu.h"
 
@@ -70,8 +73,11 @@ void Chp41::InitTimer()
 /****************************/
 void Chp41::ResetTimer()
   {
+    qWarning()<<"ResetTimer()";
   if (!fTimer)
     return;
+  qWarning()<<"ok";
+
   TimerSelA=1;
   memset(CLK_A,0,14);
   memset(CLK_B,0,14);
@@ -94,7 +100,16 @@ void Chp41::ResetTimer()
   ConvertToReg14(ALM_B,9999999999000);                         // anti-corruption constant
   TMR_S[1]&=0x04;                                              // bit 6 - Clock A incrementing
 //  COleDateTime CurrentTime=COleDateTime::GetCurrentTime();     // preset the clock with current time
-//  ClockA=(UINT64)((CurrentTime.m_dt-2.0)*8640000.0);           // this always overrides any user set value
+  QDateTime time(QDate(1900,1,1));
+
+  quint64 _t = time.msecsTo(QDateTime::currentDateTime()) / 10;
+//  quint64 _t = QTime::currentTime().hour()*360000+
+//          QTime::currentTime().minute()*6000+
+//          QTime::currentTime().second()*100+
+//          QTime::currentTime().msec()/10+
+//          8640000*20;
+  qWarning()<<_t<<"cc";
+  ClockA=_t;//(UINT64)((_t-2.0)*8640000.0);           // this always overrides any user set value
   }
 
 
@@ -396,6 +411,8 @@ void Chp41::TimerWrite()
 /****************************/
 void Chp41::TimerRead()
   {
+//    qWarning()<<"TimerRead()";
+
   switch (hp41cpu->Modifier)
     {
     case 0:             // RTIME

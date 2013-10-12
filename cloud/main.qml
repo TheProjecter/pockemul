@@ -11,7 +11,7 @@ Rectangle {
     id: root
     signal sendWarning(string test)
 
-    property string serverURL: cloud.getValueFor("serverURL","http://rrouvin.dyndns.org/cloud/")
+    property string serverURL: cloud.getValueFor("serverURL","http://pockemul.dscloud.me/pocketcloud/")
     property string currentUserid: "pock emul"
     property string currentApiKey: cloud.getValueFor("apikey","0")
     property bool   isPortrait: false

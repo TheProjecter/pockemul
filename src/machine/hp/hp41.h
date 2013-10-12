@@ -28,7 +28,7 @@
 #include "pcxxxx.h"
 
 class Chp41Cpu;
-
+class CConnector;
 #define LOG(x)
 
 typedef unsigned char flag;
@@ -138,6 +138,8 @@ public:
   virtual UINT8 out(UINT8 address,UINT8 value);
   virtual void TurnOFF();
 
+  Cconnector *pConnector0,*pConnector1,*pConnector2,*pConnector3;
+  qint64 pConnector0_value,pConnector1_value,pConnector2_value,pConnector3_value;
 
   enum {eAwake=0,eLightSleep=1,eDeepSleep=2};       // sleep modes
   void Wakeup(void);
@@ -346,7 +348,7 @@ public:
   void TimerWrite(void);
   void TimerRead(void);
 
-  void exec_perph_printer(void) {}
+  void exec_perph_printer(void);
 
   void Speaker(short Freq, int Duration);
 

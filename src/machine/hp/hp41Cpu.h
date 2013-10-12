@@ -255,18 +255,7 @@ public:
 
   void AnnunRead(void);
 
-//  void InitTimer(void);
-//  void DeInitTimer(void);
-  void ResetTimer(void);
-  void SaveTimer(void);
-  void RestoreTimer(void);
-  void ContinueTimer(void);
-  void ConvertToReg14(byte *DEST_REG,UINT64 Src);
-  void ConvertToUINT64(UINT64 *Dest,byte *SRC_REG);
-  void TimerWrite(void);
-  void TimerRead(void);
 
-  void exec_perph_printer(void) {}
   void error_message(short num);
   void Speaker(short Freq, int Duration);
 
