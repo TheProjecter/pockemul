@@ -58,7 +58,8 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
 
     TopFname = P_RES(":/hp41/top.png");
     BackFname = P_RES(":/hp41/back.png");
-
+    LeftFname = P_RES(":/hp41/left.png");
+    RightFname = P_RES(":/hp41/right.png");
     TopImage=LeftImage=RightImage=BottomImage=BackImage = 0;
 
     memsize		= 0x2000;
@@ -199,8 +200,8 @@ void Chp41::flip(Direction dir) {
 
     QPropertyAnimation *animation1 = new QPropertyAnimation(this, "angle");
     QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
-     animation1->setDuration(1500);
-     animation2->setDuration(1500);
+     animation1->setDuration(500);
+     animation2->setDuration(500);
 
      switch (currentFlipDir) {
      case TOPdir:
@@ -222,6 +223,27 @@ void Chp41::flip(Direction dir) {
          animationView1 = targetView;
          animationView2 = currentView;
          clearMask();
+         break;
+     case LEFTdir:
+         animation1->setStartValue(0);
+         animation1->setEndValue(90);
+         animation2->setKeyValueAt(0.0,1.0);
+         animation2->setKeyValueAt(0.5,.75);
+         animation2->setKeyValueAt(1.0,1.0);
+         animationView1 = currentView;
+         animationView2 = targetView;
+         clearMask();
+         break;
+     case RIGHTdir:
+         animation1->setStartValue(90);
+         animation1->setEndValue(0);
+         animation2->setKeyValueAt(0.0,1.0);
+         animation2->setKeyValueAt(0.5,.75);
+         animation2->setKeyValueAt(1.0,1.0);
+         animationView1 = targetView;
+         animationView2 = currentView;
+         clearMask();
+         break;
      }
 
      QParallelAnimationGroup *group = new QParallelAnimationGroup;
@@ -253,29 +275,53 @@ void Chp41::paintEvent(QPaintEvent *event)
             int ht = FaceRect(animationView2).height()* mainwindow->zoom/100.0;
 //            qWarning()<<"angle:"<<m_angle;
             painter.begin(this);
-            painter.translate(w/2 ,ht * m_angle/90);
-            QTransform matrix;
+
+            QTransform matrix,matrix2;
             matrix.scale(m_zoom,m_zoom);
-            painter.setTransform(matrix,true);
-            QTransform matrix2;
-            matrix2.rotate(-m_angle, Qt::XAxis);
-            painter.setTransform(matrix2,true);
-            painter.drawImage(QPoint(-w/2,0),
-                              getViewImage(animationView1)->scaled(QSize(w,h*(90 -m_angle)/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
-                              );
 
-            painter.end();
-
-            painter.begin(this);
-            painter.translate(w/2 ,ht * m_angle/90);
-            painter.setTransform(matrix,true);
-            QTransform matrix3;
-            matrix3.rotate(90-m_angle, Qt::XAxis);
-            painter.setTransform(matrix3,true);
-
-            painter.drawImage(QPoint(-w/2,-ht * m_angle/90),
-                              getViewImage(animationView2)->scaled(QSize(w,ht * m_angle/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
+            switch (currentFlipDir) {
+            case TOPdir:
+            case BOTTOMdir:
+                painter.translate(w/2 ,ht * m_angle/90);
+                painter.setTransform(matrix,true);
+                matrix2.rotate(-m_angle, Qt::XAxis);
+                painter.setTransform(matrix2,true);
+                painter.drawImage(QPoint(-w/2,0),
+                                  getViewImage(animationView1)->scaled(QSize(w,h*(90 -m_angle)/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
                                   );
+                painter.end();
+                painter.begin(this);
+                painter.translate(w/2 ,ht * m_angle/90);
+                painter.setTransform(matrix,true);
+                matrix2.reset();
+                matrix2.rotate(90-m_angle, Qt::XAxis);
+                painter.setTransform(matrix2,true);
+                painter.drawImage(QPoint(-w/2,-ht * m_angle/90),
+                                  getViewImage(animationView2)->scaled(QSize(w,ht * m_angle/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
+                                  );
+                break;
+            case LEFTdir:
+            case RIGHTdir:
+                painter.translate(wt*m_angle/90,h/2);
+                painter.setTransform(matrix,true);
+                matrix2.rotate(-m_angle, Qt::YAxis);
+                painter.setTransform(matrix2,true);
+                painter.drawImage(QPoint(0,-h/2),
+                                  getViewImage(animationView1)->scaled(QSize(w*(90 -m_angle)/90,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
+                                  );
+                painter.end();
+                painter.begin(this);
+                painter.translate(wt*m_angle/90,h/2);
+                painter.setTransform(matrix,true);
+                matrix2.reset();
+                matrix2.rotate(90-m_angle, Qt::YAxis);
+                painter.setTransform(matrix2,true);
+                painter.drawImage(QPoint(-wt * m_angle/90,-h/2),
+                                  getViewImage(animationView2)->scaled(QSize(wt * m_angle/90,ht),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
+                                  );
+                break;
+            }
+
             painter.end();
 
         }
@@ -287,7 +333,7 @@ void Chp41::paintEvent(QPaintEvent *event)
 
 void Chp41::endAnimation(){
     currentView = targetView;
-    currentFlipDir = NONEdir;
+//    currentFlipDir = NONEdir;
 //    flipping = false;
 
     changeGeometry(this->posx(),this->posy(),FaceRect(currentView).width()*mainwindow->zoom/100.0,FaceRect(currentView).height()*mainwindow->zoom/100.0);

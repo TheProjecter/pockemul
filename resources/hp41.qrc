@@ -9,5 +9,7 @@
         <file>hp41/MOD/PRINTER.MOD</file>
         <file>hp41/top.png</file>
         <file>hp41/back.png</file>
+        <file>hp41/left.png</file>
+        <file>hp41/right.png</file>
     </qresource>
 </RCC>
