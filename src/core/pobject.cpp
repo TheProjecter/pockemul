@@ -968,7 +968,7 @@ void CPObject::paintEvent(QPaintEvent *event)
 
 	UpdateFinalImage();
 		
-painter.begin(this);
+    painter.begin(this);
 	if (FinalImage)
 	{
 

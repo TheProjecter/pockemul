@@ -57,8 +57,10 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     SymbFname		= "";
 
     TopFname = P_RES(":/hp41/top.png");
+    BackFname = P_RES(":/hp41/back.png");
 
     TopImage=LeftImage=RightImage=BottomImage=BackImage = 0;
+
     memsize		= 0x2000;
     InitMemValue	= 0x00;
 
@@ -128,6 +130,7 @@ bool Chp41::InitDisplay(void)
     if (!LeftFname.isEmpty()) LeftImage = CreateImage(FaceRect(LEFTview),LeftFname);
     if (!RightFname.isEmpty()) RightImage = CreateImage(FaceRect(RIGHTview),RightFname);
     if (!BottomFname.isEmpty()) BottomImage = CreateImage(FaceRect(BOTTOMview),BottomFname);
+    if (!BackFname.isEmpty()) BackImage = CreateImage(FaceRect(BACKview),BackFname);
 
     CPObject::InitDisplay();
 
@@ -285,7 +288,7 @@ void Chp41::paintEvent(QPaintEvent *event)
 void Chp41::endAnimation(){
     currentView = targetView;
     currentFlipDir = NONEdir;
-    flipping = false;
+//    flipping = false;
 
     changeGeometry(this->posx(),this->posy(),FaceRect(currentView).width()*mainwindow->zoom/100.0,FaceRect(currentView).height()*mainwindow->zoom/100.0);
 
