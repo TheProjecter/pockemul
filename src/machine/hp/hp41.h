@@ -127,6 +127,9 @@ Q_OBJECT
     Q_PROPERTY(int angle READ angle WRITE setAngle)
     Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)
 
+public slots:
+    void addModule(QString item);
+
 public:
   Chp41(CPObject *parent=0);
   ~Chp41();

@@ -67,7 +67,7 @@
          FileBrowserType
      };
 
-     FluidLauncher(QWidget *,QStringList,LaunchType);
+     FluidLauncher(QWidget *,QStringList,LaunchType,QString connType=QString(),QString connGender=QString());
      ~FluidLauncher();
 
      void populateFileBrowser(QStringList param);
@@ -79,6 +79,9 @@
      void demoFinished();
      void exitSlot();
      void computeresize();
+
+ signals:
+     void Launched(QString);
 
  private:
 
@@ -95,7 +98,7 @@
      void parseDemos(QXmlStreamReader& reader);
 
      QStringList Config;
-
+    QString connType,connGender;
  };
 
  #endif

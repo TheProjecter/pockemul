@@ -11,5 +11,13 @@
         <file>hp41/back.png</file>
         <file>hp41/left.png</file>
         <file>hp41/right.png</file>
+        <file>hp41/modimg/hp82143a.png</file>
+        <file>hp41/modimg/hp82153a.png</file>
+        <file>hp41/modimg/hp82160a.png</file>
+        <file>hp41/MOD/FORTH.MOD</file>
+        <file>hp41/MOD/GAMES.MOD</file>
+        <file>hp41/MOD/HEPAX.MOD</file>
+        <file>hp41/modimg/module.png</file>
+        <file>hp41/modimg/hepax.png</file>
     </qresource>
 </RCC>

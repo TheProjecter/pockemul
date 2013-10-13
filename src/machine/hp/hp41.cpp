@@ -26,6 +26,7 @@
 #include <QParallelAnimationGroup>
 #include <QPainter>
 
+#include "fluidlauncher.h"
 #include "hp41.h"
 #include "hp41Cpu.h"
 #include "hp41mod.h"
@@ -43,6 +44,19 @@ extern MainWindowPockemul *mainwindow;
 /****************************/
 // Constructor
 /****************************/
+void Chp41::addModule(QString item)
+{
+    qWarning()<<"Add Module:"<< item;
+
+    ModuleHeader *pModuleNew;
+
+    if (item=="HP82143A") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
+    if (item=="HP41FORTH") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/FORTH.MOD"));
+    if (item=="HP41GAMES") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/GAMES.MOD"));
+    if (item=="HP41HEPAX") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/HEPAX.MOD"));
+
+}
+
 Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
 {
 
@@ -70,7 +84,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
 
     setDXmm(78);
     setDYmm(142);
-    setDZmm(30);
+    setDZmm(31);
 
     setDX(279);
     setDY(508);
@@ -139,8 +153,9 @@ bool Chp41::InitDisplay(void)
 }
 
 
-#define RANGEPERCENT 20
-#define THIN 5
+#define RANGEPERCENT 50
+#define THIN 5          // Percentage
+#define MIN_THIN 15
 
 Direction Chp41::borderClick(QPoint pt) {
     int x1 = this->width()*(50 - RANGEPERCENT/2) /100;
@@ -149,8 +164,8 @@ Direction Chp41::borderClick(QPoint pt) {
     int y2 = this->height()*(50 + RANGEPERCENT/2) /100;
 
     if ( (pt.x()>=x1) && (pt.x()<=x2) ) {
-        if (pt.y() <= this->height() *THIN / 100) return TOPdir;
-        if (pt.y() >= this->height() *(100-THIN) / 100) return BOTTOMdir;
+        if (pt.y() <= MAX(this->height() *THIN / 100,MIN_THIN)) return TOPdir;
+        if (pt.y() >= MAX(this->height()-MIN_THIN,this->height() *(100-THIN) / 100)) return BOTTOMdir;
     }
     if ( (pt.y()>=y1) && (pt.y()<=y2) ) {
         if (pt.x() <= this->width() *THIN / 100) return LEFTdir;
@@ -405,8 +420,18 @@ void Chp41::mousePressEvent(QMouseEvent *event) {
         flip(dir);
     }
 
-    CPObject::mousePressEvent(event);
-
+    if ( (currentView == TOPview) && (event->button() == Qt::RightButton)) {
+        event->accept();
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "hp41");
+        connect(launcher,SIGNAL(Launched(QString)),this,SLOT(addModule(QString)));
+        launcher->show();
+    }
+    else {
+        CPObject::mousePressEvent(event);
+    }
 }
 
 QImage * Chp41::getViewImage(View v) {
@@ -515,7 +540,7 @@ bool Chp41::init()
 
     ModuleHeader *pModuleNew;
     int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
-    LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
+
     hp41cpu->set_PC(0);
     qWarning()<<Chp41Mod(P_RES(QString(":/hp41/MOD/NUT-CX.MOD"))).output_mod_info(1,1);
     qWarning()<<"Load Module:"<<nRes;
@@ -948,7 +973,8 @@ void Chp41::SetKeyUp()
 UINT8 Chp41::getKey()
 {
     UINT8 code = 0;
-    if (pKEYB->LastKey)
+
+    if ( (currentView==FRONTview) && (pKEYB->LastKey))
     {
         if (KEY(K_OF))			code = 0x18;
         if (KEY(K_F1))			code = 0x18;

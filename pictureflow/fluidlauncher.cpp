@@ -54,12 +54,14 @@ extern void Vibrate();
  #define SIZING_FACTOR_WIDTH 6/12
 
 
-FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType type):QStackedWidget(parent)
+FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType type,QString connType,QString connGender):QStackedWidget(parent)
 {
 //    qWarning("CFL 1\n");
 
     Type = type;
     Config = config;
+    this->connType = connType;
+    this->connGender = connGender;
 
     pictureFlowWidget = new PictureFlow();
 
@@ -192,15 +194,23 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
                  QStringRef args = attrs.value("args");
                  QStringRef idpocket = attrs.value("idpocket");
                  QStringRef desc = attrs.value("desc");
+                 QStringRef _connectortype = attrs.value("connectortype");
+                 QStringRef _conngender = attrs.value("conngender");
 
+                 // filter on connectors type and gender
+                 if (!connType.isEmpty() && (_connectortype.indexOf(connType)==-1)) continue;
+                 qWarning()<<connType<<" found:"<<_connectortype;
+                 if (!connGender.isEmpty() && (_conngender.indexOf(connGender)==-1)) continue;
+                 qWarning()<<"included";
                  Launcher* newDemo = new Launcher(
-                         idpocket.toString(),
-                         filename.toString(),
-                         name.isEmpty() ? "Unnamed Demo" : name.toString(),
-                         image.toString(),
-                         args.toString().split(" "),
+                             idpocket.toString(),
+                             filename.toString(),
+                             name.isEmpty() ? "Unnamed Demo" : name.toString(),
+                             image.toString(),
+                             args.toString().split(" "),
                              desc.toString());
                  demoList.append(newDemo);
+
              }
          } else if(reader.isEndElement() && reader.name() == "demos") {
              return;
@@ -329,15 +339,15 @@ Vibrate();
          // Esc should exit
 
 
-
+         emit Launched(ItemText);
          if (mainwindow->objtable.contains(ItemText))
              result = mainwindow->objtable.value(ItemText);
 
          if (result != EMPTY)	{
              mainwindow->LoadPocket(result);
-             close();
              //         parentWidget()->close();
          }
+         close();
      }
 
      if (Type == FileBrowserType) {
