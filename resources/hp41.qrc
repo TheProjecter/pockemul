@@ -7,5 +7,6 @@
         <file>hp41/41chrset.ttf</file>
         <file>hp41/MOD/NUT-CX.MOD</file>
         <file>hp41/MOD/PRINTER.MOD</file>
+        <file>hp41/top.png</file>
     </qresource>
 </RCC>

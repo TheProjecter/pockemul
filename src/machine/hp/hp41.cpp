@@ -22,6 +22,9 @@
 #if 1
 #include <math.h>
 #include <QDebug>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <QPainter>
 
 #include "hp41.h"
 #include "hp41Cpu.h"
@@ -53,6 +56,9 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     LcdFname		= P_RES(":/hp41/hp41lcd.png");
     SymbFname		= "";
 
+    TopFname = P_RES(":/hp41/top.png");
+
+    TopImage=LeftImage=RightImage=BottomImage=BackImage = 0;
     memsize		= 0x2000;
     InitMemValue	= 0x00;
 
@@ -84,7 +90,8 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     pCPU		= new Chp41Cpu(this);    hp41cpu = (Chp41Cpu*)pCPU;
     pKEYB		= new Ckeyb(this,"hp41.map");
 
-
+    flipping = false;
+    currentView = FRONTview;
 }
 
 
@@ -113,6 +120,257 @@ Chp41::~Chp41()
 
   SetKeyboard(eKeyboardNone,0,0,0);
   }
+
+
+bool Chp41::InitDisplay(void)
+{
+    if (!TopFname.isEmpty()) TopImage = CreateImage(FaceRect(TOPview),TopFname);
+    if (!LeftFname.isEmpty()) LeftImage = CreateImage(FaceRect(LEFTview),LeftFname);
+    if (!RightFname.isEmpty()) RightImage = CreateImage(FaceRect(RIGHTview),RightFname);
+    if (!BottomFname.isEmpty()) BottomImage = CreateImage(FaceRect(BOTTOMview),BottomFname);
+
+    CPObject::InitDisplay();
+
+    return(1);
+}
+
+
+#define RANGEPERCENT 20
+#define THIN 5
+
+Direction Chp41::borderClick(QPoint pt) {
+    int x1 = this->width()*(50 - RANGEPERCENT/2) /100;
+    int x2 = this->width()*(50 + RANGEPERCENT/2) /100;
+    int y1 = this->height()*(50 - RANGEPERCENT/2) /100;
+    int y2 = this->height()*(50 + RANGEPERCENT/2) /100;
+
+    if ( (pt.x()>=x1) && (pt.x()<=x2) ) {
+        if (pt.y() <= this->height() *THIN / 100) return TOPdir;
+        if (pt.y() >= this->height() *(100-THIN) / 100) return BOTTOMdir;
+    }
+    if ( (pt.y()>=y1) && (pt.y()<=y2) ) {
+        if (pt.x() <= this->width() *THIN / 100) return LEFTdir;
+        if (pt.x() >= this->width() *(100-THIN) / 100) return RIGHTdir;
+    }
+
+    return NONEdir;
+
+}
+
+void Chp41::setAngle(int value) {
+    this->m_angle = value;
+}
+
+void Chp41::setZoom(qreal value)
+{
+    this->m_zoom = value;
+}
+
+QSize Chp41::FaceRect(View v) {
+    float _ratio = this->getDX()/this->getDXmm();
+
+    switch (v) {
+
+    case FRONTview:
+    case BACKview: return QSize(this->getDX(),this->getDY());
+    case TOPview:
+    case BOTTOMview: return QSize(this->getDX(),this->getDZmm()*_ratio);
+    case LEFTview:
+    case RIGHTview: return QSize(this->getDZmm()*_ratio,this->getDY());
+    }
+    return QSize(0,0);
+}
+
+void Chp41::flip(Direction dir) {
+    // IF CONNECTED to printer , exit
+//    QList<CPObject *> ConList;
+//    mainwindow->pdirectLink->findAllObj(this,&ConList);
+//    if (!ConList.isEmpty()) return;
+    // Animate close
+
+
+    targetSize = FaceRect(targetView);
+    currentFlipDir = dir;
+
+    qWarning()<<"targetdir:"<<targetSize;
+
+    QPropertyAnimation *animation1 = new QPropertyAnimation(this, "angle");
+    QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
+     animation1->setDuration(1500);
+     animation2->setDuration(1500);
+
+     switch (currentFlipDir) {
+     case TOPdir:
+         animation1->setStartValue(0);
+         animation1->setEndValue(90);
+         animation2->setKeyValueAt(0.0,1.0);
+         animation2->setKeyValueAt(0.5,.75);
+         animation2->setKeyValueAt(1.0,1.0);
+         animationView1 = currentView;
+         animationView2 = targetView;
+         clearMask();
+         break;
+     case BOTTOMdir:
+         animation1->setStartValue(90);
+         animation1->setEndValue(0);
+         animation2->setKeyValueAt(0,1.0);
+         animation2->setKeyValueAt(0.5,.75);
+         animation2->setKeyValueAt(1,1.0);
+         animationView1 = targetView;
+         animationView2 = currentView;
+         clearMask();
+     }
+
+     QParallelAnimationGroup *group = new QParallelAnimationGroup;
+     group->addAnimation(animation1);
+     group->addAnimation(animation2);
+
+     connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     connect(animation1,SIGNAL(finished()),this,SLOT(endAnimation()));
+     flipping = true;
+     group->start();
+
+}
+#define RATIO .25
+void Chp41::paintEvent(QPaintEvent *event)
+{
+    if (flipping)
+    {
+
+        UpdateFinalImage();
+
+        QPainter painter;
+
+
+        if (FinalImage)
+        {
+            int w = FaceRect(animationView1).width() * mainwindow->zoom/100.0;//this->width();
+            int h = FaceRect(animationView1).height() * mainwindow->zoom/100.0;//this->height();
+            int wt = FaceRect(animationView2).width() * mainwindow->zoom/100.0;
+            int ht = FaceRect(animationView2).height()* mainwindow->zoom/100.0;
+//            qWarning()<<"angle:"<<m_angle;
+            painter.begin(this);
+            painter.translate(w/2 ,ht * m_angle/90);
+            QTransform matrix;
+            matrix.scale(m_zoom,m_zoom);
+            painter.setTransform(matrix,true);
+            QTransform matrix2;
+            matrix2.rotate(-m_angle, Qt::XAxis);
+            painter.setTransform(matrix2,true);
+            painter.drawImage(QPoint(-w/2,0),
+                              getViewImage(animationView1)->scaled(QSize(w,h*(90 -m_angle)/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
+                              );
+
+            painter.end();
+
+            painter.begin(this);
+            painter.translate(w/2 ,ht * m_angle/90);
+            painter.setTransform(matrix,true);
+            QTransform matrix3;
+            matrix3.rotate(90-m_angle, Qt::XAxis);
+            painter.setTransform(matrix3,true);
+
+            painter.drawImage(QPoint(-w/2,-ht * m_angle/90),
+                              getViewImage(animationView2)->scaled(QSize(w,ht * m_angle/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
+                                  );
+            painter.end();
+
+        }
+    }
+    else {
+        CPObject::paintEvent(event);
+    }
+}
+
+void Chp41::endAnimation(){
+    currentView = targetView;
+    currentFlipDir = NONEdir;
+    flipping = false;
+
+    changeGeometry(this->posx(),this->posy(),FaceRect(currentView).width()*mainwindow->zoom/100.0,FaceRect(currentView).height()*mainwindow->zoom/100.0);
+
+}
+
+void Chp41::mousePressEvent(QMouseEvent *event) {
+    // if click on the border
+    // width ?
+
+    Direction dir = borderClick(event->pos());
+
+    targetView = currentView;
+    switch (currentView) {
+    case FRONTview:
+        switch (dir) {
+        case TOPdir: targetView = TOPview; break;
+        case LEFTdir: targetView = LEFTview; break;
+        case RIGHTdir: targetView = RIGHTview; break;
+        case BOTTOMdir: targetView = BOTTOMview; break;
+        }
+        break;
+    case TOPview:
+        switch (dir) {
+        case TOPdir: targetView = BACKview; break;
+        case LEFTdir: targetView = LEFTview; break;
+        case RIGHTdir: targetView = RIGHTview; break;
+        case BOTTOMdir: targetView = FRONTview; break;
+        }
+        break;
+    case LEFTview:
+        switch (dir) {
+        case TOPdir: targetView = TOPview; break;
+        case LEFTdir: targetView = BACKview; break;
+        case RIGHTdir: targetView = FRONTview; break;
+        case BOTTOMdir: targetView = BOTTOMview; break;
+        }
+        break;
+    case RIGHTview:
+        switch (dir) {
+        case TOPdir: targetView = TOPview; break;
+        case LEFTdir: targetView = FRONTview; break;
+        case RIGHTdir: targetView = BACKview; break;
+        case BOTTOMdir: targetView = BOTTOMview; break;
+        }
+        break;
+    case BOTTOMview:
+        switch (dir) {
+        case TOPdir: targetView = FRONTview; break;
+        case LEFTdir: targetView = LEFTview; break;
+        case RIGHTdir: targetView = RIGHTview; break;
+        case BOTTOMdir: targetView = BACKview; break;
+        }
+        break;
+    case BACKview:
+        switch (dir) {
+        case TOPdir: targetView = BOTTOMview; break;
+        case LEFTdir: targetView = RIGHTview; break;
+        case RIGHTdir: targetView = LEFTview; break;
+        case BOTTOMdir: targetView = TOPview; break;
+        }
+        break;
+
+    }
+
+    if ( (targetView != currentView) && getViewImage(targetView) ) {
+        QSize _s = FaceRect(currentView).expandedTo(FaceRect(targetView));
+        changeGeometry(this->posx(),this->posy(),_s.width()*mainwindow->zoom/100.0,_s.height()*mainwindow->zoom/100.0);
+        flip(dir);
+    }
+
+    CPObject::mousePressEvent(event);
+
+}
+
+QImage * Chp41::getViewImage(View v) {
+    switch (v) {
+    case FRONTview: return FinalImage;
+    case TOPview: return TopImage;
+    case LEFTview: return LeftImage;
+    case RIGHTview: return RightImage;
+    case BOTTOMview: return BottomImage;
+    case BACKview: return BackImage;
+    }
+    return 0;
+}
 
 bool Chp41::init()
 {
@@ -208,7 +466,7 @@ bool Chp41::init()
 
     ModuleHeader *pModuleNew;
     int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
-//    LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
+    LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
     hp41cpu->set_PC(0);
     qWarning()<<Chp41Mod(P_RES(QString(":/hp41/MOD/NUT-CX.MOD"))).output_mod_info(1,1);
     qWarning()<<"Load Module:"<<nRes;

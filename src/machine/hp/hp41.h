@@ -111,7 +111,8 @@ struct ModulePage
   word Image[4096];
   };
 
-
+enum Direction { TOPdir,LEFTdir, RIGHTdir, BOTTOMdir, NONEdir};
+enum View {FRONTview,TOPview,LEFTview,RIGHTview,BOTTOMview,BACKview};
 
 // functions
 //void ConvertASCIItoLCD(char *szASCII,char *dis_str,flag fLCD4);
@@ -121,8 +122,11 @@ struct ModulePage
 /****************************/
 class Chp41:public CpcXXXX{
 
-//  friend class CMcodeDlg;
-//  friend class CBreakPointsDlg;
+Q_OBJECT
+
+    Q_PROPERTY(int angle READ angle WRITE setAngle)
+    Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)
+
 public:
   Chp41(CPObject *parent=0);
   ~Chp41();
@@ -140,6 +144,22 @@ public:
 
   Cconnector *pConnector0,*pConnector1,*pConnector2,*pConnector3;
   qint64 pConnector0_value,pConnector1_value,pConnector2_value,pConnector3_value;
+
+  QString TopFname,LeftFname,RightFname,BottomFname,BackFname;
+  QImage *TopImage,*LeftImage,*RightImage,*BottomImage,*BackImage;
+
+  View currentView,targetView,animationView1,animationView2;
+  Direction currentFlipDir;
+  bool flipping;
+  void setAngle(int value);
+  int angle() const { return m_angle; }
+  int m_angle;
+
+  void setZoom(qreal value);
+  qreal zoom() const { return m_zoom; }
+  qreal m_zoom;
+
+  void paintEvent(QPaintEvent *event);
 
   enum {eAwake=0,eLightSleep=1,eDeepSleep=2};       // sleep modes
   void Wakeup(void);
@@ -359,6 +379,15 @@ public:
 
   UINT8 getKey();
 
+  Direction borderClick(QPoint pt);
+  void mousePressEvent(QMouseEvent *event);
+  QSize FaceRect(View v);
+  bool InitDisplay();
+  void flip(Direction dir);
+  QSize targetSize;
+  QImage *getViewImage(View v);
+public slots:
+  void endAnimation();
 };
 
 
