@@ -5,14 +5,13 @@
 #include <QByteArray>
 #include <QMap>
 
-#include "cpu.h"
 
-#ifndef boolean
-#define boolean int
+
+
 #define true 1
 #define false 0
-#endif
-
+//#endif
+#include "cpu.h"
 // size of our program ram
 #define kRamSize   1800
 
@@ -144,14 +143,14 @@ public:
        unsigned char *start;
        unsigned char *newEnd;
        unsigned char linelen;
-           boolean isDigital;
-           boolean alsoWait;
+           bool isDigital;
+           bool alsoWait;
            int val;
 
            unsigned char var_for;
            VAR_TYPE initial_for, step_for, terminal_for;
 
-           boolean breakFlag;
+           bool breakFlag;
            bool waitForRTN;
 
            void go_MEM();
@@ -198,9 +197,9 @@ public:
 
            QMap<unsigned short,QByteArray> keywordsMap;
 
-           boolean inhibitOutput;
-         boolean runAfterLoad;
-         boolean triggerRun;
+           bool inhibitOutput;
+         bool runAfterLoad;
+         bool triggerRun;
 
          bool table_original;
 

@@ -32,7 +32,7 @@ class TapAndHoldGesture;
 class QSwipeGesture;
 
 #include "slot.h"
-
+#include "viewobject.h"
 
 
 #define PS_OFF	0
@@ -40,7 +40,9 @@ class QSwipeGesture;
 #define PS_RSV	2
 #define PS_PRO	3
 
-class CPObject:public QWidget
+
+
+class CPObject:public CViewObject
 {
 
     Q_OBJECT
@@ -83,6 +85,7 @@ public:
 	QString	LcdFname;
 	QString	SymbFname;
 
+
     int rate;
 
     bool	off;
@@ -100,37 +103,22 @@ public:
     void	setcfgfname(QString s) { cfgfname = s; }
 	
     void    serialize(QXmlStreamWriter *,int id);
-    float	posx();
-    float   posy();
-    void    setPosX(float);
-    void    setPosY(float);
-    void    Move(QPoint);
+
     void    MoveWithLinked(QPoint);
-    QPoint   pos();
-	QImage* FinalImage;
+
+
 	QImage* BackgroundImageBackup;
 	QImage* BackgroundImage;
 	QImage* LcdImage;
 	QImage* SymbImage;
 
-    int     getDX() {return Pc_DX;}
-    int     getDY() {return Pc_DY;}
-    int     getDZ() {return 0;}
-    void    setDX(int v) {Pc_DX = v;}
-    void    setDY(int v) {Pc_DY = v;}
-    void    setDZ(int v) {Q_UNUSED(v)}
 
-    int     getDXmm() {return Pc_DX_mm;}
-    int     getDYmm() {return Pc_DY_mm;}
-    int     getDZmm() {return Pc_DZ_mm;}
-    void    setDXmm(int v) {Pc_DX_mm = v;}
-    void    setDYmm(int v) {Pc_DY_mm = v;}
-    void    setDZmm(int v) {Pc_DZ_mm = v;}
+
 
     int		getfrequency() { return frequency; }
     void	setfrequency(int f) { frequency = f; }
 
-    QImage * CreateImage(QSize size, QString fname, bool Hmirror=false, bool Vmirror=false, int angle=0);
+
 	bool	Refresh_Display;
 
 	QList<Cconnector*> ConnList;
@@ -179,7 +167,7 @@ public:
     DialogDasm      *dialogdasm;
     DialogVKeyboard  *dialogVKeyboard;
 
-    QPixmap         mask;
+
 
 	void setCpu(int );
 
@@ -221,8 +209,7 @@ public:
 	void focusInEvent ( QFocusEvent * event ); 
 	void focusOutEvent ( QFocusEvent * event ); 
 
-    void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
-    void changeGeometrySize(int newposx, int newposy, int newwidth, int newheight);
+
     virtual void raise();
 
     virtual void TurnCLOSE(void);
@@ -267,11 +254,6 @@ public slots:
 
     void createShortcut();
 private:
-    QRect rect();
-
-
-    float	PosX,PosY;
-	int		Width,Height;
 
 	bool	startKeyDrag;
 	QPoint	KeyDrag;
@@ -288,8 +270,7 @@ private:
     QByteArray audioBuff;
     QByteArray tempBuff;
 
-    int		Pc_DX,Pc_DY;
-    int		Pc_DX_mm,Pc_DY_mm,Pc_DZ_mm;		// PC size (mm)
+
 
     bool disp_on;
     bool disp_onRaised;

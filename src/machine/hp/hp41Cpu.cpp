@@ -348,6 +348,10 @@ void Chp41Cpu::Execute()
     {
     switch (control_perph)
       {
+    case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        // HP-IL
+        hp41->exec_perph_hpil();
+        break;
       case 9:    // printer
         hp41->exec_perph_printer();
         break;
@@ -483,6 +487,7 @@ void Chp41Cpu::Subclass0()
       /* Not Used */
       break;
     default:  /* HPIL=C 0-7 */
+      // HP-IL WR
       break;
     }
   r->CARRY=0;

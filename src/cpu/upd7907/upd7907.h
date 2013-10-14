@@ -10,6 +10,9 @@
 
 #include "cpu.h"
 
+#undef IN
+#undef OUT
+
 // I/O line states
 enum line_state
 {

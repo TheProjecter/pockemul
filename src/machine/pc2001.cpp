@@ -47,6 +47,9 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/pc2001/pc-2001lcd.png");
     SymbFname		= "";
 
+    RightFname = P_RES(":/pc2001/pc2001Right.png");
+    TopFname = P_RES(":/pc2001/pc2001Top.png");
+
     memsize		= 0xFFFF;
     InitMemValue	= 0xFF;
 

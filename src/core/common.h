@@ -45,14 +45,14 @@ extern QString appDir;
 //#define PUT_BIT(b,p,v)	if (v) SET_BIT(b,p); else UNSET_BIT(b,p);
 #define PUT_BIT(b,p,v)	(v) ? SET_BIT(b,p) : UNSET_BIT(b,p);
 
-#define B0	0x01
-#define B1	0x02
-#define B2	0x04
-#define B3	0x08
-#define B4	0x10
-#define B5	0x20
-#define B6	0x40
-#define B7	0x80
+//#define B0	0x01
+//#define B1	0x02
+//#define B2	0x04
+//#define B3	0x08
+//#define B4	0x10
+//#define B5	0x20
+//#define B6	0x40
+//#define B7	0x80
 
 #define PIN_MT_OUT2	1
 #define PIN_GND		2
@@ -66,7 +66,7 @@ extern QString appDir;
 #define PIN_SEL2	10
 #define PIN_SEL1	11
 
-#define RGB(r,g,b)	((COLORREF)(((BYTE)(r) | ((WORD)((BYTE)(g))<<8)) | (((DWORD)(BYTE)(b))<<16)))
+//#define RGB(r,g,b)	((COLORREF)(((BYTE)(r) | ((WORD)((BYTE)(g))<<8)) | (((DWORD)(BYTE)(b))<<16)))
 
 
 #include "global.h"

@@ -25,6 +25,8 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/pc1250/1250lcd.png");
     SymbFname		= P_RES(":/pc1250/1250symb.png");
 
+    LeftFname = P_RES(":/pc1250/125xLeft.png");
+
 	memsize		= 0x10000;
 
 	SlotList.clear();

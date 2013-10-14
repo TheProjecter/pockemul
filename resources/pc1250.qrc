@@ -13,5 +13,6 @@
         <file>pc1250/powerPRO.png</file>
         <file>pc1250/powerRSV.png</file>
         <file>pc1250/powerRUN.png</file>
+        <file>pc1250/125xLeft.png</file>
     </qresource>
 </RCC>

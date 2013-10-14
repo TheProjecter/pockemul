@@ -505,7 +505,8 @@ HEADERS += src/core/Connect.h \
     src/machine/hp/hp41Cpu.h \
     src/machine/hp/hp41mod.h \
     src/lcd/Lcdc_hp41.h \
-    src/machine/hp/hp82143A.h
+    src/machine/hp/hp82143A.h \
+    src/core/viewobject.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -584,7 +585,11 @@ RESOURCES +=  \
     resources/ti57.qrc \
     resources/hp41.qrc
 
-SOURCES += src/core/Connect.cpp \
+SOURCES +=  \
+    src/core/viewobject.cpp \
+    src/core/pobject.cpp \
+    src/core/pockemul.cpp \
+    src/core/Connect.cpp \
     src/core/Dasm.cpp \
     src/core/Debug.cpp \
     src/core/Inter.cpp \
@@ -605,8 +610,6 @@ SOURCES += src/core/Connect.cpp \
     src/core/mainwindowpockemul.cpp \
     src/core/paperwidget.cpp \
     src/core/pcxxxx_ext.cpp \
-    src/core/pobject.cpp \
-    src/core/pockemul.cpp \
     src/core/slot.cpp \
     src/core/xmlwriter.cpp \
     src/machine/sharp/Ce126.cpp \

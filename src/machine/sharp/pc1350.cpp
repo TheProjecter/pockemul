@@ -31,6 +31,8 @@ Cpc13XX::Cpc13XX(CPObject *parent)	: CpcXXXX(parent)
     setDX(633);//Pc_DX = 633;
     setDY(252);//Pc_DY = 252;
 
+    RightFname = P_RES(":/pc1350/pc1350Right.png");
+
     Lcd_X		= 75;
     Lcd_Y		= 48;
     Lcd_DX		= 150;

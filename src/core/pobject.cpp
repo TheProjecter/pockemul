@@ -39,7 +39,7 @@ FILE	*fp_tmp=NULL;
 extern MainWindowPockemul* mainwindow;
 extern int ask(QWidget *parent,QString msg,int nbButton);
 
-CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
+CPObject::CPObject(CPObject *parent):CViewObject(parent)
     {
 		pPC = (CpcXXXX*) parent;
 		Parent	= parent;
@@ -57,6 +57,9 @@ CPObject::CPObject(CPObject *parent):QWidget(mainwindow->centralwidget)
         BackgroundImageBackup = 0;
 		LcdImage = 0;
 		SymbImage = 0;
+        TopImage=LeftImage=RightImage=BottomImage=BackImage = 0;
+        flipping = false;
+        currentView = FRONTview;
 		extensionArray[0] = 0;
 		extensionArray[1] = 0;
 		extensionArray[2] = 0;
@@ -138,35 +141,6 @@ void CPObject::serialize(QXmlStreamWriter *xml,int id) {
     qWarning()<<"end serialize";
 }
 
-float	CPObject::posx()
-{
-	return PosX;
-}
-float CPObject::posy()
-{
-	return PosY;
-}
-void CPObject::setPosX(float val)
-{
-	PosX = val;
-        QWidget::move(QPoint(PosX,PosY));
-}
-void CPObject::setPosY(float val)
-{
-	PosY = val;
-        QWidget::move(QPoint(PosX,PosY));
-}
-void CPObject::Move(QPoint p)
-{
-	PosX += p.x();
-	PosY += p.y();
-	QWidget::move(QPoint(PosX,PosY));
-#ifdef AVOID
-    mainwindow->router->moveShape(mainwindow->shapeRefList[this],p.x(),p.y());
-    mainwindow->router->processTransaction();
-    mainwindow->router->outputInstanceToSVG("test-connectionpin01");
-#endif
-}
 
 QRect CPObject::RectWithLinked(void) {
     QRect r(rect());
@@ -180,7 +154,6 @@ QRect CPObject::RectWithLinked(void) {
     }
     return r;
 }
-
 
 extern void m_addShortcut(QString name,QString param);
 
@@ -263,14 +236,7 @@ void CPObject::MoveWithLinked(QPoint p) {
 //    }
 }
 
-QPoint CPObject::pos()
-{
-	return QPoint(PosX,PosY);
-}
-QRect CPObject::rect()
-{
-	return QRect(PosX,PosY,Pc_DX,Pc_DY);
-}
+
 
 bool CPObject::init()
 {
@@ -663,7 +629,8 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 extern void Vibrate();
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
-//    qWarning()<<"CPObject::mousePressEvent"<<event;
+    qWarning()<<"CPObject::mousePressEvent"<<event;
+    CViewObject::mousePressEvent(event);
 
     if (event->button() != Qt::LeftButton) {
         event->accept();
@@ -964,29 +931,34 @@ qreal CPObject::RangeFrom(CPObject * target)
 void CPObject::paintEvent(QPaintEvent *event)
 {
 
-	QPainter painter;
+    if (flipping) {
+        CViewObject::paintEvent(event);
+    }
+    else {
 
-	UpdateFinalImage();
-		
-    painter.begin(this);
-	if (FinalImage)
-	{
+        UpdateFinalImage();
+        QPainter painter;
 
-        painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
-	}
+        painter.begin(this);
+        if (FinalImage)
+        {
 
-	if (dialogkeylist)
-	{
-		painter.setPen(QPen(Qt::red));
-		QRect rect = dialogkeylist->getkeyFoundRect();
-		painter.drawRect(rect);
-	}
+            painter.drawImage(QPoint(0,0), FinalImage->scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+        }
+
+        if (dialogkeylist)
+        {
+            painter.setPen(QPen(Qt::red));
+            QRect rect = dialogkeylist->getkeyFoundRect();
+            painter.drawRect(rect);
+        }
 
 
-//    if (getfrequency()>0) {
-//        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
-//    }
-	painter.end();
+        //    if (getfrequency()>0) {
+        //        painter.drawText(10,100,QString("").setNum((int)rate)+"%");
+        //    }
+        painter.end();
+    }
 
 }
 
@@ -1279,21 +1251,7 @@ void CPObject::computeUnLinkMenu(QMenu * menu)
 	}	
 }
 
-QImage * CPObject::CreateImage(QSize size,QString fname,bool Hmirror,bool Vmirror,int angle)
-{
-    //    qWarning("LoadImage : %s",fname.toLatin1().data());
-    QImage *tempImage;
-    QMatrix matrix;
-    matrix.rotate(angle);
-    QImage loc;
-    if (fname.isEmpty()) {
-        loc = QImage(size,QImage::Format_ARGB32);
-    }
-    else
-        loc = QImage(fname).mirrored(Hmirror,Vmirror).transformed(matrix).scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation).convertToFormat(QImage::Format_ARGB32);
-    tempImage = new QImage(loc);
-    return tempImage;
-}
+
 
 
 void CPObject::publish(Cconnector* newConn)
@@ -1315,6 +1273,8 @@ void CPObject::slotExit(void)
 
 bool CPObject::InitDisplay(void)
 {
+    CViewObject::InitDisplay();
+
 //    qWarning("INIT DISPLAY");
     delete BackgroundImageBackup;
 //    qWarning()<<BackGroundFname;
@@ -1453,27 +1413,8 @@ bool CPObject::getDisp_on()
     return disp_on;
 }
 
-void CPObject::changeGeometrySize(int newposx,int newposy,int newwidth,int newheight) {
 
 
-    changeGeometry(newposx,newposy,newwidth,newheight);
-    setDX(newwidth);
-    setDY(newheight);
-}
-
-void CPObject::changeGeometry(int newposx,int newposy,int newwidth,int newheight) {
-    setPosX(newposx);
-    setPosY(newposy);
-
-    setGeometry(newposx,newposy,newwidth,newheight);
-    setMask(mask.scaled(newwidth,newheight).mask());
-
-#ifdef AVOID
-    Avoid::Rectangle rectangle(Avoid::Point(newposx-10, newposy-10),
-                               Avoid::Point(newposx+newwidth+20, newposy+newheight+20));
-    mainwindow->router->moveShape(mainwindow->shapeRefList[this], rectangle);
-#endif
-}
 
 //////////////////////////////////////////////
 // Save Memory to file						//

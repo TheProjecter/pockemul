@@ -100,9 +100,10 @@ void Chp41::ResetTimer()
   ConvertToReg14(ALM_B,9999999999000);                         // anti-corruption constant
   TMR_S[1]&=0x04;                                              // bit 6 - Clock A incrementing
 //  COleDateTime CurrentTime=COleDateTime::GetCurrentTime();     // preset the clock with current time
-  QDateTime time(QDate(1900,1,1));
-
+  QDateTime time(QDate(1899,12,31),QTime(23,0));
+qWarning()<<time;
   quint64 _t = time.msecsTo(QDateTime::currentDateTime()) / 10;
+  qWarning()<<QDateTime::currentDateTime();
 //  quint64 _t = QTime::currentTime().hour()*360000+
 //          QTime::currentTime().minute()*6000+
 //          QTime::currentTime().second()*100+

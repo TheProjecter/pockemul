@@ -74,7 +74,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     BackFname = P_RES(":/hp41/back.png");
     LeftFname = P_RES(":/hp41/left.png");
     RightFname = P_RES(":/hp41/right.png");
-    TopImage=LeftImage=RightImage=BottomImage=BackImage = 0;
+
 
     memsize		= 0x2000;
     InitMemValue	= 0x00;
@@ -107,8 +107,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     pCPU		= new Chp41Cpu(this);    hp41cpu = (Chp41Cpu*)pCPU;
     pKEYB		= new Ckeyb(this,"hp41.map");
 
-    flipping = false;
-    currentView = FRONTview;
+
 }
 
 
@@ -138,313 +137,6 @@ Chp41::~Chp41()
   SetKeyboard(eKeyboardNone,0,0,0);
   }
 
-
-bool Chp41::InitDisplay(void)
-{
-    if (!TopFname.isEmpty()) TopImage = CreateImage(FaceRect(TOPview),TopFname);
-    if (!LeftFname.isEmpty()) LeftImage = CreateImage(FaceRect(LEFTview),LeftFname);
-    if (!RightFname.isEmpty()) RightImage = CreateImage(FaceRect(RIGHTview),RightFname);
-    if (!BottomFname.isEmpty()) BottomImage = CreateImage(FaceRect(BOTTOMview),BottomFname);
-    if (!BackFname.isEmpty()) BackImage = CreateImage(FaceRect(BACKview),BackFname);
-
-    CPObject::InitDisplay();
-
-    return(1);
-}
-
-
-#define RANGEPERCENT 50
-#define THIN 5          // Percentage
-#define MIN_THIN 15
-
-Direction Chp41::borderClick(QPoint pt) {
-    int x1 = this->width()*(50 - RANGEPERCENT/2) /100;
-    int x2 = this->width()*(50 + RANGEPERCENT/2) /100;
-    int y1 = this->height()*(50 - RANGEPERCENT/2) /100;
-    int y2 = this->height()*(50 + RANGEPERCENT/2) /100;
-
-    if ( (pt.x()>=x1) && (pt.x()<=x2) ) {
-        if (pt.y() <= MAX(this->height() *THIN / 100,MIN_THIN)) return TOPdir;
-        if (pt.y() >= MAX(this->height()-MIN_THIN,this->height() *(100-THIN) / 100)) return BOTTOMdir;
-    }
-    if ( (pt.y()>=y1) && (pt.y()<=y2) ) {
-        if (pt.x() <= this->width() *THIN / 100) return LEFTdir;
-        if (pt.x() >= this->width() *(100-THIN) / 100) return RIGHTdir;
-    }
-
-    return NONEdir;
-
-}
-
-void Chp41::setAngle(int value) {
-    this->m_angle = value;
-}
-
-void Chp41::setZoom(qreal value)
-{
-    this->m_zoom = value;
-}
-
-QSize Chp41::FaceRect(View v) {
-    float _ratio = this->getDX()/this->getDXmm();
-
-    switch (v) {
-
-    case FRONTview:
-    case BACKview: return QSize(this->getDX(),this->getDY());
-    case TOPview:
-    case BOTTOMview: return QSize(this->getDX(),this->getDZmm()*_ratio);
-    case LEFTview:
-    case RIGHTview: return QSize(this->getDZmm()*_ratio,this->getDY());
-    }
-    return QSize(0,0);
-}
-
-void Chp41::flip(Direction dir) {
-    // IF CONNECTED to printer , exit
-//    QList<CPObject *> ConList;
-//    mainwindow->pdirectLink->findAllObj(this,&ConList);
-//    if (!ConList.isEmpty()) return;
-    // Animate close
-
-
-    targetSize = FaceRect(targetView);
-    currentFlipDir = dir;
-
-    qWarning()<<"targetdir:"<<targetSize;
-
-    QPropertyAnimation *animation1 = new QPropertyAnimation(this, "angle");
-    QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
-     animation1->setDuration(500);
-     animation2->setDuration(500);
-
-     switch (currentFlipDir) {
-     case TOPdir:
-         animation1->setStartValue(0);
-         animation1->setEndValue(90);
-         animation2->setKeyValueAt(0.0,1.0);
-         animation2->setKeyValueAt(0.5,.75);
-         animation2->setKeyValueAt(1.0,1.0);
-         animationView1 = currentView;
-         animationView2 = targetView;
-         clearMask();
-         break;
-     case BOTTOMdir:
-         animation1->setStartValue(90);
-         animation1->setEndValue(0);
-         animation2->setKeyValueAt(0,1.0);
-         animation2->setKeyValueAt(0.5,.75);
-         animation2->setKeyValueAt(1,1.0);
-         animationView1 = targetView;
-         animationView2 = currentView;
-         clearMask();
-         break;
-     case LEFTdir:
-         animation1->setStartValue(0);
-         animation1->setEndValue(90);
-         animation2->setKeyValueAt(0.0,1.0);
-         animation2->setKeyValueAt(0.5,.75);
-         animation2->setKeyValueAt(1.0,1.0);
-         animationView1 = currentView;
-         animationView2 = targetView;
-         clearMask();
-         break;
-     case RIGHTdir:
-         animation1->setStartValue(90);
-         animation1->setEndValue(0);
-         animation2->setKeyValueAt(0.0,1.0);
-         animation2->setKeyValueAt(0.5,.75);
-         animation2->setKeyValueAt(1.0,1.0);
-         animationView1 = targetView;
-         animationView2 = currentView;
-         clearMask();
-         break;
-     }
-
-     QParallelAnimationGroup *group = new QParallelAnimationGroup;
-     group->addAnimation(animation1);
-     group->addAnimation(animation2);
-
-     connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
-     connect(animation1,SIGNAL(finished()),this,SLOT(endAnimation()));
-     flipping = true;
-     group->start();
-
-}
-#define RATIO .25
-void Chp41::paintEvent(QPaintEvent *event)
-{
-    if (flipping)
-    {
-
-        UpdateFinalImage();
-
-        QPainter painter;
-
-
-        if (FinalImage)
-        {
-            int w = FaceRect(animationView1).width() * mainwindow->zoom/100.0;//this->width();
-            int h = FaceRect(animationView1).height() * mainwindow->zoom/100.0;//this->height();
-            int wt = FaceRect(animationView2).width() * mainwindow->zoom/100.0;
-            int ht = FaceRect(animationView2).height()* mainwindow->zoom/100.0;
-//            qWarning()<<"angle:"<<m_angle;
-            painter.begin(this);
-
-            QTransform matrix,matrix2;
-            matrix.scale(m_zoom,m_zoom);
-
-            switch (currentFlipDir) {
-            case TOPdir:
-            case BOTTOMdir:
-                painter.translate(w/2 ,ht * m_angle/90);
-                painter.setTransform(matrix,true);
-                matrix2.rotate(-m_angle, Qt::XAxis);
-                painter.setTransform(matrix2,true);
-                painter.drawImage(QPoint(-w/2,0),
-                                  getViewImage(animationView1)->scaled(QSize(w,h*(90 -m_angle)/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
-                                  );
-                painter.end();
-                painter.begin(this);
-                painter.translate(w/2 ,ht * m_angle/90);
-                painter.setTransform(matrix,true);
-                matrix2.reset();
-                matrix2.rotate(90-m_angle, Qt::XAxis);
-                painter.setTransform(matrix2,true);
-                painter.drawImage(QPoint(-w/2,-ht * m_angle/90),
-                                  getViewImage(animationView2)->scaled(QSize(w,ht * m_angle/90),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
-                                  );
-                break;
-            case LEFTdir:
-            case RIGHTdir:
-                painter.translate(wt*m_angle/90,h/2);
-                painter.setTransform(matrix,true);
-                matrix2.rotate(-m_angle, Qt::YAxis);
-                painter.setTransform(matrix2,true);
-                painter.drawImage(QPoint(0,-h/2),
-                                  getViewImage(animationView1)->scaled(QSize(w*(90 -m_angle)/90,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
-                                  );
-                painter.end();
-                painter.begin(this);
-                painter.translate(wt*m_angle/90,h/2);
-                painter.setTransform(matrix,true);
-                matrix2.reset();
-                matrix2.rotate(90-m_angle, Qt::YAxis);
-                painter.setTransform(matrix2,true);
-                painter.drawImage(QPoint(-wt * m_angle/90,-h/2),
-                                  getViewImage(animationView2)->scaled(QSize(wt * m_angle/90,ht),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)
-                                  );
-                break;
-            }
-
-            painter.end();
-
-        }
-    }
-    else {
-        CPObject::paintEvent(event);
-    }
-}
-
-void Chp41::endAnimation(){
-    currentView = targetView;
-//    currentFlipDir = NONEdir;
-//    flipping = false;
-
-    changeGeometry(this->posx(),this->posy(),FaceRect(currentView).width()*mainwindow->zoom/100.0,FaceRect(currentView).height()*mainwindow->zoom/100.0);
-
-}
-
-void Chp41::mousePressEvent(QMouseEvent *event) {
-    // if click on the border
-    // width ?
-
-    Direction dir = borderClick(event->pos());
-
-    targetView = currentView;
-    switch (currentView) {
-    case FRONTview:
-        switch (dir) {
-        case TOPdir: targetView = TOPview; break;
-        case LEFTdir: targetView = LEFTview; break;
-        case RIGHTdir: targetView = RIGHTview; break;
-        case BOTTOMdir: targetView = BOTTOMview; break;
-        }
-        break;
-    case TOPview:
-        switch (dir) {
-        case TOPdir: targetView = BACKview; break;
-        case LEFTdir: targetView = LEFTview; break;
-        case RIGHTdir: targetView = RIGHTview; break;
-        case BOTTOMdir: targetView = FRONTview; break;
-        }
-        break;
-    case LEFTview:
-        switch (dir) {
-        case TOPdir: targetView = TOPview; break;
-        case LEFTdir: targetView = BACKview; break;
-        case RIGHTdir: targetView = FRONTview; break;
-        case BOTTOMdir: targetView = BOTTOMview; break;
-        }
-        break;
-    case RIGHTview:
-        switch (dir) {
-        case TOPdir: targetView = TOPview; break;
-        case LEFTdir: targetView = FRONTview; break;
-        case RIGHTdir: targetView = BACKview; break;
-        case BOTTOMdir: targetView = BOTTOMview; break;
-        }
-        break;
-    case BOTTOMview:
-        switch (dir) {
-        case TOPdir: targetView = FRONTview; break;
-        case LEFTdir: targetView = LEFTview; break;
-        case RIGHTdir: targetView = RIGHTview; break;
-        case BOTTOMdir: targetView = BACKview; break;
-        }
-        break;
-    case BACKview:
-        switch (dir) {
-        case TOPdir: targetView = BOTTOMview; break;
-        case LEFTdir: targetView = RIGHTview; break;
-        case RIGHTdir: targetView = LEFTview; break;
-        case BOTTOMdir: targetView = TOPview; break;
-        }
-        break;
-
-    }
-
-    if ( (targetView != currentView) && getViewImage(targetView) ) {
-        QSize _s = FaceRect(currentView).expandedTo(FaceRect(targetView));
-        changeGeometry(this->posx(),this->posy(),_s.width()*mainwindow->zoom/100.0,_s.height()*mainwindow->zoom/100.0);
-        flip(dir);
-    }
-
-    if ( (currentView == TOPview) && (event->button() == Qt::RightButton)) {
-        event->accept();
-        FluidLauncher *launcher = new FluidLauncher(mainwindow,
-                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
-                                     FluidLauncher::PictureFlowType,
-                                     "hp41");
-        connect(launcher,SIGNAL(Launched(QString)),this,SLOT(addModule(QString)));
-        launcher->show();
-    }
-    else {
-        CPObject::mousePressEvent(event);
-    }
-}
-
-QImage * Chp41::getViewImage(View v) {
-    switch (v) {
-    case FRONTview: return FinalImage;
-    case TOPview: return TopImage;
-    case LEFTview: return LeftImage;
-    case RIGHTview: return RightImage;
-    case BOTTOMview: return BottomImage;
-    case BACKview: return BackImage;
-    }
-    return 0;
-}
 
 bool Chp41::init()
 {
@@ -550,6 +242,22 @@ bool Chp41::init()
     pTIMER->resetTimer(0);
 
    return true;
+}
+
+void Chp41::mousePressEvent(QMouseEvent *event) {
+
+    if ( (currentView == TOPview) && (event->button() == Qt::RightButton)) {
+        event->accept();
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "hp41");
+        connect(launcher,SIGNAL(Launched(QString)),this,SLOT(addModule(QString)));
+        launcher->show();
+    }
+    else {
+        CPObject::mousePressEvent(event);
+    }
 }
 
 void Chp41::TurnOFF()
@@ -824,7 +532,9 @@ void Chp41::ExecuteProc() {
 #endif
 }
 
+void Chp41::exec_perph_hpil(void) {
 
+}
 
 /****************************/
 // executes intelligent printer instructions
