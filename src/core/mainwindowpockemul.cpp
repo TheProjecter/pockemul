@@ -814,8 +814,8 @@ void MainWindowPockemul::doZoom(QPoint point,float delta,int step) {
 
         locpc->changeGeometry(newposx,
                               newposy,
-                              locpc->getDX()*zoom/100/(locpc->Front?1:4),
-                              locpc->getDY()*zoom/100/(locpc->Front?1:4));
+                              locpc->currentViewRect().width()*zoom/100/(locpc->Front?1:4),
+                              locpc->currentViewRect().height()*zoom/100/(locpc->Front?1:4));
 
     }
 }

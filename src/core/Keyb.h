@@ -254,13 +254,16 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_CTRL_DOWN_MOD  0x212
 #define K_CTRL_UP_MOD  0x213
 
+#define K_SHARP11PINS    0x240
+
 class CPObject;
 class CpcXXXX;
 class Ckeyb;
+#include "viewobject.h"
 
 class CKey{
 public:
-    CKey(int ScanCode, QString Description,QRect Rect = QRect(),int masterscancode=0,QString modifier = QString());
+    CKey(int ScanCode, QString Description, QRect Rect = QRect(), int masterscancode=0, QString modifier = QString(), View view = FRONTview);
     ~CKey(){}
 	
 	int		Icode;
@@ -268,6 +271,8 @@ public:
     int		ScanCode,MasterScanCode;
     QString Modifier;
 	QRect	Rect;
+    View    view;
+
 protected:
 };
 

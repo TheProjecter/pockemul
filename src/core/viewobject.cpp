@@ -75,11 +75,11 @@ QImage * CViewObject::CreateImage(QSize size,QString fname,bool Hmirror,bool Vmi
 
 bool CViewObject::InitDisplay(void)
 {
-    if (!TopFname.isEmpty()) TopImage = CreateImage(FaceRect(TOPview),TopFname);
-    if (!LeftFname.isEmpty()) LeftImage = CreateImage(FaceRect(LEFTview),LeftFname);
-    if (!RightFname.isEmpty()) RightImage = CreateImage(FaceRect(RIGHTview),RightFname);
-    if (!BottomFname.isEmpty()) BottomImage = CreateImage(FaceRect(BOTTOMview),BottomFname);
-    if (!BackFname.isEmpty()) BackImage = CreateImage(FaceRect(BACKview),BackFname);
+    if (!TopFname.isEmpty()) TopImage = CreateImage(viewRect(TOPview),TopFname);
+    if (!LeftFname.isEmpty()) LeftImage = CreateImage(viewRect(LEFTview),LeftFname);
+    if (!RightFname.isEmpty()) RightImage = CreateImage(viewRect(RIGHTview),RightFname);
+    if (!BottomFname.isEmpty()) BottomImage = CreateImage(viewRect(BOTTOMview),BottomFname);
+    if (!BackFname.isEmpty()) BackImage = CreateImage(viewRect(BACKview),BackFname);
 
     return(1);
 }
@@ -115,7 +115,7 @@ void CViewObject::setZoom(qreal value)
     this->m_zoom = value;
 }
 
-QSize CViewObject::FaceRect(View v) {
+QSize CViewObject::viewRect(View v) {
     float _ratio = this->getDX()/this->getDXmm();
 
     switch (v) {
@@ -128,6 +128,10 @@ QSize CViewObject::FaceRect(View v) {
     case RIGHTview: return QSize(this->getDZmm()*_ratio,this->getDY());
     }
     return QSize(0,0);
+}
+
+QSize CViewObject::currentViewRect() {
+    return viewRect(currentView);
 }
 
 QImage * CViewObject::getViewImage(View v) {
@@ -150,7 +154,7 @@ void CViewObject::flip(Direction dir) {
     // Animate close
 
 
-    targetSize = FaceRect(targetView);
+    targetSize = viewRect(targetView);
     currentFlipDir = dir;
 
     qWarning()<<"targetdir:"<<targetSize;
@@ -224,10 +228,10 @@ void CViewObject::paintEvent(QPaintEvent *event)
 
         if (FinalImage)
         {
-            int w = FaceRect(animationView1).width() * mainwindow->zoom/100.0;//this->width();
-            int h = FaceRect(animationView1).height() * mainwindow->zoom/100.0;//this->height();
-            int wt = FaceRect(animationView2).width() * mainwindow->zoom/100.0;
-            int ht = FaceRect(animationView2).height()* mainwindow->zoom/100.0;
+            int w = viewRect(animationView1).width() * mainwindow->zoom/100.0;//this->width();
+            int h = viewRect(animationView1).height() * mainwindow->zoom/100.0;//this->height();
+            int wt = viewRect(animationView2).width() * mainwindow->zoom/100.0;
+            int ht = viewRect(animationView2).height()* mainwindow->zoom/100.0;
 //            qWarning()<<"angle:"<<m_angle;
             painter.begin(this);
 
@@ -288,7 +292,7 @@ void CViewObject::endAnimation(){
 //    currentFlipDir = NONEdir;
 //    flipping = false;
 
-    changeGeometry(this->posx(),this->posy(),FaceRect(currentView).width()*mainwindow->zoom/100.0,FaceRect(currentView).height()*mainwindow->zoom/100.0);
+    changeGeometry(this->posx(),this->posy(),viewRect(currentView).width()*mainwindow->zoom/100.0,viewRect(currentView).height()*mainwindow->zoom/100.0);
 
 }
 
@@ -373,7 +377,7 @@ qWarning()<<"CViewObject::mousePressEvent"<<event;
     }
 
     if ( (targetView != currentView) && getViewImage(targetView) ) {
-        QSize _s = FaceRect(currentView).expandedTo(FaceRect(targetView));
+        QSize _s = viewRect(currentView).expandedTo(viewRect(targetView));
         changeGeometry(this->posx(),this->posy(),_s.width()*mainwindow->zoom/100.0,_s.height()*mainwindow->zoom/100.0);
         flip(dir);
     }

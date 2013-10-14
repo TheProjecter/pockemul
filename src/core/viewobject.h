@@ -35,7 +35,8 @@ public:
     qreal m_zoom;
 
     Direction borderClick(QPoint pt);
-    QSize FaceRect(View v);
+    QSize viewRect(View v);
+    QSize currentViewRect();
 
     QSize targetSize;
     QImage *getViewImage(View v);

@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "xmlwriter.h"
  
 #include "common.h"
@@ -29,13 +31,14 @@ typedef struct{
 const int RIGHT[11] = { 25 , 32 , 59 , 19, 21, 13, 21, 16, 31,16,16 };
 const int BOTTOM[11]= { 16 , 22 , 16 , 21, 10, 13, 13, 31, 31,16,16 };
 
-CKey::CKey(int scancode, QString description,QRect rect,int masterscancode,QString modifier)
+CKey::CKey(int scancode, QString description,QRect rect,int masterscancode,QString modifier,View view)
 {
-	Description = description;
-	ScanCode	= scancode;
-    MasterScanCode = masterscancode;
-    Modifier = modifier;
-	Rect = rect;
+    this->Description = description;
+    this->ScanCode	= scancode;
+    this->MasterScanCode = masterscancode;
+    this->Modifier = modifier;
+    this->Rect = rect;
+    this->view = view;
 }
 
 Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan) //: CPObject(parent)								//[constructor]
@@ -68,27 +71,28 @@ int Ckeyb::KeyClick(QPoint pts)
     int smallerDistance = 99999;
     for (int i=0;i<Keys.size();i++)
     {
+        if (Keys.at(i).view != pPC->currentView) continue;
         QRect r = Keys.at(i).Rect;
-        r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+r.height())*mainwindow->zoom/100);
-        int tmpDistance = 0;
-        if ( r.contains(pts) ) {
-            tmpDistance = 0;
-        }
-        else {
-            tmpDistance = (r.center()-pts).manhattanLength();
-        }
-
-        if (tmpDistance == smallerDistance) {
-            // compare key size and keep the smallest
-            QRect r1 = Keys.at(nearestIndex).Rect;
-            if (r.width()*r.height() < r1.width()*r1.height()) {
-                nearestIndex = i;
+            r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+r.height())*mainwindow->zoom/100);
+            int tmpDistance = 0;
+            if ( r.contains(pts) ) {
+                tmpDistance = 0;
             }
-        }
-        else if (tmpDistance < smallerDistance) {
-            smallerDistance = tmpDistance;
-            nearestIndex= i;
-        }
+            else {
+                tmpDistance = (r.center()-pts).manhattanLength();
+            }
+
+            if (tmpDistance == smallerDistance) {
+                // compare key size and keep the smallest
+                QRect r1 = Keys.at(nearestIndex).Rect;
+                if (r.width()*r.height() < r1.width()*r1.height()) {
+                    nearestIndex = i;
+                }
+            }
+            else if (tmpDistance < smallerDistance) {
+                smallerDistance = tmpDistance;
+                nearestIndex= i;
+            }
 
     }
     if ((smallerDistance < (30*mainwindow->zoom/100)) && (nearestIndex>=0)) {
@@ -109,7 +113,9 @@ QString Ckeyb::KeyString(QPoint pts)
 	QList<CKey>::iterator i;
  	for (i = Keys.begin(); i != Keys.end(); ++i)
  	{
-		if ( i->Rect.contains(pts) ) return i->Description;
+        if ( (i->view == pPC->currentView) &&
+             (i->Rect.contains(pts) ) )
+            return i->Description;
 	}
 	return("");
 }
@@ -294,6 +300,7 @@ bool KEYBMAPParser::startElement( const QString&, const QString&, const QString 
 	QString desc = "";
     QString modifier="";
     int scancode,masterscancode,x,y,w,h;
+    View view=FRONTview;
 	bool ok = false;
 	
     scancode=masterscancode=x=y=w=h=0;
@@ -319,8 +326,17 @@ bool KEYBMAPParser::startElement( const QString&, const QString&, const QString 
                 masterscancode = attrs.value( i ).toInt(&ok,16);
             else if( attrs.localName( i ) == "modifier" )
                 modifier = attrs.value( i );
+            else if( attrs.localName( i ) == "view" ) {
+                qWarning()<<"view="<<attrs.value( i );
+                if (attrs.value( i ) == "FRONT") view = FRONTview;
+                if (attrs.value( i ) == "TOP") view = TOPview;
+                if (attrs.value( i ) == "LEFT") view = LEFTview;
+                if (attrs.value( i ) == "RIGHT") view = RIGHTview;
+                if (attrs.value( i ) == "BACK") view = BACKview;
+                if (attrs.value( i ) == "BOTTOM") view = BOTTOMview;
+            }
 		}
-        Parent->Keys.append(CKey(scancode,desc,QRect(x,y,w,h),masterscancode,modifier));
+        Parent->Keys.append(CKey(scancode,desc,QRect(x,y,w,h),masterscancode,modifier,view));
         AddLog(LOG_KEYBOARD,mainwindow->tr("XML Read key : %1, scan=0x%2 , Rect=(%3,%4,%5,%6), mscan=0x%7, mod=%8").
                arg(desc).
                arg(scancode,2,16,QChar('0')).

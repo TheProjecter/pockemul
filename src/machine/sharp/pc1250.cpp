@@ -1,6 +1,7 @@
 
 #include	<stdlib.h>
 #include <QPainter>
+#include <QDebug>
 
 #include "common.h"
 #include "pc1250.h"
@@ -144,6 +145,15 @@ bool Cpc1250::init()
     CpcXXXX::init();
     pCONNECTOR	= new Cconnector(this,11,0,Cconnector::Sharp_11,"Connector 11 pins",false,QPoint(1,87));		publish(pCONNECTOR);
     return true;
+}
+
+bool Cpc1250::run(void)
+{
+    if (KEY(K_SHARP11PINS)) {
+        qWarning()<<"YES";
+        LastKey = 0;
+    }
+    CpcXXXX::run();
 }
 
 bool Cpc1250::Set_Connector(void)
@@ -342,7 +352,6 @@ bool Cpc1250::SaveExtra(QFile *file)
 	return true;
 }
 
- 
 
 
 
