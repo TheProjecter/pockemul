@@ -332,32 +332,32 @@ qWarning()<<"CViewObject::mousePressEvent"<<event;
     case TOPview:
         switch (dir) {
         case TOPdir: targetView = BACKview; break;
-        case LEFTdir: targetView = LEFTview; break;
-        case RIGHTdir: targetView = RIGHTview; break;
+//        case LEFTdir: targetView = LEFTview; break;
+//        case RIGHTdir: targetView = RIGHTview; break;
         case BOTTOMdir: targetView = FRONTview; break;
         }
         break;
     case LEFTview:
         switch (dir) {
-        case TOPdir: targetView = TOPview; break;
+//        case TOPdir: targetView = TOPview; break;
         case LEFTdir: targetView = BACKview; break;
         case RIGHTdir: targetView = FRONTview; break;
-        case BOTTOMdir: targetView = BOTTOMview; break;
+//        case BOTTOMdir: targetView = BOTTOMview; break;
         }
         break;
     case RIGHTview:
         switch (dir) {
-        case TOPdir: targetView = TOPview; break;
+//        case TOPdir: targetView = TOPview; break;
         case LEFTdir: targetView = FRONTview; break;
         case RIGHTdir: targetView = BACKview; break;
-        case BOTTOMdir: targetView = BOTTOMview; break;
+//        case BOTTOMdir: targetView = BOTTOMview; break;
         }
         break;
     case BOTTOMview:
         switch (dir) {
         case TOPdir: targetView = FRONTview; break;
-        case LEFTdir: targetView = LEFTview; break;
-        case RIGHTdir: targetView = RIGHTview; break;
+//        case LEFTdir: targetView = LEFTview; break;
+//        case RIGHTdir: targetView = RIGHTview; break;
         case BOTTOMdir: targetView = BACKview; break;
         }
         break;

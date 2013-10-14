@@ -35,6 +35,8 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/fp200/fp200lcd.png");
     SymbFname		= "";
 
+    TopFname    = P_RES(":/fp200/fp200Top.png");
+
     memsize		= 0x10000;
     InitMemValue	= 0xFF;
 

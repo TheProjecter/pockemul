@@ -48,6 +48,12 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
     memsize			= 0x0E0000;
     InitMemValue	= 0x00;
 
+    LeftFname   = P_RES(":/pc1600/pc1600Left.png");
+    RightFname  = P_RES(":/pc1600/pc1600Right.png");
+    BackFname   = P_RES(":/pc1600/pc1600Back.png");
+    TopFname    = P_RES(":/pc1600/pc1600Top.png");
+    BottomFname = P_RES(":/pc1600/pc1600Bottom.png");
+
     KeyMap		= KeyMap1600;
     KeyMapLenght= KeyMap1600Lenght;
 

@@ -52,6 +52,8 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/z1/z1grlcd.png");
     SymbFname		= "";
 
+    LeftFname       = P_RES(":/z1/z1Left.png");
+
     memsize		= 0xFFFFF;
     InitMemValue	= 0x00;
 
@@ -74,7 +76,7 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
 
     setDXmm(206);//Pc_DX_mm =200 ;
     setDYmm(83);//Pc_DY_mm =130;
-    setDZmm(30);//Pc_DZ_mm = 10;
+    setDZmm(25);//Pc_DZ_mm = 10;
 
     setDX(736);//Pc_DX		= 483;//409;
     setDY(297);//Pc_DY		= 252;//213;

@@ -6,5 +6,6 @@
         <file>z1/z1grlcd.png</file>
         <file>z1/z1.png</file>
         <file>z1/fx-890p.png</file>
+        <file>z1/z1Left.png</file>
     </qresource>
 </RCC>
