@@ -12,18 +12,19 @@
 #include "Inter.h"
 #include "Log.h"
 #include "paperwidget.h"
+#include "bus.h"
 
 #define DOWN	0
 #define UP		1
 
 
 
-Chp82143A::Chp82143A(CPObject *parent):CprinterCtronics(this) {
+Chp82143A::Chp82143A(CPObject *parent):Cprinter(this) {
 
     setcfgfname(QString("hp82143a"));
     BackGroundFname	= P_RES(":/hp41/hp82143a.png");
 
-    delete pKEYB; pKEYB		= new Ckeyb(this,"hp82143a.map");
+    pKEYB = new Ckeyb(this,"hp82143a.map");
 
     setDXmm(180);
     setDYmm(130);
@@ -43,25 +44,98 @@ Chp82143A::~Chp82143A() {
 
 bool Chp82143A::init(void) {
 
+    Cprinter::init();
+
     charTable = new QImage(P_RES(":/ext/ce126ptable.bmp"));
     charsize = 2;
 
-    CprinterCtronics::init();
+    pCONNECTOR = new Cconnector(this,64,0,Cconnector::hp41,"hp41 Module",true,QPoint(631,468));
+    publish(pCONNECTOR);
 
-    qWarning()<<"init done";
+    if(pKEYB)	pKEYB->init();
+    if(pTIMER)	pTIMER->init();
+
+    // Create CE-126 Paper Image
+    // The final paper image is 207 x 149 at (277,0) for the ce125
+    printerbuf	= new QImage(QSize(paperWidth, 3000),QImage::Format_ARGB32);
+    printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
+
+    paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
+    paperWidget->hide();
+//    paperWidget->show();
+//    paperWidget->hide();
+
+    // Fill it blank
+    clearPaper();
+
+    settop(10);
+    setposX(0);
     return true;
+}
+
+void Chp82143A::clearPaper(void)
+{
+    // Fill it blank
+    printerbuf->fill(PaperColor.rgba());
+    printerdisplay->fill(QColor(255,255,255,0).rgba());
+    settop(10);
+    setposX(0);
+    // empty TextBuffer
+    TextBuffer.clear();
+    paperWidget->updated = true;
+}
+
+#define PRINTER_TRACE       (1 << 15)
+#define PRINTER_NORM        (1 << 14)
+#define PRINTER_PRINTDOWN   (1 << 13)
+#define PRINTER_ADVDOWN     (1 << 12)
+#define PRINTER_OUTPAPER    (1 << 11)
+#define PRINTER_BATLOW      (1 << 10)
+#define PRINTER_IDLE        (1 << 9)
+#define PRINTER_BUFEMPTY    (1 << 8)
+#define PRINTER_LOWERCASE   (1 << 7)
+#define PRINTER_GRAPHIC     (1 << 6)
+#define PRINTER_DOUBLE      (1 << 5)
+#define PRINTER_RIGHTJUST   (1 << 4)
+#define PRINTER_EOLSENT     (1 << 3)
+#define PRINTER_NOADV       (1 << 2)
+#define PRINTER_NOTUSED_1   (1 << 1)
+#define PRINTER_NOTUSED_0   (1 << 0)
+
+quint16 Chp82143A::getStatus(void) {
+
+    return PRINTER_IDLE | PRINTER_BUFEMPTY;
 }
 
 bool Chp82143A::run(void) {
 
-    CprinterCtronics::run();
+    Cbus bus;
 
+    bus.fromUInt64(pCONNECTOR->Get_values());
+
+    switch (bus.getFunc()) {
+    case BUS_SLEEP: break;
+    case BUS_READDATA:
+        if (bus.getAddr()==0x3a) {
+            bus.setData(getStatus() >> 8);
+            bus.setFunc(BUS_READDATA);
+        }
+        if (bus.getAddr()==0x3b) {
+            bus.setData(getStatus() & 0xff);
+            bus.setFunc(BUS_READDATA);
+        }
+        break;
+    case BUS_WRITEDATA: Printer(bus.getData());
+        bus.setFunc(BUS_SLEEP);
+        break;
+    }
+    pCONNECTOR->Set_values(bus.toUInt64());
     return true;
 }
 
 bool Chp82143A::exit(void) {
 
-    CprinterCtronics::exit();
+    Cprinter::exit();
 
     return true;
 }
@@ -112,7 +186,8 @@ void Chp82143A::Printer(quint8 data) {
         }
         break;
       case 232:
-          /* print to right */qWarning()<<"Print to Right";
+          /* print to right */
+          qWarning()<<"Print to Right";
           TextBuffer = TextBuffer.rightJustified(32,' ',true).append(13).append(10);
           printLine();
           TextBuffer.clear();
@@ -237,10 +312,28 @@ void Chp82143A::printLine() {
 
 bool Chp82143A::UpdateFinalImage(void) {
 
-    CprinterCtronics::UpdateFinalImage();
+    Cprinter::UpdateFinalImage();
 
     QPainter painter;
     painter.begin(FinalImage);
+
+    float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
+
+//    ratio *= charsize;
+    QRect source = QRect( QPoint(paperWidget->getOffset().x() ,
+                                 paperWidget->getOffset().y()  - paperWidget->height() / ratio ) ,
+                          QPoint(paperWidget->bufferImage->width(),
+                                 paperWidget->getOffset().y() +10)
+                          );
+//    MSG_ERROR(QString("%1 - %2").arg(source.width()).arg(PaperPos().width()));
+    painter.drawImage(PaperPos(),
+                      paperWidget->bufferImage->copy(source).scaled(PaperPos().size(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation )
+                      );
+
+//    painter.end();
+
+//    QPainter painter;
+//    painter.begin(FinalImage);
     painter.drawImage(650,280,BackgroundImageBackup->copy(650,280,33,60).mirrored(false,charsize==1?false:true));
     painter.end();
 

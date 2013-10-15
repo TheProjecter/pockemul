@@ -2,11 +2,11 @@
 #define HP82143A_H
 
 
-#include "printerctronics.h"
+#include "cprinter.h"
 
 class DialogConsole;
 
-class Chp82143A:public CprinterCtronics{
+class Chp82143A:public Cprinter{
 Q_OBJECT
 public:
 
@@ -25,6 +25,26 @@ public:
     virtual void Printer(quint8 data);
 
     void printLine();
+
+    Cconnector *pCONNECTOR;		qint64 pCONNECTOR_value;
+
+
+    QImage *printerbuf;
+    QImage *printerdisplay;
+
+    void	settop(int value){ top = value; }
+    void	setposX(int value) { posX = value; }
+
+
+    QImage *charTable;
+    int margin;
+    int	top;
+
+    int	posX;
+    int paperWidth;
+    int charsize;
+    quint16 getStatus(void);
+    void clearPaper();
 protected:
 
 protected slots:

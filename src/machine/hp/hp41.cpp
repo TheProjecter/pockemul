@@ -179,13 +179,13 @@ bool Chp41::init()
     RectIndicator = QRect(3,3,7,7);
 
     // Connectors
-    pConnector[0] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 0",false,QPoint(715,50));
+    pConnector[0] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 0",false,QPoint(715,50));
     publish(pConnector[0]);
-    pConnector[1] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
+    pConnector[1] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
     publish(pConnector[1]);
-    pConnector[2] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
+    pConnector[2] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
     publish(pConnector[2]);
-    pConnector[3] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
+    pConnector[3] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
     publish(pConnector[3]);
 
     for (int i=0;i<4;i++) {
@@ -572,22 +572,7 @@ void Chp41::exec_perph_hpil(void) {
 /****************************/
 // executes intelligent printer instructions
 /****************************/
-#define PRINTER_TRACE       (1 << 15)
-#define PRINTER_NORM        (1 << 14)
-#define PRINTER_PRINTDOWN   (1 << 13)
-#define PRINTER_ADVDOWN     (1 << 12)
-#define PRINTER_OUTPAPER    (1 << 11)
-#define PRINTER_BATLOW      (1 << 10)
-#define PRINTER_IDLE        (1 << 9)
-#define PRINTER_BUFEMPTY    (1 << 8)
-#define PRINTER_LOWERCASE   (1 << 7)
-#define PRINTER_GRAPHIC     (1 << 6)
-#define PRINTER_DOUBLE      (1 << 5)
-#define PRINTER_RIGHTJUST   (1 << 4)
-#define PRINTER_EOLSENT     (1 << 3)
-#define PRINTER_NOADV       (1 << 2)
-#define PRINTER_NOTUSED_1   (1 << 1)
-#define PRINTER_NOTUSED_0   (1 << 0)
+
 
 void Chp41::exec_perph_printer(void)
   {
@@ -595,7 +580,7 @@ void Chp41::exec_perph_printer(void)
 //  qWarning()<<"exec_perph_printer";
   if (PageMatrix[6][0]==NULL)  // if no printer ROM
     return;
-  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
+//  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
 
   switch(hp41cpu->Tyte1)
     {
@@ -631,12 +616,20 @@ void Chp41::exec_perph_printer(void)
       }
     case 0x03a:       /* RPREG 0 or C=STATUS */
       {
-      bus[fPrinter]->setFunc(BUS_QUERY);
-      bus[fPrinter]->setData(0x3a);
+      bus[fPrinter]->setFunc(BUS_READDATA);
+      bus[fPrinter]->setAddr(0x3a);
       manageBus();
-      quint8 ret = bus[fPrinter]->getData();
-//      qWarning()<<"Get Printer Status";
-      UINT16 PRINT_STATUS= PRINTER_IDLE | PRINTER_BUFEMPTY; // | 0x3;
+      quint8 ret1 = bus[fPrinter]->getData();
+      qWarning()<<"Get Printer Status1:"<<ret1;
+      bus[fPrinter]->setFunc(BUS_READDATA);
+      bus[fPrinter]->setAddr(0x3b);
+      manageBus();
+      quint8 ret2 = bus[fPrinter]->getData();
+      qWarning()<<"Get Printer Status2:"<<ret2;
+
+      UINT16 PRINT_STATUS= (ret1<<8) | ret2;
+      qWarning()<<"Get Printer Status:"<<PRINT_STATUS;
+
       memset(hp41cpu->r->C_REG,0,sizeof(hp41cpu->r->C_REG));
       hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS&0xf000)>>12);
       hp41cpu->r->C_REG[12]=(byte)((PRINT_STATUS&0x0f00)>>8);
