@@ -30,6 +30,7 @@
 class Chp41Cpu;
 class CConnector;
 class Cctronics;
+class Cbus;
 #define LOG(x)
 
 typedef unsigned char flag;
@@ -147,6 +148,7 @@ public:
   Cconnector *pConnector[4];
   qint64 pConnector_value[4];
   Cctronics *pCENT[4];
+  Cbus *bus[4];
     int currentSlot;
 
 
@@ -322,7 +324,7 @@ public:
   int ProcCycles;                 // number of processor cycles to run each time
   word MemModules;                // number of regular Memory modules (1-4)
   word XMemModules;               // number of Extended Memory modules (1-3)
-  flag fPrinter,fCardReader,fTimer,fWand,fHPIL,fInfrared;    // 1 if the associated hardware is loaded by a module
+  int fPrinter,fCardReader,fTimer,fWand,fHPIL,fInfrared;    // 1 if the associated hardware is loaded by a module
   int SoundMode;                  // current sound mode
   flag fRunEnable;                // ==0 if Run() is disabled
 
@@ -377,6 +379,8 @@ public:
 
   void setPortChar(int port, UINT8 c);
   virtual void ComputeKey();
+  virtual bool Set_Connector(void);
+  virtual bool Get_Connector(void);
 };
 
 

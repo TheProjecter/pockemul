@@ -37,6 +37,7 @@
 #include "Connect.h"
 #include "ctronics.h"
 #include "clink.h"
+#include "bus.h"
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
@@ -60,6 +61,8 @@ void Chp41::addModule(QString item,CPObject *pPC)
     if (pPC) {
         // Link  object with main pObject
         mainwindow->pdirectLink->addLink(pConnector[currentSlot],pPC->ConnList.at(0),false);
+        pPC->setPosX(this->posx()+this->width()+15);
+        pPC->setPosY(this->posy());
     }
     currentSlot = -1;
 
@@ -185,6 +188,15 @@ bool Chp41::init()
     pConnector[3] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
     publish(pConnector[3]);
 
+    for (int i=0;i<4;i++) {
+#if 1
+        bus[i] = new Cbus();
+#else
+        pCENT[i]->pTIMER = pTIMER;
+        pCENT[i]->init();
+        pCENT[i]->setBufferSize(10);
+#endif
+    }
     WatchPoint.remove(this);
     WatchPoint.add(&pConnector_value[0],64,15,this,"HP-41 Module 0");
     WatchPoint.add(&pConnector_value[1],64,15,this,"HP-41 Module 1");
@@ -230,12 +242,12 @@ bool Chp41::init()
     ProcCycles=0;
     MemModules=0;
     XMemModules=0;
-    fPrinter=false;
-    fCardReader=false;
-    fTimer=false;
-    fWand=false;
-    fHPIL=false;
-    fInfrared=false;
+    fPrinter=-1;
+    fCardReader=-1;
+    fTimer=-1;
+    fWand=-1;
+    fHPIL=-1;
+    fInfrared=-1;
     SoundMode=eSoundNone;
     fRunEnable=false;
     fBreakPtsEnable=false;
@@ -319,6 +331,9 @@ bool Chp41::run()
         pCPU->set_PC(0);
 
     CpcXXXX::run();
+    for (int i=0;i<4;i++) {
+        pCENT[i]->run();
+    }
 
     pTIMER->state+=56;
     return true;
@@ -580,7 +595,7 @@ void Chp41::exec_perph_printer(void)
 //  qWarning()<<"exec_perph_printer";
   if (PageMatrix[6][0]==NULL)  // if no printer ROM
     return;
-//  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
+  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
 
   switch(hp41cpu->Tyte1)
     {
@@ -602,10 +617,25 @@ void Chp41::exec_perph_printer(void)
     case 0x007:       /* PRshort or BUF=BUF+C */
       {
       qWarning() << QString("%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),2,16,QChar('0'));
+      quint8 c= (hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0];
+#if 1
+      bus[fPrinter]->setFunc(BUS_WRITEDATA);
+      bus[fPrinter]->setData(c);
+      manageBus();
+#else
+      pCENT[fPrinter]->newOutChar(c);
+#endif
+
+      qWarning()<<"ouput to printer("<<fPrinter<<"):"<<c;
       break;
       }
     case 0x03a:       /* RPREG 0 or C=STATUS */
       {
+      bus[fPrinter]->setFunc(BUS_QUERY);
+      bus[fPrinter]->setData(0x3a);
+      manageBus();
+      quint8 ret = bus[fPrinter]->getData();
+//      qWarning()<<"Get Printer Status";
       UINT16 PRINT_STATUS= PRINTER_IDLE | PRINTER_BUFEMPTY; // | 0x3;
       memset(hp41cpu->r->C_REG,0,sizeof(hp41cpu->r->C_REG));
       hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS&0xf000)>>12);
@@ -753,23 +783,41 @@ UINT8 Chp41::getKey()
 
 }
 
-void Chp41::setPortChar(int port,UINT8 c) {
-
-    pConnector[port]->Set_pin((1) ,pCENT[port]->Get_STROBE());
-
-    quint8 d = pCENT[port]->Get_DATA();
-    if ((d>0)&&(d!=0xff)) {
-//        qWarning()<< "centdata"<<d;
+bool Chp41::Get_Connector(void) {
+    for (int i=0;i<4;i++) {
+#if 1
+        bus[i]->fromUInt64(pConnector[i]->Get_values());
+#else
+        pCENT[i]->Set_ACK( pConnector[i]->Get_pin(10));
+        pCENT[i]->Set_BUSY( pConnector[i]->Get_pin(11));
+        pCENT[i]->Set_ERROR( pConnector[i]->Get_pin(32));
+#endif
     }
-    pConnector[port]->Set_pin(2	,READ_BIT(d,0));
-    pConnector[port]->Set_pin(3	,READ_BIT(d,1));
-    pConnector[port]->Set_pin(4	,READ_BIT(d,2));
-    pConnector[port]->Set_pin(5	,READ_BIT(d,3));
-    pConnector[port]->Set_pin(6	,READ_BIT(d,4));
-    pConnector[port]->Set_pin(7	,READ_BIT(d,5));
-    pConnector[port]->Set_pin(8	,READ_BIT(d,6));
-    pConnector[port]->Set_pin(9	,READ_BIT(d,7));
+}
 
-    pConnector[port]->Set_pin(31	,pCENT[port]->Get_INIT());
+bool Chp41::Set_Connector(void) {
+#if 1
+    for (int i=0;i<4;i++) {
+        pConnector[i]->Set_values(bus[i]->toUInt64());
+    }
+#else
+    for (int i=0;i<4;i++) {
+        pConnector[i]->Set_pin((1) ,pCENT[i]->Get_STROBE());
 
+        quint8 d = pCENT[i]->Get_DATA();
+        if ((d>0)&&(d!=0xff)) {
+//                    qWarning()<< "centdata"<<d;
+        }
+        pConnector[i]->Set_pin(2	,READ_BIT(d,0));
+        pConnector[i]->Set_pin(3	,READ_BIT(d,1));
+        pConnector[i]->Set_pin(4	,READ_BIT(d,2));
+        pConnector[i]->Set_pin(5	,READ_BIT(d,3));
+        pConnector[i]->Set_pin(6	,READ_BIT(d,4));
+        pConnector[i]->Set_pin(7	,READ_BIT(d,5));
+        pConnector[i]->Set_pin(8	,READ_BIT(d,6));
+        pConnector[i]->Set_pin(9	,READ_BIT(d,7));
+
+        pConnector[i]->Set_pin(31	,pCENT[i]->Get_INIT());
+    }
+#endif
 }

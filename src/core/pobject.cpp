@@ -26,6 +26,7 @@
 #include "dialogdump.h"
 #include "ui/dialogdasm.h"
 #include "ui/dialogvkeyboard.h"
+#include "dialoganalog.h"
 #include "weblinksparser.h"
 
 #include "tapandholdgesture.h"
@@ -1543,4 +1544,23 @@ bool CPObject::Mem_Load(qint32 adr, QByteArray data ) {
     int p =data.size();
     in.readRawData ((char *) &mem[adr], p );
     return true;
+}
+
+void CPObject::manageBus() {
+
+    // write connector
+
+    Set_Connector();
+
+    // Execute all connected objetcs
+    // WRITE the LINK BOX Connector
+    mainwindow->pdirectLink->clearlog();
+    mainwindow->pdirectLink->Output(this);
+
+    if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
+        mainwindow->dialoganalogic->captureData();
+    }
+    // Read connector
+    Get_Connector();
+
 }

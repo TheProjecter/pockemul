@@ -86,54 +86,152 @@ void Chp82143A::ComputeKey(void)
 }
 
 void Chp82143A::Printer(quint8 data) {
-    QPainter painter;
 
 
-    if (data == 0x0d){
-        top+=10*2;//charsize;
-        setposX(0);
-        TextBuffer += data;
-//        qWarning()<<"CR PRINTED";
-    }
-    else
-    {
-        if (posX>=(80/charsize)) {
-            top+=10*2;//charsize;
-            setposX(0);
-            TextBuffer += 0x0d;
+    qWarning()<<"Received : "<<data;
+    static char buffer[82];     /* line buffer */
+    static int buflen=0;        /* line len */
+    static int flow=0;          /* flag lowercase */
+    static int fdwid=0;         /* flag double width */
+    int i, j;
+
+
+
+    if (data>127) {
+      /* control char. */
+      switch (data) {
+      case 224:
+        /* print to left if buffer NOT empty */
+        if (!TextBuffer.isEmpty()) {
+          TextBuffer.append(13).append(10);
+          printLine();    /* print buffer on display device */
+          TextBuffer.clear();             /* and clear buffer */
+          /* reset flags */
+          flow=0;
+          fdwid=0;
         }
-//        qWarning()<<"CHAR PRINTED:"<<QChar(data);
-        TextBuffer += data;
-        painter.begin(printerbuf);
-        int x = ((data>>4) & 0x0F)*6;
-        int y = (data & 0x0F) * 8;
-        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top,5*charsize,7*2/*charsize*/),
-                            *charTable,
-                            QRectF( x , y , 5,7));
-        posX++;
-        painter.end();
+        break;
+      case 232:
+          /* print to right */qWarning()<<"Print to Right";
+          TextBuffer = TextBuffer.rightJustified(32,' ',true).append(13).append(10);
+          printLine();
+          TextBuffer.clear();
+          /* reset flags */
+          flow=0;
+          fdwid=0;
+          break;
+      case 209:
+        /* lowercase */
+        flow=1;
+        break;
+      case 212:
+        /* double width */
+        fdwid=1;
+        break;
+      case 213:
+        /* lower case & double width */
+        flow=1;
+        fdwid=1;
+        break;
+      case 255:
+        /* sometime sent after ADV, don't know why, ignore it */
+        break;
+      default:
+        if ((data>160)&&(data<192)) {
+          /* accumulate spaces */
+          for (i=160;i<data;i++) {
+            if (TextBuffer.size()<70) {
+              TextBuffer.append(' ');
+              if (fdwid)
+                TextBuffer.append(' ');
+            }
+          }
+        }
+        else {
+          /* unknown code: print debug info */
+          if (buflen<70) {
+            TextBuffer.append('\\');
+            TextBuffer.append('0'+(data/100));
+            TextBuffer.append('0'+((data/10)%10));
+            TextBuffer.append('0'+(data%10));
+          }
+        }
+      } /* endswitch */
+    }
+
+    else {
+      /* normal char. */
+      if (flow)
+        data=tolower(data);
+      /* convert 41 special char to ASCII */
+      switch (data) {
+        case   0: data='*'; break;
+        case  12: data='u'; break;
+        case  29: data='#'; break;
+        case 124: data='a'; break;  /* angle */
+        case 126: data='s'; break;  /* sigma */
+        case 127: data='`'; break;  /* append sign */
+        default:
+         if ((data<32)||(data>127))  data='.';
+      }
+      if (TextBuffer.size()<70) {
+        TextBuffer.append(data);
+        if (fdwid)
+          TextBuffer.append(' ');
+      }
     }
 
 
-    painter.begin(printerdisplay);
+}
 
-    painter.drawImage(QRectF(0,MAX(149-top,0),paperWidth/charsize,MIN(top,149)),
-                      *printerbuf,
-                      QRectF(0,MAX(0,top-149),paperWidth/charsize,MIN(top,149)));
+void Chp82143A::printLine() {
+    QPainter painter;
+    qWarning()<<"Print:"<<TextBuffer;
+    for (int i=0; i< TextBuffer.size();i++) {
+        quint8 data = TextBuffer.at(i);
+        if (data == 0x0d){
+            top+=10*2;//charsize;;
 
-// Draw printer head
-//    painter.fillRect(QRect(0 , 147,207,2),QBrush(QColor(0,0,0)));
-//    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
+            //        qWarning()<<"CR PRINTED";
+        }
+        else if (data == 0x0a){
 
+            setposX(0);
 
+            //        qWarning()<<"CR PRINTED";
+        }
+        else
+        {
 
-    painter.end();
+            int x = ((data>>4) & 0x0F)*6;
+            int y = (data & 0x0F) * 8;
+            painter.begin(printerbuf);
+            painter.drawImage(	QRectF( margin + (7 * posX*charsize),top,5*charsize,7*2/*charsize*/),
+                                *charTable,
+                                QRectF( x , y , 5,7));
+            painter.end();
+            posX++;
+
+        }
+
+        painter.begin(printerdisplay);
+
+        painter.drawImage(QRectF(0,MAX(149-top,0),paperWidth/charsize,MIN(top,149)),
+                          *printerbuf,
+                          QRectF(0,MAX(0,top-149),paperWidth/charsize,MIN(top,149)));
+
+        painter.end();
+        // Draw printer head
+        //    painter.fillRect(QRect(0 , 147,207,2),QBrush(QColor(0,0,0)));
+        //    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
+
+    }
+
 
     Refresh_Display = true;
 
     paperWidget->setOffset(QPoint(0,top));
     paperWidget->updated = true;
-
 
 }
 

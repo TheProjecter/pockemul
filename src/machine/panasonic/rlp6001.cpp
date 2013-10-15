@@ -8,8 +8,9 @@
 
 #include "rlp6001.h"
 #include "clink.h"
-#include "rlh1000.h"
+//#include "rlh1000.h"
 #include "Connect.h"
+#include "bus.h"
 
 Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]

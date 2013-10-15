@@ -14,6 +14,7 @@
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "Connect.h"
+#include "bus.h"
 
 #define DOWN    0
 #define UP              1

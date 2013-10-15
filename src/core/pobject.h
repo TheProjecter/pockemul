@@ -220,6 +220,7 @@ public:
 
 
     void swipeTriggered(QSwipeGesture *gesture);
+    void manageBus();
 signals:
     void msgError(QString);
 

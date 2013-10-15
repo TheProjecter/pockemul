@@ -7,7 +7,8 @@
 #include "Connect.h"
 
 #include "rlp9001.h"
-#include "rlh1000.h"
+//#include "rlh1000.h"
+#include "bus.h"
 
 Crlp9001::Crlp9001(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]

@@ -22,6 +22,7 @@
 // *********************************************************************
 
 #if 1
+#include <QDebug>
 
 #include "hp41.h"
 #include "hp41Cpu.h"
@@ -89,22 +90,22 @@ int Chp41::LoadMOD(
   switch (pMFH->Hardware)
     {
     case HARDWARE_PRINTER:
-      fPrinter=true;
+      fPrinter=currentSlot;
       break;
     case HARDWARE_CARDREADER:
-      fCardReader=true;
+      fCardReader=currentSlot;
       break;
     case HARDWARE_TIMER:
       InitTimer();        // sets fTimer
       break;
     case HARDWARE_WAND:
-      fWand=true;
+      fWand=currentSlot;
       break;
     case HARDWARE_HPIL:
-      fHPIL=true;
+      fHPIL=currentSlot;
       break;
     case HARDWARE_INFRARED:
-      fInfrared=true;
+      fInfrared=currentSlot;
       break;
     case HARDWARE_HEPAX:
     case HARDWARE_NONE:
@@ -281,6 +282,7 @@ int Chp41::LoadMOD(
         strcpy(pNewPage->szName,pMFP->Name);
         strcpy(pNewPage->szID,pMFP->ID);
         pNewPage->Page=pMFP->Page;
+        qWarning()<<"Loaded page:"<<pNewPage->Page;
         pNewPage->ActualPage=page;
         pNewPage->Bank=pMFP->Bank;
         pNewPage->PageGroup=pMFP->PageGroup;
@@ -456,22 +458,22 @@ void Chp41::UnloadMOD(ModuleHeader *pModule)
   switch (pModule->Hardware)
     {
     case HARDWARE_PRINTER:
-      fPrinter=false;
+      fPrinter=-1;
       break;
     case HARDWARE_CARDREADER:
-      fCardReader=false;
+      fCardReader=-1;
       break;
     case HARDWARE_TIMER:
       DeInitTimer();      // clears fTimer
       break;
     case HARDWARE_WAND:
-      fWand=false;
+      fWand=-1;
       break;
     case HARDWARE_HPIL:
-      fHPIL=false;
+      fHPIL=-1;
       break;
     case HARDWARE_INFRARED:
-      fInfrared=false;
+      fInfrared=-1;
       break;
     case HARDWARE_HEPAX:
     case HARDWARE_NONE:

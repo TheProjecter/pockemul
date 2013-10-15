@@ -24,6 +24,7 @@ public:
 
     virtual void Printer(quint8 data);
 
+    void printLine();
 protected:
 
 protected slots:

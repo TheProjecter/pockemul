@@ -203,7 +203,7 @@ CPObject *pPC=0;
 
         case TI57 : pPC = new Cti57;      pPC->setName("TI-57"); break;
         case HP41 : pPC = new Chp41;      pPC->setName("HP-41"); break;
-    case HP82143A : pPC = new Chp82143A;      pPC->setName("HP-82143A Printer"); break;
+    case HP82143A : pPC = new Chp82143A;      pPC->setName("HP82143A"); break;
 
 
         default			: return 0;

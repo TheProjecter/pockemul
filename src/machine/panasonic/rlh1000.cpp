@@ -12,6 +12,7 @@
 #include "ui/dialogdasm.h"
 #include "clink.h"
 #include "dialoganalog.h"
+#include "bus.h";
 
 
 Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
@@ -71,6 +72,8 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     ioFreq = 0;
 
     extrinsic = 0;
+
+    bus = new Cbus();
 }
 
 Crlh1000::~Crlh1000() {
@@ -232,13 +235,13 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                     quint8 t = (*d-0x47FE)/4;
                     lineFE[t] = data;
 
-                    bus.setDest(t);
-                    if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus.getDest(),bus.getData());
-                    bus.setData(data);
-                    bus.setFunc(BUS_SELECT);
+                    bus->setDest(t);
+                    if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
+                    bus->setData(data);
+                    bus->setFunc(BUS_SELECT);
                     manageBus();
-                    if (bus.getFunc()==BUS_READDATA) extrinsic=t;//bus.getDest();
-//                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus.getDest());
+                    if (bus->getFunc()==BUS_READDATA) extrinsic=t;//bus->getDest();
+//                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus->getDest());
 
                     if (fp_log) {
                         fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
@@ -286,14 +289,14 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             fprintf(fp_log," %s\n",pCPU->Regs_String);
         }
 
-        if (fp_log) fprintf(fp_log,"BUS_WRITEDATA DEST=%i  data=%02X\n",bus.getDest(),data);
+        if (fp_log) fprintf(fp_log,"BUS_WRITEDATA DEST=%i  data=%02X\n",bus->getDest(),data);
         if (extrinsic!=0xff) {
-            bus.setDest(extrinsic);
-            bus.setAddr(*d-0x8000);
-            bus.setData(data);
-            bus.setFunc(BUS_WRITEDATA);
+            bus->setDest(extrinsic);
+            bus->setAddr(*d-0x8000);
+            bus->setData(data);
+            bus->setFunc(BUS_WRITEDATA);
             manageBus();
-            //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus.getDest());
+            //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
 
             return false;
         }
@@ -354,14 +357,14 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
                         t =(*d-0x47FC)/4;
 
-                        bus.setDest(t);
-                        if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus.getDest());
-                        bus.setData(0xff);
-                        bus.setFunc(BUS_QUERY);
+                        bus->setDest(t);
+                        if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
+                        bus->setData(0xff);
+                        bus->setFunc(BUS_QUERY);
                         manageBus();
-                        if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus.getData());
+                        if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
 
-                        *data = bus.getData();
+                        *data = bus->getData();
 
                     }
                     if (islineFD) {
@@ -432,22 +435,22 @@ UINT8 Crlh1000::ReadBusMem(UINT32 adr) {
     UINT8 data=0xff;
 
     if (fp_log) {
-        fprintf(fp_log,"BUS=%02X READ RAM [%04X] ",bus.getDest(),adr);
+        fprintf(fp_log,"BUS=%02X READ RAM [%04X] ",bus->getDest(),adr);
         pCPU->Regs_Info(1);
         fprintf(fp_log," %s\n",pCPU->Regs_String);
     }
-    if (fp_log) fprintf(fp_log,"BUS_READDATA DEST=%i  ",bus.getDest());
+    if (fp_log) fprintf(fp_log,"BUS_READDATA DEST=%i  ",bus->getDest());
     if (extrinsic!=0xff) {
-        bus.setDest(extrinsic);
-        bus.setAddr(adr);
-        bus.setData(0xff);
-        bus.setFunc(BUS_READDATA);
+        bus->setDest(extrinsic);
+        bus->setAddr(adr);
+        bus->setData(0xff);
+        bus->setFunc(BUS_READDATA);
         manageBus();
-        if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus.getData());
+        if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus->getData());
 
-        if (bus.getFunc()==BUS_READDATA) {
+        if (bus->getFunc()==BUS_READDATA) {
 
-            data = bus.getData();
+            data = bus->getData();
             if (fp_log) {
                 fprintf(fp_log,"***READ RAM [%04X]=%02X",adr,data);
                 pCPU->Regs_Info(1);
@@ -459,28 +462,7 @@ UINT8 Crlh1000::ReadBusMem(UINT32 adr) {
     return data;
 }
 
-UINT8 Crlh1000::manageBus() {
 
-    // write connector
-
-    Set_Connector();
-
-    // Execute all connected objetcs
-    // WRITE the LINK BOX Connector
-    mainwindow->pdirectLink->clearlog();
-    mainwindow->pdirectLink->Output(this);
-
-    if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
-        mainwindow->dialoganalogic->captureData();
-    }
-    // Read connector
-    Get_Connector();
-
-    // return Connector Data
-
-
-    return bus.getData();
-}
 
 UINT8 Crlh1000::in(UINT8 Port)
 {
@@ -499,14 +481,14 @@ UINT8 Crlh1000::out(UINT8 Port, UINT8 x)
 bool Crlh1000::Set_Connector()
 {
     // transfert busValue to Connector
-    pCONNECTOR->Set_values(bus.toUInt64());
+    pCONNECTOR->Set_values(bus->toUInt64());
     return true;
 }
 
 bool Crlh1000::Get_Connector()
 {
 
-    bus.fromUInt64(pCONNECTOR->Get_values());
+    bus->fromUInt64(pCONNECTOR->Get_values());
 
     return true;
 }
@@ -651,23 +633,3 @@ UINT8 Crlh1000::getKey(quint8 row )
 }
 
 
-quint64 Cbus::toUInt64()
-{
-    quint64 serialized = 0;
-
-    serialized |= (addr & 0xffff);
-    serialized |= (data << 16);
-    serialized |= (dest << 24);
-    quint64 _val = func;
-    serialized |= (_val << 32);
-
-    return serialized;
-}
-
-void Cbus::fromUInt64(quint64 val)
-{
-    addr = val & 0xffff;
-    data = (val >>16) & 0xff;
-    dest = (val >>24) & 0xff;
-    func = (val >>32) & 0xff;
-}
