@@ -93,6 +93,7 @@
 
 #include "ti/ti57.h"
 #include "hp/hp41.h"
+#include "hp/hp82143A.h"
 
 #include "postit.h"
 
@@ -202,6 +203,7 @@ CPObject *pPC=0;
 
         case TI57 : pPC = new Cti57;      pPC->setName("TI-57"); break;
         case HP41 : pPC = new Chp41;      pPC->setName("HP-41"); break;
+    case HP82143A : pPC = new Chp82143A;      pPC->setName("HP-82143A Printer"); break;
 
 
         default			: return 0;

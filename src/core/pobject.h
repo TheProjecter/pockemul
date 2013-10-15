@@ -75,7 +75,7 @@ public:
 
 	QPoint		SnapPts;
 	qreal		RangeFrom(CPObject * target);
-    virtual void ComputeKey(void){}
+    virtual void ComputeKey(void);
 	CPObject	*Parent;
 	CpcXXXX		*pPC;
 	Ckeyb		*pKEYB;

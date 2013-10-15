@@ -48,7 +48,8 @@ public:
 
 	virtual ~Cpc1250()
 	{								//[constructor]
-	}
+    }
+
 protected:
 	BYTE previous_key;
 

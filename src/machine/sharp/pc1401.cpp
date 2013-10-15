@@ -29,6 +29,7 @@ Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= P_RES(":/pc1401/1401symb.png");
     memsize			= 0x10000;
 //		NbSlot		= 3;
+    LeftFname = P_RES(":/pc1250/125xLeft.png");
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1401/cpu-1401.rom"), "pc-1401/cpu-1401.rom" , ROM , "CPU ROM"));

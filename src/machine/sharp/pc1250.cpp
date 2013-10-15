@@ -13,6 +13,10 @@
 #include "sc61860.h"
 #include "Keyb.h"
 #include "Connect.h"
+#include "fluidlauncher.h"
+
+#include "mainwindowpockemul.h"
+extern MainWindowPockemul* mainwindow;
 
 Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
@@ -147,12 +151,10 @@ bool Cpc1250::init()
     return true;
 }
 
+
 bool Cpc1250::run(void)
 {
-    if (KEY(K_SHARP11PINS)) {
-        qWarning()<<"YES";
-        LastKey = 0;
-    }
+
     CpcXXXX::run();
 }
 

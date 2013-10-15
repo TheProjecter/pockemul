@@ -241,6 +241,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["Post-it"]=POSTIT;
     objtable["TI-57"]=TI57;
     objtable["HP-41"]=HP41;
+    objtable["HP82143A"]=HP82143A;
 }
 
 //

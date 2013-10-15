@@ -29,6 +29,7 @@
 #include "weblinksparser.h"
 
 #include "tapandholdgesture.h"
+#include "fluidlauncher.h"
 
 #include "mainwindowpockemul.h"
 
@@ -925,7 +926,20 @@ bool CPObject::LoadSession_File(QXmlStreamReader *)
 qreal CPObject::RangeFrom(CPObject * target)
 {
 	qreal range = QLineF(pos() + SnapPts,target->pos() + target->SnapPts).length();
-	return range;
+    return range;
+}
+
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
+
+void CPObject::ComputeKey()
+{
+    if (KEY(K_SHARP11PINS)) {
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "Sharp_11");
+        launcher->show();
+    }
 }
 
 void CPObject::paintEvent(QPaintEvent *event)
