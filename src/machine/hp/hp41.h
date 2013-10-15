@@ -29,6 +29,7 @@
 
 class Chp41Cpu;
 class CConnector;
+class Cctronics;
 #define LOG(x)
 
 typedef unsigned char flag;
@@ -126,7 +127,7 @@ Q_OBJECT
 
 
 public slots:
-    void addModule(QString item);
+    void addModule(QString item, CPObject *pPC);
 
 public:
   Chp41(CPObject *parent=0);
@@ -143,9 +144,10 @@ public:
   virtual UINT8 out(UINT8 address,UINT8 value);
   virtual void TurnOFF();
 
-  Cconnector *pConnector0,*pConnector1,*pConnector2,*pConnector3;
-  qint64 pConnector0_value,pConnector1_value,pConnector2_value,pConnector3_value;
-
+  Cconnector *pConnector[4];
+  qint64 pConnector_value[4];
+  Cctronics *pCENT[4];
+    int currentSlot;
 
 
 
@@ -373,7 +375,8 @@ public:
 
 
 
-  void mousePressEvent(QMouseEvent *event);
+  void setPortChar(int port, UINT8 c);
+  virtual void ComputeKey();
 };
 
 

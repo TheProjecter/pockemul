@@ -55,6 +55,8 @@
  #include "pictureflow.h"
  #include "pictureflow/launcher.h"
 
+class CPObject;
+
  class FluidLauncher : public QStackedWidget
  {
      Q_OBJECT
@@ -81,7 +83,7 @@
      void computeresize();
 
  signals:
-     void Launched(QString);
+     void Launched(QString,CPObject *);
 
  private:
 

@@ -40,5 +40,9 @@
     <KEY description="space" height="25" left="94" masterscancode="0x00" modifier="" scancode="0x20" top="448" width="28"/>
     <KEY description="." height="25" left="152" masterscancode="0x00" modifier="" scancode="0x2e" top="446" width="28"/>
     <KEY description="R/S" height="25" left="209" masterscancode="0x00" modifier="" scancode="0x233" top="446" width="28"/>
+    <KEY description="Module 1" height="20" left="20" scancode="0x240" top="15" width="120" view="TOP"/>
+    <KEY description="Module 2" height="20" left="150" scancode="0x241" top="15" width="120" view="TOP"/>
+    <KEY description="Module 3" height="20" left="20" scancode="0x242" top="35" width="120" view="TOP"/>
+    <KEY description="Module 4" height="20" left="150" scancode="0x243" top="35" width="120" view="TOP"/>
 </Keyboard>
 </KEYBMAP>

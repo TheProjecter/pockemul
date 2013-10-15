@@ -16,28 +16,21 @@
 #define DOWN	0
 #define UP		1
 
-/*
-TransMap KeyMapce140p[]={
-    {1,	"FEED  ",	K_PFEED,34,234,	9},
-    {2, "PRINTER ON",K_PRINT_ON,34,200,9},
-    {3, "SIO ON",K_PRINT_OFF,35,150,9}
-};
- int KeyMapce140pLenght = 3;
-*/
+
 
 Chp82143A::Chp82143A(CPObject *parent):CprinterCtronics(this) {
 
-    setcfgfname(QString("hp82143A"));
+    setcfgfname(QString("hp82143a"));
     BackGroundFname	= P_RES(":/hp41/hp82143a.png");
 
-    delete pKEYB; pKEYB		= new Ckeyb(this,"hp82143A.map");
+    delete pKEYB; pKEYB		= new Ckeyb(this,"hp82143a.map");
 
-    setDXmm(210);//Pc_DX_mm = 256;
-    setDYmm(145);//Pc_DY_mm = 185;
-    setDZmm(42);//Pc_DZ_mm = 42;
+    setDXmm(180);
+    setDYmm(130);
+    setDZmm(60);
 
-    setDX(750);//Pc_DX	= 895;
-    setDY(518);//Pc_DY	= 615;
+    setDX(643);
+    setDY(464);
 
 
     margin = 40;
@@ -55,7 +48,7 @@ bool Chp82143A::init(void) {
 
     CprinterCtronics::init();
 
-//    qWarning()<<"init done";
+    qWarning()<<"init done";
     return true;
 }
 

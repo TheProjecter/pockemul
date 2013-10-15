@@ -971,7 +971,8 @@ OTHER_FILES += \
     cloud/content/Test.qml \
     cloud/content/Grid.qml \
     resources/keymap/ti57.map \
-    resources/keymap/hp41.map
+    resources/keymap/hp41.map \
+    resources/keymap/hp82143a.map
 
 
 

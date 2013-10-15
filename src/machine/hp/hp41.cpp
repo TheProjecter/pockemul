@@ -19,7 +19,7 @@
 // *********************************************************************
 // HP41.cpp : implementation file
 // *********************************************************************
-#if 1
+
 #include <math.h>
 #include <QDebug>
 #include <QPropertyAnimation>
@@ -35,6 +35,8 @@
 #include "Inter.h"
 #include "init.h"
 #include "Connect.h"
+#include "ctronics.h"
+#include "clink.h"
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
@@ -44,7 +46,7 @@ extern MainWindowPockemul *mainwindow;
 /****************************/
 // Constructor
 /****************************/
-void Chp41::addModule(QString item)
+void Chp41::addModule(QString item,CPObject *pPC)
 {
     qWarning()<<"Add Module:"<< item;
 
@@ -54,6 +56,12 @@ void Chp41::addModule(QString item)
     if (item=="HP41FORTH") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/FORTH.MOD"));
     if (item=="HP41GAMES") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/GAMES.MOD"));
     if (item=="HP41HEPAX") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/HEPAX.MOD"));
+
+    if (pPC) {
+        // Link  object with main pObject
+        mainwindow->pdirectLink->addLink(pConnector[currentSlot],pPC->ConnList.at(0),false);
+    }
+    currentSlot = -1;
 
 }
 
@@ -107,6 +115,10 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     pCPU		= new Chp41Cpu(this);    hp41cpu = (Chp41Cpu*)pCPU;
     pKEYB		= new Ckeyb(this,"hp41.map");
 
+    for (int i=0; i< 4; i++) {
+        pCENT[i] = new Cctronics(this);
+        pCENT[i]->pTIMER = pTIMER;
+    }
 
 }
 
@@ -164,20 +176,20 @@ bool Chp41::init()
     RectIndicator = QRect(3,3,7,7);
 
     // Connectors
-    pConnector0 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 0",false,QPoint(715,50));
-    publish(pConnector0);
-    pConnector1 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
-    publish(pConnector1);
-    pConnector2 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
-    publish(pConnector2);
-    pConnector3 = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
-    publish(pConnector3);
+    pConnector[0] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 0",false,QPoint(715,50));
+    publish(pConnector[0]);
+    pConnector[1] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
+    publish(pConnector[1]);
+    pConnector[2] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
+    publish(pConnector[2]);
+    pConnector[3] = new Cconnector(this,15,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
+    publish(pConnector[3]);
 
     WatchPoint.remove(this);
-    WatchPoint.add(&pConnector0_value,64,15,this,"HP-41 Module 0");
-    WatchPoint.add(&pConnector1_value,64,15,this,"HP-41 Module 1");
-    WatchPoint.add(&pConnector2_value,64,15,this,"HP-41 Module 2");
-    WatchPoint.add(&pConnector3_value,64,15,this,"HP-41 Module 3");
+    WatchPoint.add(&pConnector_value[0],64,15,this,"HP-41 Module 0");
+    WatchPoint.add(&pConnector_value[1],64,15,this,"HP-41 Module 1");
+    WatchPoint.add(&pConnector_value[2],64,15,this,"HP-41 Module 2");
+    WatchPoint.add(&pConnector_value[3],64,15,this,"HP-41 Module 3");
 
     // ROM variables
     for (int page=0;page<=0xf;page++)
@@ -244,21 +256,27 @@ bool Chp41::init()
    return true;
 }
 
-void Chp41::mousePressEvent(QMouseEvent *event) {
-
-    if ( (currentView == TOPview) && (event->button() == Qt::RightButton)) {
-        event->accept();
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
+void Chp41::ComputeKey()
+{
+    int slot = -1;
+    if (KEY(0x240)) slot = 0;
+    if (KEY(0x241)) slot = 1;
+    if (KEY(0x242)) slot = 2;
+    if (KEY(0x243)) slot = 3;
+    qWarning()<<"ComputKey:"<<slot;
+    if (slot>=0) {
+        currentSlot = slot;
         FluidLauncher *launcher = new FluidLauncher(mainwindow,
                                      QStringList()<<P_RES(":/pockemul/configExt.xml"),
                                      FluidLauncher::PictureFlowType,
                                      "hp41");
-        connect(launcher,SIGNAL(Launched(QString)),this,SLOT(addModule(QString)));
+        connect(launcher,SIGNAL(Launched(QString,CPObject *)),this,SLOT(addModule(QString,CPObject *)));
         launcher->show();
     }
-    else {
-        CPObject::mousePressEvent(event);
-    }
 }
+
+
 
 void Chp41::TurnOFF()
 {
@@ -734,125 +752,24 @@ UINT8 Chp41::getKey()
     return code;
 
 }
-#if 0
-byte Chp41::MapKeyToKey(
-  flag fAlt,                  // true if this is an alt key
-  flag fExtended,             // true if this is an extended PC keycode
-  int PCKey)                  // PC keycode
-  {
-  if (fAlt)
-    return(0);
 
-  if (fExtended)
-    {
-    switch (PCKey)
-      {
-      case VK_ENTER:
-        return(0x13);
-      case VK_DIVIDE:
-        return(0x17);
-      }
-    return(0);
+void Chp41::setPortChar(int port,UINT8 c) {
+
+    pConnector[port]->Set_pin((1) ,pCENT[port]->Get_STROBE());
+
+    quint8 d = pCENT[port]->Get_DATA();
+    if ((d>0)&&(d!=0xff)) {
+//        qWarning()<< "centdata"<<d;
     }
+    pConnector[port]->Set_pin(2	,READ_BIT(d,0));
+    pConnector[port]->Set_pin(3	,READ_BIT(d,1));
+    pConnector[port]->Set_pin(4	,READ_BIT(d,2));
+    pConnector[port]->Set_pin(5	,READ_BIT(d,3));
+    pConnector[port]->Set_pin(6	,READ_BIT(d,4));
+    pConnector[port]->Set_pin(7	,READ_BIT(d,5));
+    pConnector[port]->Set_pin(8	,READ_BIT(d,6));
+    pConnector[port]->Set_pin(9	,READ_BIT(d,7));
 
-  if ( (PCKey>=VK_A) && (PCKey<=VK_Z) )
-    return(UnshiftAlphaTable[PCKey-VK_A]);
+    pConnector[port]->Set_pin(31	,pCENT[port]->Get_INIT());
 
-  switch (PCKey)
-    {
-    case VK_F1:
-      return(0);        // HELP
-    case VK_F2:
-      return(0x18);     // ON
-    case VK_F3:
-      return(0xc6);     // USER
-    case VK_F4:
-      return(0xc5);     // PRGM
-    case VK_F5:
-      return(0xc4);     // ALPHA
-    case VK_F6:
-      return(0xc2);     // SST
-    case VK_F7:
-      return(0x87);     // R/S
-    case VK_F8:
-    case VK_F9:
-    case VK_F10:
-    case VK_F11:
-    case VK_F12:
-      return(0);
-    case VK_SHIFT:
-      return(0x12);     // SHIFT
-    case VK_CONTROL:
-      return(1);        // COPY LCD
-    case VK_TAB:
-      return(3);        // TURBO
-    case VK_BACK:
-    case VK_ESCAPE:
-      return(0xc3);     // BACKARROW
-    case VK_OEM_MINUS:  // -_ KEY
-    case VK_SUBTRACT:
-      return(0x14);
-    case VK_OEM_PLUS:   // += KEY
-    case VK_ADD:
-      return(0x15);
-    case VK_MULTIPLY:
-    case VK_OEM_QUOTE:  // '"
-      return(0x16);
-    case VK_OEM_2:      // /? KEY
-    case VK_DIVIDE:
-      return(0x17);
-    case VK_0:
-    case VK_NUMPAD0:
-    case VK_INSERT:
-      return(0x37);
-    case VK_1:
-    case VK_NUMPAD1:
-    case VK_END:
-      return(0x36);
-    case VK_2:
-    case VK_NUMPAD2:
-    case VK_DOWN:
-      return(0x76);
-    case VK_3:
-    case VK_NUMPAD3:
-    case VK_NEXT:
-      return(0x86);
-    case VK_4:
-    case VK_NUMPAD4:
-    case VK_LEFT:
-      return(0x35);
-    case VK_5:
-    case VK_NUMPAD5:
-    case VK_CLEAR:
-      return(0x75);
-    case VK_6:
-    case VK_NUMPAD6:
-    case VK_RIGHT:
-      return(0x85);
-    case VK_7:
-    case VK_NUMPAD7:
-    case VK_HOME:
-      return(0x34);
-    case VK_8:
-    case VK_NUMPAD8:
-    case VK_UP:
-      return(0x74);
-    case VK_9:
-    case VK_NUMPAD9:
-    case VK_PRIOR:
-      return(0x84);
-    case VK_DELETE:
-    case VK_OEM_PERIOD:
-    case VK_DECIMAL:
-    case VK_OEM_COMMA:
-      return(0x77);
-    case VK_SPACE:
-      return(0x37);
-    case VK_ENTER:
-      return(0x13);
-    }
-  return(0);
-  }
-#endif
-
-#endif
+}

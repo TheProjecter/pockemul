@@ -339,14 +339,16 @@ Vibrate();
          // Esc should exit
 
 
-         emit Launched(ItemText);
+         CPObject *_pc=0;
+
          if (mainwindow->objtable.contains(ItemText))
              result = mainwindow->objtable.value(ItemText);
 
          if (result != EMPTY)	{
-             mainwindow->LoadPocket(result);
+             _pc=mainwindow->LoadPocket(result);
              //         parentWidget()->close();
          }
+         emit Launched(ItemText,_pc);
          close();
      }
 
