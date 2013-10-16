@@ -6,6 +6,8 @@
 
 class DialogConsole;
 
+enum HP82143A_MODE { MANUAL_MODE,TRACE_MODE,NORM_MODE };
+
 class Chp82143A:public Cprinter{
 Q_OBJECT
 public:
@@ -45,13 +47,16 @@ public:
     int charsize;
     quint16 getStatus(void);
     void clearPaper();
+
+    HP82143A_MODE Mode;
 protected:
 
 protected slots:
 
 
 private:
-
+    int flow;          /* flag lowercase */
+    int fdwid;         /* flag double width */
 
 };
 

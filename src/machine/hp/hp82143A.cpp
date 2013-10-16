@@ -37,6 +37,9 @@ Chp82143A::Chp82143A(CPObject *parent):Cprinter(this) {
     margin = 40;
     paperWidth = 640;
     setPaperPos(QRect(90,26,400,300));
+
+    Mode = TRACE_MODE;
+    flow = fdwid = 0;
 }
 
 Chp82143A::~Chp82143A() {
@@ -104,7 +107,17 @@ void Chp82143A::clearPaper(void)
 
 quint16 Chp82143A::getStatus(void) {
 
-    return PRINTER_IDLE | PRINTER_BUFEMPTY;
+    quint16 status=0;
+
+    switch (Mode) {
+    case TRACE_MODE: status |= PRINTER_TRACE; break;
+    case NORM_MODE: status |= PRINTER_NORM; break;
+    }
+
+    if (flow) status |= PRINTER_LOWERCASE;
+    if (fdwid) status |= PRINTER_DOUBLE;
+
+    return status | PRINTER_IDLE | PRINTER_BUFEMPTY;
 }
 
 bool Chp82143A::run(void) {
@@ -146,11 +159,10 @@ void Chp82143A::ComputeKey(void)
     if (pKEYB->LastKey == K_PFEED) {
         Printer(0x0d);
     }
-    if (pKEYB->LastKey == K_PRT_COND) {
-        if (charsize==1) charsize=2;
-        else charsize = 1;
-        update();
-    }
+    if (pKEYB->LastKey == K_PRT_NORM) { Mode = NORM_MODE; update(); }
+    if (pKEYB->LastKey == K_PRT_TRACE) { Mode = TRACE_MODE; update(); }
+    if (pKEYB->LastKey == K_PRT_MANUAL) { Mode = MANUAL_MODE; update(); }
+
 //    if (pKEYB->LastKey == K_PRINT_ON) {
 //        printerSwitch = true;
 //    }
@@ -165,8 +177,7 @@ void Chp82143A::Printer(quint8 data) {
     qWarning()<<"Received : "<<data;
     static char buffer[82];     /* line buffer */
     static int buflen=0;        /* line len */
-    static int flow=0;          /* flag lowercase */
-    static int fdwid=0;         /* flag double width */
+
     int i, j;
 
 
@@ -316,6 +327,17 @@ bool Chp82143A::UpdateFinalImage(void) {
 
     QPainter painter;
     painter.begin(FinalImage);
+
+    // Draw switch
+    // MODE SWITCH
+
+    if (Mode == NORM_MODE)
+        painter.drawImage(205,385,QImage(P_RES(":/hp41/hp82143a_mode_norm.png")));
+    if (Mode == MANUAL_MODE)
+        painter.drawImage(205,385,QImage(P_RES(":/hp41/hp82143a_mode_man.png")));
+    if (Mode == TRACE_MODE)
+        painter.drawImage(205,385,BackgroundImageBackup->copy(205,385,69,24));
+
 
     float ratio = ( (float) paperWidget->width() ) / ( paperWidget->bufferImage->width() - paperWidget->getOffset().x() );
 

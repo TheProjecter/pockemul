@@ -20,5 +20,7 @@
         <file>hp41/modimg/module.png</file>
         <file>hp41/modimg/hepax.png</file>
         <file>hp41/hp82143a.png</file>
+        <file>hp41/hp82143a_mode_man.png</file>
+        <file>hp41/hp82143a_mode_norm.png</file>
     </qresource>
 </RCC>
