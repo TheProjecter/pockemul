@@ -6,6 +6,7 @@
 
 class DialogConsole;
 
+
 enum HP82143A_MODE { MANUAL_MODE,TRACE_MODE,NORM_MODE };
 
 class Chp82143A:public Cprinter{
@@ -55,8 +56,10 @@ protected slots:
 
 
 private:
-    int flow;          /* flag lowercase */
-    int fdwid;         /* flag double width */
+    bool flow;          /* flag lowercase */
+    bool fdwid;         /* flag double width */
+    bool fprint;
+    bool fpadv;
 
 };
 

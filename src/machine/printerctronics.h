@@ -63,9 +63,6 @@ public:
     int paperWidth;
     int charsize;
 
-protected slots:
-    void contextMenuEvent ( QContextMenuEvent * );
-
 private:
 
     bool	ctrl_char;

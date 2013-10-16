@@ -31,6 +31,8 @@ public:
     virtual void raise();
 
     QByteArray	TextBuffer;
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
 
 protected:
 	QColor	PaperColor;

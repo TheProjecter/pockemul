@@ -222,22 +222,7 @@ void CprinterCtronics::Printer(quint8 d)
     qWarning()<<"ERROR OLD";
 }
 
-void CprinterCtronics::contextMenuEvent ( QContextMenuEvent * event )
-{
-    QMenu *menu= new QMenu(this);
 
-    BuildContextMenu(menu);
-
-    QMenu * menuPaper = menu->addMenu(tr("Paper"));
-    menuPaper->addAction(tr("Copy Image"),paperWidget,SLOT(paperCopy()));
-    menuPaper->addAction(tr("Copy Text"),paperWidget,SLOT(paperCopyText()));
-    menuPaper->addAction(tr("Cut"),paperWidget,SLOT(paperCut()));
-    menuPaper->addAction(tr("Save Image ..."),paperWidget,SLOT(paperSaveImage()));
-    menuPaper->addAction(tr("Save Text ..."),paperWidget,SLOT(paperSaveText()));
-
-    menu->popup(event->globalPos () );
-    event->accept();
-}
 
 bool CprinterCtronics::UpdateFinalImage(void) {
 

@@ -866,6 +866,7 @@ void CPObject::mouseReleaseEvent(QMouseEvent *event)
         pKEYB->keyPressedList.removeAll(pKEYB->lastMousePressedKey);
         pKEYB->lastMousePressedKey = 0;
         pKEYB->LastKey = 0;
+        ComputeKey();
     }
 
     if ( (parentWidget() != mainwindow->centralwidget)

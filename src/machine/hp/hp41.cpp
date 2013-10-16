@@ -575,79 +575,74 @@ void Chp41::exec_perph_hpil(void) {
 
 
 void Chp41::exec_perph_printer(void)
-  {
-  hp41cpu->r->CARRY=0;
-//  qWarning()<<"exec_perph_printer";
-  if (PageMatrix[6][0]==NULL)  // if no printer ROM
-    return;
-//  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
+{
+    hp41cpu->r->CARRY=0;
+    //  qWarning()<<"exec_perph_printer";
+    if (PageMatrix[6][0]==NULL)  // if no printer ROM
+        return;
+    //  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
 
-  switch(hp41cpu->Tyte1)
+    switch(hp41cpu->Tyte1)
     {
     case 0x003:       /* ?XF 0 or BUSY? */
-      {
-      hp41cpu->r->CARRY = 0;
-      break;
-      }
-    case 0x083:       /* ?XF 2 or ERROR? */
-      {
-      hp41cpu->r->CARRY = 1;
-      break;
-      }
-    case 0x043:       /* ?XF 1 or POWON? */
-      {
-      hp41cpu->r->CARRY = 1;
-      break;
-      }
-    case 0x007:       /* PRshort or BUF=BUF+C */
-      {
-      qWarning() << QString("%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),2,16,QChar('0'));
-      quint8 c= (hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0];
-#if 1
-      bus[fPrinter]->setFunc(BUS_WRITEDATA);
-      bus[fPrinter]->setData(c);
-      manageBus();
-#else
-      pCENT[fPrinter]->newOutChar(c);
-#endif
-
-      qWarning()<<"ouput to printer("<<fPrinter<<"):"<<c;
-      break;
-      }
-    case 0x03a:       /* RPREG 0 or C=STATUS */
-      {
-      bus[fPrinter]->setFunc(BUS_READDATA);
-      bus[fPrinter]->setAddr(0x3a);
-      manageBus();
-      quint8 ret1 = bus[fPrinter]->getData();
-      qWarning()<<"Get Printer Status1:"<<ret1;
-      bus[fPrinter]->setFunc(BUS_READDATA);
-      bus[fPrinter]->setAddr(0x3b);
-      manageBus();
-      quint8 ret2 = bus[fPrinter]->getData();
-      qWarning()<<"Get Printer Status2:"<<ret2;
-
-      UINT16 PRINT_STATUS= (ret1<<8) | ret2;
-      qWarning()<<"Get Printer Status:"<<PRINT_STATUS;
-
-      memset(hp41cpu->r->C_REG,0,sizeof(hp41cpu->r->C_REG));
-      hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS&0xf000)>>12);
-      hp41cpu->r->C_REG[12]=(byte)((PRINT_STATUS&0x0f00)>>8);
-      hp41cpu->r->C_REG[11]=(byte)((PRINT_STATUS&0x00f0)>>4);
-      hp41cpu->r->C_REG[10]=(byte)(PRINT_STATUS&0x000f);
-      break;
-      }
-    case 0x005:       /* RTNCPU or WPREG 01, RTN */
-      {
-      break;
-      }
-    default:
-      {
-      LOG(30);
-      break;
-      }
+    {
+        hp41cpu->r->CARRY = 0;
+        break;
     }
-  }
+    case 0x083:       /* ?XF 2 or ERROR? */
+    {
+        hp41cpu->r->CARRY = 1;
+        break;
+    }
+    case 0x043:       /* ?XF 1 or POWON? */
+    {
+        hp41cpu->r->CARRY = 1;
+        break;
+    }
+    case 0x007:       /* PRshort or BUF=BUF+C */
+    {
+        //      qWarning() << QString("%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),2,16,QChar('0'));
+        quint8 c= (hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0];
+
+        bus[fPrinter]->setFunc(BUS_WRITEDATA);
+        bus[fPrinter]->setData(c);
+        manageBus();
+        break;
+    }
+    case 0x03a:       /* RPREG 0 or C=STATUS */
+    {
+        bus[fPrinter]->setFunc(BUS_READDATA);
+        bus[fPrinter]->setAddr(0x3a);
+        manageBus();
+        quint8 ret1 = bus[fPrinter]->getData();
+//        qWarning()<<"Get Printer Status1:"<<ret1;
+        bus[fPrinter]->setFunc(BUS_READDATA);
+        bus[fPrinter]->setAddr(0x3b);
+        manageBus();
+        quint8 ret2 = bus[fPrinter]->getData();
+//        qWarning()<<"Get Printer Status2:"<<ret2;
+
+        UINT16 PRINT_STATUS= (ret1<<8) | ret2;
+//        qWarning()<<"Get Printer Status:"<<PRINT_STATUS;
+
+        memset(hp41cpu->r->C_REG,0,sizeof(hp41cpu->r->C_REG));
+        hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS&0xf000)>>12);
+        hp41cpu->r->C_REG[12]=(byte)((PRINT_STATUS&0x0f00)>>8);
+        hp41cpu->r->C_REG[11]=(byte)((PRINT_STATUS&0x00f0)>>4);
+        hp41cpu->r->C_REG[10]=(byte)(PRINT_STATUS&0x000f);
+        break;
+    }
+    case 0x005:       /* RTNCPU or WPREG 01, RTN */
+    {
+        break;
+    }
+    default:
+    {
+        LOG(30);
+        break;
+    }
+    }
+}
 
 
 
