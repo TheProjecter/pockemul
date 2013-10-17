@@ -151,7 +151,8 @@ public:
   Cbus *bus[4];
     int currentSlot;
 
-
+    bool SaveConfig(QXmlStreamWriter *xmlOut);
+    bool LoadConfig(QXmlStreamReader *xmlIn);
 
 
 
@@ -188,8 +189,7 @@ public:
   int SaveMOD(ModuleHeader *pModule,char *pszFullPath);
   void UnloadMOD(ModuleHeader *pModule);
   void FreePage(uint page,uint bank);
-  int LoadConfig(char *pszLodFile);
-  int SaveConfig(char *pszLodFile);
+
   int GetUserCode(char *pszUCFile,char *pszError);
   int Catalog1(flag &fFirst,Cat1Label *pLbl);
   int PutUserCode(char *pszUCFile,char *pszError,Cat1Label *pLbl);
@@ -279,6 +279,7 @@ public:
 //  CBrush brushRed,brushGray;
 
   // ROM variables
+  QList<QString> stdModule;
   QList<ModuleHeader*> ModuleList;       // pointers to the loaded modules
   ModulePage *PageMatrix[16][4];         // matrix of page pointers
   ModulePage *pCurPage;                  // current page pointer

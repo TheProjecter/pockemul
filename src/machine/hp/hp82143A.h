@@ -4,8 +4,12 @@
 
 #include "cprinter.h"
 
-class DialogConsole;
+#define PRINTER_CHARACTER_WIDTH_PIXELS 7
+#define PRINTER_WIDTH_CHARS 24
+#define PRINTER_WIDTH (PRINTER_WIDTH_CHARS * PRINTER_CHARACTER_WIDTH_PIXELS)
 
+#define PRINTER_CHARACTER_HEIGHT_PIXELS 7
+#define BUF_MAX 43
 
 enum HP82143A_MODE { MANUAL_MODE,TRACE_MODE,NORM_MODE };
 
@@ -27,7 +31,7 @@ public:
 
     virtual void Printer(quint8 data);
 
-    void printLine();
+    void printLine(bool rightJustified = false);
 
     Cconnector *pCONNECTOR;		qint64 pCONNECTOR_value;
 
@@ -50,16 +54,22 @@ public:
     void clearPaper();
 
     HP82143A_MODE Mode;
+    bool addChar(quint8 c);
 protected:
 
 protected slots:
 
 
 private:
+    QByteArray BufferColumns;
     bool flow;          /* flag lowercase */
     bool fdwid;         /* flag double width */
+    bool fgraph;
     bool fprint;
     bool fpadv;
+    bool feol;
+    bool frjust;
+    bool fignADV;
 
 };
 

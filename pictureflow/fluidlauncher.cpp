@@ -199,9 +199,9 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
 
                  // filter on connectors type and gender
                  if (!connType.isEmpty() && (_connectortype.indexOf(connType)==-1)) continue;
-                 qWarning()<<connType<<" found:"<<_connectortype;
+//                 qWarning()<<connType<<" found:"<<_connectortype;
                  if (!connGender.isEmpty() && (_conngender.indexOf(connGender)==-1)) continue;
-                 qWarning()<<"included";
+//                 qWarning()<<"included";
                  Launcher* newDemo = new Launcher(
                              idpocket.toString(),
                              filename.toString(),

@@ -515,528 +515,66 @@ void Chp41::FreePage(
 // Loads the config file (.LOD) and executes its commands
 // returns 0 if successful, or number of errors
 /****************************/
-int Chp41::LoadConfig(
-  char *pszLodFile)
-  {
-    int nErrors=0;
-#if 0
-  CString sMsg;
-  WFile hLodFile;
-  char *psz,*psz2;
-  char szRegFileName[_MAX_PATH]="";
-  char szROMFileName[_MAX_PATH]="";
-  char szMODFileName[_MAX_PATH]="";
-  char szUCFileName[_MAX_PATH]="";
-  CStringArray UCArray;
-  char szLoadFullPath[_MAX_PATH];
-  char szAppFullPath[_MAX_PATH],app_drive[_MAX_DRIVE],app_dir[_MAX_DIR];
-  char drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
-  word NEW_PC_REG=0x0232;
-  flag fPC_REGSet=false;
+bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
 
-  ::GetModuleFileName(NULL,szAppFullPath,_MAX_PATH);
-  _splitpath(szAppFullPath,app_drive,app_dir,fname,ext);
-  _splitpath(pszLodFile,drive,dir,fname,ext);
-  _makepath(szLoadFullPath,app_drive,app_dir,fname,ext);
-  if (!hLodFile.Open(szLoadFullPath))
-    {
-    sMsg.Format("Unable to open configuration file: %s",szLoadFullPath);
-    AfxMessageBox(sMsg);
-    return(nErrors++);
+    if (xmlIn->readNextStartElement() && (xmlIn->name() == "config") ) {
+        if (xmlIn->readNextStartElement() && xmlIn->name() == "hardlinks" ) {
+            fPrinter = xmlIn->attributes().value("printer").toString().toInt(0,16);
+            fCardReader = xmlIn->attributes().value("cardreader").toString().toInt(0,16);
+            fTimer = xmlIn->attributes().value("timer").toString().toInt(0,16);
+            fWand = xmlIn->attributes().value("wand").toString().toInt(0,16);
+            fHPIL = xmlIn->attributes().value("hpil").toString().toInt(0,16);
+            fInfrared = xmlIn->attributes().value("infrared").toString().toInt(0,16);
+            xmlIn->skipCurrentElement();
+        }
+        if (xmlIn->readNextStartElement() && xmlIn->name() == "modules" ) {
+            while (xmlIn->readNextStartElement() && xmlIn->name() == "module" ) {
+                QString _module = xmlIn->attributes().value("filename").toString();
+                ModuleHeader *pModuleNew;
+                int nRes=LoadMOD(pModuleNew,P_RES(_module.toLatin1().data()));
+                //Returns 0 for success, 1 for open fail, 2 for read fail, 3 for invalid file, 4 for load conflict or no space
+                qWarning()<<P_RES(_module.toLatin1().data())<<" Loaded:"<<nRes;
+                //                qWarning()<<Chp41Mod(P_RES(_module.toLatin1().data())).output_mod_info(1,1);
+                xmlIn->skipCurrentElement();
+            }
+        }
     }
+    xmlIn->skipCurrentElement();
 
-  // free modules and rom pages
-  while (!ModuleList.IsEmpty())
-    {
-    ModuleHeader *pModule=(ModuleHeader *)ModuleList.RemoveTail();
-    UnloadMOD(pModule);
-    }
-
-  while (hLodFile.GetLine())
-    {
-    hLodFile.SkipWhiteSpace();
-    if (hLodFile.LineLength()==0)
-      ;  // ignore blank lines
-    else if ((hLodFile.CurrentChar()==';')||(hLodFile.CurrentChar()=='*'))
-      ;  // comments - do nothing
-    else if (hLodFile.CurrentChar()==':')
-      ;  // ignore register commands for the first pass
-    else if (hLodFile.CurrentChar()=='$')
-      {
-      psz=hLodFile.GetToken();
-      if (!strcmpi(psz,"$MODULE"))
-        {
-        hLodFile.SkipWhiteSpace();
-        psz=hLodFile.GetToken();
-        if (psz[0]==0)
-          {
-          sMsg.Format("MOD file name not specified in $MODULE command - Line:  %d",hLodFile.LineNumber());
-          AfxMessageBox(sMsg);
-          nErrors++;
-          }
-        _makepath(szMODFileName,app_drive,app_dir,psz,"MOD");
-        ModuleHeader *pModuleNew;
-        int nRes=LoadMOD(pModuleNew,szMODFileName);
-        if (nRes)       // some sort of error- try subdir
-          {
-          char app_dir2[_MAX_DIR];
-          strcpy(app_dir2,app_dir);
-          strcat(app_dir2,"MOD");
-          _makepath(szMODFileName,app_drive,app_dir2,psz,"MOD");
-          nRes=LoadMOD(pModuleNew,szMODFileName);
-          }
-        if (nRes==1)
-          {
-          sMsg.Format("File not found: %s",szMODFileName);
-          AfxMessageBox(sMsg);
-          nErrors++;
-          }
-        if (nRes==2)
-          {
-          sMsg.Format("Error reading file: %s",szMODFileName);
-          AfxMessageBox(sMsg);
-          nErrors++;
-          }
-        if (nRes==3)
-          {
-          sMsg.Format("Invalid file format: %s",szMODFileName);
-          AfxMessageBox(sMsg);
-          nErrors++;
-          }
-        if (nRes==4)
-          {
-          sMsg.Format("Load conflict or no space: %s",szMODFileName);
-          AfxMessageBox(sMsg);
-          nErrors++;
-          }
-        }
-      else if (0==strcmpi(psz,"$PAGE"))
-        {
-        sMsg.Format("$PAGE command no longer supported - Line:  %d",hLodFile.LineNumber());
-        AfxMessageBox(sMsg);
-        nErrors++;
-        }
-      // these are all legacy directives used in SDK41 so just ignore them
-      else if (!strcmpi(psz,"$EDITOR"))
-        {
-        }
-      else if (!strcmpi(psz,"$LABELS"))
-        {
-        }
-      else if (!strcmpi(psz,"$RUN"))
-        {
-        }
-      else if (!strcmpi(psz,"$GENLABELS"))
-        {
-        }
-      else if (!strcmpi(psz,"$TYPEMATIC"))
-        {
-        }
-      else if (!strcmpi(psz,"$HOLDTIME"))
-        {
-        }
-      else if (!strcmpi(psz,"$HPIL"))
-        {
-        }
-
-      else if (!strcmpi(psz,"$REG"))
-        {
-        sMsg.Format(".Reg files no longer supported - Line %d",hLodFile.LineNumber());
-        AfxMessageBox(sMsg);
-        nErrors++;
-        }
-      else if (!strcmpi(psz,"$GET"))
-        {
-        UCArray.Add(hLodFile.GetToken());
-        }
-      else     /* not recognised $ command */
-        {
-        sMsg.Format("Unknown command - Line %d",hLodFile.LineNumber());
-        AfxMessageBox(sMsg);
-        nErrors++;
-        }
-
-      }         //  if (hLodFile.CurrentChar()=='$')
-    else
-      {
-      sMsg.Format("Illegal line format - Line %d",hLodFile.LineNumber());
-      AfxMessageBox(sMsg);
-      nErrors++;
-      }
-    }
-
-  MemoryLost();     // this is the default state if no registers are loaded
-
-  // load registers
-  hLodFile.Rewind();
-  while (hLodFile.GetLine())
-    {
-    hLodFile.SkipWhiteSpace();
-    if (hLodFile.LineLength()==0)
-      ; // ignore blank lines
-    else if ((hLodFile.CurrentChar()==';')||(hLodFile.CurrentChar()=='*'))
-      ; // comments - do nothing
-    else if (hLodFile.CurrentChar()=='$')
-      ; // ignore commands
-    else if (hLodFile.CurrentChar()==':')
-      {
-      uint ScanCount=0;           // set this for byte array variables
-      byte *pbReg;                // set this to the variable's addr
-      word MaxVal=0;              // set this for word variables
-      word *pwReg;                // set this to the variable's addr
-      word unused;                // for unused values
-      psz=hLodFile.GetToken();    // get the variable name
-      psz2=hLodFile.GetToken();   // get the value if any
-      if (!strcmpi(psz,":A_REG"))
-        {
-        pbReg=A_REG;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":B_REG"))
-        {
-        pbReg=B_REG;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":C_REG"))
-        {
-        pbReg=C_REG;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":M_REG"))
-        {
-        pbReg=M_REG;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":N_REG"))
-        {
-        pbReg=N_REG;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":DIS_A_REG"))
-        {
-        pbReg=DIS_A_REG;
-        ScanCount=12;
-        }
-      else if (!strcmpi(psz,":DIS_B_REG"))
-        {
-        pbReg=DIS_B_REG;
-        ScanCount=12;
-        }
-      else if (!strcmpi(psz,":DIS_C_REG"))
-        {
-        pbReg=DIS_C_REG;
-        ScanCount=12;
-        }
-      else if (!strcmpi(psz,":CLOCK_A"))
-        {
-        pbReg=CLK_A;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":CLOCK_B"))
-        {
-        pbReg=CLK_B;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":ALARM_A"))
-        {
-        pbReg=ALM_A;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":ALARM_B"))
-        {
-        pbReg=ALM_B;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":TIMER_SCR_A"))
-        {
-        pbReg=SCR_A;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":TIMER_SCR_B"))
-        {
-        pbReg=SCR_B;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":INT_TIMER_A"))  // this is really the interval counter
-        {
-        pbReg=INTV_TV;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":INT_TIMER_B"))  // this is really the interval end value
-        {
-        pbReg=INTV_CNT;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":ACC_FACTOR"))
-        {
-        pbReg=ACC_F;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":TIMER_STATUS"))
-        {
-        pbReg=TMR_S;
-        ScanCount=14;
-        }
-      else if (!strcmpi(psz,":active_bank"))
-        {
-        pbReg=active_bank;
-        ScanCount=16;
-        }
-      else if (!strcmpi(psz,":G_REG"))
-        {
-        pwReg=&G_REG;
-        MaxVal=0xff;
-        }
-      else if (!strcmpi(psz,":F_REG"))
-        {
-        pwReg=&F_REG;
-        MaxVal=0xff;
-        }
-      else if (!strcmpi(psz,":ST_REG"))
-        {
-        pwReg=&ST_REG;
-        MaxVal=0xff;
-        }
-      else if (!strcmpi(psz,":Q_REG"))
-        {
-        pwReg=&Q_REG;
-        MaxVal=13;
-        }
-      else if (!strcmpi(psz,":P_REG"))
-        {
-        pwReg=&P_REG;
-        MaxVal=13;
-        }
-      else if (!strcmpi(psz,":KEY_REG"))
-        {
-        pwReg=&KEY_REG;
-        MaxVal=0xff;
-        }
-      else if (!strcmpi(psz,":XST_REG"))
-        {
-        pwReg=&XST_REG;
-        MaxVal=0x3f;
-        }
-      else if (!strcmpi(psz,":FI_REG"))
-        {
-        pwReg=&FI_REG;
-        MaxVal=0x3fff;
-        }
-      else if (!strcmpi(psz,":CARRY"))
-        {
-        pwReg=&CARRY;
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":KEYDOWN"))
-        {
-        pwReg=&KEYDOWN;
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":BATTERY"))
-        {
-        pwReg=&BATTERY;
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":PC_REG"))
-        {
-        fPC_REGSet=true;
-        pwReg=&NEW_PC_REG;
-        MaxVal=0xffff;
-        }
-      else if (!strcmpi(psz,":RET_STK0"))
-        {
-        pwReg=&RET_STK0;
-        MaxVal=0xffff;
-        }
-      else if (!strcmpi(psz,":RET_STK1"))
-        {
-        pwReg=&RET_STK1;
-        MaxVal=0xffff;
-        }
-      else if (!strcmpi(psz,":RET_STK2"))
-        {
-        pwReg=&RET_STK2;
-        MaxVal=0xffff;
-        }
-      else if (!strcmpi(psz,":RET_STK3"))
-        {
-        pwReg=&RET_STK3;
-        MaxVal=0xffff;
-        }
-      else if (!strcmpi(psz,":DIS_ANNUN_REG"))
-        {
-        pwReg=&DIS_ANNUN_REG;
-        MaxVal=0xfff;
-        }
-      else if (!strcmpi(psz,":sleep_mode"))
-        {
-        pwReg=&eSleepMode;
-        MaxVal=2;
-        }
-      else if (!strcmpi(psz,":dis_mode"))
-        {
-        pwReg=&DisplayOn;
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":x_mem"))
-        {
-        pwReg=&unused;     // x_mem is set when loading or unloading ROMS so ignore this now
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":timer_mod"))
-        {
-        pwReg=&unused;     // timer_mod is set when loading or unloading ROMS so ignore this now
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":perph_in_control"))
-        {
-        pwReg=&perph_in_control;
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":perph_selected"))
-        {
-        pwReg=&perph_selected;
-        MaxVal=0xff;
-        }
-      else if (!strcmpi(psz,":ram_selected"))
-        {
-        pwReg=&ram_selected;
-        MaxVal=MAX_RAM-1;
-        }
-      else if (!strcmpi(psz,":Indicator"))
-        ;  // this goes in registry now
-      else if (!strcmpi(psz,":TIMER_SEL"))
-        {
-        pwReg=&TimerSelA;
-        TimerSelA=!TimerSelA;   // value in file is backwards
-        MaxVal=1;
-        }
-      else if (!strcmpi(psz,":hex_mode"))
-        {
-        uint Val;
-        sscanf(psz2,"%X",&Val);
-        if (Val==1)
-          BASE=16;
-        else if (Val==0)
-          BASE=10;
-        else
-          goto Error;
-        }
-      else if (!strcmpi(psz,":PT_REG"))
-        {
-        uint Val;
-        sscanf(psz2,"%d",&Val);
-        if (Val==1)
-          PT_REG=&Q_REG;
-        else if (Val==0)
-          PT_REG=&P_REG;
-        else
-          goto Error;
-        }
-      else if (!strcmpi(psz,":RAM"))
-        {
-        uint RegIndex;
-        sscanf(psz2,"%X",&RegIndex);
-        if (RegIndex>=MAX_RAM)
-          goto Error;
-        for (int i=6;i>=0;i--)
-          {
-          uint Val;
-          psz2=hLodFile.GetToken();
-          sscanf(psz2,"%X",&Val);
-          if (Val>0xff)
-            goto Error;
-          pRAM[RegIndex].Reg[i]=Val;
-          }
-        }
-      else
-        goto Error;
-      if (ScanCount)
-        {
-        if (ScanCount!=strlen(psz2))    // there better be exactly the right number of chars
-          goto Error;
-        for (signed int i=ScanCount-1;i>=0;i--)
-          {
-          char ch=psz2[ScanCount-1-i];
-          if ((ch>='0')&&(ch<='9'))
-            pbReg[i]=ch-'0';
-          else if  ((ch>='A')&&(ch<='F'))
-            pbReg[i]=ch-'A'+10;
-          else if  ((ch>='a')&&(ch<='f'))
-            pbReg[i]=ch-'a'+10;
-          else
-            goto Error;
-          }
-        }
-      if (MaxVal)
-        {
-        uint Val;
-        sscanf(psz2,"%X",&Val);
-        if (Val>MaxVal)
-          goto Error;
-        *pwReg=Val;
-        }
-      }
-    else
-      {
-      // ignore any other type of line
-      }
-    continue;
-    Error:
-      {
-      sMsg.Format("Illegal line format - Line %d",hLodFile.LineNumber());
-      AfxMessageBox(sMsg);
-      nErrors++;
-      }
-    }
-  hLodFile.Close();
-
-  // normalize values
-  if (fTimer)
-    RestoreTimer();     // converts values and restarts timers
-  if (DisplayOn==1 && eSleepMode==eDeepSleep) // display state and sleep mode are inconsistent - probably since sleep mode is new parameter
-    eSleepMode=eLightSleep;
-  for (uint page=0;page<0xf;page++)
-    if (PageMatrix[page][active_bank[page]-1]==NULL)
-      active_bank[page]=1;
-  if (fPC_REGSet)
-    SetPC(NEW_PC_REG);
-  for (uint hep=5;hep<=0xf;hep++)  // find HEPAX ROM
-    if (PageMatrix[hep][0]!=NULL && PageMatrix[hep][0]->fHEPAX && !PageMatrix[hep][0]->fRAM)
-      {
-      SetPC(0);  // force hepax to do a power on initialize
-      CARRY=1;
-      break;
-      }
-
-  // load any user code programs
-  for (int i=0;i<UCArray.GetSize();i++)
-    {
-    char szError[50]="";
-    _makepath(szUCFileName,drive,dir,UCArray[i],"RAW");
-    if (!GetUserCode(szUCFileName,szError))
-      {
-      sMsg.Format("Error: %s\nFile: %s",szError,szUCFileName);
-      AfxMessageBox(sMsg);
-      nErrors++;
-      }
-    }
-
-  theApp.m_pMainWnd->InvalidateRect(pRectLCD,false);
-  theApp.m_pMainWnd->InvalidateRect(pRectAnnun,false);
-
-#endif
-  return(nErrors);
-  }
+    return true;
+}
 
 
 /****************************/
 // writes out .LOD file
 // returns 0 if successful, or number of errors
 /****************************/
-int Chp41::SaveConfig(
-  char *pszLodFile)
+bool Chp41::SaveConfig(QXmlStreamWriter *xmlOut)
   {
+    xmlOut->writeStartElement("config");
+        xmlOut->writeStartElement("hardlinks");
+            xmlOut->writeAttribute("printer",QString("%1").arg(fPrinter,2,16));
+            xmlOut->writeAttribute("cardreader",QString("%1").arg(fCardReader,2,16));
+            xmlOut->writeAttribute("timer",QString("%1").arg(fTimer,2,16));
+            xmlOut->writeAttribute("wand",QString("%1").arg(fWand,2,16));
+            xmlOut->writeAttribute("hpil",QString("%1").arg(fHPIL,2,16));
+            xmlOut->writeAttribute("infrared",QString("%1").arg(fInfrared,2,16));
+        xmlOut->writeEndElement();
+        xmlOut->writeStartElement("modules");
+        for (int i=0; i< ModuleList.size();i++) {
+            ModuleHeader *pModule = ModuleList.at(i);
+            //        qWarning()<<pModule->szFullFileName;
+            if (!stdModule.contains(pModule->szFullFileName)) {
+                xmlOut->writeStartElement("module");
+                xmlOut->writeAttribute("title",pModule->szTitle);
+                xmlOut->writeAttribute("filename",pModule->szFullFileName);
+                xmlOut->writeEndElement();
+            }
+        }
+        xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
+    return true;
+
 #if 0
   WFile hLodFile;
   HANDLE hTempFile;

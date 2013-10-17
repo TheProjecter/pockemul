@@ -181,11 +181,11 @@ bool Chp41::init()
     // Connectors
     pConnector[0] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 0",false,QPoint(715,50));
     publish(pConnector[0]);
-    pConnector[1] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
+    pConnector[1] = new Cconnector(this,64,1,Cconnector::hp41,"HP-41 Module 1",false,QPoint(715,50));
     publish(pConnector[1]);
-    pConnector[2] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
+    pConnector[2] = new Cconnector(this,64,2,Cconnector::hp41,"HP-41 Module 2",false,QPoint(715,50));
     publish(pConnector[2]);
-    pConnector[3] = new Cconnector(this,64,0,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
+    pConnector[3] = new Cconnector(this,64,3,Cconnector::hp41,"HP-41 Module 3",false,QPoint(715,50));
     publish(pConnector[3]);
 
     for (int i=0;i<4;i++) {
@@ -255,11 +255,15 @@ bool Chp41::init()
     nBreakPts=0;
 
     ModuleHeader *pModuleNew;
-    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
+    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-C.MOD"));
+//    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
 
+    for (int i=0;i<ModuleList.size();i++){
+        stdModule.append(ModuleList.at(i)->szFullFileName);
+    }
     hp41cpu->set_PC(0);
-    qWarning()<<Chp41Mod(P_RES(QString(":/hp41/MOD/NUT-CX.MOD"))).output_mod_info(1,1);
-    qWarning()<<"Load Module:"<<nRes;
+//    qWarning()<<Chp41Mod(P_RES(QString(":/hp41/MOD/NUT-CX.MOD"))).output_mod_info(1,1);
+//    qWarning()<<"Load Module:"<<nRes;
 
 //    StartTrace();
 
