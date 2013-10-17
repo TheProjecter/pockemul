@@ -122,7 +122,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
         pCENT[i] = new Cctronics(this);
         pCENT[i]->pTIMER = pTIMER;
     }
-
+    fPrinter=fCardReader=fTimer=fWand=fHPIL=fInfrared=-1;
 }
 
 
@@ -580,8 +580,10 @@ void Chp41::exec_perph_hpil(void) {
 
 void Chp41::exec_perph_printer(void)
 {
+
+
     hp41cpu->r->CARRY=0;
-    //  qWarning()<<"exec_perph_printer";
+      qWarning()<<"exec_perph_printer:"<<fPrinter;
     if (PageMatrix[6][0]==NULL)  // if no printer ROM
         return;
     //  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
@@ -605,6 +607,7 @@ void Chp41::exec_perph_printer(void)
     }
     case 0x007:       /* PRshort or BUF=BUF+C */
     {
+        if ( (fPrinter<0) || (fPrinter >3)) break;
         //      qWarning() << QString("%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),2,16,QChar('0'));
         quint8 c= (hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0];
 
@@ -615,6 +618,8 @@ void Chp41::exec_perph_printer(void)
     }
     case 0x03a:       /* RPREG 0 or C=STATUS */
     {
+        if ( (fPrinter<0) || (fPrinter >3)) break;
+
         bus[fPrinter]->setFunc(BUS_READDATA);
         bus[fPrinter]->setAddr(0x3a);
         manageBus();

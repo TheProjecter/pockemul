@@ -71,6 +71,8 @@ private:
     bool frjust;
     bool fignADV;
 
+    bool isready;
+
 };
 
 #endif // HP82143A_H

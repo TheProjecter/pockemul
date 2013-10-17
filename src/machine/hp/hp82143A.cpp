@@ -170,6 +170,7 @@ Chp82143A::Chp82143A(CPObject *parent):Cprinter(this) {
 
     Mode = TRACE_MODE;
     flow = fdwid = fprint = fpadv = fgraph = feol = frjust = fignADV = false;
+    isready = false;
 }
 
 Chp82143A::~Chp82143A() {
@@ -203,6 +204,8 @@ bool Chp82143A::init(void) {
 
     settop(10);
     setposX(0);
+
+    isready = true;
     return true;
 }
 
@@ -256,6 +259,8 @@ quint16 Chp82143A::getStatus(void) {
 }
 
 bool Chp82143A::run(void) {
+
+    if (!isready) return true;
 
     Cbus bus;
 

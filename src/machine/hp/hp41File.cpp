@@ -518,15 +518,6 @@ void Chp41::FreePage(
 bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
 
     if (xmlIn->readNextStartElement() && (xmlIn->name() == "config") ) {
-        if (xmlIn->readNextStartElement() && xmlIn->name() == "hardlinks" ) {
-            fPrinter = xmlIn->attributes().value("printer").toString().toInt(0,16);
-            fCardReader = xmlIn->attributes().value("cardreader").toString().toInt(0,16);
-            fTimer = xmlIn->attributes().value("timer").toString().toInt(0,16);
-            fWand = xmlIn->attributes().value("wand").toString().toInt(0,16);
-            fHPIL = xmlIn->attributes().value("hpil").toString().toInt(0,16);
-            fInfrared = xmlIn->attributes().value("infrared").toString().toInt(0,16);
-            xmlIn->skipCurrentElement();
-        }
         if (xmlIn->readNextStartElement() && xmlIn->name() == "modules" ) {
             while (xmlIn->readNextStartElement() && xmlIn->name() == "module" ) {
                 QString _module = xmlIn->attributes().value("filename").toString();
@@ -537,6 +528,16 @@ bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
                 //                qWarning()<<Chp41Mod(P_RES(_module.toLatin1().data())).output_mod_info(1,1);
                 xmlIn->skipCurrentElement();
             }
+        }
+        if (xmlIn->readNextStartElement() && xmlIn->name() == "hardlinks" ) {
+            fPrinter = xmlIn->attributes().value("printer").toInt();
+            qWarning()<<"fprinter="<<fPrinter;
+            fCardReader = xmlIn->attributes().value("cardreader").toInt(0,10);
+            fTimer = xmlIn->attributes().value("timer").toInt(0,10);
+            fWand = xmlIn->attributes().value("wand").toInt(0,10);
+            fHPIL = xmlIn->attributes().value("hpil").toInt(0,10);
+            fInfrared = xmlIn->attributes().value("infrared").toInt(0,10);
+            xmlIn->skipCurrentElement();
         }
     }
     xmlIn->skipCurrentElement();
@@ -552,25 +553,25 @@ bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
 bool Chp41::SaveConfig(QXmlStreamWriter *xmlOut)
   {
     xmlOut->writeStartElement("config");
+    xmlOut->writeStartElement("modules");
+    for (int i=0; i< ModuleList.size();i++) {
+        ModuleHeader *pModule = ModuleList.at(i);
+        //        qWarning()<<pModule->szFullFileName;
+        if (!stdModule.contains(pModule->szFullFileName)) {
+            xmlOut->writeStartElement("module");
+            xmlOut->writeAttribute("title",pModule->szTitle);
+            xmlOut->writeAttribute("filename",pModule->szFullFileName);
+            xmlOut->writeEndElement();
+        }
+    }
+    xmlOut->writeEndElement();
         xmlOut->writeStartElement("hardlinks");
             xmlOut->writeAttribute("printer",QString("%1").arg(fPrinter,2,16));
-            xmlOut->writeAttribute("cardreader",QString("%1").arg(fCardReader,2,16));
-            xmlOut->writeAttribute("timer",QString("%1").arg(fTimer,2,16));
-            xmlOut->writeAttribute("wand",QString("%1").arg(fWand,2,16));
-            xmlOut->writeAttribute("hpil",QString("%1").arg(fHPIL,2,16));
-            xmlOut->writeAttribute("infrared",QString("%1").arg(fInfrared,2,16));
-        xmlOut->writeEndElement();
-        xmlOut->writeStartElement("modules");
-        for (int i=0; i< ModuleList.size();i++) {
-            ModuleHeader *pModule = ModuleList.at(i);
-            //        qWarning()<<pModule->szFullFileName;
-            if (!stdModule.contains(pModule->szFullFileName)) {
-                xmlOut->writeStartElement("module");
-                xmlOut->writeAttribute("title",pModule->szTitle);
-                xmlOut->writeAttribute("filename",pModule->szFullFileName);
-                xmlOut->writeEndElement();
-            }
-        }
+            xmlOut->writeAttribute("cardreader",QString("%1").arg(fCardReader));
+            xmlOut->writeAttribute("timer",QString("%1").arg(fTimer));
+            xmlOut->writeAttribute("wand",QString("%1").arg(fWand));
+            xmlOut->writeAttribute("hpil",QString("%1").arg(fHPIL));
+            xmlOut->writeAttribute("infrared",QString("%1").arg(fInfrared));
         xmlOut->writeEndElement();
     xmlOut->writeEndElement();
     return true;
