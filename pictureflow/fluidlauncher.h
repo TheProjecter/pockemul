@@ -84,6 +84,7 @@ class CPObject;
 
  signals:
      void Launched(QString,CPObject *);
+     void exit();
 
  private:
 

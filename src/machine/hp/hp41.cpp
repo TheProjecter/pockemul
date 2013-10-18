@@ -54,17 +54,43 @@ void Chp41::addModule(QString item,CPObject *pPC)
 
     ModuleHeader *pModuleNew;
 
+    bool customModule = false;
+
     int _res = 0;
-    if (item=="HP82143A") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
-    if (item=="HP41FORTH") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/FORTH.MOD"));
-    if (item=="HP41GAMES") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/GAMES.MOD"));
-    if (item=="HP41HEPAX") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/HEPAX.MOD"));
+    QString moduleName;
+    if (item=="HP82143A") moduleName = P_RES(":/hp41/MOD/PRINTER.MOD");
+    if (item=="HP82160A") moduleName = P_RES(":/hp41/MOD/HPIL.MOD");
+    if (item=="HP82153A") moduleName = P_RES(":/hp41/MOD/WAND.MOD");
+    if (item=="HP41FORTH") moduleName = P_RES(":/hp41/MOD/FORTH.MOD");
+    if (item=="HP41GAMES") moduleName = P_RES(":/hp41/MOD/GAMES.MOD");
+    if (item=="HP41HEPAX") moduleName = P_RES(":/hp41/MOD/HEPAX.MOD");
+    if (item=="HP41MODFILE") {
+        moduleName = QFileDialog::getOpenFileName(
+                    mainwindow,
+                    tr("Choose a MOD file"),
+                    ".",
+                    tr("Module File (*.mod)"));
+        customModule = true;
+        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
+    }
+
+    if (moduleName.isEmpty()) return;
+
+    _res=LoadMOD(pModuleNew,moduleName.toLatin1().data());
+
     qWarning()<<"loaded:"<<_res;
     if (_res == 0) {
         slot[currentSlot].used = true;
         slot[currentSlot].id = pModuleNew->szFullFileName;
         slot[currentSlot].label = pModuleNew->szTitle;
+        slot[currentSlot].pModule = pModuleNew;
+        slot[currentSlot].custom = customModule;
         slotChanged = true;
+        qWarning()<<"module:"<<pModuleNew->szPartNumber;
+    }
+    else {
+        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
+
     }
     if (pPC) {
         // Link  object with main pObject
@@ -278,17 +304,34 @@ bool Chp41::init()
    return true;
 }
 
+extern int ask(QWidget *parent,QString msg,int nbButton);
 #define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
 void Chp41::ComputeKey()
 {
-    int slot = -1;
-    if (KEY(0x240)) slot = 0;
-    if (KEY(0x241)) slot = 1;
-    if (KEY(0x242)) slot = 2;
-    if (KEY(0x243)) slot = 3;
-    qWarning()<<"ComputKey:"<<slot;
+    int _slot = -1;
+    if (KEY(0x240)) _slot = 0;
+    if (KEY(0x241)) _slot = 1;
+    if (KEY(0x242)) _slot = 2;
+    if (KEY(0x243)) _slot = 3;
+    qWarning()<<"ComputKey:"<<_slot;
+    pKEYB->keyPressedList.removeAll(0x240);
+    pKEYB->keyPressedList.removeAll(0x241);
+    pKEYB->keyPressedList.removeAll(0x242);
+    pKEYB->keyPressedList.removeAll(0x243);
+    if (_slot == -1) return;
+    int _response = 0;
+    if (slot[_slot].used)
+        _response=ask(this,"The "+slot[_slot].label+ "is already plugged is this slot. Do you want to unplug it ?",2);
+
+    if (_response == 1) {
+        UnloadMOD(slot[_slot].pModule);
+        slot[_slot].used = false;
+        slotChanged = true;
+    }
+    if (_response==2) return;
+
     if (slot>=0) {
-        currentSlot = slot;
+        currentSlot = _slot;
         FluidLauncher *launcher = new FluidLauncher(mainwindow,
                                      QStringList()<<P_RES(":/pockemul/configExt.xml"),
                                      FluidLauncher::PictureFlowType,
@@ -794,6 +837,15 @@ bool Chp41::Set_Connector(void) {
     }
 }
 
+bool Chp41::InitDisplay(void)
+{
+
+    CpcXXXX::InitDisplay();
+    slotChanged = true;
+
+    return(1);
+}
+
 bool Chp41::UpdateFinalImage(void) {
 
     CpcXXXX::UpdateFinalImage();
@@ -823,7 +875,13 @@ bool Chp41::UpdateFinalImage(void) {
                 // draw label
 //                qWarning()<<"UpdateFinalImage:"<<i<<"="<<slot[i].label;
 //                painter.setPen(QColor("white"));
-                painter.drawText(slotLabelPos[i],Qt::AlignCenter,slot[i].label);
+                QImage *lbl = new QImage(slotLabelPos[0].size(),QImage::Format_ARGB32);
+                lbl->fill(QColor(0,0,0,0));
+                QPainter paintLbl(lbl);
+                paintLbl.setPen(QColor("white"));
+                paintLbl.drawText(QRect(QPoint(0,0),slotLabelPos[0].size()),Qt::AlignCenter,slot[i].label);
+                paintLbl.end();
+                painter.drawImage(slotLabelPos[i].x(),slotLabelPos[i].y(),lbl->mirrored(true));
             }
         }
         painter.end();

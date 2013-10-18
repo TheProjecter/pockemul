@@ -36,6 +36,7 @@
    <example idpocket="HP41FORTH" filename="./" name="Forth" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41GAMES" filename="./" name="Games" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41HEPAX" filename="./" name="Hepax" image=":/hp41/modimg/hepax.png" connectortype="hp41" conngender="male"/>
+   <example idpocket="HP41MODFILE" filename="./" name="External MOD file" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    </demos>
  </demolauncher>
 

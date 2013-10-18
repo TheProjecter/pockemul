@@ -385,6 +385,7 @@ Vibrate();
  void FluidLauncher::exitSlot()
  {
 //     parentWidget()->close();
+     emit exit();
      close();
  }
 

@@ -183,6 +183,8 @@ public:
 
   // HP41File.cpp:
   int LoadMOD(ModuleHeader *&pModuleOut,char *pszFullPath);
+  int LoadMOD(ModuleHeader *&pModuleOut, char *pszFullPath, QByteArray pBuff);
+
   int SaveMOD(ModuleHeader *pModule,char *pszFullPath);
   void UnloadMOD(ModuleHeader *pModule);
   void FreePage(uint page,uint bank);
@@ -357,8 +359,11 @@ public:
       QString id;
       QString label;
       bool used;
+      ModuleHeader *pModule;
+      bool custom;
   } slot[4];
   bool slotChanged;
+  bool InitDisplay();
 };
 
 

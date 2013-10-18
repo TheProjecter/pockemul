@@ -157,7 +157,6 @@ int Chp41Mod::LoadMOD( QString pszFullPath)
   pModule->Original=pMFH->Original;
   pModule->AppAutoUpdate=pMFH->AppAutoUpdate;
   pModule->NumPages=pMFH->NumPages;
-//  ModuleList.append(pModuleNew);
 
 #endif
   return(0);
@@ -477,7 +476,7 @@ QString Chp41Mod::output_mod_info(
   output.append(QString("FILE FORMAT: %1\n").arg(pModule->szFileFormat));
   output.append(QString("TITLE: %1\n").arg(pModule->szTitle));
   output.append(QString("VERSION: %1\n").arg(pModule->szVersion));
-  output.append(QString("PART NUMBER: %1").arg(pModule->szPartNumber));
+  output.append(QString("PART NUMBER: %1\n").arg(pModule->szPartNumber));
   output.append(QString("AUTHOR: %1\n").arg(pModule->szAuthor));
   output.append(QString("COPYRIGHT (c)%1\n").arg(pModule->szCopyright));
   output.append(QString("LICENSE: %1\n").arg(pModule->szLicense));

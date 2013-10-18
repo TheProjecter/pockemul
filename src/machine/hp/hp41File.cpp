@@ -35,10 +35,9 @@ int Chp41::LoadMOD(
   ModuleHeader *&pModuleOut,     // output
   char *pszFullPath)
   {
-#if 1
+
   pModuleOut=NULL;
   QByteArray pBuff;
-  uint page,hep_page=0,ww_page=0;
 
   // open file and read its contents into a buffer
   QFile file(pszFullPath);
@@ -56,9 +55,20 @@ int Chp41::LoadMOD(
       return(2);
   }
 
+  return LoadMOD(pModuleOut,pszFullPath,pBuff);
+}
+
+  int Chp41::LoadMOD(
+    ModuleHeader *&pModuleOut,     // output
+    char *pszFullPath,
+          QByteArray pBuff)
+    {
+
+      uint page,hep_page=0,ww_page=0;
+
   // validate module header
   ModuleFileHeader *pMFH=(ModuleFileHeader*)pBuff.data();
-  if (FileSize != sizeof(ModuleFileHeader)+pMFH->NumPages*sizeof(ModuleFilePage) ||
+  if (pBuff.size() != sizeof(ModuleFileHeader)+pMFH->NumPages*sizeof(ModuleFilePage) ||
     0!=strcmp(pMFH->FileFormat,MOD_FORMAT) || pMFH->MemModules>4 || pMFH->XMemModules>3 ||
     pMFH->Original>1 || pMFH->AppAutoUpdate>1 || pMFH->Category>CATEGORY_MAX || pMFH->Hardware>HARDWARE_MAX)    /* out of range */
     {
@@ -334,7 +344,7 @@ int Chp41::LoadMOD(
     }
 
   NextActualBankGroup++;
-#endif
+
   return(0);
   }
 
@@ -521,11 +531,32 @@ bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
         if (xmlIn->readNextStartElement() && xmlIn->name() == "modules" ) {
             while (xmlIn->readNextStartElement() && xmlIn->name() == "module" ) {
                 QString _module = xmlIn->attributes().value("filename").toString();
+                int _slotID = xmlIn->attributes().value("slot").toInt();
+                bool _custom = xmlIn->attributes().value("custom").toString()=="true" ? true:false;
                 ModuleHeader *pModuleNew;
-                int nRes=LoadMOD(pModuleNew,P_RES(_module.toLatin1().data()));
+                int nRes=0;
+                if  (_custom) {
+                    if (xmlIn->readNextStartElement() && xmlIn->name() == "datahex" ) {
+                        QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1());
+                        nRes = LoadMOD(pModuleNew,_module.toLatin1().data(),ba);
+                    }
+                }
+                else {
+                    nRes=LoadMOD(pModuleNew,P_RES(_module.toLatin1().data()));
+                }
                 //Returns 0 for success, 1 for open fail, 2 for read fail, 3 for invalid file, 4 for load conflict or no space
                 qWarning()<<P_RES(_module.toLatin1().data())<<" Loaded:"<<nRes;
                 //                qWarning()<<Chp41Mod(P_RES(_module.toLatin1().data())).output_mod_info(1,1);
+
+                if (_slotID>=0) {
+                    slot[_slotID].used=true;
+                    slot[_slotID].label = pModuleNew->szTitle;
+                    slot[_slotID].id = pModuleNew->szFullFileName;
+                    slot[_slotID].pModule = pModuleNew;
+                    slot[_slotID].custom = _custom;
+                    slotChanged = true;
+                }
+
                 xmlIn->skipCurrentElement();
             }
         }
@@ -561,6 +592,26 @@ bool Chp41::SaveConfig(QXmlStreamWriter *xmlOut)
             xmlOut->writeStartElement("module");
             xmlOut->writeAttribute("title",pModule->szTitle);
             xmlOut->writeAttribute("filename",pModule->szFullFileName);
+            int _slotID = -1;
+            bool _custom = false;
+            for (int j=0;j<4;j++) {
+                if (pModule == slot[j].pModule) {
+                    _slotID = j;
+                    _custom = slot[j].custom;
+                }
+            }
+            xmlOut->writeAttribute("slot",QString("%1").arg(_slotID));
+            xmlOut->writeAttribute("custom",_custom ? QString("true"):QString("false"));
+            if (_custom) {
+                QFile file(slot[_slotID].id);
+                file.open(QIODevice::ReadOnly);
+                QByteArray ba = file.readAll();
+                QString outHex = "\n";
+                for (int a=0;a<ba.size();a+=16) {
+                    outHex += QString("%1:").arg(a,6,16,QChar('0'))+ba.mid(a,16).toHex()+"\n";
+                }
+                xmlOut->writeTextElement("datahex",outHex);
+            }
             xmlOut->writeEndElement();
         }
     }
