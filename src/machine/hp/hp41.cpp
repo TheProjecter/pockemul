@@ -50,14 +50,22 @@ extern MainWindowPockemul *mainwindow;
 void Chp41::addModule(QString item,CPObject *pPC)
 {
     qWarning()<<"Add Module:"<< item;
+    if ( (currentSlot<0) || (currentSlot>3)) return;
 
     ModuleHeader *pModuleNew;
 
-    if (item=="HP82143A") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
-    if (item=="HP41FORTH") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/FORTH.MOD"));
-    if (item=="HP41GAMES") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/GAMES.MOD"));
-    if (item=="HP41HEPAX") LoadMOD(pModuleNew,P_RES(":/hp41/MOD/HEPAX.MOD"));
-
+    int _res = 0;
+    if (item=="HP82143A") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/PRINTER.MOD"));
+    if (item=="HP41FORTH") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/FORTH.MOD"));
+    if (item=="HP41GAMES") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/GAMES.MOD"));
+    if (item=="HP41HEPAX") _res=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/HEPAX.MOD"));
+    qWarning()<<"loaded:"<<_res;
+    if (_res == 0) {
+        slot[currentSlot].used = true;
+        slot[currentSlot].id = pModuleNew->szFullFileName;
+        slot[currentSlot].label = pModuleNew->szTitle;
+        slotChanged = true;
+    }
     if (pPC) {
         // Link  object with main pObject
         mainwindow->pdirectLink->addLink(pConnector[currentSlot],pPC->ConnList.at(0),false);
@@ -118,11 +126,9 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     pCPU		= new Chp41Cpu(this);    hp41cpu = (Chp41Cpu*)pCPU;
     pKEYB		= new Ckeyb(this,"hp41.map");
 
-    for (int i=0; i< 4; i++) {
-        pCENT[i] = new Cctronics(this);
-        pCENT[i]->pTIMER = pTIMER;
-    }
     fPrinter=fCardReader=fTimer=fWand=fHPIL=fInfrared=-1;
+    for (int i=0;i<4;i++) slot[i].used=false;
+    slotChanged = false;
 }
 
 
@@ -149,7 +155,7 @@ Chp41::~Chp41()
 
 //  free(pRAM);
 
-  SetKeyboard(eKeyboardNone,0,0,0);
+//  SetKeyboard(eKeyboardNone,0,0,0);
   }
 
 
@@ -255,8 +261,8 @@ bool Chp41::init()
     nBreakPts=0;
 
     ModuleHeader *pModuleNew;
-    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-C.MOD"));
-//    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
+//    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-C.MOD"));
+    int nRes=LoadMOD(pModuleNew,P_RES(":/hp41/MOD/NUT-CX.MOD"));
 
     for (int i=0;i<ModuleList.size();i++){
         stdModule.append(ModuleList.at(i)->szFullFileName);
@@ -335,9 +341,7 @@ bool Chp41::run()
         pCPU->set_PC(0);
 
     CpcXXXX::run();
-    for (int i=0;i<4;i++) {
-        pCENT[i]->run();
-    }
+
 
     pTIMER->state+=56;
     return true;
@@ -359,29 +363,29 @@ UINT8 Chp41::out(UINT8 address, UINT8 value)
 
 /*****************************/
 void Chp41::MemoryLost()
-  {
-  if (eKeyboard==eKeyboardNone)
-    return;
-  //BASE=16;
-  for (int page=1;page<=0xf;page++)
-    active_bank[page]=1;
-  pCPU->set_PC(0x0232);
-  ResetTimer();
-  }
+{
+    //  if (eKeyboard==eKeyboardNone)
+    //    return;
+    //BASE=16;
+    for (int page=1;page<=0xf;page++)
+        active_bank[page]=1;
+    pCPU->set_PC(0x0232);
+    ResetTimer();
+}
 
 
 /*****************************/
 void Chp41::EnableRun()
-  {
-  fRunEnable=true;
-  }
+{
+    fRunEnable=true;
+}
 
 
 /*****************************/
 void Chp41::DisableRun()
-  {
-  fRunEnable=false;
-  }
+{
+    fRunEnable=false;
+}
 
 
 
@@ -583,7 +587,7 @@ void Chp41::exec_perph_printer(void)
 
 
     hp41cpu->r->CARRY=0;
-      qWarning()<<"exec_perph_printer:"<<fPrinter;
+//      qWarning()<<"exec_perph_printer:"<<fPrinter;
     if (PageMatrix[6][0]==NULL)  // if no printer ROM
         return;
     //  qWarning()<<QString("exec_perph_printer:%1").arg(hp41cpu->Tyte1,2,16,QChar('0'));
@@ -608,9 +612,9 @@ void Chp41::exec_perph_printer(void)
     case 0x007:       /* PRshort or BUF=BUF+C */
     {
         if ( (fPrinter<0) || (fPrinter >3)) break;
-        //      qWarning() << QString("%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),2,16,QChar('0'));
+              qWarning() << QString("print:%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),4,16,QChar('0'));
         quint8 c= (hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0];
-
+//        qWarning()<<"print:"<<((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0]);
         bus[fPrinter]->setFunc(BUS_WRITEDATA);
         bus[fPrinter]->setData(c);
         manageBus();
@@ -693,8 +697,6 @@ void Chp41::Speaker(short Freq, int Duration)
 
 void Chp41::SetKeyDown(byte KeyCode) {
 
-//  if (eKeyboard==eKeyboardNone)
-//    return;
     if (pKEYB->LastKey)
         fEnableCLRKEY=false;           // disable CLRKEY instruction
     else {
@@ -703,7 +705,6 @@ void Chp41::SetKeyDown(byte KeyCode) {
     }
   hp41cpu->r->KEY_REG= KeyCode ? KeyCode : getKey();
   if (hp41cpu->r->KEY_REG) {
-//      qWarning()<<"Key Pressed:"<<hp41cpu->r->KEY_REG;
       hp41cpu->r->KEYDOWN=true;
   }
 //  if ( (eLightSleep==IsSleeping()) ||                 // light sleep and any key pressed or
@@ -782,39 +783,52 @@ UINT8 Chp41::getKey()
 
 bool Chp41::Get_Connector(void) {
     for (int i=0;i<4;i++) {
-#if 1
         bus[i]->fromUInt64(pConnector[i]->Get_values());
-#else
-        pCENT[i]->Set_ACK( pConnector[i]->Get_pin(10));
-        pCENT[i]->Set_BUSY( pConnector[i]->Get_pin(11));
-        pCENT[i]->Set_ERROR( pConnector[i]->Get_pin(32));
-#endif
     }
 }
 
 bool Chp41::Set_Connector(void) {
-#if 1
+
     for (int i=0;i<4;i++) {
         pConnector[i]->Set_values(bus[i]->toUInt64());
     }
-#else
-    for (int i=0;i<4;i++) {
-        pConnector[i]->Set_pin((1) ,pCENT[i]->Get_STROBE());
+}
 
-        quint8 d = pCENT[i]->Get_DATA();
-        if ((d>0)&&(d!=0xff)) {
-//                    qWarning()<< "centdata"<<d;
+bool Chp41::UpdateFinalImage(void) {
+
+    CpcXXXX::UpdateFinalImage();
+
+
+    // on TOP view, draw installed modules
+    if ((currentView == TOPview) && slotChanged) {
+        InitDisplay();
+        slotChanged = false;
+        QPainter painter;
+        painter.begin(TopImage);
+//        qWarning()<<"UpdateFinalImage:";
+
+        QRect slotLabelPos[4];
+        slotLabelPos[0] = QRect(25,8,100,10);
+        slotLabelPos[1] = QRect(146,8,100,10);
+        slotLabelPos[2] = QRect(25,35,100,10);
+        slotLabelPos[3] = QRect(146,35,100,10);
+
+        QFont font;
+//        font.setFamily("HP41 Character Set");
+        font.setPixelSize(10);
+        painter.setFont(font);
+        painter.setPen(QColor("white"));
+        for (int i=0;i<4;i++) {
+            if (slot[i].used) {
+                // draw label
+//                qWarning()<<"UpdateFinalImage:"<<i<<"="<<slot[i].label;
+//                painter.setPen(QColor("white"));
+                painter.drawText(slotLabelPos[i],Qt::AlignCenter,slot[i].label);
+            }
         }
-        pConnector[i]->Set_pin(2	,READ_BIT(d,0));
-        pConnector[i]->Set_pin(3	,READ_BIT(d,1));
-        pConnector[i]->Set_pin(4	,READ_BIT(d,2));
-        pConnector[i]->Set_pin(5	,READ_BIT(d,3));
-        pConnector[i]->Set_pin(6	,READ_BIT(d,4));
-        pConnector[i]->Set_pin(7	,READ_BIT(d,5));
-        pConnector[i]->Set_pin(8	,READ_BIT(d,6));
-        pConnector[i]->Set_pin(9	,READ_BIT(d,7));
-
-        pConnector[i]->Set_pin(31	,pCENT[i]->Get_INIT());
+        painter.end();
     }
-#endif
+
+
+    return true;
 }

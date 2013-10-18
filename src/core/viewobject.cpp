@@ -135,6 +135,7 @@ QSize CViewObject::currentViewRect() {
 }
 
 QImage * CViewObject::getViewImage(View v) {
+
     switch (v) {
     case FRONTview: return FinalImage;
     case TOPview: return TopImage;
@@ -143,6 +144,7 @@ QImage * CViewObject::getViewImage(View v) {
     case BOTTOMview: return BottomImage;
     case BACKview: return BackImage;
     }
+
     return 0;
 }
 

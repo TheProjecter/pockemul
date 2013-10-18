@@ -22,5 +22,6 @@
         <file>hp41/hp82143a.png</file>
         <file>hp41/hp82143a_mode_man.png</file>
         <file>hp41/hp82143a_mode_norm.png</file>
+        <file>hp41/hp82143a_cover.png</file>
     </qresource>
 </RCC>

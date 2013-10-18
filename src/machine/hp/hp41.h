@@ -31,7 +31,7 @@ class Chp41Cpu;
 class CConnector;
 class Cctronics;
 class Cbus;
-#define LOG(x)
+#define LOG(x) qWarning()<<"ERROR!!!!! "<<x
 
 typedef unsigned char flag;
 typedef unsigned char byte;
@@ -147,7 +147,6 @@ public:
 
   Cconnector *pConnector[4];
   qint64 pConnector_value[4];
-  Cctronics *pCENT[4];
   Cbus *bus[4];
     int currentSlot;
 
@@ -158,9 +157,7 @@ public:
 
 
   enum {eAwake=0,eLightSleep=1,eDeepSleep=2};       // sleep modes
-  void Wakeup(void);
-  void Sleep(int eNewMode);
-  int IsSleeping(void);
+
   void MemoryLost(void);
   void EnableRun(void);
   void DisableRun(void);
@@ -194,16 +191,8 @@ public:
   int Catalog1(flag &fFirst,Cat1Label *pLbl);
   int PutUserCode(char *pszUCFile,char *pszError,Cat1Label *pLbl);
 
-  // HP41Keyboard.cpp:
-  enum {eKeyboardNone=0,eKeyboardTiny=4,eKeyboardSmall=1,eKeyboardMedium=2,eKeyboardLarge=3};
-  enum {eFontLCD1,eFontLCD2,eFontLCD3,eFontLCD4};
   void SetKeyDown(byte KeyCode = 0);
   void SetKeyUp(void);
-  void SetKeyboard(int eKbd,flag fTrueType,flag fShowTitle,flag fShowMenu);
-  int GetKeyboard(void);
-//  byte MapPointToKey(CPoint pt);
-//  byte MapKeyToKey(flag fAlt,flag fExtended,int PCKey);
-  void MoveKey(byte Key,int State);
 
   // HP41Trace.cpp
   void FindGlobalName(uint addr, char *name);  // give address to get label name
@@ -254,21 +243,6 @@ public:
   word PC_LAST,PC_TRACE;  // PC_REG for last executed instruction and for tracing at any address
   word TraceTyte1;        // same as Tyte1 but for tracing use only
 
-  // graphics
-//  BITMAPINFOHEADER *pBMKeyboard;
-//  CBitmap CBMKeyboard;
-//  LOGPALETTE *pPalKeyboard;
-//  BITMAPINFO *pPalIndexKeyboard;
-//  CPalette CPalKeyboard;
-//  flag fUsePal;
-//  RECT ActiveRect;       //Clicks outside this area used for dragging if !MainWindow.ShowTitle
-
-  // keyboard and font
-//  CFont CFontLCD;
-//  CFont CFontAnnun;
-//  RECT *pRectKeyboard;
-//  RECT *pRectLCD;
-//  RECT *pRectAnnun;
   int eKeyboard;                         // current keyboard
   int eFont;                             // current font
   int UseAltPunc;                        // use alternate punc chars (for ttf wider punc chars only)
@@ -276,7 +250,6 @@ public:
   // activity dot
   word Indicator;                        // enables activity indicator
   QRect RectIndicator;
-//  CBrush brushRed,brushGray;
 
   // ROM variables
   QList<QString> stdModule;
@@ -335,13 +308,9 @@ public:
   int nBreakPts;                  // count of breakpoints
   word BreakPts[100];             // ordered list of breakpoints
 
-  word inline GetNextTyte(void);
 
   int RamExist(word addr);
-  void Execute(void);
 
-  void wdata(void);
-  void rdata(void);
 
 
   void DisplayRead(void);
@@ -382,6 +351,14 @@ public:
   virtual void ComputeKey();
   virtual bool Set_Connector(void);
   virtual bool Get_Connector(void);
+  virtual bool UpdateFinalImage();
+
+  struct {
+      QString id;
+      QString label;
+      bool used;
+  } slot[4];
+  bool slotChanged;
 };
 
 

@@ -46,11 +46,11 @@ Chp41Cpu::Chp41Cpu(CPObject *parent):CCPU(parent)
     r = new HP41regs;
 
   // trace
-  hLogFile=NULL;
-  InstSetIndex=0;
-  TEFIndex=0;
-  fTrace=false;
-  memset(szTraceOut,0,sizeof(szTraceOut));
+  hp41->hLogFile=NULL;
+  hp41->InstSetIndex=0;
+  hp41->TEFIndex=0;
+  hp41->fTrace=false;
+  memset(hp41->szTraceOut,0,sizeof(hp41->szTraceOut));
 
 
   // ram registers
@@ -123,8 +123,8 @@ void Chp41Cpu::Reset()
     r->CARRY=0;
     r->KEYDOWN=0;
     r->BATTERY=0;
-    PC_LAST=0;
-    PC_TRACE=0;
+    hp41->PC_LAST=0;
+    hp41->PC_TRACE=0;
     r->PC_REG=0;
     r->RET_STK0=0;
     r->RET_STK1=0;
@@ -144,7 +144,7 @@ void Chp41Cpu::Reset()
     FirstTEF=0;
     LastTEF=0;
 
-    MemoryLost();
+    hp41->MemoryLost();
 }
 
 
@@ -183,7 +183,7 @@ void Chp41Cpu::Wakeup()
 //  if ((hp41->hp41->PageMatrix[0][0]==NULL)||(eKeyboard==eKeyboardNone))     // not fully initialized yet
 //    return;
 //  if (pCurPage==NULL)
-    MemoryLost();
+    hp41->MemoryLost();
 
 //  eSleepMode=eAwake;
   }
@@ -208,68 +208,9 @@ int Chp41Cpu::IsSleeping()
   }
 
 
-/*****************************/
-void Chp41Cpu::MemoryLost()
-  {
-//  if (eKeyboard==eKeyboardNone)
-//    return;
-  r->BASE=16;
-  for (int page=1;page<=0xf;page++)
-    hp41->active_bank[page]=1;
-  set_PC(0x0232);
-  hp41->ResetTimer();
-  }
 
 
-/*****************************/
-// timer for execution loop
-/****************************/
-void Chp41Cpu::ExecuteProc() {
-#if 0
-    for (int i=0;i<pThis->ProcCycles;i++)
-    {
-        if (pThis->GetSoundMode()==eSoundWave)                              // if wave mode, put must be called continuously to minimize clicks
-        {
-            static int SkipSound=0;
-            if (SkipSound)
-                SkipSound--;
-            else if (WaveSound.Put(pThis->F_REG)==-1)                         // returns -1 if failed to open
-                SkipSound=10000;                                                // skip sound for a while because Put() slows way down while waiting for sound board to free up
-        }
-        else if (pThis->IsSleeping())
-            break;
-        if (pThis->GetSoundMode()==eSoundSpeaker || (pThis->TMR_S[2]&0x04)) // override ProcInterval to slow down execution to match real hardware
-        {
-            QueryPerformanceCounter(&pThis->PCCount[0]);	                    // get current count
-            pThis->Execute();                                                 // execute one instruction
-            pThis->PCCount[0].QuadPart+=pThis->InstrNSec;
-            do
-                QueryPerformanceCounter(&pThis->PCCount[1]);
-            while (pThis->PCCount[1].QuadPart < pThis->PCCount[0].QuadPart);  // delay until exact amount of time for real machine cycle has passed
-        }
-        else if (!pThis->IsSleeping())                                      // dont call execute while sleeping because it will execute the next instruction anyway
-            pThis->Execute();                                                 // execute one instruction
-        if (pThis->Boost && i+pThis->Boost>=pThis->ProcCycles)              // boost this loop for a few more cycles
-        {                                                                 // to prevent it from exiting in the middle of heavy display operations
-            i-=pThis->Boost;
-            pThis->Boost=0;
-        }
-        if (pThis->fBreak)                                                  // breakpoint has been raised
-        {
-            theApp.pMainWnd->OpenConsole();
-            theApp.pMainWnd->OpenBreakpoints();
-            pThis->fBreak=false;
-            break;
-        }
-    }
-    if (pThis->Indicator)
-        theApp.m_pMainWnd->InvalidateRect(&pThis->RectIndicator,false);     // activity indicator
-    if (pThis->UpdateDisplay)
-        theApp.m_pMainWnd->InvalidateRect(pThis->pRectLCD,false);           // refresh LCD
-    if (pThis->UpdateAnnun)
-        theApp.m_pMainWnd->InvalidateRect(pThis->pRectAnnun,false);         // refresh Annunciator
-#endif
-}
+
 
 
 
@@ -337,7 +278,7 @@ void Chp41Cpu::Execute()
   {
   if (hp41->GetTrace())
     hp41->TraceOut();
-  PC_LAST=r->PC_REG;
+  hp41->PC_LAST=r->PC_REG;
 
   r->PT_PREV=*(PT_REG);
 
@@ -543,25 +484,25 @@ void Chp41Cpu::Enbank(int BankSet)
 
 /****************************/
 void Chp41Cpu::Subclass1()
-  {
-  if (Modifier==7)
+{
+    if (Modifier==7)
     {
-    /* Not Used */
+        /* Not Used */
     }
-  else if (Modifier==15)            /* ST=0 */
+    else if (Modifier==15)            /* ST=0 */
     {
-    r->ST_REG=0;
+        r->ST_REG=0;
     }
-  else                             /* CF 0-13 */
+    else                             /* CF 0-13 */
     {
-    word nFlag=TypeA[Modifier];
-    if (nFlag<=7)
-      r->ST_REG&=~(1<<nFlag);
-    else
-      r->XST_REG&=~(1<<(nFlag-8));
+        word nFlag=TypeA[Modifier];
+        if (nFlag<=7)
+            r->ST_REG &= ~(1<<nFlag);
+        else
+            r->XST_REG &= ~(1<<(nFlag-8));
     }
-  r->CARRY=0;
-  }
+    r->CARRY = 0;
+}
 
 
 /****************************/

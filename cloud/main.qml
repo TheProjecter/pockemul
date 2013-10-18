@@ -47,7 +47,7 @@ Rectangle {
                 ispublicCloud: false
                 searchText: privateSearchItem.text
                 cacheFileName: "privateCloud.xml"
-                //xml: cloud.loadCache(cacheFileName)
+                xml: cloud.loadCache(cacheFileName)
             }
 //            LineInput {
 //                id: privateSearchItem

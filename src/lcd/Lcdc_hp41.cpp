@@ -79,7 +79,7 @@ void Clcdc_hp41::disp(void)
 //    painter.drawText(pPC->LcdImage->rect(),ba);
     painter.drawText(pPC->LcdImage->rect(),GetLCD());
 
-//    qWarning()<<"Display:"<<GetLCD()<<" : ";
+    qWarning()<<"Display:"<<GetLCD()<<" : ";
 
     Refresh = true;
     redraw = 0;

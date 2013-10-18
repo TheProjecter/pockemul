@@ -754,7 +754,6 @@ SOURCES +=  \
     src/lcd/Lcdc_ti57.cpp \
     src/machine/hp/hp41trace.cpp \
     src/machine/hp/hp41display.cpp \
-    src/machine/hp/hp41Keyboard.cpp \
     src/machine/hp/hp41Timer.cpp \
     src/machine/hp/hp41File.cpp \
     src/machine/hp/hp41Cpu.cpp \
