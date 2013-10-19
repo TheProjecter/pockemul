@@ -66,6 +66,9 @@ void Chp41::addModule(QString item,CPObject *pPC)
     if (item=="HP41HEPAX") moduleName = P_RES(":/hp41/MOD/HEPAX.MOD");
     if (item=="HP41MATH") moduleName = P_RES(":/hp41/MOD/MATH.MOD");
     if (item=="HP41MATHSTAT") moduleName = P_RES(":/hp41/MOD/MATHSTAT.MOD");
+    if (item=="HP41ADVANTAGE") moduleName = P_RES(":/hp41/MOD/ADVANTAGE.MOD");
+    if (item=="HP41CCD") moduleName = P_RES(":/hp41/MOD/CCD.MOD");
+    if (item=="HP41PPC") moduleName = P_RES(":/hp41/MOD/PPC.MOD");
     if (item=="HP41MODFILE") {
         moduleName = QFileDialog::getOpenFileName(
                     mainwindow,

@@ -33,11 +33,14 @@
    <example idpocket="HP82143A" filename="./" name="Printer (non-HP-IL) 82143A" image=":/hp41/modimg/hp82143a.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP82160A" filename="./" name="HP-IL module 82160A" image=":/hp41/modimg/hp82160a.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP82153A" filename="./" name="Optical wand 82153A" image=":/hp41/modimg/hp82153a.png" connectortype="hp41" conngender="male"/>
+   <example idpocket="HP41ADVANTAGE" filename="./" name="Advantage" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
+   <example idpocket="HP41CCD" filename="./" name="CCD" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41FORTH" filename="./" name="Forth" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41GAMES" filename="./" name="Games" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41HEPAX" filename="./" name="Hepax" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41MATH" filename="./" name="Math" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41MATHSTAT" filename="./" name="Math Stat" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
+   <example idpocket="HP41PPC" filename="./" name="PPC-ROM" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP41MODFILE" filename="./" name="External MOD file" image=":/hp41/modimg/module.png" connectortype="hp41" conngender="male"/>
    </demos>
  </demolauncher>
