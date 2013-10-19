@@ -920,8 +920,8 @@ void Chp41Cpu::Subclass9()
     }
   else          /* 0-15 (HP) OR PERTCT 0-9,A-F (OTHERS) */
     {
-    if (hp41->PageMatrix[6][0]==NULL)  // is printer ROM loaded
-      return;
+//    if (hp41->PageMatrix[6][0]==NULL)  // is printer ROM loaded
+//      return;
     perph_in_control=1;
     control_perph=Modifier;
     }

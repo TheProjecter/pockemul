@@ -442,66 +442,64 @@ int Chp41::SaveMOD(
 
 
 /****************************/
-void Chp41::UnloadMOD(ModuleHeader *pModule)
-  {
-#if 1
-  if (pModule==NULL)
-    return;
-  // free associated ROM pages
-  uint page,bank;
-  for (page=0;page<=0xf;page++)
-    for (bank=1;bank<=4;bank++)
-      if (PageMatrix[page][bank-1]!=NULL && PageMatrix[page][bank-1]->pModule==pModule)
-        {
-        FreePage(page,bank);
-        active_bank[page]=1;
-        }
-  // back out any hardware that this module contains
-  if (MemModules>=pModule->MemModules)
-    MemModules-=pModule->MemModules;
-  else
-    MemModules=0;
-  if (XMemModules>=pModule->XMemModules)
-    XMemModules-=pModule->XMemModules;
-  else
-    XMemModules=0;
-  switch (pModule->Hardware)
+void Chp41::UnloadMOD(ModuleHeader *pModule) {
+
+    if (pModule==NULL)
+        return;
+    // free associated ROM pages
+    uint page,bank;
+    for (page=0;page<=0xf;page++)
+        for (bank=1;bank<=4;bank++)
+            if (PageMatrix[page][bank-1]!=NULL && PageMatrix[page][bank-1]->pModule==pModule)
+            {
+                FreePage(page,bank);
+                active_bank[page]=1;
+            }
+    // back out any hardware that this module contains
+    if (MemModules>=pModule->MemModules)
+        MemModules-=pModule->MemModules;
+    else
+        MemModules=0;
+    if (XMemModules>=pModule->XMemModules)
+        XMemModules-=pModule->XMemModules;
+    else
+        XMemModules=0;
+    switch (pModule->Hardware)
     {
     case HARDWARE_PRINTER:
-      fPrinter=-1;
-      break;
+        fPrinter=-1;
+        break;
     case HARDWARE_CARDREADER:
-      fCardReader=-1;
-      break;
+        fCardReader=-1;
+        break;
     case HARDWARE_TIMER:
-      DeInitTimer();      // clears fTimer
-      break;
+        DeInitTimer();      // clears fTimer
+        break;
     case HARDWARE_WAND:
-      fWand=-1;
-      break;
+        fWand=-1;
+        break;
     case HARDWARE_HPIL:
-      fHPIL=-1;
-      break;
+        fHPIL=-1;
+        break;
     case HARDWARE_INFRARED:
-      fInfrared=-1;
-      break;
+        fInfrared=-1;
+        break;
     case HARDWARE_HEPAX:
     case HARDWARE_NONE:
     default:
-      break;
+        break;
     }
-  // delete pointer from list
-  for (int i = 0; i< ModuleList.size(); i++)
-  {
-      if (pModule==(ModuleHeader *)ModuleList.at(i));
-      {
-          ModuleList.removeAt(i);
-          delete pModule;
-          return;
-      }
-  }
-#endif
-  }
+    // delete pointer from list
+    for (int i = 0; i< ModuleList.size(); i++)
+    {
+        if (pModule==ModuleList.at(i))
+        {
+            ModuleList.removeAt(i);
+            delete pModule;
+            return;
+        }
+    }
+}
 
 
 /****************************/

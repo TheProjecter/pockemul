@@ -117,9 +117,9 @@ qWarning()<<time;
 /****************************/
 void Chp41::DeInitTimer()
   {
-  if (!fTimer)
-    return;
-  fTimer=false;
+//  if (!fTimer)
+//    return;
+  fTimer=-1;
 //  if(TimerEvent)
 //    timeKillEvent(TimerEvent);
 //  TimerEvent=NULL;

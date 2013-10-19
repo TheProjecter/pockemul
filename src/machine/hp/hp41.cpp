@@ -64,6 +64,8 @@ void Chp41::addModule(QString item,CPObject *pPC)
     if (item=="HP41FORTH") moduleName = P_RES(":/hp41/MOD/FORTH.MOD");
     if (item=="HP41GAMES") moduleName = P_RES(":/hp41/MOD/GAMES.MOD");
     if (item=="HP41HEPAX") moduleName = P_RES(":/hp41/MOD/HEPAX.MOD");
+    if (item=="HP41MATH") moduleName = P_RES(":/hp41/MOD/MATH.MOD");
+    if (item=="HP41MATHSTAT") moduleName = P_RES(":/hp41/MOD/MATHSTAT.MOD");
     if (item=="HP41MODFILE") {
         moduleName = QFileDialog::getOpenFileName(
                     mainwindow,
@@ -116,9 +118,9 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     SymbFname		= "";
 
     TopFname = P_RES(":/hp41/top.png");
-    BackFname = P_RES(":/hp41/back.png");
-    LeftFname = P_RES(":/hp41/left.png");
-    RightFname = P_RES(":/hp41/right.png");
+//    BackFname = P_RES(":/hp41/back.png");
+//    LeftFname = P_RES(":/hp41/left.png");
+//    RightFname = P_RES(":/hp41/right.png");
 
 
     memsize		= 0x2000;

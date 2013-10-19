@@ -602,13 +602,14 @@ void PictureFlowPrivate::resetSlides()
 
 #define BILINEAR_STRETCH_HOR 4
 #define BILINEAR_STRETCH_VER 4
-#define BACKGROUNDCOLOR Qt::black
+#define BACKGROUNDCOLOR QColor(0,0,0,0) //Qt::black
+#define IMAGEFORMAT QImage::Format_RGB16
 
 static QImage prepareSurface(QImage img, int w, int h)
 {
   Qt::TransformationMode mode = Qt::FastTransformation;//Qt::SmoothTransformation;
   QImage imgtmp  = img.scaled(w, h, Qt::KeepAspectRatio, mode);
-  img = QImage(w,h,QImage::Format_RGB16);
+  img = QImage(w,h,IMAGEFORMAT);
   img.fill(BACKGROUNDCOLOR);
   QPainter painter;
   painter.begin(&img);
@@ -620,7 +621,7 @@ static QImage prepareSurface(QImage img, int w, int h)
   int hofs = h / 3;
 
   // offscreen buffer: black is sweet
-  QImage result(hs, w, QImage::Format_RGB16);
+  QImage result(hs, w, IMAGEFORMAT);
   result.fill(BACKGROUNDCOLOR);
 
   // transpose the image, this is to speed-up the rendering
@@ -678,7 +679,7 @@ QImage* PictureFlowPrivate::surface(int slideIndex)
   {
     if(blankSurface.isNull())
     {
-      blankSurface = QImage(slideWidth, slideHeight, QImage::Format_RGB16);
+      blankSurface = QImage(slideWidth, slideHeight, IMAGEFORMAT);
         blankSurface.fill(BACKGROUNDCOLOR);
       QPainter painter(&blankSurface);
       QPoint p1(slideWidth*4/10, 0);
@@ -820,18 +821,20 @@ void PictureFlowPrivate::render()
 //  qWarning("end render\n");
 }
 
+#if 1
 static inline uint BYTE_MUL_RGB16(uint x, uint a) {
     a += 1;
     uint t = (((x & 0x07e0)*a) >> 8) & 0x07e0;
     t |= (((x & 0xf81f)*(a>>2)) >> 6) & 0xf81f;
     return t;
 }
-
-static inline uint BYTE_MUL_RGB16_32(uint x, uint a) {
+#else
+static inline uint BYTE_MUL_RGB16(uint x, uint a) {
     uint t = (((x & 0xf81f07e0) >> 5)*a) & 0xf81f07e0;
     t |= (((x & 0x07e0f81f)*a) >> 5) & 0x07e0f81f;
     return t;
 }
+#endif
 
 // Renders a slide to offscreen buffer. Returns a rect of the rendered area.
 // alpha=256 means normal, alpha=0 is fully black, alpha=128 half transparent
@@ -985,7 +988,7 @@ void PictureFlowPrivate::recalc(int ww, int wh)
 {
   int w = (ww+1)/2;
   int h = (wh+1)/2;
-  buffer = QImage(ww, wh, QImage::Format_RGB16);
+  buffer = QImage(ww, wh, IMAGEFORMAT);
   buffer.fill(BACKGROUNDCOLOR);
 
   rays.resize(w*2);
