@@ -25,7 +25,7 @@
 CprinterCtronics::CprinterCtronics(CPObject *parent):Cprinter(parent)
 {
     pTIMER = new Ctimer(this);
-    setfrequency( 1000000);
+    setfrequency( 10000000);
     printerACK = false;
     printerBUSY = false;
     printerbuf	= 0;//new QImage(QSize(0, 0),QImage::Format_ARGB32);
@@ -181,7 +181,7 @@ bool CprinterCtronics::run(void)
         UINT8 car = (pCONNECTOR->Get_values() >> 1) & 0xFF;
         AddLog(LOG_PRINTER,tr("RECIEVED CHAR : %1").arg(car,2,16,QChar('0')));
 
-        if (car != 0xff && car !=0x0a) Printer(car);
+        Printer(car);
         printerACK = true;
         pTIMER->resetTimer(6);
     }

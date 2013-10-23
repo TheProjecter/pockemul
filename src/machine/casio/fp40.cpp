@@ -43,6 +43,10 @@ Cfp40::Cfp40(CPObject *parent):CprinterCtronics(this) {
     margin = 40;
     paperWidth = 640;
     setPaperPos(QRect(90,26,400,300));
+
+    escapeSeq= NONE;
+    readCounter= -1;
+    paperfeedsize = 10;
 }
 
 Cfp40::~Cfp40() {
@@ -92,34 +96,106 @@ void Cfp40::ComputeKey(void)
 //    }
 }
 
+
 void Cfp40::Printer(quint8 data) {
     QPainter painter;
 
-
-    if (data == 0x0d){
-        top+=10*2;//charsize;
-        setposX(0);
-        TextBuffer += data;
-//        qWarning()<<"CR PRINTED";
-    }
-    else
-    {
-        if (posX>=(80/charsize)) {
-            top+=10*2;//charsize;
-            setposX(0);
-            TextBuffer += 0x0d;
+    qWarning()<<"RECIEDVED:"<<data<<"="<<QChar(data);
+    switch (escapeSeq) {
+    case NONE :
+        if (data == 0x0a) break;
+        if (data == 0xff) break;
+        if (data == 27) {
+            escapeSeq = WAITCMD;
+            qWarning()<<"ESC RECIEDVED";
+            break;
         }
-//        qWarning()<<"CHAR PRINTED:"<<QChar(data);
-        TextBuffer += data;
-        painter.begin(printerbuf);
-        int x = ((data>>4) & 0x0F)*6;
-        int y = (data & 0x0F) * 8;
-        painter.drawImage(	QRectF( margin + (7 * posX*charsize),top,5*charsize,7*2/*charsize*/),
-                            *charTable,
-                            QRectF( x , y , 5,7));
-        posX++;
-        painter.end();
+
+        if (data == 0x0d){
+            top+=paperfeedsize*2;//charsize;
+            setposX(0);
+            TextBuffer += data;
+            //        qWarning()<<"CR PRINTED";
+        }
+        else
+        {
+            if (posX >= (6*2*80/charsize)) {
+                top+=paperfeedsize*2;//charsize;
+                setposX(0);
+                TextBuffer += 0x0d;
+            }
+            //        qWarning()<<"CHAR PRINTED:"<<QChar(data);
+            TextBuffer += data;
+            painter.begin(printerbuf);
+            int x = ((data>>4) & 0x0F)*6;
+            int y = (data & 0x0F) * 8;
+            painter.drawImage(	QRectF( margin + posX,top,5*charsize,7*2/*charsize*/),
+                                *charTable,
+                                QRectF( x , y , 5,7));
+            posX += 6*charsize;
+            painter.end();
+        }
+        break;
+    case WAITCMD:
+        switch (TOUPPER(data)) {
+        case 'A': escapeSeq = CMD_A; break;
+        case 'K': escapeSeq = CMD_K; break;
+        case 'L': escapeSeq = CMD_L; break;
+        default: // ERROR
+            break;
+        }
+        n1=n2=-1;
+        currentCMD = escapeSeq;
+        break;
+    case CMD_A: if (data==8) paperfeedsize = 8;
+        if (data==12) paperfeedsize = 12;
+        qWarning()<<"paperfeedsize="<<paperfeedsize;
+        escapeSeq = NONE;
+        break;
+    case CMD_K:
+    case CMD_L:
+        if (n1>=0) {
+            n2 = data;
+            readCounter = n1 + 256*n2;
+            qWarning()<<"n2="<<n2<<"  nb="<<readCounter;
+            escapeSeq = READ_DATA;
+            n1=n2=-1;
+        }
+        else {
+            n1 = data;
+            qWarning()<<"n1="<<n1;
+        }
+
+        break;
+    case READ_DATA:
+        qWarning()<<"read DATA:"<<readCounter;
+        readCounter--;
+        readData.append(data);
+        if (readCounter==0) {
+            escapeSeq= NONE;
+            readCounter= -1;
+            // execute command
+            painter.begin(printerbuf);
+            painter.setPen(Qt::black);
+            for (int i=0;i<readData.size();i++) {
+                for (int b=0; b<8;b++)
+                {
+                    if ((readData.at(i)>>(7-b))&0x01) {
+                        painter.drawPoint( margin + posX, top+2*b);
+                        painter.drawPoint( margin + posX, top+2*b+1);
+
+                        painter.drawPoint( margin + posX+1, top+2*b);
+                        painter.drawPoint( margin + posX+1, top+2*b+1);
+                    }
+                }
+                posX++; posX++;
+            }
+            painter.end();
+            readData.clear();
+        }
+        break;
     }
+
 
 
     painter.begin(printerdisplay);

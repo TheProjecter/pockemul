@@ -74,6 +74,7 @@ private:
     bool newKey;
     Models model;
 
+    bool pCENTflip;
 
 };
 

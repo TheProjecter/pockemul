@@ -29,7 +29,13 @@ protected slots:
 
 
 private:
-
+    enum escSEQ {NONE,WAITCMD,CMD_A,CMD_K,CMD_L,READ_DATA};
+    escSEQ escapeSeq;
+    escSEQ currentCMD;
+    int n1,n2;
+    int readCounter;
+    QByteArray readData;
+    int paperfeedsize;
 
 };
 #endif // FP40_H

@@ -110,6 +110,8 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     i80l188ebcpu = (Ci80L188EB*)pCPU;
 
     ioFreq = 0;
+
+    pCENTflip = true;
 }
 
 Cz1::~Cz1() {
@@ -525,7 +527,18 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
         if (( x!=0xff)&&( x!=0x0d)) {
             AddLog(LOG_CONSOLE,tr("%1").arg(QChar(x)));
         }
-        pCENT->newOutChar( x );
+        // The Z1 seemes to send each char followed by 0xff to the printer
+        // For now we will cancel the second char sent if 0xff
+
+        pCENTflip = !pCENTflip;
+        if (pCENTflip) {
+            qWarning()<<"Z1: new CENT Char:"<<x<< "=("<<QChar(x);
+            pCENT->newOutChar( x );
+        }
+        else if (x!=0xff) {
+            pCENT->newOutChar( x );
+            qWarning()<<"Z1: double CENT Char:"<<x<< "=("<<QChar(x);
+        }
         break;
 
     default:
