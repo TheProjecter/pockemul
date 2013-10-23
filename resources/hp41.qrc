@@ -30,5 +30,6 @@
         <file>hp41/modimg/hp82160a.png</file>
         <file>hp41/modimg/module.png</file>
         <file>hp41/modimg/hepax.png</file>
+        <file>hp41/hp41symb.png</file>
     </qresource>
 </RCC>

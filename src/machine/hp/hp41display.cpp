@@ -21,6 +21,7 @@
 //   Executes the Display instructions for Halfnut LCD
 // *********************************************************************
 
+#include <QDebug>
 #if 1
 #include "hp41.h"
 #include "hp41Cpu.h"
@@ -509,25 +510,28 @@ void Chp41::DisplayRotLeft(
 void Chp41::AnnunWrite()
   {
   // 2F0          WRTEN    WRITAN   WRTEN                         ;copy bits from C[2:0] into annunciators
-  DIS_ANNUN_REG=(hp41cpu->r->C_REG[2]<<8) | (hp41cpu->r->C_REG[1]<<4) | hp41cpu->r->C_REG[0];
+
+    DIS_ANNUN_REG=(hp41cpu->r->C_REG[2]<<8) | (hp41cpu->r->C_REG[1]<<4) | hp41cpu->r->C_REG[0];
   UpdateAnnun=1;
+  pLCDC->updated= true;
+  qWarning()<<"AnnunWrite:"<<DIS_ANNUN_REG;
   }
 
 /****************************/
 /* called from subclass A - perph 0x10 */
 /****************************/
 void Chp41::HalfnutWrite()
-  {
-  // REG=C 5
-  if (hp41cpu->Modifier==5)
+{
+    // REG=C 5
+    if (hp41cpu->Modifier==5)
     {
-    SetContrast(hp41cpu->r->C_REG[0]);
-    UpdateDisplay=true;
-    pLCDC->updated = true;
+        SetContrast(hp41cpu->r->C_REG[0]);
+        UpdateDisplay=true;
+        pLCDC->updated = true;
 
-    UpdateAnnun=1;
+        UpdateAnnun=1;
     }
-  }
+}
 
 /****************************/
 /* called from subclass E - perph 0x10 */

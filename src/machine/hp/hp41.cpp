@@ -118,7 +118,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
 
     BackGroundFname	= P_RES(":/hp41/hp41.png");
     LcdFname		= P_RES(":/hp41/hp41lcd.png");
-    SymbFname		= "";
+    SymbFname		= P_RES(":/hp41/hp41symb.png");
 
     TopFname = P_RES(":/hp41/top.png");
 //    BackFname = P_RES(":/hp41/back.png");
@@ -140,16 +140,16 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     setDY(508);
 
     Lcd_X		= 30;
-    Lcd_Y		= 43;
+    Lcd_Y		= 33;
     Lcd_DX		= 220;
     Lcd_DY		= 40;
     Lcd_ratio_X	= 1;
     Lcd_ratio_Y	= 1;
 
-    Lcd_Symb_X	= 55;
-    Lcd_Symb_Y	= 41;
-    Lcd_Symb_DX	= 339;
-    Lcd_Symb_DY	= 5;
+    Lcd_Symb_X	= 35;
+    Lcd_Symb_Y	= 55;
+    Lcd_Symb_DX	= 215;
+    Lcd_Symb_DY	= 7;
     Lcd_Symb_ratio_X	= 1;
 
     pTIMER		= new Ctimer(this);
@@ -687,10 +687,10 @@ void Chp41::exec_perph_printer(void)
 //        qWarning()<<"Get Printer Status:"<<PRINT_STATUS;
 
         memset(hp41cpu->r->C_REG,0,sizeof(hp41cpu->r->C_REG));
-        hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS&0xf000)>>12);
-        hp41cpu->r->C_REG[12]=(byte)((PRINT_STATUS&0x0f00)>>8);
-        hp41cpu->r->C_REG[11]=(byte)((PRINT_STATUS&0x00f0)>>4);
-        hp41cpu->r->C_REG[10]=(byte)(PRINT_STATUS&0x000f);
+        hp41cpu->r->C_REG[13]=(byte)((PRINT_STATUS>>12)&0x0f);
+        hp41cpu->r->C_REG[12]=(byte)((PRINT_STATUS>>8)&0x0f);
+        hp41cpu->r->C_REG[11]=(byte)((PRINT_STATUS>>4)&0x0f);
+        hp41cpu->r->C_REG[10]=(byte)( PRINT_STATUS&0x0f);
         break;
     }
     case 0x005:       /* RTNCPU or WPREG 01, RTN */

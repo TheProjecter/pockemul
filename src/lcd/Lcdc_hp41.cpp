@@ -30,8 +30,28 @@ QByteArray ConvertASCIItoLCD(QByteArray *ba)
   return out;
   }
 
+
 void Clcdc_hp41::disp_symb(void)
 {
+    delete pPC->SymbImage;
+    pPC->SymbImage = pPC->CreateImage(QSize(pPC->Lcd_Symb_DX, pPC->Lcd_Symb_DY),pPC->SymbFname,false,false,0);
+    QPainter painter(pPC->SymbImage);
+
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    if (! (hp41->DIS_ANNUN_REG&0x0800)) {painter.fillRect(0,0,18,8,Qt::transparent); }// bat
+    if (! (hp41->DIS_ANNUN_REG&0x0400)) {painter.fillRect(24,0,24,8,Qt::transparent); }// user
+    if (! (hp41->DIS_ANNUN_REG&0x0200)) {painter.fillRect(54,0,6,8,Qt::transparent); }// g
+    if (! (hp41->DIS_ANNUN_REG&0x0100)) {painter.fillRect(60,0,18,8,Qt::transparent); }// rad
+    if (! (hp41->DIS_ANNUN_REG&0x0080)) {painter.fillRect(84,0,30,8,Qt::transparent); }// shift
+    if (! (hp41->DIS_ANNUN_REG&0x0040)) {painter.fillRect(120,0,6,8,Qt::transparent); }// 0
+    if (! (hp41->DIS_ANNUN_REG&0x0020)) {painter.fillRect(126,0,6,8,Qt::transparent); }// 1
+    if (! (hp41->DIS_ANNUN_REG&0x0010)) {painter.fillRect(132,0,6,8,Qt::transparent); }// 2
+    if (! (hp41->DIS_ANNUN_REG&0x0008)) {painter.fillRect(138,0,6,8,Qt::transparent); }// 3
+    if (! (hp41->DIS_ANNUN_REG&0x0004)) {painter.fillRect(144,0,6,8,Qt::transparent); }// 4
+    if (! (hp41->DIS_ANNUN_REG&0x0002)) {painter.fillRect(156,0,24,8,Qt::transparent); }// prgm
+    if (! (hp41->DIS_ANNUN_REG&0x0001)) {painter.fillRect(186,0,30,8,Qt::transparent); }// alpha
+
+    painter.end();
 }
 
 void Clcdc_hp41::disp(void)
@@ -79,7 +99,9 @@ void Clcdc_hp41::disp(void)
 //    painter.drawText(pPC->LcdImage->rect(),ba);
     painter.drawText(pPC->LcdImage->rect(),GetLCD());
 
-    qWarning()<<"Display:"<<GetLCD()<<" : ";
+    disp_symb();
+
+//    qWarning()<<"Display:"<<GetLCD()<<" : ";
 
     Refresh = true;
     redraw = 0;
