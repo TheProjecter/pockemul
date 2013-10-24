@@ -532,12 +532,12 @@ UINT8 Cz1::out8(UINT16 Port, UINT8 x)
 
         pCENTflip = !pCENTflip;
         if (pCENTflip) {
-            qWarning()<<"Z1: new CENT Char:"<<x<< "=("<<QChar(x);
+//            qWarning()<<"Z1: new CENT Char:"<<x<< "=("<<QChar(x);
             pCENT->newOutChar( x );
         }
         else if (x!=0xff) {
             pCENT->newOutChar( x );
-            qWarning()<<"Z1: double CENT Char:"<<x<< "=("<<QChar(x);
+//            qWarning()<<"Z1: double CENT Char:"<<x<< "=("<<QChar(x);
         }
         break;
 

@@ -181,14 +181,14 @@ void CPObject::maximizeHeight()
             mainwindow->MoveAll(- rs.topLeft());
             fullscreenMode = true;
             grabGesture(Qt::SwipeGesture);
-            qWarning()<<"GrabGesture SwipeGesture";
+//            qWarning()<<"GrabGesture SwipeGesture";
         }
     }
     else {
         mainwindow->doZoom(QPoint(0,0),-1,mainwindow->zoom-100);
         fullscreenMode = false;
         ungrabGesture(Qt::SwipeGesture);
-        qWarning()<<"unGrab Gesture SwipeGesture";
+//        qWarning()<<"unGrab Gesture SwipeGesture";
     }
 }
 
@@ -574,7 +574,7 @@ void CPObject::tapAndHold(QMouseEvent * event)
 
 void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    qWarning()<<"CPObject::mouseDoubleClickEvent";
+//    qWarning()<<"CPObject::mouseDoubleClickEvent";
     // Check if we clic a key
     QPoint pts(event->x() , event->y());
     if ((pKEYB) &&(pKEYB->KeyClick(pts))) {
@@ -631,7 +631,7 @@ void CPObject::mouseDoubleClickEvent(QMouseEvent *event)
 extern void Vibrate();
 void CPObject::mousePressEvent(QMouseEvent *event)
 {
-    qWarning()<<"CPObject::mousePressEvent"<<event;
+//    qWarning()<<"CPObject::mousePressEvent"<<event;
     CViewObject::mousePressEvent(event);
 
     if (event->button() != Qt::LeftButton) {

@@ -159,7 +159,7 @@ void CViewObject::flip(Direction dir) {
     targetSize = viewRect(targetView);
     currentFlipDir = dir;
 
-    qWarning()<<"targetdir:"<<targetSize;
+//    qWarning()<<"targetdir:"<<targetSize;
 
     QPropertyAnimation *animation1 = new QPropertyAnimation(this, "angle");
     QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
@@ -322,7 +322,7 @@ void CViewObject::changeGeometry(int newposx,int newposy,int newwidth,int newhei
 void CViewObject::mousePressEvent(QMouseEvent *event) {
     // if click on the border
     // width ?
-qWarning()<<"CViewObject::mousePressEvent"<<event;
+//qWarning()<<"CViewObject::mousePressEvent"<<event;
     Direction dir = borderClick(event->pos());
 
     targetView = currentView;

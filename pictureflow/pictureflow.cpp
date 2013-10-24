@@ -607,6 +607,7 @@ void PictureFlowPrivate::resetSlides()
 
 static QImage prepareSurface(QImage img, int w, int h)
 {
+//    qWarning()<<"before prepareSurface";
   Qt::TransformationMode mode = Qt::FastTransformation;//Qt::SmoothTransformation;
   QImage imgtmp  = img.scaled(w, h, Qt::KeepAspectRatio, mode);
   img = QImage(w,h,IMAGEFORMAT);
@@ -659,6 +660,7 @@ static QImage prepareSurface(QImage img, int w, int h)
   result = result.scaled(hh, ww, Qt::KeepAspectRatio, mode);
 #endif
 
+//  qWarning()<<"after prepareSurface";
   return result;
 }
 
@@ -666,6 +668,7 @@ static QImage prepareSurface(QImage img, int w, int h)
 // if it does not exist, create it and place it in the cache
 QImage* PictureFlowPrivate::surface(int slideIndex)
 {
+//    qWarning()<<"Before surface";
   if(slideIndex < 0)
     return 0;
   if(slideIndex >= slideImages.count())
@@ -700,6 +703,8 @@ QImage* PictureFlowPrivate::surface(int slideIndex)
   }
 
   surfaceCache.insert(slideIndex, new QImage(prepareSurface(img, slideWidth, slideHeight)));
+
+//  qWarning()<<"After surface";
   return surfaceCache[slideIndex];
 }
 

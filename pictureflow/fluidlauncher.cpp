@@ -40,6 +40,7 @@
  ****************************************************************************/
 
  #include <QXmlStreamReader>
+#include <QtConcurrent/QtConcurrent>
 
  #include "fluidlauncher.h"
 #include "init.h"
@@ -94,9 +95,13 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
         success = loadConfig(Config);
 //qWarning()<<"After LoadConfig";
         if (success) {
-//qWarning()<<"Berfore PopulatePictureFlow";
+#ifdef Q_OS_ANDROID
+qWarning()<<"Berfore PopulatePictureFlow";
+    QtConcurrent::run(this,&FluidLauncher::populatePictureFlow);
+qWarning()<<"After PopulatePictureFlow";
+#else
             populatePictureFlow();
-//qWarning()<<"After PopulatePictureFlow";
+#endif
             //        qWarning("CFL 4\n");
             //        show();
         }else { pictureFlowWidget->close();  }
@@ -298,12 +303,13 @@ FluidLauncher::FluidLauncher(QWidget * parent, QStringList config, LaunchType ty
 
      for (int i=demoList.count()-1; i>=0; --i) {
 //         qWarning()<<"Before reading image:";
-         QImage *img = demoList[i]->getImage();
+         QImage *img = demoList.at(i)->getImage();
 //         qWarning()<<"After reading image:";
          pictureFlowWidget->setSlide(i, *img);
          pictureFlowWidget->setSlideCaption(i, demoList[i]->getCaption());
          pictureFlowWidget->setSlideDescription(i,demoList[i]->getDescription());
          delete img;
+//         qWarning()<<"After assigning image:";
      }
 
      pictureFlowWidget->setCurrentSlide(demoList.count()/2);

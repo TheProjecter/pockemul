@@ -100,14 +100,14 @@ void Cfp40::ComputeKey(void)
 void Cfp40::Printer(quint8 data) {
     QPainter painter;
 
-    qWarning()<<"RECIEDVED:"<<data<<"="<<QChar(data);
+//    qWarning()<<"RECIEDVED:"<<data<<"="<<QChar(data);
     switch (escapeSeq) {
     case NONE :
         if (data == 0x0a) break;
         if (data == 0xff) break;
         if (data == 27) {
             escapeSeq = WAITCMD;
-            qWarning()<<"ESC RECIEDVED";
+//            qWarning()<<"ESC RECIEDVED";
             break;
         }
 
@@ -149,7 +149,7 @@ void Cfp40::Printer(quint8 data) {
         break;
     case CMD_A: if (data==8) paperfeedsize = 8;
         if (data==12) paperfeedsize = 12;
-        qWarning()<<"paperfeedsize="<<paperfeedsize;
+//        qWarning()<<"paperfeedsize="<<paperfeedsize;
         escapeSeq = NONE;
         break;
     case CMD_K:
@@ -157,18 +157,18 @@ void Cfp40::Printer(quint8 data) {
         if (n1>=0) {
             n2 = data;
             readCounter = n1 + 256*n2;
-            qWarning()<<"n2="<<n2<<"  nb="<<readCounter;
+//            qWarning()<<"n2="<<n2<<"  nb="<<readCounter;
             escapeSeq = READ_DATA;
             n1=n2=-1;
         }
         else {
             n1 = data;
-            qWarning()<<"n1="<<n1;
+//            qWarning()<<"n1="<<n1;
         }
 
         break;
     case READ_DATA:
-        qWarning()<<"read DATA:"<<readCounter;
+//        qWarning()<<"read DATA:"<<readCounter;
         readCounter--;
         readData.append(data);
         if (readCounter==0) {
