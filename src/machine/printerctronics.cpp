@@ -76,6 +76,11 @@ void CprinterCtronics::SaveAsText(void)
 /*****************************************************/
 void CprinterCtronics::clearPaper(void)
 {
+    // resize to initial height : 1000
+    QImage *_tmp = printerbuf;
+    printerbuf = new QImage(_tmp->width(),1000,QImage::Format_ARGB32);
+    paperWidget->bufferImage = printerbuf;
+    delete _tmp;
     // Fill it blank
     printerbuf->fill(PaperColor.rgba());
     printerdisplay->fill(QColor(255,255,255,0).rgba());
@@ -84,6 +89,7 @@ void CprinterCtronics::clearPaper(void)
     // empty TextBuffer
     TextBuffer.clear();
     paperWidget->updated = true;
+    update();
 }
 
 
@@ -100,7 +106,7 @@ bool CprinterCtronics::init(void)
 
     // Create CE-126 Paper Image
     // The final paper image is 207 x 149 at (277,0) for the ce125
-    printerbuf	= new QImage(QSize(paperWidth, 3000),QImage::Format_ARGB32);
+    printerbuf	= new QImage(QSize(paperWidth, 1000),QImage::Format_ARGB32);
     printerdisplay= new QImage(QSize(paperWidth, 149),QImage::Format_ARGB32);
 
     paperWidget = new CpaperWidget(PaperPos(),printerbuf,this);
@@ -201,6 +207,21 @@ bool CprinterCtronics::run(void)
     pCONNECTOR_value = pCONNECTOR->Get_values();
 
 
+    // Expand paper size if limit reached
+    int _height = printerbuf->height();
+    if (top >= (_height-500)) {
+        qWarning()<<"increase size:"<<_height;
+        QImage *_tmp = printerbuf;
+        printerbuf = new QImage(_tmp->width(),_height+500,QImage::Format_ARGB32);
+        printerbuf->fill(PaperColor.rgba());
+
+        qWarning()<<"increased size:"<<printerbuf->size();
+        QPainter painter(printerbuf);
+        painter.drawImage(0,0,*_tmp);
+        painter.end();
+        paperWidget->bufferImage = printerbuf;
+        delete _tmp;
+    }
     return true;
 
 }
