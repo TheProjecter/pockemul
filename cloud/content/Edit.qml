@@ -55,6 +55,7 @@ Rectangle {
 //            anchors.centerIn: root
             //focus: true
             wrapMode: TextEdit.Wrap
+            textFormat: TextEdit.PlainText
             onCursorRectangleChanged: flick.ensureVisible(cursorRectangle)
         }
     }

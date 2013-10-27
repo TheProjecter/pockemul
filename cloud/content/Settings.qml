@@ -9,12 +9,30 @@ Rectangle {
 
 //        SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
         SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://rrouvin.dyndns.org/pocketcloud/"}
+        SettingsDelegate { id: nameFld; name: "name"; labelString: "Name"; type: "input"; }
+        SettingsDelegate { id: emailFld; name: "email"; labelString: "Email"; type: "input"; }
         SettingsDelegate { id: usernameFld; name: "username"; labelString: "User Name"; type: "input"; }
         SettingsDelegate { id: passwordFld; name: "password"; labelString: "Password"; type: "input"; echoMode: TextInput.Password; }
+        SettingsDelegate { id: passwordFld2; name: "password2"; labelString: "Confirm Password"; type: "input"; echoMode: TextInput.Password; saveInput:false;}
+        SettingsDelegate { name: "registercloud"; labelString: "Register elgg"; type: "action"; saveInput:false;
+            onButtonClicked: {
+                if (passwordFld.inputText != passwordFld2.inputText) {
+                    apikey.inputText = "Passwords mismatch !.";
+                    return;
+                }
+
+                root.user_register(nameFld.inputText,
+                                   emailFld.inputText,
+                                   usernameFld.inputText,
+                                   passwordFld.inputText);
+            }
+        }
+
         SettingsDelegate { name: "apikey"; labelString: "Login"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
-
+                root.user_login(usernameFld.inputText,passwordFld.inputText);
+                return;
                 var key = cloud.generateKey(usernameFld.inputText,passwordFld.inputText);
                 serverURL = cloud.getValueFor("serverURL","");
                 var url = serverURL+'login?username='+encodeURIComponent(usernameFld.inputText)+'&key='+encodeURIComponent(key);
@@ -38,7 +56,6 @@ Rectangle {
                 });
             }
         }
-        SettingsDelegate { id: passwordFld2; name: "password2"; labelString: "Confirm Password"; type: "input"; echoMode: TextInput.Password; saveInput:false;}
         SettingsDelegate { name: "register"; labelString: "Register new user"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
@@ -70,6 +87,7 @@ Rectangle {
             }
         }
         SettingsDelegate { id: apikey; name: "out"; labelString: "Retrieved Key"; type: "input"; saveInput:false; }
+
     }
 
     ListView {

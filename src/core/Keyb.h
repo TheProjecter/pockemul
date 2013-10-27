@@ -112,6 +112,9 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_PRT_TRACE 0xca
 #define K_PRT_NORM  0xcb
 #define K_PRT_MANUAL  0xcc
+#define K_PRT_INT_MIN 0xcd
+#define K_PRT_INT_NORM 0xce
+#define K_PRT_INT_MAX 0xcf
 
 #define K_EJECT		0xd0
 #define K_PLAY		0xd1

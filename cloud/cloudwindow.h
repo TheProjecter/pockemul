@@ -25,8 +25,8 @@ public:
     virtual QSize sizeHint() const;
 
 
-    Q_INVOKABLE void getPML(int id);
-    Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue);
+    Q_INVOKABLE void getPML(int id, int version=0, QString auth_token = QString());
+    Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue = QString());
     Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
     Q_INVOKABLE QByteArray generateKey(QString username, QString password);
 
@@ -47,6 +47,7 @@ private slots:
 
     void sendPML(const QString &filePath);
     void downloadFinished();
+    void downloadFinished2();
     void finishedSave(QNetworkReply* reply);
 
 private:

@@ -240,7 +240,10 @@ qWarning()<<"After PopulatePictureFlow";
              if (xml.readNextStartElement()) {
                  QString elt = xml.name().toString();
                  if (elt=="snapshot")  {
-                     img.loadFromData(QByteArray::fromBase64(xml.readElementText().toLatin1()),"PNG");
+                     if (xml.attributes().value("format").toString()=="JPG")
+                         img.loadFromData(QByteArray::fromBase64(xml.readElementText().toLatin1()),"JPG");
+                     else
+                         img.loadFromData(QByteArray::fromBase64(xml.readElementText().toLatin1()),"PNG");
                      break;
                  }
              }

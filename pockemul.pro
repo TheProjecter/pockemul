@@ -973,7 +973,10 @@ OTHER_FILES += \
     cloud/content/Grid.qml \
     resources/keymap/ti57.map \
     resources/keymap/hp41.map \
-    resources/keymap/hp82143a.map
+    resources/keymap/hp82143a.map \
+    cloud/content/Message.qml \
+    cloud/PmlView2.qml \
+    cloud/content/NewsDelegate2.qml
 
 
 

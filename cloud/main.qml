@@ -24,7 +24,13 @@ Rectangle {
     property color buttonBorderColor: "orange"
     property color textButtonColor: "black"
 
+    property string auth_token: ""
 
+    Component.onCompleted: {
+        console.log("start");
+        user_login(cloud.getValueFor("username"),cloud.getValueFor("password"));
+        console.log("logged:"+auth_token);
+    }
 
     onWidthChanged: {
         isPortrait = cloud.isPortraitOrientation();
@@ -140,18 +146,19 @@ Rectangle {
                     expand: false
                     font.pointSize: 16
                     onClicked: {
-                        var xml = cloud.save();
-                        var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey ;
+                        save_pml("un titre provisoire","une description provisoire");
 
-//                        console.log("ok:"+url);
-                        requestPost(url,xml, function(o) {
-                            if (o.readyState == 4) {
-                                if (o.status==200) {
-                                    tmpXmlListModel.xml = o.responseText;
-//                                    console.log(tmpXmlListModel.xml);
-                                }
-                            }
-                        });
+//                        var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey ;
+
+////                        console.log("ok:"+url);
+//                        requestPost(url,xml, function(o) {
+//                            if (o.readyState == 4) {
+//                                if (o.status==200) {
+//                                    tmpXmlListModel.xml = o.responseText;
+////                                    console.log(tmpXmlListModel.xml);
+//                                }
+//                            }
+//                        });
                     }
                 }
                 TextButton {
@@ -200,11 +207,35 @@ Rectangle {
             }
 
         }
-//        Tab {
-//            name: "test"
-//            icon: "pics/back-white.png"
-//            Test { anchors.fill: parent}
-//        }
+        Tab {
+            name: "Private Cloud"
+            icon: "pics/private-cloud-white.png"
+
+            color: "yellow"
+
+            PmlView2   {
+                id: newprivateCloud
+                anchors.top: newprivateSearchItem.bottom
+                anchors.bottom: parent.bottom
+                width: parent.width
+                ispublicCloud: false
+                searchText: newprivateSearchItem.text
+                cacheFileName: "newprivateCloud.xml"
+//                xml: cloud.loadCache(cacheFileName)
+            }
+
+            SearchBox {
+                id: newprivateSearchItem
+                width: parent.width
+                height: 50
+                objectName: "searchFld"
+                onTextChanged: {
+                    newprivateCloud.populate(text)
+
+                }
+
+            }
+        }
     }
 
     TabbedUI {
@@ -213,6 +244,7 @@ Rectangle {
         tabIndex: 0
         tabsModel: tabsModel
         quitIndex: 4
+
     }
 
 //    Grid{
@@ -300,6 +332,90 @@ Rectangle {
 
     }
 
+    function user_register(name,email,username,password) {
+        var serverURL = 'http://ds409/elgg/services/api/rest/json/';  //cloud.getValueFor("serverURL","");
+        var url = serverURL+'?method=user.register&'+
+                '&name='+encodeURIComponent(name)+
+                '&email='+encodeURIComponent(email)+
+                '&username='+encodeURIComponent(username)+
+                '&password='+encodeURIComponent(password)+
+                '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa';
+        console.log('url:'+url);
+        requestGet(url, function (o) {
+
+            if (o.readyState == 4 ) {
+                if (o.status==200) {
+                    var obj = JSON.parse(o.responseText);
+                    console.log(o.responseText);
+                    if (obj.status == 0) {
+                        if (obj.result.success) {
+                            // sucess so login
+                            message.showMessage("User Created. Please Login.",5000);
+                        }
+                        else {
+                            message.showErrorMessage(obj.result.message,5000);
+                        }
+                    }
+                    else {
+                        message.showErrorMessage(obj.message,5000);
+                    }
+                }
+            }
+        });
+    }
+
+
+    function user_login(username,password) {
+        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';  //cloud.getValueFor("serverURL","");
+        var url = serverURL+'?method=auth.gettoken&'+
+                '&username='+encodeURIComponent(username)+
+                '&password='+encodeURIComponent(password)+
+                '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa';
+        console.log('url:'+url);
+        requestPost(url, "" , function (o) {
+
+            if (o.readyState == 4 ) {
+                if (o.status==200) {
+                    var obj = JSON.parse(o.responseText);
+                    console.log(o.responseText);
+                    if (obj.status == 0) {
+                        message.showMessage("User logged.<p>",5000);
+                        auth_token = obj.result;
+                    }
+                    else {
+                        message.showErrorMessage(obj.message,5000);
+                    }
+                }
+            }
+        });
+    }
+
+    function save_pml(title,description) {
+        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var url = serverURL+ '?method=file.save_pml&'+
+                '&title='+encodeURIComponent(title)+
+                '&description='+encodeURIComponent(description)+
+                '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
+                '&auth_token='+auth_token;
+        var xml = cloud.save();
+        console.log('url:'+url);
+        requestPost(url, xml , function (o) {
+
+            if (o.readyState == 4 ) {
+                if (o.status==200) {
+                    var obj = JSON.parse(o.responseText);
+                    console.log(o.responseText);
+                    if (obj.status == 0) {
+                        message.showMessage("session saved",5000);
+                    }
+                    else {
+                        message.showErrorMessage(obj.message,5000);
+                    }
+                }
+            }
+        });
+    }
+
     function addRefPmlModel(_pmlid,
                             _username,
                             _objects,
@@ -347,5 +463,13 @@ Rectangle {
                 };
                 return escaped_one_to_xml_special_map[item];
         });
+    }
+
+    Message {
+        id:message
+        anchors.top: parent.top
+        anchors.left: parent.left
+        width : parent.width
+        height: 50
     }
 }

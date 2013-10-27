@@ -171,6 +171,7 @@ Chp82143A::Chp82143A(CPObject *parent):Cprinter(this) {
     Mode = TRACE_MODE;
     flow = fdwid = fprint = fpadv = fgraph = feol = frjust = fignADV = false;
     isready = false;
+    intensity = 0;
 }
 
 Chp82143A::~Chp82143A() {
@@ -308,6 +309,10 @@ void Chp82143A::ComputeKey(void)
     }
     else fprint = false;
 
+    if (pKEYB->LastKey == K_PRT_INT_MIN) { intensity = -1; update(); }
+    if (pKEYB->LastKey == K_PRT_INT_NORM) { intensity = 0; update(); }
+    if (pKEYB->LastKey == K_PRT_INT_MAX) { intensity = 1; update(); }
+
     if (pKEYB->LastKey == K_PRT_NORM) { Mode = NORM_MODE; update(); }
     if (pKEYB->LastKey == K_PRT_TRACE) { Mode = TRACE_MODE; update(); }
     if (pKEYB->LastKey == K_PRT_MANUAL) { Mode = MANUAL_MODE; update(); }
@@ -416,7 +421,11 @@ void Chp82143A::printLine(bool rightJustified) {
     for (int i=0; i< BufferColumns.size();i++) {
         quint8 data = BufferColumns.at(i);
         painter.begin(printerbuf);
-        painter.setPen("black");
+        QColor _color;
+        if (intensity==0) _color = QColor(80,80,80);
+        if (intensity==-1) _color = QColor(128,128,128);
+        if (intensity==1) _color = QColor(0,0,0);
+        painter.setPen(_color);
         for (int b=0; b<8;b++)
         {
             if (data & (1<<b))
@@ -451,6 +460,15 @@ bool Chp82143A::UpdateFinalImage(void) {
     painter.begin(FinalImage);
 
     // Draw switch
+
+    if (intensity == -1)
+        painter.drawImage(205,338,QImage(P_RES(":/hp41/hp82143a_mode_man.png")));
+    if (intensity == 1)
+        painter.drawImage(205,338,QImage(P_RES(":/hp41/hp82143a_mode_norm.png")));
+    if (intensity == 0)
+        painter.drawImage(205,338,BackgroundImageBackup->copy(205,338,69,24));
+
+
     // MODE SWITCH
 
     if (Mode == NORM_MODE)

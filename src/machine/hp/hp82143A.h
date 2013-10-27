@@ -72,6 +72,7 @@ private:
     bool fignADV;
 
     bool isready;
+    int intensity;
 
 };
 

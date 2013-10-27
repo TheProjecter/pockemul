@@ -8,5 +8,8 @@
     <KEY description="Mode Trace" height="35" left="227" masterscancode="0x00" modifier="" scancode="0xca" top="373" width="20"/>
     <KEY description="Mode Normal" height="20" left="263" masterscancode="0x00" modifier="" scancode="0xcb" top="384" width="45"/>
     <KEY description="Mode Manual" height="20" left="178" masterscancode="0x00" modifier="" scancode="0xcc" top="385" width="41"/>
+    <KEY description="Intensity Min" height="20" left="178" masterscancode="0x00" modifier="" scancode="0xcd" top="355" width="40"/>
+    <KEY description="Intensity Normal" height="35" left="227" masterscancode="0x00" modifier="" scancode="0xce" top="323" width="20"/>
+    <KEY description="Intensity Max" height="20" left="263" masterscancode="0x00" modifier="" scancode="0xcf" top="355" width="40"/>
 </Keyboard>
 </KEYBMAP>

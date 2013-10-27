@@ -76,22 +76,30 @@ Rectangle {
 
     XmlListModel {
         id: xmlpmlModel
-        source: serverURL + "listPML/" + (ispublicCloud?"0":currentApiKey)+"/0"
-        query: "/listPML/item"
+        source: "http://pockemul.dscloud.me/elgg/services/api/rest/xml/?method=file.get_pmlfiles"+
+                "&username="+cloud.getValueFor("username","")+
+                "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
+                "&auth_token="+root.auth_token
+        query: "/elgg/result/array_item"
 
-        XmlRole { name: "pmlid"; query: "pmlid/string()"; }
-        XmlRole { name: "username"; query: "username/string()" }
+        XmlRole { name: "pmlid"; query: "guid/string()"; }
+        XmlRole { name: "username"; query: "owner_username/string()" }
+        XmlRole { name: "name"; query: "owner_name/string()" }
+        XmlRole { name: "avatar_url"; query: "owner_avatar_url/string()" }
         XmlRole { name: "objects"; query: "objects/string()" }
         XmlRole { name: "listobjects"; query: "listobjects/string()" }
-        XmlRole { name: "ispublic"; query: "ispublic/number()" }
+        XmlRole { name: "ispublic"; query: "access_id/number()" }
         XmlRole { name: "isdeleted"; query: "deleted/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "description"; query: "description/string()" }
+        XmlRole { name: "snap_small"; query: "snapshot_small/string()" }
+        XmlRole { name: "snap_medium"; query: "snapshot_medium/string()" }
+        XmlRole { name: "snap_large"; query: "snapshot_large/string()" }
 
         onStatusChanged: {
                 if (status == XmlListModel.Ready) {
 //                    console.log("url ("+(ispublicCloud?"public":"private")+"):"+source);
-//                    console.log("xmlpmlModel onStatusChanged: START found rows:"+count);
+                    console.log("xmlpmlModel onStatusChanged: START found rows:"+count);
                     refpmlModel.clear();
                     for (var i=0; i<count; i++) {
                         var item = get(i)
@@ -99,12 +107,17 @@ Rectangle {
                         refpmlModel.append({rowid : i,
                                             pmlid: item.pmlid,
                                             username: decodeXml(item.username),
+                                            name: decodeXml(item.name),
+                                            avatar_url: decodeXml(item.avatar_url),
                                             objects: decodeXml(item.objects),
                                             listobjects: decodeXml(item.listobjects),
                                             ispublic: item.ispublic,
                                             isdeleted: item.isdeleted,
                                             title: decodeXml(item.title),
-                                            description: decodeXml(item.description)})
+                                            description: decodeXml(item.description),
+                                            snap_small: decodeXml(item.snap_small),
+                                           snap_medium: decodeXml(item.snap_medium),
+                                           snap_large: decodeXml(item.snap_large)})
                     }
 
                     cloud.saveCache(cacheFileName,serializerefpmlModel());
@@ -197,6 +210,8 @@ Rectangle {
             xml += "<item>";
             xml += "<pmlid>"+pmlItem.pmlid+"</pmlid>";
             xml += "<username>"+encodeXml(pmlItem.username)+"</username>";
+            xml += "<name>"+encodeXml(pmlItem.name)+"</name>";
+            xml += "<avatar_url>"+encodeXml(pmlItem.avatar_url)+"</avatar_url>";
             xml += "<objects>"+encodeXml(pmlItem.objects)+"</objects>";
             xml += "<listobjects>"+encodeXml(pmlItem.listobjects)+"</listobjects>";
             xml += "<ispublic>"+pmlItem.ispublic+"</ispublic>";
@@ -230,6 +245,8 @@ Rectangle {
             pmlModel.append({   rowid : i,
                                 pmlid: item.pmlid,
                                username: item.username,
+                                name: item.name,
+                                avatar_url: item.avatar_url,
                                 objects: item.objects,
                                 ispublic: item.ispublic,
                                 isdeleted: item.isdeleted,
@@ -251,12 +268,15 @@ Rectangle {
     // Reference List Model. Contains all record
     // it might be valuable to dump it on disk when the application close
     // and load the cache at startup
-    ListModel { id: refpmlModel;
+    ListModel {
+        id: refpmlModel;
 
         function appendPml(item) {
             append({rowid : refpmlModel.count,
                        pmlid: item.pmlid,
                        username: item.username,
+                       name: item.name,
+                       avatar_url: item.avatar_url,
                        objects: item.objects,
                        listobjects: item.listobjects,
                        ispublic: item.ispublic,
@@ -306,7 +326,7 @@ Rectangle {
             id: list
             width: pmlview.width - categoriesView.width; height: pmlview.height
             model: pmlModel
-            delegate: NewsDelegate {}
+            delegate: NewsDelegate2 {}
         }
     }
     Component {

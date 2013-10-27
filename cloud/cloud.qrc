@@ -64,5 +64,8 @@
         <file>content/SortListModel.qml</file>
         <file>content/Test.qml</file>
         <file>content/Grid.qml</file>
+        <file>content/Message.qml</file>
+        <file>PmlView2.qml</file>
+        <file>content/NewsDelegate2.qml</file>
     </qresource>
 </RCC>

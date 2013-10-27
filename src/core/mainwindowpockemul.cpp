@@ -670,9 +670,9 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
 #if QT_VERSION >= 0x050000
-    grab().toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
+    grab().toImage().scaled(QSize(600,600),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "JPG");
 #else
-    QPixmap::grabWidget(this).toImage().scaled(QSize(200,200),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
+    QPixmap::grabWidget(this).toImage().scaled(QSize(600,600),Qt::KeepAspectRatio,Qt::SmoothTransformation).save(&buffer, "PNG");
 #endif
 
 
@@ -681,7 +681,11 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     xml->writeStartElement("pml");
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
-    xml->writeTextElement("snapshot",ba.toBase64());
+    xml->writeStartElement("snapshot");
+//    xml->writeTextElement("snapshot",ba.toBase64());
+    xml->writeAttribute("format", "JPG");
+    xml->writeCharacters(ba.toBase64());
+    xml->writeEndElement();
 //    qWarning()<<"OK1";
     // Fetch all objects
     for (int i=0;i<listpPObject.size();i++)

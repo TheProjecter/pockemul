@@ -189,6 +189,7 @@ void CloudWindow::downloadFinished()
 //    qWarning() << "data="<<xmlData.left(200);
     QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
 
+
     mainwindow->opensession(xml);
 //    emit imageChanged(m_object.value("id").toString());
 
@@ -197,6 +198,31 @@ void CloudWindow::downloadFinished()
 
 }
 
+void CloudWindow::downloadFinished2()
+{
+//    qWarning()<<"CloudWindow::downloadFinished - ";
+    QByteArray xmlData = m_reply->readAll();
+//    qWarning() << "data="<<xmlData.left(200);
+    QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
+
+    if (xml->readNextStartElement() && (xml->name() == "elgg")) {
+        if (xml->readNextStartElement() &&
+                (xml->name() == "status") &&
+                (xml->readElementText().toInt()==0)) {
+            if (xml->readNextStartElement() &&
+                    (xml->name() == "result")) {
+                QString pmlData = xml->readElementText();
+                qWarning() << "data="<<pmlData.left(200);
+                QXmlStreamReader *pmlxml = new QXmlStreamReader(pmlData);
+                mainwindow->opensession(pmlxml);
+            }
+        }
+    }
+
+    m_reply->deleteLater();
+    this->hide();
+
+}
 
 
 void CloudWindow::showFileDialog()
@@ -204,15 +230,29 @@ void CloudWindow::showFileDialog()
     m_fileDialog->show();
 }
 
-void CloudWindow::getPML(int id) {
+void CloudWindow::getPML(int id,int version,QString auth_token) {
     QNetworkAccessManager *mgr = new QNetworkAccessManager();
+    QString url;
+    if (version==0) {
+        QString apikey = getValueFor("apikey","");
+        QString server = getValueFor("serverURL","http://pockemul.dscloud.me/pocketcloud/")+"getPML";
+        url = server+QString("/%1/%2").arg(getValueFor("apikey","0")).arg(id);
+    }
+    else {
+        url = QString("http://pockemul.dscloud.me/elgg/services/api/rest/xml/?method=file.get_pml")+
+                QString("&file_guid=%1").arg(id)+
+                "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
+                "&auth_token="+auth_token;
+        qWarning()<<url;
+    }
+    QNetworkRequest req(url);
 
-    QString apikey = getValueFor("apikey","");
-    QString server = getValueFor("serverURL","http://pockemul.dscloud.me/pocketcloud/")+"getPML";
-    QNetworkRequest req(server+QString("/%1/%2").arg(getValueFor("apikey","0")).arg(id));
 //    qWarning()<<req.url();
     m_reply = mgr->get(req);
-    connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+    if (version==0)
+        connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+    else
+        connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished2()));
 }
 
 extern QString workDir;
