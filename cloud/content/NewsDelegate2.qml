@@ -107,6 +107,8 @@ Item {
             }
         }
     Row {
+        width: parent.width;
+        spacing: 5
         Image {
             id: username_avatar
             source: avatar_url
@@ -114,21 +116,47 @@ Item {
 
         Text {
             id: usernameText
-            text: username; width: parent.width; wrapMode: Text.WordWrap
+            text: username;
+//            width: parent.width;
+            wrapMode: Text.WordWrap
             font { bold: false; family: "Helvetica"; pointSize: 14 }
         }
     }
         Row {
             Image {
                 id: pmlThumbImage
-                source: "http://pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
+                asynchronous: true
+                cache: true
+                source:
+                        "image://PockEmulCloud/"+
+                        "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
                         "?file_guid="+pmlid+
-                        "&username="+cloud.getValueFor("username","")+
-                        "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
-                        "&auth_token="+root.auth_token+
-                        "&size=medium&ghost="+getThumbId(pmlid)
+                        "&size=medium"+
+                        "&ghost="+getThumbId(pmlid)
+//                        "http://pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
+//                        "?file_guid="+pmlid+
+//                        "&size=medium&ghost="+getThumbId(pmlid)+
+//                        "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
+//                        "&auth_token="+root.auth_token
+
                     //serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid)
                 fillMode: Image.PreserveAspectFit;
+                Timer {
+                        id: reset
+                        interval: 500;
+                        onTriggered: pmlThumbImage.source = "image://PockEmulCloud/"+
+                                     "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
+                                     "?file_guid="+pmlid+
+                                     "&size=medium"+
+                                     "&ghost="+getThumbId(pmlid);
+                    }
+                onStatusChanged: {
+                    if (status == Image.Error) {
+                        source = "";
+                        reset.restart();
+                    }
+//                                     console.log("*****image status("+index+")="+pmlThumbImage.status);
+                }
 
 //                MouseArea {
 //                    anchors.fill: parent
@@ -252,18 +280,20 @@ Item {
             visible: changed
             text: "Save"
             onClicked: {
-                console.log('onClicked');
+                var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+                var url = serverURL+ '?method=file.update&'+
+                        '&guid='+pmlid+
+                        '&access='+newpublicstatus+
+                        '&title='+encodeURIComponent(titleText.text)+
+                        '&description='+encodeURIComponent(descriptionText.text)+
+                        '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
+                        '&auth_token='+auth_token;
+
+                console.log('url:'+url);
                 //                if (cloud.askMsg("Are you sure ?",2) == 1)
                 {
                     // update data
-                    var url = serverURL + "updPML/" + currentApiKey +"/" + pmlid;
-//                    console.log('url:'+url);
-                    var data = "<data>";
-                    data +=     "<title>"+encodeXml(titleText.text)+"</title>";
-                    data +=     "<description>"+encodeXml(descriptionText.text)+"</description>";
-                    data +=     "<ispublic>"+newpublicstatus+"</ispublic>";
-                    data += "</data>";
-                    requestPost(url, data,function (o) {
+                    requestPost(url, "",function (o) {
                         if (o.readyState == 4) {
                             //                        console.log("status:"+o.status);
                             if (o.status==200) {
@@ -428,9 +458,9 @@ Item {
             changed = false;
         }
         else {
-            console.log("title:"+titleText.text+" vs "+((title=="")?"No title":title));
-            console.log("desc:"+ descriptionText.text+" vs "+((description=="")?"No description":description));
-            console.log("public:"+ispublic+ "vs "+newpublicstatus);
+//            console.log("title:"+titleText.text+" vs "+((title=="")?"No title":title));
+//            console.log("desc:"+ descriptionText.text+" vs "+((description=="")?"No description":description));
+//            console.log("public:"+ispublic+ "vs "+newpublicstatus);
             changed = true;
         }
     }

@@ -31,7 +31,7 @@
 
 #include "applicationconfig.h"
 #include "cloudwindow.h"
-
+#include "cloudimageprovider.h"
 
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
@@ -43,6 +43,7 @@ CloudWindow::CloudWindow(QWidget *parent)
 {
 
     view = new QDeclarativeView(this);
+    view->engine()->addImageProvider(QLatin1String("PockEmulCloud"), new CloudImageProvider(this));
     view->rootContext()->setContextProperty("cloud", this);
     view->setSource(QUrl("qrc:/main.qml"));
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
@@ -141,7 +142,9 @@ void CloudWindow::sendPML(const QString &filePath)
 
 void CloudWindow::finishedSave(QNetworkReply *reply)
 {
+
     QByteArray xmlData = reply->readAll();
+
 //    qWarning()<<"received id:"<<xmlData;
 
     QString pmlid,username,ispublic,isdeleted,title,description,objects,listobjects;

@@ -381,6 +381,7 @@ Rectangle {
                     if (obj.status == 0) {
                         message.showMessage("User logged.<p>",5000);
                         auth_token = obj.result;
+                        cloud.saveValueFor("auth_token",auth_token);
                     }
                     else {
                         message.showErrorMessage(obj.message,5000);
@@ -406,7 +407,32 @@ Rectangle {
                     var obj = JSON.parse(o.responseText);
                     console.log(o.responseText);
                     if (obj.status == 0) {
-                        message.showMessage("session saved",5000);
+                        message.showMessage("Session saved",5000);
+                    }
+                    else {
+                        message.showErrorMessage(obj.message,5000);
+                    }
+                }
+            }
+        });
+    }
+
+    function update_pml(title,description) {
+        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var url = serverURL+ '?method=file.update&'+
+                '&title='+encodeURIComponent(title)+
+                '&description='+encodeURIComponent(description)+
+                '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
+                '&auth_token='+auth_token;
+        console.log('url:'+url);
+        requestPost(url, "" , function (o) {
+
+            if (o.readyState == 4 ) {
+                if (o.status==200) {
+                    var obj = JSON.parse(o.responseText);
+                    console.log(o.responseText);
+                    if (obj.status == 0) {
+                        message.showMessage("Session updated",5000);
                     }
                     else {
                         message.showErrorMessage(obj.message,5000);

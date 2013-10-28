@@ -8,13 +8,13 @@
 #include <QModelIndex>
 #include <QDeclarativeView>
 
-
 class ImageDownloader;
 class ImageObject;
 class QFileDialog;
 class QListView;
 class QNetworkReply;
 class QPushButton;
+
 
 class CloudWindow : public QWidget
 {
@@ -26,8 +26,8 @@ public:
 
 
     Q_INVOKABLE void getPML(int id, int version=0, QString auth_token = QString());
-    Q_INVOKABLE QString getValueFor(const QString &objectName, const QString &defaultValue = QString());
-    Q_INVOKABLE void saveValueFor(const QString &objectName, const QString &inputValue);
+    Q_INVOKABLE static QString getValueFor(const QString &objectName, const QString &defaultValue = QString());
+    Q_INVOKABLE static void saveValueFor(const QString &objectName, const QString &inputValue);
     Q_INVOKABLE QByteArray generateKey(QString username, QString password);
 
     Q_INVOKABLE void saveCache(QString fileName,QString xml);
