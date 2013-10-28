@@ -131,8 +131,8 @@ Item {
                         "image://PockEmulCloud/"+
                         "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
                         "?file_guid="+pmlid+
-                        "&size=medium"+
-                        "&ghost="+getThumbId(pmlid)
+                        "&size=medium"
+//                        "&ghost="+getThumbId(pmlid)
 //                        "http://pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
 //                        "?file_guid="+pmlid+
 //                        "&size=medium&ghost="+getThumbId(pmlid)+

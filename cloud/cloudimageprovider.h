@@ -17,7 +17,7 @@ public:
     QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize);
     QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize);
 
-    QMap<QUrl,QImage> cache;
+    QMap<QString,QImage> cache;
     QNetworkAccessManager * mgr;
 
     QMutex mutex;

@@ -11,8 +11,12 @@
 #include <QNetworkReply>
 #include <QTimer>
 #include <QApplication>
+#include <QDir>
+#include <QCryptographicHash>
 
 #include "cloudwindow.h"
+extern QString workDir;
+
 
 CloudImageProvider::CloudImageProvider(QObject *parent) : QObject(parent),
     QDeclarativeImageProvider(QDeclarativeImageProvider::Image)
@@ -21,6 +25,25 @@ CloudImageProvider::CloudImageProvider(QObject *parent) : QObject(parent),
 
     mgr = new QNetworkAccessManager;
     connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(loadfinished(QNetworkReply*)));
+
+    // load cache
+    // fetch workdir+"/imgcache" directory
+    QDir dir;
+    dir.mkpath(workDir+"/imgcache/");
+    dir.setPath(workDir+"/imgcache/");
+    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QFileInfoList list = dir.entryInfoList();
+    //std::cout << "     Bytes Filename" << std::endl;
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        if (fileInfo.suffix() == "jpg") {
+//            qWarning()<<"load ["<< fileInfo.baseName()<<"]="+fileInfo.absoluteFilePath();
+            cache[fileInfo.baseName()] = QImage(fileInfo.absoluteFilePath());
+        }
+
+    }
 }
 
 CloudImageProvider::~CloudImageProvider()
@@ -82,10 +105,12 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
 
     QNetworkRequest req("http://"+id);
 //    qWarning()<<req.url();
-    if (cache.contains(req.url()))
-        return cache[req.url()];
+    QString key = QString(QCryptographicHash::hash ( req.url().toString().toUtf8(), QCryptographicHash::Md5).toBase64().toHex());
 
-    cache[req.url()] = QImage();
+    if (cache.contains(key))
+        return cache[key];
+
+    cache[key] = QImage();
     QNetworkReply *_reply = mgr->post(req, qu.query(QUrl::FullyEncoded).toUtf8());
 
 //    qWarning()<<_reply;
@@ -118,7 +143,11 @@ void CloudImageProvider::loadfinished(QNetworkReply *reply)
     QImage image;
     image.loadFromData(imageData);
 
-    cache[reply->url()] = image;
+    QString key = QString(QCryptographicHash::hash ( reply->url().toString().toUtf8(), QCryptographicHash::Md5).toBase64().toHex());
+
+    cache[key] = image;
+
+    image.save(workDir+"/imgcache/"+key+".jpg");
 
     reply->deleteLater();
 
