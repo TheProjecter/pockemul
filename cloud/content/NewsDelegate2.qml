@@ -129,29 +129,23 @@ Item {
             Image {
                 id: pmlThumbImage
                 asynchronous: true
-                cache: true
+                cache: false
                 source:
                         "image://PockEmulCloud/"+
                         "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
                         "?file_guid="+pmlid+
                         "&size=medium"
-//                        "&ghost="+getThumbId(pmlid)
-//                        "http://pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
-//                        "?file_guid="+pmlid+
-//                        "&size=medium&ghost="+getThumbId(pmlid)+
-//                        "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
-//                        "&auth_token="+root.auth_token
 
                     //serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid)
                 fillMode: Image.PreserveAspectFit;
                 Timer {
                         id: reset
                         interval: 500;
-                        onTriggered: pmlThumbImage.source = "image://PockEmulCloud/"+
+                        onTriggered: pmlThumbImage.source="image://PockEmulCloud/"+
                                      "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
                                      "?file_guid="+pmlid+
-                                     "&size=medium"+
-                                     "&ghost="+getThumbId(pmlid);
+                                     "&size=medium"
+//                                     "&ghost="+getThumbId(pmlid);
                     }
                 onStatusChanged: {
                     if (status == Image.Error) {
@@ -235,21 +229,43 @@ Item {
                                function(){xmlpmlModel.reload();},
                                function(){}
                                );
-//                console.log('onClicked');
-//                //                if (cloud.askMsg("Are you sure ?",2) == 1)
-//                {
-//                    // update data
-//                    var url = serverURL + "clonePML/" + currentApiKey +"/" + pmlid;
-//                    console.log('url:'+url);
-//                    requestGet(url, function (o) {
-//                        if (o.readyState == 4 ) {
-//                            if (o.status==200) {
-//                                tmpXmlListModel.xml = o.responseText;
-//                            }
-//                        }
-//                    });
-//                }
-
+            }
+        }
+        //    *     0 => 'Private',
+        //    *    -2 => 'Friends',
+        //    *     1 => 'Logged in users',
+        //    *     2 => 'Public',
+        TextButton {
+            id: makePrivate
+            visible: (access_id != 0) && ismine
+            text: "Make private"
+            onClicked: {
+                root.set_access(pmlid,0,
+                               function(){xmlpmlModel.reload();},
+                               function(){}
+                               );
+            }
+        }
+        TextButton {
+            id: makeFriend
+            visible: (access_id != -2) && ismine
+            text: "Share with Friends"
+            onClicked: {
+                root.set_access(pmlid,-2,
+                               function(){xmlpmlModel.reload();},
+                               function(){}
+                               );
+            }
+        }
+        TextButton {
+            id: makePublic
+            visible: (access_id != 2) && ismine
+            text: "Make public"
+            onClicked: {
+                root.set_access(pmlid,2,
+                               function(){xmlpmlModel.reload();},
+                               function(){}
+                               );
             }
         }
         TextButton {
@@ -257,28 +273,35 @@ Item {
             text: "Save current session"
             visible: ismine
             onClicked: {
+                var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+                var url = serverURL+ '?method=file.update_pmldata'+
+                        '&file_guid='+pmlid+
+                        '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
+                        '&auth_token='+auth_token;
                 var xml = cloud.save();
-                var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey +"/"+pmlid;
+                console.log('url:'+url);
+                requestPost(url, xml , function (o) {
 
-//                console.log("ok:"+url);
-                requestPost(url,xml, function(o) {
-                    if (o.readyState == 4) {
+                    if (o.readyState == 4 ) {
                         if (o.status==200) {
-                            tmpXmlListModel.xml = o.responseText;
-                            // Trick to reload the thumbnail
-                            //console.log("thumb url="+pmlThumbImage.source);
-                            updThumbId(pmlid);
-//                            pmlThumbImage.source = serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid);
-                            ///console.log("thumb url="+pmlThumbImage.source);
+                            var obj = JSON.parse(o.responseText);
+                            console.log(o.responseText);
+                            if (obj.status == 0) {
+                                message.showMessage("Session updated",5000);
+                                // refresh thumb
+                                cloud.clearCache(pmlThumbImage.source);
+                                pmlThumbImage.source="";
+                                reset.restart();
+                            }
+                            else {
+                                message.showErrorMessage(obj.message,5000);
+                            }
                         }
                     }
                 });
 
-                populateCategoryModel("");
 
 
-//                        privateCloud.categoryModel.reload();
-//                        publicCloud.categoryModel.reload();
             }
 
         }
@@ -404,6 +427,7 @@ Item {
             visible: ismine
             text: (isdeleted ==1) ? "Permanently delete" : "Delete"
             onClicked: {
+                return;
                 var url = serverURL + "delPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
                     if (o.readyState == 4 ) {
@@ -430,32 +454,7 @@ Item {
                 });
             }
         }
-        Row {
-            id: publicSwitch
-            opacity: delegate.detailsOpacity
-            visible: ismine
-            anchors.horizontalCenter: parent.horizontalCenter
-            Text {
-                id: switchLabel
-                text: qsTr("Public ")
-//                font.family: "Helvetica"; font.pointSize: 14
-                anchors.verticalCenter: parent.verticalCenter
-            }
-            Switch {
-                id:switchelt
-                bwidth: 50
-                bheight: 25
-                state: (ispublic==1) ? "on" :"off"
-                anchors.verticalCenter: parent.verticalCenter
-                onStateChanged: {
-                    if (state != ((ispublic==1) ? "on" :"off"))
-                        root.sendWarning("Do you really want to change the public status ?");
-                    newpublicstatus = (state=="on") ? 1 : 0;
 
-                    checkmodif();
-                }
-            }
-        }
     }
 
     function checkmodif() {

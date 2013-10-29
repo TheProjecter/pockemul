@@ -14,6 +14,7 @@ class QFileDialog;
 class QListView;
 class QNetworkReply;
 class QPushButton;
+class CloudImageProvider;
 
 
 class CloudWindow : public QWidget
@@ -34,6 +35,9 @@ public:
     Q_INVOKABLE QString loadCache(QString fileName);
     Q_INVOKABLE bool isPortraitOrientation();
     Q_INVOKABLE void addShortcut(QString param);
+
+    Q_INVOKABLE void clearCache(QString s);
+
 protected:
     void wheelEvent(QWheelEvent *event);
 
@@ -57,7 +61,7 @@ private:
     QFileDialog *m_fileDialog;
     QObject *object;
 
-
+    CloudImageProvider *imgprov;
     void resizeEvent(QResizeEvent *e);
 };
 

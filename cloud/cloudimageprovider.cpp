@@ -103,9 +103,12 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
     qu.addQueryItem("apikey","7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa");
     qu.addQueryItem("auth_token",CloudWindow::getValueFor("auth_token"));
 
-    QNetworkRequest req("http://"+id);
+    QString _id = id;
+    _id.remove(QChar('#'));
+
+    QNetworkRequest req("http://"+_id);
 //    qWarning()<<req.url();
-    QString key = QString(QCryptographicHash::hash ( req.url().toString().toUtf8(), QCryptographicHash::Md5).toBase64().toHex());
+    QString key = toKey( req.url().toString());
 
     if (cache.contains(key))
         return cache[key];
@@ -134,6 +137,17 @@ QPixmap CloudImageProvider::requestPixmap(const QString& id, QSize* size, const 
     return result;
 }
 
+void CloudImageProvider::clearCache(QString s) {
+    qWarning()<<"CloudImageProvider::clearCache:"<<s;
+    QString key = toKey(s);
+    cache.remove(key);
+
+    QString fn =workDir+"imgcache/"+key+".jpg";
+    qWarning()<<fn;
+    QFile file(fn);
+    if (file.remove()) qWarning()<<"removed";
+}
+
 void CloudImageProvider::loadfinished(QNetworkReply *reply)
 {
 //    qWarning()<<"Downloas finished*******";
@@ -143,11 +157,10 @@ void CloudImageProvider::loadfinished(QNetworkReply *reply)
     QImage image;
     image.loadFromData(imageData);
 
-    QString key = QString(QCryptographicHash::hash ( reply->url().toString().toUtf8(), QCryptographicHash::Md5).toBase64().toHex());
-
+    QString key = toKey( reply->url().toString());
     cache[key] = image;
 
-    image.save(workDir+"/imgcache/"+key+".jpg");
+    image.save(workDir+"imgcache/"+key+".jpg");
 
     reply->deleteLater();
 

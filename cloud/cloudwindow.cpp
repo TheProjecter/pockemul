@@ -41,9 +41,10 @@ extern void m_addShortcut(QString name,QString param);
 CloudWindow::CloudWindow(QWidget *parent)
     : QWidget(parent)
 {
+    imgprov = new CloudImageProvider(this);
 
     view = new QDeclarativeView(this);
-    view->engine()->addImageProvider(QLatin1String("PockEmulCloud"), new CloudImageProvider(this));
+    view->engine()->addImageProvider(QLatin1String("PockEmulCloud"),imgprov );
     view->rootContext()->setContextProperty("cloud", this);
     view->setSource(QUrl("qrc:/main.qml"));
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
@@ -310,6 +311,13 @@ void CloudWindow::warning(QString msg) {
 
 void CloudWindow::addShortcut(QString param) {
     m_addShortcut("test",param);
+}
+
+void CloudWindow::clearCache(QString s)
+{
+    s.replace("image://pockemulcloud/","http://");
+    qWarning()<<"CloudWindow::clearCache:"<<s;
+    imgprov->clearCache(s);
 }
 
 bool CloudWindow::isPortraitOrientation() {

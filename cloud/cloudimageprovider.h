@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QNetworkReply>
 #include <QMutex>
+#include <QCryptographicHash>
 
 class CloudImageProvider : public QObject, public QDeclarativeImageProvider
 {
@@ -20,7 +21,13 @@ public:
     QMap<QString,QImage> cache;
     QNetworkAccessManager * mgr;
 
+    static QString toKey(QString s) {
+        return  QString(QCryptographicHash::hash ( s.toUtf8(), QCryptographicHash::Md5).toBase64().toHex());
+    }
+
+
     QMutex mutex;
+    void clearCache(QString s);
 signals:
     Q_INVOKABLE void cacheUpdated();
 
