@@ -81,13 +81,16 @@ Item {
         Row {
             width: parent.width;
             spacing: 5
-
+            //    *     0 => 'Private',
+            //    *    -2 => 'Friends',
+            //    *     1 => 'Logged in users',
+            //    *     2 => 'Public',
             Image {
-                id: publicIcon
-                source: "images/public.png"
-                width: 40
-                height: 40
-                visible: (ispublic==1)
+                id: accessIcon
+                source: (access_id == -2 ? "images/friend.png" :"images/public.png")
+                width: 30
+                height: 30
+                visible: (access_id!=0)
             }
             Edit {
                 id: titleText
@@ -225,23 +228,27 @@ Item {
         }
         TextButton {
             id: importButton
-            visible: ispublic && !ismine
+            visible: !ismine
             text: "Clone to private"
             onClicked: {
+                root.clone_pml(pmlid,
+                               function(){xmlpmlModel.reload();},
+                               function(){}
+                               );
 //                console.log('onClicked');
-                //                if (cloud.askMsg("Are you sure ?",2) == 1)
-                {
-                    // update data
-                    var url = serverURL + "clonePML/" + currentApiKey +"/" + pmlid;
-                    console.log('url:'+url);
-                    requestGet(url, function (o) {
-                        if (o.readyState == 4 ) {
-                            if (o.status==200) {
-                                tmpXmlListModel.xml = o.responseText;
-                            }
-                        }
-                    });
-                }
+//                //                if (cloud.askMsg("Are you sure ?",2) == 1)
+//                {
+//                    // update data
+//                    var url = serverURL + "clonePML/" + currentApiKey +"/" + pmlid;
+//                    console.log('url:'+url);
+//                    requestGet(url, function (o) {
+//                        if (o.readyState == 4 ) {
+//                            if (o.status==200) {
+//                                tmpXmlListModel.xml = o.responseText;
+//                            }
+//                        }
+//                    });
+//                }
 
             }
         }

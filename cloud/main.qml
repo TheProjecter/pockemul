@@ -39,8 +39,7 @@ Rectangle {
 
     VisualItemModel {
         id: tabsModel
-        Tab {
-            name: "Private Cloud"
+        Tab {name: "Private Cloud"
             icon: "pics/private-cloud-white.png"
 
             color: "yellow"
@@ -77,9 +76,8 @@ Rectangle {
 
             }
         }
-        Tab {
+        Tab {name: "Public Cloud"
             id: publicCloudTab
-            name: "Public Cloud"
             icon: "pics/public-cloud-white.png"
 
             color: "green"
@@ -124,8 +122,7 @@ Rectangle {
 
 
         }
-        Tab {
-            name: "Action"
+        Tab {name: "Action"
             icon: "pics/action-white.png"
             Column {
                 spacing: 20
@@ -187,8 +184,7 @@ Rectangle {
 
             }
         }
-        Tab {
-            name: "Settings"
+        Tab {name: "Settings"
             icon: "pics/settings-white.png"
 
             color: "red"
@@ -207,8 +203,7 @@ Rectangle {
             }
 
         }
-        Tab {
-            name: "Private Cloud"
+        Tab {name: "Private Cloud"
             icon: "pics/private-cloud-white.png"
 
             color: "yellow"
@@ -246,11 +241,6 @@ Rectangle {
         quitIndex: 4
 
     }
-
-//    Grid{
-//        anchors.fill: parent
-//    }
-
 
     XmlListModel {
          id: tmpXmlListModel
@@ -364,7 +354,6 @@ Rectangle {
         });
     }
 
-
     function user_login(username,password) {
         var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';  //cloud.getValueFor("serverURL","");
         var url = serverURL+'?method=auth.gettoken&'+
@@ -411,6 +400,31 @@ Rectangle {
                     }
                     else {
                         message.showErrorMessage(obj.message,5000);
+                    }
+                }
+            }
+        });
+    }
+    function clone_pml(pmlid,on_success,on_failure) {
+        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var url = serverURL+ '?method=file.clone_pml'+
+                '&file_guid='+pmlid+
+                '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
+                '&auth_token='+auth_token;
+        console.log('url:'+url);
+        requestPost(url, "" , function (o) {
+
+            if (o.readyState == 4 ) {
+                if (o.status==200) {
+                    var obj = JSON.parse(o.responseText);
+                    console.log(o.responseText);
+                    if (obj.status == 0) {
+                        message.showMessage("Session cloned",2000);
+                        on_success();
+                    }
+                    else {
+                        message.showErrorMessage(obj.message,5000);
+                        on_failure();
                     }
                 }
             }
@@ -496,6 +510,6 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         width : parent.width
-        height: 50
+        height: 30
     }
 }

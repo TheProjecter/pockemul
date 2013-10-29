@@ -88,7 +88,8 @@ Rectangle {
         XmlRole { name: "avatar_url"; query: "owner_avatar_url/string()" }
         XmlRole { name: "objects"; query: "objects/string()" }
         XmlRole { name: "listobjects"; query: "listobjects/string()" }
-        XmlRole { name: "ispublic"; query: "access_id/number()" }
+        XmlRole { name: "access_id"; query: "access_id/number()" }
+        XmlRole { name: "ispublic"; query: "ispublic/number()" }
         XmlRole { name: "isdeleted"; query: "deleted/number()" }
         XmlRole { name: "title"; query: "title/string()" }
         XmlRole { name: "description"; query: "description/string()" }
@@ -111,6 +112,7 @@ Rectangle {
                                             avatar_url: decodeXml(item.avatar_url),
                                             objects: decodeXml(item.objects),
                                             listobjects: decodeXml(item.listobjects),
+                                            access_id: item.access_id,
                                             ispublic: item.ispublic,
                                             isdeleted: item.isdeleted,
                                             title: decodeXml(item.title),
@@ -145,12 +147,20 @@ Rectangle {
                                  counter: 1});
     }
 
+//    *     0 => 'Private',
+//    *    -2 => 'Friends',
+//    *     1 => 'Logged in users',
+//    *     2 => 'Public',
     function pmlContain(pmlitem,searchText) {
         if (typeof(searchText)=='undefined') return true;
         if (searchText == "") return true;
 
         var searchString = "";
-        searchString = pmlitem.title+" "+pmlitem.description+" "+pmlitem.username+" "+pmlitem.objects;
+        searchString = pmlitem.title+" "+
+                pmlitem.description+" "+
+                pmlitem.username+" "+
+                pmlitem.objects+" "+
+                (pmlitem.access_id == 0 ? "private" : (pmlitem.access_id == -2 ? "friend" : "public")) ;
         var tableau=searchText.toUpperCase().split(" ");
         for (var i=0; i<tableau.length; i++) {
             if ( (tableau[i]!="") && (searchString.toUpperCase().indexOf(tableau[i])>=0) ) return true;
@@ -214,6 +224,7 @@ Rectangle {
             xml += "<avatar_url>"+encodeXml(pmlItem.avatar_url)+"</avatar_url>";
             xml += "<objects>"+encodeXml(pmlItem.objects)+"</objects>";
             xml += "<listobjects>"+encodeXml(pmlItem.listobjects)+"</listobjects>";
+            xml += "<access_id>"+pmlItem.access_id+"</access_id>";
             xml += "<ispublic>"+pmlItem.ispublic+"</ispublic>";
             xml += "<deleted>"+pmlItem.isdeleted+"</deleted>";
             xml += "<title>"+encodeXml(pmlItem.title)+"</title>";
@@ -248,6 +259,7 @@ Rectangle {
                                 name: item.name,
                                 avatar_url: item.avatar_url,
                                 objects: item.objects,
+                                access_id: item.access_id,
                                 ispublic: item.ispublic,
                                 isdeleted: item.isdeleted,
                                 title: item.title,
@@ -279,6 +291,7 @@ Rectangle {
                        avatar_url: item.avatar_url,
                        objects: item.objects,
                        listobjects: item.listobjects,
+                       access_id: item.access_id,
                        ispublic: item.ispublic,
                        isdeleted: item.isdeleted,
                        title: item.title,
@@ -335,7 +348,7 @@ Rectangle {
             width: categories.width; height: 60
             Text {
                 id: expandcollapsebutton
-                text: "<"
+                text: "Refresh"
                 font { family: "Helvetica"; pixelSize: 16; bold: true }
                 anchors {
                     left: parent.left; leftMargin: 15
@@ -345,10 +358,10 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-
-                   categoriesView.width = (expandcollapsebutton.text=="<")? 50 : 220;
-                    expandcollapsebutton.text = (expandcollapsebutton.text=="<")? ">" : "<";
-                 //   populateCategoryModel();//xmlcategoryModel.reload();
+                    xmlpmlModel.reload();
+//                   categoriesView.width = (expandcollapsebutton.text=="<")? 50 : 220;
+//                    expandcollapsebutton.text = (expandcollapsebutton.text=="<")? ">" : "<";
+//                    populateCategoryModel();//xmlcategoryModel.reload();
                 }
             }
         }

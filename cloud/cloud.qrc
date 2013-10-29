@@ -67,5 +67,6 @@
         <file>content/Message.qml</file>
         <file>PmlView2.qml</file>
         <file>content/NewsDelegate2.qml</file>
+        <file>content/images/friend.png</file>
     </qresource>
 </RCC>
