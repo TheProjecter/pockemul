@@ -49,8 +49,6 @@ Item {
     height: column.height + 40
     width: delegate.ListView.view.width
 
-
-
     // Create a property to contain the visibility of the details.
     // We can bind multiple element's opacity to this one property,
     // rather than having a "PropertyChanges" line for each element we
@@ -78,7 +76,7 @@ Item {
     Column {
         id: column
         x: 20; y: 20
-        width: parent.width - 40
+        width: parent.width - 30
         //        height: background.height
         Row {
             width: parent.width;
@@ -102,7 +100,7 @@ Item {
                 interactive: !readOnly
 
                 wrapMode: Text.WordWrap
-                width: parent.width - 40 - (buttonColumn.visible? buttonColumn.width:0) - 5
+                width: parent.width - 30 - (buttonColumn.visible? buttonColumn.width:0) - 5
                 //                height: 30
                 font { bold: true; family: "Helvetica"; pointSize: 14 }
                 textColor: changed ? "red" : "black"
@@ -130,6 +128,8 @@ Item {
         Row {
             Image {
                 id: pmlThumbImage
+                width: 100
+                height: 100
                 asynchronous: true
                 cache: false
                 source:
@@ -248,7 +248,7 @@ Item {
                                function(){
 
                                    refpmlModel.setProperty(rowid,"access_id",0);
-                                   myCloud.populate(newprivateSearchItem.text);
+                                   ListView.view.populate(newprivateSearchItem.text);
                                },
                                function(){}
                                );
@@ -264,7 +264,7 @@ Item {
                                function(){
 
                                    refpmlModel.setProperty(rowid,"access_id",-2);
-                                   myCloud.populate(newprivateSearchItem.text);
+                                   ListView.view.populate(newprivateSearchItem.text);
                                },
                                function(){}
                                );
@@ -280,7 +280,7 @@ Item {
                                function(){
 
                                    refpmlModel.setProperty(rowid,"access_id",2);
-                                   myCloud.populate(newprivateSearchItem.text);
+                                   ListView.view.populate(newprivateSearchItem.text);
                                },
                                function(){}
                                );

@@ -330,6 +330,7 @@ Rectangle {
                 focus: true
                 anchors.fill: parent
                 model: categoryModel //xmlcategoryModel
+                clip:true
                 header: refreshButtonDelegate
                 delegate: CategoryDelegate {}
                 highlight: Rectangle { color: "steelblue" }
@@ -345,6 +346,7 @@ Rectangle {
             width: pmlview.width - categoriesView.width;
             height: pmlview.height
             interactive: true;
+            clip: true
             model: pmlModel
             delegate: NewsDelegate2 {}
         }
