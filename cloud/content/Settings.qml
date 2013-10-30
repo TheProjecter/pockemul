@@ -32,7 +32,7 @@ Rectangle {
             onButtonClicked: {
 //                buttonElementEnabled = false;
                 root.user_login(usernameFld.inputText,passwordFld.inputText);
-                return;
+/*
                 var key = cloud.generateKey(usernameFld.inputText,passwordFld.inputText);
                 serverURL = cloud.getValueFor("serverURL","");
                 var url = serverURL+'login?username='+encodeURIComponent(usernameFld.inputText)+'&key='+encodeURIComponent(key);
@@ -54,8 +54,10 @@ Rectangle {
                         }
                     }
                 });
+*/
             }
         }
+/*
         SettingsDelegate { name: "register"; labelString: "Register new user"; type: "action"; saveInput:false;
             onButtonClicked: {
 //                buttonElementEnabled = false;
@@ -87,7 +89,7 @@ Rectangle {
             }
         }
         SettingsDelegate { id: apikey; name: "out"; labelString: "Retrieved Key"; type: "input"; saveInput:false; }
-
+*/
     }
 
     ListView {

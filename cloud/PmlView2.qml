@@ -64,7 +64,10 @@ Rectangle {
     property int ispublic: ispublicCloud ? 1 : 0
     property string cacheFileName:""
 
-    onObjidChanged: {populatePMLModel(searchText)}
+    onObjidChanged: {
+
+        populatePMLModel(searchText)
+    }
 
     ListModel {
         id: categoryModel
@@ -76,7 +79,7 @@ Rectangle {
 
     XmlListModel {
         id: xmlpmlModel
-        source: "http://pockemul.dscloud.me/elgg/services/api/rest/xml/?method=file.get_pmlfiles"+
+        source: cloud.getValueFor("serverURL","")+"services/api/rest/xml/?method=file.get_pmlfiles"+
                 "&username="+cloud.getValueFor("username","")+
                 "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
                 "&auth_token="+root.auth_token
@@ -161,6 +164,7 @@ Rectangle {
                 pmlitem.username+" "+
                 pmlitem.objects+" "+
                 (pmlitem.access_id == 0 ? "private" : (pmlitem.access_id == -2 ? "friend" : "public")) ;
+//        console.log("searchText:**"+searchText+"**");
         var tableau=searchText.toUpperCase().split(" ");
         for (var i=0; i<tableau.length; i++) {
             if ( (tableau[i]!="") && (searchString.toUpperCase().indexOf(tableau[i])>=0) ) return true;
@@ -239,6 +243,7 @@ Rectangle {
 
     function populatePMLModel(searchText) {
 //        console.log("REFRESH Model");
+        list.interactive = true;
         pmlModel.clear();
         for (var i=0; i<refpmlModel.count; i++) {
             var item = refpmlModel.get(i)
@@ -337,7 +342,9 @@ Rectangle {
         }
         ListView {
             id: list
-            width: pmlview.width - categoriesView.width; height: pmlview.height
+            width: pmlview.width - categoriesView.width;
+            height: pmlview.height
+            interactive: true;
             model: pmlModel
             delegate: NewsDelegate2 {}
         }

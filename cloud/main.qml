@@ -11,12 +11,12 @@ Rectangle {
     id: root
     signal sendWarning(string test)
 
-    property string serverURL: cloud.getValueFor("serverURL","http://pockemul.dscloud.me/pocketcloud/")
+    property string serverURL: cloud.getValueFor("serverURL","http://pockemul.dscloud.me/elgg/")
     property string currentUserid: "pock emul"
     property string currentApiKey: cloud.getValueFor("apikey","0")
     property bool   isPortrait: false
 //    property alias bigposter: bigposter
-    property alias publicCloudTabName: publicCloudTab.name
+//    property alias publicCloudTabName: publicCloudTab.name
 
     property color backGroundColor: "white"
     property color textColor : "black"
@@ -39,7 +39,35 @@ Rectangle {
 
     VisualItemModel {
         id: tabsModel
-        Tab {name: "Private Cloud"
+        Tab {name: "Cloud"
+            icon: "pics/public-cloud-white.png"
+
+            color: "yellow"
+
+            PmlView2   {
+                id: myCloud
+                anchors.top: newprivateSearchItem.bottom
+                anchors.bottom: parent.bottom
+                width: parent.width
+                ispublicCloud: false
+                searchText: newprivateSearchItem.text
+                cacheFileName: "newprivateCloud.xml"
+//                xml: cloud.loadCache(cacheFileName)
+            }
+
+            SearchBox {
+                id: newprivateSearchItem
+                width: parent.width
+                height: 50
+                objectName: "searchFld"
+                onTextChanged: {
+                    myCloud.populate(text)
+
+                }
+
+            }
+        }
+/*        Tab {name: "Private Cloud"
             icon: "pics/private-cloud-white.png"
 
             color: "yellow"
@@ -122,67 +150,10 @@ Rectangle {
 
 
         }
+        */
         Tab {name: "Action"
             icon: "pics/action-white.png"
-            Column {
-                spacing: 20
-                anchors.fill: parent
-
-
-                TextButton {
-                    text: "Refresh all"
-                    font.pointSize: 16
-                    expand: false
-                    onClicked: {
-                        PmlView.populateCategoryModel();
-                    }
-                }
-                TextButton {
-                    id: saveCurrentSessionButton
-                    text: "Save current session"
-                    expand: false
-                    font.pointSize: 16
-                    onClicked: {
-                        save_pml("un titre provisoire","une description provisoire");
-
-//                        var url = cloud.getValueFor("serverURL","")+"savePML/"+ currentApiKey ;
-
-////                        console.log("ok:"+url);
-//                        requestPost(url,xml, function(o) {
-//                            if (o.readyState == 4) {
-//                                if (o.status==200) {
-//                                    tmpXmlListModel.xml = o.responseText;
-////                                    console.log(tmpXmlListModel.xml);
-//                                }
-//                            }
-//                        });
-                    }
-                }
-                TextButton {
-                    text: "upload Session File"
-                    expand: false
-                    font.pointSize: 16
-                    onClicked: {
-                        cloud.showFileDialog();
-                    }
-                }
-                TextButton {
-                    text: "analyse sensors"
-                    expand: true
-                    font.pointSize: 16
-                    onClicked: {
-                        var types = Sensors.sensorTypes();
-                        text = types.join(", ");
-
-                    }
-                }
-                TextButton {
-                    text: "Create shortcut"
-                    onClicked: cloud.addShortcut("-r PC-1475");
-                }
-
-
-            }
+            Actions {}
         }
         Tab {name: "Settings"
             icon: "pics/settings-white.png"
@@ -203,34 +174,7 @@ Rectangle {
             }
 
         }
-        Tab {name: "Private Cloud"
-            icon: "pics/private-cloud-white.png"
 
-            color: "yellow"
-
-            PmlView2   {
-                id: newprivateCloud
-                anchors.top: newprivateSearchItem.bottom
-                anchors.bottom: parent.bottom
-                width: parent.width
-                ispublicCloud: false
-                searchText: newprivateSearchItem.text
-                cacheFileName: "newprivateCloud.xml"
-//                xml: cloud.loadCache(cacheFileName)
-            }
-
-            SearchBox {
-                id: newprivateSearchItem
-                width: parent.width
-                height: 50
-                objectName: "searchFld"
-                onTextChanged: {
-                    newprivateCloud.populate(text)
-
-                }
-
-            }
-        }
     }
 
     TabbedUI {
@@ -238,10 +182,11 @@ Rectangle {
         tabsHeight: 72
         tabIndex: 0
         tabsModel: tabsModel
-        quitIndex: 4
+        quitIndex: 3
 
     }
 
+/*
     XmlListModel {
          id: tmpXmlListModel
          query: "/item"
@@ -301,7 +246,7 @@ Rectangle {
              }
          }
      }
-
+*/
     // this function is included locally, but you can also include separately via a header definition
     function requestGet(url, callback) {
         var xhr = new XMLHttpRequest();
@@ -323,7 +268,7 @@ Rectangle {
     }
 
     function user_register(name,email,username,password) {
-        var serverURL = 'http://ds409/elgg/services/api/rest/json/';  //cloud.getValueFor("serverURL","");
+        var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';  //cloud.getValueFor("serverURL","");
         var url = serverURL+'?method=user.register&'+
                 '&name='+encodeURIComponent(name)+
                 '&email='+encodeURIComponent(email)+
@@ -355,7 +300,7 @@ Rectangle {
     }
 
     function user_login(username,password) {
-        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';  //cloud.getValueFor("serverURL","");
+        var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';  //cloud.getValueFor("serverURL","");
         var url = serverURL+'?method=auth.gettoken&'+
                 '&username='+encodeURIComponent(username)+
                 '&password='+encodeURIComponent(password)+
@@ -381,7 +326,7 @@ Rectangle {
     }
 
     function save_pml(title,description) {
-        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
         var url = serverURL+ '?method=file.save_pml&'+
                 '&title='+encodeURIComponent(title)+
                 '&description='+encodeURIComponent(description)+
@@ -407,7 +352,7 @@ Rectangle {
     }
 
     function set_access(pmlid,access,on_success,on_failure) {
-        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
         var url = serverURL+ '?method=file.set_access'+
                 '&file_guid='+pmlid+
                 '&access='+access+
@@ -434,7 +379,7 @@ Rectangle {
     }
 
     function clone_pml(pmlid,on_success,on_failure) {
-        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
         var url = serverURL+ '?method=file.clone_pml'+
                 '&file_guid='+pmlid+
                 '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
@@ -460,7 +405,7 @@ Rectangle {
     }
 
     function update_pml(title,description) {
-        var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+        var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
         var url = serverURL+ '?method=file.update&'+
                 '&title='+encodeURIComponent(title)+
                 '&description='+encodeURIComponent(description)+

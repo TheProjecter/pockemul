@@ -978,7 +978,8 @@ OTHER_FILES += \
     resources/keymap/hp82143a.map \
     cloud/content/Message.qml \
     cloud/PmlView2.qml \
-    cloud/content/NewsDelegate2.qml
+    cloud/content/NewsDelegate2.qml \
+    cloud/content/Actions.qml
 
 
 

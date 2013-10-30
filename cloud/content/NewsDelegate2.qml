@@ -49,6 +49,8 @@ Item {
     height: column.height + 40
     width: delegate.ListView.view.width
 
+
+
     // Create a property to contain the visibility of the details.
     // We can bind multiple element's opacity to this one property,
     // rather than having a "PropertyChanges" line for each element we
@@ -109,22 +111,22 @@ Item {
                 }
             }
         }
-    Row {
-        width: parent.width;
-        spacing: 5
-        Image {
-            id: username_avatar
-            source: avatar_url
-        }
+        Row {
+            width: parent.width;
+            spacing: 5
+            Image {
+                id: username_avatar
+                source: avatar_url
+            }
 
-        Text {
-            id: usernameText
-            text: username;
-//            width: parent.width;
-            wrapMode: Text.WordWrap
-            font { bold: false; family: "Helvetica"; pointSize: 14 }
+            Text {
+                id: usernameText
+                text: username;
+                //            width: parent.width;
+                wrapMode: Text.WordWrap
+                font { bold: false; family: "Helvetica"; pointSize: 14 }
+            }
         }
-    }
         Row {
             Image {
                 id: pmlThumbImage
@@ -132,7 +134,8 @@ Item {
                 cache: false
                 source:
                         "image://PockEmulCloud/"+
-                        "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
+                        cloud.getValueFor("serverURL","").replace("http://","")+
+                        "mod/file/thumbnail.php"+
                         "?file_guid="+pmlid+
                         "&size=medium"
 
@@ -142,7 +145,8 @@ Item {
                         id: reset
                         interval: 500;
                         onTriggered: pmlThumbImage.source="image://PockEmulCloud/"+
-                                     "pockemul.dscloud.me/elgg/mod/file/thumbnail.php"+
+                                     cloud.getValueFor("serverURL","").replace("http://","")+
+                                     "mod/file/thumbnail.php"+
                                      "?file_guid="+pmlid+
                                      "&size=medium"
 //                                     "&ghost="+getThumbId(pmlid);
@@ -163,12 +167,12 @@ Item {
 ////                    }
 //                }
             }
-            TextEdit {
-                id: objectsText
-                text: objects
-                readOnly: true
-                opacity: delegate.detailsOpacity
-            }
+//            TextEdit {
+//                id: objectsText
+//                text: objects
+//                readOnly: true
+//                opacity: delegate.detailsOpacity
+//            }
         }
 
         Edit {
@@ -196,8 +200,6 @@ Item {
     Column {
         id: buttonColumn
         visible: (delegate.detailsOpacity==1) || ((width+pmlThumbImage.width)<column.width)
-//        width: 150
-//        width: childrenRect.width
         y:40
         anchors { right: background.right; rightMargin: 10 }
         spacing: 5
@@ -210,8 +212,8 @@ Item {
                     root.sendWarning("Cancel changes before closing.");
                 }
                 else {
-
                     delegate.state = '';
+                    delegate.ListView.view.interactive= true;
                 }
             }
         }
@@ -223,6 +225,7 @@ Item {
         TextButton {
             id: importButton
             visible: !ismine
+            opacity: delegate.detailsOpacity
             text: "Clone to private"
             onClicked: {
                 root.clone_pml(pmlid,
@@ -238,10 +241,15 @@ Item {
         TextButton {
             id: makePrivate
             visible: (access_id != 0) && ismine
+            opacity: delegate.detailsOpacity
             text: "Make private"
             onClicked: {
                 root.set_access(pmlid,0,
-                               function(){xmlpmlModel.reload();},
+                               function(){
+
+                                   refpmlModel.setProperty(rowid,"access_id",0);
+                                   myCloud.populate(newprivateSearchItem.text);
+                               },
                                function(){}
                                );
             }
@@ -249,10 +257,15 @@ Item {
         TextButton {
             id: makeFriend
             visible: (access_id != -2) && ismine
+            opacity: delegate.detailsOpacity
             text: "Share with Friends"
             onClicked: {
                 root.set_access(pmlid,-2,
-                               function(){xmlpmlModel.reload();},
+                               function(){
+
+                                   refpmlModel.setProperty(rowid,"access_id",-2);
+                                   myCloud.populate(newprivateSearchItem.text);
+                               },
                                function(){}
                                );
             }
@@ -260,10 +273,15 @@ Item {
         TextButton {
             id: makePublic
             visible: (access_id != 2) && ismine
+            opacity: delegate.detailsOpacity
             text: "Make public"
             onClicked: {
                 root.set_access(pmlid,2,
-                               function(){xmlpmlModel.reload();},
+                               function(){
+
+                                   refpmlModel.setProperty(rowid,"access_id",2);
+                                   myCloud.populate(newprivateSearchItem.text);
+                               },
                                function(){}
                                );
             }
@@ -272,8 +290,9 @@ Item {
             id: saveCurrentSessionButtonIn
             text: "Save current session"
             visible: ismine
+            opacity: delegate.detailsOpacity
             onClicked: {
-                var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+                var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
                 var url = serverURL+ '?method=file.update_pmldata'+
                         '&file_guid='+pmlid+
                         '&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa'+
@@ -310,7 +329,7 @@ Item {
             visible: changed
             text: "Save"
             onClicked: {
-                var serverURL = 'http://pockemul.dscloud.me/elgg/services/api/rest/json/';
+                var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
                 var url = serverURL+ '?method=file.update&'+
                         '&guid='+pmlid+
                         '&access='+newpublicstatus+
@@ -333,51 +352,6 @@ Item {
                                 var publicstatuschanged = false;
                                 refpmlModel.setProperty(rowid,"title",titleText.text);
                                 refpmlModel.setProperty(rowid,"description",descriptionText.text);
-                                if (refpmlModel.get(rowid).ispublic != newpublicstatus) {
-                                    refpmlModel.setProperty(rowid,"ispublic",newpublicstatus);
-                                    publicstatuschanged = true;
-                                }
-                                refpmlModel.setProperty(rowid,"ideleted",newpublicstatus);
-
-                                //                    console.log(o.responseText);
-                                if (publicstatuschanged) {
-                                    delegate.state="";
-                                    if (newpublicstatus) {
-                                        // copy item from private to public refpmlModel
-                                        publicCloud.refpmlModel.appendPml(privateCloud.refpmlModel.get(rowid));
-                                    }
-                                    else  {
-                                        // remove item from public refpmlModel
-                                        publicCloud.refpmlModel.removePml(pmlid);
-                                    }
-
-                                    privateCloud.populateCategoryModel("");
-                                    privateCloud.objid = 0;
-                                    privateCloud.populatePMLModel("");
-                                    publicCloud.populateCategoryModel("");
-                                    publicCloud.objid = 0;
-                                    publicCloud.populatePMLModel("");
-                                    if (newpublicstatus) {
-                                        tabbedui.tabClicked(1);
-                                        publicCloud.focusPml(pmlid);
-                                    }
-                                    else  {
-                                        tabbedui.tabClicked(0);
-                                        privateCloud.focusPml(pmlid);
-                                    }
-
-                                    cloud.saveCache(privateCloud.cacheFileName,privateCloud.serializerefpmlModel());
-                                    cloud.saveCache(publicCloud.cacheFileName,publicCloud.serializerefpmlModel());
-                                }
-                                else {
-                                    delegate.state="";
-                                    publicCloud.refpmlModel.removePml(pmlid);
-                                    publicCloud.refpmlModel.appendPml(privateCloud.refpmlModel.get(rowid));
-                                    publicCloud.populatePMLModel("");
-                                    populatePMLModel("");
-                                    cloud.saveCache(cacheFileName,serializerefpmlModel());
-                                }
-
                             }
                         }
                     });
@@ -425,8 +399,10 @@ Item {
         TextButton {
             id: deleteButton
             visible: ismine
+            opacity: delegate.detailsOpacity
             text: (isdeleted ==1) ? "Permanently delete" : "Delete"
             onClicked: {
+                message.showMessage("Not yet implemented",2000);
                 return;
                 var url = serverURL + "delPML/" + currentApiKey +"/" + pmlid;
                 requestGet(url,function (o) {
@@ -494,16 +470,10 @@ Item {
             NumberAnimation { duration: 300; properties: "detailsOpacity,x,contentY,height,width" }
         }
     }
-    //    MouseArea {
-    //        anchors.fill: parent
-    //        onDoubleClicked: cloud.getPML(pmlid)
-    //    }
 
     Rectangle {
         width: parent.width; height: 1; color: "#cccccc"
         anchors.bottom: parent.bottom
     }
-
-
 
 }
