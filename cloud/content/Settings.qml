@@ -8,7 +8,7 @@ Rectangle {
         id: visualSettingsModel
 
 //        SettingsDelegate { visible: false; id: testcombo; name: "combobox"; labelString: "Combobox"; type: "combo"; saveInput: false }
-        SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://rrouvin.dyndns.org/pocketcloud/"}
+        SettingsDelegate { id: servername; name: "serverURL"; labelString: "Cloud Server"; type: "input"; defaultText: "http://pockemul.dscloud.me/elgg/"}
         SettingsDelegate { id: nameFld; name: "name"; labelString: "Name"; type: "input"; }
         SettingsDelegate { id: emailFld; name: "email"; labelString: "Email"; type: "input"; }
         SettingsDelegate { id: usernameFld; name: "username"; labelString: "User Name"; type: "input"; }

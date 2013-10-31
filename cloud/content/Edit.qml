@@ -11,7 +11,7 @@ Rectangle {
     id: rootEdit
 
     width: 200
-    height: (nbLine==0)? 100 : nbLine * edit.font.pointSize * 1.3 +20
+    height: (nbLine==0)? 100 : nbLine * edit.font.pixelSize * 1.3 +20
 
     clip: true
     Rectangle {

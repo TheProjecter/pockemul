@@ -15,13 +15,15 @@ Item {
 
     signal buttonClicked
 
-    width: delegate.ListView.view.width; height: 60
+    width: delegate.ListView.view.width;
+    height: (type == "input") ? inputElement.height :
+            (type == "action")? buttonElement.height +5 : labelElement.height +5
+
 
     LineInput {
         id: inputElement
         objectName: name
         width: parent.width
-//        height: 40
         label: labelString
         font.pointSize: 16
         onInputAccepted: if (saveInput) cloud.saveValueFor(key,value)
@@ -33,22 +35,19 @@ Item {
     }
 
     Row {
-        y: 10
+        y:2
         spacing: 10
         Text {
             id: labelElement
             text: labelString
             color: delegate.ListView.isCurrentItem ? "white" : "black"
             font { family: "Helvetica"; pointSize: 16; bold: false }
-//            anchors {
-//                left: parent.left; leftMargin: 15
-//                verticalCenter: parent.verticalCenter
-//            }
             anchors.verticalCenter: parent.verticalCenter
             visible: ((type == "text") | (type == "action") )
         }
         TextButton {
             id: buttonElement
+
             text: labelString
             objectName: name
             font.pointSize: 16
@@ -59,29 +58,16 @@ Item {
             }
         }
     }
-//    BusyIndicator {
-//        scale: 0.6
-//        on: delegate.ListView.isCurrentItem && window.loading
-//        anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
+
+
+//    Rectangle {
+//        width: delegate.width; height: 1; color: "#cccccc"
+//        anchors.bottom: delegate.bottom
+//        visible: delegate.ListView.isCurrentItem ? false : true
 //    }
-
-    Rectangle {
-        width: delegate.width; height: 1; color: "#cccccc"
-        anchors.bottom: delegate.bottom
-        visible: delegate.ListView.isCurrentItem ? false : true
-    }
-    Rectangle {
-        width: delegate.width; height: 1; color: "white"
-        visible: delegate.ListView.isCurrentItem ? false : true
-    }
-
-    //    MouseArea {
-    //        anchors.fill: delegate
-    //        onClicked: {
-    //            delegate.ListView.view.currentIndex = index
-    //            window.currentObjid = objid
-    //        }
-    //    }
-
+//    Rectangle {
+//        width: delegate.width; height: 1; color: "white"
+//        visible: delegate.ListView.isCurrentItem ? false : true
+//    }
 
 }

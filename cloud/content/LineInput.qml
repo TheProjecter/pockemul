@@ -18,18 +18,20 @@ Rectangle {
 
 
 
-    width: 480; height: 100
+    width: 480;
+    height: row.height +5
 
     Text {
         id: fontstyle
         text: ""
         visible: false
-        font.pixelSize: 16
+        font.pointSize: 16
     }
     Row {
+        id: row
         width: parent.width
-        y: 10
-        spacing: 20
+//        y: 10
+        spacing: 10
         Text {
             id: label
             text: "Label"
@@ -39,7 +41,7 @@ Rectangle {
 
         FocusScope {
             width: parent.width - 30 - label.width
-            height: label.height * 1.5
+            height: label.height ;// * 1.5
             anchors.verticalCenter: parent.verticalCenter
 
 //            BorderImage {
@@ -66,7 +68,7 @@ Rectangle {
             TextInput {
 
                 width: parent.width - 20
-                height: parent.height - 10
+//                height: parent.height - 10
                 anchors.centerIn: parent
                 id: input
                 objectName: "inputField"

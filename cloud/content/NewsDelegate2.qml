@@ -88,8 +88,8 @@ Item {
             Image {
                 id: accessIcon
                 source: (access_id == -2 ? "images/friend.png" :"images/public.png")
-                width: 30
-                height: 30
+                width: titleText.height *.5
+                height: titleText.height * .5
                 visible: (access_id!=0)
             }
             Edit {
@@ -101,7 +101,6 @@ Item {
 
                 wrapMode: Text.WordWrap
                 width: parent.width - 30 - (buttonColumn.visible? buttonColumn.width:0) - 5
-                //                height: 30
                 font { bold: true; family: "Helvetica"; pointSize: 14 }
                 textColor: changed ? "red" : "black"
                 onTextChanged: {
@@ -183,6 +182,7 @@ Item {
             readOnly: !ismine
 //            wrapMode: Text.WordWrap;
             font.family: "Helvetica"; font.pointSize: 14
+//            nbLine: 4
             textColor: changed ? "red" : "black"
             opacity: delegate.detailsOpacity
             onTextChanged: checkmodif()
@@ -248,7 +248,9 @@ Item {
                                function(){
 
                                    refpmlModel.setProperty(rowid,"access_id",0);
-                                   ListView.view.populate(newprivateSearchItem.text);
+                                   pmlModel.setProperty(index,"access_id",0);
+
+//                                   pmlview.populate(newprivateSearchItem.text);
                                },
                                function(){}
                                );
@@ -264,7 +266,9 @@ Item {
                                function(){
 
                                    refpmlModel.setProperty(rowid,"access_id",-2);
-                                   ListView.view.populate(newprivateSearchItem.text);
+                                   pmlModel.setProperty(index,"access_id",-2);
+
+//                                   pmlview.populate(newprivateSearchItem.text);
                                },
                                function(){}
                                );
@@ -280,7 +284,8 @@ Item {
                                function(){
 
                                    refpmlModel.setProperty(rowid,"access_id",2);
-                                   ListView.view.populate(newprivateSearchItem.text);
+                                   pmlModel.setProperty(index,"access_id",2);
+//                                   pmlview.populate(newprivateSearchItem.text);
                                },
                                function(){}
                                );

@@ -108,6 +108,7 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
 
     QNetworkRequest req("http://"+_id);
 //    qWarning()<<req.url();
+    req.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     QString key = toKey( req.url().toString());
 
     if (cache.contains(key))

@@ -14,13 +14,6 @@ Rectangle {
     height: label.height + 6
     border.color: root.buttonBorderColor
     radius: 5
-    //antialiasing: true
-//    radius: 10
-
-//    gradient: Gradient {
-//        GradientStop { id: gradientStop; position: 0.0; color: "#666666" }
-//        GradientStop { position: 1.0; color: "#000000" }
-//    }
 
     MouseArea {
         id: mouseArea
