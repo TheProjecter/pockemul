@@ -930,41 +930,44 @@ void Chp41Cpu::SubclassA()
         ram_selected=(ram_selected&0x3f0)|Modifier;
         wdata();
     }
-    else switch(perph_selected)
-    {
-    case 0:      /* REG=C - already wrote to ram */
+    else {
+
+        switch(perph_selected)
+        {
+        case 0:      /* REG=C - already wrote to ram */
+            break;
+        case 0x10:   /* halfnut display */
+        {
+            hp41->HalfnutWrite();
+            break;
+        }
+        case 0xfb:   /* timer write */
+        {
+            if (hp41->fTimer)
+                hp41->TimerWrite();
+            break;
+        }
+        case 0xfc:   /* card reader */
+        {
+            error_message(30);
+            break;
+        }
+        case 0xfd:   /* lcd display */
+        {
+            hp41->DisplayWrite();
         break;
-    case 0x10:   /* halfnut display */
-    {
-        hp41->HalfnutWrite();
-        break;
-    }
-    case 0xfb:   /* timer write */
-    {
-        if (hp41->fTimer)
-            hp41->TimerWrite();
-        break;
-    }
-    case 0xfc:   /* card reader */
-    {
-        error_message(30);
-        break;
-    }
-    case 0xfd:   /* lcd display */
-    {
-        hp41->DisplayWrite();
-        break;
-    }
-    case 0xfe:   /* wand */
-    {
-        error_message(30);
-        break;
-    }
-    default:
-    {
-        error_message(31);
-        break;
-    }
+        }
+        case 0xfe:   /* wand */
+        {
+            error_message(30);
+            break;
+        }
+        default:
+        {
+            error_message(31);
+            break;
+        }
+        }
     }
     r->CARRY=0;
 }
@@ -1201,42 +1204,46 @@ void Chp41Cpu::SubclassE()
             ram_selected=(ram_selected&0x3f0)|Modifier;
         rdata();
     }
-    else switch(perph_selected)
-    {
-    case 0:     /* RDATA/C=REG - already took care of ram read*/
-        break;
-    case 0x10:  /* halfnut display - only known to work for contrast */
-    {
-        hp41->HalfnutRead();
-        break;
+    else {
+        memset(r->C_REG,0,14);
+        switch(perph_selected)
+        {
+        case 0:     /* RDATA/C=REG - already took care of ram read*/
+            break;
+        case 0x10:  /* halfnut display - only known to work for contrast */
+        {
+            hp41->HalfnutRead();
+            break;
+        }
+        case 0xfb:   /* timer */
+        {
+            if (hp41->fTimer)
+                hp41->TimerRead();
+            break;
+        }
+        case 0xfc:  /* card reader */
+        {
+            error_message(30);
+            break;
+        }
+        case 0xfd: /* lcd display */
+        {
+            hp41->DisplayRead();
+            break;
+        }
+        case 0xfe:   /* wand */
+        {
+            error_message(30);
+            break;
+        }
+        default:
+        {
+            error_message(31);
+            break;
+        }
+        }
     }
-    case 0xfb:   /* timer */
-    {
-        if (hp41->fTimer)
-            hp41->TimerRead();
-        break;
-    }
-    case 0xfc:  /* card reader */
-    {
-        error_message(30);
-        break;
-    }
-    case 0xfd: /* lcd display */
-    {
-        hp41->DisplayRead();
-        break;
-    }
-    case 0xfe:   /* wand */
-    {
-        error_message(30);
-        break;
-    }
-    default:
-    {
-        error_message(31);
-        break;
-    }
-    }
+
     r->CARRY=0;
 }
 
