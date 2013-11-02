@@ -153,6 +153,10 @@ void Chp41Cpu::Load_Internal(QXmlStreamReader *xmlIn)
             //            QByteArray ba_mem = QByteArray::fromBase64(xmlIn->attributes().value("memory").toString().toLatin1());
             //            if (!ba_mem.isEmpty()) memcpy((char *) pRAM,ba_mem.data(),sizeof(RAM_REG)*MAX_RAM);
             qWarning()<<"regs read hp41cpu";
+
+            QString _pt = xmlIn->attributes().value("pt_reg").toString();
+            if (_pt=="P") PT_REG = &r->P_REG;
+            if (_pt=="Q") PT_REG = &r->Q_REG;
         }
         xmlIn->skipCurrentElement();
     }
@@ -164,6 +168,8 @@ void Chp41Cpu::save_internal(QXmlStreamWriter *xmlOut)
     xmlOut->writeAttribute("model","hp41cpu");
     QByteArray ba_reg((char*)&r[0],sizeof(HP41regs));
     xmlOut->writeAttribute("registers",ba_reg.toBase64());
+    if (PT_REG == &r->P_REG) xmlOut->writeAttribute("pt_reg","P");
+    if (PT_REG == &r->Q_REG) xmlOut->writeAttribute("pt_reg","Q");
     xmlOut->writeEndElement();
 }
 

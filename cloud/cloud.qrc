@@ -28,13 +28,6 @@
         <file>qmltemplates/AccordionList/component/gfx/list_item_pressed.png</file>
         <file>qmltemplates/AccordionList/component/gfx/list_item_selected.png</file>
         <file>qmltemplates/AccordionList/component/gfx/list_subitem.png</file>
-        <file>TabbedQuickApp/main.qml</file>
-        <file>TabbedQuickApp/Tab.qml</file>
-        <file>TabbedQuickApp/TabbedUI.qml</file>
-        <file>TabbedQuickApp/pics/close.png</file>
-        <file>TabbedQuickApp/pics/tab0.png</file>
-        <file>TabbedQuickApp/pics/tab1.png</file>
-        <file>TabbedQuickApp/pics/tab2.png</file>
         <file>RatingIndicatorQML/MyRatingIndicator.qml</file>
         <file>RatingIndicatorQML/star.png</file>
         <file>content/TextButton.qml</file>
@@ -49,11 +42,6 @@
         <file>content/images/public.png</file>
         <file>content/images/scrollbar.png</file>
         <file>content/SettingsDelegate.qml</file>
-        <file>TabbedQuickApp/pics/private-cloud-white.png</file>
-        <file>TabbedQuickApp/pics/public-cloud-white.png</file>
-        <file>TabbedQuickApp/pics/settings-white.png</file>
-        <file>TabbedQuickApp/pics/action-white.png</file>
-        <file>TabbedQuickApp/pics/back-white.png</file>
         <file>content/Edit.qml</file>
         <file>content/ComboBox.qml</file>
         <file>content/Switch.qml</file>
@@ -69,5 +57,17 @@
         <file>content/NewsDelegate2.qml</file>
         <file>content/images/friend.png</file>
         <file>content/Actions.qml</file>
+        <file>TabbedQuickApp/main.qml</file>
+        <file>TabbedQuickApp/Tab.qml</file>
+        <file>TabbedQuickApp/TabbedUI.qml</file>
+        <file>TabbedQuickApp/pics/action-white.png</file>
+        <file>TabbedQuickApp/pics/back-white.png</file>
+        <file>TabbedQuickApp/pics/close.png</file>
+        <file>TabbedQuickApp/pics/private-cloud-white.png</file>
+        <file>TabbedQuickApp/pics/public-cloud-white.png</file>
+        <file>TabbedQuickApp/pics/settings-white.png</file>
+        <file>TabbedQuickApp/pics/tab0.png</file>
+        <file>TabbedQuickApp/pics/tab1.png</file>
+        <file>TabbedQuickApp/pics/tab2.png</file>
     </qresource>
 </RCC>
