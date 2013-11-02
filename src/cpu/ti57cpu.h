@@ -1,6 +1,12 @@
 #ifndef TI57CPU_H
 #define TI57CPU_H
 
+/*
+ * this code is based on TI-57E emulator
+ * http://www.hrastprogrammer.com/ti57e/
+ */
+
+
 #include "cpu.h"
 
 #define MAXROM 0x07FF

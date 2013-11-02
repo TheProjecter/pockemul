@@ -1,3 +1,10 @@
+/*
+ * this code is based on TI-57E emulator
+ * http://www.hrastprogrammer.com/ti57e/
+ */
+
+
+
 #include <QDebug>
 
 #include "ti57cpu.h"
