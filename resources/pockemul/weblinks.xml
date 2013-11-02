@@ -137,12 +137,14 @@
         <document desc="BASIC reference (fr)" link="http://pockemul.free.fr/Documents/userguide/X07/CarteReferenceBasicX-07.pdf"/>
     </model>
     <model value="pb1000">
+        <url desc="The original emulator" link="http://www.pisi.com.pl/piotr433/pb1000ee.htm"/>
         <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=29&amp;serie=6"/>
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/pb-1000_e.html"/>
         <url desc="Silicium wiki" link="http://www.silicium.org/wiki/index.php/CASIO_PB_1000"/>
         <document desc="User Guide (fr)" link="http://pockemul.free.fr/Documents/userguide/PB1000/PB1000_OM_FR.pdf"/>
     </model>
     <model value="pb2000">
+        <url desc="The original emulator" link="http://www.pisi.com.pl/piotr433/pb2000ee.htm"/>
         <url desc="Casio Museum" link="http://casio.ledudu.com/pockets.asp?type=60"/>
         <url desc="Pocket Museum" link="http://pocket.free.fr/html/casio/pb-2000c_e.html"/>
         <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/PB2000/PB2000_OM_GB.pdf"/>

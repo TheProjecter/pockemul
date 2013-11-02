@@ -134,9 +134,12 @@ Item {
                 source:
                         "image://PockEmulCloud/"+
                         cloud.getValueFor("serverURL","").replace("http://","")+
-                        "mod/file/thumbnail.php"+
-                        "?file_guid="+pmlid+
+                        "services/api/rest/xml/?method=file.get_snap"+
+                        "&file_guid="+pmlid+
                         "&size=medium"
+//                        "mod/file/thumbnail.php"+
+//                        "?file_guid="+pmlid+
+//                        "&size=medium"
 
                     //serverURL+"getPMLthumb/"+pmlid+"/"+getThumbId(pmlid)
                 fillMode: Image.PreserveAspectFit;
@@ -145,9 +148,12 @@ Item {
                         interval: 500;
                         onTriggered: pmlThumbImage.source="image://PockEmulCloud/"+
                                      cloud.getValueFor("serverURL","").replace("http://","")+
-                                     "mod/file/thumbnail.php"+
-                                     "?file_guid="+pmlid+
+                                     "services/api/rest/xml/?method=file.get_snap"+
+                                     "&file_guid="+pmlid+
                                      "&size=medium"
+//                                     "mod/file/thumbnail.php"+
+//                                     "?file_guid="+pmlid+
+//                                     "&size=medium"
 //                                     "&ghost="+getThumbId(pmlid);
                     }
                 onStatusChanged: {

@@ -497,7 +497,6 @@ HEADERS += src/core/Connect.h \
     src/cpu/m6502/ops02.h \
     src/machine/postit.h \
     src/core/sizegrip.h \
-    src/cpu/nut.h \
     src/machine/hp/hp41.h \
     src/cpu/ti57cpu.h \
     src/machine/ti/ti57.h \
@@ -747,7 +746,6 @@ SOURCES +=  \
     src/cpu/m6502/m6502_dasm.cpp \
     src/machine/postit.cpp \
     src/core/sizegrip.cpp \
-    src/cpu/nut.cpp \
     src/machine/hp/hp41.cpp \
     src/cpu/ti57cpu.cpp \
     src/machine/ti/ti57.cpp \

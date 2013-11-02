@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QCryptographicHash>
+#include <QXmlStreamReader>
 
 #include "cloudwindow.h"
 extern QString workDir;
@@ -100,7 +101,7 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
 //    qWarning()<<id<<"   auth_token="<<CloudWindow::getValueFor("auth_token")<<" size="<<requestedSize;
 
     QUrlQuery qu;
-    qu.addQueryItem("apikey","7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa");
+    qu.addQueryItem("api_key","7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa");
     qu.addQueryItem("auth_token",CloudWindow::getValueFor("auth_token"));
 
     QString _id = id;
@@ -108,7 +109,7 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
 
     QNetworkRequest req("http://"+_id);
 //    qWarning()<<req.url();
-    req.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+//    req.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
     QString key = toKey( req.url().toString());
 
     if (cache.contains(key))
@@ -153,15 +154,29 @@ void CloudImageProvider::loadfinished(QNetworkReply *reply)
 {
 //    qWarning()<<"Downloas finished*******";
 
-    QByteArray imageData = reply->readAll();
+    QByteArray xmlData = reply->readAll();
+//    qWarning() << "data="<<xmlData.left(200);
+    QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
 
-    QImage image;
-    image.loadFromData(imageData);
+    if (xml->readNextStartElement() && (xml->name() == "elgg")) {
+        if (xml->readNextStartElement() &&
+                (xml->name() == "status") &&
+                (xml->readElementText().toInt()==0)) {
+            if (xml->readNextStartElement() &&
+                    (xml->name() == "result")) {
+                QByteArray snapData = xml->readElementText().toLatin1();
+//                qWarning() << "data="<<snapData.left(200);
+                QImage image;
+                image.loadFromData(QByteArray::fromBase64(snapData));
 
-    QString key = toKey( reply->url().toString());
-    cache[key] = image;
+                QString key = toKey( reply->url().toString());
+//                qWarning()<<key<<" <- "<<reply->url().toString();
+                cache[key] = image;
 
-    image.save(workDir+"imgcache/"+key+".jpg");
+                image.save(workDir+"imgcache/"+key+".jpg");
+            }
+        }
+    }
 
     reply->deleteLater();
 
