@@ -375,7 +375,7 @@ void Cce515p::Command(quint8 t) {
         escCommand+=QChar(t);
         AddLog(LOG_PRINTER,"Esc Command:"+escCommand);
 
-        switch (t) {
+        switch (TOLOWER(t)) {
             case 'a' :
             case 'b' :
             case 'c' :
@@ -453,7 +453,7 @@ void Cce515p::Command(quint8 t) {
 void Cce515p::ProcessGraphCommand() {
     bool ok;
     AddLog(LOG_PRINTER,"Graph Command:"+graphCommand);
-    switch (graphCommand.at(0).toLatin1()) {
+    switch (graphCommand.at(0).toUpper().toLatin1()) {
     case 'S':   { //size 0-15 (Canon x-710)
                     qint8 tmpcharSize = graphCommand.mid(1).toInt() +1;
                     if ((tmpcharSize >0) && (tmpcharSize <= 16))
@@ -543,7 +543,7 @@ void Cce515p::ProcessMultiPointCommand(QString command) {
             //AddLog(LOG_PRINTER,"first param:"+coordList.at(ind));
             //AddLog(LOG_PRINTER,"second param:"+coordList.at(ind+1));
             AddLog(LOG_PRINTER,tr("draw to [%1,%2]").arg(TRANSX(x),4,10,QChar('0')).arg(TRANSY(y),4,10,QChar('0')));
-            switch (command.at(0).toLatin1()) {
+            switch (command.at(0).toUpper().toLatin1()) {
             case 'D' :  penDown = true;
                         DrawLine(TRANSX(Pen_X),TRANSY(Pen_Y),TRANSX(x),TRANSY(y));
                         Pen_X = (x);
@@ -573,7 +573,7 @@ void Cce515p::ProcessMultiPointCommand(QString command) {
 
 void Cce515p::ProcessEscCommand() {
     qint8 tmpcharSize = 0;
-    switch (escCommand.at(0).toLatin1()) {
+    switch (escCommand.at(0).toUpper().toLatin1()) {
     case '?': //size 2 mode a-o or 1- 63 (for ce-140p)
 
         if ( (escCommand.at(1).toLatin1()>=97) && (escCommand.at(1).toLatin1()<=111) )
@@ -585,15 +585,15 @@ void Cce515p::ProcessEscCommand() {
         }
 
         break;
-    case 'a': // text mode
+    case 'A': // text mode
         mode = TEXT;
         orig_X = 0 ;            Pen_X = 0;
         orig_Y = TRANSY(Pen_Y); Pen_Y = 0;
         break;
-    case 'g': // TEST
+    case 'G': // TEST
         DrawTest();
         break;
-    case 'b': // graphic mode
+    case 'B': // graphic mode
         if (mode == TEXT) {
             mode = GRAPH;
             orig_X = TRANSX(Pen_X); Pen_X = 0;

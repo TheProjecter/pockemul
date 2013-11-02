@@ -6,28 +6,6 @@
         <file>content/ScrollBar.qml</file>
         <file>main.qml</file>
         <file>content/TabWidget.qml</file>
-        <file>qmltemplates/CoverFlow/example/main.qml</file>
-        <file>qmltemplates/CoverFlow/component/AlphaGradient.qml</file>
-        <file>qmltemplates/CoverFlow/component/CoverFlow.qml</file>
-        <file>qmltemplates/CoverFlow/component/CoverFlowDelegate.qml</file>
-        <file>qmltemplates/CoverFlow/component/gfx/accordionlist.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/background.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/image_placeholder.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/media_browser_visuals.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/photo_back.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/rotation_icon.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/splash.png</file>
-        <file>qmltemplates/CoverFlow/component/gfx/splash_screen.png</file>
-        <file>qmltemplates/AccordionList/example/AccordionList.qml</file>
-        <file>qmltemplates/AccordionList/component/AccordionList.qml</file>
-        <file>qmltemplates/AccordionList/component/AccordionListModel.qml</file>
-        <file>qmltemplates/AccordionList/component/ListItem.qml</file>
-        <file>qmltemplates/AccordionList/component/gfx/arrow.png</file>
-        <file>qmltemplates/AccordionList/component/gfx/list_item.png</file>
-        <file>qmltemplates/AccordionList/component/gfx/list_item_active.png</file>
-        <file>qmltemplates/AccordionList/component/gfx/list_item_pressed.png</file>
-        <file>qmltemplates/AccordionList/component/gfx/list_item_selected.png</file>
-        <file>qmltemplates/AccordionList/component/gfx/list_subitem.png</file>
         <file>RatingIndicatorQML/MyRatingIndicator.qml</file>
         <file>RatingIndicatorQML/star.png</file>
         <file>content/TextButton.qml</file>

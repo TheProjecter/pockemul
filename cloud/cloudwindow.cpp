@@ -42,6 +42,7 @@ CloudWindow::CloudWindow(QWidget *parent)
     : QWidget(parent)
 {
     imgprov = new CloudImageProvider(this);
+    if (getValueFor("serverURL","")=="") saveValueFor("serverURL","http://pockemul.dscloud.me/elgg/");
 
     view = new QDeclarativeView(this);
     view->engine()->addImageProvider(QLatin1String("PockEmulCloud"),imgprov );
@@ -243,7 +244,8 @@ void CloudWindow::getPML(int id,int version,QString auth_token) {
         url = server+QString("/%1/%2").arg(getValueFor("apikey","0")).arg(id);
     }
     else {
-        url = QString("http://pockemul.dscloud.me/elgg/services/api/rest/xml/?method=file.get_pml")+
+        url = getValueFor("serverURL","http://pockemul.dscloud.me/elgg/")+
+                QString("services/api/rest/xml/?method=file.get_pml")+
                 QString("&file_guid=%1").arg(id)+
                 "&api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa"+
                 "&auth_token="+auth_token;

@@ -90,7 +90,7 @@
     <KEY description="(" masterscancode="0x39" modifier="shift"/>
     <KEY description=")" masterscancode="0x30" modifier="shift"/>
     <KEY description="_" masterscancode="0x2d" modifier="shift"/>
-    <KEY description="&quot;" masterscancode="0x2c" modifier="shift"/>
+    <KEY description="&quot;" masterscancode="0xb0" modifier="shift"/>
     <KEY description="]" masterscancode="0xb1" modifier="shift"/>
     <KEY description="?" masterscancode="0x2f" modifier="shift"/>
     <KEY description=":" masterscancode="0x3b" modifier="shift"/>
