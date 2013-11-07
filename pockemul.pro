@@ -139,12 +139,18 @@ SOURCES += \
 contains(PROJECT_MODULE,M_CLOUD) {
 DEFINES += P_CLOUD
 
+RESOURCES +=  \
+    cloud/cloud.qrc \
+
+
 HEADERS+= \
     cloud/cloudwindow.h \
+    cloud/cloudimageprovider.h
 
 
 SOURCES+= \
-    cloud/cloudwindow.cpp
+    cloud/cloudwindow.cpp \
+    cloud/cloudimageprovider.cpp
 
 }
 
@@ -518,8 +524,7 @@ HEADERS += src/core/Connect.h \
     src/lcd/Lcdc_hp41.h \
     src/machine/hp/hp82143A.h \
     src/core/viewobject.h \
-    src/machine/bus.h \
-    cloud/cloudimageprovider.h
+    src/machine/bus.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -593,8 +598,7 @@ RESOURCES +=  \
     resources/asmlibs.qrc \
     resources/core.qrc \
     resources/tpc8300.qrc \
-    resources/rlh1000.qrc \
-    cloud/cloud.qrc \
+    resources/rlh1000.qrc
     resources/ti57.qrc \
     resources/hp41.qrc
 
@@ -771,8 +775,7 @@ SOURCES +=  \
     src/machine/hp/hp41mod.cpp \
     src/lcd/Lcdc_hp41.cpp \
     src/machine/hp/hp82143A.cpp \
-    src/machine/bus.cpp \
-    cloud/cloudimageprovider.cpp
+    src/machine/bus.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \
