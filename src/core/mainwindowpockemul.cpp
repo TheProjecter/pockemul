@@ -529,6 +529,7 @@ void MainWindowPockemul::CheckUpdates()
     dialogcheckupdate.show();
 }
 
+// FIXME: TURNON POCKET after full load
 void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
     QMap<int,CPObject*> map;
     CPObject * firstPC = 0;
@@ -585,15 +586,12 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
                             }
                             else
                             if (eltname == "session") {
-//                                AddLog(LOG_MASTER,"OK");
-//                                ((CpcXXXX*)locPC)->LoadSession_File(&xml);
                                 locPC->LoadSession_File(xml);
                                 xml->skipCurrentElement();
                             }
                             else
                                 xml->skipCurrentElement();
                         }
-             //           xml->readNextStartElement();
                      }
                     else if (eltname == "link") {
                         int idpc1 = xml->attributes().value("idpcFrom").toString().toInt();

@@ -54,13 +54,13 @@ Rectangle {
 
     function showMessage(text,speed) {
         message.border.color = "black"
-        message.y = 50
-        message.width = parent.width / 5 * 4
-        message.height = parent.height / 8 * 1
+//        message.y = 50
+        message.width = parent.width
+        message.height = messageText.height *1.3;//parent.height / 8 * 1
         txt = text
         animSpeed = speed
         message.opacity = 1
-        messageText.font.pixelSize = parent.width / 14
+        messageText.font.pointSize = 16; //ixelSize = parent.width / 14
         messageAnim.restart()
     }
 
@@ -132,16 +132,17 @@ Rectangle {
 
     Text {
         id: messageText
-        anchors.fill: parent
-        anchors.margins: 10
+        width: parent.width
+//        anchors.margins: 10
         text: txt
         wrapMode: Text.WordWrap
         color: "white"
         font.family: "Calibri"
-        font.pixelSize:  parent.width / 14
+//        font.pixelSize:  parent.width / 14
+        font.pointSize: 16
         font.bold: true
         onLinkActivated: {
-            GameEngine.openLink(link)
+//            GameEngine.openLink(link)
         }
     }
 }

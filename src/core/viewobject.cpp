@@ -7,6 +7,9 @@
 #include "viewobject.h"
 
 #include "mainwindowpockemul.h"
+
+#include "Keyb.h"
+
 extern MainWindowPockemul* mainwindow;
 
 CViewObject::CViewObject(CViewObject *parent):QWidget(mainwindow->centralwidget)
@@ -323,6 +326,12 @@ void CViewObject::mousePressEvent(QMouseEvent *event) {
     // if click on the border
     // width ?
 //qWarning()<<"CViewObject::mousePressEvent"<<event;
+
+    QPoint pts(event->x() , event->y());
+    if (pKEYB && pKEYB->KeyClick(pts)) {
+        return;
+    }
+
     Direction dir = borderClick(event->pos());
 
     targetView = currentView;
@@ -380,7 +389,8 @@ void CViewObject::mousePressEvent(QMouseEvent *event) {
 
     if ( (targetView != currentView) && getViewImage(targetView) ) {
         QSize _s = viewRect(currentView).expandedTo(viewRect(targetView));
-        changeGeometry(this->posx(),this->posy(),_s.width()*mainwindow->zoom/100.0,_s.height()*mainwindow->zoom/100.0);
+        changeGeometry(this->posx(),this->posy(),
+                       _s.width()*mainwindow->zoom/100.0,_s.height()*mainwindow->zoom/100.0);
         flip(dir);
     }
 

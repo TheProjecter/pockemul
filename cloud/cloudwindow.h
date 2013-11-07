@@ -25,7 +25,7 @@ public:
     CloudWindow(QWidget *parent = 0);
     virtual QSize sizeHint() const;
 
-
+    Q_INVOKABLE int askDialog(QString msg, int nbButton);
     Q_INVOKABLE void getPML(int id, int version=0, QString auth_token = QString());
     Q_INVOKABLE static QString getValueFor(const QString &objectName, const QString &defaultValue = QString());
     Q_INVOKABLE static void saveValueFor(const QString &objectName, const QString &inputValue);

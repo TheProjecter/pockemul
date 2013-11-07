@@ -6,7 +6,7 @@
 #include "paperwidget.h"
 #include "Log.h"
 
-//TODO  Lorsque pointeur positionné sur papier, afficher scroolbar verticale et gerer mousewheel
+//TODO  Lorsque pointeur positionne sur papier, afficher scroolbar verticale et gerer mousewheel
 Cprinter::Cprinter(CPObject *parent):CPObject(parent)
 {
 	PaperColor = QColor(255,255,255);
@@ -68,4 +68,27 @@ void Cprinter::raise()
     AddLog(LOG_TEMP,"RAISE");
     CPObject::raise();
 
+}
+
+bool Cprinter::SaveSession_File(QXmlStreamWriter *xmlOut)
+{
+    xmlOut->writeStartElement("session");
+        xmlOut->writeAttribute("version", "2.0");
+        xmlOut->writeAttribute("posx",QString("%1").arg(pos.x()));
+        xmlOut->writeAttribute("posy",QString("%1").arg(pos.y()));
+        xmlOut->writeAttribute("buffer",QString(TextBuffer.toBase64()));
+
+    xmlOut->writeEndElement();  // session
+    return true;
+}
+
+bool Cprinter::LoadSession_File(QXmlStreamReader *xmlIn)
+{
+    if (xmlIn->name()=="session") {
+        pos.setX( xmlIn->attributes().value("posx").toString().toInt());
+        pos.setY( xmlIn->attributes().value("posy").toString().toInt());
+        TextBuffer.clear();
+        TextBuffer = QByteArray::fromBase64(xmlIn->attributes().value("posy").toString().toLatin1());
+    }
+    return true;
 }

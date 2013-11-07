@@ -74,6 +74,11 @@ QSize CloudWindow::sizeHint() const
     return QSize(500, 700);
 }
 
+int CloudWindow::askDialog(QString msg, int nbButton)
+{
+    return ask(this, msg, nbButton);
+}
+
 void CloudWindow::wheelEvent(QWheelEvent *event)
 {
     event->accept();

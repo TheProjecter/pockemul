@@ -303,6 +303,7 @@ Item {
             visible: ismine
             opacity: delegate.detailsOpacity
             onClicked: {
+                if (cloud.askDialog("Do you want to overwrite this session file ?",2)==2) return;
                 var serverURL = cloud.getValueFor("serverURL","")+'services/api/rest/json/';
                 var url = serverURL+ '?method=file.update_pmldata'+
                         '&file_guid='+pmlid+
@@ -413,6 +414,7 @@ Item {
             opacity: delegate.detailsOpacity
             text: (isdeleted ==1) ? "Permanently delete" : "Delete"
             onClicked: {
+                if (cloud.askDialog("Do you want to delete this session ?",2)==2) return;
                 message.showMessage("Not yet implemented",2000);
                 return;
                 var url = serverURL + "delPML/" + currentApiKey +"/" + pmlid;

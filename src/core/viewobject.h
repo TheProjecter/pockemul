@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class Ckeyb;
+
 enum Direction { TOPdir,LEFTdir, RIGHTdir, BOTTOMdir, NONEdir};
 enum View {FRONTview,TOPview,LEFTview,RIGHTview,BOTTOMview,BACKview};
 
@@ -17,6 +19,7 @@ public:
     CViewObject(CViewObject *parent=0);
     virtual ~CViewObject();
 
+    Ckeyb		*pKEYB;
 
     QString FrontFname,TopFname,LeftFname,RightFname,BottomFname,BackFname;
     QImage *FrontImage,*TopImage,*LeftImage,*RightImage,*BottomImage,*BackImage;

@@ -117,6 +117,7 @@ CPObject::~CPObject()
     delete LcdImage;
     delete SymbImage;
 
+
 //    delete extensionArray[0];
 //    delete extensionArray[1];
 //    delete extensionArray[2];
@@ -266,6 +267,11 @@ bool CPObject::init()
 bool CPObject::exit()
 {
 	if (pKEYB)		pKEYB->exit();
+    if (pLCDC)  pLCDC->exit();
+    if (pTIMER) pTIMER->exit();
+    if (dialogVKeyboard) { dialogVKeyboard->close(); dialogVKeyboard->deleteLater(); }
+    if (dialogdump) { dialogdump->close(); dialogdump->deleteLater(); }
+    if (dialogdasm) { dialogdasm->close(); dialogdasm->deleteLater(); }
 
 	return true;
 }

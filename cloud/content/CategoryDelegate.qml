@@ -44,12 +44,14 @@ import QtQuick 1.1
 Item {
     id: delegate
 
-    width: delegate.ListView.view.width; height: 60
+    width: delegate.ListView.view.width;
+    height: textlabel.height *1.1
 
     Text {
+        id:textlabel
         text: name+" ("+counter+")"
         color: delegate.ListView.isCurrentItem ? "white" : "black"
-        font { family: "Helvetica"; pointSize: 12; bold: true }
+        font { family: "Helvetica"; pointSize: 14; bold: false }
         anchors {
             left: parent.left; leftMargin: 15
             verticalCenter: parent.verticalCenter

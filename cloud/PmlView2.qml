@@ -354,11 +354,11 @@ Rectangle {
     Component {
         id: refreshButtonDelegate
         Item {
-            width: categories.width; height: 60
+            width: categories.width; height: expandcollapsebutton.height
             Text {
                 id: expandcollapsebutton
                 text: "Refresh"
-                font { family: "Helvetica"; pixelSize: 16; bold: true }
+                font { family: "Helvetica"; pointSize: 16; bold: false }
                 anchors {
                     left: parent.left; leftMargin: 15
                     verticalCenter: parent.verticalCenter

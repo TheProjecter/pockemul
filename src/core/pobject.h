@@ -78,7 +78,7 @@ public:
     virtual void ComputeKey(void);
 	CPObject	*Parent;
 	CpcXXXX		*pPC;
-	Ckeyb		*pKEYB;
+
 	Ctimer		*pTIMER;
 	Clcdc		*pLCDC;					// create LCDC object
     QString BackGroundFname;

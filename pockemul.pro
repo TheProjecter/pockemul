@@ -25,10 +25,15 @@ PROJECT_TYPE = \
     STANDARD \
 #    EMSCRIPTEN \
 #    ANDROID \
+#   IOS \
 
 
 android {
 PROJECT_TYPE = ANDROID
+}
+
+ios {
+PROJECT_TYPE = IOS
 }
 
 contains(PROJECT_TYPE,STANDARD) {
@@ -55,6 +60,13 @@ PROJECT_MODULE += \
     M_CLOUD \
 }
 
+contains(PROJECT_TYPE,IOS) {
+DEFINES += NO_SOUND
+
+PROJECT_MODULE += \
+    M_EMB_QRC \
+    M_CLOUD \
+}
 
 
 TARGET = Pockemul

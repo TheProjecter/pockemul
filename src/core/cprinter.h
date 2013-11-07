@@ -19,6 +19,9 @@ public:
 	Cprinter(CPObject *parent);
 	virtual ~Cprinter();
 
+    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+    virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
+
     virtual void resizeEvent ( QResizeEvent * );
     virtual void moveEvent(QMoveEvent *event);
 	
