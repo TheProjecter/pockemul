@@ -2,16 +2,14 @@
 #define BUS_H
 
 
-#define BUS_SLEEP 0
-#define BUS_WRITEDATA 1
-#define BUS_READDATA 2
-#define BUS_QUERY 3
-#define BUS_SELECT 4
-#define BUS_READROM 5
+
 
 #include <QtCore>
 
+enum BUS_FUNC{BUS_SLEEP,BUS_WRITEDATA,BUS_READDATA,BUS_QUERY,BUS_SELECT,BUS_READROM};
+
 class Cbus {
+
 
 public:
     quint64 toUInt64();
@@ -22,14 +20,14 @@ public:
     void setAddr(quint32 val) { addr=val;}
     quint8 getDest() { return dest;}
     void setDest(quint8 val) { dest = val;}
-    quint8 getFunc() { return func;}
-    void setFunc(quint8 val) { func = val;}
+    BUS_FUNC getFunc() { return func;}
+    void setFunc(BUS_FUNC val) { func = val;}
 
 private:
     quint32 addr;
     quint8 data;
     quint8 dest;
-    quint8 func;
+    BUS_FUNC func;
 
 
 };

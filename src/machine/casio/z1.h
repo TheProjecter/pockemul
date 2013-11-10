@@ -8,7 +8,7 @@ class CCF79107PJ;
 class Cctronics;
 
 #include "pcxxxx.h"
-#include "init.h"
+#include "mainwindowpockemul.h"
 
 class Cz1 : public CpcXXXX
 {

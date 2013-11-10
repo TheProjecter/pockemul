@@ -18,5 +18,5 @@ void Cbus::fromUInt64(quint64 val)
     addr = val & 0xffff;
     data = (val >>16) & 0xff;
     dest = (val >>24) & 0xff;
-    func = (val >>32) & 0xff;
+    func = static_cast<BUS_FUNC>((val >>32) & 0xff);
 }

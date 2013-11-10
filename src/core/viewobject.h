@@ -75,9 +75,9 @@ public:
 
     virtual bool InitDisplay(void);
     void mousePressEvent(QMouseEvent *event);
-      void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
     void flip(Direction dir);
-    virtual bool	UpdateFinalImage(void) { return true;}
+    virtual bool UpdateFinalImage(void) { return true;}
 
     QImage * CreateImage(QSize size, QString fname, bool Hmirror=false, bool Vmirror=false, int angle=0);
     void changeGeometry(int newposx, int newposy, int newwidth, int newheight);
