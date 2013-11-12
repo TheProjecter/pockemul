@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QDebug>
 #include <QEventLoop>
-#include <QUrlQuery>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -99,10 +98,8 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
 QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QSize& requestedSize)
 {
 //    qWarning()<<id<<"   auth_token="<<CloudWindow::getValueFor("auth_token")<<" size="<<requestedSize;
-
-    QUrlQuery qu;
-    qu.addQueryItem("api_key","7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa");
-    qu.addQueryItem("auth_token",CloudWindow::getValueFor("auth_token"));
+    QByteArray _ba = "api_key=7118206e08fed2c5ec8c0f2db61bbbdc09ab2dfa&auth_token=" +
+            CloudWindow::getValueFor("auth_token").toUtf8();
 
     QString _id = id;
     _id.remove(QChar('#'));
@@ -116,7 +113,7 @@ QImage CloudImageProvider::requestImage(const QString& id, QSize* size, const QS
         return cache[key];
 
     cache[key] = QImage();
-    QNetworkReply *_reply = mgr->post(req, qu.query(QUrl::FullyEncoded).toUtf8());
+    QNetworkReply *_reply = mgr->post(req, _ba);
 
 //    qWarning()<<_reply;
 
