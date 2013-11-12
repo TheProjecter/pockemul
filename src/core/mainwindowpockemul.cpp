@@ -67,7 +67,7 @@ extern QString m_getArgs();
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
-#define TIMER_RES			20
+#define TIMER_RES			1
 
 QTime t,tf;
 QElapsedTimer et;
@@ -588,8 +588,7 @@ void MainWindowPockemul::Close_All() {
 
     for (int k = 0; k < listpPObject.size(); k++)
     {
-        CPObject *pc = listpPObject.at(k);
-        pc->slotExit();
+        listpPObject.at(k)->slotExit();
     }
 }
 
@@ -635,7 +634,7 @@ void MainWindowPockemul::IDE()
 
 void MainWindowPockemul::CloudSlot()
 {
-#if 1
+
     if (cloud==0) {
         cloud = new CloudWindow(this);
     }
@@ -644,22 +643,12 @@ void MainWindowPockemul::CloudSlot()
 
     cloud->show();
     cloud->raise();
-#else
-    QQmlApplicationEngine *engine= new QQmlApplicationEngine(QUrl("qrc:/rssnews.qml"));
-    QObject *topLevel = engine->rootObjects().value(0);
-    QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
-    if ( !window ) {
-        qWarning("Error: Your root item has to be a Window.");
-        return ;
-    }
-    window->show();
-#endif
 
 }
 
 void MainWindowPockemul::Analogic()
 {
-        dialoganalogic = new dialogAnalog(11,this);
+        if (dialoganalogic==0) dialoganalogic = new dialogAnalog(11,this);
         dialoganalogic->setWindowTitle("Logic Analyser");
         dialoganalogic->show();
 }
@@ -770,7 +759,8 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
 
 void MainWindowPockemul::quitPockEmul()
 {
-    if (ask(this,"Do you really want to quit ?",2)==1) QApplication::quit();
+    if (ask(this,"Do you really want to quit ?",2)==1)
+        QApplication::quit();
 }
 
 void MainWindowPockemul::opensession(QString sessionFN)
@@ -821,11 +811,10 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
     xml->writeAttribute("version", "1.0");
     xml->writeAttribute("zoom",QString("%1").arg(zoom));
     xml->writeStartElement("snapshot");
-//    xml->writeTextElement("snapshot",ba.toBase64());
     xml->writeAttribute("format", "JPG");
     xml->writeCharacters(ba.toBase64());
     xml->writeEndElement();
-//    qWarning()<<"OK1";
+
     // Fetch all objects
     for (int i=0;i<listpPObject.size();i++)
     {
@@ -1058,7 +1047,7 @@ void MainWindowPockemul::updateFrameTimer()
 // Normally each frame equal pPC->frequency state / NBFRAMEPERSEC
 
 
-    if (! listpPObject.size()) return;
+    if ( listpPObject.isEmpty()) return;
 
     static int deltaTime = -1;
 
@@ -1159,10 +1148,7 @@ void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){
         QPoint delta(event->globalPos() - PosDrag);
 
         // Fetch all_object and move them
-        for (int i=0;i<listpPObject.size();i++)
-        {
-            listpPObject.at(i)->Move(delta);
-        }
+        MoveAll(delta);
 
         PosDrag = event->globalPos();
         update();

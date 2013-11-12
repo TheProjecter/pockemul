@@ -24,6 +24,7 @@ public:
     virtual UINT8   in(UINT8 address){return(1);}
     virtual UINT8   out(UINT8 address,UINT8 value){return(1);}
     virtual bool    CheckUpdateExtension(CExtension *ext);
+    virtual int     mapKey(QKeyEvent *event);
 	
     Cpc13XX(CPObject *parent = 0);
 

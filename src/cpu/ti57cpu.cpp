@@ -78,13 +78,6 @@ void Cti57cpu::Reset()
     if (!WarmStart) {
         memset(&(r->RX),0,sizeof(r->RX));
         memset(&(r->RY),0,sizeof(r->RY));
-
-//        for (int j=0; j<8;j++) {
-//            for (int i=0;i<16;i++) {
-//                RX[j][i]=0;
-//                RY[j][i]=0;
-//            }
-//        }
     }
 }
 
@@ -117,10 +110,7 @@ void Cti57cpu::Regs_Info(UINT8)
 }
 
 void Cti57cpu::BranchOP() {
-    UINT8 n;
-
-    n = (r->OP & 0x0400) ? 1 : 0;
-    if (r->COND==n)
+    if (r->COND==(r->OP & 0x0400))
         r->PC=(r->PC & 0x0400) | (r->OP & 0x03FF);
     r->COND=0;
 }

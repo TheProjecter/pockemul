@@ -129,7 +129,22 @@ bool Cpc13XX::CheckUpdateExtension(CExtension *ext)
 	        	    break;
 	        	}
 	       	}
-       	return true;
+        return true;
+}
+
+int Cpc13XX::mapKey(QKeyEvent *event)
+{
+    int key = CpcXXXX::mapKey(event);
+
+    switch (key) {
+    case K_UA: return '8';
+    case K_DA: return '2';
+    case K_LA: return '4';
+    case K_RA: return '6';
+    case ' ': return K_RET;
+    }
+
+    return key;
 }
 
 
@@ -162,7 +177,7 @@ void	Cpc13XX::Set_PortA(BYTE data)
 	if ((IO_A != 0) && (data == 0))
 	{
 		++cnt;
-		if (cnt > 2)
+        if (cnt > 0)
 		{
 			pKEYB->keyscan();
 			cnt = 0;

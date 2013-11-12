@@ -58,18 +58,9 @@ Cmotor::Cmotor(void) {
 BYTE Cmotor::SendPhase(BYTE Phase)		// Next step, return direction: 0 no move, 1 Right,2 left
 {
     LastStepDirection=NO_MOVE;
-
-    if ((Phase==0)||(Phase == this->CurrentPhase))
-        return(LastStepDirection);
-
-//        AddLog(LOG_PRINTER,"CurrentPhase=%02X,Phase=%02X",CurrentPhase,Phase);
-
-
+    if ((Phase==0)||(Phase == this->CurrentPhase)) return(LastStepDirection);
     LastStepDirection = phaseList[this->CurrentPhase][Phase];
-
     this->CurrentPhase = Phase;
-//    if (LastStepDirection) AddLog(LOG_PRINTER,"Direction=%02X",LastStepDirection);
-
     return (LastStepDirection);
 
 }

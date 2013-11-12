@@ -214,7 +214,7 @@ public:
 
     virtual void TurnCLOSE(void);
 
-    int mapKey(QKeyEvent *event);
+    virtual int mapKey(QKeyEvent *event);
     QRect RectWithLinked();
 
 

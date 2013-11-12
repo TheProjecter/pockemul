@@ -125,7 +125,8 @@ void Ckeyb::keyscan(void)
     int i, j;
 	unsigned char ch;
 
-	for (i = 0; i < NM; i++)	{ keym[i] = 0; }
+//	for (i = 0; i < NM; i++)	{ keym[i] = 0; }
+    memset(&keym,0,sizeof(keym));
 		
     for (i = 0; i < NM; i++)
 	{
@@ -133,13 +134,14 @@ void Ckeyb::keyscan(void)
 		{
 			ch = scandef[i * 8 + j];
 
-            if ( (LastKey == ch) || (TOUPPER(LastKey) == TOUPPER(ch)) )
+            if ( keyPressedList.contains(TOUPPER(ch)) ||
+                 keyPressedList.contains(ch) ||
+                 keyPressedList.contains(TOLOWER(ch)) ||
+                 (LastKey == ch) ||
+                 (TOUPPER(LastKey) == TOUPPER(ch)) )
 			{
-//                if (ch=='k') {
-//                    LastKey=0;
-//                }
 				keym[i] = (1 << j);
-				LastKey = 0;
+//				LastKey = 0;
 				break;
 			}	    
 		}

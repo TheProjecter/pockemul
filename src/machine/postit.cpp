@@ -11,7 +11,7 @@
 
 
 
-//FIXME: manage post-it size in savesession and loadession
+//FIXME: on Android, background color issue
 
 Cpostit::Cpostit(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]

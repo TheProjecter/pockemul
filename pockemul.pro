@@ -50,6 +50,9 @@ PROJECT_MODULE += \
 
 contains(PROJECT_TYPE,EMSCRIPTEN) {
 DEFINES += NO_SOUND EMSCRIPTEN
+
+PROJECT_MODULE += \
+    M_CLOUD \
 }
 
 contains(PROJECT_TYPE,ANDROID) {
@@ -538,8 +541,7 @@ INCLUDEPATH += . \
     src/machine \
     src/lcd \
     src/qmdilib \
-    pictureflow \
-    enginio_client
+    pictureflow
 
 INCLUDEPATH += qcodeedit qcodeedit/document qcodeedit/language qcodeedit/widgets qcodeedit/snippets qcodeedit/qnfa \
                 libavoid

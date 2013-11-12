@@ -120,7 +120,7 @@ void	Cpc1401::Set_PortA(BYTE data)
 	if ((IO_A != 0) && (data == 0))
 	{
 		++cnt;
-		if (cnt > 2)
+        if (cnt > 2)
 		{
 			pKEYB->keyscan();
 			cnt = 0;

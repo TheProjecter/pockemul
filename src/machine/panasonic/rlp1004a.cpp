@@ -63,7 +63,7 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     rotate = false;
     internal_device_code = 0x0f;
 
-    memsize                     = 0x2000;
+    memsize             = 0x2000;
     InitMemValue        = 0xff;
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,  P_RES(":/rlh1000/rlp1004a.bin")    , "" , ROM , "Printer ROM"));
@@ -117,7 +117,6 @@ bool Crlp1004a::run(void)
     case BUS_WRITEDATA: break;
     case BUS_READDATA:  break;
     case BUS_READROM: bus.setData(mem[bus.getAddr()]);
-
         bus.setFunc(BUS_READDATA);
         break;
     }
@@ -374,7 +373,7 @@ void Crlp1004a::contextMenuEvent ( QContextMenuEvent * event )
     menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
     menu->addSeparator();
 
-    menu->addAction(tr("Rotate 180°"),this,SLOT(Rotate()));
+    menu->addAction(tr("Rotate 180"),this,SLOT(Rotate()));
 //    menu.addAction(tr("Hide console"),this,SLOT(HideConsole()));
 
     menu->popup(event->globalPos () );
