@@ -26,8 +26,8 @@
 
 
 #include <QtDeclarative/QDeclarativeView>
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeEngine>
 
 #include "applicationconfig.h"
 #include "cloudwindow.h"

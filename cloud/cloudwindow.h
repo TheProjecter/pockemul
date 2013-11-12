@@ -6,7 +6,6 @@
 #include <QDialog>
 #include <QMap>
 #include <QModelIndex>
-#include <QDeclarativeView>
 
 class ImageDownloader;
 class ImageObject;
@@ -15,7 +14,7 @@ class QListView;
 class QNetworkReply;
 class QPushButton;
 class CloudImageProvider;
-
+class QDeclarativeView;
 
 class CloudWindow : public QWidget
 {
