@@ -33,14 +33,14 @@
 /****************************/
 int Chp41::LoadMOD(
   ModuleHeader *&pModuleOut,     // output
-  char *pszFullPath)
+  QString FullPath)
   {
 
   pModuleOut=NULL;
   QByteArray pBuff;
 
   // open file and read its contents into a buffer
-  QFile file(pszFullPath);
+  QFile file(FullPath);
   if (! file.open(QIODevice::ReadOnly)) return(1);
 
   qint64 FileSize=file.size();
@@ -55,12 +55,11 @@ int Chp41::LoadMOD(
       return(2);
   }
 
-  return LoadMOD(pModuleOut,pszFullPath,pBuff);
+  return LoadMOD(pModuleOut,FullPath,pBuff);
 }
 
-  int Chp41::LoadMOD(
-    ModuleHeader *&pModuleOut,     // output
-    char *pszFullPath,
+  int Chp41::LoadMOD(ModuleHeader *&pModuleOut,     // output
+    QString FullPath,
           QByteArray pBuff)
     {
 
@@ -81,7 +80,7 @@ int Chp41::LoadMOD(
   ModuleHeader *pModuleNew=new ModuleHeader;
   pModuleOut=pModuleNew;
   // info strings
-  strncpy(pModuleNew->szFullFileName,pszFullPath,sizeof(pModuleNew->szFullFileName));
+  strncpy(pModuleNew->szFullFileName,(char*)FullPath.data(),sizeof(pModuleNew->szFullFileName));
   strcpy(pModuleNew->szFileFormat,pMFH->FileFormat);
   strcpy(pModuleNew->szTitle,pMFH->Title);
   strcpy(pModuleNew->szVersion,pMFH->Version);

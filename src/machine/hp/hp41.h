@@ -182,8 +182,8 @@ public:
 //  LOGPALETTE *GetPalKeyboard(void);
 
   // HP41File.cpp:
-  int LoadMOD(ModuleHeader *&pModuleOut,char *pszFullPath);
-  int LoadMOD(ModuleHeader *&pModuleOut, char *pszFullPath, QByteArray pBuff);
+  int LoadMOD(ModuleHeader *&pModuleOut, QString FullPath);
+  int LoadMOD(ModuleHeader *&pModuleOut, QString FullPath, QByteArray pBuff);
 
   int SaveMOD(ModuleHeader *pModule,char *pszFullPath);
   void UnloadMOD(ModuleHeader *pModule);

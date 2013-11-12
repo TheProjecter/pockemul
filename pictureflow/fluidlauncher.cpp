@@ -40,7 +40,6 @@
  ****************************************************************************/
 
  #include <QXmlStreamReader>
-#include <QtConcurrent/QtConcurrent>
 
  #include "fluidlauncher.h"
 #include "init.h"
