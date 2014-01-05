@@ -1703,20 +1703,19 @@ void Clcdc_pc1500::disp(void)
         if ( (DirtyBuf[adr-0x7600]))
 		{	
             Refresh = true;
+            DirtyBuf[adr-0x7600] = 0;
 			if (On)
 			{
 				data = (BYTE) ( LOW(pPC->Get_8(adr)) | ( LOW(pPC->Get_8(adr+1)) << 4) );
-				DirtyBuf[adr-0x7600] = 0;				
 			}
 			else
 			{
 				data = 0;
-				DirtyBuf[adr-0x7600] = 0;
 			}
 			
 			x = ind >> 1;
 			
-			for (b=0; b<8;b++)
+            for (b=0; b<7;b++)
 			{
 				painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
 				painter.drawPoint( x, b);
@@ -1725,17 +1724,15 @@ void Clcdc_pc1500::disp(void)
 			if (On)
 			{
 				data = (BYTE) ( HIGHT(pPC->Get_8(adr)) | ( HIGHT(pPC->Get_8(adr+1)) << 4) );
-				DirtyBuf[adr-0x7600] = 0;				
 			}
 			else
 			{
 				data = 0;
-				DirtyBuf[adr-0x7600] = 0;
 			}
 			
 			x += 78;
 			
-			for (b=0; b<8;b++)
+            for (b=0; b<7;b++)
 			{
 				painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
 				painter.drawPoint( x, b);
@@ -1749,20 +1746,19 @@ void Clcdc_pc1500::disp(void)
         if ( (DirtyBuf[adr-0x7600]) )
 		{	
             Refresh = true;
-			if (On)
+            DirtyBuf[adr-0x7600] = 0;
+            if (On)
 			{
 				data = (BYTE) ( LOW(pPC->Get_8(adr)) | ( LOW(pPC->Get_8(adr+1)) << 4) );
-				DirtyBuf[adr-0x7600] = 0;				
 			}
 			else
 			{
 				data = 0;
-				DirtyBuf[adr-0x7600] = 0;
 			}
 			
 			x = (ind >> 1) + 39;
 			
-			for (b=0; b<8;b++)
+            for (b=0; b<7;b++)
 				{
 					painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
 					painter.drawPoint( x, b);
@@ -1771,17 +1767,15 @@ void Clcdc_pc1500::disp(void)
 			if (On)
 			{
 				data = (BYTE) ( HIGHT(pPC->Get_8(adr)) | ( HIGHT(pPC->Get_8(adr+1)) << 4) );
-				DirtyBuf[adr-0x7600] = 0;				
 			}
 			else
 			{
 				data = 0;
-				DirtyBuf[adr-0x7600] = 0;
 			}
 			
 			x += 78;
 			
-			for (b=0; b<8;b++) {
+            for (b=0; b<7;b++) {
 				painter.setPen( ((data>>b)&0x01) ? Color_On : Color_Off );
 				painter.drawPoint( x, b);
 			}

@@ -47,6 +47,7 @@ bool Crlp9001::run(void)
 
     if (bus.getDest()!=0) return true;
 
+    bus.setDest(0);
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0xFB);
         bus.setFunc(BUS_READDATA);

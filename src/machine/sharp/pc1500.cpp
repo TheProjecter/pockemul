@@ -53,7 +53,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     Lcd_X		= 93;//80;
     Lcd_Y		= 61;//50;
 	Lcd_DX		= 156;
-	Lcd_DY		= 8;
+    Lcd_DY		= 7;
     Lcd_ratio_X	= 2*1.18;
     Lcd_ratio_Y	= 2*1.18;
 
@@ -124,9 +124,9 @@ Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
 
     SessionHeader	= "TRSPC-2PKM";
     Initial_Session_Fname ="trspc2.pkm";
-    BackGroundFname	= P_RES(":/TRSPC2/pc1500/trspc2.png");
-    LcdFname		= P_RES(":/TRSPC2/pc1500/pc2lcd.png");
-    SymbFname		= P_RES(":/TRSPC2/pc1500/pc2symb.png");
+    BackGroundFname	= P_RES(":/pc1500/trspc2.png");
+    LcdFname		= P_RES(":/pc1500/pc2lcd.png");
+    SymbFname		= P_RES(":/pc1500/pc2symb.png");
 
     Lcd_X		= 181;//152 ;
     Lcd_Y		= 62;//52 ;

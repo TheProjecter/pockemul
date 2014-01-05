@@ -47,14 +47,6 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     SlotList.append(CSlot(8  , 0xc000 ,	""                  , ""	, RAM , "RAM"));
     SlotList.append(CSlot(8  , 0xe000 ,	""                  , ""	, RAM , "RAM"));
 
-
-
-//    KeyMap		= KeyMapfp200;
-//    KeyMapLenght= KeyMapfp200Lenght;
-
-
-    Pc_Offset_X = Pc_Offset_Y = 0;
-
     setDXmm(320);
     setDYmm(220);
     setDZmm(55);

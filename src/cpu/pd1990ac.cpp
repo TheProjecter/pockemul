@@ -1,8 +1,4 @@
 
-//#include <stdlib.h>
-//#include <string.h>
-
-//#include <time.h>
 #include "common.h"
 #include "Log.h"
 #include "pd1990ac.h"
@@ -41,7 +37,8 @@ bool	CPD1990AC::init(void)
 	previous_state_tp = 0;
 
 	return(1);
-};
+}
+
 				//initialize
 void	CPD1990AC::Reset(void){}
 
@@ -137,7 +134,7 @@ bool CPD1990AC::step(void)
 	{
 		// Mode can change
 		mode = c0+(c1<<1)+(c2<<2);
-        AddLog(LOG_TIME,tr("Mode:%1").arg(mode));
+        AddLog(LOG_TIME,tr("Mode:%1 m=%2 clk=%3").arg(mode).arg(pd1990ac.minutes).arg(clk));
         if (mode !=prev_mode) { New_Mode = true; prev_mode=mode; }
         else					New_Mode = false;
 	}
@@ -151,7 +148,7 @@ bool CPD1990AC::step(void)
     }
     if (mode == 0)	{ clk = true; flip_clk=true; bitno=0; }
 
-	if (clk && flip_clk)
+    if (clk && flip_clk)
 	{
 	
 	
@@ -196,6 +193,7 @@ bool CPD1990AC::step(void)
 			break;
 	
 		case 0x02:	/* Set Register */
+            AddLog(LOG_TIME,"SET TIME");
 			switch(bitno)
 			{
 			case 0x00: case 0x01: case 0x02: case 0x03:
@@ -225,7 +223,7 @@ bool CPD1990AC::step(void)
 			break;
 	
 		default:	/* Unhandled value */
-	//--		AddLog(LOG_TIME,"MODE %02X (Unhandled) - bitno=%02X, D_in=%s",mode,bitno,data_in?"1":"0");
+            //AddLog(LOG_TIME,"MODE %02X (Unhandled) - bitno=%02X, D_in=%s",mode,bitno,data_in?"1":"0");
 			break;
 		}
 	}	

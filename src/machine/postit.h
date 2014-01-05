@@ -15,6 +15,13 @@ class CpostitTextEdit:public QTextEdit {
 public:
     CpostitTextEdit(QWidget * parent):QTextEdit(parent){}
 
+
+    void wheelEvent(QWheelEvent *e) {
+        QTextEdit::wheelEvent(e);
+        e->accept();
+        qWarning()<<"OK";
+    }
+
     void contextMenuEvent ( QContextMenuEvent * event )
     {
         QMenu *menupocket = QTextEdit::createStandardContextMenu();

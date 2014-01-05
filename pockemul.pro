@@ -587,7 +587,11 @@ RESOURCES +=  \
     resources/fp200.qrc \
     resources/pc1211.qrc \
     resources/pc2001.qrc \
-    resources/lbc1100.qrc
+    resources/lbc1100.qrc \
+    resources/tpc8300.qrc \
+    resources/rlh1000.qrc \
+    resources/ti57.qrc \
+    resources/hp41.qrc
 }
 else {
 DEFINES += LOCRES
@@ -599,11 +603,7 @@ RESOURCES +=  \
     qcodeedit/qxs/qxs.qrc \
     src/core/lfhex/lfhex.qrc \
     resources/asmlibs.qrc \
-    resources/core.qrc \
-    resources/tpc8300.qrc \
-    resources/rlh1000.qrc \
-    resources/ti57.qrc \
-    resources/hp41.qrc
+    resources/core.qrc
 
 SOURCES +=  \
     src/core/viewobject.cpp \

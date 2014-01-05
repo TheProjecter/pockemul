@@ -12,7 +12,7 @@
 #include "ui/dialogdasm.h"
 #include "clink.h"
 #include "dialoganalog.h"
-#include "bus.h";
+
 
 
 Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
@@ -28,7 +28,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0x30000;
-    InitMemValue	= 0xFF;
+    InitMemValue	= 0x7F;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
@@ -170,9 +170,12 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
         if (fp_log) {
-            fprintf(fp_log,"WRITE ROM [%04X] ",*d);
+            fprintf(fp_log,"**ERROR** WRITE ROM [%04X]=%02X ",*d,data);
             pCPU->Regs_Info(1);
             fprintf(fp_log," %s\n",pCPU->Regs_String);
+        }
+        if (pCPU->fp_log) {
+            sprintf(Log_String,"%s Write ROM[%04x]=%02x ",Log_String,*d,data);
         }
         return false;
     }
@@ -217,7 +220,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             // 47FF : write from ext, read by nucleus
 
             if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM LINE [%04X]=%02X\n",*d,data);
+                if (pCPU->fp_log) sprintf(Log_String,"%s,WRITE ROM LINE [%04X]=%02X ",Log_String,*d,data);
                 bool islineFC = ((*d-0x47FC)%4==0);
                 bool islineFD = ((*d-0x47FD)%4==0);
                 bool islineFE = ((*d-0x47FE)%4==0);
@@ -318,7 +321,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
     }
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
-        *data = ReadBusMem(*d-0x2000);
+        *data = ReadBusMem(BUS_READROM,*d-0x2000);
         return false;
     }
 
@@ -377,7 +380,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                     }
                     if (islineFF) {
                         t = (*d-0x47FF)/4;
-                        *data = lineFF[t];
+                        *data = 0xff;//lineFF[t];
                     }
 
                     if (fp_log) {
@@ -385,7 +388,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                         pCPU->Regs_Info(1);
                         fprintf(fp_log," %s\n",pCPU->Regs_String);
                     }
-                    if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n READ LINE%s [%i]=%04X\n",LINEID,t,*data);
+                    if (pCPU->fp_log) sprintf(Log_String,"%s,READ LINE%s [%i]=%04X ",Log_String,LINEID,t,*data);
                     return false;
                 }
             }
@@ -424,14 +427,14 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
 
     if((*d>=0x8000) && (*d < 0xC000)) {
-        *data = ReadBusMem(*d-0x8000);
+        *data = ReadBusMem(BUS_READDATA,*d-0x8000);
         return false; /* RAM */
     }
 
     return true;
 }
 
-UINT8 Crlh1000::ReadBusMem(UINT32 adr) {
+UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr) {
     UINT8 data=0xff;
 
     if (fp_log) {
@@ -444,7 +447,7 @@ UINT8 Crlh1000::ReadBusMem(UINT32 adr) {
         bus->setDest(extrinsic);
         bus->setAddr(adr);
         bus->setData(0xff);
-        bus->setFunc(BUS_READDATA);
+        bus->setFunc(f);
         manageBus();
         if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus->getData());
 
@@ -628,6 +631,12 @@ UINT8 Crlh1000::getKey(quint8 row )
 
     }
 
+    if (KEY('Z')) {
+        qWarning()<<"LOG";
+        pCPU->logsw = true;
+        pCPU->Check_Log();
+        if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+    }
     return data;
 
 }

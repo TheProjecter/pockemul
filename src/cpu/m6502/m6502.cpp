@@ -301,6 +301,7 @@ AddLog(LOG_CONSOLE,"updateIRQ\n");
         P |= F_I;
         PCL = RDMEM(EAD);
         PCH = RDMEM(EAD + 1);
+        CallSubLevel++;
         // call back the cpuintrf to let it clear the line
         //d_pic->intr_reti();
         irq_state = false;

@@ -64,7 +64,7 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     internal_device_code = 0x0f;
 
     memsize             = 0x2000;
-    InitMemValue        = 0xff;
+    InitMemValue        = 0x7f;
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,  P_RES(":/rlh1000/rlp1004a.bin")    , "" , ROM , "Printer ROM"));
 
@@ -86,10 +86,12 @@ bool Crlp1004a::run(void)
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
-    if (bus.getDest()!=0) return true;
+
+    if ((bus.getDest()!=0)||(bus.getDest()!=0)||(bus.getDest()!=0)) return true;
+//    bus.setDest(0);
 
     if (bus.getFunc()==BUS_QUERY) {
-        bus.setData(0x01);
+        bus.setData(0x00);
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
         if (pPC->pTIMER->pPC->fp_log) fprintf(pPC->pTIMER->pPC->fp_log,"RL-P1004A BUS_QUERY\n");
@@ -116,7 +118,8 @@ bool Crlp1004a::run(void)
     case BUS_SLEEP: break;
     case BUS_WRITEDATA: break;
     case BUS_READDATA:  break;
-    case BUS_READROM: bus.setData(mem[bus.getAddr()]);
+    case BUS_READROM: if (bus.getDest()==0) bus.setData(mem[bus.getAddr()]);
+        else bus.setData(0x00);
         bus.setFunc(BUS_READDATA);
         break;
     }

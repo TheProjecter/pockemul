@@ -433,7 +433,7 @@ bool Cpc1600::run(void)
 // ---------------------------------------------------------
 
     Current_PC = pCPU->get_PC();
-//hack(Current_PC);
+hack(Current_PC);
 #ifndef QT_NO_DEBUG
     hack(Current_PC);
 #endif

@@ -528,7 +528,7 @@ bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
         if (xmlIn->readNextStartElement() && xmlIn->name() == "modules" ) {
             while (xmlIn->readNextStartElement() && xmlIn->name() == "module" ) {
                 QString _module = xmlIn->attributes().value("filename").toString();
-                int _slotID = xmlIn->attributes().value("slot").toInt();
+                int _slotID = xmlIn->attributes().value("slot").toString().toInt();
                 bool _custom = xmlIn->attributes().value("custom").toString()=="true" ? true:false;
                 ModuleHeader *pModuleNew;
                 int nRes=0;
@@ -558,13 +558,13 @@ bool Chp41::LoadConfig(QXmlStreamReader *xmlIn) {
             }
         }
         if (xmlIn->readNextStartElement() && xmlIn->name() == "hardlinks" ) {
-            fPrinter = xmlIn->attributes().value("printer").toInt();
+            fPrinter = xmlIn->attributes().value("printer").toString().toInt();
             qWarning()<<"fprinter="<<fPrinter;
-            fCardReader = xmlIn->attributes().value("cardreader").toInt(0,10);
-            fTimer = xmlIn->attributes().value("timer").toInt(0,10);
-            fWand = xmlIn->attributes().value("wand").toInt(0,10);
-            fHPIL = xmlIn->attributes().value("hpil").toInt(0,10);
-            fInfrared = xmlIn->attributes().value("infrared").toInt(0,10);
+            fCardReader = xmlIn->attributes().value("cardreader").toString().toInt(0,10);
+            fTimer = xmlIn->attributes().value("timer").toString().toInt(0,10);
+            fWand = xmlIn->attributes().value("wand").toString().toInt(0,10);
+            fHPIL = xmlIn->attributes().value("hpil").toString().toInt(0,10);
+            fInfrared = xmlIn->attributes().value("infrared").toString().toInt(0,10);
             xmlIn->skipCurrentElement();
         }
     }

@@ -10,7 +10,7 @@ public:
 
     Cconnector	*pMAINCONNECTOR;
 
-    Cconnector *pEXTCONNECTOR[5];
+    Cconnector *pEXTCONNECTOR[6];
 
     bool run(void);
     bool init(void);				//initialize

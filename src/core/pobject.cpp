@@ -547,7 +547,7 @@ void CPObject::swipeTriggered(QSwipeGesture *gesture)
 }
 
 void CPObject::wheelEvent(QWheelEvent *event) {
-
+    qWarning()<<"wheel";
     QPoint point;
     if (Parent) {
         point = event->pos();

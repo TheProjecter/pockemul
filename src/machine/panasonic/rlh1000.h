@@ -2,9 +2,9 @@
 #define RLH1000_H
 
 #include "pcxxxx.h"
+#include "bus.h"
 
 class Cm6502;
-class Cbus;
 
 
 class Crlh1000 : public CpcXXXX
@@ -39,7 +39,7 @@ public:
     quint8 strobe32;
     quint8 extrinsic;
     UINT8 getKey(quint8 row);
-    UINT8 ReadBusMem(UINT32 adr);
+    UINT8 ReadBusMem(BUS_FUNC f, UINT32 adr);
 private:
     Cbus *bus;
     quint8 latchByte;
