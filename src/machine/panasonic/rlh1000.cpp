@@ -164,6 +164,21 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Write[%04x]=%02x ",Log_String,*d,data);
         }
+
+        if (*d==0x4e) {
+            // print char
+            // send data to the bus
+            if (extrinsic!=0xff) {
+                bus->setDest(extrinsic);
+                bus->setAddr(*d);
+                bus->setData(data);
+                bus->setFunc(BUS_WRITEDATA);
+                manageBus();
+                //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
+
+                return true;
+            }
+        }
         return true; /* RAM */
     }
 
@@ -295,7 +310,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         if (fp_log) fprintf(fp_log,"BUS_WRITEDATA DEST=%i  data=%02X\n",bus->getDest(),data);
         if (extrinsic!=0xff) {
             bus->setDest(extrinsic);
-            bus->setAddr(*d-0x8000);
+            bus->setAddr(*d);
             bus->setData(data);
             bus->setFunc(BUS_WRITEDATA);
             manageBus();
@@ -321,7 +336,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
     }
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
-        *data = ReadBusMem(BUS_READROM,*d-0x2000);
+        *data = ReadBusMem(BUS_READROM,*d);
         return false;
     }
 
@@ -427,7 +442,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
 
     if((*d>=0x8000) && (*d < 0xC000)) {
-        *data = ReadBusMem(BUS_READDATA,*d-0x8000);
+        *data = ReadBusMem(BUS_READDATA,*d);
         return false; /* RAM */
     }
 

@@ -114,11 +114,18 @@ bool Crlp1004a::run(void)
 
     if (!Power) return true;
 
+    quint32 adr = bus.getAddr();
+    quint8 data = bus.getData();
+
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
-    case BUS_WRITEDATA: break;
+    case BUS_WRITEDATA: if ((adr==0x4e)&& (data!=0)) qWarning()<<" *** PRINT *** : "<< data << " - "<<QChar(data);
+            break;
     case BUS_READDATA:  break;
-    case BUS_READROM: if (bus.getDest()==0) bus.setData(mem[bus.getAddr()]);
+    case BUS_READROM: if (bus.getDest()==0) {
+
+            if ( (adr>=0x2000) && (adr<0x4000)) bus.setData(mem[adr-0x2000]);
+        }
         else bus.setData(0x00);
         bus.setFunc(BUS_READDATA);
         break;

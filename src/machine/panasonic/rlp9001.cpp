@@ -69,11 +69,13 @@ bool Crlp9001::run(void)
 
     if (!Power) return true;
 
+    quint32 adr = bus.getAddr();
+
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
-    case BUS_WRITEDATA: mem[bus.getAddr()] = bus.getData();
+    case BUS_WRITEDATA: if((adr>=0x8000) && (adr < 0xC000)) mem[adr-0x8000] = bus.getData();
         break;
-    case BUS_READDATA: bus.setData(mem[bus.getAddr()]);
+    case BUS_READDATA: if((adr>=0x8000) && (adr < 0xC000)) bus.setData(mem[adr-0x8000]);
         break;
     }
 
