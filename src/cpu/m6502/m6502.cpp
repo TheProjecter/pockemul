@@ -401,10 +401,12 @@ void Cm6502::run_one_opecode()
         P |= F_I;	// set I flag
         PCL = RDMEM(EAD);
         PCH = RDMEM(EAD + 1);
+        CallSubLevel++;
         nmi_state = false;
         halt=false;
         AddLog(LOG_CONSOLE,"CPU RUNNING\n");
         qWarning()<<"CPU RUNNING";
+        if (fp_log) fprintf(fp_log,"\n INT NMI newpc:%04x\n",PCW);
     }
     else if(pending_irq) {
         if (halt) Reset();

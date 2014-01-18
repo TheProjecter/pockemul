@@ -60,6 +60,7 @@ public:
     QImage *charTable;
     int margin;
     int		top;
+    bool INTrequest;
 protected:
     void paintEvent(QPaintEvent *);
 protected slots:

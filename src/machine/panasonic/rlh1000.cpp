@@ -84,8 +84,8 @@ Crlh1000::~Crlh1000() {
 bool Crlh1000::init(void)				// initialize
 {
 
-//pCPU->logsw = true;
-//    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+pCPU->logsw = true;
+    if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -130,6 +130,12 @@ bool Crlh1000::run() {
 
      CpcXXXX::run();
 
+     if (bus->getINT()) {
+         qWarning()<<"INT RECEIVED FROM BUS";
+         m6502->write_signal(101,1,1);
+         bus->setINT(false);
+     }
+
     if (pKEYB->LastKey>0) { m6502->write_signal(101,1,1); }
 
     if (pTIMER->usElapsedId(1)>=3906) {
@@ -152,6 +158,7 @@ bool Crlh1000::run() {
         pTIMER->resetTimer(1);
     }
 
+    Set_Connector();
     return true;
 }
 
@@ -396,6 +403,14 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                     if (islineFF) {
                         t = (*d-0x47FF)/4;
                         *data = 0xff;//lineFF[t];
+                        bus->setDest(t);
+                        if (fp_log) fprintf(fp_log,"BUS_QUERY_LINE DEST=%i  ",bus->getDest());
+                        bus->setData(0xff);
+                        bus->setFunc(BUS_INTREQUEST);
+                        manageBus();
+                        if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
+
+                        *data = bus->getData();
                     }
 
                     if (fp_log) {

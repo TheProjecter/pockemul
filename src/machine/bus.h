@@ -6,7 +6,7 @@
 
 #include <QtCore>
 
-enum BUS_FUNC{BUS_SLEEP,BUS_WRITEDATA,BUS_READDATA,BUS_QUERY,BUS_SELECT,BUS_READROM};
+enum BUS_FUNC{BUS_SLEEP,BUS_WRITEDATA,BUS_READDATA,BUS_QUERY,BUS_SELECT,BUS_READROM,BUS_INTREQUEST};
 
 class Cbus {
 
@@ -22,12 +22,15 @@ public:
     void setDest(quint8 val) { dest = val;}
     BUS_FUNC getFunc() { return func;}
     void setFunc(BUS_FUNC val) { func = val;}
+    bool getINT() { return interrupt; }
+    void setINT(bool val) { interrupt = val; }
 
 private:
     quint32 addr;
     quint8 data;
     quint8 dest;
     BUS_FUNC func;
+    bool    interrupt;
 
 
 };

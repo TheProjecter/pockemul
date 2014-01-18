@@ -62,6 +62,7 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
 
     rotate = false;
     internal_device_code = 0x0f;
+    INTrequest = false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -119,8 +120,26 @@ bool Crlp1004a::run(void)
 
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
-    case BUS_WRITEDATA: if ((adr==0x4e)&& (data!=0)) qWarning()<<" *** PRINT *** : "<< data << " - "<<QChar(data);
+    case BUS_WRITEDATA: if ((adr==0x4e)&& (data!=0)) {
+            qWarning()<<" *** PRINT *** : "<< data << " - "<<QChar(data);
+            if (data == 0x0d) {
+                bus.setINT(true);
+                INTrequest = true;
+                qWarning()<<"INT SET FROM PRINTER";
+            }
+            bus.setData(0x00);
+            bus.setFunc(BUS_READDATA);
+        }
             break;
+    case BUS_INTREQUEST: if (INTrequest) {
+            bus.setData(0x00);
+        }
+        else {
+            bus.setData(0xff);
+        }
+        bus.setFunc(BUS_READDATA);
+        INTrequest = false;
+        break;
     case BUS_READDATA:  break;
     case BUS_READROM: if (bus.getDest()==0) {
 
