@@ -35,7 +35,7 @@ Crlp9001::Crlp9001(CPObject *parent )   : CPObject(this)
 }
 
 Crlp9001::~Crlp9001(){
-    delete(pMAINCONNECTOR);
+    delete(pCONNECTOR);
 }
 
 
@@ -43,7 +43,7 @@ bool Crlp9001::run(void)
 {
     Cbus bus;
 
-    bus.fromUInt64(pMAINCONNECTOR->Get_values());
+    bus.fromUInt64(pCONNECTOR->Get_values());
 
     if (bus.getDest()!=0) return true;
 
@@ -51,7 +51,7 @@ bool Crlp9001::run(void)
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0xFB);
         bus.setFunc(BUS_READDATA);
-        pMAINCONNECTOR->Set_values(bus.toUInt64());
+        pCONNECTOR->Set_values(bus.toUInt64());
         return true;
     }
 
@@ -63,7 +63,7 @@ bool Crlp9001::run(void)
             Power = false;
         }
         bus.setFunc(BUS_READDATA);
-        pMAINCONNECTOR->Set_values(bus.toUInt64());
+        pCONNECTOR->Set_values(bus.toUInt64());
         return true;
     }
 
@@ -73,13 +73,29 @@ bool Crlp9001::run(void)
 
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
-    case BUS_WRITEDATA: if((adr>=0x8000) && (adr < 0xC000)) mem[adr-0x8000] = bus.getData();
+    case BUS_WRITEDATA:
+        if((adr>=0x8000) && (adr < 0xC000))
+            mem[adr-0x8000] = bus.getData();
+        else qWarning()<<"ERROR1:"<<QString("%1").arg(adr,16);
         break;
-    case BUS_READDATA: if((adr>=0x8000) && (adr < 0xC000)) bus.setData(mem[adr-0x8000]);
+    case BUS_READDATA:
+        if((adr>=0x8000) && (adr < 0xC000))
+            bus.setData(mem[adr-0x8000]);
+        else {
+            bus.setData(0x00);
+            //qWarning()<<"ERROR2:"<<QString("%1").arg(adr,16);
+        }
+        break;
+    case BUS_INTREQUEST:
+        bus.setData(0xff);
+        bus.setFunc(BUS_READDATA);
+        break;
+    case BUS_READROM:
+        qWarning()<<"read rom:"<<adr;
         break;
     }
 
-    pMAINCONNECTOR->Set_values(bus.toUInt64());
+    pCONNECTOR->Set_values(bus.toUInt64());
     return true;
 }
 
@@ -95,13 +111,13 @@ bool Crlp9001::init(void)
 
     CPObject::init();
 
-    pMAINCONNECTOR = new Cconnector(this,44,0,
+    pCONNECTOR = new Cconnector(this,44,0,
                                     Cconnector::Panasonic_44,
                                     "44 pins conector",
                                     true,
                                     QPoint(30,72),
                                     Cconnector::WEST);
-    publish(pMAINCONNECTOR);
+    publish(pCONNECTOR);
 
     Power = false;
 
@@ -184,9 +200,9 @@ void Crlp9001::Rotate()
         delete FinalImage;
         FinalImage = new QImage(*BackgroundImageBackup);
 
-        pMAINCONNECTOR->setSnap(rotate?QPoint(372,72):QPoint(30,72));
+        pCONNECTOR->setSnap(rotate?QPoint(372,72):QPoint(30,72));
 
-        pMAINCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
+        pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
         mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
         setMask(mask.mask());
 

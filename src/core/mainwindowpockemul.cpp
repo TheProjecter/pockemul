@@ -837,7 +837,7 @@ void MainWindowPockemul::saveassession(QXmlStreamWriter *xml)
         //int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Id;
         int idco2 = mainwindow->pdirectLink->BConnList.at(j)->Parent->ConnList.indexOf(mainwindow->pdirectLink->BConnList.at(j));
         bool close = mainwindow->pdirectLink->closeList.at(j);
-        qWarning()<<"linkks";
+//        qWarning()<<"linkks";
         xml->writeStartElement("link");
         xml->writeAttribute("idpcFrom",QString("%1").arg(idpc1));
         xml->writeAttribute("idcoFrom",QString("%1").arg(idco1));

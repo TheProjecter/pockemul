@@ -171,7 +171,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Write[%04x]=%02x ",Log_String,*d,data);
         }
-
+#if 1
         if (*d==0x4e) {
             // print char
             // send data to the bus
@@ -186,6 +186,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                 return true;
             }
         }
+#endif
         return true; /* RAM */
     }
 
@@ -198,6 +199,16 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         }
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Write ROM[%04x]=%02x ",Log_String,*d,data);
+        }
+        if (extrinsic!=0xff) {
+            bus->setDest(extrinsic);
+            bus->setAddr(*d);
+            bus->setData(data);
+            bus->setFunc(BUS_WRITEDATA);
+            manageBus();
+            //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
+
+            return false;
         }
         return false;
     }

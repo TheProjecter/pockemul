@@ -10,5 +10,6 @@
         <file>rlh1000/HHC-rom-C000-FFFF.bin</file>
         <file>rlh1000/SnapBasic.bin</file>
         <file>rlh1000/SnapForth.bin</file>
+        <file>rlh1000/rlp1004atable.bmp</file>
     </qresource>
 </RCC>

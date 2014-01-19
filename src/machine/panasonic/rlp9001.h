@@ -8,7 +8,7 @@ class Crlp9001:public CPObject {
 public:
     const char*	GetClassName(){ return("Crlp9001");}
 
-    Cconnector	*pMAINCONNECTOR;
+    Cconnector	*pCONNECTOR;
 
 
     bool run(void);

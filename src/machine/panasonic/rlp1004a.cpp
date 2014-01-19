@@ -34,7 +34,6 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     //bells             = 0;
     charTable = 0;
     margin = 25;
-    ToDestroy   = false;
     BackGroundFname     = P_RES(":/rlh1000/rlp1004a.png");
     setcfgfname("rlp1004a");
 
@@ -51,9 +50,8 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
  // Ratio = 3,57
     setDX(403);//Pc_DX  = 75;
     setDY(340);//Pc_DY  = 20;
-    SnapPts = QPoint(594,145);
 
-    setPaperPos(QRect(70,-3,275,149));
+    setPaperPos(QRect(53,0,291,216));
 
     ctrl_char = false;
     t = 0;
@@ -61,7 +59,6 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     rmtSwitch = false;
 
     rotate = false;
-    internal_device_code = 0x0f;
     INTrequest = false;
 
     memsize             = 0x2000;
@@ -79,17 +76,22 @@ Crlp1004a::~Crlp1004a() {
 //    delete bells;
 }
 
-#define PC2021LATENCY (pTIMER->pPC->getfrequency()/3200)
+#define LATENCY (pTIMER->pPC->getfrequency()/3200)
 bool Crlp1004a::run(void)
 {
 
+//    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? SEL1:true));       // RMT
+    pTAPECONNECTOR->Set_pin(2,tapeOutput);    // Out
+//    MT_IN = pTAPECONNECTOR->Get_pin(1);      // In
+
+    pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
 
-    if ((bus.getDest()!=0)||(bus.getDest()!=0)||(bus.getDest()!=0)) return true;
-//    bus.setDest(0);
+    if (bus.getDest()!=0) return true;
+    bus.setDest(0);
 
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0x00);
@@ -120,18 +122,24 @@ bool Crlp1004a::run(void)
 
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
-    case BUS_WRITEDATA: if ((adr==0x4e)&& (data!=0)) {
-            qWarning()<<" *** PRINT *** : "<< data << " - "<<QChar(data);
-            if (data == 0x0d) {
-                bus.setINT(true);
-                INTrequest = true;
-                qWarning()<<"INT SET FROM PRINTER";
+    case BUS_WRITEDATA:
+        if (adr==0x4e) {
+            if (data!=0) {
+                Printer(data);
+                if (data == 0x0d) {
+                    bus.setINT(true);
+                    INTrequest = true;
+                }
             }
             bus.setData(0x00);
             bus.setFunc(BUS_READDATA);
         }
+        else {
+            qWarning()<<"error Writedata :"<<adr;
+        }
             break;
-    case BUS_INTREQUEST: if (INTrequest) {
+    case BUS_INTREQUEST:
+        if (INTrequest) {
             bus.setData(0x00);
         }
         else {
@@ -141,50 +149,25 @@ bool Crlp1004a::run(void)
         INTrequest = false;
         break;
     case BUS_READDATA:  break;
-    case BUS_READROM: if (bus.getDest()==0) {
-
-            if ( (adr>=0x2000) && (adr<0x4000)) bus.setData(mem[adr-0x2000]);
+    case BUS_READROM:
+        if ( (adr>=0x2000) && (adr<0x4000) ) bus.setData(mem[adr-0x2000]);
+        else {
+            bus.setData(0xff);
         }
-        else bus.setData(0x00);
         bus.setFunc(BUS_READDATA);
+        break;
+    case BUS_WRITEDATA:
+        switch (adr) {
+        case 0x3020: // flip flop K7 output
+            tapeOutput = !tapeOutput;
+        }
+
         break;
     }
 
     pCONNECTOR->Set_values(bus.toUInt64());
     return true;
 
-
-
-    Get_Connector();
-
-#if 1
-// Try to introduce a latency
-    quint64     deltastate = 0;
-
-    if (run_oldstate == -1) run_oldstate = pTIMER->state;
-    deltastate = pTIMER->state - run_oldstate;
-    if (deltastate < PC2021LATENCY ) return true;
-    run_oldstate        = pTIMER->state;
-#endif
-
-    quint8 c = pCONNECTOR->Get_values();
-
-
-    if (c>0)
-    {
-        AddLog(LOG_PRINTER,QString("Recieve:%1 = (%2)").arg(c,2,16,QChar('0')).arg(QChar(c)));
-        SET_PIN(9,1);
-        Printer(c);
-    }
-
-    pCONNECTOR_value = pCONNECTOR->Get_values();
-
-
-
-
-    Set_Connector();
-
-    return true;
 }
 
 void Crlp1004a::ComputeKey(void)
@@ -247,7 +230,7 @@ void Crlp1004a::Refresh(qint8 data)
         painter.end();
     }
 
-    if (posX >= 20) {
+    if (posX >= 40) {
         posX=0;
         top+=10;
     }
@@ -303,17 +286,24 @@ bool Crlp1004a::init(void)
     WatchPoint.add(&pCONNECTOR_value,64,44,this,"Printer connector");
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
 
+    pTAPECONNECTOR	= new Cconnector(this,
+                                     3,
+                                     1,
+                                     Cconnector::Jack,
+                                     "Line in / Rec",false);	publish(pTAPECONNECTOR);
+    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
+
     if(pKEYB)   pKEYB->init();
     if(pTIMER)  pTIMER->init();
 
     // Create CE-126 Paper Image
     // The final paper image is 207 x 149 at (277,0) for the ce125
-    paperbuf    = new QImage(QSize(170, 3000),QImage::Format_ARGB32);
-    paperdisplay= new QImage(QSize(170, 149),QImage::Format_ARGB32);
+    paperbuf    = new QImage(QSize(340, 3000),QImage::Format_ARGB32);
+    paperdisplay= new QImage(QSize(200, 149),QImage::Format_ARGB32);
 
 
 //TODO Update the chartable with upd16343 char table
-    charTable = new QImage(P_RES(":/ext/ce126ptable.bmp"));
+    charTable = new QImage(P_RES(":/rlh1000/rlp1004atable.bmp"));
 
 //      bells    = new QSound("ce.wav");
 
@@ -328,6 +318,8 @@ bool Crlp1004a::init(void)
 
     run_oldstate = -1;
 
+
+    tapeOutput = tapeInput = false;
     return true;
 }
 

@@ -42,12 +42,8 @@ bool Crlp6001::run(void)
     bus.fromUInt64(pMAINCONNECTOR->Get_values());
     quint8 dest = bus.getDest()-1;
 
-#if 0
-    if (bus.getDest()!=0) return true;
-#else
+//    if ( dest > 0x06) dest -=7;
     if (dest >= 5) return true;
-    if ( dest > 0x06) dest -=7;
-#endif
 
     bus.setDest(0);
     // copy MainConnector to Ext Connectors
@@ -59,7 +55,6 @@ bool Crlp6001::run(void)
     bus.fromUInt64(pEXTCONNECTOR[dest]->Get_values());
     if (bus.getFunc()==BUS_READDATA)
         pMAINCONNECTOR->Set_values(bus.toUInt64());
-
 
     return true;
 }

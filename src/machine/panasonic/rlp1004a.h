@@ -35,6 +35,8 @@ public:
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
 
+    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
+
     QImage *paperbuf;
     QImage *paperdisplay;
 
@@ -42,8 +44,6 @@ public:
 #ifndef NO_SOUND
     QSound *bells;
 #endif
-
-    bool	ToDestroy;
 
     void	settop(int value){ top = value; }
     void	setposX(int value) { posX = value; }
@@ -55,7 +55,6 @@ public:
 
 public:
     bool    rmtSwitch;
-    int     internal_device_code;
     void	Printer(qint8 d);			//printer emulator
     QImage *charTable;
     int margin;
@@ -78,6 +77,7 @@ private:
     BYTE	t,c;
     quint64	run_oldstate;
     quint64  lastState;
+    bool    tapeOutput,tapeInput;
 
 
 public:
