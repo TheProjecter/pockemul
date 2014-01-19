@@ -80,9 +80,9 @@ Crlp1004a::~Crlp1004a() {
 bool Crlp1004a::run(void)
 {
 
-//    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? SEL1:true));       // RMT
+    pTAPECONNECTOR->Set_pin(3,true);       // RMT
     pTAPECONNECTOR->Set_pin(2,tapeOutput);    // Out
-//    MT_IN = pTAPECONNECTOR->Get_pin(1);      // In
+    tapeInput = pTAPECONNECTOR->Get_pin(1);      // In
 
     pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
     Cbus bus;
@@ -123,7 +123,14 @@ bool Crlp1004a::run(void)
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
     case BUS_WRITEDATA:
-        if (adr==0x4e) {
+        switch (adr) {
+        case 0x3020: // flip flop K7 output
+            tapeOutput = !tapeOutput;
+//            qWarning()<<pTIMER->state<<" - "<<tapeOutput;
+            bus.setData(0x00);
+            bus.setFunc(BUS_READDATA);
+            break;
+        case 0x4e:
             if (data!=0) {
                 Printer(data);
                 if (data == 0x0d) {
@@ -133,11 +140,9 @@ bool Crlp1004a::run(void)
             }
             bus.setData(0x00);
             bus.setFunc(BUS_READDATA);
-        }
-        else {
-            qWarning()<<"error Writedata :"<<adr;
-        }
             break;
+        }
+        break;
     case BUS_INTREQUEST:
         if (INTrequest) {
             bus.setData(0x00);
@@ -150,19 +155,13 @@ bool Crlp1004a::run(void)
         break;
     case BUS_READDATA:  break;
     case BUS_READROM:
-        if ( (adr>=0x2000) && (adr<0x4000) ) bus.setData(mem[adr-0x2000]);
-        else {
-            bus.setData(0xff);
+        if ( (adr>=0x2000) && (adr<0x3000) ) bus.setData(mem[adr-0x2000]);
+        else if (adr == 0x3060){
+            bus.setData(tapeInput? 0x80 : 0x00);
         }
         bus.setFunc(BUS_READDATA);
         break;
-    case BUS_WRITEDATA:
-        switch (adr) {
-        case 0x3020: // flip flop K7 output
-            tapeOutput = !tapeOutput;
-        }
 
-        break;
     }
 
     pCONNECTOR->Set_values(bus.toUInt64());
