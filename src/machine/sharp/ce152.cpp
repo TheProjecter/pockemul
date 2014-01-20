@@ -152,7 +152,7 @@ bool Cce152::init(void)
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
 
-if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
+//if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
     return true;
 }
 
@@ -213,11 +213,11 @@ bool Cce152::GetWav(void)
     }
 
 	// Calculate nb of byte to skip corresponding to the CPU frequency
-    qint64 wait =  (pTIMER->pPC->getfrequency() / info.freq);
+    quint64 wait =  (pTIMER->pPC->getfrequency() / info.freq);
     //qint64 delta = (pTIMER->state - first_state);
     while ((pTIMER->state - first_state) >= wait) {
 		GetWav_Val = myfgetc(&info);
-        fprintf(fp_tape,
+        if (fp_tape) fprintf(fp_tape,
                 "delta=%lld val=%s c=%i c=%lld\n",
                 (pTIMER->state - first_state),
                 (GetWav_Val>0x10)?"1":"0",GetWav_Val,counter);
@@ -248,7 +248,7 @@ int Cce152::myfgetc(WavFileInfo* ptrFile)
 
 bool Cce152::SetWav(bool bit)
 {
-    if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
+//    if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
 //fprintf(fp_tape,"setwav - mode=%d",mode);
 	if (mode != RECORD) return false;			// Return 0 If not PLAY mode
 //fprintf(fp_tape,"RECORD - ");
@@ -260,14 +260,14 @@ bool Cce152::SetWav(bool bit)
 		}
 
 	// Calculate nb of byte to skip corresponding to the CPU frequency
-    qint64 wait = ( pTIMER->pPC->getfrequency()) / info.freq;
+    quint64 wait = ( pTIMER->pPC->getfrequency()) / info.freq;
     quint64 delta = (pTIMER->state - first_state);
 
 //    if (pTIMER->pPC->pCPU) fprintf(fp_tape," Xout=%d - ",pTIMER->pPC->pCPU->Get_Xout());
 
     while ((pTIMER->state - first_state) >= wait)
 	{
-        fprintf(fp_tape,"state=%lld diff=%lld delta=%lld val=%s c=%lld\n",pTIMER->state,pTIMER->state-previous_state_setwav,delta,bit?"1":"0",counter);
+        if (fp_tape) fprintf(fp_tape,"state=%lld diff=%lld delta=%lld val=%s c=%lld\n",pTIMER->state,pTIMER->state-previous_state_setwav,delta,bit?"1":"0",counter);
         previous_state_setwav = pTIMER->state;
         int error = fputc ( (bit?0xFF:0x00), info.ptrFd) ;
         counter++;
@@ -566,14 +566,14 @@ int Cce152_PC15XX::serial(int bit)
 	if (last_time==0) 
 		time.restart(); //last_time=timeGetTime();
 
-	if (fp_tape==NULL) 
-		fp_tape=fopen("LOG TAPE.txt","wb");
+//	if (fp_tape==NULL)
+//		fp_tape=fopen("LOG TAPE.txt","wb");
 
 	if ((bit_number == 0) && (bit !=0)) return 0;
 	
 	if (bit) Byte |= (0x01 << bit_number);
 
-	fprintf(fp_tape,"%c",(bit==1?'1':'0'));
+    if (fp_tape) fprintf(fp_tape,"%c",(bit==1?'1':'0'));
 
 	Byte2=Byte;
 	bit_number++;
@@ -591,7 +591,7 @@ int Cce152_PC15XX::serial(int bit)
 		t=((t>>4)&0x0F) | ((t&0x0F)<<4);
 		
 		UINT32 delta_time = time.restart();//-- timeGetTime() - last_time;
-		fprintf(fp_tape,"    %02X=%c  Tape Counter=%d  time=%d   delta_state=%d\n",t,t,TapeCounter,delta_time,pPC->pTIMER->state-last_state);
+        if (fp_tape) fprintf(fp_tape,"    %02X=%c  Tape Counter=%d  time=%d   delta_state=%d\n",t,t,TapeCounter,delta_time,pPC->pTIMER->state-last_state);
 //--		AddLog(LOG_TAPE,tr("Lecture K7: 0x%1 = %c",t,t);
 //--		last_time=timeGetTime();
 		last_state = pPC->pTIMER->state;
@@ -619,7 +619,7 @@ int Cce152_PC15XX::GetBit(void)
 
 
 //	ce152.info.debug=0x04;
-	if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
+//	if (fp_tape==NULL) fp_tape=fopen("LOG TAPE.txt","wb");
 
 	if (last_TapeCounter==0) last_TapeCounter=TapeCounter;
 
@@ -741,7 +741,7 @@ int Cce152_PC15XX::ReadBitFieldFromWav (u_long nbBits, char* ptrBits, WavFileInf
                 error = SyncBitFromWav (1, &trans, &limit, ptrFile);
                 if (error != ERR_OK) break ;
                 if (limit == 0) {
-                    fprintf (fp_tape,"ERROR : Synchro lost %d\n",trans) ;
+                    if (fp_tape) fprintf (fp_tape,"ERROR : Synchro lost %d\n",trans) ;
                     error = ERR_NOK ;
                     break ;
                 }
@@ -753,7 +753,7 @@ int Cce152_PC15XX::ReadBitFieldFromWav (u_long nbBits, char* ptrBits, WavFileInf
                 error = SyncBitFromWav (-1, &trans, &limit, ptrFile);
                 if (error != ERR_OK) break ;
                 if (limit == 0) {
-                    fprintf (fp_tape,"ERROR : Synchro lost %d\n",trans) ;
+                    if (fp_tape) fprintf (fp_tape,"ERROR : Synchro lost %d\n",trans) ;
                     error = ERR_NOK ;
                     break ;
                 }
@@ -767,10 +767,10 @@ int Cce152_PC15XX::ReadBitFieldFromWav (u_long nbBits, char* ptrBits, WavFileInf
             ptrBits[ii] = 0;     /* Bit a 0 */
 
         if ( (ptrFile->debug & 0x0004) > 0 )
-            fprintf (fp_tape," %d", ptrBits[ii]) ;
+            if (fp_tape) fprintf (fp_tape," %d", ptrBits[ii]) ;
     }
         if ( (ptrFile->debug & 0x0004) > 0 )
-            fprintf (fp_tape,"\n") ;
+            if (fp_tape) fprintf (fp_tape,"\n") ;
 
     return (error);
 }
@@ -816,7 +816,7 @@ int Cce152_PC15XX::SyncBitFromWav (int sign, u_long*   ptrTrans, u_long* ptrLimi
     int         error ;
 
     if ( (ptrFile->debug & 0x0002) > 0 )
-        fprintf(fp_tape," %d -> ", *ptrTrans);
+        if (fp_tape) fprintf(fp_tape," %d -> ", *ptrTrans);
 
     ii    = 1 ;
     do {
@@ -827,7 +827,7 @@ int Cce152_PC15XX::SyncBitFromWav (int sign, u_long*   ptrTrans, u_long* ptrLimi
 
         error = myfseek (ptrFile, tmp, SEEK_CUR) ;
         if (error != ERR_OK) {
-            fprintf (fp_tape,"ERROR : Can't seek the file\n") ;
+            if (fp_tape) fprintf (fp_tape,"ERROR : Can't seek the file\n") ;
             break ;
         }
         error = ReadBitFromWav (ptrTrans, ptrFile);
@@ -840,8 +840,8 @@ int Cce152_PC15XX::SyncBitFromWav (int sign, u_long*   ptrTrans, u_long* ptrLimi
                 ( (sign < 0) && (*ptrTrans > BIT_0) ) ) ) ;
 
     if ( (ptrFile->debug & 0x0002) > 0 ) {
-        fprintf(fp_tape,"%d bits -> ", tmp + ptrFile->bitLen);
-        fprintf(fp_tape,"%d\n", *ptrTrans);
+        if (fp_tape) fprintf(fp_tape,"%d bits -> ", tmp + ptrFile->bitLen);
+        if (fp_tape) fprintf(fp_tape,"%d\n", *ptrTrans);
     }
 
     if ( (*ptrTrans < BIT_1) &&
@@ -866,7 +866,7 @@ int Cce152_PC15XX::ReadBitFromWav (u_long*   ptrTrans,WavFileInfo* ptrFile)
     for ( ii = 0 ; ii < ptrFile->bitLen ; ii++ ) {
         inVal = myfgetc (ptrFile) ; 
         if (inVal == EOF) {
-            fprintf (fp_tape,"\nEnd of File\n") ;
+            if (fp_tape) fprintf (fp_tape,"\nEnd of File\n") ;
             error = ERR_NOK ;
             break ;
         }

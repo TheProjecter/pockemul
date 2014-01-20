@@ -17,7 +17,7 @@
 
 Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
-    setfrequency( (int) 1000000);
+    setfrequency( (int) 4194300/4);
     setcfgfname(QString("rlh1000"));
 
     SessionHeader	= "RLH1000PKM";
@@ -266,6 +266,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                 if (islineFD) {
                     quint8 t = (*d-0x47FD)/4;
                     lineFD[t] = data;
+                    qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
                 }
                 if (islineFE) {
                     quint8 t = (*d-0x47FE)/4;
@@ -354,7 +355,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
     }
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
-        *data = ReadBusMem(BUS_READROM,*d);
+        *data = ReadBusMem(BUS_READDATA,*d);
         return false;
     }
 

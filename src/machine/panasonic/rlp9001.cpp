@@ -82,16 +82,13 @@ bool Crlp9001::run(void)
         if((adr>=0x8000) && (adr < 0xC000))
             bus.setData(mem[adr-0x8000]);
         else {
-            bus.setData(0x00);
-            //qWarning()<<"ERROR2:"<<QString("%1").arg(adr,16);
+            bus.setData(0xff);
+//            qWarning()<<"ERROR2:"<<QString("%1").arg(adr,16);
         }
         break;
     case BUS_INTREQUEST:
         bus.setData(0xff);
         bus.setFunc(BUS_READDATA);
-        break;
-    case BUS_READROM:
-        qWarning()<<"read rom:"<<adr;
         break;
     }
 

@@ -72,6 +72,7 @@ Crlp1004a::~Crlp1004a() {
     delete paperbuf;
     delete paperdisplay;
     delete pCONNECTOR;
+    delete pTAPECONNECTOR;
     delete charTable;
 //    delete bells;
 }
@@ -153,8 +154,7 @@ bool Crlp1004a::run(void)
         bus.setFunc(BUS_READDATA);
         INTrequest = false;
         break;
-    case BUS_READDATA:  break;
-    case BUS_READROM:
+    case BUS_READDATA:
         if ( (adr>=0x2000) && (adr<0x3000) ) bus.setData(mem[adr-0x2000]);
         else if (adr == 0x3060){
             bus.setData(tapeInput? 0x80 : 0x00);
@@ -209,6 +209,8 @@ void Crlp1004a::Refresh(qint8 data)
 
 // grab data char to byteArray
     if ( (data == 0xff) || (data==0x0a)) return;
+
+    if ( (data == 0x81) || (data == 0x82)) return;
 
     TextBuffer += data;
 
