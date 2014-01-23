@@ -222,11 +222,11 @@ void Crlp1004a::Refresh(qint8 data)
     else
     {
         painter.begin(paperbuf);
-        int x = ((data>>4) & 0x0F)*6;
+        int x = ((data>>4) & 0x0F)*7;
         int y = (data & 0x0F) * 8;
         painter.drawImage(      QPointF( margin + (7 * posX),top),
                             *charTable,
-                            QRectF( x , y , 5,7));
+                            QRectF( x , y , 7,7));
         posX++;
         painter.end();
     }
