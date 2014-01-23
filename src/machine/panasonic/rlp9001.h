@@ -3,6 +3,8 @@
 
 #include "pobject.h"
 
+#include "mainwindowpockemul.h"
+
 class Crlp9001:public CPObject {
     Q_OBJECT
 public:
@@ -17,7 +19,7 @@ public:
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
 
-    Crlp9001(CPObject *parent = 0);
+    Crlp9001(CPObject *parent = 0, Models mod=RLP9001);
     virtual ~Crlp9001();
 
     bool Power;
@@ -31,6 +33,8 @@ protected slots:
 private:
 
     bool rotate;
+    Models model;
+    quint8 bank;
 
 };
 

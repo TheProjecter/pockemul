@@ -10,13 +10,13 @@
 //#include "rlh1000.h"
 #include "bus.h"
 
-Crlp9001::Crlp9001(CPObject *parent )   : CPObject(this)
+Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
 {                                                       //[constructor]
 
 
     setfrequency( 0);
     BackGroundFname     = P_RES(":/rlh1000/rlp9002.png");
-
+    model = mod;
     setDXmm(113);
     setDYmm(95);
     setDZmm(51);
@@ -25,12 +25,29 @@ Crlp9001::Crlp9001(CPObject *parent )   : CPObject(this)
     setDY(340);//Pc_DY  = 20;
 
     rotate = false;
-
-    memsize                     = 0x4000;
-    InitMemValue        = 0xff;
-
     SlotList.clear();
-    SlotList.append(CSlot(16 , 0x0000 , ""                                  , ""        , RAM , "RAM 16Ko"));
+    InitMemValue = 0xff;
+    bank = 0;
+
+    switch(model) {
+    case RLP9001:
+        memsize      = 0x1000;
+        SlotList.append(CSlot(4 , 0x0000 , "" , ""        , RAM , "RAM 4Ko"));
+        break;
+    case RLP9002:
+        memsize      = 0x2000;
+        SlotList.append(CSlot(8 , 0x0000 , "" , ""        , RAM , "RAM 8Ko"));
+        break;
+    case RLP9003:
+        memsize      = 0x4000;
+        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko"));
+        break;
+    case RLP9004:
+        memsize      = 0x8000;
+        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko bank 1"));
+        SlotList.append(CSlot(16 , 0x4000 , "" , ""        , RAM , "RAM 16Ko bank 2"));
+        break;
+    }
 
 }
 
@@ -57,12 +74,13 @@ bool Crlp9001::run(void)
     }
 
     if (bus.getFunc()==BUS_SELECT) {
-        if (bus.getData()==1){
-            Power=true;
+
+        switch (bus.getData()) {
+        case 1: Power = true; bank = 0; break;
+        case 2: if (model == RLP9004) { Power = true; bank = 1; } break;
+        default: Power = false; break;
         }
-        if (bus.getData()==0) {
-            Power = false;
-        }
+
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
@@ -75,17 +93,37 @@ bool Crlp9001::run(void)
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
     case BUS_WRITEDATA:
+#if 1
+        switch (model) {
+        case RLP9001: if((adr>=0x8000) && (adr < 0x9000)) mem[adr-0x8000] = bus.getData(); break;
+        case RLP9002: if((adr>=0x8000) && (adr < 0xa000)) mem[adr-0x8000] = bus.getData(); break;
+        case RLP9003: if((adr>=0x8000) && (adr < 0xc000)) mem[adr-0x8000] = bus.getData(); break;
+        case RLP9004: if((adr>=0x8000) && (adr < 0xc000)) mem[(adr-0x8000)+bank*0x4000] = bus.getData(); break;
+        }
+#else
         if((adr>=0x8000) && (adr < 0xC000))
             mem[adr-0x8000] = bus.getData();
         else qWarning()<<"ERROR1:"<<QString("%1").arg(adr,16);
+#endif
         break;
     case BUS_READDATA:
+#if 1
+        bus.setData(0x7f);
+        switch (model) {
+        case RLP9001: if((adr>=0x8000) && (adr < 0x9000)) bus.setData(mem[adr-0x8000]); break;
+        case RLP9002: if((adr>=0x8000) && (adr < 0xa000)) bus.setData(mem[adr-0x8000]); break;
+        case RLP9003: if((adr>=0x8000) && (adr < 0xc000)) bus.setData(mem[adr-0x8000]); break;
+        case RLP9004: if((adr>=0x8000) && (adr < 0xc000)) bus.setData(mem[adr-0x8000+bank*0x4000]); break;
+        }
+#else
         if((adr>=0x8000) && (adr < 0xC000))
             bus.setData(mem[adr-0x8000]);
         else {
-            bus.setData(0xff);
+            bus.setData(0xfb);
 //            qWarning()<<"ERROR2:"<<QString("%1").arg(adr,16);
         }
+#endif
+
         break;
     case BUS_INTREQUEST:
         bus.setData(0xff);

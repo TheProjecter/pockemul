@@ -237,7 +237,10 @@ void MainWindowPockemul::initObjectTable() {
     objtable["SANCO TP-83"]=TP83;
     objtable["Panasonic HHC RL-H1000"]=RLH1000;
     objtable["Panasonic RL-P6001"]=RLP6001;
-    objtable["Panasonic RL-P9001"]=RLP9001;
+    objtable["Panasonic RL-P9001 4Ko"]=RLP9001;
+    objtable["Panasonic RL-P9002 8Ko"]=RLP9002;
+    objtable["Panasonic RL-P9003 16Ko"]=RLP9003;
+    objtable["Panasonic RL-P9004 32Ko"]=RLP9004;
     objtable["Panasonic RL-P1004A"]=RLP1004A;
     objtable["Post-it"]=POSTIT;
     objtable["TI-57"]=TI57;
@@ -335,7 +338,10 @@ CPObject *pPC=0;
 
         case RLH1000 : pPC = new Crlh1000;      pPC->setName("Panasonic HHC RL-H1000"); break;
         case RLP6001 : pPC = new Crlp6001;      pPC->setName("Panasonic RL-P6001"); break;
-        case RLP9001 : pPC = new Crlp9001;      pPC->setName("Panasonic RL-P9001"); break;
+        case RLP9001 : pPC = new Crlp9001;      pPC->setName("Panasonic RL-P9001 4Ko"); break;
+        case RLP9002 : pPC = new Crlp9001(0,RLP9002);      pPC->setName("Panasonic RL-P9002 8Ko"); break;
+        case RLP9003 : pPC = new Crlp9001(0,RLP9003);      pPC->setName("Panasonic RL-P9003 16Ko"); break;
+        case RLP9004 : pPC = new Crlp9001(0,RLP9004);      pPC->setName("Panasonic RL-P9004 32Ko"); break;
         case RLP1004A : pPC = new Crlp1004a;      pPC->setName("Panasonic RL-P1004A"); break;
 
         case POSTIT : pPC = new Cpostit;      pPC->setName("Post-it"); break;

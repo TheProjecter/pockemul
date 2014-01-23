@@ -103,13 +103,10 @@ bool Crlp1004a::run(void)
     }
 
     if (bus.getFunc()==BUS_SELECT) {
-        if (bus.getData()==1){
-            Power=true;
-            if (pPC->pTIMER->pPC->fp_log) fprintf(pPC->pTIMER->pPC->fp_log,"RL-P1004A POWER ON\n");
-        }
-        if (bus.getData()==0) {
-            if (pPC->pTIMER->pPC->fp_log) fprintf(pPC->pTIMER->pPC->fp_log,"RL-P1004A POWER Off\n");
-            Power = false;
+        switch (bus.getData()) {
+        case 1: Power = true; break;
+//        case 2: Power = true; break;
+        default: Power = false; break;
         }
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
