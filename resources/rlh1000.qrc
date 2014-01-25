@@ -12,5 +12,6 @@
         <file>rlh1000/SnapForth.bin</file>
         <file>rlh1000/rlp1004atable.bmp</file>
         <file>rlh1000/test.bin</file>
+        <file>rlh1000/rlp9003r.png</file>
     </qresource>
 </RCC>

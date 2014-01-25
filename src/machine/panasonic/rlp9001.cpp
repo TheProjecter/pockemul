@@ -44,6 +44,7 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
         SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko"));
         break;
     case RLP9003R:
+        BackGroundFname     = P_RES(":/rlh1000/rlp9003r.png");
         memsize      = 0x4000;
         SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko"));
         break;
@@ -330,5 +331,8 @@ void Crlp9001::exportROM() {
             out.writeRawData( (char *) &mem[romoffset],size );
             f.close();
         }
+    }
+    else {
+        QMessageBox::warning(this,"ERROR","Please, switch to ROM simulator mode before trying to export the file");
     }
 }
