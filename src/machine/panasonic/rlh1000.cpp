@@ -37,7 +37,8 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, RAM , "Ext RAM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, ROM , "ROM"));
     SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, RAM , "I/O Hard"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
+    //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")    , ""	, ROM , "ROM Capsules 2"));
     SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, ROM , "ROM Capsules 3"));
     SlotList.append(CSlot(16, 0x1C000 ,	""                                  , ""	, RAM , "Ext RAM"));
 
@@ -71,7 +72,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 
     ioFreq = 0;
 
-    extrinsic = 0;
+    extrinsic = 0xff;
 
     bus = new Cbus();
 }
@@ -123,7 +124,7 @@ bool Crlh1000::run() {
         dialogdasm->imem=false;
 
 #ifndef QT_NO_DEBUG
-    if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
+//    if (pCPU->get_PC()==0xc854) m6502->set_PC(0xc856);
 #endif
 
 
@@ -182,7 +183,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                 bus->setFunc(BUS_WRITEDATA);
                 manageBus();
                 //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
-
+                bus->setFunc(BUS_SLEEP);
                 return true;
             }
         }
@@ -207,7 +208,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             bus->setFunc(BUS_WRITEDATA);
             manageBus();
             //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
-
+            bus->setFunc(BUS_SLEEP);
             return false;
         }
         return false;
@@ -222,6 +223,10 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             AddLog(LOG_CONSOLE,"CPU HALT\n");
             if (fp_log) fprintf(fp_log,"\nCPU HALT\n");
             if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nCPU HALT\n");
+        }
+        if ( (latchByte & 0x03)==0x03) {
+            qWarning()<<"EXT ROM";
+            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE\n");
         }
         if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n ROM latchByte=%02X\n",data);
 
@@ -273,13 +278,13 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                     lineFE[t] = data;
 
                     bus->setDest(t);
-                    if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
                     bus->setData(data);
                     bus->setFunc(BUS_SELECT);
+                    if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
                     manageBus();
                     if (bus->getFunc()==BUS_READDATA) extrinsic=t;//bus->getDest();
 //                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus->getDest());
-
+                    bus->setFunc(BUS_SLEEP);
                     if (fp_log) {
                         fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
                         for (int i=0;i<=32;i++) {
@@ -334,7 +339,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             bus->setFunc(BUS_WRITEDATA);
             manageBus();
             //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
-
+            bus->setFunc(BUS_SLEEP);
             return false;
         }
 
@@ -402,6 +407,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                         if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
 
                         *data = bus->getData();
+                        bus->setFunc(BUS_SLEEP);
 
                     }
                     if (islineFD) {
@@ -423,6 +429,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                         if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
 
                         *data = bus->getData();
+                        bus->setFunc(BUS_SLEEP);
                     }
 
                     if (fp_log) {
@@ -452,15 +459,16 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
         else {
             UINT32 offset = 0;
             switch (latchByte & 0x03) {
-            case 0x00 : offset = 0; break;
-            case 0x01 : offset = 0x10000; break;
-            case 0x02 : offset = 0x14000; break;
-            case 0x03 :
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE\n");
-                offset = 0; break;//*data=0xff; return false; // External ROM ????
+            case 0x00 : offset = 0; return true;
+            case 0x01 : offset = 0x10000; *d += offset; return true;
+            case 0x02 : offset = 0x14000; *d += offset; return true;
+            case 0x03 :  *data = ReadBusMem(BUS_READDATA,*d);
+//                qWarning()<<"READ EXT ROM:"<<*d<<"="<<*data;
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE dest:%02x\n",extrinsic);
+                // External ROM ????
+                return false;
             default: break;
             }
-            *d += offset;
             return true;
         }
 
@@ -503,6 +511,7 @@ UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr) {
             }
         }
         else data = 0xff;
+        bus->setFunc(BUS_SLEEP);
     }
     return data;
 }

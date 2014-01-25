@@ -77,6 +77,7 @@ Crlp1004a::~Crlp1004a() {
 //    delete bells;
 }
 
+
 #define LATENCY (pTIMER->pPC->getfrequency()/3200)
 bool Crlp1004a::run(void)
 {
@@ -89,7 +90,7 @@ bool Crlp1004a::run(void)
     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
-
+    if (bus.getFunc()==BUS_SLEEP) return true;
 
     if (bus.getDest()!=0) return true;
     bus.setDest(0);
@@ -103,13 +104,17 @@ bool Crlp1004a::run(void)
     }
 
     if (bus.getFunc()==BUS_SELECT) {
+//        qWarning()<<"1004A BUS SELECT:"<<bus.getData();
+
         switch (bus.getData()) {
         case 1: Power = true; break;
-//        case 2: Power = true; break;
         default: Power = false; break;
         }
-        bus.setFunc(BUS_READDATA);
-        pCONNECTOR->Set_values(bus.toUInt64());
+        if (Power)
+        {
+            bus.setFunc(BUS_READDATA);
+            pCONNECTOR->Set_values(bus.toUInt64());
+        }
         return true;
     }
 
@@ -156,7 +161,7 @@ bool Crlp1004a::run(void)
         else if (adr == 0x3060){
             bus.setData(tapeInput? 0x80 : 0x00);
         }
-        bus.setFunc(BUS_READDATA);
+
         break;
 
     }

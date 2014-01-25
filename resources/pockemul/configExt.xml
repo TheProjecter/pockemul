@@ -31,7 +31,9 @@
      <example idpocket="Panasonic RL-P9001 4Ko" filename="./" name="Panasonic RL-P9001 4Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9002 8Ko" filename="./" name="Panasonic RL-P9002 8Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9003 16Ko" filename="./" name="Panasonic RL-P9003 16Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
+     <example idpocket="Panasonic RL-P9003R 16Ko ROM Simulator" filename="./" name="Panasonic RL-P9003R 16Ko ROM Simulator" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9004 32Ko" filename="./" name="Panasonic RL-P9004 32Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
+     <example idpocket="Panasonic RL-P9005 128Ko" filename="./" name="Panasonic RL-P9005 128Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P1004A" filename="./" name="Panasonic RL-P1004A" image=":/rlh1000/rlp1004a.png" connectortype="Panasonic_44" conngender="male"/>
    <example idpocket="HP82143A" filename="./" name="Printer (non-HP-IL) 82143A" image=":/hp41/modimg/hp82143a.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP82160A" filename="./" name="HP-IL module 82160A" image=":/hp41/modimg/hp82160a.png" connectortype="hp41" conngender="male"/>

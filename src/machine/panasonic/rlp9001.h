@@ -29,10 +29,12 @@ protected:
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void Rotate();
+    void ROMSwitch();
 
 private:
 
     bool rotate;
+    bool romSwitch;
     Models model;
     quint8 bank;
 

@@ -1,6 +1,6 @@
 #include "bus.h"
 
-quint64 Cbus::toUInt64()
+quint64 Cbus::toUInt64() const
 {
     quint64 serialized = 0;
 
@@ -22,5 +22,31 @@ void Cbus::fromUInt64(quint64 val)
     dest = (val >>24) & 0xff;
     func = static_cast<BUS_FUNC>((val >>32) & 0xff);
     interrupt = (val >> 40) &0x01;
-//    if (interrupt) qWarning()<<"INTERRUPT";
+    //    if (interrupt) qWarning()<<"INTERRUPT";
 }
+
+QString Cbus::toLog() const
+{
+    QString ret;
+    ret = QString("Dest:%1  - %2").arg(getDest()).arg(getFunc());
+    switch (getFunc()) {
+    case BUS_QUERY: ret += "BUS_QUERY"; break;
+    case BUS_SELECT: ret += "BUS_SELECT"; break;
+    case BUS_READDATA: ret += "BUS_READDATA";
+        ret += QString(" - addr=%1").arg(getAddr(),4,16,QChar('0'));
+        break;
+    case BUS_WRITEDATA: ret += "BUS_WRITEDATA";
+        ret += QString(" - addr=%1").arg(getAddr(),4,16,QChar('0'));
+        break;
+    }
+    ret += QString(" - data=%1").arg(getData(),2,16,QChar('0'));
+
+    return ret;
+}
+
+QDebug operator<<(QDebug dbg, const Cbus &bus)
+{
+    dbg.nospace() << bus.toLog();
+    return dbg.maybeSpace();
+}
+
