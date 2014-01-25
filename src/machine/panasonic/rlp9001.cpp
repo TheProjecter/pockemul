@@ -80,9 +80,10 @@ bool Crlp9001::run(void)
 
     bus.fromUInt64(pCONNECTOR->Get_values());
     if (bus.getFunc()==BUS_SLEEP) return true;
-    if (bus.getDest()!=0) return true;
 
-    bus.setDest(0);
+    if ( (bus.getDest()!=0) && (bus.getDest()!=30)) return true;
+
+//    bus.setDest(0);
 
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0xFB);
@@ -97,16 +98,10 @@ bool Crlp9001::run(void)
         bank=0;
 //        qWarning()<<"9001 BUS SELECT:"<<bus.getData();
         if (romSwitch) {
-            switch (bus.getData()) {
-            case 128: Power = true; bank = 0; break;
-//            case 2: if ((model == RLP9004)||(model == RLP9005)) { Power = true; bank = 1; } break;
-//            case 4: if (model == RLP9005) { Power = true; bank = 2; } break;
-//            case 8: if (model == RLP9005) { Power = true; bank = 3; } break;
-//            case 16: if (model == RLP9005) { Power = true; bank = 4; } break;
-//            case 32: if (model == RLP9005) { Power = true; bank = 5; } break;
-//            case 64: if (model == RLP9005) { Power = true; bank = 6; } break;
-//            case 128: if (model == RLP9005) { Power = true; bank = 7; } break;
-            default: Power = false; break;
+            Power = false;
+            if ( bus.getData()==128 ) {
+                Power = true;
+                bank = 0;
             }
         }
         else {
@@ -159,8 +154,8 @@ bool Crlp9001::run(void)
         case RLP9002: if((adr>=0x8000) && (adr < 0xa000)) bus.setData(mem[adr-0x8000]); break;
         case RLP9003: if((adr>=0x8000) && (adr < 0xc000)) bus.setData(mem[adr-0x8000]); break;
         case RLP9003R:
-            if (romSwitch &&(adr>=0x4000) && (adr < 0x8000)) {
-                qWarning()<<"ROM SIMUL:"<<adr<<"="<<mem[adr-0x4000+0x14];
+            if (romSwitch && (adr>=0x4000) && (adr < 0x8000)) {
+//                qWarning()<<"ROM SIMUL:"<<adr<<"="<<mem[adr-0x4000+0x14];
                 bus.setFunc(BUS_ACK);
                 bus.setData(mem[adr-0x4000+0x14]);
             }

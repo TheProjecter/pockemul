@@ -52,21 +52,7 @@ bool Crlp6001::run(void)
 
     if (_log) fprintf(_log,bus.toLog().toLatin1().data());
 
-#if 0
-    // BUS_SELECT on Dest 32 : Power off all
-    if ( (bus.getFunc()==BUS_SELECT) && (bus.getDest()==32) ) {
-//        qWarning()<<"6001 BUS_SELECT:"<<dest<<" - "<<bus.getData();
-        // Turn off all extensions
-        for (int i=0; i<5;i++) {
-            Cbus _b;
-            _b.setDest(0);
-            _b.setFunc(BUS_SELECT);
-            _b.setData(0);
-            pEXTCONNECTOR[i]->Set_values(_b.toUInt64());
-            mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
-        }
-    }
-#endif
+
 #if 1
     if (bus.getDest()==30) {
         // BUS_QUERY on Dest 30 : Ask all ext for F7 return (ROM Expander)
@@ -76,7 +62,7 @@ bool Crlp6001::run(void)
             quint8 ret=0;
             for (int i=0; i<5;i++) {
                 Cbus _b;
-                _b.setDest(0);
+//                _b.setDest(0);
                 _b.setFunc(BUS_QUERY);
                 _b.setData(0);
                 pEXTCONNECTOR[i]->Set_values(_b.toUInt64());
@@ -94,7 +80,7 @@ bool Crlp6001::run(void)
         if (bus.getFunc()==BUS_SELECT) {
             qWarning()<<"BUS_SELECT on Dest 30";
             for (int i=0; i<5;i++) {
-                bus.setDest(0);
+//                bus.setDest(0);
                 pEXTCONNECTOR[i]->Set_values(bus.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
                 Cbus _b;
@@ -110,7 +96,7 @@ bool Crlp6001::run(void)
         if (bus.getFunc()==BUS_READDATA) {
 //            qWarning()<<"BUS_READDATA on Dest 30";
             for (int i=0; i<5;i++) {
-                bus.setDest(0);
+//                bus.setDest(0);
                 bus.setData(0xff);
                 pEXTCONNECTOR[i]->Set_values(bus.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
@@ -119,7 +105,7 @@ bool Crlp6001::run(void)
                 if(pTIMER->pPC->pCPU->fp_log) fprintf(pTIMER->pPC->pCPU->fp_log,"EXT ROM DATA READ:(%i) = %02x",i,_b.getData());
 
                 if (_b.getFunc()==BUS_ACK) {
-                    qWarning()<<"EXT ROM DATA READ";
+//                    qWarning()<<"EXT ROM DATA READ";
                     if(pTIMER->pPC->pCPU->fp_log) fprintf(pTIMER->pPC->pCPU->fp_log,"EXT ROM DATA READ:%02x",_b.getData());
                     bus.setFunc(BUS_READDATA);
                     bus.setData(_b.getData());
@@ -136,21 +122,8 @@ bool Crlp6001::run(void)
         if (_log) fprintf(_log,"\n");
         return true;
     }
-#if 0
-    if ( (bus.getFunc()==BUS_SELECT) && (bus.getData()!=0) ) {
 
-//        qWarning()<<"6001 BUS_SELECT:"<<dest<<" - "<<bus.getData();
-        // Turn off all other extensions
-        for (int i=0; i<5;i++) {
-            Cbus _b;
-            _b.setDest(0);
-            _b.setFunc(BUS_SELECT);
-            _b.setData(0);
-            pEXTCONNECTOR[i]->Set_values(_b.toUInt64());
-            mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
-        }
-    }
-#endif
+
     bus.setDest(0);
     // copy MainConnector to Ext Connectors
     pEXTCONNECTOR[dest]->Set_values(bus.toUInt64());
@@ -159,7 +132,7 @@ bool Crlp6001::run(void)
     mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[dest]);
 
     bus.fromUInt64(pEXTCONNECTOR[dest]->Get_values());
-    if (bus.getFunc()==BUS_READDATA)
+    if ( (bus.getFunc()==BUS_READDATA) || (bus.getFunc()==BUS_ACK) )
         pMAINCONNECTOR->Set_values(bus.toUInt64());
 
     if (_log) fprintf(_log,"    --->  ");

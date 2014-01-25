@@ -39,7 +39,7 @@ public:
     quint8 strobe32;
     quint8 extrinsic;
     UINT8 getKey(quint8 row);
-    UINT8 ReadBusMem(BUS_FUNC f, UINT32 adr);
+    UINT8 ReadBusMem(BUS_FUNC f, UINT32 adr, quint8 dest);
 private:
     Cbus *bus;
     quint8 latchByte;
