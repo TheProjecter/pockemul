@@ -30,11 +30,13 @@ protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void Rotate();
     void ROMSwitch();
+    void exportROM();
 
 private:
 
     bool rotate;
     bool romSwitch;
+    int  romoffset;
     Models model;
     quint8 bank;
 

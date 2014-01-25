@@ -57,7 +57,7 @@ bool Crlp6001::run(void)
     if (bus.getDest()==30) {
         // BUS_QUERY on Dest 30 : Ask all ext for F7 return (ROM Expander)
         if ( bus.getFunc()==BUS_QUERY) {
-            qWarning()<<"BUS_QUERY on Dest 30";
+//            qWarning()<<"BUS_QUERY on Dest 30";
             // Query all extensions
             quint8 ret=0;
             for (int i=0; i<5;i++) {
@@ -78,7 +78,7 @@ bool Crlp6001::run(void)
             }
         }
         if (bus.getFunc()==BUS_SELECT) {
-            qWarning()<<"BUS_SELECT on Dest 30";
+//            qWarning()<<"BUS_SELECT on Dest 30";
             for (int i=0; i<5;i++) {
 //                bus.setDest(0);
                 pEXTCONNECTOR[i]->Set_values(bus.toUInt64());
@@ -86,7 +86,7 @@ bool Crlp6001::run(void)
                 Cbus _b;
                 _b.fromUInt64(pEXTCONNECTOR[i]->Get_values());
                 if (_b.getFunc()==BUS_READDATA) {
-                    qWarning()<<"EXT ROM POWER ON";
+//                    qWarning()<<"EXT ROM POWER ON";
                     bus.setFunc(BUS_READDATA);
                     pMAINCONNECTOR->Set_values(bus.toUInt64());
                     return true;

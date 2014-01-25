@@ -1,5 +1,5 @@
 #include <QtGui>
-
+#include <QFileDialog>
 
 #include "common.h"
 #include "Log.h"
@@ -157,7 +157,7 @@ bool Crlp9001::run(void)
             if (romSwitch && (adr>=0x4000) && (adr < 0x8000)) {
 //                qWarning()<<"ROM SIMUL:"<<adr<<"="<<mem[adr-0x4000+0x14];
                 bus.setFunc(BUS_ACK);
-                bus.setData(mem[adr-0x4000+0x14]);
+                bus.setData(mem[adr-0x4000+romoffset]);
             }
             else if((adr>=0x8000) && (adr < 0xc000)) bus.setData(mem[adr-0x8000]);
             break;
@@ -261,8 +261,10 @@ void Crlp9001::contextMenuEvent ( QContextMenuEvent * event )
 
     menu->addAction(tr("Rotate 180"),this,SLOT(Rotate()));
 
-    if (model==RLP9003R)
+    if (model==RLP9003R) {
         menu->addAction(tr("ROM Switch"),this,SLOT(ROMSwitch()));
+        menu->addAction(tr("ROM Save"),this,SLOT(exportROM()));
+    }
 
     menu->popup(event->globalPos () );
     event->accept();
@@ -291,5 +293,42 @@ void Crlp9001::Rotate()
 void Crlp9001::ROMSwitch()
 {
    romSwitch = !romSwitch;
+
+   if (romSwitch) {
+       // analyse memory to find the snap code offset
+       // 0x0D filename lenght
+       romoffset = 0x0E + mem[0x0d];
+       if (mem[romoffset+1]!=0x43) {
+           // no ROM found
+           QMessageBox::critical(this,"ERROR","No ROM found in this module");
+           romSwitch = false;
+       }
+   }
    qWarning()<<"romSwitch:"<<romSwitch;
+}
+
+void Crlp9001::exportROM() {
+    if (romSwitch) {
+        int size = mem[0x0a] + mem[0x0b]*0x100;
+        qWarning()<<"size="<<size<<"  - "<<mem[0x0a]<<"-"<<mem[0x0b];
+        QString fn = QFileDialog::getSaveFileName(
+                    mainwindow,
+                    tr("Choose a filename to save ROM file"),
+                    ".",
+                    tr("ROM File (*.bin)"));
+
+
+        QFileInfo fi( fn );
+                if (fi.suffix().isEmpty())
+                {
+                        // no suffix, adding .pml  - BUG For Android
+                    fn.append(".bin");
+                }
+        QFile f(fn);
+        if (f.open(QFile::WriteOnly | QFile::Truncate)) {
+            QDataStream out(&f);
+            out.writeRawData( (char *) &mem[romoffset],size );
+            f.close();
+        }
+    }
 }

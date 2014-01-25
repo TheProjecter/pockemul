@@ -682,12 +682,12 @@ UINT8 Crlh1000::getKey(quint8 row )
 
     }
 
-    if (KEY('Z')) {
-        qWarning()<<"LOG";
-        pCPU->logsw = true;
-        pCPU->Check_Log();
-        if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
-    }
+//    if (KEY('Z')) {
+//        qWarning()<<"LOG";
+//        pCPU->logsw = true;
+//        pCPU->Check_Log();
+//        if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+//    }
     return data;
 
 }
