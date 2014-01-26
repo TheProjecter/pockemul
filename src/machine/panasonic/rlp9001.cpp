@@ -29,6 +29,7 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
     SlotList.clear();
     InitMemValue = 0x7f;
     bank = 0;
+    slotChanged = false;
 
     switch(model) {
     case RLP9001:
@@ -317,20 +318,29 @@ void Crlp9001::Rotate()
 {
     rotate = ! rotate;
 
+    // Correct Key pos
+    for (int i=0; i <pKEYB->Keys.size();i++) {
+        pKEYB->Keys[i].Rect=pKEYB->Keys[i].Rect.translated(rotate?-42:42,rotate?13:-13);
+    }
+
+#if 0
     delete BackgroundImageBackup;
     BackgroundImageBackup = CreateImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
-        delete BackgroundImage;
-        BackgroundImage = new QImage(*BackgroundImageBackup);
-        delete FinalImage;
-        FinalImage = new QImage(*BackgroundImageBackup);
+    delete BackgroundImage;
+    BackgroundImage = new QImage(*BackgroundImageBackup);
+    delete FinalImage;
+    FinalImage = new QImage(*BackgroundImageBackup);
 
-        pCONNECTOR->setSnap(rotate?QPoint(406,72):QPoint(34,72));
+    pCONNECTOR->setSnap(rotate?QPoint(406,72):QPoint(34,72));
 
-        pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
-        mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
-        setMask(mask.mask());
+    pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
+    mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
+    setMask(mask.mask());
 
         // adapt SNAP connector
+#else
+    InitDisplay();
+#endif
 }
 
 void Crlp9001::ROMSwitch()
@@ -415,7 +425,7 @@ void Crlp9001::ComputeKey()
 
             memset((void *)capsule ,0x7f,0x4000);
 
-//            slotChanged = true;
+            slotChanged = true;
         }
         if (_response==2) return;
 
@@ -479,7 +489,7 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
         }
 //        SlotList[currentSlot].pModule = pModuleNew;
 //        SlotList[currentSlot].setType(customModule);
-//        slotChanged = true;
+        slotChanged = true;
 //        qWarning()<<"module:"<<pModuleNew->szPartNumber;
     }
     else {
@@ -489,4 +499,65 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
 
     currentSlot = -1;
 
+}
+
+bool Crlp9001::InitDisplay(void)
+{
+
+//    CPObject::InitDisplay();
+    slotChanged = true;
+
+    delete BackgroundImageBackup;
+    BackgroundImageBackup = CreateImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
+    delete BackgroundImage;
+    BackgroundImage = new QImage(*BackgroundImageBackup);
+    delete FinalImage;
+    FinalImage = new QImage(*BackgroundImageBackup);
+
+    pCONNECTOR->setSnap(rotate?QPoint(406,72):QPoint(34,72));
+
+    pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
+    mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
+    setMask(mask.mask());
+
+    return true;
+}
+
+bool Crlp9001::UpdateFinalImage(void) {
+
+//    CPObject::UpdateFinalImage();
+
+
+
+    // on TOP view, draw installed modules
+    if ((model == RLP9006) && (currentView == FRONTview) && slotChanged) {
+        InitDisplay();
+        slotChanged = false;
+        QPainter painter;
+        painter.begin(FinalImage);
+
+        QRect slotPos[8];
+        slotPos[0] = QRect(88,34,75,127);
+        slotPos[1] = QRect(166,34,75,127);
+        slotPos[2] = QRect(242,34,75,127);
+        slotPos[3] = QRect(319,34,75,127);
+        slotPos[4] = QRect(88,164,75,127);
+        slotPos[5] = QRect(166,164,75,127);
+        slotPos[6] = QRect(242,164,75,127);
+        slotPos[7] = QRect(319,164,75,127);
+
+        QImage *capsule = new QImage(QString(P_RES(":/rlh1000/capsule.png")));
+        for (int i=0;i<8;i++) {
+            if (!SlotList[i].isEmpty()) {
+                // draw capsule
+                painter.drawImage(slotPos[i].x()+(rotate?-42:0),
+                                  slotPos[i].y()+(rotate?13:0),
+                                  capsule->scaled(75,127));
+            }
+        }
+        painter.end();
+    }
+
+
+    return true;
 }

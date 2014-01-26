@@ -18,5 +18,6 @@
         <file>rlh1000/modimg/snapbasic.png</file>
         <file>rlh1000/modimg/snapforth.png</file>
         <file>rlh1000/modimg/capsule.png</file>
+        <file>rlh1000/capsule.png</file>
     </qresource>
 </RCC>

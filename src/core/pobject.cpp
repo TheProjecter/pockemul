@@ -1453,6 +1453,7 @@ void CPObject::Mem_Save(QXmlStreamWriter *xmlOut,BYTE s)
 {
     xmlOut->writeStartElement("bank");
         xmlOut->writeAttribute("label",SlotList[s].getLabel());
+        xmlOut->writeAttribute("empty",SlotList[s].isEmpty()?"true":"false");
         xmlOut->writeAttribute("id",QString("%1").arg(s));
         int size = SlotList[s].getSize() * 1024;
         int adr = SlotList[s].getAdr();
@@ -1493,6 +1494,8 @@ void CPObject::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
 {
     if (xmlIn->readNextStartElement()) {
         if (xmlIn->name() == "bank" && xmlIn->attributes().value("id").toString().toInt() == s) {
+            SlotList[s].setEmpty(xmlIn->attributes().value("empty").toString()=="true"?true:false);
+            SlotList[s].setLabel(xmlIn->attributes().value("label").toString());
             if (xmlIn->readNextStartElement() ) {
                 if (xmlIn->name()=="data")  {
                     QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());

@@ -18,7 +18,8 @@ public:
     bool exit(void);				//end
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
-
+    virtual bool	InitDisplay(void);
+    virtual bool UpdateFinalImage();
     virtual void ComputeKey();
 
     Crlp9001(CPObject *parent = 0, Models mod=RLP9001);
@@ -43,6 +44,7 @@ private:
     Models model;
     quint8 bank;
     int currentSlot;
+    bool slotChanged;
 
 };
 
