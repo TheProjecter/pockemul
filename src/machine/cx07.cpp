@@ -89,13 +89,13 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xff;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
-    SlotList.append(CSlot(8 , 0x4000 ,	""					, ""	, RAM , "Prise ROM 8kb"));
-    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "ROM Carte 8kb"));
-    SlotList.append(CSlot(8 , 0x8000 ,	""					, ""	, RAM , "Carte RAM 8kb"));
-    SlotList.append(CSlot(4 , 0xA000 ,	""                  , ""	, ROM , "ROM TV"));
-    SlotList.append(CSlot(20, 0xB000 ,	P_RES(":/x07/rom_xo7.bin") , "x07/rom_xo7.bin" 	, ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""					, ""	, CSlot::RAM , "Carte RAM 8kb"));
+    SlotList.append(CSlot(8 , 0x4000 ,	""					, ""	, CSlot::RAM , "Prise ROM 8kb"));
+    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, CSlot::RAM , "ROM Carte 8kb"));
+    SlotList.append(CSlot(8 , 0x8000 ,	""					, ""	, CSlot::RAM , "Carte RAM 8kb"));
+    SlotList.append(CSlot(4 , 0xA000 ,	""                  , ""	, CSlot::ROM , "ROM TV"));
+    SlotList.append(CSlot(20, 0xB000 ,	P_RES(":/x07/rom_xo7.bin") , "x07/rom_xo7.bin" 	, CSlot::ROM , "BASIC ROM"));
 
     KeyMap		= KeyMap1250;
     KeyMapLenght= KeyMap1250Lenght;

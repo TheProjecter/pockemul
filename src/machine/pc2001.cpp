@@ -54,9 +54,9 @@ Cpc2001::Cpc2001(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/pc2001/rom-0000-0FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x2000 ,	P_RES(":/pc2001/rom-2000-5FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(40 ,0x6000 ,	""	, ""	, RAM , "RAM"));
+    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/pc2001/rom-0000-0FFF.bin"), ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x2000 ,	P_RES(":/pc2001/rom-2000-5FFF.bin"), ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(40 ,0x6000 ,	""	, ""	, CSlot::RAM , "RAM"));
 
 
     KeyMap		= KeyMap1250;

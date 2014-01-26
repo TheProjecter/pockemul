@@ -2,12 +2,12 @@
 #include <QFileDialog>
 
 #include "common.h"
+#include "fluidlauncher.h"
 #include "Log.h"
 #include "pcxxxx.h"
 #include "Connect.h"
-
+#include "Keyb.h"
 #include "rlp9001.h"
-//#include "rlh1000.h"
 #include "bus.h"
 
 Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
@@ -21,7 +21,7 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
     setDYmm(95);
     setDZmm(51);
  // Ratio = 3,57
-    setDX(403);//Pc_DX  = 75;
+    setDX(440);//Pc_DX  = 75;
     setDY(340);//Pc_DY  = 20;
 
     rotate = false;
@@ -33,36 +33,49 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
     switch(model) {
     case RLP9001:
         memsize      = 0x1000;
-        SlotList.append(CSlot(4 , 0x0000 , "" , ""        , RAM , "RAM 4Ko"));
+        SlotList.append(CSlot(4 , 0x0000 , "" , ""        , CSlot::RAM , "RAM 4Ko"));
         break;
     case RLP9002:
         memsize      = 0x2000;
-        SlotList.append(CSlot(8 , 0x0000 , "" , ""        , RAM , "RAM 8Ko"));
+        SlotList.append(CSlot(8 , 0x0000 , "" , ""        , CSlot::RAM , "RAM 8Ko"));
         break;
     case RLP9003:
         memsize      = 0x4000;
-        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko"));
+        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , CSlot::RAM , "RAM 16Ko"));
         break;
     case RLP9003R:
         BackGroundFname     = P_RES(":/rlh1000/rlp9003r.png");
         memsize      = 0x4000;
-        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko"));
+        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , CSlot::RAM , "RAM 16Ko"));
         break;
     case RLP9004:
         memsize      = 0x8000;
-        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko bank 1"));
-        SlotList.append(CSlot(16 , 0x4000 , "" , ""        , RAM , "RAM 16Ko bank 2"));
+        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 1"));
+        SlotList.append(CSlot(16 , 0x4000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 2"));
         break;
     case RLP9005:
         memsize      = 0x20000;
-        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , RAM , "RAM 16Ko bank 1"));
-        SlotList.append(CSlot(16 , 0x4000 , "" , ""        , RAM , "RAM 16Ko bank 2"));
-        SlotList.append(CSlot(16 , 0x8000 , "" , ""        , RAM , "RAM 16Ko bank 3"));
-        SlotList.append(CSlot(16 , 0xC000 , "" , ""        , RAM , "RAM 16Ko bank 4"));
-        SlotList.append(CSlot(16 , 0x10000 , "" , ""        , RAM , "RAM 16Ko bank 5"));
-        SlotList.append(CSlot(16 , 0x14000 , "" , ""        , RAM , "RAM 16Ko bank 6"));
-        SlotList.append(CSlot(16 , 0x18000 , "" , ""        , RAM , "RAM 16Ko bank 7"));
-        SlotList.append(CSlot(16 , 0x1C000 , "" , ""        , RAM , "RAM 16Ko bank 8"));
+        SlotList.append(CSlot(16 , 0x0000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 1"));
+        SlotList.append(CSlot(16 , 0x4000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 2"));
+        SlotList.append(CSlot(16 , 0x8000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 3"));
+        SlotList.append(CSlot(16 , 0xC000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 4"));
+        SlotList.append(CSlot(16 , 0x10000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 5"));
+        SlotList.append(CSlot(16 , 0x14000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 6"));
+        SlotList.append(CSlot(16 , 0x18000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 7"));
+        SlotList.append(CSlot(16 , 0x1C000 , "" , ""        , CSlot::RAM , "RAM 16Ko bank 8"));
+        break;
+    case RLP9006:
+        pKEYB               = new Ckeyb(this,"rlp9006.map");
+        BackGroundFname     = P_RES(":/rlh1000/rlp9006.png");
+        memsize      = 0x20000;
+        SlotList.append(CSlot(16 , 0x0000 , P_RES(":/rlh1000/SnapBasic.bin") , ""        , CSlot::CUSTOM_ROM , "ROM bank 1"));
+        SlotList.append(CSlot(16 , 0x4000 , P_RES(":/rlh1000/SnapForth.bin") , ""        , CSlot::CUSTOM_ROM , "ROM bank 2"));
+        SlotList.append(CSlot(16 , 0x8000 , P_RES(":/rlh1000/test.bin")      , ""        , CSlot::CUSTOM_ROM , "ROM bank 3"));
+        SlotList.append(CSlot(16 , 0xC000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 4"));
+        SlotList.append(CSlot(16 , 0x10000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 5"));
+        SlotList.append(CSlot(16 , 0x14000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 6"));
+        SlotList.append(CSlot(16 , 0x18000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 7"));
+        SlotList.append(CSlot(16 , 0x1C000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 8"));
         break;
     }
 
@@ -89,6 +102,7 @@ bool Crlp9001::run(void)
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0xFB);
         if (romSwitch) bus.setData(0xf7);
+        if (model==RLP9006) bus.setData(0xf7);
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
@@ -103,6 +117,19 @@ bool Crlp9001::run(void)
             if ( bus.getData()==128 ) {
                 Power = true;
                 bank = 0;
+            }
+        }
+        else if (model==RLP9006) {
+            switch (bus.getData()) {
+            case 1: Power = true; bank = 7; break;
+            case 2: Power = true; bank = 6;  break;
+            case 4: Power = true; bank = 5;  break;
+            case 8: Power = true; bank = 4;  break;
+            case 16: Power = true; bank = 3;  break;
+            case 32: Power = true; bank = 2;  break;
+            case 64: Power = true; bank = 1;  break;
+            case 128: Power = true; bank = 0;  break;
+            default: Power = false; break;
             }
         }
         else {
@@ -164,6 +191,13 @@ bool Crlp9001::run(void)
             break;
         case RLP9004:
         case RLP9005: if((adr>=0x8000) && (adr < 0xc000)) bus.setData(mem[adr-0x8000+bank*0x4000]); break;
+        case RLP9006:
+            if ( (adr>=0x4000) && (adr < 0x8000)) {
+//                qWarning()<<"ROM SIMUL:"<<adr<<"="<<mem[adr-0x4000+0x14];
+                bus.setFunc(BUS_ACK);
+                bus.setData(mem[adr-0x4000+bank*0x4000]);
+            }
+            break;
         }
 
         break;
@@ -197,6 +231,8 @@ bool Crlp9001::init(void)
                                     Cconnector::WEST);
     publish(pCONNECTOR);
 
+    if(pKEYB)   pKEYB->init();
+
     Power = false;
 
     AddLog(LOG_MASTER,"done.\n");
@@ -209,6 +245,7 @@ bool Crlp9001::init(void)
 /*****************************************************************************/
 bool Crlp9001::exit(void)
 {
+    CPObject::exit();
     return true;
 }
 
@@ -220,7 +257,10 @@ bool Crlp9001::SaveSession_File(QXmlStreamWriter *xmlOut)
         xmlOut->writeStartElement("memory");
             for (int s=0; s<SlotList.size(); s++)                               // Save Memory
             {
-                if (SlotList[s].getType() == RAM)       Mem_Save(xmlOut,s);
+                switch (SlotList[s].getType()) {
+                case CSlot::RAM:
+                case CSlot::CUSTOM_ROM: Mem_Save(xmlOut,s); break;
+                }
             }
         xmlOut->writeEndElement();  // memory
     xmlOut->writeEndElement();  // session
@@ -236,7 +276,9 @@ bool Crlp9001::LoadSession_File(QXmlStreamReader *xmlIn)
             AddLog(LOG_MASTER,"Load Memory");
             for (int s=0; s<SlotList.size(); s++)                               // Save Memory
             {
-                if (SlotList[s].getType() == RAM) {
+                switch (SlotList[s].getType()) {
+                case CSlot::RAM:
+                case CSlot::CUSTOM_ROM:
                     AddLog(LOG_MASTER,"    Load Slot"+SlotList[s].getLabel());
                     Mem_Load(xmlIn,s);
                 }
@@ -282,7 +324,7 @@ void Crlp9001::Rotate()
         delete FinalImage;
         FinalImage = new QImage(*BackgroundImageBackup);
 
-        pCONNECTOR->setSnap(rotate?QPoint(372,72):QPoint(30,72));
+        pCONNECTOR->setSnap(rotate?QPoint(406,72):QPoint(34,72));
 
         pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
         mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
@@ -335,4 +377,105 @@ void Crlp9001::exportROM() {
     else {
         QMessageBox::warning(this,"ERROR","Please, switch to ROM simulator mode before trying to export the file");
     }
+}
+
+extern int ask(QWidget *parent,QString msg,int nbButton);
+#define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
+void Crlp9001::ComputeKey()
+{
+    if (model==RLP9006) {
+        int _slot = -1;
+        if (KEY(0x240)) _slot = 0;
+        if (KEY(0x241)) _slot = 1;
+        if (KEY(0x242)) _slot = 2;
+        if (KEY(0x243)) _slot = 3;
+        if (KEY(0x244)) _slot = 4;
+        if (KEY(0x245)) _slot = 5;
+        if (KEY(0x246)) _slot = 6;
+        if (KEY(0x247)) _slot = 7;
+
+        qWarning()<<"ComputKey:"<<_slot;
+        pKEYB->keyPressedList.removeAll(0x240);
+        pKEYB->keyPressedList.removeAll(0x241);
+        pKEYB->keyPressedList.removeAll(0x242);
+        pKEYB->keyPressedList.removeAll(0x243);
+        pKEYB->keyPressedList.removeAll(0x244);
+        pKEYB->keyPressedList.removeAll(0x245);
+        pKEYB->keyPressedList.removeAll(0x246);
+        pKEYB->keyPressedList.removeAll(0x247);
+        if (_slot == -1) return;
+        int _response = 0;
+        if (!SlotList[_slot].isEmpty())
+            _response=ask(this,"The "+SlotList[_slot].getLabel()+ "is already plugged is this slot. Do you want to unplug it ?",2);
+
+        if (_response == 1) {
+ //           UnloadMOD(slot[_slot].pModule);
+            SlotList[_slot].setEmpty(true);
+//            slotChanged = true;
+        }
+        if (_response==2) return;
+
+        currentSlot = _slot;
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                                    QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                                    FluidLauncher::PictureFlowType,
+                                                    "Panasonic_Capsule");
+        connect(launcher,SIGNAL(Launched(QString,CPObject *)),this,SLOT(addModule(QString,CPObject *)));
+        launcher->show();
+    }
+}
+
+void Crlp9001::addModule(QString item,CPObject *pPC)
+{
+    qWarning()<<"Add Module:"<< item;
+    if ( (currentSlot<0) || (currentSlot>7)) return;
+
+//    ModuleHeader *pModuleNew;
+
+    CSlot::SlotType customModule = CSlot::ROM;
+
+    int _res = 0;
+    QString moduleName;
+    if (item=="SNAPBASIC") moduleName = P_RES(":/rlh1000/SnapBasic.bin");
+    if (item=="SNAPFORTH") moduleName = P_RES(":/rlh1000/SnapForth.bin");
+    if (item=="MSBASIC")   moduleName = P_RES(":/rlh1000/HHCbasic.bin");
+    if (item=="PANACAPSFILE") {
+        moduleName = QFileDialog::getOpenFileName(
+                    mainwindow,
+                    tr("Choose a Capsule file"),
+                    ".",
+                    tr("Module File (*.bin)"));
+        customModule = CSlot::CUSTOM_ROM;
+//        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
+    }
+
+    if (moduleName.isEmpty()) return;
+
+//    _res=LoadMOD(pModuleNew,moduleName.toLatin1().data());
+
+   bool result = true; // check this is a true capsule
+
+    qWarning()<<"loaded:"<<_res;
+    if (result) {
+        SlotList[currentSlot].setEmpty(false);
+        SlotList[currentSlot].setResID(moduleName);
+        SlotList[currentSlot].setLabel("custom module");
+        Mem_Load(currentSlot);
+//        SlotList[currentSlot].pModule = pModuleNew;
+//        SlotList[currentSlot].setType(customModule);
+//        slotChanged = true;
+//        qWarning()<<"module:"<<pModuleNew->szPartNumber;
+    }
+    else {
+//        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
+
+    }
+//    if (pPC) {
+//        // Link  object with main pObject
+//        mainwindow->pdirectLink->addLink(pConnector[currentSlot],pPC->ConnList.at(0),false);
+//        pPC->setPosX(this->posx()+this->width()+15);
+//        pPC->setPosY(this->posy());
+//    }
+    currentSlot = -1;
+
 }

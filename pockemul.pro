@@ -994,7 +994,8 @@ OTHER_FILES += \
     cloud/content/Message.qml \
     cloud/PmlView2.qml \
     cloud/content/NewsDelegate2.qml \
-    cloud/content/Actions.qml
+    cloud/content/Actions.qml \
+    resources/keymap/rlp9006.map
 
 
 

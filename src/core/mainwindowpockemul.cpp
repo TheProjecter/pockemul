@@ -243,6 +243,7 @@ void MainWindowPockemul::initObjectTable() {
     objtable["Panasonic RL-P9003R 16Ko ROM Simulator"]=RLP9003R;
     objtable["Panasonic RL-P9004 32Ko"]=RLP9004;
     objtable["Panasonic RL-P9005 128Ko"]=RLP9005;
+    objtable["Panasonic RL-P9006 EPROM Expander"]=RLP9006;
     objtable["Panasonic RL-P1004A"]=RLP1004A;
     objtable["Post-it"]=POSTIT;
     objtable["TI-57"]=TI57;
@@ -346,6 +347,7 @@ CPObject *pPC=0;
         case RLP9003R: pPC = new Crlp9001(0,RLP9003R);     pPC->setName("Panasonic RL-P9003R 16Ko ROM Simulator"); break;
         case RLP9004 : pPC = new Crlp9001(0,RLP9004);      pPC->setName("Panasonic RL-P9004 32Ko"); break;
         case RLP9005 : pPC = new Crlp9001(0,RLP9005);      pPC->setName("Panasonic RL-P9005 128Ko"); break;
+        case RLP9006 : pPC = new Crlp9001(0,RLP9006);      pPC->setName("Panasonic RL-P9006 EPROM Expander"); break;
         case RLP1004A: pPC = new Crlp1004a;      pPC->setName("Panasonic RL-P1004A"); break;
 
         case POSTIT : pPC = new Cpostit;      pPC->setName("Post-it"); break;

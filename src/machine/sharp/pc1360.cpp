@@ -23,20 +23,20 @@ Cpc1360::Cpc1360(CPObject *parent)	: Cpc13XX(parent)
     memsize			= 0x40000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1360/cpu-1360.rom")	, "pc-1360/cpu-1360.rom", ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""									, "pc-1360/R1-1360.ram"	, RAM , "SYSTEM RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1360/B0-1360.rom")	, "pc-1360/B0-1360.rom" , ROM , "CURRENT ROM BANK"));
-    SlotList.append(CSlot(32, 0x8000 ,	""									, "pc-1360/R2-1360.ram"	, RAM , "CURRENT RAM SLOT"));
-    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1360/B0-1360.rom")	, "pc-1360/B0-1360.rom" , ROM , "ROM BANK 0"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1360/B1-1360.rom")	, "pc-1360/B1-1360.rom" , ROM , "ROM BANK 1"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1360/B2-1360.rom")	, "pc-1360/B2-1360.rom" , ROM , "ROM BANK 2"));
-    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1360/B3-1360.rom")	, "pc-1360/B3-1360.rom" , ROM , "ROM BANK 3"));
-    SlotList.append(CSlot(16, 0x20000 ,	P_RES(":/pc1360/B4-1360.rom")	, "pc-1360/B4-1360.rom" , ROM , "ROM BANK 4"));
-    SlotList.append(CSlot(16, 0x24000 ,	P_RES(":/pc1360/B5-1360.rom")	, "pc-1360/B5-1360.rom" , ROM , "ROM BANK 5"));
-    SlotList.append(CSlot(16, 0x28000 ,	P_RES(":/pc1360/B6-1360.rom")	, "pc-1360/B6-1360.rom" , ROM , "ROM BANK 6"));
-    SlotList.append(CSlot(16, 0x2C000 ,	P_RES(":/pc1360/B7-1360.rom")	, "pc-1360/B7-1360.rom" , ROM , "ROM BANK 7"));
-    SlotList.append(CSlot(32, 0x30000 ,	""									, "pc-1360/B0-1360.ram" , RAM , "RAM SLOT 1"));
-    SlotList.append(CSlot(32, 0x38000 ,	""									, "pc-1360/B1-1360.ram" , RAM , "RAM SLOT 2"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1360/cpu-1360.rom")	, "pc-1360/cpu-1360.rom", CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""									, "pc-1360/R1-1360.ram"	, CSlot::RAM , "SYSTEM RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1360/B0-1360.rom")	, "pc-1360/B0-1360.rom" , CSlot::ROM , "CURRENT ROM BANK"));
+    SlotList.append(CSlot(32, 0x8000 ,	""									, "pc-1360/R2-1360.ram"	, CSlot::RAM , "CURRENT RAM SLOT"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1360/B0-1360.rom")	, "pc-1360/B0-1360.rom" , CSlot::ROM , "ROM BANK 0"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1360/B1-1360.rom")	, "pc-1360/B1-1360.rom" , CSlot::ROM , "ROM BANK 1"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1360/B2-1360.rom")	, "pc-1360/B2-1360.rom" , CSlot::ROM , "ROM BANK 2"));
+    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1360/B3-1360.rom")	, "pc-1360/B3-1360.rom" , CSlot::ROM , "ROM BANK 3"));
+    SlotList.append(CSlot(16, 0x20000 ,	P_RES(":/pc1360/B4-1360.rom")	, "pc-1360/B4-1360.rom" , CSlot::ROM , "ROM BANK 4"));
+    SlotList.append(CSlot(16, 0x24000 ,	P_RES(":/pc1360/B5-1360.rom")	, "pc-1360/B5-1360.rom" , CSlot::ROM , "ROM BANK 5"));
+    SlotList.append(CSlot(16, 0x28000 ,	P_RES(":/pc1360/B6-1360.rom")	, "pc-1360/B6-1360.rom" , CSlot::ROM , "ROM BANK 6"));
+    SlotList.append(CSlot(16, 0x2C000 ,	P_RES(":/pc1360/B7-1360.rom")	, "pc-1360/B7-1360.rom" , CSlot::ROM , "ROM BANK 7"));
+    SlotList.append(CSlot(32, 0x30000 ,	""									, "pc-1360/B0-1360.ram" , CSlot::RAM , "RAM SLOT 1"));
+    SlotList.append(CSlot(32, 0x38000 ,	""									, "pc-1360/B1-1360.ram" , CSlot::RAM , "RAM SLOT 2"));
 
     KeyMap = KeyMap1360;
     KeyMapLenght = KeyMap1360Lenght;

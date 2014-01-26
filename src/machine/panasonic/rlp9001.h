@@ -19,6 +19,8 @@ public:
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
 
+    virtual void ComputeKey();
+
     Crlp9001(CPObject *parent = 0, Models mod=RLP9001);
     virtual ~Crlp9001();
 
@@ -31,6 +33,7 @@ protected slots:
     void Rotate();
     void ROMSwitch();
     void exportROM();
+    void addModule(QString item, CPObject *pPC);
 
 private:
 
@@ -39,6 +42,7 @@ private:
     int  romoffset;
     Models model;
     quint8 bank;
+    int currentSlot;
 
 };
 

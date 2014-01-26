@@ -32,9 +32,9 @@ Cpc1401::Cpc1401(CPObject *parent)	: CpcXXXX(parent)
     LeftFname = P_RES(":/pc1250/125xLeft.png");
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1401/cpu-1401.rom"), "pc-1401/cpu-1401.rom" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1401/R1-1401.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1401/bas-1401.rom"), "pc-1401/bas-1401.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1401/cpu-1401.rom"), "pc-1401/cpu-1401.rom" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1401/R1-1401.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1401/bas-1401.rom"), "pc-1401/bas-1401.rom" , CSlot::ROM , "BASIC ROM"));
 
     KeyMap		= KeyMap1401;
     KeyMapLenght= KeyMap1401Lenght;

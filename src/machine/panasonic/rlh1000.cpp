@@ -31,16 +31,16 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0x7F;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, ROM , "Ext ROM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, ROM , "ROM Capsules 1"));
-    SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, RAM , "Ext RAM"));
-    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, RAM , "I/O Hard"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, ROM , "ROM Capsules 2"));
-    //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")    , ""	, ROM , "ROM Capsules 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, ROM , "ROM Capsules 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	""                                  , ""	, RAM , "Ext RAM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, CSlot::ROM , "Ext ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, CSlot::ROM , "ROM Capsules 1"));
+    SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, CSlot::RAM , "Ext RAM"));
+    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, CSlot::RAM , "I/O Hard"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, CSlot::ROM , "ROM Capsules 2"));
+    //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")    , ""	, CSlot::ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, CSlot::ROM , "ROM Capsules 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	""                                  , ""	, CSlot::RAM , "Ext RAM"));
 
 // Ratio = 3,57
     setDXmm(227);

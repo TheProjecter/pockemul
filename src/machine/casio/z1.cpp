@@ -58,17 +58,17 @@ Cz1::Cz1(CPObject *parent, Models mod)	: CpcXXXX(parent)
     InitMemValue	= 0x00;
 
     SlotList.clear();
-    SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(64 , 0x10000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(64 , 0xa0000 ,	""                  , ""	, RAM , "VIDEO RAM"));
+    SlotList.append(CSlot(64 , 0x00000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0x10000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0x20000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0x30000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32 , 0x40000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(64 , 0xa0000 ,	""                  , ""	, CSlot::RAM , "VIDEO RAM"));
 
     if (model==Z1GR)
-        SlotList.append(CSlot(128 , 0xE0000 ,	P_RES(":/z1/romz1gr.bin")	, ""	, ROM , "ROM"));
+        SlotList.append(CSlot(128 , 0xE0000 ,	P_RES(":/z1/romz1gr.bin")	, ""	, CSlot::ROM , "ROM"));
     else
-        SlotList.append(CSlot(128 , 0xE0000 ,	P_RES(":/z1/romz1.bin")	, ""	, ROM , "ROM"));
+        SlotList.append(CSlot(128 , 0xE0000 ,	P_RES(":/z1/romz1.bin")	, ""	, CSlot::ROM , "ROM"));
 
 
     PowerSwitch	= 0;

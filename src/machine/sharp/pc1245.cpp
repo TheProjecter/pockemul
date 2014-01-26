@@ -22,10 +22,10 @@ Cpc1245::Cpc1245(CPObject *parent)	: Cpc1250(parent)
 //	NbSlot		= 4;
 
 	SlotList.clear();
-    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1245/cpu-1245.rom")	, "pc1245/cpu-1245.rom"	, ROM , "CPU ROM"));
-	SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1245/R1-1245.ram"	, RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1245/bas-1245.rom")	, "pc1245/bas-1245.rom"	, ROM , "BASIC ROM"));
-	SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1245/R2-1245.ram" 	, RAM , "RAM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1245/cpu-1245.rom")	, "pc1245/cpu-1245.rom"	, CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc1245/R1-1245.ram"	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1245/bas-1245.rom")	, "pc1245/bas-1245.rom"	, CSlot::ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc1245/R2-1245.ram" 	, CSlot::RAM , "RAM"));
 
 
 	Lcd_X		= 50;

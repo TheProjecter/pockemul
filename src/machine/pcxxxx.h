@@ -40,9 +40,6 @@ class Ckeyb;
 
 #define	SLOT3EXT	17
 
-#define	ROM			1
-#define RAM			2
-#define NOTUSED		3
 
 #define EXTENSION_CE125				ext_11pins->ExtArray[ID_CE125]
 #define EXTENSION_CE126P			ext_11pins->ExtArray[ID_CE126P]

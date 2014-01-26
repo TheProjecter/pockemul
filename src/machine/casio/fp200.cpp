@@ -41,11 +41,11 @@ Cfp200::Cfp200(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(32 , 0x0000 ,	P_RES(":/fp200/fp200rom.bin")   , ""	, ROM , "ROM"));
-    SlotList.append(CSlot(8  , 0x8000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8  , 0xa000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8  , 0xc000 ,	""                  , ""	, RAM , "RAM"));
-    SlotList.append(CSlot(8  , 0xe000 ,	""                  , ""	, RAM , "RAM"));
+    SlotList.append(CSlot(32 , 0x0000 ,	P_RES(":/fp200/fp200rom.bin")   , ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(8  , 0x8000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8  , 0xa000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8  , 0xc000 ,	""                  , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8  , 0xe000 ,	""                  , ""	, CSlot::RAM , "RAM"));
 
     setDXmm(320);
     setDYmm(220);

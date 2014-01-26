@@ -53,11 +53,11 @@ Ctpc8300::Ctpc8300(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/tpc8300/tpc8300-0000-0FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(12, 0x1000 ,	"", ""	,                             RAM , "RAM"));
-    SlotList.append(CSlot(8,  0x4000 ,	P_RES(":/tpc8300/tpc8300-4000-5FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(8,  0x6000 ,	P_RES(":/tpc8300/tpc8300-6000-7FFF.bin"), ""	, ROM , "ROM"));
-    SlotList.append(CSlot(32 ,0x8000 ,	""	, ""	,                         RAM , "RAM"));
+    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/tpc8300/tpc8300-0000-0FFF.bin"), ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(12, 0x1000 ,	"", ""	,                             CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8,  0x4000 ,	P_RES(":/tpc8300/tpc8300-4000-5FFF.bin"), ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(8,  0x6000 ,	P_RES(":/tpc8300/tpc8300-6000-7FFF.bin"), ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(32 ,0x8000 ,	""	, ""	,                         CSlot::RAM , "RAM"));
 
 //    Pc_Offset_X = Pc_Offset_Y = 0;
 

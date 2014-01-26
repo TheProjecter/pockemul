@@ -79,9 +79,9 @@ Cpc1350::Cpc1350(CPObject *parent)	: Cpc13XX(parent)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1350/cpu-1350.rom")	, "pc-1350/cpu-1350.rom"	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	""								, "pc-1350/R1-1350.ram"		, RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1350/bas-1350.rom")	, "pc-1350/bas-1350.rom"	, ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1350/cpu-1350.rom")	, "pc-1350/cpu-1350.rom"	, CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	""								, "pc-1350/R1-1350.ram"		, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1350/bas-1350.rom")	, "pc-1350/bas-1350.rom"	, CSlot::ROM , "BASIC ROM"));
 
     KeyMap		= KeyMap1350;
     KeyMapLenght= KeyMap1350Lenght;

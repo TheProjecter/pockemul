@@ -19,9 +19,9 @@ Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
     memsize			= 0x10000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1260/cpu-1260.rom")	, "" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1260/bas-1260.rom")	, "" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1260/cpu-1260.rom")	, "" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	""									, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1260/bas-1260.rom")	, "" , CSlot::ROM , "BASIC ROM"));
 
     Lcd_X		= 79;
     Lcd_Y		= 37;
@@ -82,9 +82,9 @@ Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1261/cpu-1261.rom")	, "" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1261/bas-1261.rom")	, "" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1261/cpu-1261.rom")	, "" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	""									, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1261/bas-1261.rom")	, "" , CSlot::ROM , "BASIC ROM"));
 
 }
 bool Cpc1261::Chk_Adr(UINT32 *d,UINT32 data)
@@ -111,9 +111,9 @@ Cpc1262::Cpc1262(CPObject *parent)	: Cpc1261(this)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1262/cpu-1262.rom")	, "" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	""									, "" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1262/bas-1262.rom")	, "" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1262/cpu-1262.rom")	, "" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	""									, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1262/bas-1262.rom")	, "" , CSlot::ROM , "BASIC ROM"));
 }
 
 

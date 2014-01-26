@@ -31,10 +31,15 @@
      <example idpocket="Panasonic RL-P9001 4Ko" filename="./" name="Panasonic RL-P9001 4Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9002 8Ko" filename="./" name="Panasonic RL-P9002 8Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9003 16Ko" filename="./" name="Panasonic RL-P9003 16Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
-     <example idpocket="Panasonic RL-P9003R 16Ko ROM Simulator" filename="./" name="Panasonic RL-P9003R 16Ko ROM Simulator" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
+     <example idpocket="Panasonic RL-P9003R 16Ko ROM Simulator" filename="./" name="Panasonic RL-P9003R 16Ko ROM Simulator" image=":/rlh1000/rlp9003r.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9004 32Ko" filename="./" name="Panasonic RL-P9004 32Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9005 128Ko" filename="./" name="Panasonic RL-P9005 128Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
+     <example idpocket="Panasonic RL-P9006 EPROM Expander" filename="./" name="Panasonic RL-P9006 EPROM Expander" image=":/rlh1000/rlp9006.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P1004A" filename="./" name="Panasonic RL-P1004A" image=":/rlh1000/rlp1004a.png" connectortype="Panasonic_44" conngender="male"/>
+     <example idpocket="SNAPBASIC" filename="./" name="SNAPBasic capsule" image=":/rlh1000/modimg/snapbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>
+     <example idpocket="SNAPFORTH" filename="./" name="SNAPForth capsule" image=":/rlh1000/modimg/snapforth.png" connectortype="Panasonic_Capsule" conngender="male"/>
+     <example idpocket="MSBASIC" filename="./" name="MSBasic capsule" image=":/rlh1000/modimg/msbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>
+     <example idpocket="PANACAPSFILE" filename="./" name="External Capsule file" image=":/rlh1000/modimg/capsule.png" connectortype="Panasonic_Capsule" conngender="male"/>
    <example idpocket="HP82143A" filename="./" name="Printer (non-HP-IL) 82143A" image=":/hp41/modimg/hp82143a.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP82160A" filename="./" name="HP-IL module 82160A" image=":/hp41/modimg/hp82160a.png" connectortype="hp41" conngender="male"/>
    <example idpocket="HP82153A" filename="./" name="Optical wand 82153A" image=":/hp41/modimg/hp82153a.png" connectortype="hp41" conngender="male"/>

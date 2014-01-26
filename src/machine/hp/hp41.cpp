@@ -130,7 +130,7 @@ Chp41::Chp41(CPObject *parent):CpcXXXX(parent)
     InitMemValue	= 0x00;
 
     SlotList.clear();
-        SlotList.append(CSlot(8 , 0x0000 ,"", ""	, RAM , "RAM"));
+        SlotList.append(CSlot(8 , 0x0000 ,"", ""	, CSlot::RAM , "RAM"));
 
     setDXmm(78);
     setDYmm(142);

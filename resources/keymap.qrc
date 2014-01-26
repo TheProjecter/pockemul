@@ -46,5 +46,6 @@
         <file>keymap/ti57.map</file>
         <file>keymap/hp41.map</file>
         <file>keymap/hp82143a.map</file>
+        <file>keymap/rlp9006.map</file>
     </qresource>
 </RCC>

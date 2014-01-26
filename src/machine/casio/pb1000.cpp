@@ -45,11 +45,11 @@ Cpb1000::Cpb1000(CPObject *parent)	: CpcXXXX(parent)
 
 
     SlotList.clear();
-    SlotList.append(CSlot(6 , 0x0000 ,	P_RES(":/pb1000/rom0.bin") , ""	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, RAM , "RAM0"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pb1000/rom1.bin")	, ""	, ROM , "ROM"));
-    SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, RAM , "RAM1"));
-    SlotList.append(CSlot(1 , 0x1800 ,	""					, ""	, ROM , "PORT"));
+    SlotList.append(CSlot(6 , 0x0000 ,	P_RES(":/pb1000/rom0.bin") , ""	, CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x6000 ,	""					, ""	, CSlot::RAM , "RAM0"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pb1000/rom1.bin")	, ""	, CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(32, 0x18000 ,	""					, ""	, CSlot::RAM , "RAM1"));
+    SlotList.append(CSlot(1 , 0x1800 ,	""					, ""	, CSlot::ROM , "PORT"));
 
     PowerSwitch	= 0;
     Pc_Offset_X = Pc_Offset_Y = 0;

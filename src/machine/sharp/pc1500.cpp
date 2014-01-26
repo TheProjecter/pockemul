@@ -103,16 +103,16 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     memsize			= 0x26000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x4000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500A/SYS1500A.ROM"), "" , ROM , "SYSTEM ROM"));
-    SlotList.append(CSlot(64, 0x10000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500A/CE-150.ROM")	, "" , ROM , "CE-150 ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500A/SYS1500A.ROM"), "" , CSlot::ROM , "SYSTEM ROM"));
+    SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500A/CE-150.ROM")	, "" , CSlot::ROM , "CE-150 ROM"));
 
     delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
 

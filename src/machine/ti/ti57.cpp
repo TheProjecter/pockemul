@@ -26,7 +26,7 @@ Cti57::Cti57(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xFF;
 
     SlotList.clear();
-    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/ti57/ti57.bin"), ""	, ROM , "ROM"));
+    SlotList.append(CSlot(4 , 0x0000 ,	P_RES(":/ti57/ti57.bin"), ""	, CSlot::ROM , "ROM"));
 
     setDXmm(78);
     setDYmm(148);

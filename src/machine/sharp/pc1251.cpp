@@ -18,10 +18,10 @@ Cpc1251::Cpc1251(CPObject *parent)	: Cpc1250(this)
 //		NbSlot		= 4;
 
     SlotList.clear();
-    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1251/cpu-1251.rom"), "pc-1251/cpu-1251.rom", ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""						, "pc-1251/R1-1251.ram"	, RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1251/bas-1251.rom"), "pc-1251/bas-1251.rom", ROM , "BASIC ROM"));
-    SlotList.append(CSlot(32, 0x8000 ,	""						, "pc-1251/R2-1251.ram" , RAM , "RAM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1251/cpu-1251.rom"), "pc-1251/cpu-1251.rom", CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""						, "pc-1251/R1-1251.ram"	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1251/bas-1251.rom"), "pc-1251/bas-1251.rom", CSlot::ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	""						, "pc-1251/R2-1251.ram" , CSlot::RAM , "RAM"));
 
 }
 

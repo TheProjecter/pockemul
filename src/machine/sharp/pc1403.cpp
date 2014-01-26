@@ -63,14 +63,14 @@ Cpc1403::Cpc1403(CPObject *parent)	: Cpc1401(parent)
 //		NbSlot		= 8;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1403/cpu-1403.rom")	, "pc-1403/cpu-1403.rom" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1403/R1-1403.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1403/ba1-1403.rom")	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
-    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1403/R2-1403.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1403/ba1-1403.rom")	, "pc-1403/ba1-1403.rom" , ROM , "BANK 1"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1403/ba2-1403.rom")	, "pc-1403/ba2-1403.rom" , ROM , "BANK 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1403/ba3-1403.rom")	, "pc-1403/ba3-1403.rom" , ROM , "BANK 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1403/ba4-1403.rom")	, "pc-1403/ba4-1403.rom" , ROM , "BANK 4"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1403/cpu-1403.rom")	, "pc-1403/cpu-1403.rom" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1403/R1-1403.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1403/ba1-1403.rom")	, "pc-1403/ba1-1403.rom" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1403/R2-1403.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1403/ba1-1403.rom")	, "pc-1403/ba1-1403.rom" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1403/ba2-1403.rom")	, "pc-1403/ba2-1403.rom" , CSlot::ROM , "BANK 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1403/ba3-1403.rom")	, "pc-1403/ba3-1403.rom" , CSlot::ROM , "BANK 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1403/ba4-1403.rom")	, "pc-1403/ba4-1403.rom" , CSlot::ROM , "BANK 4"));
 
     RomBank = 0;
 

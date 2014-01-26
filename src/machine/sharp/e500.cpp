@@ -66,9 +66,9 @@ Ce500::Ce500(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0xff;
     /* ROM area(c0000-fffff) S3: */
     SlotList.clear();
-    SlotList.append(CSlot(256, 0x40000 , ""             , ""            , RAM , "RAM S1"));
-    SlotList.append(CSlot(256, 0x80000 , ""             , ""            , RAM , "RAM S2"));
-    SlotList.append(CSlot(256, 0xC0000 , P_RES(":/e500/s3.rom"), "e500/s3.rom" , ROM , "ROM S3"));
+    SlotList.append(CSlot(256, 0x40000 , ""             , ""            , CSlot::RAM , "RAM S1"));
+    SlotList.append(CSlot(256, 0x80000 , ""             , ""            , CSlot::RAM , "RAM S2"));
+    SlotList.append(CSlot(256, 0xC0000 , P_RES(":/e500/s3.rom"), "e500/s3.rom" , CSlot::ROM , "ROM S3"));
 
 
     PowerSwitch	= 0;

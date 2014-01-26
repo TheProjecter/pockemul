@@ -118,79 +118,79 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
 
     // Bank 0
-    SlotList.append(CSlot(16, 0x00000 ,	P_RES(":/pc1600/romI-0.bin")	, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x04000 ,	P_RES(":/pc1600/romII-0.bin")	, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x08000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x0C000 ,	""								, "" , RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x00000 ,	P_RES(":/pc1600/romI-0.bin")	, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x04000 ,	P_RES(":/pc1600/romII-0.bin")	, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x08000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x0C000 ,	""								, "" , CSlot::RAM , "RAM"));
 
     // Bank 1
-    SlotList.append(CSlot(16, 0x10000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x14000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x18000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x1C000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x10000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x14000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x18000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x1C000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 
     // Bank 2
-    SlotList.append(CSlot(16, 0x20000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x24000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x28000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x2C000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x20000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x24000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x28000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x2C000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 
     // Bank 3
-    SlotList.append(CSlot(16, 0x30000 ,	P_RES(":/pc1600/rom3b.bin" )    , "" , ROM , "ROM 3b"));
-    SlotList.append(CSlot(16, 0x34000 ,	P_RES(":/pc1600/romIII-3.bin")	, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x38000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x3C000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x30000 ,	P_RES(":/pc1600/rom3b.bin" )    , "" , CSlot::ROM , "ROM 3b"));
+    SlotList.append(CSlot(16, 0x34000 ,	P_RES(":/pc1600/romIII-3.bin")	, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x38000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x3C000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 
     // Bank 4
-    SlotList.append(CSlot(16, 0x40000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x44000 ,P_RES(":/pc1600/romce1600-1.bin"), "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x48000 ,	""								, "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x4C000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x40000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x44000 ,P_RES(":/pc1600/romce1600-1.bin"), "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x48000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x4C000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 
     // Bank 5
-    SlotList.append(CSlot(16, 0x50000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x54000 ,P_RES(":/pc1600/romce1600-2.bin"), "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x58000 ,	""								, "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x5C000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x50000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x54000 ,P_RES(":/pc1600/romce1600-2.bin"), "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x58000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x5C000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 
     // Bank 6
-    SlotList.append(CSlot(16, 0x60000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x64000 ,	""                              , "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(16, 0x68000 ,	P_RES(":/pc1600/romIV-6.bin")	, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x6C000 ,	""								, "" , NOTUSED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x60000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x64000 ,	""                              , "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(16, 0x68000 ,	P_RES(":/pc1600/romIV-6.bin")	, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x6C000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 
     // Initialize bank nummber
     bank1 = bank2 = bank3 = bank4 = 0;
 
     // MOD 1 MAP
-    SlotList.append(CSlot(8 , 0x70000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x72000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x74000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x78000 ,	""								, "" , NOTUSED , "NOT USED"));
-    SlotList.append(CSlot(8 , 0x7A000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x7C000 ,	P_RES(":/pc1600/rom1500.bin")	, "" , ROM , "SYSTEM ROM"));
-    SlotList.append(CSlot(64, 0x80000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x90000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x92000 ,	""								, "" , ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x94000 ,	P_RES(":/pc1500/CE-150.ROM")	, "" , ROM , "CE-150 ROM"));
+    SlotList.append(CSlot(8 , 0x70000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x72000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x74000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x78000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
+    SlotList.append(CSlot(8 , 0x7A000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x7C000 ,	P_RES(":/pc1600/rom1500.bin")	, "" , CSlot::ROM , "SYSTEM ROM"));
+    SlotList.append(CSlot(64, 0x80000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x90000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(8 , 0x92000 ,	""								, "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(8 , 0x94000 ,	P_RES(":/pc1500/CE-150.ROM")	, "" , CSlot::ROM , "CE-150 ROM"));
 
     // RAM BANK
-    SlotList.append(CSlot(16, 0xA0000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xA4000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xA8000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xAC000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xB0000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xB4000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xB8000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xBC000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xC0000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xC4000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xC8000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xCC000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xD0000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xD4000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xD8000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0xDC000 ,	""								, "" , RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xA0000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xA4000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xA8000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xAC000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xB0000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xB4000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xB8000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xBC000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xC0000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xC4000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xC8000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xCC000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xD0000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xD4000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xD8000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0xDC000 ,	""								, "" , CSlot::RAM , "RAM"));
 
 }
 

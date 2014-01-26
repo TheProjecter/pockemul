@@ -6,7 +6,16 @@
 class CSlot 
 {
 public:
-	CSlot(	int size, int adr, QString	resid, QString filename, int type, QString label)
+
+    enum SlotType
+    {
+        RAM,
+        ROM,
+        CUSTOM_ROM,
+        NOT_USED
+    };
+
+    CSlot(	int size, int adr, QString	resid, QString filename, SlotType type, QString label)
 	{
 		Size = size;
 		Adr	= adr;
@@ -31,16 +40,20 @@ public:
 	QString getLabel() { return Label; }
     void	setLabel(QString label)	{ Label = label; }
 
-	int		getType() { return Type; }
-    void	setType(int type)	{ Type = type; }
+    SlotType		getType() { return Type; }
+    void	setType(SlotType type)	{ Type = type; }
+
+    bool    isEmpty() { return Empty; }
+    void	setEmpty(bool empty)	{ Empty = empty; }
 	
 private:
 	int		Size;
 	int		Adr;
 	QString	ResID;
 	QString	FileName;
-	int		Type;
+    SlotType		Type;
 	QString	Label;
+    bool    Empty;
 	
 };
 #endif

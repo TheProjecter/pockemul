@@ -258,7 +258,7 @@ bool CPObject::init()
         AddLog(LOG_MASTER,tr("Memory loading nb slot:%1").arg(SlotList.size()));
         for (int s=0; s < SlotList.size(); ++s)
         {
-            if (SlotList[s].getType() == ROM)   Mem_Load(s);
+            if (SlotList[s].getType() == CSlot::ROM)   Mem_Load(s);
         }
     }
         return true;

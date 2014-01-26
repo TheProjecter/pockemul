@@ -121,6 +121,7 @@ enum Models {
     RLP9003R,
     RLP9004,
     RLP9005,
+    RLP9006,
     RLP1004A,
     POSTIT,
     TI57,

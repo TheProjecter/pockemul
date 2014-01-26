@@ -48,7 +48,7 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     setDYmm(95);
     setDZmm(51);
  // Ratio = 3,57
-    setDX(403);//Pc_DX  = 75;
+    setDX(440);//Pc_DX  = 75;
     setDY(340);//Pc_DY  = 20;
 
     setPaperPos(QRect(53,0,291,216));
@@ -64,7 +64,7 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,  P_RES(":/rlh1000/rlp1004a.bin")    , "" , ROM , "Printer ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,  P_RES(":/rlh1000/rlp1004a.bin")    , "" , CSlot::ROM , "Printer ROM"));
 
 }
 
@@ -284,7 +284,7 @@ bool Crlp1004a::init(void)
                                  Cconnector::Panasonic_44,
                                  "Printer connector",
                                  true,
-                                 QPoint(372,72),
+                                 QPoint(406,72),
                                  Cconnector::EAST);     publish(pCONNECTOR);
     WatchPoint.add(&pCONNECTOR_value,64,44,this,"Printer connector");
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
@@ -415,7 +415,7 @@ void Crlp1004a::Rotate()
     delete FinalImage;
     FinalImage = new QImage(*BackgroundImageBackup);
 
-    pCONNECTOR->setSnap(rotate?QPoint(30,72):QPoint(372,72));
+    pCONNECTOR->setSnap(rotate?QPoint(34,72):QPoint(406,72));
 
     pCONNECTOR->setDir(rotate?Cconnector::WEST:Cconnector::EAST);
     mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);

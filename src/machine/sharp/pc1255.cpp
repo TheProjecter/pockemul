@@ -17,10 +17,10 @@ Cpc1255::Cpc1255(CPObject *parent)	: Cpc1250(parent)
 
     memsize			= 0x10000;
     SlotList.clear();
-    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1255/cpu-1255.rom")	, "pc1255/cpu-1255.rom"	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""									, "pc1255/R1-1255.ram"	, RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1255/bas-1255.rom")	, "pc1255/bas-1255.rom"	, ROM , "BASIC ROM"));
-    SlotList.append(CSlot(32, 0x8000 ,	""									, "pc1255/R2-1255.ram" 	, RAM , "RAM"));
+    SlotList.append(CSlot(8	, 0x0000 ,	P_RES(":/pc1255/cpu-1255.rom")	, "pc1255/cpu-1255.rom"	, CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""									, "pc1255/R1-1255.ram"	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1255/bas-1255.rom")	, "pc1255/bas-1255.rom"	, CSlot::ROM , "BASIC ROM"));
+    SlotList.append(CSlot(32, 0x8000 ,	""									, "pc1255/R2-1255.ram" 	, CSlot::RAM , "RAM"));
 
     delete pLCDC; pLCDC		= new Clcdc_pc1255(this);
 

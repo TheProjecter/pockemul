@@ -28,20 +28,20 @@ Cpc1280::Cpc1280(CPObject *parent)	: Cpc1360(parent)
     memsize			= 0x40000;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1280/cpu-1280.rom")	, "pc-1280/cpu-1280.rom" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1280/R1-1280.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1280/b0-1280.rom")	, "pc-1280/b0-1280.rom" , ROM , "BANK 1"));
-    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1280/R2-1280.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1280/b0-1280.rom")	, "pc-1280/b0-1280.rom" , ROM , "BANK 1"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1280/b1-1280.rom")	, "pc-1280/b1-1280.rom" , ROM , "BANK 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1280/b2-1280.rom")	, "pc-1280/b2-1280.rom" , ROM , "BANK 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1280/b3-1280.rom")	, "pc-1280/b3-1280.rom" , ROM , "BANK 4"));
-    SlotList.append(CSlot(16, 0x20000 ,	P_RES(":/pc1280/b4-1280.rom")	, "pc-1280/b4-1280.rom" , ROM , "BANK 1"));
-    SlotList.append(CSlot(16, 0x24000 ,	P_RES(":/pc1280/b5-1280.rom")	, "pc-1280/b5-1280.rom" , ROM , "BANK 2"));
-    SlotList.append(CSlot(16, 0x28000 ,	P_RES(":/pc1280/b6-1280.rom")	, "pc-1280/b6-1280.rom" , ROM , "BANK 3"));
-    SlotList.append(CSlot(16, 0x2C000 ,	P_RES(":/pc1280/b7-1280.rom")	, "pc-1280/b7-1280.rom" , ROM , "BANK 4"));
-    SlotList.append(CSlot(32, 0x30000 ,	""								, "pc-1280/B0-1280.ram" , RAM , "RAM S1"));
-    SlotList.append(CSlot(32, 0x38000 ,	""								, "pc-1280/B1-1280.ram" , RAM , "RAM S2"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1280/cpu-1280.rom")	, "pc-1280/cpu-1280.rom" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "pc-1280/R1-1280.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1280/b0-1280.rom")	, "pc-1280/b0-1280.rom" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(32, 0x8000 ,	""								, "pc-1280/R2-1280.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1280/b0-1280.rom")	, "pc-1280/b0-1280.rom" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1280/b1-1280.rom")	, "pc-1280/b1-1280.rom" , CSlot::ROM , "BANK 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1280/b2-1280.rom")	, "pc-1280/b2-1280.rom" , CSlot::ROM , "BANK 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1280/b3-1280.rom")	, "pc-1280/b3-1280.rom" , CSlot::ROM , "BANK 4"));
+    SlotList.append(CSlot(16, 0x20000 ,	P_RES(":/pc1280/b4-1280.rom")	, "pc-1280/b4-1280.rom" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x24000 ,	P_RES(":/pc1280/b5-1280.rom")	, "pc-1280/b5-1280.rom" , CSlot::ROM , "BANK 2"));
+    SlotList.append(CSlot(16, 0x28000 ,	P_RES(":/pc1280/b6-1280.rom")	, "pc-1280/b6-1280.rom" , CSlot::ROM , "BANK 3"));
+    SlotList.append(CSlot(16, 0x2C000 ,	P_RES(":/pc1280/b7-1280.rom")	, "pc-1280/b7-1280.rom" , CSlot::ROM , "BANK 4"));
+    SlotList.append(CSlot(32, 0x30000 ,	""								, "pc-1280/B0-1280.ram" , CSlot::RAM , "RAM S1"));
+    SlotList.append(CSlot(32, 0x38000 ,	""								, "pc-1280/B1-1280.ram" , CSlot::RAM , "RAM S2"));
 
     KeyMap = KeyMap1280;
     KeyMapLenght = KeyMap1280Lenght;

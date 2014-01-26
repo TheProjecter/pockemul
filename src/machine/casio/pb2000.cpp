@@ -42,11 +42,11 @@ Cpb2000::Cpb2000(CPObject *parent)	: Cpb1000(parent)
 
 
     SlotList.clear();
-    SlotList.append(CSlot(64, 0x00000 ,	P_RES(":/pb2000/rom1.bin")	, ""	, ROM , "ROM 1"));
-    SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, RAM , "RAM 0"));
-    SlotList.append(CSlot(6 , 0x20000 ,	P_RES(":/pb2000/rom0.bin") , ""	, ROM , "CPU ROM"));
-    SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, RAM , "RAM 1"));
-    SlotList.append(CSlot(64, 0x30000 ,	"EMPTY"             , ""	, ROM , "EXT ROM"));      // Originally in 70000
+    SlotList.append(CSlot(64, 0x00000 ,	P_RES(":/pb2000/rom1.bin")	, ""	, CSlot::ROM , "ROM 1"));
+    SlotList.append(CSlot(64, 0x10000 ,	""					, ""	, CSlot::RAM , "RAM 0"));
+    SlotList.append(CSlot(6 , 0x20000 ,	P_RES(":/pb2000/rom0.bin") , ""	, CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(32, 0x28000 ,	""					, ""	, CSlot::RAM , "RAM 1"));
+    SlotList.append(CSlot(64, 0x30000 ,	"EMPTY"             , ""	, CSlot::ROM , "EXT ROM"));      // Originally in 70000
 
     Pc_Offset_X = Pc_Offset_Y = 0;
 

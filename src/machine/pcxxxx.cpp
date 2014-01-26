@@ -617,7 +617,7 @@ bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
         xmlOut->writeStartElement("memory");
             for (int s=0; s<SlotList.size(); s++)				// Save Memory
             {
-                if (SlotList[s].getType() == RAM)	Mem_Save(xmlOut,s);
+                if (SlotList[s].getType() == CSlot::RAM)	Mem_Save(xmlOut,s);
             }
         xmlOut->writeEndElement();  // memory
     xmlOut->writeEndElement();  // session
@@ -634,7 +634,7 @@ bool CpcXXXX::SaveSession_File(QFile *file)
 	pCPU->save_internal(file);							// Save cpu status
 	for (int s=0; s<SlotList.size(); s++)				// Save Memory
 	{
-		if (SlotList[s].getType() == RAM)	Mem_Save(file,s);
+		if (SlotList[s].getType() == CSlot::RAM)	Mem_Save(file,s);
 	}
 	
 	SaveExtra(file);									// Save all other data  (virtual)
@@ -662,7 +662,7 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
                 AddLog(LOG_MASTER,"Load Memory");
                 for (int s=0; s<SlotList.size(); s++)				// Save Memory
                 {
-                    if (SlotList[s].getType() == RAM) {
+                    if (SlotList[s].getType() == CSlot::RAM) {
                         AddLog(LOG_MASTER,"    Load Slot"+SlotList[s].getLabel());
                         Mem_Load(xmlIn,s);
                     }
@@ -697,7 +697,7 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 		// Save Memory
 		for (int s=0; s<SlotList.size(); s++)
 		{
-            if (SlotList[s].getType() == RAM)
+            if (SlotList[s].getType() == CSlot::RAM)
                 Mem_Load(file,s);
 		}
 		// Close the file

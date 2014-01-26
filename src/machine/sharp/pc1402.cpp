@@ -20,9 +20,9 @@ Cpc1402::Cpc1402(CPObject *parent)	: Cpc1401(parent)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1402/cpu-1402.rom"), "pc-1402/cpu-1402.rom" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1402/R1-1402.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1402/bas-1402.rom"), "pc-1402/bas-1402.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1402/cpu-1402.rom"), "pc-1402/cpu-1402.rom" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1402/R1-1402.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1402/bas-1402.rom"), "pc-1402/bas-1402.rom" , CSlot::ROM , "BASIC ROM"));
 
 }
 

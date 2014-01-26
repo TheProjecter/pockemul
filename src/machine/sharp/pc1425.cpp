@@ -15,14 +15,14 @@ Cpc1425::Cpc1425(CPObject *parent) : Cpc1403(parent)
     SymbFname		= P_RES(":/pc1403/1403symb.png");
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1425/cpu-1425.bin")	, "" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1425/b0-1425.bin"), "" , ROM , "BANK 1"));
-    SlotList.append(CSlot(32, 0x8000 ,	""								, "" , RAM , "RAM"));
-    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1425/b0-1425.bin"), "" , ROM , "BANK 1"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1425/b1-1425.bin"), "" , ROM , "BANK 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1425/b2-1425.bin"), "" , ROM , "BANK 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1425/b3-1425.bin"), "" , ROM , "BANK 4"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1425/cpu-1425.bin")	, "" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/pc1425/b0-1425.bin"), "" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(32, 0x8000 ,	""								, "" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/pc1425/b0-1425.bin"), "" , CSlot::ROM , "BANK 1"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/pc1425/b1-1425.bin"), "" , CSlot::ROM , "BANK 2"));
+    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/pc1425/b2-1425.bin"), "" , CSlot::ROM , "BANK 3"));
+    SlotList.append(CSlot(16, 0x1C000 ,	P_RES(":/pc1425/b3-1425.bin"), "" , CSlot::ROM , "BANK 4"));
 
     delete pLCDC;	pLCDC = new Clcdc_pc1425(this);
     pKEYB->fn_KeyMap = "pc1425.map";

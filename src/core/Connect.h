@@ -44,6 +44,7 @@ public:
         DIN_8,
         General_20,
         Panasonic_44,
+        Panasonic_Capsule,
         hp41
     };
 

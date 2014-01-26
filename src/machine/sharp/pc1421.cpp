@@ -22,8 +22,8 @@ Cpc1421::Cpc1421(CPObject *parent)	: Cpc1401(parent)
 //		NbSlot		= 3;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1421/cpu-1421.rom"), "pc-1421/cpu-1421.rom" , ROM , "CPU ROM"));
-    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1421/R1-1421.ram" , RAM , "RAM"));
-    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1421/bas-1421.rom"), "pc-1421/bas-1421.rom" , ROM , "BASIC ROM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1421/cpu-1421.rom"), "pc-1421/cpu-1421.rom" , CSlot::ROM , "CPU ROM"));
+    SlotList.append(CSlot(24, 0x2000 ,	"",								"pc-1421/R1-1421.ram" , CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(32, 0x8000 ,	P_RES(":/pc1421/bas-1421.rom"), "pc-1421/bas-1421.rom" , CSlot::ROM , "BASIC ROM"));
 
 }
