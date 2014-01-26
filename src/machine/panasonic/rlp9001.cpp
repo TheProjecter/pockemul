@@ -27,7 +27,7 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
     rotate = false;
     romSwitch = false;
     SlotList.clear();
-    InitMemValue = 0xff;
+    InitMemValue = 0x7f;
     bank = 0;
 
     switch(model) {
@@ -405,12 +405,16 @@ void Crlp9001::ComputeKey()
         pKEYB->keyPressedList.removeAll(0x247);
         if (_slot == -1) return;
         int _response = 0;
-        if (!SlotList[_slot].isEmpty())
+        BYTE* capsule = &mem[_slot*0x4000];
+        if (!SlotList[_slot].isEmpty() || (capsule[0]!=0x7f))
             _response=ask(this,"The "+SlotList[_slot].getLabel()+ "is already plugged is this slot. Do you want to unplug it ?",2);
 
         if (_response == 1) {
  //           UnloadMOD(slot[_slot].pModule);
             SlotList[_slot].setEmpty(true);
+
+            memset((void *)capsule ,0x7f,0x4000);
+
 //            slotChanged = true;
         }
         if (_response==2) return;
@@ -482,12 +486,7 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
 //        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
 
     }
-//    if (pPC) {
-//        // Link  object with main pObject
-//        mainwindow->pdirectLink->addLink(pConnector[currentSlot],pPC->ConnList.at(0),false);
-//        pPC->setPosX(this->posx()+this->width()+15);
-//        pPC->setPosY(this->posy());
-//    }
+
     currentSlot = -1;
 
 }
