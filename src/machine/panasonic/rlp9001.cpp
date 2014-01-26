@@ -459,8 +459,20 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
     if (result) {
         SlotList[currentSlot].setEmpty(false);
         SlotList[currentSlot].setResID(moduleName);
-        SlotList[currentSlot].setLabel("custom module");
         Mem_Load(currentSlot);
+        // Analyse capsule
+        // 0x01 = 'C'
+        // 0x01 - 0x28 : Copyright
+        // 0x2C : title lenght
+        // 0x2D - .. : title
+
+        BYTE* capsule = &mem[currentSlot*0x4000];
+        if (capsule[1]=='C') {
+            QString copyright = QString::fromLocal8Bit(QByteArray((const char*)&capsule[1],0x26));
+            QString title  = QString::fromLocal8Bit(QByteArray((const char*)&capsule[0x2d],capsule[0x2c]));
+            qWarning()<<"title:"<<title;
+            SlotList[currentSlot].setLabel(title);
+        }
 //        SlotList[currentSlot].pModule = pModuleNew;
 //        SlotList[currentSlot].setType(customModule);
 //        slotChanged = true;
