@@ -18,6 +18,7 @@ public:
 
     BINEditor::BinEditor *hexeditor;
 
+
 private slots:
 	void slotDump( QTableWidgetItem * , QTableWidgetItem * );
 	void LoadBin( void );
@@ -26,6 +27,8 @@ private slots:
     void FindNext( void );
     void FindPrevious(void);
     void JumpTo( void);
+    void Refresh(void);
+    void Update(int adr, uchar val);
 
 protected:
 	void resizeEvent(QResizeEvent *);

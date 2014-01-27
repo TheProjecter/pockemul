@@ -1271,6 +1271,7 @@ void BinEditor::changeData(int position, uchar character, bool highNibble)
     }
 
     changeDataAt(position, (char) character);
+    emit update(position,character);
     bool emitModificationChanged = (m_undoStack.size() == m_unmodifiedState);
     m_undoStack.push(cmd);
     if (emitModificationChanged) {

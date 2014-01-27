@@ -416,8 +416,11 @@ void Crlp9001::ComputeKey()
         if (_slot == -1) return;
         int _response = 0;
         BYTE* capsule = &mem[_slot*0x4000];
-        if (!SlotList[_slot].isEmpty() || (capsule[0]!=0x7f))
-            _response=ask(this,"The "+SlotList[_slot].getLabel()+ "is already plugged is this slot. Do you want to unplug it ?",2);
+        if (!SlotList[_slot].isEmpty() || (capsule[0]!=0x7f)) {
+            _response=ask(this,
+                          "The "+SlotList[_slot].getLabel()+ " capsule is already plugged in this slot.\nDo you want to unplug it ?",
+                          2);
+        }
 
         if (_response == 1) {
  //           UnloadMOD(slot[_slot].pModule);

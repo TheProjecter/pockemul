@@ -27,20 +27,20 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     LcdFname		= P_RES(":/rlh1000/rlh1000lcd.png");
     SymbFname		= "";
 
-    memsize		= 0x30000;
+    memsize		= 0x20000;
     InitMemValue	= 0x7F;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, CSlot::RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	P_RES(":/rlh1000/rlp1004a.bin")    , ""	, CSlot::ROM , "Ext ROM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""                                  , ""	, CSlot::ROM , "Ext ROM"));
     SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, CSlot::ROM , "ROM Capsules 1"));
     SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, CSlot::RAM , "Ext RAM"));
-    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"), ""	, CSlot::ROM , "ROM"));
-    SlotList.append(CSlot(16, 0x10000 ,	""                                  , ""	, CSlot::RAM , "I/O Hard"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/HHCbasic.bin")    , ""	, CSlot::ROM , "ROM Capsules 2"));
-    //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")    , ""	, CSlot::ROM , "ROM Capsules 2"));
-    SlotList.append(CSlot(16, 0x18000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, CSlot::ROM , "ROM Capsules 3"));
-    SlotList.append(CSlot(16, 0x1C000 ,	""                                  , ""	, CSlot::RAM , "Ext RAM"));
+    SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"),""	, CSlot::ROM , "ROM"));
+//    SlotList.append(CSlot(16, 0x10000 ,	""                                  ,""	, CSlot::RAM , "I/O Hard"));
+    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/rlh1000/HHCbasic.bin")     , ""	, CSlot::ROM , "ROM Capsules 2"));
+    //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")     , ""	, CSlot::ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, CSlot::ROM , "ROM Capsules 3"));
+//    SlotList.append(CSlot(16, 0x1C000 ,	""                              , ""	, CSlot::RAM , "Ext RAM"));
 
 // Ratio = 3,57
     setDXmm(227);
@@ -103,11 +103,25 @@ bool Crlh1000::init(void)				// initialize
 
     latchByte = 0x00;
 
-    timercnt1=timercnt2=timercnt3=0;
+    timercnt1=0;
+    timercnt2=0;
+    timercnt3=10;
     memset(&lineFD,0xff,sizeof(lineFD));
     memset(&lineFE,0xff,sizeof(lineFE));
     memset(&lineFF,0xff,sizeof(lineFF));
 
+    // Set DATA/TIME since 01 january 1980
+    // 0x20E : 1/256 second
+    // 0x20F : seconds
+    // 0x210 : 256 seconds
+    // 0x211 : 65536 seconds
+    // 0X212 : 16 777 216 seconds
+
+//    mem[0x20E]= 00;
+//    mem[0x20F]= 00;
+//    mem[0x210]= 00;
+//    mem[0x211]= 00;
+//    mem[0x212]= 00;
     return true;
 }
 
@@ -118,6 +132,7 @@ bool Crlh1000::run() {
     // 0x5802 : Shift 0x80   ???
     // 0x5820 : 2nd 0x80     ???
     // timercnt = timer (1/256 sec)
+
 
     //TODO: change this !!!
     if (dialogdasm)
@@ -232,7 +247,10 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
         return false;
     }
-
+    if (*d==0x58FB) { timercnt1=data; return false; }
+    if (*d==0x58FC) { timercnt2=data; return false; }
+    if (*d==0x58FD) { timercnt3=data; return false; }
+    if (*d==0x58FF) {                 return false; }
     if((*d>=0x4000) && (*d <=0x7FFF)) {
 
         if (latchByte & 0x80){
@@ -246,69 +264,51 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
             return false;
         }
-        else {
-            // KBD I/O Mapping
-            if (*d==0x58FB) { timercnt1=data; return false; }
-            if (*d==0x58FC) { timercnt2=data; return false; }
-            if (*d==0x58FD) { timercnt3=data; return false; }
-            if (*d==0x58FF) {                 return false; }
 
-// Write 47FD 47FE 47FF
 
-            // 47FF : write from ext, read by nucleus
+        // 47FF : write from ext, read by nucleus
 
-            if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
-                if (pCPU->fp_log) sprintf(Log_String,"%s,WRITE ROM LINE [%04X]=%02X ",Log_String,*d,data);
-                bool islineFC = ((*d-0x47FC)%4==0);
-                bool islineFD = ((*d-0x47FD)%4==0);
-                bool islineFE = ((*d-0x47FE)%4==0);
-                bool islineFF = ((*d-0x47FF)%4==0);
+        if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
+            if (pCPU->fp_log) sprintf(Log_String,"%s,WRITE ROM LINE [%04X]=%02X ",Log_String,*d,data);
+            bool islineFC = ((*d-0x47FC)%4==0);
+            bool islineFD = ((*d-0x47FD)%4==0);
+            bool islineFE = ((*d-0x47FE)%4==0);
+            bool islineFF = ((*d-0x47FF)%4==0);
 
-                if (islineFF) {
-                    quint8 t = (*d-0x47FF)/4;
-                    lineFF[t] = data;
-                }
-                if (islineFD) {
-                    quint8 t = (*d-0x47FD)/4;
-                    lineFD[t] = data;
-                    qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
-                }
-                if (islineFE) {
-                    quint8 t = (*d-0x47FE)/4;
-                    lineFE[t] = data;
+            if (islineFF) {
+                quint8 t = (*d-0x47FF)/4;
+                lineFF[t] = data;
+            }
+            if (islineFD) {
+                quint8 t = (*d-0x47FD)/4;
+                lineFD[t] = data;
+                qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
+            }
+            if (islineFE) {
+                quint8 t = (*d-0x47FE)/4;
+                lineFE[t] = data;
 
-                    bus->setDest(t);
-                    bus->setData(data);
-                    bus->setFunc(BUS_SELECT);
-                    if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
-                    manageBus();
-                    if (bus->getFunc()==BUS_READDATA) extrinsic=t;//bus->getDest();
-//                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus->getDest());
-                    bus->setFunc(BUS_SLEEP);
-                    if (fp_log) {
-                        fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
-                        for (int i=0;i<=32;i++) {
-                            if (i%4 == 0) fprintf(fp_log," ");
-                            fprintf(fp_log,"%i",lineFE[i]);
+                bus->setDest(t);
+                bus->setData(data);
+                bus->setFunc(BUS_SELECT);
+                if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
+                manageBus();
+                if (bus->getFunc()==BUS_READDATA) extrinsic=t;//bus->getDest();
+                //                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus->getDest());
+                bus->setFunc(BUS_SLEEP);
+                if (fp_log) {
+                    fprintf(fp_log,"WRITE LINE%s [%2i]=%i",LINEID,t,data);
+                    for (int i=0;i<=32;i++) {
+                        if (i%4 == 0) fprintf(fp_log," ");
+                        fprintf(fp_log,"%i",lineFE[i]);
 
-                        }
-                        pCPU->Regs_Info(1);
-                        fprintf(fp_log," %s\n",pCPU->Regs_String);
                     }
+                    pCPU->Regs_Info(1);
+                    fprintf(fp_log," %s\n",pCPU->Regs_String);
                 }
+            }
 
                 return false;
-            }
-
-            if (pCPU->fp_log) fprintf(pCPU->fp_log,"\n WRITE ROM [%02X]=%02X\n",*d,data);
-
-            if (fp_log) {
-                fprintf(fp_log,"WRITE ROM [%04X]=%02X ",*d,data);
-                pCPU->Regs_Info(1);
-                fprintf(fp_log," %s\n",pCPU->Regs_String);
-            }
-
-            return false;
         }
 
         if (fp_log) {
@@ -384,64 +384,65 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                     *data = getKey(t);
                     return false;
                 }
-
-                // EXT management
-                if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
-                    bool islineFC = ((*d-0x47FC)%4==0);
-                    bool islineFD = ((*d-0x47FD)%4==0);
-                    bool islineFE = ((*d-0x47FE)%4==0);
-                    bool islineFF = ((*d-0x47FF)%4==0);
-                    quint8 t=0;
-
-                    if (islineFC) {
-                        // return &FF : Scan next line
-                        // return &FB :
-
-                        t =(*d-0x47FC)/4;
-
-                        bus->setDest(t);
-                        if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
-                        bus->setData(0xff);
-                        bus->setFunc(BUS_QUERY);
-                        manageBus();
-                        if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
-
-                        *data = bus->getData();
-                        bus->setFunc(BUS_SLEEP);
-
-                    }
-                    if (islineFD) {
-                        t = (*d-0x47FD)/4;
-                        *data = lineFD[t];
-                    }
-                    if (islineFE) {
-                        t = (*d-0x47FE)/4;
-                        *data = lineFE[t];
-                    }
-                    if (islineFF) {
-                        t = (*d-0x47FF)/4;
-                        *data = 0xff;//lineFF[t];
-                        bus->setDest(t);
-                        if (fp_log) fprintf(fp_log,"BUS_QUERY_LINE DEST=%i  ",bus->getDest());
-                        bus->setData(0xff);
-                        bus->setFunc(BUS_INTREQUEST);
-                        manageBus();
-                        if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
-
-                        *data = bus->getData();
-                        bus->setFunc(BUS_SLEEP);
-                    }
-
-                    if (fp_log) {
-                        fprintf(fp_log,"READ LINE%s (%2i) data=%i ",LINEID,t,*data);
-                        pCPU->Regs_Info(1);
-                        fprintf(fp_log," %s\n",pCPU->Regs_String);
-                    }
-                    if (pCPU->fp_log) sprintf(Log_String,"%s,READ LINE%s [%i]=%04X ",Log_String,LINEID,t,*data);
-                    return false;
-                }
             }
-            if (*d==0x58FA) { *data=0x80; return false; }
+                // EXT management
+            if ( (*d>=0x47FC) && (*d<=(0x47FF+0xff))) {
+                bool islineFC = ((*d-0x47FC)%4==0);
+                bool islineFD = ((*d-0x47FD)%4==0);
+                bool islineFE = ((*d-0x47FE)%4==0);
+                bool islineFF = ((*d-0x47FF)%4==0);
+                quint8 t=0;
+
+                if (islineFC) {
+                    // return &FF : Scan next line
+                    // return &FB :
+
+                    t =(*d-0x47FC)/4;
+
+                    bus->setDest(t);
+                    if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
+                    bus->setData(0xff);
+                    bus->setFunc(BUS_QUERY);
+                    manageBus();
+                    if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
+
+                    *data = bus->getData();
+                    bus->setFunc(BUS_SLEEP);
+
+                }
+                if (islineFD) {
+                    t = (*d-0x47FD)/4;
+                    *data = lineFD[t];
+                }
+                if (islineFE) {
+                    t = (*d-0x47FE)/4;
+                    *data = lineFE[t];
+                }
+                if (islineFF) {
+                    t = (*d-0x47FF)/4;
+                    *data = 0xff;//lineFF[t];
+                    bus->setDest(t);
+                    if (fp_log) fprintf(fp_log,"BUS_QUERY_LINE DEST=%i  ",bus->getDest());
+                    bus->setData(0xff);
+                    bus->setFunc(BUS_INTREQUEST);
+                    manageBus();
+                    if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
+
+                    *data = bus->getData();
+                    bus->setFunc(BUS_SLEEP);
+                }
+
+                if (fp_log) {
+                    fprintf(fp_log,"READ LINE%s (%2i) data=%i ",LINEID,t,*data);
+                    pCPU->Regs_Info(1);
+                    fprintf(fp_log," %s\n",pCPU->Regs_String);
+                }
+                if (pCPU->fp_log) sprintf(Log_String,"%s,READ LINE%s [%i]=%04X ",Log_String,LINEID,t,*data);
+                return false;
+            }
+
+            // 0x58FA??? I don't know what it is.
+            if (*d==0x58FA) { *data=0x00; return false; }
             if (*d==0x58FB) { *data=timercnt1; return false; }
             if (*d==0x58FC) { *data=timercnt2; return false; }
             if (*d==0x58FD) { *data=timercnt3; return false; }
@@ -460,8 +461,8 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
             UINT32 offset = 0;
             switch (latchByte & 0x03) {
             case 0x00 : offset = 0; return true;
-            case 0x01 : offset = 0x10000; *d += offset; return true;
-            case 0x02 : offset = 0x14000; *d += offset; return true;
+            case 0x01 : offset = 0x0C000; *d += offset; return true;
+            case 0x02 : offset = 0x10000; *d += offset; return true;
             case 0x03 :  *data = ReadBusMem(BUS_READDATA,*d,30);
 //                qWarning()<<"READ EXT ROM: dest="<<extrinsic<<" - adr="<<*d<<"="<<*data;
                 if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE dest:%02x\n",extrinsic);
@@ -484,7 +485,8 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
     return true;
 }
 
-UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr,quint8 dest) {
+UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr,quint8 dest)
+{
     UINT8 data=0xff;
 
     if (fp_log) {

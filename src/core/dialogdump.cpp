@@ -1,4 +1,5 @@
 #include <QFileDialog>
+#include <QDebug>
 
 #include "dialogdump.h"
 #include "hexviewer.h"
@@ -27,13 +28,21 @@ DialogDump::DialogDump(QWidget * parent, Qt::WindowFlags f)
     connect(pbFindPrevious,SIGNAL(clicked()),this,SLOT(FindPrevious()));
     connect(pbFindNext,SIGNAL(clicked()),this,SLOT(FindNext()));
     connect(leJump,SIGNAL(returnPressed()),this,SLOT(JumpTo()));
+    connect(pbRefresh,SIGNAL(clicked()),this,SLOT(Refresh()));
+
 
     hexeditor = new BINEditor::BinEditor(framedump);
     hexeditor->setFocus();
+    connect(hexeditor,SIGNAL(update(int,uchar)),this,SLOT(Update(int,uchar)));
 
     LoadSlot();
 
 	resize( 605,400);
+}
+
+void DialogDump::Update(int adr,uchar val) {
+    qWarning()<<"Update["<<adr<<"]="<<val;
+    pPC->mem[adr] = val;
 }
 
 void DialogDump::Find(void) {
@@ -52,6 +61,18 @@ void DialogDump::FindNext(void) {
     //MSG_ERROR("ok");
     findpos = hexeditor->find(leFind->text().toLatin1(),findpos+1);
     //MSG_ERROR(tr("ok").arg(findpos));
+}
+void DialogDump::Refresh(void) {
+    int _pos = hexeditor->cursorPosition();
+    bool ok;
+    int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(&ok,16);
+    int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
+
+    QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
+    hexeditor->data().clear();
+    hexeditor->setReadOnly(false);
+    hexeditor->setData(*ba,adr);
+    hexeditor->setCursorPosition(_pos,BINEditor::BinEditor::MoveAnchor);
 }
 
 void DialogDump::LoadBin(void)
@@ -158,7 +179,7 @@ void DialogDump::slotDump( QTableWidgetItem * current, QTableWidgetItem * previo
 
     QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
     hexeditor->data().clear();
-    hexeditor->setReadOnly(true);
+    hexeditor->setReadOnly(false);
     hexeditor->setData(*ba,adr);
     hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
 

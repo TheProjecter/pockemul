@@ -125,6 +125,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void modificationChanged(bool modified);
+    void update(int position,uchar character);
     void undoAvailable(bool);
     void redoAvailable(bool);
     void copyAvailable(bool);
