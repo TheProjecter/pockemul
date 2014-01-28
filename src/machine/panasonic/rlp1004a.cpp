@@ -51,7 +51,8 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     setDX(440);//Pc_DX  = 75;
     setDY(340);//Pc_DY  = 20;
 
-    setPaperPos(QRect(53,0,291,216));
+//    setPaperPos(QRect(53,0,291,216));
+    setPaperPos(QRect(57,-20,318,236));
 
     ctrl_char = false;
     t = 0;

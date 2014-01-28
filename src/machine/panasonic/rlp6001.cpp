@@ -25,9 +25,10 @@ Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
     setDYmm(318);
     setDZmm(51);
  // Ratio = 3,57
-    setDX(303);//Pc_DX  = 75;
-    setDY(1035);//Pc_DY = 20;
-
+    setDX(252);//Pc_DX  = 75;
+    setDY(1075);//Pc_DY = 20;
+//    setDX(1458);//Pc_DX  = 75;
+//    setDY(1095);//Pc_DY = 20;
 }
 
 Crlp6001::~Crlp6001(){
@@ -147,15 +148,18 @@ bool Crlp6001::run(void)
 /*****************************************************************************/
 /* Initialize                                                                                                                    */
 /*****************************************************************************/
+
+
 bool Crlp6001::init(void)
 {
 
-    int snap[5][2] = {
-        {0,345+345+72},
-        {0,345+72},
+    int snap[6][2] = {
+        {0,367+367+72},
+        {0,367+72},
         {0,72},
-        {303,72},
-        {303,345+72}
+        {252,72},
+        {252,367+72},
+        {252,367+367+72}
     };
     Cconnector::ConnectorDir dir[] = {
         Cconnector::WEST,
@@ -173,7 +177,7 @@ qWarning()<<"RL-P6001 initializing...step1";
                                     Cconnector::Panasonic_44,
                                     "44 pins main connector",
                                     true,
-                                    QPoint(303,345*2+72),
+                                    QPoint(snap[5][0],snap[5][1]),
                                     Cconnector::EAST);
     publish(pMAINCONNECTOR);
 qWarning()<<"RL-P6001 initializing...step2";

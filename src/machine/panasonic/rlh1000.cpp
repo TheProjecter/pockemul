@@ -110,18 +110,7 @@ bool Crlh1000::init(void)				// initialize
     memset(&lineFE,0xff,sizeof(lineFE));
     memset(&lineFF,0xff,sizeof(lineFF));
 
-    // Set DATA/TIME since 01 january 1980
-    // 0x20E : 1/256 second
-    // 0x20F : seconds
-    // 0x210 : 256 seconds
-    // 0x211 : 65536 seconds
-    // 0X212 : 16 777 216 seconds
 
-//    mem[0x20E]= 00;
-//    mem[0x20F]= 00;
-//    mem[0x210]= 00;
-//    mem[0x211]= 00;
-//    mem[0x212]= 00;
     return true;
 }
 
@@ -154,7 +143,7 @@ bool Crlh1000::run() {
 
     if (pKEYB->LastKey>0) { m6502->write_signal(101,1,1); }
 
-    if (pTIMER->usElapsedId(1)>=3906) {
+    if (pTIMER->usElapsedId(1)>=4096) {
 //        if (timercnt1!=0)
         {
             timercnt1--;

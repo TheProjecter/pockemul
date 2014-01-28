@@ -318,29 +318,13 @@ void Crlp9001::Rotate()
 {
     rotate = ! rotate;
 
-    // Correct Key pos
-    for (int i=0; i <pKEYB->Keys.size();i++) {
-        pKEYB->Keys[i].Rect=pKEYB->Keys[i].Rect.translated(rotate?-42:42,rotate?13:-13);
+    if (pKEYB) {
+        // Correct Key pos
+        for (int i=0; i <pKEYB->Keys.size();i++) {
+            pKEYB->Keys[i].Rect=pKEYB->Keys[i].Rect.translated(rotate?-42:42,rotate?13:-13);
+        }
     }
-
-#if 0
-    delete BackgroundImageBackup;
-    BackgroundImageBackup = CreateImage(QSize(getDX(), getDY()),BackGroundFname,false,false,rotate?180:0);
-    delete BackgroundImage;
-    BackgroundImage = new QImage(*BackgroundImageBackup);
-    delete FinalImage;
-    FinalImage = new QImage(*BackgroundImageBackup);
-
-    pCONNECTOR->setSnap(rotate?QPoint(406,72):QPoint(34,72));
-
-    pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
-    mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
-    setMask(mask.mask());
-
-        // adapt SNAP connector
-#else
     InitDisplay();
-#endif
 }
 
 void Crlp9001::ROMSwitch()
@@ -369,7 +353,6 @@ void Crlp9001::exportROM() {
                     tr("Choose a filename to save ROM file"),
                     ".",
                     tr("ROM File (*.bin)"));
-
 
         QFileInfo fi( fn );
                 if (fi.suffix().isEmpty())
@@ -423,10 +406,10 @@ void Crlp9001::ComputeKey()
         }
 
         if (_response == 1) {
- //           UnloadMOD(slot[_slot].pModule);
             SlotList[_slot].setEmpty(true);
 
             memset((void *)capsule ,0x7f,0x4000);
+            SlotList[_slot].setLabel(QString("ROM bank %1").arg(_slot+1));
 
             slotChanged = true;
         }
@@ -447,8 +430,6 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
     qWarning()<<"Add Module:"<< item;
     if ( (currentSlot<0) || (currentSlot>7)) return;
 
-//    ModuleHeader *pModuleNew;
-
     CSlot::SlotType customModule = CSlot::ROM;
 
     int _res = 0;
@@ -463,14 +444,11 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
                     ".",
                     tr("Module File (*.bin)"));
         customModule = CSlot::CUSTOM_ROM;
-//        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
     }
 
     if (moduleName.isEmpty()) return;
 
-//    _res=LoadMOD(pModuleNew,moduleName.toLatin1().data());
-
-   bool result = true; // check this is a true capsule
+    bool result = true; // check this is a true capsule
 
     qWarning()<<"loaded:"<<_res;
     if (result) {
@@ -490,14 +468,8 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
             qWarning()<<"title:"<<title;
             SlotList[currentSlot].setLabel(title);
         }
-//        SlotList[currentSlot].pModule = pModuleNew;
-//        SlotList[currentSlot].setType(customModule);
-        slotChanged = true;
-//        qWarning()<<"module:"<<pModuleNew->szPartNumber;
-    }
-    else {
-//        qWarning()<<Chp41Mod(moduleName).output_mod_info(1,1);
 
+        slotChanged = true;
     }
 
     currentSlot = -1;
