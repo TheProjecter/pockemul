@@ -22,7 +22,8 @@ public:
 		ResID = resid;
 		FileName = filename;
 		Type = type;
-		Label = label;		
+        Label = label;
+        Empty = resid.isEmpty() && filename.isEmpty();
     }
 	
 	int		getSize()		  { return Size; }

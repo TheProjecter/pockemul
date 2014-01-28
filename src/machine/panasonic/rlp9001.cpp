@@ -69,10 +69,10 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
         pKEYB               = new Ckeyb(this,"rlp9006.map");
         BackGroundFname     = P_RES(":/rlh1000/rlp9006.png");
         memsize      = 0x20000;
-        SlotList.append(CSlot(16 , 0x0000 , P_RES(":/rlh1000/SnapBasic.bin") , ""        , CSlot::CUSTOM_ROM , "ROM bank 1"));
-        SlotList.append(CSlot(16 , 0x4000 , P_RES(":/rlh1000/SnapForth.bin") , ""        , CSlot::CUSTOM_ROM , "ROM bank 2"));
-        SlotList.append(CSlot(16 , 0x8000 , P_RES(":/rlh1000/test.bin")      , ""        , CSlot::CUSTOM_ROM , "ROM bank 3"));
-        SlotList.append(CSlot(16 , 0xC000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 4"));
+        SlotList.append(CSlot(16 , 0x0000 , ""  , ""        , CSlot::CUSTOM_ROM , "ROM bank 1"));
+        SlotList.append(CSlot(16 , 0x4000 , ""  , ""        , CSlot::CUSTOM_ROM , "ROM bank 2"));
+        SlotList.append(CSlot(16 , 0x8000 , ""  , ""        , CSlot::CUSTOM_ROM , "ROM bank 3"));
+        SlotList.append(CSlot(16 , 0xC000 , ""  , ""        , CSlot::CUSTOM_ROM , "ROM bank 4"));
         SlotList.append(CSlot(16 , 0x10000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 5"));
         SlotList.append(CSlot(16 , 0x14000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 6"));
         SlotList.append(CSlot(16 , 0x18000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 7"));
@@ -319,9 +319,14 @@ void Crlp9001::Rotate()
     rotate = ! rotate;
 
     if (pKEYB) {
-        // Correct Key pos
+        // rotate Key pos
+        //
         for (int i=0; i <pKEYB->Keys.size();i++) {
-            pKEYB->Keys[i].Rect=pKEYB->Keys[i].Rect.translated(rotate?-42:42,rotate?13:-13);
+            QSize _size = pKEYB->Keys[i].Rect.size();
+            pKEYB->Keys[i].Rect.setTop(this->getDY()-pKEYB->Keys[i].Rect.bottom());
+            pKEYB->Keys[i].Rect.setLeft(this->getDX()-pKEYB->Keys[i].Rect.right());
+            pKEYB->Keys[i].Rect.setSize(_size);
+            //pKEYB->Keys[i].Rect=pKEYB->Keys[i].Rect.translated(rotate?-42:42,rotate?13:-13);
         }
     }
     InitDisplay();
@@ -521,13 +526,19 @@ bool Crlp9001::UpdateFinalImage(void) {
         slotPos[6] = QRect(242,164,75,127);
         slotPos[7] = QRect(319,164,75,127);
 
+        QMatrix matrix;
+        matrix.rotate(rotate?180:0);
         QImage *capsule = new QImage(QString(P_RES(":/rlh1000/capsule.png")));
+        QImage _rotCapsule = capsule->transformed(matrix).scaled(pKEYB->Keys[0].Rect.size());
         for (int i=0;i<8;i++) {
             if (!SlotList[i].isEmpty()) {
                 // draw capsule
-                painter.drawImage(slotPos[i].x()+(rotate?-42:0),
-                                  slotPos[i].y()+(rotate?13:0),
-                                  capsule->scaled(75,127));
+//                painter.drawImage(slotPos[i].x()+(rotate?-42:0),
+//                                  slotPos[i].y()+(rotate?13:0),
+//                                  capsule->scaled(75,127));
+                painter.drawImage(pKEYB->Keys[i].Rect.left(),
+                                  pKEYB->Keys[i].Rect.top(),
+                                  _rotCapsule);
             }
         }
         painter.end();
