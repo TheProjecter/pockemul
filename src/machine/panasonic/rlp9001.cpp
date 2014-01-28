@@ -516,16 +516,6 @@ bool Crlp9001::UpdateFinalImage(void) {
         QPainter painter;
         painter.begin(FinalImage);
 
-        QRect slotPos[8];
-        slotPos[0] = QRect(88,34,75,127);
-        slotPos[1] = QRect(166,34,75,127);
-        slotPos[2] = QRect(242,34,75,127);
-        slotPos[3] = QRect(319,34,75,127);
-        slotPos[4] = QRect(88,164,75,127);
-        slotPos[5] = QRect(166,164,75,127);
-        slotPos[6] = QRect(242,164,75,127);
-        slotPos[7] = QRect(319,164,75,127);
-
         QMatrix matrix;
         matrix.rotate(rotate?180:0);
         QImage *capsule = new QImage(QString(P_RES(":/rlh1000/capsule.png")));
@@ -533,9 +523,7 @@ bool Crlp9001::UpdateFinalImage(void) {
         for (int i=0;i<8;i++) {
             if (!SlotList[i].isEmpty()) {
                 // draw capsule
-//                painter.drawImage(slotPos[i].x()+(rotate?-42:0),
-//                                  slotPos[i].y()+(rotate?13:0),
-//                                  capsule->scaled(75,127));
+
                 painter.drawImage(pKEYB->Keys[i].Rect.left(),
                                   pKEYB->Keys[i].Rect.top(),
                                   _rotCapsule);

@@ -84,6 +84,7 @@ CPObject::CPObject(CPObject *parent):CViewObject(parent)
 		dialogkeylist	= 0;
 		dialogdump		= 0;
         dialogdasm = 0;
+        dialogVKeyboard = 0;
 		Power = false;
         audioBuff.clear();
 
