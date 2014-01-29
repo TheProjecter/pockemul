@@ -73,7 +73,7 @@ public:
 	virtual bool		Chk_Adr(UINT32 *d,UINT32 data);
     virtual bool		Chk_Adr_R(UINT32 *d, UINT32 *data);
     UINT8		in(UINT8 address);
-    UINT8 out(UINT8 address,UINT8 value){return(1);}
+    UINT8 out(UINT8 ,UINT8 ){return(1);}
 	bool		Set_Connector(void);
 	bool		Get_Connector(void);
 
@@ -103,6 +103,8 @@ public:
 
 	Cpc1500(CPObject *parent = 0)	: Cpc15XX(this)
 	{								//[constructor]
+        Q_UNUSED(parent)
+
         setcfgfname(QString("pc1500"));
 
 		SlotList.clear();

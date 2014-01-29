@@ -37,6 +37,8 @@ bool Cpc1255::Chk_Adr(UINT32 *d,UINT32 data)
 
 Cpc1251H::Cpc1251H(CPObject *parent)	: Cpc1255(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setcfgfname("pc1251H");
 
     SessionHeader	= "PC1251HPKM";

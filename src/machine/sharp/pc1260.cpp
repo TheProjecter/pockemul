@@ -6,6 +6,8 @@
 
 Cpc1260::Cpc1260(CPObject *parent)	: Cpc1250(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setfrequency( (int) 768000/3);
     setcfgfname("pc1260");
 
@@ -54,7 +56,9 @@ BYTE	Cpc1260::Get_PortB(void)
 
 bool Cpc1260::Chk_Adr(UINT32 *d,UINT32 data)
 {
-	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);				// ROM area(0000-1fff) 
+    Q_UNUSED(data)
+
+    if (                 (*d<=0x1FFF) )	return(0);				// ROM area(0000-1fff)
 	if ( (*d>=0x5800) && (*d<=0x6800) )	return(1);				// ROM area(8000-ffff) 
 	if ( (*d>=0x8000) && (*d<=0xFFFF) )	return(0);				// ROM area(8000-ffff) 
 	if ( (*d>=0x2000) && (*d<=0x207D) )	{ pLCDC->SetDirtyBuf(*d-0x2000); return(1); }	/* LCDC (0200x) */
@@ -67,6 +71,8 @@ bool Cpc1260::Chk_Adr(UINT32 *d,UINT32 data)
 
 Cpc1261::Cpc1261(CPObject *parent)	: Cpc1260(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setfrequency( (int) 768000/3);
     setcfgfname("pc1261");
 
@@ -96,6 +102,8 @@ bool Cpc1261::Chk_Adr(UINT32 *d,UINT32 data)
 
 Cpc1262::Cpc1262(CPObject *parent)	: Cpc1261(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setfrequency( (int) 768000/3);
     setcfgfname("pc1262");
 

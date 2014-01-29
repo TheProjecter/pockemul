@@ -10,7 +10,7 @@
 
 #include "pobject.h"
 
-#define PB7	((lh5810.r_opb & 0x80)?true:false)
+#define LH5810_PB7	((lh5810.r_opb & 0x80)?true:false)
 
 #define SETREG_LH5810_RESET(p,data)	(p->lh5810.reset	= (data));
 #define SETREG_LH5810_U(p,data)		(p->lh5810.r_u	= (data));
@@ -75,7 +75,7 @@ public:
         case G:		return(lh5810.r_g);
         case MSK:	t=(lh5810.r_msk);
                             if (IRQ)	t|=0x10;
-                            if (PB7)	t|=0x20;
+                            if (LH5810_PB7)	t|=0x20;
                             return(t);
         case IF:		t=(lh5810.r_if);
     //						if (IRQ)	t|=0x01;
@@ -87,6 +87,7 @@ public:
         case OPB:	return(lh5810.r_opb & (~lh5810.r_ddb));	//OK
         case OPC:	return(lh5810.r_opc);
         case F:		return(lh5810.r_f);
+        default: return(0);
 
         }
         return(0);

@@ -111,6 +111,8 @@ void WindowIDE::setupEditor()
 
 QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
 
+    QList<QCodeNode *> nodes;
+
 #ifndef Q_OS_ANDROID
 
     QMap<QString,QByteArray> mapSRC;
@@ -148,7 +150,7 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
         this->proclist = lcc->proclist;
 
 
-        QList<QCodeNode *> nodes;
+
 
         QCodeNode *n = new QCodeNode();
 
@@ -193,6 +195,7 @@ QList<QCodeNode *> WindowIDE::completionScan(QEditor *e) {
         return nodes;
     }
 #endif
+    return nodes;
 }
 
 QStringList WindowIDE::getProc(QString s) {
@@ -502,7 +505,7 @@ void WindowIDE::newFile()
 
 void WindowIDE::targetChange(QString m)
 {
-
+    Q_UNUSED(m)
 }
 
 Cproc WindowIDE::getProcObj(QString s)

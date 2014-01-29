@@ -174,7 +174,7 @@ public:
   void GetAnnunciator(char *str);
   void GetShortAnnunciator(char *str);
   int GetContrast(void);
-  void SetContrast(int ContrastVal){}
+  void SetContrast(int ){}
   void SetFontColor(int ColorVal);
   int GetFontColor(void);
   int GetIndicator() {return(Indicator);}

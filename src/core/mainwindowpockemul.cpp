@@ -379,7 +379,7 @@ CPObject *pPC=0;
 
 #define NBFRAMEPERSEC		20
 #define FRAMERATE			(1000/NBFRAMEPERSEC)
-#define TIMER_RES 30
+//#define TIMER_RES 30
 
     pPC->InitDisplay();
 
@@ -918,7 +918,9 @@ QString MainWindowPockemul::saveassession()
 
 
 
-void MainWindowPockemul::paintEvent(QPaintEvent *event) {}
+void MainWindowPockemul::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event)
+}
 
 void MainWindowPockemul::updateTimer()
 {
@@ -1169,12 +1171,16 @@ void MainWindowPockemul::mouseMoveEvent		( QMouseEvent * event ){
 }
 
 void MainWindowPockemul::mouseReleaseEvent	( QMouseEvent *event){
+    Q_UNUSED(event)
+
     startPosDrag = false;
     setCursor(Qt::ArrowCursor);
 
 }
 
-void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){}
+void MainWindowPockemul::keyReleaseEvent	( QKeyEvent * event ){
+    Q_UNUSED(event)
+}
 
 void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
 //    qWarning()<<"MainWindowPockemul::keyPressEvent";
@@ -1182,6 +1188,8 @@ void MainWindowPockemul::keyPressEvent		( QKeyEvent * event ){
 }
 
 void MainWindowPockemul::resizeEvent		( QResizeEvent * event ){
+    Q_UNUSED(event)
+
 #ifndef EMSCRIPTEN
     downloadManager->resize();
 #endif
@@ -1230,7 +1238,7 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
 
 void MainWindowPockemul::closeEvent(QCloseEvent *event)
 {
-
+    Q_UNUSED(event)
 }
 
 void MainWindowPockemul::slotMsgError(QString msg) {
@@ -1305,6 +1313,8 @@ void MainWindowPockemul::optionFound(const QString & name, const QVariant & valu
 //          pPC->maximizeWidth();
 //      else
 //          pPC->maximizeHeight();
+#else
+      Q_UNUSED(pPC)
 #endif
   }
 }

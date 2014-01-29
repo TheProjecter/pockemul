@@ -27,7 +27,9 @@ TransMap KeyMaprlp1004a[]={
 int KeyMaprlp1004aLenght = 3;
 
 Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
-{                                                               //[constructor]
+{ //[constructor]
+    Q_UNUSED(parent)
+
     setfrequency( 0);
     paperbuf    = 0;
     paperdisplay= 0;
@@ -162,8 +164,8 @@ bool Crlp1004a::run(void)
         else if (adr == 0x3060){
             bus.setData(tapeInput? 0x80 : 0x00);
         }
-
         break;
+    default: break;
 
     }
 
@@ -200,7 +202,7 @@ void Crlp1004a::SaveAsText(void)
         AddLog(LOG_PRINTER,TextBuffer.data());
 }
 
-void Crlp1004a::Refresh(qint8 data)
+void Crlp1004a::Refresh(quint8 data)
 {
 
     QPainter painter;

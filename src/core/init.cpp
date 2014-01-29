@@ -69,7 +69,7 @@ void CPocketThread::run()
                     if (pPC->pTIMER->state <= cs)
                     {
                         if (pPC->ioFreq > 0) {
-                            int step = MIN(f / pPC->ioFreq - pPC->pTIMER->deltaStep,cs-pPC->pTIMER->state);
+                            int step = MIN((quint64)(f / pPC->ioFreq - pPC->pTIMER->deltaStep),cs-pPC->pTIMER->state);
                             pPC->pTIMER->deltaStep = pPC->runRange(step) - step;
                         }
                         else {

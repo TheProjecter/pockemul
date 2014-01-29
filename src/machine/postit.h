@@ -49,7 +49,7 @@ public slots:
     void
     urlText() //this is the SLOT for the button trigger(bool)
     {
-        bool isBold= true;
+
         QTextCharFormat fmt;
         qWarning()<<"url:"<<acceptRichText();
         QTextCursor cursor = textCursor();

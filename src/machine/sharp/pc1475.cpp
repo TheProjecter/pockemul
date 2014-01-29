@@ -66,7 +66,7 @@ Cpc1475::Cpc1475(CPObject *parent)	: Cpc1360(parent)
 bool Cpc1475::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
-	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);	// ROM area(0000-1fff) 
+    if (                 (*d<=0x1FFF) )	return(0);	// ROM area(0000-1fff)
 	if ( (*d>=0x2000) && (*d<=0x27FF) )	return(0);
     if ( (*d>=0x2800) && (*d<=0x2B7B) ) { pLCDC->SetDirtyBuf(*d-0x2800);pLCDC->redraw = true;return(1);			/* LCDC (0200x) */	}
 	if ( (*d>=0x2800) && (*d<=0x33FF) ) return(1);
@@ -131,6 +131,8 @@ bool Cpc1475::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc1475::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
+    Q_UNUSED(data)
+
 	if ( (*d>=0x4000) && (*d<=0x7FFF) )	{ *d += 0xC000 + ( RomBank * 0x4000 ); }	// Manage ROM Bank
 	if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ *d += 0x28000 + ( RamBank * 0x8000 );}	// Manage ram bank
 

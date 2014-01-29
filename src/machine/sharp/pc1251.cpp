@@ -4,6 +4,8 @@
 
 Cpc1251::Cpc1251(CPObject *parent)	: Cpc1250(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setcfgfname("pc1251");
 
     SessionHeader	= "PC1251PKM";

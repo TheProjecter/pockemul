@@ -24,6 +24,8 @@ public:
 
     Ctrspc3Ext(CPObject *parent = 0)	: Cpc1251(this)
     {								//[constructor]
+        Q_UNUSED(parent)
+
         setcfgfname("trspc3ext");
 
         SessionHeader	= "TRSPC3EXTPKM";

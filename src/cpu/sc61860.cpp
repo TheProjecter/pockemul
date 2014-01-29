@@ -2223,7 +2223,7 @@ INLINE void CSC61860::Op_df(void)
 
     //compute_xout();
 
-    if (fp_log) fprintf(fp_log,"check outc %lld %d\n",pPC->pTIMER->state,pPC->Get_Port(PORT_C)>>4)
+    if (fp_log) fprintf(fp_log,"check outc %lld %d\n",pPC->pTIMER->state,pPC->Get_Port(PORT_C)>>4);
 	AddLog(LOG_CPU,"OUTC");
 
 }

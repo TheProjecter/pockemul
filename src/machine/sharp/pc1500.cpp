@@ -92,6 +92,8 @@ Cpc15XX::~Cpc15XX()
 
 Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setfrequency( (int) 2600000/2);
     setcfgfname("pc1500a");
 
@@ -120,6 +122,8 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
 
 Ctrspc2::Ctrspc2(CPObject *parent)	: Cpc1500(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setcfgfname("trspc2");
 
     SessionHeader	= "TRSPC-2PKM";
@@ -188,13 +192,15 @@ bool Cpc15XX::InitDisplay(void)
 
 bool Cpc15XX::LoadConfig(QXmlStreamReader *xmlIn)
 {
-
+    Q_UNUSED(xmlIn)
 
     return true;
 }
 
 bool Cpc15XX::LoadConfig(QFile *file)
 {
+    Q_UNUSED(file)
+
 	AddLog(LOG_FUNC,"Cpc1500::LoadConfig");
 
 //--	fread(&Extension,1,sizeof(TExtension),fp);
@@ -203,6 +209,8 @@ bool Cpc15XX::LoadConfig(QFile *file)
 
 bool Cpc15XX::SaveConfig(QFile *file)
 {
+    Q_UNUSED(file)
+
 	AddLog(LOG_FUNC,"Cpc1500::SaveConfig");
 
 //--	fwrite(&Extension,1,sizeof(TExtension),fp);
@@ -211,7 +219,7 @@ bool Cpc15XX::SaveConfig(QFile *file)
 
 bool Cpc15XX::SaveConfig(QXmlStreamWriter *xmlOut)
 {
-
+    Q_UNUSED(xmlOut)
 
     return true;
 }
@@ -273,10 +281,10 @@ bool Cpc15XX::init(void)				// initialize
 
 bool Cpc15XX::run(void) 
 {
-	UINT32 previous_pc;
+//	UINT32 previous_pc;
 	UINT32 Current_PC;	
 
-	previous_pc = pCPU->get_PC();
+//	previous_pc = pCPU->get_PC();
 
 // ---------------------------------------------------------	
 	CpcXXXX::run();
@@ -484,9 +492,11 @@ inline bool Cpc1500A::Mem_Mirror(UINT32 *d)
 
 bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data) 
 {
+    Q_UNUSED(data)
+
 	Mem_Mirror(d);
 
-	if ( (*d>=0x0000) && (*d<=0x1FFF) )	{ return(EXTENSION_CE161_CHECK); }						// ROM area(0000-3FFF) 16K
+    if (                 (*d<=0x1FFF) )	{ return(EXTENSION_CE161_CHECK); }						// ROM area(0000-3FFF) 16K
 	if ( (*d>=0x2000) && (*d<=0x37FF) )	{ return(EXTENSION_CE161_CHECK | EXTENSION_CE159_CHECK); }	// ROM area(0000-3FFF) 16K
 	if ( (*d>=0x3800) && (*d<=0x3FFF) )	{ return(EXTENSION_CE161_CHECK | EXTENSION_CE159_CHECK| EXTENSION_CE155_CHECK); }		// ROM area(0000-3FFF) 16K
 	if ( (*d>=0x4000) && (*d<=0x47FF) )	{ return(1); }										// RAM area(0000-3FFF) 16K
@@ -512,9 +522,11 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data) 
 {
+    Q_UNUSED(data)
+
 	Mem_Mirror(d);
 
-	if ( (*d>=0x0000) && (*d<=0x1FFF) )	{ return(EXTENSION_CE161_CHECK); }						// ROM area(0000-3FFF) 16K
+    if (                 (*d<=0x1FFF) )	{ return(EXTENSION_CE161_CHECK); }						// ROM area(0000-3FFF) 16K
 	if ( (*d>=0x2000) && (*d<=0x37FF) )	{ return(EXTENSION_CE161_CHECK | EXTENSION_CE159_CHECK); }	// ROM area(0000-3FFF) 16K
 	if ( (*d>=0x3800) && (*d<=0x3FFF) )	{ return(EXTENSION_CE161_CHECK | EXTENSION_CE159_CHECK | EXTENSION_CE155_CHECK); }		// ROM area(0000-3FFF) 16K
     if ( (*d>=0x4000) && (*d<=0x57FF) )	{ return(1); }										// RAM area(0000-3FFF) 16K
@@ -539,6 +551,8 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
 { 
+    Q_UNUSED(data)
+
 	Mem_Mirror(d);
 	if (*d == 0x4000) AddLog(LOG_MASTER,tr("read 0x04000"));
 	if (*d == 0x4001) AddLog(LOG_MASTER,tr("read 0x04001"));
@@ -561,14 +575,22 @@ bool Cpc1500A::Chk_Adr_R(UINT32 *d,UINT32 *data)
 	return(1); 
 }
 
-void Cpc15XX::Set_Port(PORTS Port,BYTE data){}
-BYTE Cpc15XX::Get_Port(PORTS Port){return(0);}
+void Cpc15XX::Set_Port(PORTS Port,BYTE data){
+    Q_UNUSED(Port)
+    Q_UNUSED(data)
+}
+BYTE Cpc15XX::Get_Port(PORTS Port){
+    Q_UNUSED(Port)
+    return(0);
+}
 
 #define KS		( pKEYB->Get_KS()) 
 #define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
 
 UINT8 Cpc15XX::in(UINT8 address)
 {
+    Q_UNUSED(address)
+
 //return 1^0xff;
 //	static int cnt=0;
 	UINT8 data=0;
@@ -659,6 +681,8 @@ UINT8 Cpc15XX::in(UINT8 address)
 
 void Cpc15XX::Regs_Info(UINT8 Type)
 {
+    Q_UNUSED(Type)
+
 	strcat(Regs_String,	"");
 	CpcXXXX::Regs_Info(0);
 	pLH5810->Regs_Info(0);

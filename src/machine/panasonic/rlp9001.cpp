@@ -12,7 +12,7 @@
 
 Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
 {                                                       //[constructor]
-
+    Q_UNUSED(parent)
 
     setfrequency( 0);
     BackGroundFname     = P_RES(":/rlh1000/rlp9002.png");
@@ -78,6 +78,7 @@ Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
         SlotList.append(CSlot(16 , 0x18000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 7"));
         SlotList.append(CSlot(16 , 0x1C000 , "" , ""        , CSlot::CUSTOM_ROM , "ROM bank 8"));
         break;
+    default: break;
     }
 
 }
@@ -162,7 +163,8 @@ bool Crlp9001::run(void)
     quint32 adr = bus.getAddr();
 
     switch (bus.getFunc()) {
-    case BUS_SLEEP: break;
+    case BUS_SLEEP:
+    case BUS_ACK: break;
     case BUS_WRITEDATA:
 
         switch (model) {
@@ -172,6 +174,7 @@ bool Crlp9001::run(void)
         case RLP9003R:if((adr>=0x8000) && (adr < 0xc000)) mem[adr-0x8000] = bus.getData(); break;
         case RLP9004:
         case RLP9005: if((adr>=0x8000) && (adr < 0xc000)) mem[(adr-0x8000)+bank*0x4000] = bus.getData(); break;
+        default: break;
         }
 
         break;
@@ -199,6 +202,7 @@ bool Crlp9001::run(void)
                 bus.setData(mem[adr-0x4000+bank*0x4000]);
             }
             break;
+        default: break;
         }
 
         break;
@@ -206,6 +210,7 @@ bool Crlp9001::run(void)
         bus.setData(0xff);
         bus.setFunc(BUS_READDATA);
         break;
+    default: break;
     }
 
     pCONNECTOR->Set_values(bus.toUInt64());
@@ -261,6 +266,7 @@ bool Crlp9001::SaveSession_File(QXmlStreamWriter *xmlOut)
                 switch (SlotList[s].getType()) {
                 case CSlot::RAM:
                 case CSlot::CUSTOM_ROM: Mem_Save(xmlOut,s); break;
+                default: break;
                 }
             }
         xmlOut->writeEndElement();  // memory
@@ -281,7 +287,8 @@ bool Crlp9001::LoadSession_File(QXmlStreamReader *xmlIn)
                 case CSlot::RAM:
                 case CSlot::CUSTOM_ROM:
                     AddLog(LOG_MASTER,"    Load Slot"+SlotList[s].getLabel());
-                    Mem_Load(xmlIn,s);
+                    Mem_Load(xmlIn,s); break;
+                default: break;
                 }
             }
         }
@@ -432,10 +439,10 @@ void Crlp9001::ComputeKey()
 
 void Crlp9001::addModule(QString item,CPObject *pPC)
 {
+    Q_UNUSED(pPC)
+
     qWarning()<<"Add Module:"<< item;
     if ( (currentSlot<0) || (currentSlot>7)) return;
-
-    CSlot::SlotType customModule = CSlot::ROM;
 
     int _res = 0;
     QString moduleName;
@@ -448,7 +455,7 @@ void Crlp9001::addModule(QString item,CPObject *pPC)
                     tr("Choose a Capsule file"),
                     ".",
                     tr("Module File (*.bin)"));
-        customModule = CSlot::CUSTOM_ROM;
+//        customModule = CSlot::CUSTOM_ROM;
     }
 
     if (moduleName.isEmpty()) return;

@@ -40,7 +40,7 @@ public:
     QImage *paperbuf;
     QImage *paperdisplay;
 
-    void Refresh(qint8 data);
+    void Refresh(quint8 data);
 #ifndef NO_SOUND
     QSound *bells;
 #endif

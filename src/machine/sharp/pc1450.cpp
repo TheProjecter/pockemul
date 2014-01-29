@@ -96,9 +96,7 @@ BYTE	Cpc1450::Get_PortA(void)
 
 bool Cpc1450::Chk_Adr(UINT32 *d,UINT32 data)
 {
-	if ( (*d>=0x7000) && (*d<=0x708F) ) {pLCDC->SetDirtyBuf(*d-0x7000);return(1);	}
-	if ( (*d>=0x7E00) && (*d<=0x7FFF) )	{pKEYB->Set_KS( (BYTE) data & 0x7F );return(1);}
-	if ( (*d>=0x0000) && (*d<=0x1FFF) ) return(0);			// ROM area(0000-1fff) 
+    if (                 (*d<=0x1FFF) ) return(0);			// ROM area(0000-1fff)
 
     if ( (*d>=0x2000) && (*d<=0x3FFF) && (EXTENSION_CE201M_CHECK | EXTENSION_CE212M_CHECK) ) {
 				*d+=0x2000;
@@ -107,7 +105,8 @@ bool Cpc1450::Chk_Adr(UINT32 *d,UINT32 data)
 				return(EXTENSION_CE202M_CHECK | EXTENSION_CE203M_CHECK); }						// ROM area(0000-3FFF) 16K
 	if ( (*d>=0x4000) && (*d<=0x5FFF) )	{ 
 				return( EXTENSION_CE201M_CHECK | EXTENSION_CE202M_CHECK | EXTENSION_CE203M_CHECK); }	// ROM area(0000-3FFF) 16K
-
+    if ( (*d>=0x7000) && (*d<=0x708F) ) {pLCDC->SetDirtyBuf(*d-0x7000);return(1);	}
+    if ( (*d>=0x7E00) && (*d<=0x7FFF) )	{pKEYB->Set_KS( (BYTE) data & 0x7F );return(1);}
 	if ( (*d>=0x6000) && (*d<=0x7FFF) ) return(1);			// Internal RAM area(6000-8000)
 	if ( (*d>=0x8000) && (*d<=0xFFFF) ) return(0);			// ROM area(8000-ffff) 
 
@@ -116,6 +115,9 @@ bool Cpc1450::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc1450::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
+
     return(1);
 }
 

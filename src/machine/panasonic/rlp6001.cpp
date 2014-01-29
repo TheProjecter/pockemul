@@ -16,7 +16,7 @@
 
 Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]
-
+    Q_UNUSED(parent)
 
     setfrequency( 0);
     BackGroundFname     = P_RES(":/rlh1000/rlp6001.png");
@@ -44,28 +44,19 @@ bool Crlp6001::run(void)
 //    if (!_log) _log=fopen("bus.log","wt");	// Open log file
 
     Cbus bus;
-
     bus.fromUInt64(pMAINCONNECTOR->Get_values());
-
     if (bus.getFunc()==BUS_SLEEP) return true;
 
     quint8 dest = bus.getDest()-1;
 
     if (_log) fprintf(_log,bus.toLog().toLatin1().data());
 
-
-#if 1
     if (bus.getDest()==30) {
         // BUS_QUERY on Dest 30 : Ask all ext for F7 return (ROM Expander)
         if ( bus.getFunc()==BUS_QUERY) {
 //            qWarning()<<"BUS_QUERY on Dest 30";
-            // Query all extensions
-            quint8 ret=0;
             for (int i=0; i<5;i++) {
-                Cbus _b;
-//                _b.setDest(0);
-                _b.setFunc(BUS_QUERY);
-                _b.setData(0);
+                Cbus _b(0,BUS_QUERY,0);
                 pEXTCONNECTOR[i]->Set_values(_b.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
                 _b.fromUInt64(pEXTCONNECTOR[i]->Get_values());
@@ -81,7 +72,6 @@ bool Crlp6001::run(void)
         if (bus.getFunc()==BUS_SELECT) {
 //            qWarning()<<"BUS_SELECT on Dest 30";
             for (int i=0; i<5;i++) {
-//                bus.setDest(0);
                 pEXTCONNECTOR[i]->Set_values(bus.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
                 Cbus _b;
@@ -116,14 +106,11 @@ bool Crlp6001::run(void)
             }
         }
     }
-#endif
-//    if ( dest > 0x06) dest -=7;
 
     if (dest >= 5) {
         if (_log) fprintf(_log,"\n");
         return true;
     }
-
 
     bus.setDest(0);
     // copy MainConnector to Ext Connectors

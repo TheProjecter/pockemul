@@ -143,7 +143,7 @@ bool Cpc1403::Get_Connector(void)
 bool Cpc1403::Chk_Adr(UINT32 *d,UINT32 data)
 {
 
-	if ( (*d>=0x0000) && (*d<=0x1FFF) )	{ return(0); }		// CPU ROM
+    if (                 (*d<=0x1FFF) )	{ return(0); }		// CPU ROM
 	if ( (*d>=0x2000) && (*d<=0x2FFF) )	{ return(0); }		// unused
 	if ( (*d>=0x3000) && (*d<=0x30FF) )	{ pLCDC->SetDirtyBuf(*d-0x3000);return(1); }
 	if ( (*d>=0x3100) && (*d<=0x3BFF) )	{ return(1); }
@@ -177,6 +177,8 @@ bool Cpc1403::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc1403::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
+    Q_UNUSED(data)
+
     if ( (*d>=0x4000) && (*d<=0x7FFF) )	{
 //        *d += 0xC000 + (RomBank * 0x4000);
         *d += memOffset;

@@ -81,6 +81,8 @@ Cpc1250::Cpc1250(CPObject *parent)	: CpcXXXX(parent)
 
 Ctrspc3::Ctrspc3(CPObject *parent)	: Cpc1250(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setcfgfname("trspc3");
 
     SessionHeader	= "TRSPC3PKM";
@@ -154,8 +156,9 @@ bool Cpc1250::init()
 
 bool Cpc1250::run(void)
 {
-
     CpcXXXX::run();
+
+    return true;
 }
 
 bool Cpc1250::Set_Connector(void)
@@ -208,6 +211,8 @@ bool Cpc1250::Mem_Mirror(UINT32 *d)
 
 bool Cpc1250::Chk_Adr(UINT32 *d,UINT32 data)
 {
+    Q_UNUSED(data)
+
 //	Mem_Mirror(d);
 
 	if ( (*d>=0xC000) && (*d<=0xC7FF) )	return(true);		// RAM area(c000-c800)
@@ -219,6 +224,9 @@ bool Cpc1250::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc1250::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
+
 //	Mem_Mirror(d);
 	return(true);
 }
@@ -339,6 +347,7 @@ BYTE	Cpc1250::Get_PortB(void)
 
 bool Cpc1250::LoadExtra(QFile *file)
 {
+    Q_UNUSED(file)
 #if 0
 	QDataStream in(file);
 	in >> PowerSwitch;
@@ -347,6 +356,7 @@ bool Cpc1250::LoadExtra(QFile *file)
 }
 bool Cpc1250::SaveExtra(QFile *file)	
 {
+    Q_UNUSED(file)
 #if 0
 	QDataStream out(file);
 	out << PowerSwitch;

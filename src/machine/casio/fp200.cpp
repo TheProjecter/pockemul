@@ -89,7 +89,9 @@ Cfp200::~Cfp200() {
 
 bool Cfp200::Chk_Adr(UINT32 *d, UINT32 data)
 {
-    if ( (*d>=0x0000) && (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
+    Q_UNUSED(data)
+
+    if (                 (*d<=0x7FFF) )	return(false);		// ROM area(0000-7FFF)
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	{ return(true);	}
     if ( (*d>=0xA000) && (*d<=0xBFFF) )	{ return(ext_MemSlot1->ExtArray[ID_FP201]->IsChecked);	}
     if ( (*d>=0xC000) && (*d<=0xDFFF) )	{ return(ext_MemSlot2->ExtArray[ID_FP201]->IsChecked);	}
@@ -100,6 +102,9 @@ bool Cfp200::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Cfp200::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
+
     return true;
 }
 
@@ -221,6 +226,8 @@ UINT8 Cfp200::out(UINT8 Port, UINT8 Value)
 
 UINT8 Cfp200::in8(UINT16 Port)
 {
+    Q_UNUSED(Port)
+
     return 0;
 }
 
@@ -228,16 +235,24 @@ UINT8 Cfp200::in8(UINT16 Port)
 
 UINT8 Cfp200::out8(UINT16 Port, UINT8 x)
 {
+    Q_UNUSED(Port)
+    Q_UNUSED(x)
+
     return 0;
 }
 
 UINT16 Cfp200::in16(UINT16 Port)
 {
+    Q_UNUSED(Port)
+
     return 0;
 }
 
 UINT16 Cfp200::out16(UINT16 Port, UINT16 x)
 {
+    Q_UNUSED(Port)
+    Q_UNUSED(x)
+
     return 0;
 }
 
@@ -360,12 +375,14 @@ void Cfp200::TurnOFF()
 
 bool Cfp200::SaveConfig(QXmlStreamWriter *xmlOut)
 {
+    Q_UNUSED(xmlOut)
 
     return true;
 }
 
 bool Cfp200::LoadConfig(QXmlStreamReader *xmlIn)
 {
+    Q_UNUSED(xmlIn)
 
     return true;
 }

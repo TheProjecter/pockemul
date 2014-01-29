@@ -377,7 +377,7 @@ QString m_getArgs() {
             return s;
 
 #endif
-
+            return QString("");
 }
 
 int ask(QWidget *parent, QString msg, int nbButton) {
@@ -407,6 +407,7 @@ int ask(QWidget *parent, QString msg, int nbButton) {
         switch (QMessageBox::question(parent, "PockEmul",msg,QMessageBox::Yes|QMessageBox::No)) {
         case QMessageBox::Yes: return 1;
         case QMessageBox::No: return 2;
+        default: return 0;
         }
     }
     if (nbButton==3) {
@@ -414,11 +415,12 @@ int ask(QWidget *parent, QString msg, int nbButton) {
         case QMessageBox::Yes: return 1;
         case QMessageBox::No: return 2;
         case QMessageBox::Cancel: return 3;
+        default: return 0;
         }
     }
 
 #endif
-
+    return 0;
 }
 
 void Vibrate() {
@@ -485,7 +487,9 @@ void m_addShortcut(QString name, QString param) {
             // Don't forget to detach from current thread
             s_javaVM->DetachCurrentThread();
             qWarning()<<"End addShortcut";
-
+#else
+    Q_UNUSED(name)
+    Q_UNUSED(param)
 #endif
 }
 

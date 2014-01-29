@@ -79,7 +79,7 @@ CPObject::CPObject(CPObject *parent):CViewObject(parent)
 		
 		Front = true;
         fullscreenMode = false;
-		fillSoundBuffer_old_state = -1;
+        fillSoundBuffer_old_state = 0;
 
 		dialogkeylist	= 0;
 		dialogdump		= 0;
@@ -405,9 +405,10 @@ int CPObject::exitsound()
 void CPObject::fillSoundBuffer(BYTE val)
 {
 #ifndef NO_SOUND
-    quint64 new_state,delta_state;
+//    quint64 new_state;
+    quint64 delta_state;
 	 
-	if (fillSoundBuffer_old_state == -1) fillSoundBuffer_old_state = pTIMER->state;
+    if (fillSoundBuffer_old_state == 0) fillSoundBuffer_old_state = pTIMER->state;
 		
     if (getfrequency()==0) {
         mainwindow->audioMutex.lock();
@@ -417,9 +418,9 @@ void CPObject::fillSoundBuffer(BYTE val)
     }
 
 //    qWarning("freq:%i",getfrequency());
-	new_state = pTIMER->state;
+//	new_state = pTIMER->state;
     delta_state = pTIMER->state - fillSoundBuffer_old_state;
-    if (delta_state < 0) fillSoundBuffer_old_state=new_state;
+//    if (delta_state < 0) fillSoundBuffer_old_state=new_state;
 	// Calculate nb of state to skip corresponding to the CPU frequency
     quint64 wait = ((pTIMER->CPUSpeed*getfrequency()) / SAMPLERATE );
 //	fprintf(fp_tmp,"%s\n",tr("%1 : wait = %2  -  delta=%3  new:%4 - old:%5  ptimer:%6").arg(getName()).arg(wait).arg(delta_state).arg(new_state).arg(fillSoundBuffer_old_state).arg((int)pTIMER).toLocal8Bit().data());
@@ -566,6 +567,8 @@ void CPObject::wheelEvent(QWheelEvent *event) {
 
 void CPObject::tapAndHold(QMouseEvent * event)
 {
+    Q_UNUSED(event)
+
 #if 0
 #ifdef Q_OS_ANDROIS
     QContextMenuEvent *cme = new QContextMenuEvent(QContextMenuEvent::Mouse,QPoint(0,0),QPoint(0,0));
@@ -923,6 +926,8 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
 
 bool CPObject::SaveSession_File(QXmlStreamWriter *xmlOut)
 {
+    Q_UNUSED(xmlOut)
+
     return true;
 }
 
@@ -1080,12 +1085,12 @@ void CPObject::keyPressEvent (QKeyEvent * event )
     }
 }
 
-void CPObject::focusInEvent ( QFocusEvent * event )
+void CPObject::focusInEvent ( QFocusEvent *  )
 {
 
 }
 
-void CPObject::focusOutEvent ( QFocusEvent * event )
+void CPObject::focusOutEvent (QFocusEvent *)
 {
 }
 

@@ -82,11 +82,11 @@ bool CLH5810::step()
 		New_L=false;
 	}
 	if (IRQ)	lh5810.r_if|=0x01;
-	if (PB7)	lh5810.r_if|=0x02;
+    if (LH5810_PB7)	lh5810.r_if|=0x02;
 
 	if (
 		( (lh5810.r_msk & 0x01) && IRQ ) ||
-		( (lh5810.r_msk & 0x02) && PB7 )
+        ( (lh5810.r_msk & 0x02) && LH5810_PB7 )
 		)
 	{
 		INT=true;

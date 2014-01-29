@@ -24,13 +24,15 @@
 #include "mainwindowpockemul.h"
 extern MainWindowPockemul *mainwindow;
 
-#define AddLog(Level,msg); 	\
+#define AddLog(Level,msg) 	\
     { \
         if ( mainwindow->dialoglog) {\
-            if ((Level) & mainwindow->dialoglog->LogLevel) \
+            if ((Level) & mainwindow->dialoglog->LogLevel) {\
                 mainwindow->SendSignal_AddLogItem(msg); \
-            if (Level == 0) \
+            } \
+            if ((Level) == 0) {\
                 mainwindow->SendSignal_AddLogConsole(msg); \
+            } \
         } \
     }
 

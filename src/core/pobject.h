@@ -206,8 +206,8 @@ public:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent( QMouseEvent * event );
     void wheelEvent(QWheelEvent *event);
-	void focusInEvent ( QFocusEvent * event ); 
-	void focusOutEvent ( QFocusEvent * event ); 
+    void focusInEvent (QFocusEvent *);
+    void focusOutEvent ( QFocusEvent *  );
 
 
     virtual void raise();
@@ -267,7 +267,7 @@ private:
 	
 
 	int		iChanIndex;
-	qint64	fillSoundBuffer_old_state;	
+    quint64	fillSoundBuffer_old_state;
     QByteArray audioBuff;
     QByteArray tempBuff;
 
@@ -276,7 +276,7 @@ private:
     bool disp_on;
     bool disp_onRaised;
 
-    qint64 resetAt,hardresetAt;
+    quint64 resetAt,hardresetAt;
 
 
     TapAndHoldGesture* _gestureHandler;

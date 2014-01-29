@@ -12,8 +12,9 @@ enum BUS_FUNC{BUS_SLEEP,BUS_WRITEDATA,BUS_READDATA,BUS_QUERY,BUS_SELECT,BUS_INTR
 
 class Cbus {
 
-
 public:
+    Cbus(quint8 dest=0,BUS_FUNC func=BUS_SLEEP,quint8 data=0);
+
     quint64 toUInt64() const;
     void fromUInt64(quint64 val);
     quint8 getData() const { return data;}

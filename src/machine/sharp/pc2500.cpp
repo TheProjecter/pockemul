@@ -17,6 +17,8 @@
 
 Cpc2500::Cpc2500(CPObject *parent)	: Cpc1350(this)
 {								//[constructor]
+    Q_UNUSED(parent)
+
     setcfgfname("pc2500");
 
     SessionHeader	= "PC2500PKM";
@@ -211,10 +213,11 @@ bool Cpc2500::init(void) {
 
 bool Cpc2500::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
-    if ( (*d >= 0x8000) && (*d<=0xFFFF) && (RomBank & 0x02) ) {
-        *d += 0x8000;
-        return(1);
-    }
+    Q_UNUSED(data)
+
+    if (                   (*d<=0x1FFF) ) { return(0);}
+    if ( (*d>=0x2000) && (*d<=0x3FFF) && EXTENSION_CE201M_CHECK ) { *d+=0x2000; return true;}  // 8Kb Ram Card Image
+    if ( (*d >= 0x8000) && (*d<=0xFFFF) && (RomBank & 0x02) ) { *d += 0x8000; return true; }
 
     if (ProtectMemory) {
         if ( (*d>=0x8000) && (*d<=0xFFFF) )	{
@@ -226,11 +229,10 @@ bool Cpc2500::Chk_Adr_R(UINT32 *d,UINT32 *data)
         }
         return (1);
     }
-    if ( (*d>=0x2000) && (*d<=0x3FFF) && EXTENSION_CE201M_CHECK ) { *d+=0x2000;}										// 8Kb Ram Card Image
 
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]=%02x (%c)\n",(uint)*d,mem[*d],mem[*d]);
-    if ( (*d>=0x0000) && (*d<=0x1FFF) ) { return(0);}
-    return(1);
+
+    return true;
 }
 
 bool Cpc2500::run(void)

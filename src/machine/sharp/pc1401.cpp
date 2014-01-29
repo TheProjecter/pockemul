@@ -181,8 +181,9 @@ bool Cpc1401::Get_Connector(void)
 
 bool Cpc1401::Chk_Adr(UINT32 *d,UINT32 data)
 {
+    Q_UNUSED(data)
 
-	if ( (*d>=0x0000) && (*d<=0x1FFF) )	return(0);			// ROM area(0000-1fff) 
+    if (                 (*d<=0x1FFF) )	return(0);			// ROM area(0000-1fff)
 	if ( (*d>=0x8000) && (*d<=0xFFFF) )	return(0);			// ROM area(8000-ffff) 
 	if ( (*d>=0x6000) && (*d<=0x67FF) ) {	pLCDC->SetDirtyBuf(*d-0x6000);	return(1);	}
 	if ( (*d>=0x2800) && (*d<=0x47FF) )	return(1);
@@ -193,7 +194,10 @@ bool Cpc1401::Chk_Adr(UINT32 *d,UINT32 data)
 
 bool Cpc1401::Chk_Adr_R(UINT32 *d,UINT32 *data)
 {
-	return(1);
+    Q_UNUSED(d)
+    Q_UNUSED(data)
+
+    return true;
 }
 
 

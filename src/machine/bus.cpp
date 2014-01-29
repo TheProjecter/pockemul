@@ -1,5 +1,12 @@
 #include "bus.h"
 
+Cbus::Cbus(quint8 dest, BUS_FUNC func, quint8 data)
+{
+    this->dest = dest;
+    this->func = func;
+    this->data = data;
+}
+
 quint64 Cbus::toUInt64() const
 {
     quint64 serialized = 0;
