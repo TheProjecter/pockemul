@@ -9,12 +9,12 @@
 #include "Log.h"
 
 
-
-
 //FIXME: on Android, background color issue
 
 Cpostit::Cpostit(CPObject *parent )   : CPObject(this)
-{                                                       //[constructor]
+{
+    //[constructor]
+    Q_UNUSED(parent)
 
 //    setWindowFlags(Qt::SubWindow);
 //    setParent(parent);

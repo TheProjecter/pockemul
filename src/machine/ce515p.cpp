@@ -1,6 +1,4 @@
 
-
-
 #include <QPainter>
 #include <QResource>
 
@@ -854,7 +852,7 @@ void Cce515p::DrawLine(int xa, int ya, int xb, int yb) {
    else {
     dp += NE;
     y+=incrmY;
-   }
+       }
   }
  }
  else if (dx<dy) {

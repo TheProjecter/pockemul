@@ -247,7 +247,7 @@ void Crlp1004a::Refresh(quint8 data)
 
 // Draw printer head
 //    painter.fillRect(QRect(0 , 147,407,2),QBrush(QColor(0,0,0)));
-//    painter.fillRect(QRect(21 + (7 * posX) , 147,14,2),QBrush(QColor(255,255,255)));
+//    painter.fillRect(QRect(21 + (7 * posX) , 137,14,2),QBrush(QColor(128,0,0)));
 
     painter.end();
 

@@ -10,7 +10,7 @@
 
 Cpotar::Cpotar(CPObject *parent )	: CPObject(this)
 {							//[constructor]
-
+    Q_UNUSED(parent)
 
     setfrequency( 0);
     BackGroundFname	= P_RES(":/ext/jack.png");

@@ -90,9 +90,6 @@ Ctpc8300::Ctpc8300(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"tpc8300.map");
 
-
-    //    i86cpu = (Ci80x86*)pCPU;
-
     ioFreq = 0;
 }
 
@@ -200,6 +197,7 @@ bool Ctpc8300::run() {
 
 bool Ctpc8300::Chk_Adr(UINT32 *d, UINT32 data)
 {
+    Q_UNUSED(data)
 
     if(*d < 0x8000) return false; /* ROM */
 //    if(*d < 0xE000) return false; /* RAM */
@@ -209,6 +207,8 @@ bool Ctpc8300::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Ctpc8300::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
 
     return true;
 }

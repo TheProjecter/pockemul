@@ -190,6 +190,7 @@ bool Cpc2001::run() {
 
 bool Cpc2001::Chk_Adr(UINT32 *d, UINT32 data)
 {
+    Q_UNUSED(data)
 
     if(*d >= 0x6000) return true; /* RAM */
 
@@ -198,6 +199,8 @@ bool Cpc2001::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Cpc2001::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
 
     return true;
 }
@@ -217,6 +220,9 @@ UINT8 Cpc2001::in(UINT8 Port)
 
 UINT8 Cpc2001::out(UINT8 Port, UINT8 x)
 {
+    Q_UNUSED(Port)
+    Q_UNUSED(x)
+
 //    switch (Port) {
 //    case 0x01 : portB = x; break;
 //    }

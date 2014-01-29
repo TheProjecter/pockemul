@@ -92,14 +92,10 @@ Clbc1100::Clbc1100(CPObject *parent)	: CpcXXXX(parent)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"lbc1100.map");
 
-
-    //    i86cpu = (Ci80x86*)pCPU;
-
     ioFreq = 0;
 }
 
 Clbc1100::~Clbc1100() {
-    // BUG : crash when deleting those pointers. Need investigation
     for (int i=0;i<4;i++) {
         delete(upd16434[i]);
     }
@@ -123,7 +119,6 @@ bool Clbc1100::init(void)				// initialize
     WatchPoint.add(&pCONNECTOR_value,64,20,this,"20 pins connector");
 
     portB = 0;
-
 
 initcmd = true;
 
@@ -223,6 +218,7 @@ bool Clbc1100::run() {
 
 bool Clbc1100::Chk_Adr(UINT32 *d, UINT32 data)
 {
+    Q_UNUSED(data)
 
     if(*d < 0x8000) return false; /* ROM */
 //    if(*d < 0xE000) return false; /* RAM */
@@ -232,6 +228,8 @@ bool Clbc1100::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Clbc1100::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
 
     return true;
 }

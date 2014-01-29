@@ -313,9 +313,10 @@ bool Cx07::run() {
 
 bool Cx07::Chk_Adr(UINT32 *d, UINT32 data)
 {
-    if ( (*d>=0x0000) && (*d<=0x9FFF) )	return(true);		// RAM area()
+    Q_UNUSED(data)
 
-    if ( (*d>=0x0000) && (*d<=0x5FFF) )	return(true);		// RAM area()
+    if (                 (*d<=0x9FFF) )	return(true);		// RAM area()
+    if (                 (*d<=0x5FFF) )	return(true);		// RAM area()
     if ( (*d>=0x8000) && (*d<=0x9FFF) )	return(true);		// RAM area()
 
     return false;
@@ -323,6 +324,9 @@ bool Cx07::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Cx07::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(d)
+    Q_UNUSED(data)
+
     return true;
 }
 
