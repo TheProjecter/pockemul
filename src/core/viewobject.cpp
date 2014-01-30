@@ -14,6 +14,7 @@ extern MainWindowPockemul* mainwindow;
 
 CViewObject::CViewObject(CViewObject *parent):QWidget(mainwindow->centralwidget)
 {
+    FrontImage=TopImage=LeftImage=RightImage=BottomImage=BackImage=0;
 }
 
 CViewObject::~CViewObject()
@@ -78,6 +79,12 @@ QImage * CViewObject::CreateImage(QSize size,QString fname,bool Hmirror,bool Vmi
 
 bool CViewObject::InitDisplay(void)
 {
+    delete TopImage;
+    delete LeftImage;
+    delete RightImage;
+    delete BottomImage;
+    delete BackImage;
+
     if (!TopFname.isEmpty()) TopImage = CreateImage(viewRect(TOPview),TopFname);
     if (!LeftFname.isEmpty()) LeftImage = CreateImage(viewRect(LEFTview),LeftFname);
     if (!RightFname.isEmpty()) RightImage = CreateImage(viewRect(RIGHTview),RightFname);

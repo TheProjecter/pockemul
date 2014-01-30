@@ -19,5 +19,10 @@
         <file>rlh1000/modimg/snapforth.png</file>
         <file>rlh1000/modimg/capsule.png</file>
         <file>rlh1000/capsule.png</file>
+        <file>rlh1000/rlh1000Left.png</file>
+        <file>rlh1000/rlh1000Bottom.png</file>
+        <file>rlh1000/rlh1000Top.png</file>
+        <file>rlh1000/rlh1000BackOpen.png</file>
+        <file>rlh1000/trappe.png</file>
     </qresource>
 </RCC>

@@ -20,8 +20,10 @@ public:
     virtual UINT8 in(UINT8 address);
     virtual UINT8 out(UINT8 address,UINT8 value);
 
-    virtual bool        Set_Connector(void);
-    virtual bool        Get_Connector(void);
+    virtual void ComputeKey();
+    virtual bool Set_Connector(void);
+    virtual bool Get_Connector(void);
+    virtual bool UpdateFinalImage();
 
     virtual bool init();
     virtual bool run();
@@ -44,6 +46,8 @@ private:
     Cbus *bus;
     quint8 latchByte;
     quint8 timercnt1,timercnt2,timercnt3;
+    bool   backdoorOpen;
+    QImage *backDoorImage;
 
 };
 

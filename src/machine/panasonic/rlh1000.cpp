@@ -2,6 +2,7 @@
 #define USEBUS
 #include <QDebug>
 
+#include "fluidlauncher.h"
 #include "rlh1000.h"
 #include "m6502/m6502.h"
 #include "Inter.h"
@@ -26,6 +27,13 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     BackGroundFname	= P_RES(":/rlh1000/rlh1000.png");
     LcdFname		= P_RES(":/rlh1000/rlh1000lcd.png");
     SymbFname		= "";
+
+    LeftFname   = P_RES(":/rlh1000/rlh1000Left.png");
+//    RightFname  = P_RES(":/rlh1000/rlh1000Right.png");
+    BackFname   = P_RES(":/rlh1000/rlh1000BackOpen.png");
+    TopFname    = P_RES(":/rlh1000/rlh1000Top.png");
+    BottomFname = P_RES(":/rlh1000/rlh1000Bottom.png");
+    backDoorImage = new QImage(QString(P_RES(":/rlh1000/trappe.png")));
 
     memsize		= 0x20000;
     InitMemValue	= 0x7F;
@@ -75,10 +83,11 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     extrinsic = 0xff;
 
     bus = new Cbus();
+    backdoorOpen = false;
 }
 
 Crlh1000::~Crlh1000() {
-
+    delete backDoorImage;
 }
 
 
@@ -113,7 +122,6 @@ bool Crlh1000::init(void)				// initialize
 
     return true;
 }
-
 
 
 bool Crlh1000::run() {
@@ -511,6 +519,8 @@ UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr,quint8 dest)
 
 UINT8 Crlh1000::in(UINT8 Port)
 {
+    Q_UNUSED(Port)
+
     return 0;
 }
 
@@ -518,6 +528,8 @@ UINT8 Crlh1000::in(UINT8 Port)
 
 UINT8 Crlh1000::out(UINT8 Port, UINT8 x)
 {
+    Q_UNUSED(Port)
+    Q_UNUSED(x)
 
     return 0;
 }
@@ -563,19 +575,58 @@ void Crlh1000::Reset()
 
 bool Crlh1000::LoadConfig(QXmlStreamReader *xmlIn)
 {
+    Q_UNUSED(xmlIn)
 
     return true;
 }
 
 bool Crlh1000::SaveConfig(QXmlStreamWriter *xmlOut)
 {
+    Q_UNUSED(xmlOut)
 
     return true;
 }
 
+extern int ask(QWidget *parent,QString msg,int nbButton);
 #define KEY(c)	((pKEYB->keyPressedList.contains(TOUPPER(c)) || \
                   pKEYB->keyPressedList.contains(c) || \
                   pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
+void Crlh1000::ComputeKey()
+{
+
+    if (KEY(0x240) && (currentView==LEFTview)) {
+        pKEYB->keyPressedList.removeAll(0x240);
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "Panasonic_44");
+//        connect(launcher,SIGNAL(Launched(QString,CPObject *)),this,SLOT(addModule(QString,CPObject *)));
+        launcher->show();
+
+    }
+
+    if (KEY(0x241) && (currentView==BACKview)) {
+        backdoorOpen = !backdoorOpen;
+        qWarning()<<"back door="<<backdoorOpen;
+    }
+#if 0
+    if (_slot == -1) return;
+    int _response = 0;
+    if (slot[_slot].used)
+        _response=ask(this,"The "+slot[_slot].label+ "is already plugged is this slot. Do you want to unplug it ?",2);
+
+    if (_response == 1) {
+        UnloadMOD(slot[_slot].pModule);
+        slot[_slot].used = false;
+        slotChanged = true;
+    }
+    if (_response==2) return;
+
+    if (slot>=0) {
+        currentSlot = _slot;
+    }
+#endif
+}
 
 UINT8 Crlh1000::getKey(quint8 row )
 {
@@ -684,3 +735,18 @@ UINT8 Crlh1000::getKey(quint8 row )
 }
 
 
+bool Crlh1000::UpdateFinalImage(void) {
+
+    CpcXXXX::UpdateFinalImage();
+
+    // Draw backdoor when not in frontview
+    if ((currentView != FRONTview) && !backdoorOpen) {
+        InitDisplay();
+        QPainter painter;
+        painter.begin(BackImage);
+        painter.drawImage(192,25,*backDoorImage);
+        painter.end();
+    }
+
+    return true;
+}
