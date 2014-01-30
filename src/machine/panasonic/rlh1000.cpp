@@ -41,13 +41,13 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, CSlot::RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x2000 ,	""                                  , ""	, CSlot::ROM , "Ext ROM"));
-    SlotList.append(CSlot(16, 0x4000 ,	P_RES(":/rlh1000/SnapBasic.bin")    , ""	, CSlot::ROM , "ROM Capsules 1"));
-    SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, CSlot::RAM , "Ext RAM"));
+    SlotList.append(CSlot(16, 0x4000 ,	/*P_RES(":/rlh1000/SnapBasic.bin")*/""    , ""	, CSlot::ROM , "ROM Capsules 1"));
+    SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, CSlot::NOT_USED , "Ext RAM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"),""	, CSlot::ROM , "ROM"));
 //    SlotList.append(CSlot(16, 0x10000 ,	""                                  ,""	, CSlot::RAM , "I/O Hard"));
-    SlotList.append(CSlot(16, 0x10000 ,	P_RES(":/rlh1000/HHCbasic.bin")     , ""	, CSlot::ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x10000 ,	/*P_RES(":/rlh1000/HHCbasic.bin")*/""     , ""	, CSlot::ROM , "ROM Capsules 2"));
     //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")     , ""	, CSlot::ROM , "ROM Capsules 2"));
-    SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/SnapForth.bin")    , ""	, CSlot::ROM , "ROM Capsules 3"));
+    SlotList.append(CSlot(16, 0x14000 ,	/*P_RES(":/rlh1000/SnapForth.bin")*/""    , ""	, CSlot::ROM , "ROM Capsules 3"));
 //    SlotList.append(CSlot(16, 0x1C000 ,	""                              , ""	, CSlot::RAM , "Ext RAM"));
 
 // Ratio = 3,57
@@ -77,6 +77,9 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     pCPU		= new Cm6502(this);    m6502 = (Cm6502*)pCPU;
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"rlh1000.map");
+    backdoorKeyIndex=0;
+    capsuleKeyIndex=0;
+
 
     ioFreq = 0;
 
@@ -84,6 +87,8 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 
     bus = new Cbus();
     backdoorOpen = false;
+    backdoorFlipping = false;
+    m_backdoorAngle = 0;
 }
 
 Crlh1000::~Crlh1000() {
@@ -119,6 +124,17 @@ bool Crlh1000::init(void)				// initialize
     memset(&lineFE,0xff,sizeof(lineFE));
     memset(&lineFF,0xff,sizeof(lineFF));
 
+    // search key 0x242 index
+    for (int i=0;i<pKEYB->Keys.size();i++)
+    {
+//        qWarning()<<i<<" - "<<pKEYB->Keys.at(i).ScanCode;
+        if (pKEYB->Keys.at(i).ScanCode==0x242) {
+            backdoorKeyIndex = i;
+        }
+        if (pKEYB->Keys.at(i).ScanCode==0x243) {
+            capsuleKeyIndex = i;
+        }
+    }
 
     return true;
 }
@@ -575,15 +591,28 @@ void Crlh1000::Reset()
 
 bool Crlh1000::LoadConfig(QXmlStreamReader *xmlIn)
 {
-    Q_UNUSED(xmlIn)
+    if (xmlIn->readNextStartElement() && (xmlIn->name() == "config") ) {
+        if (xmlIn->readNextStartElement() && xmlIn->name() == "modules" ) {
+            Mem_Load(xmlIn,2);
+            Mem_Load(xmlIn,5);
+            Mem_Load(xmlIn,6);
 
+            xmlIn->skipCurrentElement();
+        }
+    }
+    xmlIn->skipCurrentElement();
     return true;
 }
 
 bool Crlh1000::SaveConfig(QXmlStreamWriter *xmlOut)
 {
-    Q_UNUSED(xmlOut)
-
+    xmlOut->writeStartElement("config");
+        xmlOut->writeStartElement("modules");
+           Mem_Save(xmlOut,2,(SlotList[2].getType()==CSlot::ROM)?false:true);
+           Mem_Save(xmlOut,5,(SlotList[5].getType()==CSlot::ROM)?false:true);
+           Mem_Save(xmlOut,6,(SlotList[6].getType()==CSlot::ROM)?false:true);
+        xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
     return true;
 }
 
@@ -605,28 +634,108 @@ void Crlh1000::ComputeKey()
 
     }
 
-    if (KEY(0x241) && (currentView==BACKview)) {
+    if ((KEY(0x241)||KEY(0x242)) && (currentView==BACKview)) {
         pKEYB->keyPressedList.removeAll(0x241);
+        pKEYB->keyPressedList.removeAll(0x242);
         backdoorOpen = !backdoorOpen;
+        animateBackDoor();
         qWarning()<<"back door="<<backdoorOpen;
     }
-#if 0
-    if (_slot == -1) return;
-    int _response = 0;
-    if (slot[_slot].used)
-        _response=ask(this,"The "+slot[_slot].label+ "is already plugged is this slot. Do you want to unplug it ?",2);
+    if (backdoorOpen && !backdoorFlipping) {
+        int _slot = -1;
+        quint32 _adr = 0;
+        if (KEY(0x243)) {_slot = 2; _adr = 0x4000;}
+        if (KEY(0x244)) {_slot = 5; _adr = 0x10000;}
+        if (KEY(0x245)) {_slot = 6; _adr = 0x14000;}
+        pKEYB->keyPressedList.removeAll(0x243);
+        pKEYB->keyPressedList.removeAll(0x244);
+        pKEYB->keyPressedList.removeAll(0x245);
+        if (_slot == -1) return;
+        int _response = 0;
+        BYTE* capsule = &mem[_adr];
+        if (!SlotList[_slot].isEmpty() || (capsule[0]!=0x7f)) {
+            _response=ask(this,
+                          "The "+SlotList[_slot].getLabel()+ " capsule is already plugged in this slot.\nDo you want to unplug it ?",
+                          2);
+        }
 
-    if (_response == 1) {
-        UnloadMOD(slot[_slot].pModule);
-        slot[_slot].used = false;
+        if (_response == 1) {
+            qWarning()<<"ok1";
+            SlotList[_slot].setEmpty(true);
+            SlotList[_slot].setFileName("");
+            qWarning()<<"ok2";
+            memset((void *)capsule ,0x7f,0x4000);
+            qWarning()<<"ok3";
+            SlotList[_slot].setLabel(QString("ROM bank %1").arg(_slot+1));
+            SlotList[_slot].setType(CSlot::ROM);
+            slotChanged = true;
+            qWarning()<<"ok";
+        }
+        if (_response==2) return;
+
+        currentSlot = _slot;
+        currentAdr = _adr;
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                                    QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                                    FluidLauncher::PictureFlowType,
+                                                    "Panasonic_Capsule");
+        connect(launcher,SIGNAL(Launched(QString,CPObject *)),this,SLOT(addModule(QString,CPObject *)));
+        launcher->show();
+    }
+}
+
+void Crlh1000::addModule(QString item,CPObject *pPC)
+{
+    Q_UNUSED(pPC)
+
+    qWarning()<<"Add Module:"<< item;
+    if ( (currentSlot<0) || (currentSlot>7)) return;
+
+    int _res = 0;
+    CSlot::SlotType customModule = CSlot::ROM;
+    QString moduleName;
+    if (item=="SNAPBASIC") moduleName = P_RES(":/rlh1000/SnapBasic.bin");
+    if (item=="SNAPFORTH") moduleName = P_RES(":/rlh1000/SnapForth.bin");
+    if (item=="MSBASIC")   moduleName = P_RES(":/rlh1000/HHCbasic.bin");
+    if (item=="PANACAPSFILE") {
+        moduleName = QFileDialog::getOpenFileName(
+                    mainwindow,
+                    tr("Choose a Capsule file"),
+                    ".",
+                    tr("Module File (*.bin)"));
+        customModule = CSlot::CUSTOM_ROM;
+    }
+
+    if (moduleName.isEmpty()) return;
+
+    bool result = true; // check this is a true capsule
+
+    qWarning()<<"loaded:"<<_res;
+    if (result) {
+        SlotList[currentSlot].setEmpty(false);
+        SlotList[currentSlot].setResID(moduleName);
+        SlotList[currentSlot].setType(customModule);
+        Mem_Load(currentSlot);
+        // Analyse capsule
+        // 0x01 = 'C'
+        // 0x01 - 0x28 : Copyright
+        // 0x2C : title lenght
+        // 0x2D - .. : title
+
+        BYTE* capsule = &mem[currentAdr];
+        if (capsule[1]=='C') {
+            QString copyright = QString::fromLocal8Bit(QByteArray((const char*)&capsule[1],0x26));
+            QString title  = QString::fromLocal8Bit(QByteArray((const char*)&capsule[0x2d],capsule[0x2c]));
+            qWarning()<<"title:"<<title;
+            SlotList[currentSlot].setLabel(title);
+        }
+
         slotChanged = true;
     }
-    if (_response==2) return;
 
-    if (slot>=0) {
-        currentSlot = _slot;
-    }
-#endif
+    currentSlot = -1;
+    currentAdr=0;
+
 }
 
 UINT8 Crlh1000::getKey(quint8 row )
@@ -741,13 +850,88 @@ bool Crlh1000::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();
 
     // Draw backdoor when not in frontview
-    if ((currentView != FRONTview) && !backdoorOpen) {
-        InitDisplay();
+    if ((currentView != FRONTview) ) {
+        delete BackImage;
+        if (!BackFname.isEmpty()) BackImage = CreateImage(viewRect(BACKview),BackFname);
+    }
+
+    if ((currentView == BACKview)) {
+//        InitDisplay();
+        slotChanged = false;
         QPainter painter;
         painter.begin(BackImage);
-        painter.drawImage(192,25,*backDoorImage);
+
+        QImage _capsule = QImage(QString(P_RES(":/rlh1000/capsule.png"))).scaled(pKEYB->Keys[capsuleKeyIndex].Rect.size());
+        int _slot=0;
+        for (int i=0;i<3;i++) {
+            switch (i) {
+            case 0: _slot = 2; break;
+            case 1: _slot = 5; break;
+            case 2: _slot = 6; break;
+            }
+
+            if (!SlotList[_slot].isEmpty()) {
+                // draw capsule
+
+                painter.drawImage(pKEYB->Keys[capsuleKeyIndex+i].Rect.left(),
+                                  pKEYB->Keys[capsuleKeyIndex+i].Rect.top(),
+                                  _capsule);
+            }
+        }
         painter.end();
     }
 
+    if ((currentView != FRONTview) ) {
+        QPainter painter;
+        painter.begin(BackImage);
+        painter.translate(192,25);
+        QTransform matrix2;
+        matrix2.rotate(m_backdoorAngle, Qt::YAxis);
+        painter.setTransform(matrix2,true);
+        painter.drawImage(0,0,*backDoorImage);
+        painter.end();
+    }
+
+    // on TOP view, draw installed modules
+
     return true;
+}
+
+
+void Crlh1000::animateBackDoor(void) {
+    qWarning()<<"ANIMATE";
+    QPropertyAnimation *animation1 = new QPropertyAnimation(this, "backdoorangle");
+     animation1->setDuration(1500);
+     if (backdoorOpen) {
+         animation1->setStartValue(m_backdoorAngle);
+         animation1->setEndValue(80);
+     }
+     else {
+         animation1->setStartValue(m_backdoorAngle);
+         animation1->setEndValue(0);
+     }
+
+     QParallelAnimationGroup *group = new QParallelAnimationGroup;
+     group->addAnimation(animation1);
+
+     connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     connect(animation1,SIGNAL(finished()),this,SLOT(endbackdoorAnimation()));
+     backdoorFlipping = true;
+     group->start();
+
+}
+
+void Crlh1000::setbackdoorAngle(int value) {
+    this->m_backdoorAngle = value;
+}
+
+void Crlh1000::endbackdoorAnimation()
+{
+    backdoorFlipping = false;
+    if (backdoorOpen) {
+        pKEYB->Keys[backdoorKeyIndex].Rect.setSize(QSize(105,145));
+    }
+    else {
+        pKEYB->Keys[backdoorKeyIndex].Rect.setSize(QSize(365,145));
+    }
 }

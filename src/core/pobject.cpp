@@ -1455,21 +1455,31 @@ void CPObject::Mem_Save(QFile *file,BYTE s)
     out.writeRawData( (char *) &mem[SlotList[s].getAdr()],SlotList[s].getSize() * 1024 );
 }
 
-void CPObject::Mem_Save(QXmlStreamWriter *xmlOut,BYTE s)
+void CPObject::Mem_Save(QXmlStreamWriter *xmlOut,BYTE s,bool dumphex)
 {
     xmlOut->writeStartElement("bank");
+        switch(SlotList[s].getType()) {
+        case CSlot::ROM: xmlOut->writeAttribute("type","ROM");
+            xmlOut->writeAttribute("resID",SlotList[s].getResID());
+            break;
+        case CSlot::CUSTOM_ROM: xmlOut->writeAttribute("type","CUSTOM_ROM"); break;
+        case CSlot::RAM: xmlOut->writeAttribute("type","RAM"); break;
+        default: break;
+        }
         xmlOut->writeAttribute("label",SlotList[s].getLabel());
         xmlOut->writeAttribute("empty",SlotList[s].isEmpty()?"true":"false");
         xmlOut->writeAttribute("id",QString("%1").arg(s));
-        int size = SlotList[s].getSize() * 1024;
-        int adr = SlotList[s].getAdr();
-        QByteArray ba((char *) &mem[adr],size );
-//        xmlOut->writeTextElement("data",ba.toBase64());
-        QString outHex = "\n";
-        for (int a=0;a<size;a+=16) {
-            outHex += QString("%1:").arg(a,6,16,QChar('0'))+ba.mid(a,16).toHex()+"\n";
+        if (dumphex) {
+            int size = SlotList[s].getSize() * 1024;
+            int adr = SlotList[s].getAdr();
+            QByteArray ba((char *) &mem[adr],size );
+            //        xmlOut->writeTextElement("data",ba.toBase64());
+            QString outHex = "\n";
+            for (int a=0;a<size;a+=16) {
+                outHex += QString("%1:").arg(a,6,16,QChar('0'))+ba.mid(a,16).toHex()+"\n";
+            }
+            xmlOut->writeTextElement("datahex",outHex);
         }
-        xmlOut->writeTextElement("datahex",outHex);
     xmlOut->writeEndElement();
 }
 
@@ -1502,16 +1512,27 @@ void CPObject::Mem_Load(QXmlStreamReader *xmlIn,BYTE s)
         if (xmlIn->name() == "bank" && xmlIn->attributes().value("id").toString().toInt() == s) {
             SlotList[s].setEmpty(xmlIn->attributes().value("empty").toString()=="true"?true:false);
             SlotList[s].setLabel(xmlIn->attributes().value("label").toString());
-            if (xmlIn->readNextStartElement() ) {
-                if (xmlIn->name()=="data")  {
-                    QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());
-                    memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
-                }
-                if (xmlIn->name()=="datahex")  {
 
-//                    MSG_ERROR(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1())
-                     QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1());
-                    memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+            QString _type = xmlIn->attributes().value("type").toString();
+            if (_type=="ROM") {
+                SlotList[s].setType(CSlot::ROM);
+                SlotList[s].setResID(xmlIn->attributes().value("resID").toString());
+                Mem_Load(s);
+            }
+            else {
+                if (_type=="CUSTOM_ROM") SlotList[s].setType(CSlot::CUSTOM_ROM);
+                if (_type=="RAM") SlotList[s].setType(CSlot::RAM);
+                if (xmlIn->readNextStartElement() ) {
+                    if (xmlIn->name()=="data")  {
+                        QByteArray ba = QByteArray::fromBase64(xmlIn->readElementText().toLatin1());
+                        memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+                    }
+                    if (xmlIn->name()=="datahex")  {
+
+                        //                    MSG_ERROR(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1())
+                        QByteArray ba = QByteArray::fromHex(xmlIn->readElementText().replace(QRegExp("......:"),"").toLatin1());
+                        memcpy((char *) &mem[SlotList[s].getAdr()],ba.data(),SlotList[s].getSize() * 1024);
+                    }
                 }
             }
         }

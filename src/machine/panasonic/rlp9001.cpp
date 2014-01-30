@@ -525,8 +525,7 @@ bool Crlp9001::UpdateFinalImage(void) {
 
         QMatrix matrix;
         matrix.rotate(rotate?180:0);
-        QImage *capsule = new QImage(QString(P_RES(":/rlh1000/capsule.png")));
-        QImage _rotCapsule = capsule->transformed(matrix).scaled(pKEYB->Keys[0].Rect.size());
+        QImage _rotCapsule = QImage(QString(P_RES(":/rlh1000/capsule.png"))).transformed(matrix).scaled(pKEYB->Keys[0].Rect.size());
         for (int i=0;i<8;i++) {
             if (!SlotList[i].isEmpty()) {
                 // draw capsule

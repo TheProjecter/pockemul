@@ -10,7 +10,7 @@ class Cm6502;
 class Crlh1000 : public CpcXXXX
 {
     Q_OBJECT
-
+    Q_PROPERTY(int backdoorangle READ backdoorAngle WRITE setbackdoorAngle)
 public:
     Crlh1000(CPObject *parent = 0);
     virtual ~Crlh1000();
@@ -42,13 +42,30 @@ public:
     quint8 extrinsic;
     UINT8 getKey(quint8 row);
     UINT8 ReadBusMem(BUS_FUNC f, UINT32 adr, quint8 dest);
+
+public slots:
+    void endbackdoorAnimation(void);
+    void addModule(QString item, CPObject *pPC);
+
 private:
     Cbus *bus;
     quint8 latchByte;
     quint8 timercnt1,timercnt2,timercnt3;
+    int currentSlot;
+    quint32 currentAdr;
+    bool slotChanged;
     bool   backdoorOpen;
     QImage *backDoorImage;
 
+    void setbackdoorAngle(int value);
+    int backdoorAngle() const { return m_backdoorAngle; }
+    int m_backdoorAngle;
+
+
+    void animateBackDoor();
+    bool backdoorFlipping;
+    int  backdoorKeyIndex;
+    int  capsuleKeyIndex;
 };
 
 #endif // RLH1000_H

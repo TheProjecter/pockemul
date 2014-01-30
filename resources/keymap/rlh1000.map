@@ -3,6 +3,10 @@
 <Keyboard>
     <KEY description="Left Connector" height="235" left="32" scancode="0x240" top="52" width="30" view="LEFT"/>
     <KEY description="Back Door" height="46" left="555" scancode="0x241" top="76" width="36" view="BACK"/>
+    <KEY description="Back Door main" height="145" left="192" scancode="0x242" top="25" width="365" view="BACK"/>
+    <KEY description="Capsule 1" height="138" left="296" scancode="0x243" top="31" width="80" view="BACK"/>
+    <KEY description="Capsule 2" height="138" left="380" scancode="0x244" top="31" width="80" view="BACK"/>
+    <KEY description="Capsule 3" height="138" left="465" scancode="0x245" top="31" width="80" view="BACK"/>
     <KEY description="HELP" height="15" left="527" masterscancode="0x00" modifier="" scancode="0x220" top="142" width="25"/>
     <KEY description="SEARCH" height="15" left="530" masterscancode="0x00" modifier="" scancode="0x20f" top="210" width="25"/>
     <KEY description="ROTATE" height="15" left="615" masterscancode="0x00" modifier="" scancode="0x223" top="210" width="25"/>
