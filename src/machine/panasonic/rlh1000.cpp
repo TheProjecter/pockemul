@@ -638,6 +638,10 @@ void Crlh1000::ComputeKey()
         pKEYB->keyPressedList.removeAll(0x241);
         pKEYB->keyPressedList.removeAll(0x242);
         backdoorOpen = !backdoorOpen;
+        pKEYB->Keys[capsuleKeyIndex  ].enabled = backdoorOpen;
+        pKEYB->Keys[capsuleKeyIndex+1].enabled = backdoorOpen;
+        pKEYB->Keys[capsuleKeyIndex+2].enabled = backdoorOpen;
+
         animateBackDoor();
         qWarning()<<"back door="<<backdoorOpen;
     }
@@ -872,7 +876,6 @@ bool Crlh1000::UpdateFinalImage(void) {
 
             if (!SlotList[_slot].isEmpty()) {
                 // draw capsule
-
                 painter.drawImage(pKEYB->Keys[capsuleKeyIndex+i].Rect.left(),
                                   pKEYB->Keys[capsuleKeyIndex+i].Rect.top(),
                                   _capsule);

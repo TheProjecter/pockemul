@@ -278,6 +278,7 @@ public:
     QString Modifier;
 	QRect	Rect;
     View    view;
+    bool    enabled;
 
 protected:
 };

@@ -39,6 +39,7 @@ CKey::CKey(int scancode, QString description,QRect rect,int masterscancode,QStri
     this->Modifier = modifier;
     this->Rect = rect;
     this->view = view;
+    this->enabled = true;
 }
 
 Ckeyb::Ckeyb(CPObject *parent,QString map,BYTE *scan) //: CPObject(parent)								//[constructor]
@@ -72,6 +73,7 @@ int Ckeyb::KeyClick(QPoint pts)
     for (int i=0;i<Keys.size();i++)
     {
         if (Keys.at(i).view != pPC->currentView) continue;
+        if (!(Keys.at(i).enabled)) continue;
         QRect r = Keys.at(i).Rect;
             r.setCoords(r.x()*mainwindow->zoom/100,r.y()*mainwindow->zoom/100,(r.x()+r.width())*mainwindow->zoom/100,(r.y()+r.height())*mainwindow->zoom/100);
             int tmpDistance = 0;
@@ -114,7 +116,8 @@ QString Ckeyb::KeyString(QPoint pts)
  	for (i = Keys.begin(); i != Keys.end(); ++i)
  	{
         if ( (i->view == pPC->currentView) &&
-             (i->Rect.contains(pts) ) )
+             (i->Rect.contains(pts) ) &&
+             i->enabled)
             return i->Description;
 	}
 	return("");
