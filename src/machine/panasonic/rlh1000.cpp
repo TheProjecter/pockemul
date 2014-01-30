@@ -622,29 +622,30 @@ extern int ask(QWidget *parent,QString msg,int nbButton);
                   pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
 void Crlh1000::ComputeKey()
 {
-
+    // Manage left connector click
     if (KEY(0x240) && (currentView==LEFTview)) {
         pKEYB->keyPressedList.removeAll(0x240);
         FluidLauncher *launcher = new FluidLauncher(mainwindow,
                                      QStringList()<<P_RES(":/pockemul/configExt.xml"),
                                      FluidLauncher::PictureFlowType,
                                      "Panasonic_44");
-//        connect(launcher,SIGNAL(Launched(QString,CPObject *)),this,SLOT(addModule(QString,CPObject *)));
         launcher->show();
-
     }
 
+    // Manage backdoor click
     if ((KEY(0x241)||KEY(0x242)) && (currentView==BACKview)) {
         pKEYB->keyPressedList.removeAll(0x241);
         pKEYB->keyPressedList.removeAll(0x242);
         backdoorOpen = !backdoorOpen;
+        // Enable or disable capsule slot click
         pKEYB->Keys[capsuleKeyIndex  ].enabled = backdoorOpen;
         pKEYB->Keys[capsuleKeyIndex+1].enabled = backdoorOpen;
         pKEYB->Keys[capsuleKeyIndex+2].enabled = backdoorOpen;
 
         animateBackDoor();
-        qWarning()<<"back door="<<backdoorOpen;
     }
+
+    // Manage capsules  click
     if (backdoorOpen && !backdoorFlipping) {
         int _slot = -1;
         quint32 _adr = 0;
@@ -664,17 +665,15 @@ void Crlh1000::ComputeKey()
         }
 
         if (_response == 1) {
-            qWarning()<<"ok1";
+            // Clear slot
             SlotList[_slot].setEmpty(true);
             SlotList[_slot].setFileName("");
-            qWarning()<<"ok2";
             memset((void *)capsule ,0x7f,0x4000);
-            qWarning()<<"ok3";
             SlotList[_slot].setLabel(QString("ROM bank %1").arg(_slot+1));
             SlotList[_slot].setType(CSlot::ROM);
             slotChanged = true;
-            qWarning()<<"ok";
         }
+
         if (_response==2) return;
 
         currentSlot = _slot;
@@ -739,7 +738,6 @@ void Crlh1000::addModule(QString item,CPObject *pPC)
 
     currentSlot = -1;
     currentAdr=0;
-
 }
 
 UINT8 Crlh1000::getKey(quint8 row )
@@ -860,7 +858,6 @@ bool Crlh1000::UpdateFinalImage(void) {
     }
 
     if ((currentView == BACKview)) {
-//        InitDisplay();
         slotChanged = false;
         QPainter painter;
         painter.begin(BackImage);
@@ -895,7 +892,6 @@ bool Crlh1000::UpdateFinalImage(void) {
         painter.end();
     }
 
-    // on TOP view, draw installed modules
 
     return true;
 }
