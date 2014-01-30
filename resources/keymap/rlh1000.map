@@ -1,7 +1,7 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>rlh1000</model>
 <Keyboard>
-    <KEY description="Left Connector" height="4" left="32" scancode="0x240" top="52" width="30" view="LEFT"/>
+    <KEY description="Left Connector" height="235" left="32" scancode="0x240" top="52" width="30" view="LEFT"/>
     <KEY description="Back Door" height="46" left="555" scancode="0x241" top="76" width="36" view="BACK"/>
     <KEY description="HELP" height="15" left="527" masterscancode="0x00" modifier="" scancode="0x220" top="142" width="25"/>
     <KEY description="SEARCH" height="15" left="530" masterscancode="0x00" modifier="" scancode="0x20f" top="210" width="25"/>

@@ -606,6 +606,7 @@ void Crlh1000::ComputeKey()
     }
 
     if (KEY(0x241) && (currentView==BACKview)) {
+        pKEYB->keyPressedList.removeAll(0x241);
         backdoorOpen = !backdoorOpen;
         qWarning()<<"back door="<<backdoorOpen;
     }
