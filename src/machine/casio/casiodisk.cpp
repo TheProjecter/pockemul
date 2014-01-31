@@ -65,7 +65,7 @@
   }
 
   bool CcasioDOS::FormatDisk(void) {
-      int secnum = -1;
+//      int secnum = -1;
       bool err = false;
 
       // CloseDiskFile(0xff);
@@ -78,7 +78,7 @@
 
       memset((char *)&secbuf[0] ,0xff,START_DATA / SIZE_BLOCK * 2);
       if (!SectorWrite(0)) return err;
-      secnum = 0;
+//      secnum = 0;
       err = true;
       return err;
   }

@@ -275,6 +275,8 @@ bool Cz1::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Cz1::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(data)
+
     /*
     if(0x400 <= p && p <= 0x40f)
         printf("READ IP=%04x p=%04x v=%02x\n", cpu->r16.ip, p, cpu->m[p]);
@@ -300,6 +302,8 @@ bool Cz1::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
 UINT8 Cz1::in(UINT8 Port)
 {
+    Q_UNUSED(Port)
+
     return 0;
 }
 
@@ -408,6 +412,9 @@ if (ext_MemSlot1->ExtArray[ID_RP_256]->IsChecked) return 0x40;
 
 UINT8 Cz1::out(UINT8 Port, UINT8 x)
 {
+    Q_UNUSED(Port)
+    Q_UNUSED(x)
+
     return 0;
 }
 UINT8 Cz1::out8(UINT16 Port, UINT8 x)
@@ -602,12 +609,14 @@ void Cz1::Reset()
 
 bool Cz1::LoadConfig(QXmlStreamReader *xmlIn)
 {
+    Q_UNUSED(xmlIn)
 
     return true;
 }
 
 bool Cz1::SaveConfig(QXmlStreamWriter *xmlOut)
 {
+    Q_UNUSED(xmlOut)
 
     return true;
 }

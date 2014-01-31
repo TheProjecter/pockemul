@@ -16,6 +16,8 @@
 
 
 Cfp100::Cfp100(CPObject *parent):Cce515p(this) {
+    Q_UNUSED(parent)
+
     setfrequency( 4000);
     ioFreq = 0;
     setcfgfname(QString("fp100"));

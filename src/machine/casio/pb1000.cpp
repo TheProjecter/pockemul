@@ -242,6 +242,8 @@ WORD Cpb1000::Get_16rPC(UINT32 adr)
 
 bool Cpb1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(data)
+
     MemBank(d);
     if ( (*d>=0x00C00+0xc00) && (*d<=0x00C0F+0xc00) )	{
 
@@ -264,12 +266,15 @@ bool Cpb1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
 UINT8 Cpb1000::in(UINT8 Port)
 {
+    Q_UNUSED(Port)
 
     return 0;
 }
 
 UINT8 Cpb1000::out(UINT8 Port, UINT8 Value)
 {
+    Q_UNUSED(Port)
+    Q_UNUSED(Value)
 
  return 0;
 }
@@ -302,12 +307,14 @@ void Cpb1000::Reset()
 
 bool Cpb1000::LoadConfig(QXmlStreamReader *xmlIn)
 {
+    Q_UNUSED(xmlIn)
 
     return true;
 }
 
 bool Cpb1000::SaveConfig(QXmlStreamWriter *xmlOut)
 {
+    Q_UNUSED(xmlOut)
 
     return true;
 }

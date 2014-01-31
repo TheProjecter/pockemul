@@ -1,3 +1,5 @@
+#include <QtCore>
+
 static const char
 *S_REV_BATT=
 "#################\r"
@@ -362,3 +364,5 @@ static const char
 "#####"
 
 ;
+
+

@@ -205,10 +205,7 @@ void Cpb2000::MemBank(UINT32 *d) {
     }
 //    else adrBus = 0;
 
-    if ((*d >= 0x00000)&& (*d<0x00C00)) {
-        *d |= 0x20000;
-        return;
-    }
+    if (*d<0x00C00) { *d |= 0x20000; return; }
     if ((*d >= 0x00C12)) {
         BYTE m = 1 <<  (*d >> 15);
         if (mem[0x0C10] & m) {
@@ -277,6 +274,8 @@ bool Cpb2000::Chk_Adr(UINT32 *d, UINT32 data)
 
 bool Cpb2000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 {
+    Q_UNUSED(data)
+
     MemBank(d);
 
     if ( (*d>=0x0C00) && (*d<=0x0C0F) )	{

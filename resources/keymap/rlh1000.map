@@ -121,5 +121,6 @@
     <KEY description="[" height="0" left="0" masterscancode="0x67" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
     <KEY description="]" height="0" left="0" masterscancode="0x68" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
     <KEY description="|" height="0" left="0" masterscancode="0x6e" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
+    <KEY description="*" height="0" left="0" masterscancode="0x6d" modifier="firstctrl" scancode="0x00" top="0" width="25"/>
 </Keyboard>
 </KEYBMAP>
