@@ -133,6 +133,9 @@ bool Crlh1000::init(void)				// initialize
         }
         if (pKEYB->Keys.at(i).ScanCode==0x243) {
             capsuleKeyIndex = i;
+            pKEYB->Keys[capsuleKeyIndex  ].enabled = backdoorOpen;
+            pKEYB->Keys[capsuleKeyIndex+1].enabled = backdoorOpen;
+            pKEYB->Keys[capsuleKeyIndex+2].enabled = backdoorOpen;
         }
     }
 

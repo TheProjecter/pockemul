@@ -535,7 +535,7 @@ bool CpcXXXX::run(void)
 	if(!pCPU->halt && !off)
 	{
         if ( (pCPU->logsw) && (pCPU->fp_log) ) {
-            sprintf(Log_String,"");
+            sprintf(Log_String," ");
             pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
             fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
             fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
@@ -842,8 +842,8 @@ bool CpcXXXX::SaveExt(QXmlStreamWriter *xmlOut)
     return true;
 }
 
-bool CpcXXXX::LoadExtra(QFile *file) 	{ return true; }
-bool CpcXXXX::SaveExtra(QFile *file)	{ return true; }
+bool CpcXXXX::LoadExtra(QFile *file) 	{ Q_UNUSED(file) return true; }
+bool CpcXXXX::SaveExtra(QFile *file)	{ Q_UNUSED(file) return true; }
 
 void CpcXXXX::LoadSession(void)
 {
@@ -900,8 +900,8 @@ QString fileName = QFileDialog::getSaveFileName(
 /*  RETURN:bool (1=RAM,0=ROM)												 */
 /*****************************************************************************/
 // Virtual Fonction
-bool CpcXXXX::Chk_Adr(UINT32 *d,UINT32 data) { return(1); }
-bool CpcXXXX::Chk_Adr_R(UINT32 *d,UINT32 *data) { return(1);}
+bool CpcXXXX::Chk_Adr(UINT32 *d,UINT32 data) { Q_UNUSED(d) Q_UNUSED(data) return(1); }
+bool CpcXXXX::Chk_Adr_R(UINT32 *d,UINT32 *data) { Q_UNUSED(d) Q_UNUSED(data) return(1);}
 
 
 
@@ -1004,6 +1004,8 @@ QByteArray CpcXXXX::getmem()
 #define MAXEXT  40
 bool CpcXXXX::CheckUpdateExtension(CExtension *ext)
 {
+    Q_UNUSED(ext)
+
     return true;
 }
 
@@ -1147,11 +1149,12 @@ void CpcXXXX::emptyExtensionArray(QAction *action)
 }
 void CpcXXXX::loadExtensionArray(QAction *action)
 {
-
+    Q_UNUSED(action)
 }
+
 void CpcXXXX::saveExtensionArray(QAction *action)
 {
-
+    Q_UNUSED(action)
 }
 
 

@@ -183,4 +183,11 @@
     <model value="ti57">
        <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/TI-57LCD_QRG_US.pdf"/>
     </model>
+    <model value="rlh1000">
+       <document desc="User Guide (en)" link="http://pockemul.free.fr/Documents/userguide/panasonic/hhc_user_guide.pdf"/>
+       <document desc="SnapBASIC Vol I (en)" link="http://pockemul.free.fr/Documents/userguide/panasonic/SnapBASIC_vol1.pdf"/>
+       <document desc="SnapBASIC Vol II (en)" link="http://pockemul.free.fr/Documents/userguide/panasonic/SnapBASIC_vol2.pdf"/>
+       <document desc="SnapFORTH Vol I Tutorial (en)" link="http://pockemul.free.fr/Documents/userguide/panasonic/SnapFORTH_Volume_I_Tutorial.pdf"/>
+       <document desc="SnapFORTH Vol II Reference Guide (en)" link="http://pockemul.free.fr/Documents/userguide/panasonic/SnapFORTH_Volume_II_Reference_Guide.pdf"/>
+    </model>
 </weblinks>
