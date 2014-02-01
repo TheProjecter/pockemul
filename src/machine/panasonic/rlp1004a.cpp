@@ -65,6 +65,7 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     INTrequest = false;
     printing = false;
     receiveMode = false;
+    CRLFPending = false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -101,24 +102,28 @@ bool Crlp1004a::run(void)
     if (printing) {
         if (!buffer.isEmpty()) {
             // Print char one by one from buffer
-            // Wait 80ms/char
-            if (pTIMER->msElapsed(_state)>80)
+            // Wait 20char/sec -> 140 cols / Sec -> 7,142ms / col
+            if (pTIMER->usElapsed(_state)>=7142)
             {
                 _state = pTIMER->state;
-                Printer(buffer.at(0));
-                qWarning()<<"Printing data:"<<buffer.at(0)<<":"<<QChar(buffer.at(0));
+                Refresh(buffer.at(0));
+//                qWarning()<<"Printing data:"<<buffer.at(0)<<":"<<QChar(buffer.at(0));
                 buffer.remove(0,1);
             }
-
-
         }
         else {
-            // When buffer is empty, send an INT to the BUS
             printing = false;
-            bus.setINT(true);
+        }
+    }
+    else {
+        if (CRLFPending) {
+//            qWarning()<<"Send CRLF";
+            CRLFPending = false;
+            top+=10;
+            posX=0;
+//                bus.setINT(true);
             INTrequest = true;
             pCONNECTOR->Set_values(bus.toUInt64());
-            qWarning()<<"PRINT Finished: send INT"<<bus.getDest();
         }
     }
 
@@ -154,29 +159,31 @@ bool Crlp1004a::run(void)
     case BUS_TOUCH: // Print buffer
         switch(bus.getData()) {
         case 0: // Print
-            qWarning()<<"BUS_TOUCH:"<<bus.getData();
-            Refresh(0);
-            buffer.clear();
+//            qWarning()<<"BUS_TOUCH:"<<bus.getData()<<  "PRINTING "<<buffer.size()<<" chars";
+//            Refresh(0);
+            printing = true;
+//            buffer.clear();
             INTrequest = false;
             break;
         case 5: //
-            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+//            qWarning()<<"BUS_TOUCH:"<<bus.getData();
             buffer.clear();
             receiveMode = true;
             INTrequest = true;
 //            receiveMode = true;
             break;
         case 4: // CR/LF
-            Refresh(0x0d);
-            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+//            Refresh(0x0d);
+//            qWarning()<<"BUS_TOUCH:"<<bus.getData();
 
 //            printing = true;
-            INTrequest = true;
+            CRLFPending = true;
+//            INTrequest = true;
             break;
         default: qWarning()<<"BUS_TOUCH:"<<bus.getData();
             break;
         }
-        bus.setFunc(BUS_SLEEP);
+        bus.setFunc(BUS_ACK);
         break;
     case BUS_INTREQUEST:
         if (INTrequest) {
@@ -200,7 +207,7 @@ bool Crlp1004a::run(void)
 
             INTrequest = true;
         }
-        bus.setFunc(BUS_SLEEP);
+        bus.setFunc(BUS_ACK);
         break;
     default: break;
     }
@@ -285,21 +292,22 @@ void Crlp1004a::Refresh(quint8 data)
 
 //    TextBuffer += data;
 
-    if (data == 0x0d){
-        top+=10;
-        posX=0;
-//        qWarning()<<"CR PRINTED";
-    }
-    else
+//    if (data == 0x0d){
+//        top+=10;
+//        posX=0;
+////        qWarning()<<"CR PRINTED";
+//    }
+//    else
     {
         painter.begin(paperbuf);
-        for (int i=0;i<buffer.size();i++) {
+//        for (int i=0;i<buffer.size();i++)
+        {
             for (int b=0; b<8;b++)
             {
-                if ((buffer.at(i)>>b)&0x01) painter.drawPoint( i, top+b);
+                if ((data>>b)&0x01) painter.drawPoint( posX, top+b);
             }
         }
-//        posX++;
+        posX++;
         painter.end();
     }
 

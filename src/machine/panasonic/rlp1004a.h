@@ -81,7 +81,7 @@ private:
     QByteArray buffer;
     bool printing;
     bool receiveMode;
-
+    bool CRLFPending;
 
 public:
 
