@@ -63,6 +63,8 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
 
     rotate = false;
     INTrequest = false;
+    printing = false;
+    receiveMode = false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -84,20 +86,47 @@ Crlp1004a::~Crlp1004a() {
 #define LATENCY (pTIMER->pPC->getfrequency()/3200)
 bool Crlp1004a::run(void)
 {
+    static quint64 _state=0;
 
     pTAPECONNECTOR->Set_pin(3,true);       // RMT
     pTAPECONNECTOR->Set_pin(2,tapeOutput);    // Out
     tapeInput = pTAPECONNECTOR->Get_pin(1);      // In
 
     pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
+
     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
+
+    if (printing) {
+        if (!buffer.isEmpty()) {
+            // Print char one by one from buffer
+            // Wait 80ms/char
+            if (pTIMER->msElapsed(_state)>80)
+            {
+                _state = pTIMER->state;
+                Printer(buffer.at(0));
+                qWarning()<<"Printing data:"<<buffer.at(0)<<":"<<QChar(buffer.at(0));
+                buffer.remove(0,1);
+            }
+
+
+        }
+        else {
+            // When buffer is empty, send an INT to the BUS
+            printing = false;
+            bus.setINT(true);
+            INTrequest = true;
+            pCONNECTOR->Set_values(bus.toUInt64());
+            qWarning()<<"PRINT Finished: send INT"<<bus.getDest();
+        }
+    }
+
     if (bus.getFunc()==BUS_SLEEP) return true;
 
     if (bus.getDest()!=0) return true;
     bus.setDest(0);
-
+//    qWarning()<<"PRINTER:"<<bus.toLog();
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0x00);
         bus.setFunc(BUS_READDATA);
@@ -121,6 +150,62 @@ bool Crlp1004a::run(void)
         return true;
     }
 
+    switch (bus.getFunc()) {
+    case BUS_TOUCH: // Print buffer
+        switch(bus.getData()) {
+        case 0: // Print
+            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+            Refresh(0);
+            buffer.clear();
+            INTrequest = false;
+            break;
+        case 5: //
+            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+            buffer.clear();
+            receiveMode = true;
+            INTrequest = true;
+//            receiveMode = true;
+            break;
+        case 4: // CR/LF
+            Refresh(0x0d);
+            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+
+//            printing = true;
+            INTrequest = true;
+            break;
+        default: qWarning()<<"BUS_TOUCH:"<<bus.getData();
+            break;
+        }
+        bus.setFunc(BUS_SLEEP);
+        break;
+    case BUS_INTREQUEST:
+        if (INTrequest) {
+//            qWarning()<<"INTREQUEST:true";
+            bus.setINT(true);
+            bus.setData(0x00);
+            INTrequest = false;
+        }
+        else {
+//            qWarning()<<"INTREQUEST:false";
+            bus.setData(0xff);
+        }
+        bus.setFunc(BUS_READDATA);
+        pCONNECTOR->Set_values(bus.toUInt64());
+        return true;
+        break;
+    case BUS_ACKINT:
+        if (receiveMode) {
+            buffer.append(bus.getData());
+//            qWarning()<<"Receive data:"<<bus.getData();
+
+            INTrequest = true;
+        }
+        bus.setFunc(BUS_SLEEP);
+        break;
+    default: break;
+    }
+
+
     if (!Power) return true;
 
     quint32 adr = bus.getAddr();
@@ -136,29 +221,10 @@ bool Crlp1004a::run(void)
             bus.setData(0x00);
             bus.setFunc(BUS_READDATA);
             break;
-        case 0x4e:
-            if (data!=0) {
-                Printer(data);
-                if (data == 0x0d) {
-                    bus.setINT(true);
-                    INTrequest = true;
-                }
-            }
-            bus.setData(0x00);
-            bus.setFunc(BUS_READDATA);
-            break;
         }
         break;
-    case BUS_INTREQUEST:
-        if (INTrequest) {
-            bus.setData(0x00);
-        }
-        else {
-            bus.setData(0xff);
-        }
-        bus.setFunc(BUS_READDATA);
-        INTrequest = false;
-        break;
+
+
     case BUS_READDATA:
         if ( (adr>=0x2000) && (adr<0x3000) ) bus.setData(mem[adr-0x2000]);
         else if (adr == 0x3060){
@@ -213,11 +279,11 @@ void Crlp1004a::Refresh(quint8 data)
 // The final paper image is 207 x 149 at (277,0) for the ce125
 
 // grab data char to byteArray
-    if ( (data == 0xff) || (data==0x0a)) return;
+//    if ( (data == 0xff) || (data==0x0a)) return;
 
-    if ( (data == 0x81) || (data == 0x82)) return;
+//    if ( (data == 0x81) || (data == 0x82)) return;
 
-    TextBuffer += data;
+//    TextBuffer += data;
 
     if (data == 0x0d){
         top+=10;
@@ -227,19 +293,20 @@ void Crlp1004a::Refresh(quint8 data)
     else
     {
         painter.begin(paperbuf);
-        int x = ((data>>4) & 0x0F)*7;
-        int y = (data & 0x0F) * 8;
-        painter.drawImage(      QPointF( margin + (7 * posX),top),
-                            *charTable,
-                            QRectF( x , y , 7,7));
-        posX++;
+        for (int i=0;i<buffer.size();i++) {
+            for (int b=0; b<8;b++)
+            {
+                if ((buffer.at(i)>>b)&0x01) painter.drawPoint( i, top+b);
+            }
+        }
+//        posX++;
         painter.end();
     }
 
-    if (posX >= 40) {
-        posX=0;
-        top+=10;
-    }
+//    if (posX >= 40) {
+//        posX=0;
+//        top+=10;
+//    }
 
     painter.begin(paperdisplay);
 

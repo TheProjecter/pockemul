@@ -45,6 +45,7 @@ QString Cbus::toLog() const
     case BUS_WRITEDATA: ret += "BUS_WRITEDATA";
         ret += QString(" - addr=%1").arg(getAddr(),4,16,QChar('0'));
         break;
+    case BUS_INTREQUEST: ret += "BUS_INTREQUEST"; break;
     }
     ret += QString(" - data=%1").arg(getData(),2,16,QChar('0'));
 

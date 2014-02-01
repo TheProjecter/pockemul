@@ -307,6 +307,7 @@ AddLog(LOG_CONSOLE,"updateIRQ\n");
         irq_state = false;
         halt = false;
         AddLog(LOG_CONSOLE,"CPU RUNNING\n");
+//        qWarning()<<"CPU RUNNING";
     }
     pending_irq = false;
 }
@@ -405,7 +406,7 @@ void Cm6502::run_one_opecode()
         nmi_state = false;
         halt=false;
         AddLog(LOG_CONSOLE,"CPU RUNNING\n");
-        qWarning()<<"CPU RUNNING";
+//        qWarning()<<"CPU RUNNING";
         if (fp_log) fprintf(fp_log,"\n INT NMI newpc:%04x\n",PCW);
     }
     else if(pending_irq) {

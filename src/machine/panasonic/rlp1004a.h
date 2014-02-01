@@ -78,6 +78,9 @@ private:
     quint64	run_oldstate;
     quint64  lastState;
     bool    tapeOutput,tapeInput;
+    QByteArray buffer;
+    bool printing;
+    bool receiveMode;
 
 
 public:
