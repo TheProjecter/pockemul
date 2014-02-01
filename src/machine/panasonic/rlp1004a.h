@@ -40,7 +40,7 @@ public:
     QImage *paperbuf;
     QImage *paperdisplay;
 
-    void Refresh(quint8 data);
+    void Refresh();
 #ifndef NO_SOUND
     QSound *bells;
 #endif
@@ -55,7 +55,7 @@ public:
 
 public:
     bool    rmtSwitch;
-    void	Printer(qint8 d);			//printer emulator
+    void drawGraph(quint8 data);
     QImage *charTable;
     int margin;
     int		top;
@@ -83,7 +83,6 @@ private:
     bool receiveMode;
     bool CRLFPending;
 
-public:
 
 };
 

@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include "common.h"
+#include "fluidlauncher.h"
 
 #include "rlp1004a.h"
 #include "rlh1000.h"
@@ -106,7 +107,7 @@ bool Crlp1004a::run(void)
             if (pTIMER->usElapsed(_state)>=7142)
             {
                 _state = pTIMER->state;
-                Refresh(buffer.at(0));
+                drawGraph(buffer.at(0));
 //                qWarning()<<"Printing data:"<<buffer.at(0)<<":"<<QChar(buffer.at(0));
                 buffer.remove(0,1);
             }
@@ -216,7 +217,7 @@ bool Crlp1004a::run(void)
     if (!Power) return true;
 
     quint32 adr = bus.getAddr();
-    quint8 data = bus.getData();
+//    quint8 data = bus.getData();
 
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
@@ -247,82 +248,38 @@ bool Crlp1004a::run(void)
 
 }
 
-void Crlp1004a::ComputeKey(void)
-{
-    if (pKEYB->LastKey == K_PFEED) {
-        Refresh(0x0d);
-    }
-}
-
 
 void Crlp1004a::SaveAsText(void)
 {
-    mainwindow->releaseKeyboard();
-
-    QString s = QFileDialog::getSaveFileName(
-                    mainwindow,
-                    tr("Choose a filename to save under"),
-                    ".",
-                   tr("Text File (*.txt)"));
-
-    QFile file(s);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
-
-    file.write(TextBuffer);
-
-    mainwindow->grabKeyboard();
-        AddLog(LOG_PRINTER,TextBuffer.data());
+    QMessageBox::warning(mainwindow, "PockEmul",
+                          tr("This printer is a pure graphic printer (yes it is!!!)\n") +
+                          tr("Saving output as text is irrelevant") );
 }
 
-void Crlp1004a::Refresh(quint8 data)
-{
-
+void Crlp1004a::drawGraph(quint8 data) {
     QPainter painter;
 
-//if (posX==0) bells->play();
-
-// copy ce126buf to ce126display
-// The final paper image is 207 x 149 at (277,0) for the ce125
-
-// grab data char to byteArray
-//    if ( (data == 0xff) || (data==0x0a)) return;
-
-//    if ( (data == 0x81) || (data == 0x82)) return;
-
-//    TextBuffer += data;
-
-//    if (data == 0x0d){
-//        top+=10;
-//        posX=0;
-////        qWarning()<<"CR PRINTED";
-//    }
-//    else
+    painter.begin(paperbuf);
+    for (int b=0; b<8;b++)
     {
-        painter.begin(paperbuf);
-//        for (int i=0;i<buffer.size();i++)
-        {
-            for (int b=0; b<8;b++)
-            {
-                if ((data>>b)&0x01) painter.drawPoint( posX, top+b);
-            }
-        }
-        posX++;
-        painter.end();
+        if ((data>>b)&0x01) painter.drawPoint( posX, top+b);
     }
+    posX++;
+    painter.end();
 
-//    if (posX >= 40) {
-//        posX=0;
-//        top+=10;
-//    }
+    Refresh();
+}
+
+void Crlp1004a::Refresh()
+{
+    QPainter painter;
 
     painter.begin(paperdisplay);
-
     painter.drawImage(QRectF(0,MAX(149-top,0),165,MIN(top,149)),*paperbuf,QRectF(0,MAX(0,top-149),170,MIN(top,149)));
 
-// Draw printer head
-//    painter.fillRect(QRect(0 , 147,407,2),QBrush(QColor(0,0,0)));
-//    painter.fillRect(QRect(21 + (7 * posX) , 137,14,2),QBrush(QColor(128,0,0)));
+    // Draw printer head
+    //    painter.fillRect(QRect(0 , 147,407,2),QBrush(QColor(0,0,0)));
+    //    painter.fillRect(QRect(21 + (7 * posX) , 137,14,2),QBrush(QColor(128,0,0)));
 
     painter.end();
 
@@ -422,22 +379,6 @@ bool Crlp1004a::exit(void)
 /* CE-126P PRINTER emulation                                             */
 /*****************************************************/
 
-void Crlp1004a::Printer(qint8 d)
-{
-    if(ctrl_char && d==0x20) {
-        ctrl_char=false;
-        Refresh(d);
-    }
-    else
-    {
-        if(d==0xf || d==0xe || d==0x03)
-            ctrl_char=true;
-        else
-        {
-            Refresh(d);
-        }
-    }
-}
 
 
 #define         WAIT ( pPC->frequency / 10000*6)
@@ -504,3 +445,26 @@ void Crlp1004a::Rotate()
         // adapt SNAP connector
 }
 
+
+extern int ask(QWidget *parent,QString msg,int nbButton);
+#define KEY(c)	((pKEYB->keyPressedList.contains(TOUPPER(c)) || \
+                  pKEYB->keyPressedList.contains(c) || \
+                  pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
+void Crlp1004a::ComputeKey()
+{
+    if (pKEYB->LastKey == K_PFEED) {
+        top+=10;
+        Refresh();
+    }
+
+    // Manage left connector click
+    if (KEY(0x240) && (currentView==FRONTview)) {
+        pKEYB->keyPressedList.removeAll(0x240);
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "Jack_3");
+        launcher->show();
+    }
+
+}

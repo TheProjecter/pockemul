@@ -2,8 +2,8 @@
  <demolauncher>
    <demos>
    <example idpocket="CE-122" filename="./" name="Sharp ce-122" image=":/ext/ce-122.png" connectortype="Sharp_9" conngender="female"/>
-   <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/ext/ce-152.png" connectortype="Sharp_9" conngender="female"/>
-   <example idpocket="CE-127R" filename="./" name="Sharp ce-127r" image=":/ext/ce-127r.png" connectortype="Sharp_9" conngender="female"/>
+   <example idpocket="CE-152" filename="./" name="Sharp ce-152" image=":/ext/ce-152.png" connectortype="Jack_3" conngender="female"/>
+   <example idpocket="CE-127R" filename="./" name="Sharp ce-127r" image=":/ext/ce-127r.png" connectortype="Jack_3" conngender="female"/>
     <example idpocket="CE-125" filename="./" name="Sharp ce-125" image=":/ext/ce-125.png" connectortype="Sharp_11" conngender="male"/>
     <example idpocket="MP-220" filename="./" name="Seiko MP-220" image=":/ext/mp-220.jpg" connectortype="Sharp_11" conngender="male"/>
      <example idpocket="26-3591" filename="./" name="Tandy 26-3591" image=":/ext/26-3591.jpg" connectortype="Sharp_11" conngender="male"/>
@@ -24,7 +24,7 @@
      <example idpocket="Casio FP-100" filename="./" name="Casio FP-100" image=":/ext/fp100.png" connectortype="Centronics_36" conngender="female"/>
      <example idpocket="Casio FP-40" filename="./" name="Casio FP-40" image=":/ext/fp40.png" connectortype="Sharp_9" conngender="female"/>
      <example idpocket="Nec PC-2021" filename="./" name="Nec PC-2021" image=":/ext/pc-2021.png" connectortype="Sharp_9" conngender="female"/>
-     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/ext/pc-2081.png" connectortype="Sharp_9" conngender="female"/>
+     <example idpocket="Nec PC-2081" filename="./" name="Nec PC-2081" image=":/ext/pc-2081.png" connectortype="Jack_3" conngender="female"/>
      <example idpocket="General CL-1000" filename="./" name="General CL-1000" image=":/ext/cl-1000.png" connectortype="General_20" conngender="male"/>
      <example idpocket="SANCO TP-83" filename="./" name="SANCO TP-83" image=":/ext/tp-83.png" connectortype="Sharp_9" conngender="female"/>
      <example idpocket="Panasonic RL-P6001" filename="./" name="Panasonic RL-P6001" image=":/rlh1000/rlp6001.png" connectortype="Panasonic_44" conngender="female;male"/>
