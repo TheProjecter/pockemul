@@ -88,6 +88,7 @@ Crlp1004a::~Crlp1004a() {
 #define LATENCY (pTIMER->pPC->getfrequency()/3200)
 bool Crlp1004a::run(void)
 {
+
     static quint64 _state=0;
 
     pTAPECONNECTOR->Set_pin(3,true);       // RMT
@@ -132,6 +133,7 @@ bool Crlp1004a::run(void)
 
     if (bus.getDest()!=0) return true;
     bus.setDest(0);
+
 //    qWarning()<<"PRINTER:"<<bus.toLog();
     if (bus.getFunc()==BUS_QUERY) {
         bus.setData(0x00);
@@ -151,6 +153,7 @@ bool Crlp1004a::run(void)
         if (Power)
         {
             bus.setFunc(BUS_READDATA);
+            bus.setData(0x01);
             pCONNECTOR->Set_values(bus.toUInt64());
         }
         return true;
@@ -238,6 +241,7 @@ bool Crlp1004a::run(void)
         else if (adr == 0x3060){
             bus.setData(tapeInput? 0x80 : 0x00);
         }
+        else bus.setData(0x7f);
         break;
     default: break;
 

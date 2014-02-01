@@ -83,7 +83,8 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
 
     ioFreq = 0;
 
-    extrinsic = 0xff;
+    extrinsicRAM = 0xff;
+    extrinsicROM = 0xff;
 
     bus = new Cbus();
     backdoorOpen = false;
@@ -234,8 +235,8 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Write ROM[%04x]=%02x ",Log_String,*d,data);
         }
-        if (extrinsic!=0xff) {
-            bus->setDest(extrinsic);
+        if (extrinsicROM!=0xff) {
+            bus->setDest(extrinsicROM);
             bus->setAddr(*d);
             bus->setData(data);
             bus->setFunc(BUS_WRITEDATA);
@@ -324,7 +325,12 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                 bus->setFunc(BUS_SELECT);
                 if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
                 manageBus();
-                if (bus->getFunc()==BUS_READDATA) extrinsic=t;//bus->getDest();
+                if (bus->getFunc()==BUS_READDATA) {
+                    if (bus->getData()==0x00) extrinsicRAM=t;
+                    if (bus->getData()==0x01) extrinsicROM=t;
+                }
+//                else
+//                    extrinsic=0xff;
                 //                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus->getDest());
                 bus->setFunc(BUS_SLEEP);
                 if (fp_log) {
@@ -363,14 +369,16 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         }
 
         if (fp_log) fprintf(fp_log,"BUS_WRITEDATA DEST=%i  data=%02X\n",bus->getDest(),data);
-        if (extrinsic!=0xff) {
-            bus->setDest(extrinsic);
+        if (extrinsicRAM!=0xff) {
+            bus->setDest(extrinsicRAM);
             bus->setAddr(*d);
             bus->setData(data);
             bus->setFunc(BUS_WRITEDATA);
             manageBus();
             //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
             bus->setFunc(BUS_SLEEP);
+
+            // do not write hhc memory. Data has been sent to external
             return false;
         }
 
@@ -391,7 +399,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
     }
 
     if((*d>=0x2000) && (*d < 0x4000)) { // ROM
-        *data = ReadBusMem(BUS_READDATA,*d,extrinsic);
+        *data = ReadBusMem(BUS_READDATA,*d,extrinsicROM);
         return false;
     }
 
@@ -498,7 +506,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
             case 0x02 : offset = 0x10000; *d += offset; return true;
             case 0x03 :  *data = ReadBusMem(BUS_READDATA,*d,30);
 //                qWarning()<<"READ EXT ROM: dest="<<extrinsic<<" - adr="<<*d<<"="<<*data;
-                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE dest:%02x\n",extrinsic);
+                if (pCPU->fp_log) fprintf(pCPU->fp_log,"\nEXT CAPSULE dest:%02x\n",extrinsicRAM);
                 // External ROM ????
                 return false;
             default: break;
@@ -511,7 +519,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
 
 
     if((*d>=0x8000) && (*d < 0xC000)) {
-        *data = ReadBusMem(BUS_READDATA,*d,extrinsic);
+        *data = ReadBusMem(BUS_READDATA,*d,extrinsicRAM);
         return false; /* RAM */
     }
 
@@ -528,7 +536,7 @@ UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr,quint8 dest)
         fprintf(fp_log," %s\n",pCPU->Regs_String);
     }
     if (fp_log) fprintf(fp_log,"BUS_READDATA DEST=%i  ",bus->getDest());
-    if (extrinsic!=0xff) {
+    if (dest!=0xff) {
         bus->setDest(dest);
         bus->setAddr(adr);
         bus->setData(0xff);

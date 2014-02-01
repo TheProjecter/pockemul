@@ -39,7 +39,8 @@ public:
     quint8 lineFD[0x100];
     quint8 lineFF[0x100];
     quint8 strobe32;
-    quint8 extrinsic;
+    quint8 extrinsicRAM;
+    quint8 extrinsicROM;
     UINT8 getKey(quint8 row);
     UINT8 ReadBusMem(BUS_FUNC f, UINT32 adr, quint8 dest);
 

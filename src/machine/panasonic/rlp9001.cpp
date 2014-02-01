@@ -151,6 +151,7 @@ bool Crlp9001::run(void)
         if (Power)
         {
             bus.setFunc(BUS_READDATA);
+            bus.setData(0x00);
             pCONNECTOR->Set_values(bus.toUInt64());
         }
         return true;
