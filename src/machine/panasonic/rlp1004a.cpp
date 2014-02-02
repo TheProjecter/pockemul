@@ -103,7 +103,7 @@ bool Crlp1004a::run(void)
 
     if (printing) {
         if (!buffer.isEmpty()) {
-            // Print char one by one from buffer
+            // Print char column one by one from buffer
             // Wait 20char/sec -> 140 cols / Sec -> 7,142ms / col
             if (pTIMER->usElapsed(_state)>=7142)
             {

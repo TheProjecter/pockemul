@@ -29,7 +29,8 @@
     <KEY description="ENTER" height="15" left="528" masterscancode="0x00" modifier="" scancode="0x0d" top="278" width="69"/>
     <KEY description="INS" height="15" left="528" masterscancode="0x00" modifier="" scancode="0x09" top="246" width="25"/>
     <KEY description="Left Arrow" height="15" left="528" masterscancode="0x00" modifier="" scancode="0x06" top="176" width="25"/>
-    <KEY description="On/Off" height="15" left="706" masterscancode="0x00" modifier="" scancode="0x3e" top="144" width="25"/>
+    <KEY description="On" height="15" left="706" masterscancode="0x00" modifier="" scancode="0x3" top="144" width="25"/>
+    <KEY description="Off" height="15" left="706" scancode="0xc8" top="178" width="25"/>
     <KEY description="Rigth Arrow" height="15" left="614" masterscancode="0x00" modifier="" scancode="0x07" top="178" width="25"/>
     <KEY description="SHIFT1" height="15" left="619" masterscancode="0x00" modifier="" scancode="0x11" top="283" width="25"/>
     <KEY description="2nd Sft (Ctrl)" height="15" left="438" masterscancode="0x00" modifier="" scancode="0xd5" top="279" width="25"/>

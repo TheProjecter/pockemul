@@ -14,6 +14,8 @@
 #include "Inter.h"
 #include "cpu.h"
 
+#define NB_SLOTS 5
+
 Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]
     Q_UNUSED(parent)
@@ -34,7 +36,7 @@ Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
 Crlp6001::~Crlp6001(){
     delete(pMAINCONNECTOR);
 
-    for (int i=0;i<5;i++) delete(pEXTCONNECTOR[i]);
+    for (int i=0;i<NB_SLOTS;i++) delete(pEXTCONNECTOR[i]);
 }
 
 FILE *_log;
@@ -107,7 +109,7 @@ bool Crlp6001::run(void)
         }
     }
 
-    if (dest >= 5) {
+    if (dest >= NB_SLOTS) {
         if (_log) fprintf(_log,"\n");
         return true;
     }
@@ -140,18 +142,30 @@ bool Crlp6001::run(void)
 bool Crlp6001::init(void)
 {
 
-    int snap[6][2] = {
+    int snap[17][2] = {
         {0,367+367+72},
         {0,367+72},
         {0,72},
         {252,72},
         {252,367+72},
+        {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
         {252,367+367+72}
     };
     Cconnector::ConnectorDir dir[] = {
         Cconnector::WEST,
         Cconnector::WEST,
         Cconnector::WEST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
+        Cconnector::EAST,
         Cconnector::EAST,
         Cconnector::EAST
     };
@@ -164,15 +178,15 @@ qWarning()<<"RL-P6001 initializing...step1";
                                     Cconnector::Panasonic_44,
                                     "44 pins main connector",
                                     true,
-                                    QPoint(snap[5][0],snap[5][1]),
+                                    QPoint(snap[16][0],snap[16][1]),
                                     Cconnector::EAST);
     publish(pMAINCONNECTOR);
 qWarning()<<"RL-P6001 initializing...step2";
 
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<NB_SLOTS;i++) {
         pEXTCONNECTOR[i] = new Cconnector(this,44,i+1,
                                           Cconnector::Panasonic_44,
-                                          "44 pins Ext. connector",
+                                          QString("Slot %1 - 44 pins Ext. connector").arg(i+1),
                                           false,
                                           QPoint(snap[i][0],snap[i][1]),
                                           dir[i]);
