@@ -160,7 +160,7 @@ bool Crlp1004a::run(void)
     }
 
     switch (bus.getFunc()) {
-    case BUS_TOUCH: // Print buffer
+    case BUS_LINE3: // Print buffer
         switch(bus.getData()) {
         case 0: // Print
 //            qWarning()<<"BUS_TOUCH:"<<bus.getData()<<  "PRINTING "<<buffer.size()<<" chars";
@@ -204,7 +204,7 @@ bool Crlp1004a::run(void)
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
         break;
-    case BUS_ACKINT:
+    case BUS_LINE1:
         if (receiveMode) {
             buffer.append(bus.getData());
 //            qWarning()<<"Receive data:"<<bus.getData();

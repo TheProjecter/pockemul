@@ -93,7 +93,7 @@ bool Crlp4002::run(void)
     }
 
     switch (bus.getFunc()) {
-    case BUS_TOUCH: // Print buffer
+    case BUS_LINE3: // Print buffer
         switch(bus.getData()) {
         case 84: // Modem CONNECT
             qWarning()<<"BUS_TOUCH:"<<bus.getData();
@@ -128,13 +128,14 @@ bool Crlp4002::run(void)
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
         break;
-    case BUS_ACKINT:
-//        if (receiveMode)
-        {
-            qWarning()<<"Receive data:"<<bus.getData();
-
-            INTrequest = true;
-        }
+    case BUS_LINE0:
+        qWarning()<<"Receive data LINE 0:"<<bus.getData();
+        INTrequest = true;
+        bus.setFunc(BUS_ACK);
+        break;
+    case BUS_LINE1:
+        qWarning()<<"Receive data LINE 1:"<<bus.getData();
+        INTrequest = true;
         bus.setFunc(BUS_ACK);
         break;
     default: break;

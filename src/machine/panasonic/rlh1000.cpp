@@ -300,9 +300,21 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
                 bus->setDest(t);
                 bus->setData(data);
-                bus->setFunc(BUS_TOUCH);
+                bus->setFunc(BUS_LINE3);
                 if (fp_log) fprintf(fp_log,"BUS_TOUCH DEST=%i data=%02x \n",bus->getDest(),bus->getData());
                 manageBus();
+            }
+
+            if (islineFC) {
+                quint8 t = (*d-0x47FC)/4;
+//                lineFC[t] = data;
+                bus->setDest(t);
+                bus->setData(data);
+                bus->setFunc(BUS_LINE0);
+                if (fp_log) fprintf(fp_log,"BUS_ACKINT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
+//                qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
+                manageBus();
+
             }
 
             if (islineFD) {
@@ -310,7 +322,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                 lineFD[t] = data;
                 bus->setDest(t);
                 bus->setData(data);
-                bus->setFunc(BUS_ACKINT);
+                bus->setFunc(BUS_LINE1);
                 if (fp_log) fprintf(fp_log,"BUS_ACKINT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
 //                qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
                 manageBus();
