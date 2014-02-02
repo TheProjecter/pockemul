@@ -45,6 +45,7 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
     SlotList.clear();
+    // This ROM file stop at 0x1000. I think data aremissing at 0x1000.
     SlotList.append(CSlot(8 , 0x0000 , P_RES(":/rlh1000/Telecomputing_1.bin")    , "" , CSlot::ROM , "ROM"));
 
 }
