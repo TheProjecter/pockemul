@@ -528,7 +528,8 @@ HEADERS += src/core/Connect.h \
     src/machine/hp/hp82143A.h \
     src/core/viewobject.h \
     src/machine/bus.h \
-    src/core/allobjects.h
+    src/core/allobjects.h \
+    src/machine/panasonic/rlp4002.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -777,7 +778,8 @@ SOURCES +=  \
     src/machine/hp/hp41mod.cpp \
     src/lcd/Lcdc_hp41.cpp \
     src/machine/hp/hp82143A.cpp \
-    src/machine/bus.cpp
+    src/machine/bus.cpp \
+    src/machine/panasonic/rlp4002.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \

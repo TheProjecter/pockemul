@@ -24,5 +24,7 @@
         <file>rlh1000/rlh1000Top.png</file>
         <file>rlh1000/rlh1000BackOpen.png</file>
         <file>rlh1000/trappe.png</file>
+        <file>rlh1000/Telecomputing_1.bin</file>
+        <file>rlh1000/rlp4002.png</file>
     </qresource>
 </RCC>

@@ -62,6 +62,7 @@
 #include "tpc8300.h"
 #include "tp83.h"
 #include "panasonic/rlh1000.h"
+#include "panasonic/rlp4002.h"
 #include "panasonic/rlp6001.h"
 #include "panasonic/rlp9001.h"
 #include "panasonic/rlp1004a.h"
