@@ -44,8 +44,8 @@ Crlp1004a::Crlp1004a(CPObject *parent):Cprinter(this)
     setposX(0);
 
     pTIMER              = new Ctimer(this);
-    KeyMap      = KeyMaprlp1004a;
-    KeyMapLenght= KeyMaprlp1004aLenght;
+//    KeyMap      = KeyMaprlp1004a;
+//    KeyMapLenght= KeyMaprlp1004aLenght;
     pKEYB               = new Ckeyb(this,"rlp1004a.map");
     setDXmm(113);
     setDYmm(95);
@@ -126,6 +126,7 @@ bool Crlp1004a::run(void)
 //                bus.setINT(true);
             INTrequest = true;
             pCONNECTOR->Set_values(bus.toUInt64());
+            Refresh();
         }
     }
 
@@ -279,7 +280,7 @@ void Crlp1004a::Refresh()
     QPainter painter;
 
     painter.begin(paperdisplay);
-    painter.drawImage(QRectF(0,MAX(149-top,0),165,MIN(top,149)),*paperbuf,QRectF(0,MAX(0,top-149),170,MIN(top,149)));
+    painter.drawImage(QRectF(0,MAX(149-top,0),165,MIN(top,159)),*paperbuf,QRectF(0,MAX(0,top-149),170,MIN(top,149)));
 
     // Draw printer head
     //    painter.fillRect(QRect(0 , 147,407,2),QBrush(QColor(0,0,0)));

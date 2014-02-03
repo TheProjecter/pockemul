@@ -611,7 +611,6 @@ SOURCES +=  \
     src/core/pobject.cpp \
     src/core/pockemul.cpp \
     src/core/Connect.cpp \
-    src/core/Dasm.cpp \
     src/core/Debug.cpp \
     src/core/Inter.cpp \
     src/core/Keyb.cpp \

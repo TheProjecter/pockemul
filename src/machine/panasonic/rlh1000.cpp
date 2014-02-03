@@ -341,6 +341,8 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                     if (bus->getData()==0x00) extrinsicRAM=t;
                     if (bus->getData()==0x01) extrinsicROM=t;
                 }
+                // It shoud be a way to reset extrinsic values ??? .... ????
+                // Perhaps when dest = 32 ???
 //                else
 //                    extrinsic=0xff;
                 //                    if (fp_log) fprintf(fp_log," AFTER DEST=%i data \n",bus->getDest());

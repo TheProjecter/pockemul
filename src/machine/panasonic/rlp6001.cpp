@@ -14,7 +14,7 @@
 #include "Inter.h"
 #include "cpu.h"
 
-#define NB_SLOTS 5
+#define NB_SLOTS 6
 
 Crlp6001::Crlp6001(CPObject *parent )   : CPObject(this)
 {                                                       //[constructor]
