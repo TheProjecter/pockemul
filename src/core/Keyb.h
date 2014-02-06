@@ -75,7 +75,6 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_SHT2		0x12
 #define K_SML		0x14
 #define K_OB		0x3f
-#define K_OF		0x3e
 #define K_DBLQUOTE  0x22
 
 #if 1
@@ -98,6 +97,7 @@ K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9
 #define K_BLANK     0xae
 #define K_QUOTE     0xb0
 #define K_BRACKET   0xb1
+#define K_OF		0xb2
 
 #define K_PRINT		0xc0
 #define K_PFEED		0xc1

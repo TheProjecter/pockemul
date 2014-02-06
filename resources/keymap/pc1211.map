@@ -15,7 +15,7 @@
     <KEY description="Left Arrow" height="21" left="580" masterscancode="0x00" modifier="" scancode="0x06" top="175" width="28"/>
     <KEY description="MODE" height="23" left="579" masterscancode="0x00" modifier="" scancode="0x08" top="142" width="27"/>
     <KEY description="On/Brk" height="13" left="60" masterscancode="0x00" modifier="" scancode="0x03" top="121" width="21"/>
-    <KEY description="On/Off" height="18" left="21" masterscancode="0x00" modifier="" scancode="0x3e" top="117" width="20"/>
+    <KEY description="On/Off" height="18" left="21" masterscancode="0x00" modifier="" scancode="0xb2" top="117" width="20"/>
     <KEY description="Rigth Arrow" height="18" left="578" masterscancode="0x00" modifier="" scancode="0x07" top="214" width="31"/>
     <KEY description="SHIFT1" height="13" left="378" masterscancode="0x00" modifier="" scancode="0x11" top="122" width="27"/>
     <KEY description="Space" height="13" left="298" masterscancode="0x00" modifier="" scancode="0x20" top="202" width="27"/>

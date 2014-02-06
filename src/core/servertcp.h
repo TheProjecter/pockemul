@@ -24,6 +24,7 @@ signals :
     void vers_IHM_texte(QString);
 private :
     QTcpSocket *clientConnection;
+    CPObject *currentPC;
 };
 
 #endif // SERVERTCP_H

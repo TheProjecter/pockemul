@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     QApplication *app = new QApplication(argc, argv);
      app->setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 #if QT_VERSION >= 0x050000
-//     app->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents,false);
+     app->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents,false);
 //     test();
 #else
 

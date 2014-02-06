@@ -1,4 +1,6 @@
- 
+
+#include <QDebug>
+
 #include	"common.h"
 #include	"pc1360.h"
 #include "cextension.h"
@@ -21,6 +23,7 @@ Cpc1360::Cpc1360(CPObject *parent)	: Cpc13XX(parent)
     LcdFname		= P_RES(":/pc1360/1360lcd.png");
     SymbFname		= P_RES(":/pc1360/1360symb.png");
     memsize			= 0x40000;
+//    InitMemValue    = 0xff;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1360/cpu-1360.rom")	, "pc-1360/cpu-1360.rom", CSlot::ROM , "CPU ROM"));
@@ -47,7 +50,6 @@ Cpc1360::Cpc1360(CPObject *parent)	: Cpc13XX(parent)
     pTIMER		= new Ctimer(this);
 
 
-//		InitMemValue = 0xFF;
 }
 
 
@@ -182,8 +184,8 @@ void	Cpc1360::Set_PortF(BYTE data)
 {
 	IO_F = data;
 	RamBank = GET_PORT_BIT(PORT_F,3);
+//    qWarning()<<"RAMBANK F="<<RamBank;
 }
-
 void	Cpc1360::Set_PortC(BYTE data)
 {
 	IO_C = data;

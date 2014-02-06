@@ -128,7 +128,7 @@ void Ckeyb::keyscan(void)
     int i, j;
 	unsigned char ch;
 
-//	for (i = 0; i < NM; i++)	{ keym[i] = 0; }
+//    for (i = 0; i < NM; i++)	{ keym[i] = 0; }
     memset(&keym,0,sizeof(keym));
 		
     for (i = 0; i < NM; i++)
@@ -186,10 +186,11 @@ void Ckeyb::Set_KS(BYTE data)
 bool Ckeyb::CheckKon()
 {
     Kon = false;
-	if ( (LastKey == K_BRK) )
+    if ( (LastKey == K_BRK) )
 	{
         Kon = true;
 		AddLog(2,"Kon TRUE");
+        qWarning()<<"Kon true";
 		LastKey = 0;
     }
 	return (Kon);

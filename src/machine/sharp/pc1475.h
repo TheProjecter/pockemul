@@ -16,7 +16,8 @@ public:
     Cpc1475(CPObject *parent = 0);
     virtual ~Cpc1475()
 	{								//[constructor]
-	}
+    }
+
 private:
 };
 

@@ -10,18 +10,21 @@ extern QList<CPObject *> listpPObject;
 
 ServeurTcp :: ServeurTcp (QObject *parent)
 {
+    Q_UNUSED(parent)
+
     listen(QHostAddress::LocalHost,4000);
     QObject:: connect(this, SIGNAL(newConnection()),
     this, SLOT(demande_connexion()));
+    currentPC = 0;
 }
 
 // si un client demande une connexion
 void ServeurTcp :: demande_connexion()
  {
-    emit vers_IHM_connexion(); // on envoie un signal à l'IHM
-    // on crée une nouvelle socket pour ce client
+    emit vers_IHM_connexion(); // on envoie un signal a l'IHM
+    // on cree une nouvelle socket pour ce client
     clientConnection = nextPendingConnection();
-    // si on reçoit des données, le slot lecture() est appelé
+    // si on recoit des donnees, le slot lecture() est appele
     QObject:: connect(clientConnection, SIGNAL(readyRead()),
     this, SLOT(lecture()));
     clientConnection->setTextModeEnabled(true);
@@ -36,7 +39,7 @@ void ServeurTcp ::lecture()
 
         ligne.remove('\n');
         qWarning()<<ligne;
-        emit vers_IHM_texte(ligne);           // on l'envoie à l'IHM
+        emit vers_IHM_texte(ligne);           // on l'envoie a l'IHM
         process_command(ligne);
         QTextStream texte(clientConnection);
         texte <<"PockEmul>";
@@ -61,7 +64,7 @@ void ServeurTcp::cmd_help(QTextStream *sock,QString subcmd)
         *sock << "  close Id" << endl;
         *sock << "  list            List all running model Ids" << endl;
         *sock << "  load pml_file   Load a .pml file" << endl;
-        *sock << "  select Id       focus on the designed pocke. Use list to retrieve Ids" << endl;
+        *sock << "  select Id       focus on the designed pocket. Use list to retrieve Ids" << endl;
         *sock << "  start model_name" << endl;
 //        *sock << "  key(k) [enter cr f1 esc ctrl+c shift+code+a \"Text\" ...]" << endl;
     }
@@ -79,6 +82,10 @@ void ServeurTcp::cmd_help(QTextStream *sock,QString subcmd)
         *sock << "Help close" << endl << "==========" << endl;
         *sock << "  close [all,Id]  close all pocket or select by Id (use list command)." << endl;
     }
+    else if(subcmd=="select") {
+        *sock << "Help select" << endl << "==========" << endl;
+        *sock << "  select [none,Id]  define corresponding Pocket as current pocket for next commands." << endl;
+    }
 }
 void ServeurTcp::process_command(QString ligne)
 {
@@ -88,8 +95,8 @@ void ServeurTcp::process_command(QString ligne)
     QString cmd = args.first();
 
 
-    QTextStream texte(clientConnection);      // création d'un flux pour écrire dans la socket
-//    texte << \"message reçu\n" << endl;          // message à envoyer au client
+    QTextStream texte(clientConnection);      // creation d'un flux pour ecrire dans la socket
+//    texte << \"message recu\n" << endl;          // message Ã  envoyer au client
 
     qWarning()<<"cmd:'"<<cmd<<"'";
     if (cmd == "help")				// Check for help
@@ -107,17 +114,27 @@ void ServeurTcp::process_command(QString ligne)
         for (int i=0;i<listpPObject.size();i++)
         {
             CPObject *po = listpPObject.at(i);
-            texte << i << " : "<< po->getName()<<endl;
+            texte << i << " : "<< po->getName();
+            if (po == currentPC) {
+                texte << " (** selected Pocket **)";
+            }
+            texte<<endl;
         }
     }
     else if (cmd=="select") {
-        if (args.size()<2) { // Erreur
+        if ((args.size()==2) && (args.at(1) == "none")) {
+            currentPC = 0;
+            return;
         }
-        else if (args.at(1).toInt() < listpPObject.size()) {
-            CPObject *pc = listpPObject.at(args.at(1).toInt());
-            pc->raise();
-            pc->setFocus();
+        if ((args.size()==2) && (args.at(1).toInt() < listpPObject.size())) {
+            currentPC = listpPObject.at(args.at(1).toInt());
+            currentPC->raise();
+            currentPC->setFocus();
+            return;
         }
+        texte << "Bad argument." << endl;
+        cmd_help(&texte,"select");
+        return;
     }
     else if (cmd=="close") {
         if ((args.size()==2) && (args.at(1) == "all")) {

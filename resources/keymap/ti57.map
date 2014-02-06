@@ -11,7 +11,7 @@
     <KEY description="CLR" height="20" left="220" masterscancode="0x00" modifier="" scancode="0xef" top="222" width="20"/>
     <KEY description="INV" height="16" left="81" masterscancode="0x00" modifier="" scancode="0x0b" top="224" width="25"/>
     <KEY description="Equal" height="20" left="214" masterscancode="0x00" modifier="" scancode="0x3d" top="481" width="20"/>
-    <KEY description="On/Off" height="21" left="204" masterscancode="0x00" modifier="" scancode="0x3e" top="121" width="31"/>
+    <KEY description="On/Off" height="21" left="204" masterscancode="0x00" modifier="" scancode="0xb2" top="121" width="31"/>
     <KEY description="SHIFT1" height="20" left="37" masterscancode="0x00" modifier="" scancode="0x11" top="220" width="20"/>
     <KEY description="0" height="20" left="77" masterscancode="0x00" modifier="" scancode="0x30" top="483" width="35"/>
     <KEY description="1" height="20" left="76" masterscancode="0x00" modifier="" scancode="0x31" top="445" width="20"/>

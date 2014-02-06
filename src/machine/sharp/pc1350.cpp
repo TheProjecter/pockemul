@@ -52,6 +52,7 @@ Cpc13XX::Cpc13XX(CPObject *parent)	: CpcXXXX(parent)
 
 bool Cpc13XX::init(void)
 {
+
 #ifndef QT_NO_DEBUG
     //pCPU->logsw = true;
 #endif

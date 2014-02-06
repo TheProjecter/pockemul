@@ -1,7 +1,7 @@
 <!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
 <model>hp41</model>
 <Keyboard>
-    <KEY description="On/Off" height="18" left="25" masterscancode="0x00" modifier="" scancode="0x3e" top="84" width="39"/>
+    <KEY description="On/Off" height="18" left="25" masterscancode="0x00" modifier="" scancode="0xb2" top="84" width="39"/>
     <KEY description="User" height="18" left="76" masterscancode="0x00" modifier="" scancode="0xf7" top="82" width="36"/>
     <KEY description="PRGM" height="18" left="167" masterscancode="0x00" modifier="" scancode="0xf8" top="84" width="39"/>
     <KEY description="ALPHA" height="18" left="217" masterscancode="0x00" modifier="" scancode="0xf9" top="82" width="36"/>

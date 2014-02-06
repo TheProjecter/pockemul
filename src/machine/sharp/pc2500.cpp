@@ -216,7 +216,7 @@ bool Cpc2500::Chk_Adr_R(UINT32 *d,UINT32 *data)
     Q_UNUSED(data)
 
     if (                   (*d<=0x1FFF) ) { return(0);}
-    if ( (*d>=0x2000) && (*d<=0x3FFF) && EXTENSION_CE201M_CHECK ) { *d+=0x2000; return true;}  // 8Kb Ram Card Image
+    if ( (*d >= 0x2000) && (*d<=0x3FFF) && EXTENSION_CE201M_CHECK ) { *d+=0x2000; return true;}  // 8Kb Ram Card Image
     if ( (*d >= 0x8000) && (*d<=0xFFFF) && (RomBank & 0x02) ) { *d += 0x8000; return true; }
 
     if (ProtectMemory) {

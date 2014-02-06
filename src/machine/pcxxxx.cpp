@@ -197,13 +197,14 @@ void CpcXXXX::TurnOFF(void)
 
 void CpcXXXX::TurnON(void)
 {
+
     if (pKEYB->LastKey == 0) pKEYB->LastKey = K_POW_ON;
-    qWarning()<<"power="<<Power;
+    qWarning()<<"power1="<<Power<< " k="<<pKEYB->LastKey;
     if ( (pKEYB->LastKey == K_POW_ON) ||
          (!Power && pKEYB->LastKey == K_OF) ||
          (!Power && pKEYB->LastKey == K_BRK))
     {
-         qWarning()<<"power ON";
+         qWarning()<<"power ON:";
         AddLog(LOG_MASTER,"Power ON");
         if (!hardreset) {
 //            Initial_Session_Load();
@@ -213,6 +214,7 @@ void CpcXXXX::TurnON(void)
         Power = true;
         PowerSwitch = PS_RUN;
         if (pLCDC) pLCDC->TurnON();
+        pKEYB->LastKey = 0;
     }
 }
 
@@ -452,8 +454,10 @@ void CpcXXXX::set_mem(UINT32 adr,int size,UINT32 data)
 /*****************************************************************************/
 /* RETURN: 0=error, 1=success												 */
 /*****************************************************************************/
+//FILE *_loclog;
 bool CpcXXXX::init(void)
 {
+//    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
     pCPU->logsw = true;
 #endif
@@ -495,6 +499,7 @@ bool CpcXXXX::init(void)
 	
 	initsound();
 
+//    _loclog=fopen("toto.log","wt");
 	return(1);
 }
 
@@ -535,30 +540,33 @@ bool CpcXXXX::run(void)
 	if(!pCPU->halt && !off)
 	{
         if ( (pCPU->logsw) && (pCPU->fp_log) ) {
+            char	s[2000];
             sprintf(Log_String," ");
             pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
-            fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
-            fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
-            for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
+            sprintf(s,"[%lld] ",pTIMER->state);
+            sprintf(s,"[%02i]",pCPU->prevCallSubLevel);
+            for (int g=0;g<pCPU->prevCallSubLevel;g++) sprintf(s,"\t");
 
             pCPU->step();
             Regs_Info(1);
 
-            fprintf(pCPU->fp_log,"%-40s   %s  %s\n",pCPU->pDEBUG->Buffer,pCPU->Regs_String,Log_String);
+            sprintf(s,"%-40s   %s  %s\n",pCPU->pDEBUG->Buffer,pCPU->Regs_String,Log_String);
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
-                for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
-                fprintf(pCPU->fp_log,"{\n");
+                for (int g=0;g<pCPU->prevCallSubLevel;g++) sprintf(s,"\t");
+                sprintf(s,"{\n");
             }
             if (pCPU->prevCallSubLevel > pCPU->CallSubLevel) {
-                for (int g=0;g<(pCPU->prevCallSubLevel-1);g++) fprintf(pCPU->fp_log,"\t");
-                fprintf(pCPU->fp_log,"}\n");
+                for (int g=0;g<(pCPU->prevCallSubLevel-1);g++) sprintf(s,"\t");
+                sprintf(s,"}\n");
             }
             if (pCPU->CallSubLevel <0) pCPU->CallSubLevel=0;
             pCPU->prevCallSubLevel = pCPU->CallSubLevel;
 
+            fprintf(pCPU->fp_log,s);
 //            fflush(pCPU->fp_log);
         }
         else {
+//            fprintf(_loclog,"[%lld] %05x",pTIMER->state,pCPU->get_PC());
             if (!off) pCPU->step();
 #ifndef QT_NO_DEBUG
             Regs_Info(0);

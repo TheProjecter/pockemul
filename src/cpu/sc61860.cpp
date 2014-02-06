@@ -2,6 +2,7 @@
 /* sc61860 CPU emulation                                  */
 /**********************************************************/
 #include <stdlib.h>
+#include <QDebug>
 
 #include "common.h"
 #include "Log.h"
@@ -91,6 +92,7 @@ INLINE void CSC61860::AddState(BYTE n)
         ticksReset+=(n);
         if (ticksReset >= XTICKRESET)
         {
+            qWarning()<<"OKOK";
             resetFlag = false;
             ticksReset = 0;
         }
@@ -1407,7 +1409,7 @@ INLINE void CSC61860::Op_4e(void)
 	if (op_local_counter--)
 	{
 		AddState(1);
-        if (fp_log) fprintf(fp_log,"current WAIT -1: %i\n",op_local_counter);
+//        if (fp_log) fprintf(fp_log,"current WAIT -1: %i\n",op_local_counter);
 		reg.d.pc--;
 	}
 	else
@@ -2796,7 +2798,9 @@ bool CSC61860::init(void)
 
 void CSC61860::Reset(void)
 {
+    memset(&reg,0,sizeof(reg));
     resetFlag = true;
+    ticksReset = 0;
 	memset(imem,0,MAX_IMEM);
 	I_REG_A  = 0;
 	I_REG_B  = 0;
@@ -3019,7 +3023,7 @@ void CSC61860::Regs_Info(UINT8 Type)
 {
 	switch(Type)
 	{
-	case 0:			// Monitor Registers Dialog
+    case 0:			// Monitor Registers Dialog
 	case 2:			// For Log File
 		sprintf(Regs_String,	"I:%.2x J:%.2x A:%.2x B:%.2x \r\nX:%.2x%.2x  Y:%.2x%.2x \r\nK:%.2x L:%.2x M:%.2x N:%.2x \r\nP:%.2x Q:%.2x R:%.2x DP:%.4x \r\nC:%s Z:%s",
 			I_REG_I,I_REG_J,I_REG_A,I_REG_B,

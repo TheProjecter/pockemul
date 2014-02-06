@@ -338,10 +338,12 @@ bool CPObject::run(void){
 //    }
 
     if ((resetAt>0) && (pTIMER->state >= resetAt)) {
+        qWarning()<<"Reset";
         Reset();
         resetAt = 0;
     }
     if ((hardresetAt>0) && (pTIMER->state >= hardresetAt)) {
+        qWarning()<<"HardReset";
         hardreset = true;
         init();
         Reset();
@@ -681,9 +683,14 @@ void CPObject::mousePressEvent(QMouseEvent *event)
         if (pKEYB->LastKey) pKEYB->keyPressedList.append(pKEYB->LastKey);
 
         switch (pKEYB->LastKey) {
-        case K_OF : Vibrate();slotPower();grabGesture(Qt::TapAndHoldGesture);return; break;
+        case K_OF :
+            Vibrate();
+            slotPower();
+            grabGesture(Qt::TapAndHoldGesture);
+            return;
+            break;
         case K_BRK :
-        case K_POW_ON : Vibrate();TurnON(); break;
+        case K_POW_ON :qWarning()<<"GOGO"; Vibrate();TurnON(); break;
         case K_POW_OFF: Vibrate();Power = false;TurnOFF();grabGesture(Qt::TapAndHoldGesture);return;break;
         case K_CLOSE: Vibrate();TurnCLOSE();break;
         }
@@ -1364,9 +1371,11 @@ void CPObject::slotContrast(QAction * action) {
 
 void CPObject::slotPower()
 { 
-//	Power = !Power;
-    if (!Power)
+    qWarning()<<"Slot POWER"<<Power;
+    if (!Power) {
+//        pKEYB->LastKey = K_POW_ON;
 		TurnON();
+    }
 	else
         TurnOFF();
 

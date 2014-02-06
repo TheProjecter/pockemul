@@ -38,6 +38,8 @@ CExtensionArray::CExtensionArray(QString value1,QString value2)							//[constru
     emptyAction	= 0;
     actionGroup	= 0;
 
+    for (int i=0; i < NB_EXT;i++) ExtArray[i]=0;
+
     ExtArray[ID_CE151]	= new CExtension("ce-151",		"4 Kb memory module");
     ExtArray[ID_CE153]	= new CExtension("ce-153",		"Graphic pad");
     ExtArray[ID_CE155]	= new CExtension("ce-155",		"8 Kb memory module");

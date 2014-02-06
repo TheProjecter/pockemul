@@ -195,7 +195,7 @@ bool Cpc1280::Chk_Adr_R(UINT32 *d,UINT32 *data)
 
     if ( (*d>=0x4000) && (*d<=0x7FFF) )	{ *d += 0xC000 + ( RomBank * 0x4000 ); return(1); }	// Manage ROM Bank
     if (pCPU->fp_log) fprintf(pCPU->fp_log,"LECTURE [%04x]\n",*d);
-    if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ *d += 0x28000 + ( RamBank * 0x8000 );}	// Manage ram bank
+    if ( (*d>=0x8000) && (*d<=0xFFFF) )	{ *d += 0x28000 + ( RamBank * 0x8000 ); return(1);}	// Manage ram bank
 
     return(1);
 }
