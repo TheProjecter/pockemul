@@ -38,7 +38,7 @@ Crlp1002::Crlp1002(CPObject *parent):Cprinter(this)
     setposX(0);
 
     pTIMER              = new Ctimer(this);
-    pKEYB               = new Ckeyb(this,"rlp1002.map");
+//    pKEYB               = new Ckeyb(this,"rlp1002.map");
     setDXmm(113);
     setDYmm(95);
     setDZmm(51);
@@ -71,7 +71,6 @@ Crlp1002::~Crlp1002() {
     delete paperbuf;
     delete paperdisplay;
     delete pCONNECTOR;
-    delete pTAPECONNECTOR;
     delete charTable;
 //    delete bells;
 }
@@ -83,13 +82,7 @@ bool Crlp1002::run(void)
 
     static quint64 _state=0;
 
-    pTAPECONNECTOR->Set_pin(3,true);       // RMT
-    pTAPECONNECTOR->Set_pin(2,tapeOutput);    // Out
-    tapeInput = pTAPECONNECTOR->Get_pin(1);      // In
-
-    pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
-
-    Cbus bus;
+     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
@@ -319,13 +312,6 @@ bool Crlp1002::init(void)
     publish(pCONNECTOR);
     WatchPoint.add(&pCONNECTOR_value,64,44,this,"Printer connector");
     AddLog(LOG_PRINTER,tr("PRT initializing..."));
-
-    pTAPECONNECTOR	= new Cconnector(this,
-                                     3,
-                                     1,
-                                     Cconnector::Jack,
-                                     "Line in / Rec",false);	publish(pTAPECONNECTOR);
-    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
 
     if(pKEYB)   pKEYB->init();
     if(pTIMER)  pTIMER->init();

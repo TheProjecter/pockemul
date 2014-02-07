@@ -34,8 +34,6 @@ public:
 
     Cconnector	*pCONNECTOR;		qint64 pCONNECTOR_value;
 
-    Cconnector	*pTAPECONNECTOR;	qint64 pTAPECONNECTOR_value;
-
     QImage *paperbuf;
     QImage *paperdisplay;
 
