@@ -39,9 +39,10 @@ Crlp1002::Crlp1002(CPObject *parent):Cprinter(this)
 
     pTIMER              = new Ctimer(this);
 //    pKEYB               = new Ckeyb(this,"rlp1002.map");
-    setDXmm(113);
+    setDXmm(227);
     setDYmm(95);
-    setDZmm(51);
+    setDZmm(31);
+
  // Ratio = 3,57
     setDX(848);//Pc_DX  = 75;
     setDY(340);//Pc_DY  = 20;

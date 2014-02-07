@@ -31,13 +31,13 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
 
     pTIMER              = new Ctimer(this);
 //    pKEYB               = new Ckeyb(this,"rlp4002.map");
-    setDXmm(113);
+    setDXmm(227);
     setDYmm(95);
-    setDZmm(51);
- // Ratio = 3,57
-    setDX(440);//Pc_DX  = 75;
-    setDY(340);//Pc_DY  = 20;
+    setDZmm(31);
 
+ // Ratio = 3,57
+    setDX(848);//Pc_DX  = 75;
+    setDY(340);//Pc_DY  = 20;
     rotate = false;
     slotChanged = false;
     INTrequest = false;
@@ -381,10 +381,10 @@ bool Crlp4002::InitDisplay(void)
     delete FinalImage;
     FinalImage = new QImage(*BackgroundImageBackup);
 
-    pCONNECTOR->setSnap(rotate?QPoint(406,72):QPoint(34,72));
+    pCONNECTOR->setSnap(rotate?QPoint(811,72):QPoint(37,72));
 
     pCONNECTOR->setDir(rotate?Cconnector::EAST:Cconnector::WEST);
-    mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
+        mask = QPixmap::fromImage(*BackgroundImageBackup).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
     setMask(mask.mask());
 
     return true;

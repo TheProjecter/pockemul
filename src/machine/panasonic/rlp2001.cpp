@@ -16,9 +16,10 @@ Crlp2001::Crlp2001(CPObject *parent)   : CPObject(this)
 
     setfrequency( 0);
     BackGroundFname     = P_RES(":/rlh1000/rlp2001.png");
-    setDXmm(113);
+    setDXmm(227);
     setDYmm(95);
-    setDZmm(51);
+    setDZmm(31);
+
  // Ratio = 3,57
     setDX(848);//Pc_DX  = 75;
     setDY(340);//Pc_DY  = 20;
