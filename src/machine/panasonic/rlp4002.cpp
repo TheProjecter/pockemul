@@ -30,7 +30,7 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     setcfgfname("rlp4002");
 
     pTIMER              = new Ctimer(this);
-//    pKEYB               = new Ckeyb(this,"rlp4002.map");
+    pKEYB               = new Ckeyb(this,"rlp4002.map");
     setDXmm(227);
     setDYmm(95);
     setDZmm(31);
@@ -41,6 +41,7 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     rotate = false;
     slotChanged = false;
     INTrequest = false;
+    connected = false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -62,11 +63,22 @@ bool Crlp4002::run(void)
     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
-
+    if (connected && (pKEYB->LastKey!=0)) {
+        inBuffer.append("PREMIERE COMMUNICATION SERIE");
+        INTrequest=true;
+    }
+//    if (connected &&
+//            !inBuffer.isEmpty() &&
+//            (pTIMER->msElapsed(_state)>33) ) {
+//        INTrequest=true;
+//        _state = pTIMER->state;
+//    }
     if (bus.getFunc()==BUS_SLEEP) return true;
 
     if (bus.getDest()!=0) return true;
     bus.setDest(0);
+
+
 
 //    qWarning()<<"MODEM:"<<bus.toLog();
     if (bus.getFunc()==BUS_QUERY) {
@@ -96,11 +108,15 @@ bool Crlp4002::run(void)
     switch (bus.getFunc()) {
     case BUS_LINE3: // Print buffer
         switch(bus.getData()) {
-        case 84: // Modem CONNECT
+        case 92: // Modem CONNECT
             qWarning()<<"BUS_TOUCH:"<<bus.getData();
+            connected = true;
             INTrequest = true;
             break;
-
+        case 212: // Read one char
+            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+            INTrequest = false;
+            break;
         case 220: // Modem OUT ON
             qWarning()<<"BUS_TOUCH:"<<bus.getData();
             INTrequest = false;
@@ -123,7 +139,7 @@ bool Crlp4002::run(void)
         }
         else {
 //            qWarning()<<"INTREQUEST:false";
-            bus.setData(0xff);
+            bus.setData(0x80);
         }
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
@@ -136,8 +152,13 @@ bool Crlp4002::run(void)
         break;
     case BUS_LINE1:
         qWarning()<<"Receive data LINE 1:"<<bus.getData();
-        INTrequest = true;
+//        INTrequest = true;
         bus.setFunc(BUS_ACK);
+        if (!inBuffer.isEmpty()) {
+            quint8 _c = inBuffer.at(0);
+            inBuffer.remove(0,1);
+            bus.setData(_c);
+        }
         break;
     default: break;
     }
@@ -195,6 +216,7 @@ bool Crlp4002::init(void)
     if(pKEYB)   pKEYB->init();
     if(pTIMER)  pTIMER->init();
 
+    inBuffer.append("PREMIERE COMMUNICATION SERIE");
     return true;
 }
 
@@ -252,6 +274,7 @@ extern int ask(QWidget *parent,QString msg,int nbButton);
 #define KEY(c)	( pKEYB->keyPressedList.contains(TOUPPER(c)) || pKEYB->keyPressedList.contains(c) || pKEYB->keyPressedList.contains(TOLOWER(c)))
 void Crlp4002::ComputeKey()
 {
+    return;
     if (KEY(0x240)) {
         pKEYB->keyPressedList.removeAll(0x240);
         int _response = 0;

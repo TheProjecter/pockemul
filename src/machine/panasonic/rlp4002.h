@@ -49,6 +49,8 @@ protected slots:
 private:
     bool rotate;
     bool slotChanged;
+    bool connected;
+    QByteArray inBuffer,outBuffer;
 
 };
 

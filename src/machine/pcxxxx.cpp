@@ -540,29 +540,29 @@ bool CpcXXXX::run(void)
 	if(!pCPU->halt && !off)
 	{
         if ( (pCPU->logsw) && (pCPU->fp_log) ) {
-            char	s[2000];
+            //char	s[2000];
             sprintf(Log_String," ");
             pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());
-            sprintf(s,"[%lld] ",pTIMER->state);
-            sprintf(s,"[%02i]",pCPU->prevCallSubLevel);
-            for (int g=0;g<pCPU->prevCallSubLevel;g++) sprintf(s,"\t");
+            fprintf(pCPU->fp_log,"[%lld] ",pTIMER->state);
+            fprintf(pCPU->fp_log,"[%02i]",pCPU->prevCallSubLevel);
+            for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
 
             pCPU->step();
             Regs_Info(1);
 
-            sprintf(s,"%-40s   %s  %s\n",pCPU->pDEBUG->Buffer,pCPU->Regs_String,Log_String);
+            fprintf(pCPU->fp_log,"%-40s   %s  %s\n",pCPU->pDEBUG->Buffer,pCPU->Regs_String,Log_String);
             if (pCPU->prevCallSubLevel < pCPU->CallSubLevel) {
-                for (int g=0;g<pCPU->prevCallSubLevel;g++) sprintf(s,"\t");
-                sprintf(s,"{\n");
+                for (int g=0;g<pCPU->prevCallSubLevel;g++) fprintf(pCPU->fp_log,"\t");
+                fprintf(pCPU->fp_log,"{\n");
             }
             if (pCPU->prevCallSubLevel > pCPU->CallSubLevel) {
-                for (int g=0;g<(pCPU->prevCallSubLevel-1);g++) sprintf(s,"\t");
-                sprintf(s,"}\n");
+                for (int g=0;g<(pCPU->prevCallSubLevel-1);g++) fprintf(pCPU->fp_log,"\t");
+                fprintf(pCPU->fp_log,"}\n");
             }
             if (pCPU->CallSubLevel <0) pCPU->CallSubLevel=0;
             pCPU->prevCallSubLevel = pCPU->CallSubLevel;
 
-            fprintf(pCPU->fp_log,s);
+            //fprintf(pCPU->fp_log,s);
 //            fflush(pCPU->fp_log);
         }
         else {

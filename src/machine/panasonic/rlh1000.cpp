@@ -445,12 +445,20 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                 }
                 if (islineFD) {
                     t = (*d-0x47FD)/4;
-//                    *data = lineFD[t];
-                    qWarning()<<"Read LINE FD:"<<t<<" - "<<data;
+                    bus->setDest(t);
+                    if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
+                    bus->setData(0xff);
+                    bus->setFunc(BUS_LINE1);
+                    manageBus();
+                    if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
+
+                    *data = bus->getData();
+                    bus->setFunc(BUS_SLEEP);
                 }
                 if (islineFE) {
                     t = (*d-0x47FE)/4;
 //                    *data = lineFE[t];
+                    qWarning()<<"Read bus line FE";
                 }
                 if (islineFF) {
                     t = (*d-0x47FF)/4;
@@ -858,12 +866,12 @@ UINT8 Crlh1000::getKey(quint8 row )
 
     }
 
-//    if (KEY('Z')) {
-//        qWarning()<<"LOG";
-//        pCPU->logsw = true;
-//        pCPU->Check_Log();
-//        if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
-//    }
+    if (KEY(K_F7)) {
+        qWarning()<<"LOG";
+        pCPU->logsw = true;
+        pCPU->Check_Log();
+        if (!fp_log) fp_log=fopen("rlh1000.log","wt");	// Open log file
+    }
     return data;
 
 }

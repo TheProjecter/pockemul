@@ -48,5 +48,6 @@
         <file>keymap/hp82143a.map</file>
         <file>keymap/rlp9006.map</file>
         <file>keymap/rlp1004a.map</file>
+        <file>keymap/rlp4002.map</file>
     </qresource>
 </RCC>
