@@ -66,6 +66,7 @@
 #include "panasonic/rlp6001.h"
 #include "panasonic/rlp9001.h"
 #include "panasonic/rlp1004a.h"
+#include "panasonic/rlp1002.h"
 
 #include "ti/ti57.h"
 #include "hp/hp41.h"

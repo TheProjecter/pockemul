@@ -37,6 +37,7 @@
      <example idpocket="Panasonic RL-P9005 128Ko" filename="./" name="Panasonic RL-P9005 128Ko" image=":/rlh1000/rlp9002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P9006 EPROM Expander" filename="./" name="Panasonic RL-P9006 EPROM Expander" image=":/rlh1000/rlp9006.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="Panasonic RL-P1004A" filename="./" name="Panasonic RL-P1004A" image=":/rlh1000/rlp1004a.png" connectortype="Panasonic_44" conngender="male"/>
+     <example idpocket="Panasonic RL-P1002" filename="./" name="Panasonic RL-P1002" image=":/rlh1000/rlp1002.png" connectortype="Panasonic_44" conngender="male"/>
      <example idpocket="SNAPBASIC" filename="./" name="SNAPBasic capsule" image=":/rlh1000/modimg/snapbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>
      <example idpocket="SNAPFORTH" filename="./" name="SNAPForth capsule" image=":/rlh1000/modimg/snapforth.png" connectortype="Panasonic_Capsule" conngender="male"/>
      <example idpocket="MSBASIC" filename="./" name="MSBasic capsule" image=":/rlh1000/modimg/msbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>

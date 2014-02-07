@@ -137,6 +137,7 @@ int Cpc13XX::mapKey(QKeyEvent *event)
 {
     int key = CpcXXXX::mapKey(event);
 
+#if 0
     switch (key) {
     case K_UA: return '8';
     case K_DA: return '2';
@@ -144,6 +145,7 @@ int Cpc13XX::mapKey(QKeyEvent *event)
     case K_RA: return '6';
     case ' ': return K_RET;
     }
+#endif
 
     return key;
 }

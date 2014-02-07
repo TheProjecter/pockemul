@@ -391,7 +391,7 @@ bool Cce126::run(void)
 #endif
 
     switch (code_transfer_step) {
-    case INIT_MODE :    if ((MT_OUT1 == UP) && (D_OUT==UP))
+    case INIT_MODE :    if ((MT_OUT1 == UP))// && (D_OUT==UP))
                 {
                     pTIMER->resetTimer(1);//lastState = pTIMER->state; //time.restart();
                     code_transfer_step=1;
@@ -399,7 +399,7 @@ bool Cce126::run(void)
                     if (mainwindow->dialoganalogic) mainwindow->dialoganalogic->setMarker(8);
                 }
                 break;
-    case 1 :    if ((MT_OUT1 == UP) && (D_OUT==UP))
+    case 1 :    if ((MT_OUT1 == UP))// && (D_OUT==UP))
                 {
                     if (pTIMER->msElapsedId(1) > 30) {
                         // Code transfer sequence started

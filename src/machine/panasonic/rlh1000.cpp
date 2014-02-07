@@ -39,16 +39,13 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     InitMemValue	= 0x7F;
 
     SlotList.clear();
-    SlotList.append(CSlot(8 , 0x0000 ,	""                                  , ""	, CSlot::RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x2000 ,	""                                  , ""	, CSlot::ROM , "Ext ROM"));
-    SlotList.append(CSlot(16, 0x4000 ,	/*P_RES(":/rlh1000/SnapBasic.bin")*/""    , ""	, CSlot::ROM , "ROM Capsules 1"));
-    SlotList.append(CSlot(16, 0x8000 ,	""                                  , ""	, CSlot::NOT_USED , "Ext RAM"));
+    SlotList.append(CSlot(8 , 0x0000 ,	""    , ""	, CSlot::RAM , "RAM"));
+    SlotList.append(CSlot(8 , 0x2000 ,	""    , ""	, CSlot::ROM , "Ext ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,	""    , ""	, CSlot::ROM , "ROM Capsules 1"));
+    SlotList.append(CSlot(16, 0x8000 ,	""    , ""	, CSlot::NOT_USED , "Ext RAM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/rlh1000/HHC-rom-C000-FFFF.bin"),""	, CSlot::ROM , "ROM"));
-//    SlotList.append(CSlot(16, 0x10000 ,	""                                  ,""	, CSlot::RAM , "I/O Hard"));
-    SlotList.append(CSlot(16, 0x10000 ,	/*P_RES(":/rlh1000/HHCbasic.bin")*/""     , ""	, CSlot::ROM , "ROM Capsules 2"));
-    //SlotList.append(CSlot(16, 0x14000 ,	P_RES(":/rlh1000/test.bin")     , ""	, CSlot::ROM , "ROM Capsules 2"));
-    SlotList.append(CSlot(16, 0x14000 ,	/*P_RES(":/rlh1000/SnapForth.bin")*/""    , ""	, CSlot::ROM , "ROM Capsules 3"));
-//    SlotList.append(CSlot(16, 0x1C000 ,	""                              , ""	, CSlot::RAM , "Ext RAM"));
+    SlotList.append(CSlot(16, 0x10000 ,	""     , ""	, CSlot::ROM , "ROM Capsules 2"));
+    SlotList.append(CSlot(16, 0x14000 ,	""    , ""	, CSlot::ROM , "ROM Capsules 3"));
 
 // Ratio = 3,57
     setDXmm(227);
@@ -206,22 +203,6 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
         if (pCPU->fp_log) {
             sprintf(Log_String,"%s Write[%04x]=%02x ",Log_String,*d,data);
         }
-#if 0
-        if (*d==0x4e) {
-            // print char
-            // send data to the bus
-            if (extrinsic!=0xff) {
-                bus->setDest(extrinsic);
-                bus->setAddr(*d);
-                bus->setData(data);
-                bus->setFunc(BUS_WRITEDATA);
-                manageBus();
-                //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
-                bus->setFunc(BUS_SLEEP);
-                return true;
-            }
-        }
-#endif
         return true; /* RAM */
     }
 
@@ -307,7 +288,6 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
             if (islineFC) {
                 quint8 t = (*d-0x47FC)/4;
-//                lineFC[t] = data;
                 bus->setDest(t);
                 bus->setData(data);
                 bus->setFunc(BUS_LINE0);
@@ -319,7 +299,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
             if (islineFD) {
                 quint8 t = (*d-0x47FD)/4;
-                lineFD[t] = data;
+//                lineFD[t] = data;
                 bus->setDest(t);
                 bus->setData(data);
                 bus->setFunc(BUS_LINE1);
@@ -330,7 +310,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             }
             if (islineFE) {
                 quint8 t = (*d-0x47FE)/4;
-                lineFE[t] = data;
+//                lineFE[t] = data;
 
                 bus->setDest(t);
                 bus->setData(data);
@@ -341,7 +321,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                     if (bus->getData()==0x00) extrinsicRAM=t;
                     if (bus->getData()==0x01) extrinsicROM=t;
                 }
-                // It shoud be a way to reset extrinsic values ??? .... ????
+                // there shoud be a way to reset extrinsic values ??? .... ????
                 // Perhaps when dest = 32 ???
 //                else
 //                    extrinsic=0xff;
@@ -465,12 +445,12 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                 }
                 if (islineFD) {
                     t = (*d-0x47FD)/4;
-                    *data = lineFD[t];
+//                    *data = lineFD[t];
                     qWarning()<<"Read LINE FD:"<<t<<" - "<<data;
                 }
                 if (islineFE) {
                     t = (*d-0x47FE)/4;
-                    *data = lineFE[t];
+//                    *data = lineFE[t];
                 }
                 if (islineFF) {
                     t = (*d-0x47FF)/4;
@@ -940,7 +920,7 @@ bool Crlh1000::UpdateFinalImage(void) {
 
 
 void Crlh1000::animateBackDoor(void) {
-    qWarning()<<"ANIMATE";
+//    qWarning()<<"ANIMATE";
     QPropertyAnimation *animation1 = new QPropertyAnimation(this, "backdoorangle");
      animation1->setDuration(1500);
      if (backdoorOpen) {
