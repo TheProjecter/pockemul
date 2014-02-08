@@ -57,22 +57,24 @@ Crlp4002::~Crlp4002() {
 
 bool Crlp4002::run(void)
 {
-
+    const QString _trans = "Premiere Communication SERIE. ";
     static quint64 _state=0;
+    static int i = 0;
 
     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
-    if (connected && (pKEYB->LastKey!=0)) {
-        inBuffer.append("PREMIERE COMMUNICATION SERIE");
+    if (connected && !inBuffer.isEmpty()) {
         INTrequest=true;
     }
-//    if (connected &&
-//            !inBuffer.isEmpty() &&
-//            (pTIMER->msElapsed(_state)>33) ) {
-//        INTrequest=true;
-//        _state = pTIMER->state;
-//    }
+    if (connected &&
+       (pTIMER->msElapsed(_state)>33) ) {
+        inBuffer.append(_trans.at(i));
+        INTrequest=true;
+        i++;
+        if (i>=_trans.size()) i =0;
+        _state = pTIMER->state;
+    }
     if (bus.getFunc()==BUS_SLEEP) return true;
 
     if (bus.getDest()!=0) return true;
@@ -113,6 +115,9 @@ bool Crlp4002::run(void)
             connected = true;
             INTrequest = true;
             break;
+        case 124: // Acknoledge char reception
+//            inBuffer.remove(0,1);
+            break;
         case 212: // Read one char
             qWarning()<<"BUS_TOUCH:"<<bus.getData();
             INTrequest = false;
@@ -123,6 +128,7 @@ bool Crlp4002::run(void)
             break;
         case 252: // Print
             qWarning()<<"BUS_TOUCH:"<<bus.getData();
+            if (!inBuffer.isEmpty())
             INTrequest = true;
             break;
         default: qWarning()<<"BUS_TOUCH:"<<bus.getData();
@@ -132,7 +138,7 @@ bool Crlp4002::run(void)
         break;
     case BUS_INTREQUEST:
         if (INTrequest) {
-            qWarning()<<"INTREQUEST:true";
+//            qWarning()<<"INTREQUEST:true";
             bus.setINT(true);
             bus.setData(0x00);
             INTrequest = false;
@@ -154,6 +160,7 @@ bool Crlp4002::run(void)
         qWarning()<<"Receive data LINE 1:"<<bus.getData();
 //        INTrequest = true;
         bus.setFunc(BUS_ACK);
+        bus.setData(0x00);
         if (!inBuffer.isEmpty()) {
             quint8 _c = inBuffer.at(0);
             inBuffer.remove(0,1);
