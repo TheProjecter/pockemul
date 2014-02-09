@@ -221,6 +221,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             bus->setAddr(*d);
             bus->setData(data);
             bus->setFunc(BUS_WRITEDATA);
+            bus->setWrite(true);
             manageBus();
             //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
             bus->setFunc(BUS_SLEEP);
@@ -281,6 +282,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
                 bus->setDest(t);
                 bus->setData(data);
+                bus->setWrite(true);
                 bus->setFunc(BUS_LINE3);
                 if (fp_log) fprintf(fp_log,"BUS_TOUCH DEST=%i data=%02x \n",bus->getDest(),bus->getData());
                 manageBus();
@@ -290,6 +292,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
                 quint8 t = (*d-0x47FC)/4;
                 bus->setDest(t);
                 bus->setData(data);
+                bus->setWrite(true);
                 bus->setFunc(BUS_LINE0);
                 if (fp_log) fprintf(fp_log,"BUS_ACKINT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
 //                qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
@@ -299,9 +302,9 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
             if (islineFD) {
                 quint8 t = (*d-0x47FD)/4;
-//                lineFD[t] = data;
                 bus->setDest(t);
                 bus->setData(data);
+                bus->setWrite(true);
                 bus->setFunc(BUS_LINE1);
                 if (fp_log) fprintf(fp_log,"BUS_ACKINT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
 //                qWarning()<<"Write LINE FD:"<<t<<" - "<<data;
@@ -310,10 +313,10 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             }
             if (islineFE) {
                 quint8 t = (*d-0x47FE)/4;
-//                lineFE[t] = data;
 
                 bus->setDest(t);
                 bus->setData(data);
+                bus->setWrite(true);
                 bus->setFunc(BUS_SELECT);
                 if (fp_log) fprintf(fp_log,"BUS_SELECT DEST=%i data=%02x \n",bus->getDest(),bus->getData());
                 manageBus();
@@ -367,6 +370,7 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
             bus->setDest(extrinsicRAM);
             bus->setAddr(*d);
             bus->setData(data);
+            bus->setWrite(true);
             bus->setFunc(BUS_WRITEDATA);
             manageBus();
             //        if (fp_log) fprintf(fp_log,"  AFTER DEST=%i  \n",bus->getDest());
@@ -435,6 +439,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                     bus->setDest(t);
                     if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
                     bus->setData(0xff);
+                    bus->setWrite(false);
                     bus->setFunc(BUS_QUERY);
                     manageBus();
                     if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
@@ -448,6 +453,7 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                     bus->setDest(t);
                     if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
                     bus->setData(0xff);
+                    bus->setWrite(false);
                     bus->setFunc(BUS_LINE1);
                     manageBus();
                     if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
@@ -457,17 +463,26 @@ bool Crlh1000::Chk_Adr_R(UINT32 *d, UINT32 *data)
                 }
                 if (islineFE) {
                     t = (*d-0x47FE)/4;
-//                    *data = lineFE[t];
                     qWarning()<<"Read bus line FE";
+                    bus->setDest(t);
+                    if (fp_log) fprintf(fp_log,"BUS_QUERY DEST=%i  ",bus->getDest());
+                    bus->setData(0xff);
+                    bus->setWrite(false);
+                    bus->setFunc(BUS_LINE2);
+                    manageBus();
+                    if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
+
+                    *data = bus->getData();
+                    bus->setFunc(BUS_SLEEP);
                 }
                 if (islineFF) {
                     t = (*d-0x47FF)/4;
-                    *data = 0xff;
                     bus->setDest(t);
                     if (fp_log) fprintf(fp_log,"BUS_QUERY_LINE DEST=%i  ",bus->getDest());
 //                    qWarning()<<"Read LINE FF:"<<t<<" - "<<data;
                     bus->setData(0xff);
-                    bus->setFunc(BUS_INTREQUEST);
+                    bus->setWrite(false);
+                    bus->setFunc(BUS_LINE3);
                     manageBus();
                     if (fp_log) fprintf(fp_log,"  data=%02X  \n",bus->getData());
 
@@ -542,6 +557,7 @@ UINT8 Crlh1000::ReadBusMem(BUS_FUNC f,UINT32 adr,quint8 dest)
         bus->setDest(dest);
         bus->setAddr(adr);
         bus->setData(0xff);
+        bus->setWrite(false);
         bus->setFunc(f);
         manageBus();
         if (fp_log) fprintf(fp_log," DATA=%02X  \n",bus->getData());

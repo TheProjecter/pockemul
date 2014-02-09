@@ -207,7 +207,7 @@ bool Crlp9001::run(void)
         }
 
         break;
-    case BUS_INTREQUEST:
+    case BUS_LINE3:
         bus.setData(0xff);
         bus.setFunc(BUS_READDATA);
         break;

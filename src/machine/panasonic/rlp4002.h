@@ -36,7 +36,7 @@ public:
     virtual ~Crlp4002();
 
 public:
-    bool INTrequest;
+    bool INTrequest,INTpending;
 
 public slots:
     void addModule(QString item, CPObject *pPC);
@@ -51,6 +51,10 @@ private:
     bool slotChanged;
     bool connected;
     QByteArray inBuffer,outBuffer;
+
+    quint8 statusReg;
+    quint8 outputReg;
+    quint8 controlReg;
 
 };
 

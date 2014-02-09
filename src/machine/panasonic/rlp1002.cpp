@@ -146,37 +146,38 @@ bool Crlp1002::run(void)
         return true;
     }
 
-    switch (bus.getFunc()) {
-    case BUS_LINE3: // Print buffer
-        switch(bus.getData()) {
-        case 0: // Print
-//            qWarning()<<"BUS_TOUCH:"<<bus.getData()<<  "PRINTING "<<buffer.size()<<" chars";
-//            Refresh(0);
-            printing = true;
-//            buffer.clear();
-            INTrequest = false;
-            break;
-        case 5: //
-//            qWarning()<<"BUS_TOUCH:"<<bus.getData();
-            buffer.clear();
-            receiveMode = true;
-            INTrequest = true;
-//            receiveMode = true;
-            break;
-        case 4: // CR/LF
-//            Refresh(0x0d);
-//            qWarning()<<"BUS_TOUCH:"<<bus.getData();
 
-//            printing = true;
-            CRLFPending = true;
-//            INTrequest = true;
-            break;
-        default: qWarning()<<"BUS_TOUCH:"<<bus.getData();
-            break;
-        }
-        bus.setFunc(BUS_ACK);
-        break;
-    case BUS_INTREQUEST:
+    if ( (bus.getFunc()==BUS_LINE3) && bus.getWrite() ) {
+            switch(bus.getData()) {
+            case 0: // Print
+    //            qWarning()<<"BUS_TOUCH:"<<bus.getData()<<  "PRINTING "<<buffer.size()<<" chars";
+    //            Refresh(0);
+                printing = true;
+    //            buffer.clear();
+                INTrequest = false;
+                break;
+            case 5: //
+    //            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+                buffer.clear();
+                receiveMode = true;
+                INTrequest = true;
+    //            receiveMode = true;
+                break;
+            case 4: // CR/LF
+    //            Refresh(0x0d);
+    //            qWarning()<<"BUS_TOUCH:"<<bus.getData();
+
+    //            printing = true;
+                CRLFPending = true;
+    //            INTrequest = true;
+                break;
+            default: qWarning()<<"BUS_TOUCH:"<<bus.getData();
+                break;
+            }
+            bus.setFunc(BUS_ACK);
+    }
+
+    if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
         if (INTrequest) {
 //            qWarning()<<"INTREQUEST:true";
             bus.setINT(true);
@@ -190,8 +191,9 @@ bool Crlp1002::run(void)
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
-        break;
-    case BUS_LINE1:
+       }
+
+    if ( (bus.getFunc()==BUS_LINE1) && bus.getWrite() ) {
         if (receiveMode) {
             buffer.append(bus.getData());
 //            qWarning()<<"Receive data:"<<bus.getData();
@@ -199,9 +201,8 @@ bool Crlp1002::run(void)
             INTrequest = true;
         }
         bus.setFunc(BUS_ACK);
-        break;
-    default: break;
     }
+
 
 
     if (!Power) return true;

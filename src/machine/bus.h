@@ -11,14 +11,13 @@
 enum BUS_FUNC{
     BUS_SLEEP,
     BUS_WRITEDATA,BUS_READDATA,
-    BUS_QUERY,BUS_SELECT,BUS_INTREQUEST,BUS_ACK,
-    BUS_LINE0,BUS_LINE1,
-    BUS_LINE3};
+    BUS_QUERY,BUS_SELECT,BUS_ACK,
+    BUS_LINE0,BUS_LINE1,BUS_LINE2,BUS_LINE3};
 
 class Cbus {
 
 public:
-    Cbus(quint8 dest=0,BUS_FUNC func=BUS_SLEEP,quint8 data=0);
+    Cbus(quint8 dest=0, BUS_FUNC func=BUS_SLEEP, quint8 data=0, bool write= false);
 
     quint64 toUInt64() const;
     void fromUInt64(quint64 val);
@@ -32,6 +31,8 @@ public:
     void setFunc(BUS_FUNC val) { func = val;}
     bool getINT() const { return interrupt; }
     void setINT(bool val) { interrupt = val; }
+    bool getWrite() const { return writeMode; }
+    void setWrite(bool val) { writeMode = val; }
     QString toLog() const;
 
 private:
@@ -40,6 +41,7 @@ private:
     quint8 dest;
     BUS_FUNC func;
     bool    interrupt;
+    bool    writeMode;
 
 
 };
