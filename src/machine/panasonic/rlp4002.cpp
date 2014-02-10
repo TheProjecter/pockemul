@@ -164,7 +164,7 @@ bool Crlp4002::run(void)
             bus.setData(0x40);
 //            RTS=false;
         }
-        else if (!inBuffer.isEmpty()) {
+        else if (/*xon && */!inBuffer.isEmpty()) {
             bus.setData(0x00);
         }
         else {
@@ -209,8 +209,14 @@ bool Crlp4002::run(void)
         qWarning()<<"Write data LINE 1:"<<_c<<" - "<<(_c>0?QChar(_c):' ')<<"  ** "<<outBuffer;
         //outBuffer.append(_c);
         switch (_c) {
-        case 17: /*connected = false;*/ break;
-        case 19: /*connected = true;*/  break;
+        case 17: /*connected = false;*/
+            RTS=false;
+            xon = true;
+            bus.setINT(true);
+            break;
+        case 19: /*connected = true;*/
+            xon = false;
+            break;
 //        case 10:
         case 13:
             outBuffer.append(10);
@@ -224,15 +230,16 @@ bool Crlp4002::run(void)
     if ( (bus.getFunc()==BUS_LINE1) && !bus.getWrite() ) {
           INTrequest = false;
         outputReg = 0;
-        if (!inBuffer.isEmpty()) {
+        if (xon && !inBuffer.isEmpty()) {
             quint8 _c = inBuffer.at(0);
             inBuffer.remove(0,1);
             outputReg = _c;
+            bus.setINT(true);
 //                statusReg |= 0x88;
         }
         bus.setFunc(BUS_ACK);
         bus.setData(outputReg);
-        bus.setINT(true);
+
         statusReg = 0x00;
 
         qWarning()<<"Receive data LINE 1:"<<bus.getData()<<" - "<<(bus.getData()>0?QChar(bus.getData()):' ');
@@ -295,6 +302,7 @@ bool Crlp4002::init(void)
     statusReg = 0;
     outputReg = 0;
     controlReg = 0;
+    xon = true;
 
     soc.connectToHost("127.0.0.1",4000);
 

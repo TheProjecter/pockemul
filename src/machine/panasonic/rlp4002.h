@@ -53,6 +53,7 @@ private:
     bool rotate;
     bool slotChanged;
     bool connected;
+    bool xon;
     QByteArray inBuffer,outBuffer,_trans;
 
     quint8 statusReg;

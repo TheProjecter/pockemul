@@ -43,7 +43,7 @@ void ServeurTcp ::lecture()
         emit vers_IHM_texte(ligne);           // on l'envoie a l'IHM
         process_command(ligne);
         QTextStream texte(clientConnection);
-        texte <<"PockEmul>";
+        texte <<"PockEmul>" << flush;
     }
 
 }
@@ -51,9 +51,9 @@ void ServeurTcp ::lecture()
 void ServeurTcp::send_greeting(QTextStream *sock)
 {
     *sock << endl << "Welcome to the PockEmul v1.0 TELNET interface." << endl;
-//    *sock << "Use decimal, C hex (0x2a) or Asm hex (14h) for input." << endl;
-//    *sock << "Type 'help' for a list of supported commands." << endl<< endl;
-//    *sock << "PockEmul>" << flush;
+    *sock << "Use decimal, C hex (0x2a) or Asm hex (14h) for input." << endl;
+    *sock << "Type 'help' for a list of supported commands." << endl<< endl;
+    *sock << "PockEmul>" << flush;
 
 }
 
@@ -90,6 +90,8 @@ void ServeurTcp::cmd_help(QTextStream *sock,QString subcmd)
 }
 void ServeurTcp::process_command(QString ligne)
 {
+
+    if (ligne.isEmpty()) return;
 
     // Separate out the command word from any arguments
     QStringList args =  splitArgs(ligne);//ligne.split(' ',QString::SkipEmptyParts);
