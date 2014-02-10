@@ -278,7 +278,6 @@ bool Crlh1000::Chk_Adr(UINT32 *d, UINT32 data)
 
             if (islineFF) {
                 quint8 t = (*d-0x47FF)/4;
-                lineFF[t] = data;
 
                 bus->setDest(t);
                 bus->setData(data);

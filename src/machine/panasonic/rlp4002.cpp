@@ -42,6 +42,7 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     slotChanged = false;
     INTrequest = false;
     connected = false;
+    RTS=false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -57,7 +58,6 @@ Crlp4002::~Crlp4002() {
 
 bool Crlp4002::run(void)
 {
-    const QString _trans = "Premiere Communication SERIE. ";
     static quint64 _state=0;
     static int i = 0;
 
@@ -66,11 +66,12 @@ bool Crlp4002::run(void)
     bus.fromUInt64(pCONNECTOR->Get_values());
 connected=true;
     if (connected &&
-       (pTIMER->msElapsed(_state)>330) ) {
-        inBuffer.append(_trans.at(i));
+       (pTIMER->msElapsed(_state)>33) ) {
+        if (!_trans.isEmpty()) {
+            inBuffer.append(_trans.at(0));
+            _trans.remove(0,1);
+        }
         INTrequest=true;
-        i++;
-        if (i>=_trans.size()) i =0;
         _state = pTIMER->state;
 //        qWarning()<<"ok2";
 //        statusReg &= 0x7f;  // 1 char received
@@ -111,21 +112,21 @@ connected=true;
     }
 
     if ( (bus.getFunc()==BUS_LINE3) && bus.getWrite() ) {
-        qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+//        qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
         switch(bus.getData()) {
         case 0: // MODEM OFF
 //            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             break;
         case 0x5C: // 01011100
             //Modem CONNECT
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
 //            connected = true;
             INTrequest = false;
             statusReg = 0;
             break;
         case 0x7C: // 01111100
             // Acknoledge char reception
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
 //            outputReg = 0;
 //            if (!inBuffer.isEmpty()) {
 //                quint8 _c = inBuffer.at(0);
@@ -134,26 +135,29 @@ connected=true;
 //                statusReg |= 0x88;
 //            }
             INTrequest = false;
+            RTS=false;
             break;
         case 0xD4: // 11010100
             // Read one char
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             INTrequest = false;
             break;
         case 0xDC: // 11011100
             // Modem OUT ON
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             INTrequest = false;
+            RTS=false;
             break;
         case 0xFC: // 11111100
-            // receive char
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+            // Send char
+            RTS=true;
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
 //            if (!inBuffer.isEmpty())
                 INTrequest = true;
 //            statusReg = 0;
             break;
         default:
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             break;
         }
         bus.setFunc(BUS_ACK);
@@ -163,7 +167,11 @@ connected=true;
     if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
         // Status register ???
 #if 1
-        if (!inBuffer.isEmpty()) {
+        if (RTS) {
+            bus.setData(0x40);
+//            RTS=false;
+        }
+        else if (!inBuffer.isEmpty()) {
             bus.setData(0x00);
         }
         else {
@@ -204,7 +212,19 @@ connected=true;
 
     if ( (bus.getFunc()==BUS_LINE1) && bus.getWrite() ) {
         bus.setFunc(BUS_ACK);
-        qWarning()<<"Write data LINE 1:"<<bus.getData()<<" - "<<(bus.getData()>0?QChar(bus.getData()):' ');
+        quint8 _c = bus.getData();
+        qWarning()<<"Write data LINE 1:"<<_c<<" - "<<(_c>0?QChar(_c):' ')<<"  ** "<<outBuffer;
+        //outBuffer.append(_c);
+        switch (_c) {
+        case 17: // XON, XOFF
+        case 19: break;
+        case 13:
+            outBuffer.append(10);
+            qWarning()<<"send data:"<<soc.write(outBuffer);
+            outBuffer.clear();
+            break;
+        default: outBuffer.append(_c); break;
+        }
     }
 
     if ( (bus.getFunc()==BUS_LINE1) && !bus.getWrite() ) {
@@ -282,6 +302,11 @@ bool Crlp4002::init(void)
     outputReg = 0;
     controlReg = 0;
 
+    soc.connectToHost("127.0.0.1",4000);
+
+    QObject:: connect(&soc, SIGNAL(readyRead()), this, SLOT(readData()));
+
+
     return true;
 }
 
@@ -333,6 +358,18 @@ void Crlp4002::Rotate()
 
     InitDisplay();
 
+}
+
+void Crlp4002::readData()
+{
+    QString ligne;
+    while(soc.bytesAvailable()) // tant qu'il y a quelque chose à lire dans la socket
+    {
+        char _c;
+        soc.read(&_c,1);     // on lit une ligne
+        //emit vers_IHM_texte(ligne); // on envoie à l'IHM
+        _trans.append(_c);
+    }
 }
 
 extern int ask(QWidget *parent,QString msg,int nbButton);

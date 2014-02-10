@@ -6,6 +6,8 @@
 #include <QSound>
 #endif
 
+#include <QTcpSocket>
+
 #include "common.h"
 
 #include "Inter.h"
@@ -36,7 +38,7 @@ public:
     virtual ~Crlp4002();
 
 public:
-    bool INTrequest,INTpending;
+    bool INTrequest,INTpending,RTS;
 
 public slots:
     void addModule(QString item, CPObject *pPC);
@@ -45,16 +47,19 @@ protected:
 protected slots:
     void contextMenuEvent ( QContextMenuEvent * );
     void Rotate();
+    void readData();
 
 private:
     bool rotate;
     bool slotChanged;
     bool connected;
-    QByteArray inBuffer,outBuffer;
+    QByteArray inBuffer,outBuffer,_trans;
 
     quint8 statusReg;
     quint8 outputReg;
     quint8 controlReg;
+
+    QTcpSocket soc;
 
 };
 

@@ -25,16 +25,17 @@ void ServeurTcp :: demande_connexion()
     // on cree une nouvelle socket pour ce client
     clientConnection = nextPendingConnection();
     // si on recoit des donnees, le slot lecture() est appele
-    QObject:: connect(clientConnection, SIGNAL(readyRead()),
-    this, SLOT(lecture()));
+    QObject:: connect(clientConnection, SIGNAL(readyRead()),this, SLOT(lecture()));
     clientConnection->setTextModeEnabled(true);
     send_greeting(new QTextStream(clientConnection));
 }
 void ServeurTcp ::lecture()
 {
     QString ligne;
+    qWarning()<<"LECTURE";
     while(clientConnection->canReadLine())    // tant qu'on peut lire sur la socket
     {
+        qWarning()<<"LECTURE 2";
         ligne = clientConnection->readLine().trimmed(); // on lit une ligne
 
         ligne.remove('\n');
@@ -50,9 +51,9 @@ void ServeurTcp ::lecture()
 void ServeurTcp::send_greeting(QTextStream *sock)
 {
     *sock << endl << "Welcome to the PockEmul v1.0 TELNET interface." << endl;
-    *sock << "Use decimal, C hex (0x2a) or Asm hex (14h) for input." << endl;
-    *sock << "Type 'help' for a list of supported commands." << endl<< endl;
-    *sock << "PockEmul>" << flush;
+//    *sock << "Use decimal, C hex (0x2a) or Asm hex (14h) for input." << endl;
+//    *sock << "Type 'help' for a list of supported commands." << endl<< endl;
+//    *sock << "PockEmul>" << flush;
 
 }
 
