@@ -459,7 +459,7 @@ bool CpcXXXX::init(void)
 {
 //    pCPU->logsw = true;
 #ifndef QT_NO_DEBUG
-    pCPU->logsw = true;
+//    pCPU->logsw = true;
 #endif
 	CPObject::init();
 	

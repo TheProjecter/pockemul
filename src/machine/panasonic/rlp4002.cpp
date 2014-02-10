@@ -64,7 +64,8 @@ bool Crlp4002::run(void)
     Cbus bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
-connected=true;
+
+    connected = true;
     if (connected &&
        (pTIMER->msElapsed(_state)>33) ) {
         if (!_trans.isEmpty()) {
@@ -120,20 +121,12 @@ connected=true;
         case 0x5C: // 01011100
             //Modem CONNECT
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-//            connected = true;
             INTrequest = false;
             statusReg = 0;
             break;
         case 0x7C: // 01111100
             // Acknoledge char reception
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-//            outputReg = 0;
-//            if (!inBuffer.isEmpty()) {
-//                quint8 _c = inBuffer.at(0);
-//                inBuffer.remove(0,1);
-//                outputReg = _c;
-//                statusReg |= 0x88;
-//            }
             INTrequest = false;
             RTS=false;
             break;
@@ -153,7 +146,7 @@ connected=true;
             RTS=true;
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
 //            if (!inBuffer.isEmpty())
-                INTrequest = true;
+            INTrequest = true;
 //            statusReg = 0;
             break;
         default:
@@ -216,8 +209,9 @@ connected=true;
         qWarning()<<"Write data LINE 1:"<<_c<<" - "<<(_c>0?QChar(_c):' ')<<"  ** "<<outBuffer;
         //outBuffer.append(_c);
         switch (_c) {
-        case 17: // XON, XOFF
-        case 19: break;
+        case 17: /*connected = false;*/ break;
+        case 19: /*connected = true;*/  break;
+//        case 10:
         case 13:
             outBuffer.append(10);
             qWarning()<<"send data:"<<soc.write(outBuffer);
@@ -307,6 +301,7 @@ bool Crlp4002::init(void)
     QObject:: connect(&soc, SIGNAL(readyRead()), this, SLOT(readData()));
 
 
+    connected = true;
     return true;
 }
 
