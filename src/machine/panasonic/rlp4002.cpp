@@ -47,7 +47,6 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
     SlotList.clear();
-    // This ROM file stop at 0x1000. I think data are missing at 0x1000.
     SlotList.append(CSlot(8 , 0x0000 , P_RES(":/rlh1000/Telecomputing_1.bin")    , "" , CSlot::ROM , "ROM"));
 
 }
@@ -61,7 +60,6 @@ Crlp4002::~Crlp4002() {
 bool Crlp4002::run(void)
 {
     static quint64 _state=0;
-    static int i = 0;
 
     Cbus bus;
 
@@ -69,7 +67,7 @@ bool Crlp4002::run(void)
 
 //    connected = true;
     if (connected &&
-       (pTIMER->msElapsed(_state)>33) ) {
+       (pTIMER->msElapsed(_state)>33) ) {   // 300 bds
         if (!_trans.isEmpty()) {
             inBuffer.append(_trans.at(0));
             _trans.remove(0,1);
