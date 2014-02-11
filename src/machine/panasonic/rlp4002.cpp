@@ -42,7 +42,7 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     slotChanged = false;
     INTrequest = false;
     connected = false;
-    RTS=false;
+    rts=false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -55,6 +55,8 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
 Crlp4002::~Crlp4002() {
     delete pCONNECTOR;
 }
+
+#define RTS ( (controlReg & 0x20) ? true: false)
 
 bool Crlp4002::run(void)
 {
@@ -114,6 +116,15 @@ bool Crlp4002::run(void)
 
     if ( (bus.getFunc()==BUS_LINE3) && bus.getWrite() ) {
 //        qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
+        controlReg = bus.getData();
+
+        cts = RTS;
+        if (RTS) bus.setINT(true);
+#if 1
+        if (bus.getData()!=0) {
+            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'))<<" rts:"<<RTS<<" cts:"<<cts;
+        }
+#else
         switch(bus.getData()) {
         case 0: // MODEM OFF
 //            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
@@ -128,7 +139,8 @@ bool Crlp4002::run(void)
             // Acknoledge char reception
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             INTrequest = false;
-            RTS=false;
+
+            rts=false;
             break;
         case 0xD4: // 11010100
             // Read one char
@@ -139,11 +151,11 @@ bool Crlp4002::run(void)
             // Modem OUT ON
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             INTrequest = false;
-            RTS=false;
+            rts=false;
             break;
         case 0xFC: // 11111100
             // Send char
-            RTS=true;
+            rts=true;
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
 //            if (!inBuffer.isEmpty())
             INTrequest = true;
@@ -153,6 +165,7 @@ bool Crlp4002::run(void)
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
             break;
         }
+#endif
         bus.setFunc(BUS_ACK);
         if (INTrequest) bus.setINT(true);
     }
@@ -160,7 +173,13 @@ bool Crlp4002::run(void)
     if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
         // Status register ???
 #if 1
-        if (RTS) {
+        statusReg = 0;
+        if (cts) statusReg |= 0x40;
+        else if (inBuffer.isEmpty()) statusReg |= 0x80;
+        bus.setData(statusReg);
+
+#else
+        if (rts) {
             bus.setData(0x40);
 //            RTS=false;
         }
@@ -172,18 +191,8 @@ bool Crlp4002::run(void)
         }
         statusReg=0x80;
         INTpending = false;
-#else
-        if (INTrequest) {
-            qWarning()<<"INTREQUEST: 0x00";
-            bus.setINT(true);
-            bus.setData(0x00);
-            INTrequest = false;
-        }
-        else {
-//            qWarning()<<"INTREQUEST: 	0x80";
-            bus.setData(0x88);
-        }
 #endif
+
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
@@ -205,12 +214,15 @@ bool Crlp4002::run(void)
 
     if ( (bus.getFunc()==BUS_LINE1) && bus.getWrite() ) {
         bus.setFunc(BUS_ACK);
+
+
         quint8 _c = bus.getData();
+
         qWarning()<<"Write data LINE 1:"<<_c<<" - "<<(_c>0?QChar(_c):' ')<<"  ** "<<outBuffer;
         //outBuffer.append(_c);
         switch (_c) {
         case 17: /*connected = false;*/
-            RTS=false;
+            rts=false;
             xon = true;
             bus.setINT(true);
             break;

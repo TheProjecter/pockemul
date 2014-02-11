@@ -38,7 +38,8 @@ public:
     virtual ~Crlp4002();
 
 public:
-    bool INTrequest,INTpending,RTS;
+    bool INTrequest,INTpending;
+    bool rts,cts;
 
 public slots:
     void addModule(QString item, CPObject *pPC);
