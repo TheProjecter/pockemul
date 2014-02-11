@@ -38,7 +38,6 @@ public:
     virtual ~Crlp4002();
 
 public:
-    bool INTrequest,INTpending;
     bool rts,cts;
 
 public slots:
@@ -60,6 +59,7 @@ private:
     quint8 statusReg;
     quint8 outputReg;
     quint8 controlReg;
+    quint8 commandReg;
 
     QTcpSocket soc;
 

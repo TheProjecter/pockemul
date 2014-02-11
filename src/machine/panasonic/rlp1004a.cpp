@@ -270,6 +270,7 @@ void Crlp1004a::drawGraph(quint8 data) {
         if ((data>>b)&0x01) painter.drawPoint( posX, top+b);
     }
     posX++;
+    if (posX>320) posX=0;
     painter.end();
 
     Refresh();

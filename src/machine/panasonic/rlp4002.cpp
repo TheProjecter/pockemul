@@ -40,9 +40,9 @@ Crlp4002::Crlp4002(CPObject *parent):CPObject(this)
     setDY(340);//Pc_DY  = 20;
     rotate = false;
     slotChanged = false;
-    INTrequest = false;
     connected = false;
-    rts=false;
+    rts = false;
+    cts = false;
 
     memsize             = 0x2000;
     InitMemValue        = 0x7f;
@@ -56,7 +56,7 @@ Crlp4002::~Crlp4002() {
     delete pCONNECTOR;
 }
 
-#define RTS ( (controlReg & 0x20) ? true: false)
+#define RTS ( (commandReg & 0xa0)==0xa0 ? true: false)
 
 bool Crlp4002::run(void)
 {
@@ -67,20 +67,17 @@ bool Crlp4002::run(void)
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
-    connected = true;
+//    connected = true;
     if (connected &&
        (pTIMER->msElapsed(_state)>33) ) {
         if (!_trans.isEmpty()) {
             inBuffer.append(_trans.at(0));
             _trans.remove(0,1);
         }
-        INTrequest=true;
         _state = pTIMER->state;
-//        qWarning()<<"ok2";
-//        statusReg &= 0x7f;  // 1 char received
     }
 
-//    if (INTrequest)  bus.setINT(true);
+   if (xon && !inBuffer.isEmpty())  bus.setINT(true);
 
     if (bus.getFunc()==BUS_SLEEP) return true;
 
@@ -115,83 +112,25 @@ bool Crlp4002::run(void)
     }
 
     if ( (bus.getFunc()==BUS_LINE3) && bus.getWrite() ) {
-//        qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-        controlReg = bus.getData();
+
+        commandReg = bus.getData();
 
         cts = RTS;
         if (RTS) bus.setINT(true);
-#if 1
+
         if (bus.getData()!=0) {
             qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'))<<" rts:"<<RTS<<" cts:"<<cts;
         }
-#else
-        switch(bus.getData()) {
-        case 0: // MODEM OFF
-//            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-            break;
-        case 0x5C: // 01011100
-            //Modem CONNECT
-            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-            INTrequest = false;
-            statusReg = 0;
-            break;
-        case 0x7C: // 01111100
-            // Acknoledge char reception
-            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-            INTrequest = false;
 
-            rts=false;
-            break;
-        case 0xD4: // 11010100
-            // Read one char
-            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-            INTrequest = false;
-            break;
-        case 0xDC: // 11011100
-            // Modem OUT ON
-            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-            INTrequest = false;
-            rts=false;
-            break;
-        case 0xFC: // 11111100
-            // Send char
-            rts=true;
-            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-//            if (!inBuffer.isEmpty())
-            INTrequest = true;
-//            statusReg = 0;
-            break;
-        default:
-            qWarning()<<"BUS_TOUCH:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'));
-            break;
-        }
-#endif
         bus.setFunc(BUS_ACK);
-        if (INTrequest) bus.setINT(true);
     }
 
     if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
         // Status register ???
-#if 1
         statusReg = 0;
         if (cts) statusReg |= 0x40;
         else if (inBuffer.isEmpty()) statusReg |= 0x80;
         bus.setData(statusReg);
-
-#else
-        if (rts) {
-            bus.setData(0x40);
-//            RTS=false;
-        }
-        else if (/*xon && */!inBuffer.isEmpty()) {
-            bus.setData(0x00);
-        }
-        else {
-            bus.setData(0x80);
-        }
-        statusReg=0x80;
-        INTpending = false;
-#endif
 
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
@@ -200,7 +139,6 @@ bool Crlp4002::run(void)
 
     if ( (bus.getFunc()==BUS_LINE0) && bus.getWrite() ) {
         // Analyse command
-        INTrequest = true;
         controlReg = bus.getData();
         qWarning()<<"Control Register set: "<<controlReg;
 
@@ -224,7 +162,7 @@ bool Crlp4002::run(void)
         case 17: /*connected = false;*/
             rts=false;
             xon = true;
-            bus.setINT(true);
+//            bus.setINT(true);
             break;
         case 19: /*connected = true;*/
             xon = false;
@@ -240,7 +178,7 @@ bool Crlp4002::run(void)
     }
 
     if ( (bus.getFunc()==BUS_LINE1) && !bus.getWrite() ) {
-          INTrequest = false;
+
         outputReg = 0;
         if (xon && !inBuffer.isEmpty()) {
             quint8 _c = inBuffer.at(0);
@@ -321,7 +259,7 @@ bool Crlp4002::init(void)
     QObject:: connect(&soc, SIGNAL(readyRead()), this, SLOT(readData()));
 
 
-    connected = true;
+
     return true;
 }
 
@@ -393,7 +331,7 @@ void Crlp4002::ComputeKey()
 {
 
     if (pKEYB->LastKey>0) {
-        connected = true;
+        connected = !connected;
     }
 }
 
