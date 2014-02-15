@@ -20,6 +20,7 @@
 #include "ce152.h"
 
 class CPD1990AC;
+class Cbus;
 
 class CLH5810_PC1500:public CLH5810{
     Q_OBJECT
@@ -56,8 +57,9 @@ public:
     bool	SaveConfig(QXmlStreamWriter *);
 	bool	InitDisplay(void);
 	bool	CompleteDisplay(void);
+    virtual void ComputeKey();
 
-	bool	run(void);				// emulator main
+    virtual bool	run(void);				// emulator main
 	void	Set_Port(PORTS Port,BYTE data);
 	BYTE	Get_Port(PORTS Port);
 
@@ -74,11 +76,12 @@ public:
     virtual bool		Chk_Adr_R(UINT32 *d, UINT32 *data);
     UINT8		in(UINT8 address);
     UINT8 out(UINT8 ,UINT8 ){return(1);}
-	bool		Set_Connector(void);
-	bool		Get_Connector(void);
+    virtual bool Set_Connector(void);
+    virtual bool Get_Connector(void);
 
 	CLH5810_PC1500	*pLH5810;
 	Cce152_PC15XX	*pce152;
+    Cbus        *bus;
 	
 	bool		lh5810_Access;
 	bool		ce150_connected;
@@ -132,9 +135,9 @@ public:
     const char*	GetClassName(){ return("Cpc1500A");}
 
 
-	bool Chk_Adr(UINT32 *d,UINT32 data);
-    bool Chk_Adr_R(UINT32 *d, UINT32 *data);
-	bool Mem_Mirror(UINT32 *d); 
+    virtual bool Chk_Adr(UINT32 *d,UINT32 data);
+    virtual bool Chk_Adr_R(UINT32 *d, UINT32 *data);
+    virtual bool Mem_Mirror(UINT32 *d);
 
     Cpc1500A(CPObject *parent = 0);
 

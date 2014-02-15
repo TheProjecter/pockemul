@@ -621,7 +621,7 @@ bool CpcXXXX::SaveSession_File(QXmlStreamWriter *xmlOut) {
         xmlOut->writeAttribute("model", SessionHeader );
         SaveConfig(xmlOut);
         SaveExt(xmlOut);
-        pCPU->save_internal(xmlOut);
+        if (pCPU) pCPU->save_internal(xmlOut);
         xmlOut->writeStartElement("memory");
             for (int s=0; s<SlotList.size(); s++)				// Save Memory
             {
@@ -639,7 +639,7 @@ bool CpcXXXX::SaveSession_File(QFile *file)
 
     out.writeRawData( (char*)(SessionHeader.toLocal8Bit().data() ),SessionHeader.length());	// Write Header
 	SaveConfig(file);									// Write PC configuration
-	pCPU->save_internal(file);							// Save cpu status
+    if (pCPU) pCPU->save_internal(file);							// Save cpu status
 	for (int s=0; s<SlotList.size(); s++)				// Save Memory
 	{
 		if (SlotList[s].getType() == CSlot::RAM)	Mem_Save(file,s);
@@ -664,7 +664,7 @@ bool CpcXXXX::LoadSession_File(QXmlStreamReader *xmlIn) {
                 return false;
             }
 
-            pCPU->Load_Internal(xmlIn);
+            if (pCPU) pCPU->Load_Internal(xmlIn);
             AddLog(LOG_MASTER,"Loadmemory:"+xmlIn->name().toString());
             if (xmlIn->readNextStartElement() && xmlIn->name() == "memory" ) {
                 AddLog(LOG_MASTER,"Load Memory");
@@ -701,7 +701,7 @@ bool CpcXXXX::LoadSession_File(QFile *file)
 		LoadConfig(file);												// Write PC configuration
 
 		// Load cpu status	
-		pCPU->Load_Internal(file);
+        if (pCPU) pCPU->Load_Internal(file);
 		// Save Memory
 		for (int s=0; s<SlotList.size(); s++)
 		{

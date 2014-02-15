@@ -4,9 +4,13 @@
 //#include	<string.h>
 //#include	<stdlib.h>
 
+#define TEST_BUS
+
 #include <QtGui> 
 
 #include	"common.h"
+#include "fluidlauncher.h"
+
 #include	"pc1500.h"
 #include "cextension.h"
 #include    "Lcdc.h"
@@ -16,6 +20,7 @@
 #include    "Keyb1500.h"
 #include	"ce152.h"
 #include	"dialoganalog.h"
+#include    "bus.h"
 
 
 extern int	g_DasmStep;
@@ -35,6 +40,8 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= P_RES(":/pc1500/1500symb.png");
 	memsize			= 0x26000;
 	InitMemValue	= 0xFF;
+
+    LeftFname   = P_RES(":/pc1600/pc1600Left.png");
 
 	SlotList.clear();
 
@@ -76,6 +83,8 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	pce152		= new Cce152_PC15XX(this);
 	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
 	
+    bus = new Cbus();
+
 	ce150_connected = false;
 	
 	Tape_Base_Freq=2500;
@@ -88,6 +97,7 @@ Cpc15XX::~Cpc15XX()
 {
     delete pLH5810;
     delete pce152;
+    delete bus;
 }
 
 Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
@@ -226,6 +236,9 @@ bool Cpc15XX::SaveConfig(QXmlStreamWriter *xmlOut)
 
 bool Cpc15XX::init(void)				// initialize
 {
+//    pCPU->logsw = true;
+//        if (!fp_log) fp_log=fopen("pc1500.log","wt");	// Open log file
+
 	CpcXXXX::init();
 	
 #if 1
@@ -511,6 +524,16 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0xA000) && (*d<=0xBFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 		
+    if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
+        bus->setFunc(BUS_WRITEDATA);
+        bus->setAddr(*d);
+//        qWarning()<<QString("write:%1").arg(*d,6,16,QChar('0'));
+        bus->setData((quint8)data);
+        manageBus();
+        bus->setFunc(BUS_SLEEP);
+        return false;
+    }
+
 	if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
     if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;	return(1); }
 	if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
@@ -537,13 +560,26 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0x8000) && (*d<=0x9FFF) ) { return(0); }										// RAM area(4000-7FFFF)
 	if ( (*d>=0xA000) && (*d<=0xBFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
+
+
+    if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
+        bus->setFunc(BUS_WRITEDATA);
+        bus->setAddr(*d);
+//        qWarning()<<QString("write:%1").arg(*d,6,16,QChar('0'));
+        bus->setData((quint8)data);
+        manageBus();
+        bus->setFunc(BUS_SLEEP);
+        return false;
+    }
+    if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
     if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;	return(1); }
-	if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;
+    if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
+    if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;
 										  if (*d==0x1F006) pLH5810->New_L=true;
 										  return(1);}										// I/O area(LH5810)
 
-	if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
-	if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
+
+
 
 	return(0);
 }
@@ -556,6 +592,19 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
 	Mem_Mirror(d);
 	if (*d == 0x4000) AddLog(LOG_MASTER,tr("read 0x04000"));
 	if (*d == 0x4001) AddLog(LOG_MASTER,tr("read 0x04001"));
+
+    if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
+        bus->setFunc(BUS_READDATA);
+        bus->setAddr(*d);
+        bus->setData(0xfe);
+        manageBus();
+        if (bus->getFunc()==BUS_ACK) {
+            *data = bus->getData();
+            bus->setFunc(BUS_SLEEP);
+            return false;
+        }
+        return true;
+    }
 
     if ( (*d>=0x1B000) && (*d<=0x1B00F) ) {	ce150_Access = true;	return(1);	}
     if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {	lh5810_Access = true;	return(1);	}
@@ -571,8 +620,8 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
  
 bool Cpc1500A::Chk_Adr_R(UINT32 *d,UINT32 *data)
 { 
-	Cpc15XX::Chk_Adr_R(d,data);
-	return(1); 
+    return Cpc15XX::Chk_Adr_R(d,data);
+
 }
 
 void Cpc15XX::Set_Port(PORTS Port,BYTE data){
@@ -585,8 +634,10 @@ BYTE Cpc15XX::Get_Port(PORTS Port){
 }
 
 #define KS		( pKEYB->Get_KS()) 
-#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
-
+//#define KEY(c)	( TOUPPER(pKEYB->LastKey) == TOUPPER(c) )
+#define KEY(c)	((pKEYB->keyPressedList.contains(TOUPPER(c)) || \
+                  pKEYB->keyPressedList.contains(c) || \
+                  pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
 UINT8 Cpc15XX::in(UINT8 address)
 {
     Q_UNUSED(address)
@@ -694,13 +745,23 @@ void Cpc15XX::Regs_Info(UINT8 Type)
 
 bool Cpc15XX::Set_Connector(void)
 {
+#ifdef TEST_BUS
+    // transfert busValue to Connector
+    pCONNECTOR->Set_values(bus->toUInt64());
+#else
 	pCONNECTOR->Set_pin(1	,0);
-	return true;
+#endif
+    return true;
 }
 bool Cpc15XX::Get_Connector(void)
 {
+#ifdef TEST_BUS
+    bus->fromUInt64(pCONNECTOR->Get_values());
+#else
 	ce150_connected = pCONNECTOR->Get_pin(1);	
-	return true;
+#endif
+
+    return true;
 }
 
 bool	CLH5810_PC1500::init(void)
@@ -718,8 +779,10 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	INT FROM connector to IRQ
 	////////////////////////////////////////////////////////////////////
+#ifndef TEST_BUS
 	IRQ = pPC->pCONNECTOR->Get_pin(30);
-		
+#endif
+
 	////////////////////////////////////////////////////////////////////
 	//	Send Data to PD1990AC -- TIMER
 	////////////////////////////////////////////////////////////////////
@@ -820,3 +883,19 @@ void Cpc15XX::contextMenuEvent ( QContextMenuEvent * event )
     menu->popup(event->globalPos () );
 }
 
+extern int ask(QWidget *parent,QString msg,int nbButton);
+#define KEY(c)	((pKEYB->keyPressedList.contains(TOUPPER(c)) || \
+                  pKEYB->keyPressedList.contains(c) || \
+                  pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
+void Cpc15XX::ComputeKey()
+{
+    // Manage left connector click
+    if (KEY(0x240) && (currentView==LEFTview)) {
+        pKEYB->keyPressedList.removeAll(0x240);
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "Sharp_60");
+        launcher->show();
+    }
+}

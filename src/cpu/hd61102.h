@@ -22,7 +22,7 @@ class CHD61102:public QObject{
 
 public:
     const char*	GetClassName(){ return("CHD61102");}
-    CpcXXXX		*pPC;
+    CPObject		*pPC;
 
     bool	init(void);						//initialize
     bool	exit(void);						//end
@@ -49,7 +49,7 @@ public:
     void	Load_Internal(QXmlStreamReader *);
     void	save_internal(QXmlStreamWriter *);
 
-    CHD61102(CpcXXXX *parent);
+    CHD61102(CPObject *parent);
     virtual ~CHD61102();
 
     void	addretrace (void);

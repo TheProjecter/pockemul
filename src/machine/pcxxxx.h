@@ -262,8 +262,7 @@ public:
 
 	
 	bool	Japan;
-	
-    FILE	*fp_log;
+
 
 	CpcXXXX(CPObject *parent = 0);
 	

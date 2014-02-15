@@ -13,7 +13,7 @@
 #define MASK_status     0x200
 #define MASK_read       0x300
 
-CHD61102::CHD61102(CpcXXXX *parent)
+CHD61102::CHD61102(CPObject *parent)
 {
     pPC = parent;
 
@@ -48,6 +48,7 @@ BYTE CHD61102::get8(qint16 adr)
 
 void CHD61102::set8(qint16 adr,BYTE val)
 {
+//    qWarning()<<"set8["<<adr<<"]="<<val;
     if (adr >= 0x200)
     {
         // ERROR
@@ -60,7 +61,7 @@ void CHD61102::set8(qint16 adr,BYTE val)
 
 BYTE CHD61102::instruction(qint16 cmd)
 {
-    if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);
+//    if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);
 
     AddLog(LOG_DISPLAY,tr("HD61102 CMD:%1").arg(cmd,4,16,QChar('0')));
 
@@ -139,7 +140,8 @@ BYTE CHD61102::cmd_status(qint16 cmd)
 
 void CHD61102::cmd_write(qint16 cmd)
 {
-    if ((pPC->pCPU->fp_log) && (cmd & 0xff))fprintf(pPC->pCPU->fp_log,"LCD Write:%02x\n",cmd & 0xff);
+//    qWarning()<<"LCD Write:"<<(cmd&0xff);
+//    if ((pPC->fp_log) && (cmd & 0xff))fprintf(pPC->fp_log,"LCD Write:%02x\n",cmd & 0xff);
 //    if ((pPC->fp_log) && (cmd & 0xff)) fprintf(pPC->fp_log,"LCD Write:x=%02x y=%02x val=%02x\n",Xadr,Yadr,cmd & 0xff);
     set8( (info.Xadr * 0x40) + info.Yadr , (cmd & 0xff));
     (info.Yadr)++;

@@ -129,7 +129,8 @@ enum Models {
     POSTIT,
     TI57,
     HP41,
-    HP82143A
+    HP82143A,
+    CE1560
 };
 
 class MainWindowPockemul : public QMainWindow, public Ui::MainWindow

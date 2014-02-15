@@ -15,6 +15,7 @@
 #include "Keyb.h"
 #include "Connect.h"
 #include "bus.h"
+#include "cpu.h"
 
 #define DOWN    0
 #define UP              1
@@ -125,11 +126,17 @@ bool Crlp4002::run(void)
 
     if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
         // Status register ???
-        statusReg = 0;
+//        if (connected)
+            statusReg = 0x30;
+//        else statusReg = 0x10;
         if (cts) statusReg |= 0x40;
-        else if (inBuffer.isEmpty()) statusReg |= 0x80;
+        else if (inBuffer.isEmpty()) statusReg |= 0x80;     // INPUT BUFFER EMPTY
+
         bus.setData(statusReg);
 
+        if (!(statusReg&0x80)) {
+            qWarning()<<"Read STATUS Reg:"<<QString("%1").arg(bus.getData(),2,16,QChar('0'))<<" pc="<<QString("%1").arg(pTIMER->pPC->pCPU->get_PC(),2,16,QChar('0'));
+        }
         bus.setFunc(BUS_READDATA);
         pCONNECTOR->Set_values(bus.toUInt64());
         return true;
@@ -188,9 +195,9 @@ bool Crlp4002::run(void)
         bus.setFunc(BUS_ACK);
         bus.setData(outputReg);
 
-        statusReg = 0x00;
+//        statusReg = 0x00;
 
-        qWarning()<<"Receive data LINE 1:"<<bus.getData()<<" - "<<(bus.getData()>0?QChar(bus.getData()):' ');
+        qWarning()<<connected<<"-Receive data LINE 1:"<<bus.getData()<<" - "<<(bus.getData()>0?QChar(bus.getData()):' ');
     }
 
 

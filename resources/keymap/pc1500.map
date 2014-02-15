@@ -64,6 +64,32 @@
     <KEY description="X" height="16" left="105" scancode="0x78" top="225" width="25"/>
     <KEY description="Y" height="16" left="243" scancode="0x79" top="158" width="25"/>
     <KEY description="Z" height="16" left="64" scancode="0x7a" top="224" width="25"/>
+    <KEY description="a" height="16" left="42" masterscancode="0x61" top="192" width="25" modifier="2nd"/>
+    <KEY description="b" height="16" left="231" masterscancode="0x62" top="224" width="25" modifier="2nd"/>
+    <KEY description="c" height="16" left="147" masterscancode="0x63" top="225" width="25" modifier="2nd"/>
+    <KEY description="d" height="16" left="126" masterscancode="0x64" top="191" width="25" modifier="2nd"/>
+    <KEY description="e" height="16" left="115" masterscancode="0x65" top="158" width="25" modifier="2nd"/>
+    <KEY description="f" height="16" left="168" masterscancode="0x66" top="191" width="25" modifier="2nd"/>
+    <KEY description="g" height="16" left="210" masterscancode="0x67" top="191" width="25" modifier="2nd"/>
+    <KEY description="h" height="16" left="252" masterscancode="0x68" top="191" width="25" modifier="2nd"/>
+    <KEY description="i" height="16" left="327" masterscancode="0x69" top="159" width="25" modifier="2nd"/>
+    <KEY description="j" height="16" left="295" masterscancode="0x6a" top="191" width="25" modifier="2nd"/>
+    <KEY description="k" height="16" left="336" masterscancode="0x6b" top="191" width="25" modifier="2nd"/>
+    <KEY description="l" height="16" left="378" masterscancode="0x6c" top="192" width="25" modifier="2nd"/>
+    <KEY description="m" height="16" left="315" masterscancode="0x6d" top="225" width="25" modifier="2nd"/>
+    <KEY description="n" height="16" left="275" masterscancode="0x6e" top="225" width="25" modifier="2nd"/>
+    <KEY description="o" height="16" left="368" masterscancode="0x6f" top="159" width="25" modifier="2nd"/>
+    <KEY description="p" height="16" left="411" masterscancode="0x70" top="159" width="25" modifier="2nd"/>
+    <KEY description="q" height="16" left="31" masterscancode="0x71" top="159" width="25" modifier="2nd"/>
+    <KEY description="r" height="16" left="158" masterscancode="0x72" top="158" width="25" modifier="2nd"/>
+    <KEY description="s" height="16" left="83" masterscancode="0x73" top="191" width="25" modifier="2nd"/>
+    <KEY description="t" height="16" left="200" masterscancode="0x74" top="159" width="25" modifier="2nd"/>
+    <KEY description="u" height="16" left="284" masterscancode="0x75" top="157" width="25" modifier="2nd"/>
+    <KEY description="v" height="16" left="188" masterscancode="0x76" top="225" width="25" modifier="2nd"/>
+    <KEY description="w" height="16" left="73" masterscancode="0x77" top="158" width="25" modifier="2nd"/>
+    <KEY description="x" height="16" left="105" masterscancode="0x78" top="225" width="25" modifier="2nd"/>
+    <KEY description="y" height="16" left="243" masterscancode="0x79" top="158" width="25" modifier="2nd"/>
+    <KEY description="z" height="16" left="64" masterscancode="0x7a" top="224" width="25" modifier="2nd"/>
     <KEY description="F1" height="12" left="118" scancode="0xf6" top="122" width="23"/>
     <KEY description="F2" height="12" left="175" scancode="0xf7" top="122" width="23"/>
     <KEY description="F3" height="12" left="231" scancode="0xf8" top="121" width="23"/>
@@ -85,5 +111,6 @@
     <KEY description=":" masterscancode="0x2a" modifier="2nd"/>
     <KEY description="," masterscancode="0x2d" modifier="2nd"/>
     <KEY description=";" masterscancode="0x2b" modifier="2nd"/>
+    <KEY description="60pins connector" height="170" left="35" scancode="0x240" top="80" width="25" view="LEFT"/>
 </Keyboard>
 </KEYBMAP>

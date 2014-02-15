@@ -86,6 +86,8 @@ public:
 	QString	SymbFname;
 
 
+    FILE	*fp_log;
+
     int rate;
 
     bool	off;
