@@ -125,7 +125,8 @@ bool Cce150::init(void)
     CPObject::init();
 
     setfrequency( 0);
-    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(465,72));	publish(pCONNECTOR);
+    pCONNECTOR	 = new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(465,72));	publish(pCONNECTOR);
+    pEXTCONNECTOR= new Cconnector(this,60,1,Cconnector::Sharp_60,"Connector 60 pins Ext",true,QPoint(565,0));	publish(pEXTCONNECTOR);
 
     WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");
@@ -181,7 +182,7 @@ INLINE bool Cce150::lh5810_read(void)
     case 0xB00D: bus->setData( pLH5810->GetReg(CLH5810::DDB)); break;
     case 0xB00E: bus->setData( pLH5810->GetReg(CLH5810::CLH5810::OPA)); break;
     case 0xB00F: bus->setData( pLH5810->GetReg(CLH5810::OPB)); break;
-    default: bus->setData(0x00); break;
+    default: /*bus->setData(0x00);*/ break;
     }
 
     return true;
@@ -203,6 +204,8 @@ PB7		Paper feed key input
 bool Cce150::run(void)
 {
 	bool has_moved = false;
+    bool forwardBus = true;
+
 
     bus->fromUInt64(pCONNECTOR->Get_values());
 
@@ -243,11 +246,13 @@ bool Cce150::run(void)
         (addr >=0xA000) && (addr < 0xC000) )
     {
         bus->setData(mem[addr - 0xA000]);
+        forwardBus = false;
 //        qWarning()<<"CE15O READ:"<<bus->getData();
     }
 #endif
     if (bus->isEnable() && bus->isME1() && (addr >= 0xb000) && (addr <= 0xb00f) && (bus->isWrite()) ) {
         lh5810_write();
+        forwardBus = false;
     }
 
 	
@@ -346,11 +351,24 @@ bool Cce150::run(void)
 //	pCONNECTOR->Set_pin(30	,pLH5810->INT);
     bus->setINT(pLH5810->INT);
 
-    if (bus->isEnable() && !bus->isWrite() && bus->isME1()) {
+    if (bus->isEnable() &&
+            !bus->isWrite() &&
+            bus->isME1() &&
+            (addr >= 0xb000) &&
+            (addr <= 0xb00f)) {
         lh5810_read();
+        forwardBus=false;
     }
 
-//    qWarning()<<"END:"<<bus->toLog();
+    // Manage EXT Connector
+    if (forwardBus) {
+        // copy MainConnector to Ext Connectors
+        pEXTCONNECTOR->Set_values(bus->toUInt64());
+        // execute Ext
+        mainwindow->pdirectLink->outConnector(pEXTCONNECTOR);
+        bus->fromUInt64(pEXTCONNECTOR->Get_values());
+    }
+
     pCONNECTOR->Set_values(bus->toUInt64());
 	return(1);
 }

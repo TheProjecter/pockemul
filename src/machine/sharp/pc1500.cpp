@@ -112,7 +112,7 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     BackGroundFname	= P_RES(":/pc1500A/pc1500A.png");
     LcdFname		= P_RES(":/pc1500A/1500Alcd.png");
     SymbFname		= P_RES(":/pc1500A/1500Asymb.png");
-    memsize			= 0x26000;
+    memsize			= 0x24000;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , CSlot::RAM , "RAM"));
@@ -124,7 +124,6 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
     SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
     SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500A/CE-150.ROM")	, "" , CSlot::ROM , "CE-150 ROM"));
 
     delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
 
@@ -586,10 +585,8 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
     }
     if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {	lh5810_Access = true;	return(1);	}
 
-//	if ( (ce150_connected) && (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
     if ( (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
     {
-#if 1
         bus->setWrite(false);
         bus->setAddr(*d);
         bus->setData(0xff);
@@ -599,11 +596,6 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
         *data = bus->getData();
         bus->setEnable(false);
         return false;
-#else
-        *d+=0x1A000;
-        qWarning()<<"Query ROM:"<<QString("[%1]=%2").arg(*d,4,16,QChar('0')).arg(mem[*d],2,16,QChar('0'));
-        return true;
-#endif
 	}
 
 	return(1); 
