@@ -267,6 +267,8 @@ bool Chp82143A::run(void) {
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
+    if (!bus.isEnable()) return true;
+#if 0
     switch (bus.getFunc()) {
     case BUS_SLEEP: break;
     case BUS_READDATA:
@@ -283,6 +285,23 @@ bool Chp82143A::run(void) {
         bus.setFunc(BUS_SLEEP);
         break;
     }
+#else
+    if (bus.isWrite()) {
+        Printer(bus.getData());
+//        bus.setFunc(BUS_SLEEP);
+    }
+    else {
+        if (bus.getAddr()==0x3a) {
+            bus.setData(getStatus() >> 8);
+//            bus.setFunc(BUS_READDATA);
+        }
+        if (bus.getAddr()==0x3b) {
+            bus.setData(getStatus() & 0xff);
+//            bus.setFunc(BUS_READDATA);
+        }
+    }
+
+#endif
     pCONNECTOR->Set_values(bus.toUInt64());
     return true;
 }

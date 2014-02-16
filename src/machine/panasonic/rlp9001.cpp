@@ -8,7 +8,7 @@
 #include "Connect.h"
 #include "Keyb.h"
 #include "rlp9001.h"
-#include "bus.h"
+#include "buspanasonic.h"
 
 Crlp9001::Crlp9001(CPObject *parent ,Models mod)   : CPObject(this)
 {                                                       //[constructor]
@@ -92,7 +92,7 @@ Crlp9001::~Crlp9001(){
 bool Crlp9001::run(void)
 {
 
-    Cbus bus;
+    CbusPanasonic bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
     if (bus.getFunc()==BUS_SLEEP) return true;

@@ -15,7 +15,7 @@
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "Connect.h"
-#include "bus.h"
+#include "buspanasonic.h"
 
 #define DOWN    0
 #define UP              1
@@ -97,7 +97,7 @@ bool Crlp1004a::run(void)
 
     pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
-    Cbus bus;
+    CbusPanasonic bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
@@ -160,7 +160,7 @@ bool Crlp1004a::run(void)
         return true;
     }
 
-    if ( (bus.getFunc()==BUS_LINE3) && bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE3) && bus.isWrite() ) {
             switch(bus.getData()) {
             case 0: // Print
     //            qWarning()<<"BUS_TOUCH:"<<bus.getData()<<  "PRINTING "<<buffer.size()<<" chars";
@@ -190,7 +190,7 @@ bool Crlp1004a::run(void)
             bus.setFunc(BUS_ACK);
     }
 
-    if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE3) && !bus.isWrite() ) {
         if (INTrequest) {
 //            qWarning()<<"INTREQUEST:true";
             bus.setINT(true);
@@ -206,7 +206,7 @@ bool Crlp1004a::run(void)
         return true;
        }
 
-    if ( (bus.getFunc()==BUS_LINE1) && bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE1) && bus.isWrite() ) {
         if (receiveMode) {
             buffer.append(bus.getData());
 //            qWarning()<<"Receive data:"<<bus.getData();

@@ -8,46 +8,47 @@
 #include <QMetaType>
 
 
-enum BUS_FUNC{
-    BUS_SLEEP,
-    BUS_WRITEDATA,BUS_READDATA,
-    BUS_QUERY,BUS_SELECT,BUS_ACK,
-    BUS_LINE0,BUS_LINE1,BUS_LINE2,BUS_LINE3};
 
 class Cbus {
 
 public:
-    Cbus(quint8 dest=0, BUS_FUNC func=BUS_SLEEP, quint8 data=0, bool write= false);
+    Cbus();
+    virtual ~Cbus() {}
 
-    quint64 toUInt64() const;
-    void fromUInt64(quint64 val);
-    quint8 getData() const { return data;}
-    void setData(quint8 val) { data = val;}
+    virtual quint64 toUInt64() const;
+    virtual void fromUInt64(quint64 val);
+
+    quint32 getData() const { return data;}
+    void setData(quint32 val) { data = val;}
+
     quint32 getAddr() const { return addr;}
-    void setAddr(quint32 val) { addr=val;}
-    quint8 getDest() const { return dest;}
-    void setDest(quint8 val) { dest = val;}
-    BUS_FUNC getFunc() const  { return func;}
-    void setFunc(BUS_FUNC val) { func = val;}
+    virtual void setAddr(quint32 val) { addr=val;}
+
     bool getINT() const { return interrupt; }
     void setINT(bool val) { interrupt = val; }
-    bool getWrite() const { return writeMode; }
-    void setWrite(bool val) { writeMode = val; }
-    QString toLog() const;
 
-private:
+    bool isWrite() const { return writeMode; }
+    void setWrite(bool val) { writeMode = val; }
+
+    bool isEnable() const { return enable; }
+    void setEnable(bool val) { enable = val; }
+
+    virtual QString toLog() const;
+
+protected:
     quint32 addr;
-    quint8 data;
-    quint8 dest;
-    BUS_FUNC func;
+    quint32 data;
+    bool    enable;
     bool    interrupt;
     bool    writeMode;
-
 
 };
 
 Q_DECLARE_METATYPE(Cbus);
 
 QDebug operator<<(QDebug dbg, const Cbus &bus);
+
+
+
 
 #endif // BUS_H

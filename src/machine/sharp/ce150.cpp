@@ -12,6 +12,7 @@
 #include "keybce150.h"
 #include "clink.h"
 #include "dialoganalog.h"
+#include "buspc1500.h"
 
 #define NO_MOVE	0
 #define RI_MOVE	1
@@ -81,6 +82,12 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
     KeyMapLenght= KeyMapce150Lenght;
     pKEYB		= new Ckeyb(this,"ce150.map");
 
+    memsize			= 0x2000;
+
+    SlotList.clear();
+    SlotList.append(CSlot(8 , 0x0000 ,	P_RES(":/pc1500A/CE-150.ROM")	, "" , CSlot::ROM , "CE-150 ROM"));
+
+
     Print_Mode = 0;
 
     Pen_X = 0;
@@ -101,6 +108,8 @@ Cce150::Cce150(CPObject *parent):Cprinter(this)
 
     StartRot = false;
     Change_Color = true;
+
+    bus = new CbusPc1500();
 }
 
 Cce150::~Cce150() {
@@ -127,6 +136,7 @@ bool Cce150::init(void)
 
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
+    pLH5810->init();
 
     // Create CE-150 Paper Image
     ce150buf	= new QImage(QSize(320, 3000),QImage::Format_ARGB32);
@@ -145,39 +155,36 @@ bool Cce150::init(void)
 
 INLINE bool Cce150::lh5810_write(void)
 {
-#if 0 // TRY TO OPTIMIZE ...
-    SETREG_LH5810_OPC(pLH5810,pTIMER->pPC->Get_8(0x1B008))
-    SETREG_LH5810_G(pLH5810  ,pTIMER->pPC->Get_8(0x1B009))
-    SETREG_LH5810_MSK(pLH5810,pTIMER->pPC->Get_8(0x1B00A))
-    SETREG_LH5810_IF(pLH5810 ,pTIMER->pPC->Get_8(0x1B00B))
-    SETREG_LH5810_DDA(pLH5810,pTIMER->pPC->Get_8(0x1B00C))
-    SETREG_LH5810_DDB(pLH5810,pTIMER->pPC->Get_8(0x1B00D))
-    SETREG_LH5810_OPA(pLH5810,pTIMER->pPC->Get_8(0x1B00E))
-    SETREG_LH5810_OPB(pLH5810,pTIMER->pPC->Get_8(0x1B00F))
-#else	
-    pLH5810->SetReg(CLH5810::OPC,pTIMER->pPC->Get_8(0x1B008));
-    pLH5810->SetReg(CLH5810::G  ,pTIMER->pPC->Get_8(0x1B009));
-    pLH5810->SetReg(CLH5810::MSK,pTIMER->pPC->Get_8(0x1B00A));
-    pLH5810->SetReg(CLH5810::IF ,pTIMER->pPC->Get_8(0x1B00B));
-    pLH5810->SetReg(CLH5810::DDA,pTIMER->pPC->Get_8(0x1B00C));
-    pLH5810->SetReg(CLH5810::DDB,pTIMER->pPC->Get_8(0x1B00D));
-    pLH5810->SetReg(CLH5810::OPA,pTIMER->pPC->Get_8(0x1B00E));
-    pLH5810->SetReg(CLH5810::OPB,pTIMER->pPC->Get_8(0x1B00F));
-#endif
-	return(1);
+    switch (bus->getAddr()) {
+    case 0xB008: pLH5810->SetReg(CLH5810::OPC,bus->getData()); break;
+    case 0xB009: pLH5810->SetReg(CLH5810::G  ,bus->getData()); break;
+    case 0xB00A: pLH5810->SetReg(CLH5810::MSK,bus->getData()); break;
+    case 0xB00B: pLH5810->SetReg(CLH5810::IF ,bus->getData()); break;
+    case 0xB00C: pLH5810->SetReg(CLH5810::DDA,bus->getData()); break;
+    case 0xB00D: pLH5810->SetReg(CLH5810::DDB,bus->getData()); break;
+    case 0xB00E: pLH5810->SetReg(CLH5810::OPA,bus->getData()); break;
+    case 0xB00F: pLH5810->SetReg(CLH5810::OPB,bus->getData()); break;
+    default:  break;
+    }
+
+    return true;
 }
+
 INLINE bool Cce150::lh5810_read(void)
 {
-    pTIMER->pPC->Set_8(0x1B008 , pLH5810->GetReg(CLH5810::OPC));
-    pTIMER->pPC->Set_8(0x1B009 , pLH5810->GetReg(CLH5810::G));
-    pTIMER->pPC->Set_8(0x1B00A , pLH5810->GetReg(CLH5810::MSK));
-    pTIMER->pPC->Set_8(0x1B00B , pLH5810->GetReg(CLH5810::IF));
-    pTIMER->pPC->Set_8(0x1B00C , pLH5810->GetReg(CLH5810::DDA));
-    pTIMER->pPC->Set_8(0x1B00D , pLH5810->GetReg(CLH5810::DDB));
-    pTIMER->pPC->Set_8(0x1B00E , pLH5810->GetReg(CLH5810::CLH5810::OPA));
-    pTIMER->pPC->Set_8(0x1B00F , pLH5810->GetReg(CLH5810::OPB));
+    switch (bus->getAddr()) {
+    case 0xB008: bus->setData( pLH5810->GetReg(CLH5810::OPC) ); break;
+    case 0xB009: bus->setData( pLH5810->GetReg(CLH5810::G)); break;
+    case 0xB00A: bus->setData( pLH5810->GetReg(CLH5810::MSK)); break;
+    case 0xB00B: bus->setData( pLH5810->GetReg(CLH5810::IF)); break;
+    case 0xB00C: bus->setData( pLH5810->GetReg(CLH5810::DDA)); break;
+    case 0xB00D: bus->setData( pLH5810->GetReg(CLH5810::DDB)); break;
+    case 0xB00E: bus->setData( pLH5810->GetReg(CLH5810::CLH5810::OPA)); break;
+    case 0xB00F: bus->setData( pLH5810->GetReg(CLH5810::OPB)); break;
+    default: bus->setData(0x00); break;
+    }
 
-	return(1);
+    return true;
 }
 
 
@@ -196,42 +203,63 @@ PB7		Paper feed key input
 bool Cce150::run(void)
 {
 	bool has_moved = false;
-	lh5810_write();
-	
-	////////////////////////////////////////////////////////////////////
-	//	VOLTAGE OK :-)
-	//////////////////////////////////////////////////////////////////
+
+    bus->fromUInt64(pCONNECTOR->Get_values());
+
+    ////////////////////////////////////////////////////////////////////
+    //	VOLTAGE OK :-)
+    //////////////////////////////////////////////////////////////////
     pLH5810->SetRegBit(CLH5810::OPB,6,false);
 
-	////////////////////////////////////////////////////////////////////
-	//	PRINT MODE
-	//////////////////////////////////////////////////////////////////
-	if (pKEYB->LastKey==K_PRINT)
-	{
-		Print_Mode = ! Print_Mode;
+    ////////////////////////////////////////////////////////////////////
+    //	PRINT MODE
+    //////////////////////////////////////////////////////////////////
+    if (pKEYB->LastKey==K_PRINT)
+    {
+        Print_Mode = ! Print_Mode;
         pLH5810->SetRegBit(CLH5810::OPA,5,Print_Mode);
         pKEYB->LastKey = 0;
-	}
-	
-	////////////////////////////////////////////////////////////////////
-	//	PAPER FEED
-	//////////////////////////////////////////////////////////////////
-	if (pKEYB->LastKey==K_PFEED)
-	{
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //	PAPER FEED
+    //////////////////////////////////////////////////////////////////
+    if (pKEYB->LastKey==K_PFEED)
+    {
         pLH5810->SetRegBit(CLH5810::OPB,7,true);
-		AddLog(LOG_MASTER,"Paper Feed");
-	}
-	else
+        AddLog(LOG_MASTER,"Paper Feed");
+    }
+    else
         pLH5810->SetRegBit(CLH5810::OPB,7,false);
 
+
+//    if (!bus->isEnable()) return true;
+#if 1
+    quint16 addr = bus->getAddr();
+
+    if (bus->isEnable() &&
+        !bus->isME1() &&
+        !bus->isWrite() &&
+        (addr >=0xA000) && (addr < 0xC000) )
+    {
+        bus->setData(mem[addr - 0xA000]);
+//        qWarning()<<"CE15O READ:"<<bus->getData();
+    }
+#endif
+    if (bus->isEnable() && bus->isME1() && (addr >= 0xb000) && (addr <= 0xb00f) && (bus->isWrite()) ) {
+        lh5810_write();
+    }
+
+	
 	////////////////////////////////////////////////////////////////////
 	//	RMT ON/OFF
 	////////////////////////////////////////////////////////////////////
-    if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = false;	// RMT 0 ON
-    if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = true;	// RMT 0 OFF
+    // Service manual PA 1234. Take a look
+//    if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = false;	// RMT 0 ON
+//    if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = true;	// RMT 0 OFF
 
 
- 
+    // PC CHANGE
 	Direction = Motor_X.SendPhase(PC & 0x0f);
  
 	switch (Direction)
@@ -306,8 +334,7 @@ bool Cce150::run(void)
 	}
 
 	pLH5810->step();
-	
-	lh5810_read();
+
 
 	//---------------------------------------------------
 	// Draw printer
@@ -315,9 +342,16 @@ bool Cce150::run(void)
 	if (has_moved) Print();
 
 
-	pCONNECTOR->Set_pin(1	,1);
-	pCONNECTOR->Set_pin(30	,pLH5810->INT);
+//	pCONNECTOR->Set_pin(1	,1);
+//	pCONNECTOR->Set_pin(30	,pLH5810->INT);
+    bus->setINT(pLH5810->INT);
 
+    if (bus->isEnable() && !bus->isWrite() && bus->isME1()) {
+        lh5810_read();
+    }
+
+//    qWarning()<<"END:"<<bus->toLog();
+    pCONNECTOR->Set_values(bus->toUInt64());
 	return(1);
 }
 
@@ -430,4 +464,17 @@ bool CLH5810_CE150::step()
     CLH5810::step();
 
 	return(1);
+}
+
+void Cce150::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu *menu= new QMenu(this);
+
+    BuildContextMenu(menu);
+
+    menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
+    menu->addSeparator();
+
+    menu->popup(event->globalPos () );
+    event->accept();
 }

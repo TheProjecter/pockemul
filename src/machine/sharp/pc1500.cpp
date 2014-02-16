@@ -20,7 +20,7 @@
 #include    "Keyb1500.h"
 #include	"ce152.h"
 #include	"dialoganalog.h"
-#include    "bus.h"
+#include    "buspc1500.h"
 
 
 extern int	g_DasmStep;
@@ -83,7 +83,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	pce152		= new Cce152_PC15XX(this);
 	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
 	
-    bus = new Cbus();
+    bus = new CbusPc1500();
 
 	ce150_connected = false;
 	
@@ -241,44 +241,7 @@ bool Cpc15XX::init(void)				// initialize
 
 	CpcXXXX::init();
 	
-#if 1
-		// Init I/O Ce150 memory
-		Set_8(0x1B000 , 0);
-		Set_8(0x1B001 , 0);
-		Set_8(0x1B002 , 0);
-		Set_8(0x1B003 , 0);
-		Set_8(0x1B004 , 0);
-		Set_8(0x1B005 , 0);
-		Set_8(0x1B006 , 0);
-		Set_8(0x1B007 , 0);
-		Set_8(0x1B008 , 0);
-		Set_8(0x1B009 , 0);
-		Set_8(0x1B00A , 0);
-		Set_8(0x1B00B , 0);
-		Set_8(0x1B00C , 0);
-		Set_8(0x1B00D , 0);
-		Set_8(0x1B00E , 0);
-		Set_8(0x1B00F , 0);
-#endif
-#if 1
-		// Init I/O LH5810 memory
-		Set_8(0x1F000 , 0);
-		Set_8(0x1F001 , 0);
-		Set_8(0x1F002 , 0);
-		Set_8(0x1F003 , 0);
-		Set_8(0x1F004 , 0);
-		Set_8(0x1F005 , 0);
-		Set_8(0x1F006 , 0);
-		Set_8(0x1F007 , 0);
-		Set_8(0x1F008 , 0);
-		Set_8(0x1F009 , 0);
-		Set_8(0x1F00A , 0);
-		Set_8(0x1F00B , 0);
-		Set_8(0x1F00C , 0);
-		Set_8(0x1F00D , 0);
-		Set_8(0x1F00E , 0);
-		Set_8(0x1F00F , 0);
-#endif
+
 
         pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,72));	publish(pCONNECTOR);
 
@@ -288,6 +251,27 @@ bool Cpc15XX::init(void)				// initialize
 	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");
 	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opb),8,8,this,"LH5810 Port B");
 	WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opc),8,8,this,"LH5810 Port C");
+
+
+#if 1
+        // Init I/O LH5810 memory
+        Set_8(0x1F000 , 0);
+        Set_8(0x1F001 , 0);
+        Set_8(0x1F002 , 0);
+        Set_8(0x1F003 , 0);
+        Set_8(0x1F004 , 0);
+        Set_8(0x1F005 , 0);
+        Set_8(0x1F006 , 0);
+        Set_8(0x1F007 , 0);
+        Set_8(0x1F008 , 0);
+        Set_8(0x1F009 , 0);
+        Set_8(0x1F00A , 0);
+        Set_8(0x1F00B , 0);
+        Set_8(0x1F00C , 0);
+        Set_8(0x1F00D , 0);
+        Set_8(0x1F00E , 0);
+        Set_8(0x1F00F , 0);
+#endif
 
 	return true;
 }
@@ -525,17 +509,28 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 		
     if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
-        bus->setFunc(BUS_WRITEDATA);
+        bus->setWrite(true);
         bus->setAddr(*d);
 //        qWarning()<<QString("write:%1").arg(*d,6,16,QChar('0'));
         bus->setData((quint8)data);
+        bus->setEnable(true);
         manageBus();
-        bus->setFunc(BUS_SLEEP);
+        bus->setEnable(false);
         return false;
     }
 
 	if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
-    if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;	return(1); }
+
+    if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) {
+        bus->setAddr(*d);
+        bus->setData(data);
+        bus->setWrite(true);
+        bus->setEnable(true);
+        manageBus();
+        bus->setEnable(false);
+        ce150_Access = true;
+        return false;
+    }
 	if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
     if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;if (*d==0x1F006) pLH5810->New_L=true;return(1);}	// I/O area(LH5810)
 
@@ -549,39 +544,12 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
 
 	Mem_Mirror(d);
 
-    if (                 (*d<=0x1FFF) )	{ return(EXTENSION_CE161_CHECK); }						// ROM area(0000-3FFF) 16K
-	if ( (*d>=0x2000) && (*d<=0x37FF) )	{ return(EXTENSION_CE161_CHECK | EXTENSION_CE159_CHECK); }	// ROM area(0000-3FFF) 16K
-	if ( (*d>=0x3800) && (*d<=0x3FFF) )	{ return(EXTENSION_CE161_CHECK | EXTENSION_CE159_CHECK | EXTENSION_CE155_CHECK); }		// ROM area(0000-3FFF) 16K
     if ( (*d>=0x4000) && (*d<=0x57FF) )	{ return(1); }										// RAM area(0000-3FFF) 16K
 	if ( (*d>=0x5800) && (*d<=0x67FF) )	{ return(EXTENSION_CE155_CHECK | EXTENSION_CE151_CHECK); }	// RAM area(0000-3FFF) 16K
 	if ( (*d>=0x6800) && (*d<=0x6FFF) )	{ return(EXTENSION_CE155_CHECK); }						// RAM area(0000-3FFF) 16K
-	if ( (*d>=0x7600) && (*d<=0x77FF) ) { pLCDC->SetDirtyBuf(*d-0x7600);return(1);}
-	if ( (*d>=0x7800) && (*d<=0x7FFF) ) { return(1); }										// RAM area(7800-7BFF)
-	if ( (*d>=0x8000) && (*d<=0x9FFF) ) { return(0); }										// RAM area(4000-7FFFF)
-	if ( (*d>=0xA000) && (*d<=0xBFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 
-
-    if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
-        bus->setFunc(BUS_WRITEDATA);
-        bus->setAddr(*d);
-//        qWarning()<<QString("write:%1").arg(*d,6,16,QChar('0'));
-        bus->setData((quint8)data);
-        manageBus();
-        bus->setFunc(BUS_SLEEP);
-        return false;
-    }
-    if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
-    if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) { ce150_Access = true;	return(1); }
-    if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
-    if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;
-										  if (*d==0x1F006) pLH5810->New_L=true;
-										  return(1);}										// I/O area(LH5810)
-
-
-
-
-	return(0);
+    return Cpc15XX::Chk_Adr(d,data);
 }
 
 
@@ -589,31 +557,55 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
 { 
     Q_UNUSED(data)
 
-	Mem_Mirror(d);
-	if (*d == 0x4000) AddLog(LOG_MASTER,tr("read 0x04000"));
-	if (*d == 0x4001) AddLog(LOG_MASTER,tr("read 0x04001"));
+    Mem_Mirror(d);
+
 
     if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
-        bus->setFunc(BUS_READDATA);
+        bus->setWrite(false);
         bus->setAddr(*d);
         bus->setData(0xfe);
+        bus->setEnable(true);
         manageBus();
-        if (bus->getFunc()==BUS_ACK) {
-            *data = bus->getData();
-            bus->setFunc(BUS_SLEEP);
-            return false;
-        }
-        return true;
+        *data = bus->getData();
+        bus->setEnable(false);
+        return false;
     }
 
-    if ( (*d>=0x1B000) && (*d<=0x1B00F) ) {	ce150_Access = true;	return(1);	}
+    if ( (*d>=0x1B000) && (*d<=0x1B00F) ) {
+        bus->setAddr(*d);
+        bus->setData(0xff);
+        bus->setWrite(false);
+        bus->setEnable(true);
+        manageBus();
+        *data = bus->getData();
+//        qWarning()<<"Query CE-150 bis:"<<bus->toLog();
+        bus->setEnable(false);
+
+        ce150_Access = true;
+        return false;
+    }
     if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {	lh5810_Access = true;	return(1);	}
 
-	if ( (ce150_connected) && (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
-	{ 
-		*d+=0x1A000;
-		return(1); 
+//	if ( (ce150_connected) && (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
+    if ( (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
+    {
+#if 1
+        bus->setWrite(false);
+        bus->setAddr(*d);
+        bus->setData(0xff);
+        bus->setEnable(true);
+        manageBus();
+//        qWarning()<<"Query CE-150:"<<bus->toLog();
+        *data = bus->getData();
+        bus->setEnable(false);
+        return false;
+#else
+        *d+=0x1A000;
+        qWarning()<<"Query ROM:"<<QString("[%1]=%2").arg(*d,4,16,QChar('0')).arg(mem[*d],2,16,QChar('0'));
+        return true;
+#endif
 	}
+
 	return(1); 
 }
 
@@ -745,21 +737,18 @@ void Cpc15XX::Regs_Info(UINT8 Type)
 
 bool Cpc15XX::Set_Connector(void)
 {
-#ifdef TEST_BUS
     // transfert busValue to Connector
+
+    bus->setPU(((CLH5801 *)pCPU)->lh5801.pu);
+    bus->setPV(((CLH5801 *)pCPU)->lh5801.pv);
     pCONNECTOR->Set_values(bus->toUInt64());
-#else
-	pCONNECTOR->Set_pin(1	,0);
-#endif
+
     return true;
 }
 bool Cpc15XX::Get_Connector(void)
 {
-#ifdef TEST_BUS
     bus->fromUInt64(pCONNECTOR->Get_values());
-#else
-	ce150_connected = pCONNECTOR->Get_pin(1);	
-#endif
+    bus->setEnable(false);
 
     return true;
 }
@@ -779,9 +768,7 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	INT FROM connector to IRQ
 	////////////////////////////////////////////////////////////////////
-#ifndef TEST_BUS
-	IRQ = pPC->pCONNECTOR->Get_pin(30);
-#endif
+    IRQ= ((Cpc15XX*)pPC)->bus->getINT();
 
 	////////////////////////////////////////////////////////////////////
 	//	Send Data to PD1990AC -- TIMER

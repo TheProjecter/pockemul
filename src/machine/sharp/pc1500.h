@@ -20,7 +20,7 @@
 #include "ce152.h"
 
 class CPD1990AC;
-class Cbus;
+class CbusPc1500;
 
 class CLH5810_PC1500:public CLH5810{
     Q_OBJECT
@@ -81,7 +81,7 @@ public:
 
 	CLH5810_PC1500	*pLH5810;
 	Cce152_PC15XX	*pce152;
-    Cbus        *bus;
+    CbusPc1500        *bus;
 	
 	bool		lh5810_Access;
 	bool		ce150_connected;

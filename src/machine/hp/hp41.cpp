@@ -663,24 +663,28 @@ void Chp41::exec_perph_printer(void)
               qWarning() << QString("print:%1").arg(((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0] ),4,16,QChar('0'));
         quint8 c= (hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0];
 //        qWarning()<<"print:"<<((hp41cpu->r->C_REG[1] << 4) | hp41cpu->r->C_REG[0]);
-        bus[fPrinter]->setFunc(BUS_WRITEDATA);
+        bus[fPrinter]->setWrite(true);
         bus[fPrinter]->setData(c);
+        bus[fPrinter]->setEnable(true);
         manageBus();
+        bus[fPrinter]->setEnable(false);
         break;
     }
     case 0x03a:       /* RPREG 0 or C=STATUS */
     {
         if ( (fPrinter<0) || (fPrinter >3)) break;
 
-        bus[fPrinter]->setFunc(BUS_READDATA);
+        bus[fPrinter]->setWrite(false);
         bus[fPrinter]->setAddr(0x3a);
+        bus[fPrinter]->setEnable(true);
         manageBus();
         quint8 ret1 = bus[fPrinter]->getData();
 //        qWarning()<<"Get Printer Status1:"<<ret1;
-        bus[fPrinter]->setFunc(BUS_READDATA);
+        bus[fPrinter]->setWrite(false);
         bus[fPrinter]->setAddr(0x3b);
         manageBus();
         quint8 ret2 = bus[fPrinter]->getData();
+        bus[fPrinter]->setEnable(false);
 //        qWarning()<<"Get Printer Status2:"<<ret2;
 
         UINT16 PRINT_STATUS= (ret1<<8) | ret2;
@@ -833,6 +837,7 @@ bool Chp41::Get_Connector(void) {
     for (int i=0;i<4;i++) {
         bus[i]->fromUInt64(pConnector[i]->Get_values());
     }
+    return true;
 }
 
 bool Chp41::Set_Connector(void) {
@@ -840,6 +845,7 @@ bool Chp41::Set_Connector(void) {
     for (int i=0;i<4;i++) {
         pConnector[i]->Set_values(bus[i]->toUInt64());
     }
+    return true;
 }
 
 bool Chp41::InitDisplay(void)

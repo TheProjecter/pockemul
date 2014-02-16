@@ -7,7 +7,7 @@
 #include "common.h"
 #include "ce1560.h"
 #include "Lcdc_ce1560.h"
-#include "bus.h"
+#include "buspc1500.h"
 
 Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
 {
@@ -36,7 +36,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     pTIMER		= new Ctimer(this);
 //    pKEYB		= new Ckeyb(this,"ce150.map");
 
-    bus = new Cbus();
+    bus = new CbusPc1500();
 
     for (int i=0;i<3;i++) ps6b0108[i]  = new CS6B0108(this);
 
@@ -67,10 +67,10 @@ bool Cce1560::run(void)
 {
     bus->fromUInt64(pCONNECTOR->Get_values());
 
-    if (bus->getFunc()==BUS_SLEEP) return true;
+    if (!bus->isEnable()) return true;
 
 
-    if (bus->getFunc() == BUS_WRITEDATA) {
+    if (bus->isWrite()) {
         quint8 module = (bus->getAddr() >> 1 ) & 0x03;
         quint8 reg = (bus->getAddr()&0x07) - (module*2);
 
@@ -78,12 +78,12 @@ bool Cce1560::run(void)
 //        qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;
 
         ps6b0108[module]->instruction(cmd);
-        bus->setFunc(BUS_SLEEP);
+//        bus->setFunc(BUS_SLEEP);
     }
-    else if (bus->getFunc() == BUS_READDATA) {
+    else {
         qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
         bus->setData(0x10);
-        bus->setFunc(BUS_ACK);
+//        bus->setFunc(BUS_ACK);
     }
 
 

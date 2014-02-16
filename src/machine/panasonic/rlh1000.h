@@ -2,7 +2,7 @@
 #define RLH1000_H
 
 #include "pcxxxx.h"
-#include "bus.h"
+#include "buspanasonic.h"
 
 class Cm6502;
 
@@ -49,7 +49,7 @@ public slots:
     void addModule(QString item, CPObject *pPC);
 
 private:
-    Cbus *bus;
+    CbusPanasonic *bus;
     quint8 latchByte;
     quint8 timercnt1,timercnt2,timercnt3;
     int currentSlot;

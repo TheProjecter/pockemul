@@ -83,7 +83,7 @@ Crlh1000::Crlh1000(CPObject *parent)	: CpcXXXX(parent)
     extrinsicRAM = 0xff;
     extrinsicROM = 0xff;
 
-    bus = new Cbus();
+    bus = new CbusPanasonic();
     backdoorOpen = false;
     backdoorFlipping = false;
     m_backdoorAngle = 0;

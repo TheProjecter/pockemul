@@ -16,6 +16,7 @@
 #define PEN_DOWN 1
 
 class Cprinter;
+class CbusPc1500;
 
 extern void DoCe150Dialog(void);
 
@@ -47,7 +48,7 @@ public:
 	bool		Print_Mode;
 	bool		needRedraw;
 	Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
-
+    CbusPc1500  *bus;
     CLH5810		*pLH5810;
 
 	bool lh5810_write(void);
@@ -69,7 +70,8 @@ public:
 
 public:
 
-
+protected slots:
+    void contextMenuEvent ( QContextMenuEvent * );
 
 protected:
     bool		Next_Color(void);

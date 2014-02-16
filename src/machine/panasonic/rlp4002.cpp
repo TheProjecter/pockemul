@@ -14,7 +14,7 @@
 #include "paperwidget.h"
 #include "Keyb.h"
 #include "Connect.h"
-#include "bus.h"
+#include "buspanasonic.h"
 #include "cpu.h"
 
 #define DOWN    0
@@ -62,7 +62,7 @@ bool Crlp4002::run(void)
 {
     static quint64 _state=0;
 
-    Cbus bus;
+    CbusPanasonic bus;
 
     bus.fromUInt64(pCONNECTOR->Get_values());
 
@@ -110,7 +110,7 @@ bool Crlp4002::run(void)
         return true;
     }
 
-    if ( (bus.getFunc()==BUS_LINE3) && bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE3) && bus.isWrite() ) {
 
         commandReg = bus.getData();
 
@@ -124,7 +124,7 @@ bool Crlp4002::run(void)
         bus.setFunc(BUS_ACK);
     }
 
-    if ( (bus.getFunc()==BUS_LINE3) && !bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE3) && !bus.isWrite() ) {
         // Status register ???
 //        if (connected)
             statusReg = 0x30;
@@ -142,20 +142,20 @@ bool Crlp4002::run(void)
         return true;
     }
 
-    if ( (bus.getFunc()==BUS_LINE0) && bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE0) && bus.isWrite() ) {
         // Analyse command
         controlReg = bus.getData();
         qWarning()<<"Control Register set: "<<controlReg;
 
         bus.setFunc(BUS_ACK);
     }
-    if ( (bus.getFunc()==BUS_LINE0) && !bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE0) && !bus.isWrite() ) {
         qWarning()<<"Read data LINE 0:";
         bus.setFunc(BUS_ACK);
     }
 
 
-    if ( (bus.getFunc()==BUS_LINE1) && bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE1) && bus.isWrite() ) {
         bus.setFunc(BUS_ACK);
 
 
@@ -182,7 +182,7 @@ bool Crlp4002::run(void)
         }
     }
 
-    if ( (bus.getFunc()==BUS_LINE1) && !bus.getWrite() ) {
+    if ( (bus.getFunc()==BUS_LINE1) && !bus.isWrite() ) {
 
         outputReg = 0;
         if (xon && !inBuffer.isEmpty()) {

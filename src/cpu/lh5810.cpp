@@ -26,7 +26,7 @@ CLH5810::~CLH5810(){			//[destructor]
 }
 
 
-bool	CLH5810::init(void){return true;}					//initialize
+bool	CLH5810::init(void){Reset(); return true;}					//initialize
 bool	CLH5810::exit(void){return true;}						//end
 void	CLH5810::Load_Internal(QFile *file){
     char t[16];

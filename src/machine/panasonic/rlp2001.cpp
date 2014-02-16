@@ -8,7 +8,7 @@
 #include "Connect.h"
 #include "Keyb.h"
 #include "rlp2001.h"
-#include "bus.h"
+#include "buspanasonic.h"
 
 Crlp2001::Crlp2001(CPObject *parent)   : CPObject(this)
 {                                                       //[constructor]

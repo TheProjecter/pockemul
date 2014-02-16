@@ -12,7 +12,7 @@
 
 #include "s6b0108.h"
 
-class Cbus;
+class CbusPc1500;
 
 class Cce1560:public CpcXXXX{
 public:
@@ -26,7 +26,7 @@ public:
     virtual bool		exit(void);
 
     Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
-    Cbus    *bus;
+    CbusPc1500    *bus;
 
     CS6B0108 *ps6b0108[4];
 

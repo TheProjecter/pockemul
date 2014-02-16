@@ -10,7 +10,7 @@
 #include "clink.h"
 //#include "rlh1000.h"
 #include "Connect.h"
-#include "bus.h"
+#include "buspanasonic.h"
 #include "Inter.h"
 #include "cpu.h"
 
@@ -45,7 +45,7 @@ bool Crlp6001::run(void)
 {
 //    if (!_log) _log=fopen("bus.log","wt");	// Open log file
 
-    Cbus bus;
+    CbusPanasonic bus;
     bus.fromUInt64(pMAINCONNECTOR->Get_values());
     if (bus.getFunc()==BUS_SLEEP) return true;
 
@@ -58,7 +58,7 @@ bool Crlp6001::run(void)
         if ( bus.getFunc()==BUS_QUERY) {
 //            qWarning()<<"BUS_QUERY on Dest 30";
             for (int i=0; i<5;i++) {
-                Cbus _b(0,BUS_QUERY,0);
+                CbusPanasonic _b(0,BUS_QUERY,0);
                 pEXTCONNECTOR[i]->Set_values(_b.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
                 _b.fromUInt64(pEXTCONNECTOR[i]->Get_values());
@@ -76,7 +76,7 @@ bool Crlp6001::run(void)
             for (int i=0; i<5;i++) {
                 pEXTCONNECTOR[i]->Set_values(bus.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
-                Cbus _b;
+                CbusPanasonic _b;
                 _b.fromUInt64(pEXTCONNECTOR[i]->Get_values());
                 if (_b.getFunc()==BUS_READDATA) {
 //                    qWarning()<<"EXT ROM POWER ON";
@@ -93,7 +93,7 @@ bool Crlp6001::run(void)
                 bus.setData(0xff);
                 pEXTCONNECTOR[i]->Set_values(bus.toUInt64());
                 mainwindow->pdirectLink->outConnector(pEXTCONNECTOR[i]);
-                Cbus _b;
+                CbusPanasonic _b;
                 _b.fromUInt64(pEXTCONNECTOR[i]->Get_values());
                 if(pTIMER->pPC->pCPU->fp_log) fprintf(pTIMER->pPC->pCPU->fp_log,"EXT ROM DATA READ:(%i) = %02x",i,_b.getData());
 
