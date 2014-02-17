@@ -125,8 +125,8 @@ bool Cce150::init(void)
     CPObject::init();
 
     setfrequency( 0);
-    pCONNECTOR	 = new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(465,72));	publish(pCONNECTOR);
-    pEXTCONNECTOR= new Cconnector(this,60,1,Cconnector::Sharp_60,"Connector 60 pins Ext",true,QPoint(565,0));	publish(pEXTCONNECTOR);
+    pCONNECTOR	 = new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(465,72),Cconnector::EAST);	publish(pCONNECTOR);
+    pEXTCONNECTOR= new Cconnector(this,60,1,Cconnector::Sharp_60,"Connector 60 pins Ext",false,QPoint(565,0),Cconnector::NORTH);	publish(pEXTCONNECTOR);
 
     WatchPoint.add(&pCONNECTOR_value,64,60,this,"Standard 60pins connector");
     WatchPoint.add((qint64 *) &(pLH5810->lh5810.r_opa),8,8,this,"LH5810 Port A");

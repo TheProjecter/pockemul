@@ -71,19 +71,17 @@ bool Cce1560::run(void)
 
     if (bus->isME1() && (bus->getAddr()<=0x000F))
     {
-
+        quint8 module = (bus->getAddr() >> 1 ) & 0x03;
+        quint8 reg = (bus->getAddr()&0x07) - (module*2);
         if (bus->isWrite()) {
-            quint8 module = (bus->getAddr() >> 1 ) & 0x03;
-            quint8 reg = (bus->getAddr()&0x07) - (module*2);
-
-            quint16 cmd = ((reg==0)? 0x0 : 0x100) | bus->getData();
+            quint16 cmd = ((reg==0)? 0x00 : 0x100) | bus->getData()  ;
 //                    qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;
-
             ps6b0108[module]->instruction(cmd);
         }
         else {
             qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
-            bus->setData(0x10);
+            quint16 cmd = ((reg==0)? 0x200 : 0x300);// | bus->getData();
+            bus->setData(ps6b0108[module]->instruction(cmd));
         }
 
     }

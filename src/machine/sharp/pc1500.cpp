@@ -241,7 +241,15 @@ bool Cpc15XX::init(void)				// initialize
 	
 
 
-        pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,72));	publish(pCONNECTOR);
+        pCONNECTOR	= new Cconnector(this,
+                                     60,
+                                     0,
+                                     Cconnector::Sharp_60,
+                                     "Connector 60 pins",
+                                     false,
+                                     QPoint(0,72),
+                                     Cconnector::WEST);
+        publish(pCONNECTOR);
 
 	WatchPoint.remove(this);
 	
