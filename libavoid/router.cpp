@@ -63,41 +63,41 @@ class ActionInfo {
               newPoly(p),
               firstMove(fM)
         {
-            COLA_ASSERT(type == ShapeMove);
+//            COLA_ASSERT(type == ShapeMove);
         }
         ActionInfo(ActionType t, ShapeRef *s)
             : type(t),
               objPtr(s)
 
         {
-            COLA_ASSERT((type == ShapeAdd) || (type == ShapeRemove) ||
-                    (type == ShapeMove));
+//            COLA_ASSERT((type == ShapeAdd) || (type == ShapeRemove) ||
+//                    (type == ShapeMove));
         }
         ActionInfo(ActionType t, JunctionRef *j, const Point& p)
             : type(t),
               objPtr(j),
               newPosition(p)
         {
-            COLA_ASSERT(type == JunctionMove);
+//            COLA_ASSERT(type == JunctionMove);
         }
         ActionInfo(ActionType t, JunctionRef *j)
             : type(t),
               objPtr(j)
         {
-            COLA_ASSERT((type == JunctionAdd) || (type == JunctionRemove) ||
-                    (type == JunctionMove));
+//            COLA_ASSERT((type == JunctionAdd) || (type == JunctionRemove) ||
+//                    (type == JunctionMove));
         }
         ActionInfo(ActionType t, ConnRef *c)
             : type(t),
               objPtr(c)
         {
-            COLA_ASSERT(type == ConnChange);
+//            COLA_ASSERT(type == ConnChange);
         }
         ActionInfo(ActionType t, ShapeConnectionPin *p)
             : type(t),
               objPtr(p)
         {
-            COLA_ASSERT(type == ConnectionPinChange);
+//            COLA_ASSERT(type == ConnectionPinChange);
         }
         ~ActionInfo()
         {

@@ -1,6 +1,11 @@
 #include <QtGui>
-#include <QtWidgets>
 
+#if QT_VERSION >= 0x050000
+#   include <QtWidgets>
+#else
+#   include <QtCore>
+#   include <QtGui>
+#endif
 //FIXME: JPC not working
 
 #include "parser/parser.h"

@@ -40,7 +40,11 @@
  ****************************************************************************/
 
  #include <QXmlStreamReader>
-#include <QtConcurrent/QtConcurrent>
+#if QT_VERSION >= 0x050000
+#   include <QtConcurrent/QtConcurrent>
+#else
+
+#endif
 
  #include "fluidlauncher.h"
 #include "init.h"

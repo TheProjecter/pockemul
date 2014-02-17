@@ -226,7 +226,7 @@ void VertInf::removeFromGraph(const bool isConnVert)
 {
     if (isConnVert)
     {
-        COLA_ASSERT(id.isConnPt());
+//        COLA_ASSERT(id.isConnPt());
     }
 
     // For each vertex.
@@ -271,7 +271,7 @@ unsigned int VertInf::pathLeadsBackTo(const VertInf *start) const
         }
 
         // Check we don't have an apparent infinite connector path.
-        COLA_ASSERT(pathlen < 20000);
+//        COLA_ASSERT(pathlen < 20000);
     }
     return pathlen;
 }
@@ -288,7 +288,7 @@ bool directVis(VertInf *src, VertInf *dst)
 
     // We better be part of the same instance of libavoid.
     Router *router = src->_router;
-    COLA_ASSERT(router == dst->_router);
+//    COLA_ASSERT(router == dst->_router);
 
     ContainsMap& contains = router->contains;
     if (pID.isConnPt())

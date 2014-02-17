@@ -99,7 +99,7 @@ bool operator<(const ANode &a, const ANode &b)
         // then we always try to explore forward first.
         return a.timeStamp < b.timeStamp;
     }
-    COLA_ASSERT(a.prevIndex != b.prevIndex);
+//    COLA_ASSERT(a.prevIndex != b.prevIndex);
     return a.prevIndex > b.prevIndex;
 }
 

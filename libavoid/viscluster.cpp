@@ -37,7 +37,7 @@ ClusterRef::ClusterRef(Router *router, unsigned int id, Polygon& polygon)
     , m_rectangular_polygon(m_polygon.boundingRect())
     , m_active(false)
 {
-    COLA_ASSERT(m_router != NULL);
+//    COLA_ASSERT(m_router != NULL);
     m_id = m_router->assignId(id);
 }
 
@@ -49,7 +49,7 @@ ClusterRef::~ClusterRef()
 
 void ClusterRef::makeActive(void)
 {
-    COLA_ASSERT(!m_active);
+//    COLA_ASSERT(!m_active);
     
     // Add to clusterRefs list.
     m_clusterrefs_pos = m_router->clusterRefs.insert(
@@ -61,7 +61,7 @@ void ClusterRef::makeActive(void)
 
 void ClusterRef::makeInactive(void)
 {
-    COLA_ASSERT(m_active);
+//    COLA_ASSERT(m_active);
     
     // Remove from clusterRefs list.
     m_router->clusterRefs.erase(m_clusterrefs_pos);

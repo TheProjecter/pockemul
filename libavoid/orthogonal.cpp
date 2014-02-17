@@ -485,7 +485,7 @@ int compare_events(const void *a, const void *b)
     {
         return ea->type - eb->type;
     }
-    COLA_ASSERT(ea->v != eb->v);
+//    COLA_ASSERT(ea->v != eb->v);
     return ea->v - eb->v;
 }
 
@@ -598,7 +598,7 @@ struct CmpVertInf
         // It is assumed vertical sets of points will all have the same
         // x position and horizontal sets all share a y position, so this
         // method can be used to sort both these sets.
-        COLA_ASSERT((u->point.x == v->point.x) || (u->point.y == v->point.y));
+//        COLA_ASSERT((u->point.x == v->point.x) || (u->point.y == v->point.y));
         if (u->point.x != v->point.x)
         {
             return u->point.x < v->point.x;
@@ -630,7 +630,7 @@ public:
           pos(p),
           shapeSide(false)
     {
-        COLA_ASSERT(begin < finish);
+//        COLA_ASSERT(begin < finish);
 
         if (bvi)
         {

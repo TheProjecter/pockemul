@@ -45,7 +45,11 @@
 #include <QAction>
 #include <QPointer>
 #include <QPainter>
-#include <QtPrintSupport/QPrinter>
+#if QT_VERSION >= 0x050000
+#   include <QtPrintSupport/QPrinter>
+#else
+#   include <QPrinter>
+#endif
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QFileInfo>

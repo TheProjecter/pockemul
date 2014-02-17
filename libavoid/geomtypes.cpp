@@ -36,7 +36,7 @@
 namespace Avoid
 {
 
-    
+
 Point::Point() :
     id(0),
     vn(kUnassignedVertexNumber)

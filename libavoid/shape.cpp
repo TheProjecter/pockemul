@@ -54,7 +54,7 @@ void ShapeRef::moveAttachedConns(const Polygon& newPoly)
             curr != m_following_conns.end(); ++curr)
     {
         ConnEnd *connEnd = *curr;
-        COLA_ASSERT(connEnd->m_conn_ref != NULL);
+//        COLA_ASSERT(connEnd->m_conn_ref != NULL);
         m_router->modifyConnector(connEnd->m_conn_ref, connEnd->type(), 
                 *connEnd);
     }

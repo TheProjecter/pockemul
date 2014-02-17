@@ -45,7 +45,7 @@ Obstacle::Obstacle(Router *router, Polygon ply, const unsigned int id)
       m_first_vert(NULL),
       m_last_vert(NULL)
 {
-    COLA_ASSERT(m_router != NULL);
+//    COLA_ASSERT(m_router != NULL);
     m_id = m_router->assignId(id);
 
     VertID i = VertID(m_id, 0);

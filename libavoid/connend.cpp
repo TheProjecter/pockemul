@@ -38,7 +38,7 @@
 
 namespace Avoid {
 
-    
+
 ConnEnd::ConnEnd(const Point& point) 
     : m_point(point),
       m_directions(ConnDirAll),

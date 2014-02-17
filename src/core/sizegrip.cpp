@@ -46,6 +46,7 @@
 // Qt4 code
 #   include <QtCore>
 #   include <QtGui>
+#   include <QWidget>
 #endif
 #include <QAbstractScrollArea>
 
@@ -263,6 +264,7 @@ void CSizeGrip::mousePressEvent(QMouseEvent * e)
     }
 #endif // Q_WS_X11
 #ifdef Q_WS_WIN
+    #if QT_VERSION >= 0x050000
     if (tlw->isWindow() && !tlw->testAttribute(Qt::WA_DontShowOnScreen) && !qt_widget_private(tlw)->hasHeightForWidth()) {
         uint orientation = 0;
         if (atBottom())
@@ -274,6 +276,7 @@ void CSizeGrip::mousePressEvent(QMouseEvent * e)
         PostMessage(tlw->winId(), WM_SYSCOMMAND, orientation, 0);
         return;
     }
+#endif
 #endif // Q_WS_WIN
 
     // Find available desktop/workspace geometry.
@@ -357,12 +360,14 @@ void CSizeGrip::mouseMoveEvent(QMouseEvent * e)
         return;
 #endif
 #ifdef Q_WS_WIN
+    #if QT_VERSION >= 0x050000
     if (tlw->isWindow() && GetSystemMenu(tlw->winId(), FALSE) != 0 && internalWinId()
         && !tlw->testAttribute(Qt::WA_DontShowOnScreen) && !qt_widget_private(tlw)->hasHeightForWidth()) {
         MSG msg;
         while(PeekMessage(&msg, winId(), WM_MOUSEMOVE, WM_MOUSEMOVE, PM_REMOVE));
         return;
     }
+#endif
 #endif
 
     QPoint np(e->globalPos());
