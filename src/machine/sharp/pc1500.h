@@ -47,6 +47,7 @@ class Cpc15XX:public CpcXXXX{
 
 Q_OBJECT
 
+
 public:
     const char*	GetClassName(){ return("Cpc15XX");}
 
@@ -68,9 +69,11 @@ public:
 
 	void	Regs_Info(UINT8 Type);
 
+    void writeBus(UINT32 *d, UINT32 data);
+    void readBus(UINT32 *d, UINT32 *data);
 
-	bool		lh5810_write(void);
-	bool		lh5810_read(void);
+    bool		lh5810_write(UINT32 d, UINT32 data);
+    quint8		lh5810_read(UINT32 d);
 
 	virtual bool		Chk_Adr(UINT32 *d,UINT32 data);
     virtual bool		Chk_Adr_R(UINT32 *d, UINT32 *data);
@@ -84,8 +87,7 @@ public:
     CbusPc1500        *bus;
 	
 	bool		lh5810_Access;
-	bool		ce150_connected;
-	bool		ce150_Access;
+    bool		ce150_connected;
 
 	void		InitCE150(void);
 	
@@ -95,6 +97,7 @@ public:
 	Cpc15XX(CPObject *parent = 0);
 
     virtual ~Cpc15XX();
+
 
 protected slots:
 	void contextMenuEvent ( QContextMenuEvent * event );

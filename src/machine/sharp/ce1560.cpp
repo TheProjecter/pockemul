@@ -69,24 +69,25 @@ bool Cce1560::run(void)
 
     if (!bus->isEnable()) return true;
 
+    if (bus->isME1() && (bus->getAddr()<=0x000F))
+    {
 
-    if (bus->isWrite()) {
-        quint8 module = (bus->getAddr() >> 1 ) & 0x03;
-        quint8 reg = (bus->getAddr()&0x07) - (module*2);
+        if (bus->isWrite()) {
+            quint8 module = (bus->getAddr() >> 1 ) & 0x03;
+            quint8 reg = (bus->getAddr()&0x07) - (module*2);
 
-        quint16 cmd = ((reg==0)? 0x0 : 0x100) | bus->getData();
-//        qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;
+            quint16 cmd = ((reg==0)? 0x0 : 0x100) | bus->getData();
+//                    qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;
 
-        ps6b0108[module]->instruction(cmd);
-//        bus->setFunc(BUS_SLEEP);
+            ps6b0108[module]->instruction(cmd);
+        }
+        else {
+            qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
+            bus->setData(0x10);
+        }
+
     }
-    else {
-        qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
-        bus->setData(0x10);
-//        bus->setFunc(BUS_ACK);
-    }
-
-
+    bus->setEnable(false);
     pCONNECTOR->Set_values(bus->toUInt64());
 
     return true;

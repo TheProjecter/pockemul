@@ -73,7 +73,6 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 
     SoundOn			= false;
     lh5810_Access	= false;
-    ce150_Access	= false;
 
 	pLCDC		= new Clcdc_pc1500(this);
     pCPU		= new CLH5801(this); pCPU->logsw=false;
@@ -202,7 +201,7 @@ bool Cpc15XX::InitDisplay(void)
 bool Cpc15XX::LoadConfig(QXmlStreamReader *xmlIn)
 {
     Q_UNUSED(xmlIn)
-
+    pLH5810->Load_Internal(xmlIn);
     return true;
 }
 
@@ -229,7 +228,7 @@ bool Cpc15XX::SaveConfig(QFile *file)
 bool Cpc15XX::SaveConfig(QXmlStreamWriter *xmlOut)
 {
     Q_UNUSED(xmlOut)
-
+    pLH5810->save_internal(xmlOut);
     return true;
 }
 
@@ -296,10 +295,9 @@ bool Cpc15XX::run(void)
     if (pKEYB->Kon) lh5810_Access = true;
 
 	if (lh5810_Access)
-	{
-		lh5810_write();
+    {
 		pLH5810->step();
-		lh5810_read();
+        pKEYB->Set_KS(lh5810_read(0x1F00C));
         lh5810_Access = false;
 	}
 
@@ -421,46 +419,50 @@ void Cpc15XX::ReadQuarterTape(void)
 }
 
 
-INLINE bool Cpc15XX::lh5810_write(void)
+INLINE bool Cpc15XX::lh5810_write(UINT32 d, UINT32 data)
 {
 //	AddLog(LOG_FUNC,"Cpc1500::lh5810_write");
 
+    switch (d) {
+    case 0x1F004: pLH5810->SetReg(CLH5810::RESET,	data); break;
+    case 0x1F005: pLH5810->SetReg(CLH5810::U,		data); break;
+    case 0x1F006: pLH5810->SetReg(CLH5810::L,		data); break;
+    case 0x1F008: pLH5810->SetReg(CLH5810::OPC,     data); break;
+    case 0x1F009: pLH5810->SetReg(CLH5810::G  ,     data); break;
+    case 0x1F00A: pLH5810->SetReg(CLH5810::MSK,     data); break;
+    case 0x1F00B: pLH5810->SetReg(CLH5810::IF ,     data); break;
+    case 0x1F00C: pLH5810->SetReg(CLH5810::DDA,     data); break;
+    case 0x1F00D: pLH5810->SetReg(CLH5810::DDB,     data); break;
+    case 0x1F00E: pLH5810->SetReg(CLH5810::OPA,     data); break;
+    case 0x1F00F: pLH5810->SetReg(CLH5810::OPB,     data); break;
+    default: break;
+    }
 
-    pLH5810->SetReg(CLH5810::RESET,	Get_8(0x1F004));
-    pLH5810->SetReg(CLH5810::U,		Get_8(0x1F005));
-    pLH5810->SetReg(CLH5810::L,		Get_8(0x1F006));
-    pLH5810->SetReg(CLH5810::OPC,	Get_8(0x1F008));
-    pLH5810->SetReg(CLH5810::G  ,	Get_8(0x1F009));
-    pLH5810->SetReg(CLH5810::MSK,	Get_8(0x1F00A));
-    pLH5810->SetReg(CLH5810::IF ,	Get_8(0x1F00B));
-    pLH5810->SetReg(CLH5810::DDA,	Get_8(0x1F00C));
-    pLH5810->SetReg(CLH5810::DDB,	Get_8(0x1F00D));
-    pLH5810->SetReg(CLH5810::OPA,	Get_8(0x1F00E));
-    pLH5810->SetReg(CLH5810::OPB,	Get_8(0x1F00F));
-
-	return(1);
+    return true;
 }
 
-INLINE bool Cpc15XX::lh5810_read(void)
+INLINE quint8 Cpc15XX::lh5810_read(UINT32 d)
 {
 //	AddLog(LOG_FUNC,"Cpc1500::lh5810_read");
 
+    switch (d) {
+    case 0x1F005: return (pLH5810->GetReg(CLH5810::U)); break;
+    case 0x1F006: return (pLH5810->GetReg(CLH5810::L)); break;
 
-    mem[0x1F005] = pLH5810->GetReg(CLH5810::U);
-    mem[0x1F006] = pLH5810->GetReg(CLH5810::L);
+    case 0x1F008: return (pLH5810->GetReg(CLH5810::OPC)); break;
+    case 0x1F009: return (pLH5810->GetReg(CLH5810::G)); break;
+    case 0x1F00A: return (pLH5810->GetReg(CLH5810::MSK)); break;
+    case 0x1F00B: return (pLH5810->GetReg(CLH5810::IF)); break;
+    case 0x1F00C: return (pLH5810->GetReg(CLH5810::DDA)); break;
+    case 0x1F00D: return (pLH5810->GetReg(CLH5810::DDB)); break;
+    case 0x1F00E: return (pLH5810->GetReg(CLH5810::OPA)); break;
+    case 0x1F00F: return (pLH5810->GetReg(CLH5810::OPB)); break;
+    default: break;
+    }
 
-    mem[0x1F008] = pLH5810->GetReg(CLH5810::OPC);
-    mem[0x1F009] = pLH5810->GetReg(CLH5810::G);
-    mem[0x1F00A] = pLH5810->GetReg(CLH5810::MSK);
-    mem[0x1F00B] = pLH5810->GetReg(CLH5810::IF);
-    mem[0x1F00C] = pLH5810->GetReg(CLH5810::DDA);
-    mem[0x1F00D] = pLH5810->GetReg(CLH5810::DDB);
-    mem[0x1F00E] = pLH5810->GetReg(CLH5810::OPA);
-    mem[0x1F00F] = pLH5810->GetReg(CLH5810::OPB);
 
-	pKEYB->Set_KS(Get_8(0x1F00C));
 	
-	return(1);
+    return 0;
 }
 
 bool Cpc15XX::Mem_Mirror(UINT32 *d) 
@@ -486,6 +488,25 @@ inline bool Cpc1500A::Mem_Mirror(UINT32 *d)
 	return(1);
 }
 
+void Cpc15XX::writeBus(UINT32 *d,UINT32 data) {
+    bus->setWrite(true);
+    bus->setAddr(*d);
+    bus->setData((quint8)data);
+    bus->setEnable(true);
+    manageBus();
+    bus->setEnable(false);
+}
+
+void Cpc15XX::readBus(UINT32 *d,UINT32 *data) {
+    bus->setWrite(false);
+    bus->setAddr(*d);
+    bus->setData(0xfe);
+    bus->setEnable(true);
+    manageBus();
+    *data = bus->getData();
+    bus->setEnable(false);
+}
+
 bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data) 
 {
     Q_UNUSED(data)
@@ -503,38 +524,15 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0x7600) && (*d<=0x77FF) ) { pLCDC->SetDirtyBuf(*d-0x7600);return(1);}
 	if ( (*d>=0x7800) && (*d<=0x7BFF) ) { return(1); }										// RAM area(7800-7BFF)
 	if ( (*d>=0x7C00) && (*d<=0x7FFF) ) { return(0); }										// INHIBITED MIRRORING
-	if ( (*d>=0x8000) && (*d<=0x9FFF) ) { return(0); }										// RAM area(4000-7FFFF)
-	if ( (*d>=0xA000) && (*d<=0xBFFF) ) { return(0); }										// RAM area(4000-7FFFF)
-	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
-		
-    if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
-        bus->setWrite(true);
-        bus->setAddr(*d);
-//        qWarning()<<QString("write:%1").arg(*d,6,16,QChar('0'));
-        bus->setData((quint8)data);
-        bus->setEnable(true);
-        manageBus();
-        bus->setEnable(false);
-        return false;
-    }
+    if ( (*d>=0x8000) && (*d<=0xBFFF) ) { writeBus(d,data); return false; }										// RAM area(4000-7FFFF)
+    if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 
-	if ( (*d>=0x18000)&&(*d<=0x1800F) ) { return(1); }
+    if ( (*d>=0x1F000) && (*d<=0x1F00F) ) { lh5810_write(*d,data); lh5810_Access = true; return false; }	// I/O area(LH5810)
 
-    if ( (*d>=0x1B000)&&(*d<=0x1B00F) ) {
-        bus->setAddr(*d);
-        bus->setData(data);
-        bus->setWrite(true);
-        bus->setEnable(true);
-        manageBus();
-        bus->setEnable(false);
-        ce150_Access = true;
-        return false;
-    }
-	if ( (*d>=0x1D000)&&(*d<=0x1D00F) ) { return(1); }
-    if ( (*d>=0x1F000)&&(*d<=0x1F00F) )	{ lh5810_Access = true;if (*d==0x1F006) pLH5810->New_L=true;return(1);}	// I/O area(LH5810)
+    if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { writeBus(d,data); return false; }
 
 	// else it's ROM
-	return(0);
+    return false;
 }
 
 bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data) 
@@ -558,47 +556,22 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
 
     Mem_Mirror(d);
 
-
-    if ( (*d>=0x10000)&&(*d<=0x1000F) ) {
-        bus->setWrite(false);
-        bus->setAddr(*d);
-        bus->setData(0xfe);
-        bus->setEnable(true);
-        manageBus();
-        *data = bus->getData();
-        bus->setEnable(false);
-        return false;
-    }
-
-    if ( (*d>=0x1B000) && (*d<=0x1B00F) ) {
-        bus->setAddr(*d);
-        bus->setData(0xff);
-        bus->setWrite(false);
-        bus->setEnable(true);
-        manageBus();
-        *data = bus->getData();
-//        qWarning()<<"Query CE-150 bis:"<<bus->toLog();
-        bus->setEnable(false);
-
-        ce150_Access = true;
-        return false;
-    }
-    if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {	lh5810_Access = true;	return(1);	}
-
-    if ( (*d>=0xA000) && (*d<=0xBFFF) &&  (((CLH5801 *)pCPU)->lh5801.pv==0) )
+    if ( (*d>=0x8000) && (*d<=0xBFFF) )
     {
-        bus->setWrite(false);
-        bus->setAddr(*d);
-        bus->setData(0xff);
-        bus->setEnable(true);
-        manageBus();
-//        qWarning()<<"Query CE-150:"<<bus->toLog();
-        *data = bus->getData();
-        bus->setEnable(false);
+        readBus(d,data);
         return false;
-	}
+    }
 
-	return(1); 
+    if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {
+        lh5810_Access = true;
+        *data = lh5810_read(*d);
+        return false;
+    }
+
+    if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { readBus(d,data); return false; }
+
+
+    return true ;
 }
 
  

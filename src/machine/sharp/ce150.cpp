@@ -180,7 +180,7 @@ INLINE bool Cce150::lh5810_read(void)
     case 0xB00B: bus->setData( pLH5810->GetReg(CLH5810::IF)); break;
     case 0xB00C: bus->setData( pLH5810->GetReg(CLH5810::DDA)); break;
     case 0xB00D: bus->setData( pLH5810->GetReg(CLH5810::DDB)); break;
-    case 0xB00E: bus->setData( pLH5810->GetReg(CLH5810::CLH5810::OPA)); break;
+    case 0xB00E: bus->setData( pLH5810->GetReg(CLH5810::OPA)); break;
     case 0xB00F: bus->setData( pLH5810->GetReg(CLH5810::OPB)); break;
     default: /*bus->setData(0x00);*/ break;
     }
@@ -209,6 +209,8 @@ bool Cce150::run(void)
 
     bus->fromUInt64(pCONNECTOR->Get_values());
 
+    if (!bus->isEnable()) return true;
+
     ////////////////////////////////////////////////////////////////////
     //	VOLTAGE OK :-)
     //////////////////////////////////////////////////////////////////
@@ -235,22 +237,24 @@ bool Cce150::run(void)
     else
         pLH5810->SetRegBit(CLH5810::OPB,7,false);
 
-
-//    if (!bus->isEnable()) return true;
-#if 1
     quint16 addr = bus->getAddr();
 
     if (bus->isEnable() &&
         !bus->isME1() &&
+        !bus->isPV() &&
         !bus->isWrite() &&
         (addr >=0xA000) && (addr < 0xC000) )
     {
         bus->setData(mem[addr - 0xA000]);
         forwardBus = false;
-//        qWarning()<<"CE15O READ:"<<bus->getData();
     }
-#endif
-    if (bus->isEnable() && bus->isME1() && (addr >= 0xb000) && (addr <= 0xb00f) && (bus->isWrite()) ) {
+
+    if (bus->isEnable() &&
+        bus->isME1() &&
+        (addr >= 0xb000) &&
+        (addr <= 0xb00f) &&
+        (bus->isWrite()) )
+    {
         lh5810_write();
         forwardBus = false;
     }
@@ -318,6 +322,7 @@ bool Cce150::run(void)
 	{
  		if (Pen_Status==PEN_DOWN) 
 		{
+//            qWarning()<<"PEN UP";
             has_moved=true;
 			Pen_Status = PEN_UP;
 //			AddLog(LOG_PRINTER,"PEN UP");
@@ -331,7 +336,7 @@ bool Cce150::run(void)
 	{
 		if (Pen_Status==PEN_UP) 
 		{
-
+//            qWarning()<<"PEN DOWN";
             has_moved=true;
 			Pen_Status = PEN_DOWN;
 //			AddLog(LOG_PRINTER,"PEN DOWN");
@@ -369,6 +374,7 @@ bool Cce150::run(void)
         bus->fromUInt64(pEXTCONNECTOR->Get_values());
     }
 
+    bus->setEnable(false);
     pCONNECTOR->Set_values(bus->toUInt64());
 	return(1);
 }
@@ -377,7 +383,7 @@ bool Cce150::Next_Color(void)
 {
 	Pen_Color++;
 	Change_Color = true;
-	if (Pen_Color == 4)
+    if (Pen_Color > 3)
 	{
 		Pen_Color = 0;
         return(true);
@@ -411,7 +417,7 @@ void Cce150::Print(void)
     //pPC->Refresh_Display = true;
 	
 	if (Pen_Status==PEN_DOWN)
-	{
+    {
 		painter.begin(ce150buf);
 		switch (Pen_Color)
 		{
