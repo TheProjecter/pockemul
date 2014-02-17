@@ -443,8 +443,6 @@ INLINE bool Cpc15XX::lh5810_write(UINT32 d, UINT32 data)
 
 INLINE quint8 Cpc15XX::lh5810_read(UINT32 d)
 {
-//	AddLog(LOG_FUNC,"Cpc1500::lh5810_read");
-
     switch (d) {
     case 0x1F005: return (pLH5810->GetReg(CLH5810::U)); break;
     case 0x1F006: return (pLH5810->GetReg(CLH5810::L)); break;

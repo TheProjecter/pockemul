@@ -205,11 +205,11 @@ bool Cce150::run(void)
 {
 	bool has_moved = false;
     bool forwardBus = true;
-
+    bool keyEvent = false;
 
     bus->fromUInt64(pCONNECTOR->Get_values());
 
-    if (!bus->isEnable()) return true;
+
 
     ////////////////////////////////////////////////////////////////////
     //	VOLTAGE OK :-)
@@ -221,21 +221,35 @@ bool Cce150::run(void)
     //////////////////////////////////////////////////////////////////
     if (pKEYB->LastKey==K_PRINT)
     {
+        keyEvent = true;
         Print_Mode = ! Print_Mode;
         pLH5810->SetRegBit(CLH5810::OPA,5,Print_Mode);
         pKEYB->LastKey = 0;
+        qWarning()<<" Print Mode:"<<Print_Mode;
     }
+
+//    pLH5810->SetRegBit(CLH5810::OPA,5,Print_Mode);
 
     ////////////////////////////////////////////////////////////////////
     //	PAPER FEED
     //////////////////////////////////////////////////////////////////
     if (pKEYB->LastKey==K_PFEED)
     {
+        keyEvent = true;
         pLH5810->SetRegBit(CLH5810::OPB,7,true);
         AddLog(LOG_MASTER,"Paper Feed");
     }
     else
         pLH5810->SetRegBit(CLH5810::OPB,7,false);
+
+    if (!bus->isEnable()) {
+        if (keyEvent) {
+            pLH5810->step();
+            bus->setINT(pLH5810->INT);
+            pCONNECTOR->Set_values(bus->toUInt64());
+        }
+        return true;
+    }
 
     quint16 addr = bus->getAddr();
 
