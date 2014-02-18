@@ -239,6 +239,7 @@ void CSizeGrip::mousePressEvent(QMouseEvent * e)
     r = tlw->geometry();
 
 #ifdef Q_WS_X11
+    #if QT_VERSION >= 0x050000
     // Use a native X11 sizegrip for "real" top-level windows if supported.
     if (tlw->isWindow() && X11->isSupportedByWM(ATOM(_NET_WM_MOVERESIZE))
         && !(tlw->windowFlags() & Qt::X11BypassWindowManagerHint)
@@ -262,6 +263,7 @@ void CSizeGrip::mousePressEvent(QMouseEvent * e)
                    SubstructureRedirectMask | SubstructureNotifyMask, &xev);
         return;
     }
+#endif
 #endif // Q_WS_X11
 #ifdef Q_WS_WIN
     #if QT_VERSION >= 0x050000
@@ -354,10 +356,12 @@ void CSizeGrip::mouseMoveEvent(QMouseEvent * e)
         return;
 
 #ifdef Q_WS_X11
+    #if QT_VERSION >= 0x050000
     if (tlw->isWindow() && X11->isSupportedByWM(ATOM(_NET_WM_MOVERESIZE))
         && tlw->isTopLevel() && !(tlw->windowFlags() & Qt::X11BypassWindowManagerHint)
         && !tlw->testAttribute(Qt::WA_DontShowOnScreen) && !qt_widget_private(tlw)->hasHeightForWidth())
         return;
+#endif
 #endif
 #ifdef Q_WS_WIN
     #if QT_VERSION >= 0x050000

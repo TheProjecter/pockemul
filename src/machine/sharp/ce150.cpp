@@ -225,10 +225,8 @@ bool Cce150::run(void)
         Print_Mode = ! Print_Mode;
         pLH5810->SetRegBit(CLH5810::OPA,5,Print_Mode);
         pKEYB->LastKey = 0;
-        qWarning()<<" Print Mode:"<<Print_Mode;
+//        qWarning()<<" Print Mode:"<<Print_Mode;
     }
-
-//    pLH5810->SetRegBit(CLH5810::OPA,5,Print_Mode);
 
     ////////////////////////////////////////////////////////////////////
     //	PAPER FEED
@@ -261,6 +259,9 @@ bool Cce150::run(void)
     {
         bus->setData(mem[addr - 0xA000]);
         forwardBus = false;
+        bus->setEnable(false);
+        pCONNECTOR->Set_values(bus->toUInt64());
+        return true;
     }
 
     if (bus->isEnable() &&
@@ -365,9 +366,6 @@ bool Cce150::run(void)
 	//---------------------------------------------------
 	if (has_moved) Print();
 
-
-//	pCONNECTOR->Set_pin(1	,1);
-//	pCONNECTOR->Set_pin(30	,pLH5810->INT);
     bus->setINT(pLH5810->INT);
 
     if (bus->isEnable() &&
@@ -390,7 +388,8 @@ bool Cce150::run(void)
 
     bus->setEnable(false);
     pCONNECTOR->Set_values(bus->toUInt64());
-	return(1);
+
+    return true;
 }
 
 bool Cce150::Next_Color(void)
