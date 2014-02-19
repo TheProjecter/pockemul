@@ -81,7 +81,7 @@ void DialogDump::LoadBin(void)
 {
 	// Launch Open File Dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                 ".",
+                                                 "",
                                                  tr("Binary File (*.bin)"));
 
 	if( fileName.isNull() ) 
@@ -108,7 +108,7 @@ void DialogDump::LoadBin(void)
 void DialogDump::SaveBin(void)
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-                            ".",
+                            "",
                             tr("Binary File (*.bin)"));
 
 	if( fileName.isNull() ) 
