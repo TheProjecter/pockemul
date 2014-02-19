@@ -38,6 +38,7 @@ Cce153::Cce153(CPObject *parent):CPObject(this)
     bus = new CbusPc1500();
 
     keyPressed = 0xff;
+    dragging = false;
 
 }
 
@@ -126,6 +127,52 @@ bool Cce153::run(void)
     return true;
 }
 
+void Cce153::mouseDoubleClickEvent(QMouseEvent *event) {
+    float _zoom = mainwindow->zoom/100;
+    QPoint pts(event->x() , event->y());
+    QRect kbdZone(118*_zoom,170*_zoom,636*_zoom,382*_zoom);
+
+    if (kbdZone.contains(pts)) {
+        QMouseEvent *e=new QMouseEvent(QEvent::MouseButtonPress, pts, Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
+        QApplication::sendEvent(this, e);
+        delete e;
+        return;
+    }
+    else {
+        CPObject::mouseDoubleClickEvent(event);
+    }
+}
+
+void Cce153::mouseMoveEvent(QMouseEvent *event) {
+#if 0
+
+#else
+    if (!dragging) {
+        CPObject::mouseMoveEvent(event);
+        return;
+    }
+
+    float _zoom = mainwindow->zoom/100;
+    QPoint pts(event->x() , event->y());
+    QRect kbdZone(118*_zoom,170*_zoom,636*_zoom,382*_zoom);
+
+    if (kbdZone.contains(pts)) {
+        int x = pts.x() - kbdZone.x();
+        int y = pts.y() - kbdZone.y();
+        int col = x / (45*_zoom);
+        int row = y / (38*_zoom);
+        keyPressed = ((col & 0xf) << 4 ) | (row & 0xf);
+        event->accept();
+        return;
+    }else {
+        keyPressed = 0xff;
+        PA = 0;
+        PB &= 0xfc;
+
+    }
+#endif
+}
+
 void Cce153::mousePressEvent(QMouseEvent *event)
 {
     float _zoom = mainwindow->zoom/100;
@@ -140,15 +187,18 @@ void Cce153::mousePressEvent(QMouseEvent *event)
         keyPressed = ((col & 0xf) << 4 ) | (row & 0xf);
 //        qWarning()<<"Key pressed:"<<QString("%1").arg(keyPressed,2,16,QChar('0'));
         event->accept();
+        dragging =true;
         return;
     }
     else {
+        dragging = false;
         CPObject::mousePressEvent(event);
     }
 }
 
 void Cce153::mouseReleaseEvent(QMouseEvent *event)
 {
+    dragging = false;
     keyPressed = 0xff;
     PA = 0;
     PB &= 0xfc;

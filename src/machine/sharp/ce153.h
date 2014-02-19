@@ -23,6 +23,9 @@ public:
     bool lh5810_read(void);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
     virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
     virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
 
@@ -31,7 +34,8 @@ public:
     Cce153(CPObject *parent = 0);
     virtual ~Cce153();
 
-
+private:
+    bool dragging;
 };
 
 
