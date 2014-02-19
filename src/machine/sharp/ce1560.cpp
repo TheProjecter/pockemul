@@ -73,6 +73,12 @@ bool Cce1560::run(void)
     {
         quint8 module = (bus->getAddr() >> 1 ) & 0x03;
         quint8 reg = (bus->getAddr()&0x07) - (module*2);
+        if (module >2) {
+            qWarning()<<"ERROR Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
+            bus->setEnable(false);
+            pCONNECTOR->Set_values(bus->toUInt64());
+            return true;
+        }
         if (bus->isWrite()) {
             quint16 cmd = ((reg==0)? 0x00 : 0x100) | bus->getData()  ;
 //                    qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;
