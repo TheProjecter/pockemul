@@ -366,7 +366,7 @@
        <item>
         <widget class="QLineEdit" name="regTM">
          <property name="inputMask">
-          <string>HH</string>
+          <string>HHH</string>
          </property>
         </widget>
        </item>
