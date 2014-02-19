@@ -20,6 +20,10 @@ public:
 
     void refresh();
 
+
+private slots:
+    void updateReg(void);
+
 private:
     Ui::Cregslh5801Widget *ui;
 };
