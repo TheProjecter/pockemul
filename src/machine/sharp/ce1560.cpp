@@ -106,5 +106,21 @@ bool Cce1560::exit(void)
     return true;
 }
 
+bool Cce1560::LoadConfig(QXmlStreamReader *xmlIn)
+{
+    for (int i=0; i<3; i++) {
+        ps6b0108[i]->Load_Internal(xmlIn);
+    }
+    return true;
+}
+
+bool Cce1560::SaveConfig(QXmlStreamWriter *xmlOut)
+{
+    for (int i=0; i<3; i++) {
+        ps6b0108[i]->save_internal(xmlOut);
+    }
+    return true;
+}
+
 
 

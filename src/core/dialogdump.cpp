@@ -65,9 +65,11 @@ void DialogDump::FindNext(void) {
 void DialogDump::Refresh(void) {
     int _pos = hexeditor->cursorPosition();
     bool ok;
+    if (twSlot->currentRow()==-1) {
+        twSlot->selectRow(0);
+    }
     int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(&ok,16);
     int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
-
     QByteArray *ba= new QByteArray((const char*)&(pPC->mem[adr]),size);
     hexeditor->data().clear();
     hexeditor->setReadOnly(false);

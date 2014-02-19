@@ -24,6 +24,8 @@ public:
     virtual bool		run(void);
     virtual bool		init(void);
     virtual bool		exit(void);
+    virtual bool	LoadConfig(QXmlStreamReader *xmlIn);	// Load PC Configuration
+    virtual bool	SaveConfig(QXmlStreamWriter *xmlOut);	// Save PC Configuration
 
     Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
     CbusPc1500    *bus;
