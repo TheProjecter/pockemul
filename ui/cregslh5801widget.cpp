@@ -20,18 +20,18 @@ Cregslh5801Widget::Cregslh5801Widget(CPObject *parent,CCPU *pCPU) :
     connect(ui->regA,SIGNAL(textEdited(QString)),this,SLOT(updateReg()));
     connect(ui->regT,SIGNAL(textEdited(QString)),this,SLOT(updateReg()));
     connect(ui->regTM,SIGNAL(textEdited(QString)),this,SLOT(updateReg()));
-    connect(ui->cbPU,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbPV,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbBF,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbDP,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF0,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF1,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF2,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF3,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF4,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF5,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF6,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
-    connect(ui->cbF7,SIGNAL(stateChanged(int)),this,SLOT(updateReg()));
+    connect(ui->cbPU,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbPV,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbBF,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbDP,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF0,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF1,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF2,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF3,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF4,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF5,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF6,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
+    connect(ui->cbF7,SIGNAL(clicked(bool)),this,SLOT(updateReg()));
 
 }
 
