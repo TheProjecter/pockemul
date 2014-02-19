@@ -536,7 +536,9 @@ HEADERS += src/core/Connect.h \
     src/cpu/s6b0108.h \
     src/lcd/Lcdc_ce1560.h \
     src/machine/panasonic/buspanasonic.h \
-    src/machine/sharp/buspc1500.h
+    src/machine/sharp/buspc1500.h \
+    src/machine/sharp/ce162e.h \
+    src/machine/sharp/ce153.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \
@@ -792,7 +794,9 @@ SOURCES +=  \
     src/cpu/s6b0108.cpp \
     src/lcd/Lcdc_ce1560.cpp \
     src/machine/panasonic/buspanasonic.cpp \
-    src/machine/sharp/buspc1500.cpp
+    src/machine/sharp/buspc1500.cpp \
+    src/machine/sharp/ce162e.cpp \
+    src/machine/sharp/ce153.cpp
 
 greaterThan(QT_MAJOR_VERSION, 4): SOURCES += \
     qhttp/qhttpauthenticator.cpp \

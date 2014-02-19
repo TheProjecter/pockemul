@@ -1181,8 +1181,9 @@ void CPObject::BuildContextMenu(QMenu * menu)
         menu->addAction(tr("Keyboard Simulator"),this,SLOT(VirtualKeyboard()));
     }
 
+    if (!SlotList.isEmpty()) menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
     if ( dynamic_cast<CpcXXXX *>(this) ) {
-        menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
+
         menu->addAction(tr("Debug"),this,SLOT(Dasm()));
     }
 

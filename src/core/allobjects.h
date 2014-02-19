@@ -24,7 +24,9 @@
 
 #include "sharp/pc1500.h"
 #include "sharp/ce150.h"
+#include "sharp/ce153.h"
 #include "sharp/ce1560.h"
+#include "sharp/ce162e.h"
 
 #include "sharp/pc1600.h"
 #include "sharp/ce1600p.h"
