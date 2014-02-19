@@ -41,6 +41,7 @@ private:
 
 public slots:
     void RefreshDasm();
+    void ManualDasm();
     void loadImem();
     void loadMem();
     void start();

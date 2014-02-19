@@ -1,5 +1,5 @@
 //TODO Contextual menu on breakpoints
-
+#include <QDebug>
 
 #include "dialogdasm.h"
 #include "ui_dialogdasm.h"
@@ -29,6 +29,7 @@ DialogDasm::DialogDasm(QWidget *parent) :
     connect(ui->tbStep,SIGNAL(clicked()),this,SLOT(step()));
     connect(ui->tbStepOver,SIGNAL(clicked()),this,SLOT(stepOver()));
     connect(pPC,SIGNAL(RefreshDasm()),this,SLOT(RefreshDasm()));
+    connect(ui->pbDasm,SIGNAL(clicked()),this,SLOT(ManualDasm()));
     connect(ui->tbAddBrkPt,SIGNAL(clicked()),this,SLOT(addBreakPoint()));
     connect(ui->lwBreakPts,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(breakPointChanged(QListWidgetItem*)));
 
@@ -94,10 +95,33 @@ bool DialogDasm::IsAdrInList(qint32 adr)
 
 }
 
+void DialogDasm::ManualDasm() {
+    quint32 _adr = ui->leDasmAdr->text().toUInt(0,16);
+    int _nb = ui->leNbLine->text().toInt(0,16);
+    ui->codelistWidget->clear();
+    Index		= 0;
+
+    for (int j=0;j<_nb;j++)
+    {
+        //            qWarning()<<"adr="<<_adr;
+        pPC->pCPU->pDEBUG->DisAsm_1(_adr);
+        //MaxAdr		= pPC->pCPU->pDEBUG->DasmAdr;
+        _adr	= pPC->pCPU->pDEBUG->NextDasmAdr;
+        QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
+        int adr = pPC->pCPU->pDEBUG->DasmAdr;
+        item->setData(Qt::UserRole,adr);
+
+        ui->codelistWidget->addItem(item);
+        Index++;
+    }
+
+
+}
+
 void DialogDasm::RefreshDasm()
 {
 
-    if ( pPC->pCPU->pDEBUG->debugged)
+ if ( pPC->pCPU->pDEBUG->debugged)
     {
         QString	text;
 
