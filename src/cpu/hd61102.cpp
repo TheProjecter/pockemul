@@ -86,7 +86,7 @@ BYTE CHD61102::instruction(qint16 cmd)
 
 void CHD61102::cmd_on_off(qint16 cmd)
 {
-    qWarning()<<"LCD "<<(info.on_off?"ON":"OFF")<< "  cmd:"<<cmd;
+//    qWarning()<<"LCD "<<(info.on_off?"ON":"OFF")<< "  cmd:"<<cmd;
 
     BYTE newon_off = cmd & 0x01;
     if (newon_off != info.on_off) {
