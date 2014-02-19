@@ -837,7 +837,9 @@ INLINE void CLH5801::instruction(void)
 	case 0x2d: EOR(cpu_readmem(U));						AddState(7);/**/	break;
 	case 0x2e: cpu_writemem(U,lh5801.a);				AddState(6);/**/	break;
 	case 0x2f: BIT(cpu_readmem(U),lh5801.a);			AddState(7);/**/	break;
-	case 0x38: /*nop*/									AddState(5);/**/	break;
+    case 0x34: LDA(0);									AddState(5);/**/	break;
+    case 0x36: CPA(lh5801.a, 0);						AddState(6);/**/	break;
+    case 0x38: /*nop*/									AddState(5);/**/	break;
 	case 0x40: INC(&XL);								AddState(5);/**/	break;
 	case 0x41: SIN(&lh5801.x);							AddState(6);/**/	break;
 	case 0x42: DEC(&XL);								AddState(5);/**/	break;
