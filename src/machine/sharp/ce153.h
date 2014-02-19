@@ -23,6 +23,8 @@ public:
     bool lh5810_read(void);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    virtual bool    SaveSession_File(QXmlStreamWriter *xmlOut);
+    virtual bool	LoadSession_File(QXmlStreamReader *xmlIn);
 
     quint8 keyPressed;
 

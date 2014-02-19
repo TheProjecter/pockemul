@@ -11,6 +11,9 @@
 #include "Connect.h"
 #include "Keyb.h"
 
+#include "mainwindowpockemul.h"
+extern MainWindowPockemul *mainwindow;
+
 Cce153::Cce153(CPObject *parent):CPObject(this)
 {
     Q_UNUSED(parent)
@@ -60,6 +63,8 @@ bool Cce153::init(void)
 
 }
 
+#define REVERSE8BITS(x) ((((x) * 0x0802LU & 0x22110LU) | ((x) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+
 #define PA		(pLH5810->lh5810.r_opa)
 #define PB		(pLH5810->lh5810.r_opb)
 #define PC		(pLH5810->lh5810.r_opc)
@@ -84,38 +89,26 @@ bool Cce153::run(void)
     }
 
 
-
-    ////////////////////////////////////////////////////////////////////
-    //	RMT ON/OFF
-    ////////////////////////////////////////////////////////////////////
-    // Service manual PA 1234. Take a look
-//    if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = false;	// RMT 0 ON
-//    if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = true;	// RMT 0 OFF
-//    pLH5810_2->SetRegBit(CLH5810::OPB,0,true);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,1,true);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,2,true);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,3,false);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,4,true);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,5,true);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,6,true);
-//    pLH5810_2->SetRegBit(CLH5810::OPB,7,true);  // Centronic BUSY ???
-
     if (keyPressed != 0xff) {
-        pLH5810->Regs_Info(0);
-//        qWarning()<<pLH5810->Regs_String;
-        quint16 strobe = ((PB>>2)<<8) | PC ;
+        quint8 _c = REVERSE8BITS(PC);
+        quint8 _b = REVERSE8BITS(PB);
+        quint16 strobe = ((_b & 0x3F)<<8) | _c ;
         if (strobe & (1 << (keyPressed >>4))) {
-//            qWarning()<<"Match Strobe:"<<QString("%1").arg(strobe,4,16,QChar('0'))<<QString("%1").arg(keyPressed,2,16,QChar('0'));
+            quint16 _result = ( 1 << (keyPressed & 0x0f));
+            PA =  (_result >> 3) & 0xff;
+            PA |= (_result & 0x04) ? 0x80: 0;
 
-            PA = (keyPressed+1) & 0x0f;
-//            qWarning()<<"OpA="<<QString("%1").arg(PA,2,16,QChar('0'));
+            PB = (PB & 0xfc) |
+                    ((_result&0x01)? 0x02:0x00) |
+                    ((_result&0x02)? 0x01: 0x00);
         }
-        else PA = 0;
+        else {
+            PA = 0;
+            PB &= 0xfc;
+        }
     }
 
     pLH5810->step();
-
-//    bus->setINT(pLH5810->INT);
 
     if (bus->isEnable() &&
             !bus->isWrite() &&
@@ -123,9 +116,8 @@ bool Cce153::run(void)
             (addr >= 0x8000) &&
             (addr <= 0x800f)) {
         lh5810_read();
-        if ((addr==0x800e) && (bus->getData()!=0))
-            qWarning()<<"Read "<<QString("%1").arg(addr,4,16,QChar('0'))<<"="<<QString("%1").arg(bus->getData(),2,16,QChar('0'));
-
+//        if ((addr==0x800e) && (bus->getData()!=0))
+//            qWarning()<<"Read "<<QString("%1").arg(addr,4,16,QChar('0'))<<"="<<QString("%1").arg(bus->getData(),2,16,QChar('0'));
     }
 
     bus->setEnable(false);
@@ -136,36 +128,43 @@ bool Cce153::run(void)
 
 void Cce153::mousePressEvent(QMouseEvent *event)
 {
-//    qWarning()<<"CPObject::mousePressEvent"<<event;
-//    CPObject::mousePressEvent(event);
-
-    if (event->button() != Qt::LeftButton) {
-        event->accept();
-        return;
-    }
-
-    setFocus();
-
-    if (event->modifiers() == Qt::MetaModifier) return;
-
+    float _zoom = mainwindow->zoom/100;
     QPoint pts(event->x() , event->y());
-    QRect kbdZone(118,170,636,382);
+    QRect kbdZone(118*_zoom,170*_zoom,636*_zoom,382*_zoom);
 
     if (kbdZone.contains(pts)) {
         int x = pts.x() - kbdZone.x();
         int y = pts.y() - kbdZone.y();
-        int col = x / 45;
-        int row = y / 38;
+        int col = x / (45*_zoom);
+        int row = y / (38*_zoom);
         keyPressed = ((col & 0xf) << 4 ) | (row & 0xf);
-        qWarning()<<"Key pressed:"<<QString("%1").arg(keyPressed,2,16,QChar('0'));
+//        qWarning()<<"Key pressed:"<<QString("%1").arg(keyPressed,2,16,QChar('0'));
+        event->accept();
+        return;
     }
-
+    else {
+        CPObject::mousePressEvent(event);
+    }
 }
 
 void Cce153::mouseReleaseEvent(QMouseEvent *event)
 {
     keyPressed = 0xff;
     PA = 0;
+    PB &= 0xfc;
+    CPObject::mouseReleaseEvent(event);
+}
+
+bool Cce153::SaveSession_File(QXmlStreamWriter *xmlOut)
+{
+    pLH5810->save_internal(xmlOut);
+    return true;
+}
+
+bool Cce153::LoadSession_File(QXmlStreamReader *xmlIn)
+{
+    pLH5810->Load_Internal(xmlIn);
+    return true;
 }
 
 bool Cce153::exit(void)
