@@ -48,6 +48,8 @@ public slots:
     void step();
     void stepOver();
 
+    void Update(int adr, uchar val);
+
     void addBreakPoint();
     void breakPointChanged(QListWidgetItem* item);
     void addTraceRange();

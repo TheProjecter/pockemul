@@ -1,5 +1,6 @@
 //TODO Contextual menu on breakpoints
 #include <QDebug>
+#include <QScrollBar>
 
 #include "dialogdasm.h"
 #include "ui_dialogdasm.h"
@@ -22,6 +23,7 @@ DialogDasm::DialogDasm(QWidget *parent) :
     NextMaxAdr = 0;
 
     imemHexEditor = new BINEditor::BinEditor(ui->imemframe);
+    connect(imemHexEditor,SIGNAL(update(int,uchar)),this,SLOT(Update(int,uchar)));
 //    memHexEditor = new BINEditor::BinEditor(ui->memframe);
 
     connect(ui->tbStart,SIGNAL(clicked()),this,SLOT(start()));
@@ -59,6 +61,16 @@ DialogDasm::DialogDasm(QWidget *parent) :
 DialogDasm::~DialogDasm()
 {
     delete ui;
+}
+
+void DialogDasm::Update(int adr,uchar val) {
+    qWarning()<<"Update["<<adr<<"]="<<val;
+    if (imem) {
+        pPC->pCPU->imem[adr]=val;
+    }
+    else {
+        pPC->mem[adr] = val;
+    }
 }
 
 void DialogDasm::selectRow(int index) {
@@ -189,12 +201,19 @@ void DialogDasm::RefreshDasm()
 
 void DialogDasm::loadImem()
 {
+    int _curPos = imemHexEditor->cursorPosition();
+    int _scrollPos = imemHexEditor->verticalScrollBar()->value();
     if (pPC) {
         if (imem)
             imemHexEditor->setData(pPC->pCPU->getimem());
         else
             imemHexEditor->setData(pPC->getmem());
     }
+
+    imemHexEditor->setReadOnly(false);
+    imemHexEditor->setCursorPosition(_curPos,BINEditor::BinEditor::MoveAnchor);
+    imemHexEditor->verticalScrollBar()->setValue(_scrollPos);
+
     update();
 }
 
