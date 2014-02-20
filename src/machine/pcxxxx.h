@@ -283,9 +283,11 @@ public:
     bool DasmFlag;
     UINT32 DasmLastAdr;
     QMap<UINT32,Qt::CheckState> BreakPoints;
+    QMap<QPair<UINT32,UINT32>,Qt::CheckState> TraceRange;
     int BreakSubLevel;
 
 
+    bool checkTraceRange(UINT32 adr);
 };
 
 

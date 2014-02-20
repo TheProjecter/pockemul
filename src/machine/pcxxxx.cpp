@@ -82,6 +82,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     DasmFlag = false;
     DasmStep = false;
     BreakPoints.clear();
+    TraceRange.clear();
     BreakSubLevel = -1;
 
 }
@@ -520,6 +521,18 @@ bool CpcXXXX::exit(void)
 	return(1);
 }
 
+INLINE bool CpcXXXX::checkTraceRange(UINT32 adr) {
+    if (TraceRange.isEmpty()) return true;
+
+    QMapIterator<QPair<UINT32,UINT32>, Qt::CheckState> i(TraceRange);
+    while (i.hasNext()) {
+        i.next();
+//        cout << i.key() << ": " << i.value() << endl;
+        if ( (adr >=i.key().first) && (adr <=i.key().second) && (i.value()==Qt::Checked)) return true;
+    }
+
+    return false;
+}
 
 /*****************************************************************************/
 /* Execute XXXX emulator (while pPC->pCPU->end==0)							 */
@@ -539,7 +552,12 @@ bool CpcXXXX::run(void)
 
 	if(!pCPU->halt && !off)
 	{
-        if ( (pCPU->logsw) && (pCPU->fp_log) ) {
+#if 0
+        if ( (pCPU->logsw) && (pCPU->fp_log) )
+#else
+        if (  pCPU->logsw && pCPU->fp_log && checkTraceRange(pCPU->get_PC()))
+#endif
+        {
             //char	s[2000];
             sprintf(Log_String," ");
             pCPU->pDEBUG->DisAsm_1(pCPU->get_PC());

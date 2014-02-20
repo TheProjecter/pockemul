@@ -30,8 +30,12 @@ DialogDasm::DialogDasm(QWidget *parent) :
     connect(ui->tbStepOver,SIGNAL(clicked()),this,SLOT(stepOver()));
     connect(pPC,SIGNAL(RefreshDasm()),this,SLOT(RefreshDasm()));
     connect(ui->pbDasm,SIGNAL(clicked()),this,SLOT(ManualDasm()));
+
     connect(ui->tbAddBrkPt,SIGNAL(clicked()),this,SLOT(addBreakPoint()));
     connect(ui->lwBreakPts,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(breakPointChanged(QListWidgetItem*)));
+
+    connect(ui->tbAddTraceRange,SIGNAL(clicked()),this,SLOT(addTraceRange()));
+    connect(ui->lwTraceRange,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(traceRangeChanged(QListWidgetItem*)));
 
     QFont font;
     font.setFamily("Courier");
@@ -241,10 +245,6 @@ void DialogDasm::stepOver()
     pPC->DasmFlag = false;
 }
 
-quint16 DialogDasm::getValue()
-{
-    return ui->lineEdit->text().toLong(0,16);
-}
 
 void DialogDasm::addBreakPoint()
 {
@@ -258,5 +258,29 @@ void DialogDasm::addBreakPoint()
 void DialogDasm::breakPointChanged(QListWidgetItem *item)
 {
     pPC->BreakPoints[item->text().toLongLong(0,16)] = item->checkState();
+
+}
+
+void DialogDasm::addTraceRange()
+{
+    // Check log
+    pPC->pCPU->logsw = true;
+    pPC->pCPU->Check_Log();
+
+    QPair<UINT32,UINT32> _pair;
+    _pair.first = ui->leTraceFrom->text().toUInt(0,16);
+    _pair.second = ui->leTraceTo->text().toUInt(0,16);
+    pPC->TraceRange[_pair] = Qt::Checked;
+    QListWidgetItem *_item = new QListWidgetItem(ui->leTraceFrom->text()+"-"+ui->leTraceTo->text());
+    _item->setCheckState(Qt::Checked);
+    ui->lwTraceRange->addItem(_item);
+}
+
+void DialogDasm::traceRangeChanged(QListWidgetItem *item)
+{
+    QPair<UINT32,UINT32> _pair;
+    _pair.first = ui->leTraceFrom->text().toUInt(0,16);
+    _pair.second = ui->leTraceTo->text().toUInt(0,16);
+    pPC->TraceRange[_pair] = item->checkState();
 
 }
