@@ -54,7 +54,7 @@ void Clcdc_ce1560::disp(void)
 
     QPainter painter(pPC->LcdImage);
     for (int _m=0; _m<3 ; _m++) {
-//        if (((Cce1560 *)pPC)->ps6b0108[_m]->info.on_off)
+        if (((Cce1560 *)pPC)->ps6b0108[_m]->info.on_off)
         {
             for (int i = 0 ; i < 64; i++)
             {
@@ -71,6 +71,12 @@ void Clcdc_ce1560::disp(void)
                     }
                 }
             }
+        }
+        else {
+            // Turn off screen
+            painter.setPen( Color_Off );
+            painter.setBrush(Color_Off);
+            painter.drawRect( _m*64, 0,64,64);
         }
     }
 

@@ -95,7 +95,7 @@ void CHD61102::cmd_on_off(qint16 cmd)
         AddLog(LOG_DISPLAY,tr("UPDATED on_off"));
     }
 
-    info.on_off = 1;
+//    info.on_off = 1;
 
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"LCD :%s\n",on_off?"on":"off");
 }
