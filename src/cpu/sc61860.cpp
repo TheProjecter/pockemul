@@ -2784,7 +2784,7 @@ bool CSC61860::init(void)
 	}
 	else
 	{
-		Reset();
+        Reset();
 	}
 
 

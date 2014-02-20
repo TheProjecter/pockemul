@@ -293,7 +293,7 @@ public:
 	};
 	virtual ~Clcdc_pc1475()
 	{						//[constructor]
-	};
+    }
 
 };
 
@@ -301,7 +301,7 @@ class Clcdc_pc1500:public Clcdc{
 public:
 	void disp(void);				//display LCDC data to screen
 	void disp_symb(void);
-    const char*	GetClassName(){ return("Clcdc_pc1500");};
+    const char*	GetClassName(){ return("Clcdc_pc1500");}
 
 
 	int x2a[100];
@@ -312,15 +312,15 @@ public:
 							(int) (0x6e*contrast),
 							(int) (0x80*contrast),
 							(int) (0x80*contrast));
-	};
+    }
 	virtual ~Clcdc_pc1500()
 	{						//[constructor]
-	};
+    }
 
 };
 class Clcdc_trspc2:public Clcdc_pc1500{
 public:
-    const char*	GetClassName(){ return("Clcdc_trspc2");};
+    const char*	GetClassName(){ return("Clcdc_trspc2");}
 
 	Clcdc_trspc2(CPObject *parent = 0)	: Clcdc_pc1500(parent){						//[constructor]
 		Color_Off.setRgb(
@@ -330,13 +330,13 @@ public:
 	};
 	virtual ~Clcdc_trspc2()
 	{						//[constructor]
-	};
+    }
 
 };
 
 class Clcdc_pc1500A:public Clcdc_pc1500{
 public:
-    const char*	GetClassName(){ return("Clcdc_pc1500A");};
+    const char*	GetClassName(){ return("Clcdc_pc1500A");}
 
 	Clcdc_pc1500A(CPObject *parent = 0)	: Clcdc_pc1500(parent){						//[constructor]
 		Color_Off.setRgb(
@@ -346,7 +346,7 @@ public:
 	};
 	virtual ~Clcdc_pc1500A()
 	{						//[constructor]
-	};
+    }
 
 };
 

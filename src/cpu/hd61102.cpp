@@ -59,6 +59,21 @@ void CHD61102::set8(qint16 adr,BYTE val)
     info.imem[adr] = val;
 }
 
+bool CHD61102::init()
+{
+    for (int i = 0 ; i < 0x200 ; i++)
+    {
+        info.imem[i] = 0;
+    }
+
+    info.on_off = 0;
+    info.displaySL = 0;
+    info.Xadr = 0;
+    info.Yadr = 0;
+    info.status = 0;
+    updated = true;
+}
+
 BYTE CHD61102::instruction(qint16 cmd)
 {
 //    if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);

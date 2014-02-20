@@ -374,6 +374,9 @@ bool Cpc1600::init(void)				// initialize
 
     pLU57813P->init();
     pLH5810->init();
+    pHD61102_1->init();
+    pHD61102_2->init();
+
     pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",false,QPoint(0,60));	publish(pCONNECTOR);
     pSIOCONNECTOR=new Cconnector(this,15,1,Cconnector::Sharp_15,"Connector 15 pins",false,QPoint(679,190));	publish(pSIOCONNECTOR);
     pADCONNECTOR= new Cconnector(this,8,2,Cconnector::Jack,"Digital connector 2 pins",false,QPoint(679,20));	publish(pADCONNECTOR);
@@ -433,7 +436,7 @@ bool Cpc1600::run(void)
 // ---------------------------------------------------------
 
     Current_PC = pCPU->get_PC();
-hack(Current_PC);
+//hack(Current_PC);
 #ifndef QT_NO_DEBUG
     hack(Current_PC);
 #endif
