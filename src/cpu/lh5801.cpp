@@ -2,7 +2,7 @@
 /* LH5801 CPU emulation                                  */
 /**********************************************************/
 #include <stdlib.h>
-
+#include <QDebug>
 
 #include "common.h"
 #include "pcxxxx.h"
@@ -703,7 +703,8 @@ INLINE void CLH5801::instruction_fd(void)
 	case 0x2d:	EOR(cpu_readmem(ME1(U)));						AddState(11);	break;
 	case 0x2e:	cpu_writemem(ME1(U),lh5801.a); 					AddState(10);	break;
 	case 0x2f:	BIT(cpu_readmem(ME1(U)),lh5801.a); 				AddState(11);	break;
-	case 0x40:	INC(&XH);										AddState(9);	break;
+    case 0x3a:	S++;S++;            							AddState(15);	break;
+    case 0x40:	INC(&XH);										AddState(9);	break;
 	case 0x42:	DEC(&XH);										AddState(9);	break;
 	case 0x48:	X=S;											AddState(11);	break;
 	case 0x49:	AND_MEM(ME1(X), cpu_readop(P++));				AddState(17);	break;
@@ -749,7 +750,8 @@ INLINE void CLH5801::instruction_fd(void)
 	case 0xae:	cpu_writemem(ME1(readop_word()),lh5801.a);		AddState(16);	break;
 	case 0xaf:	BIT(cpu_readmem(ME1(readop_word())),lh5801.a);	AddState(17);	break;
     case 0xb1:	lh5801.HLT=0;AddLog(0x01,"HALT");/* LOOK */		AddState(8);	break;
-	case 0xba:	ITA();											AddState(9);	break;
+    case 0xb8:	PUSH_WORD((lh5801.s.b.h)<<8);   				AddState(14);	break;
+    case 0xba:	ITA();											AddState(9);	break;
 	case 0xbe:	UNSET_IE; /*rie !*/								AddState(8);/**/	break;
 	case 0xc0:	lh5801.dp=0; /*rdp !*/							AddState(8);	break;
 	case 0xc1:	lh5801.dp=1; /*sdp !*/							AddState(8);	break;
@@ -773,6 +775,8 @@ INLINE void CLH5801::instruction_fd(void)
 																AddState(23);	break;
 	default:
 				AddLog(LOG_MASTER,tr("lh5801 illegal opcode at %1  fd%2").arg((P-2),4,16,QChar('0')).arg((int)oper,2,16,QChar('0')));
+                qWarning()<<tr("lh5801 illegal opcode at %1  fd%2").arg((P-2),4,16,QChar('0')).arg((int)oper,2,16,QChar('0'));
+                break;
 	}
 }
 
@@ -837,6 +841,8 @@ INLINE void CLH5801::instruction(void)
 	case 0x2d: EOR(cpu_readmem(U));						AddState(7);/**/	break;
 	case 0x2e: cpu_writemem(U,lh5801.a);				AddState(6);/**/	break;
 	case 0x2f: BIT(cpu_readmem(U),lh5801.a);			AddState(7);/**/	break;
+    case 0x30: SBC(0);									AddState(6);/**/	break;
+    case 0x32: ADC(0);									AddState(6);/**/	break;
     case 0x34: LDA(0);									AddState(5);/**/	break;
     case 0x36: CPA(lh5801.a, 0);						AddState(6);/**/	break;
     case 0x38: /*nop*/									AddState(5);/**/	break;
@@ -990,6 +996,8 @@ INLINE void CLH5801::instruction(void)
 				VECTOR(1, oper);						AddState(4);/**/	break;
 	default:
 		AddLog(LOG_MASTER,tr("lh5801 illegal opcode at %1 %2").arg(P-1,4,16,QChar('0')).arg(oper,4,16,QChar('0')));
+        qWarning()<<tr("lh5801 illegal opcode at %1 %2").arg(P-1,4,16,QChar('0')).arg(oper,4,16,QChar('0'));
+        break;
 	}
 
 }
