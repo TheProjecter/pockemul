@@ -10,6 +10,7 @@
 
 #include	"common.h"
 #include "fluidlauncher.h"
+#include "ui/dialogdasm.h"
 
 #include	"pc1500.h"
 #include "cextension.h"
@@ -284,6 +285,11 @@ bool Cpc15XX::init(void)				// initialize
 
 bool Cpc15XX::run(void) 
 {
+    // NEED TO USE IMEMSIZE instead
+    if (dialogdasm)
+        dialogdasm->imem=false;
+
+
 //	UINT32 previous_pc;
 	UINT32 Current_PC;	
 

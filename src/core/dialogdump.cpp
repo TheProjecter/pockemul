@@ -41,8 +41,10 @@ DialogDump::DialogDump(QWidget * parent, Qt::WindowFlags f)
 }
 
 void DialogDump::Update(int adr,uchar val) {
-    qWarning()<<"Update["<<adr<<"]="<<val;
-    pPC->mem[adr] = val;
+//    qWarning()<<"Update["<<adr<<"]="<<val;
+    if (twSlot->currentRow()==-1) return;
+    quint32 _offset = twSlot->item(twSlot->currentRow(),2)->text().toUInt(0,16);
+    pPC->mem[_offset + adr] = val;
 }
 
 void DialogDump::Find(void) {
