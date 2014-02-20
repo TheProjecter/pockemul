@@ -113,6 +113,13 @@ void Clcdc_pc1600::disp(void)
             }
         }
     }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 0, 0,64,32);
+    }
+
 
     if (((Cpc1600 *)pPC)->pHD61102_2->info.on_off) {
         for (int i = 0 ; i < 64; i++)
@@ -131,6 +138,13 @@ void Clcdc_pc1600::disp(void)
             }
         }
     }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 64, 0,64,32);
+    }
+
 
     if (((Cpc1600 *)pPC)->pHD61102_1->info.on_off) {
 
@@ -150,6 +164,13 @@ void Clcdc_pc1600::disp(void)
             }
         }
     }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 128, 0,64,32);
+    }
+
 
     redraw = 0;
     painter.end();

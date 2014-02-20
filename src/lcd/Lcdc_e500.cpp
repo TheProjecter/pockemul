@@ -118,6 +118,12 @@ void Clcdc_e500::disp(void)
             }
         }
     }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 0, 0,64,32);
+    }
 
     if (((Ce500 *)pPC)->pHD61102_1->info.on_off) {
         for (int i = 0 ; i < 56; i++)
@@ -135,6 +141,12 @@ void Clcdc_e500::disp(void)
                 }
             }
         }
+    }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 64, 0,56,32);
     }
 
     if (((Ce500 *)pPC)->pHD61102_1->info.on_off) {
@@ -155,6 +167,13 @@ void Clcdc_e500::disp(void)
             }
         }
     }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 175-55, 0,56,32);
+    }
+
 
 
     if (((Ce500 *)pPC)->pHD61102_2->info.on_off) {
@@ -175,6 +194,13 @@ void Clcdc_e500::disp(void)
             }
         }
     }
+    else {
+        // Turn off screen
+        painter.setPen( Color_Off );
+        painter.setBrush(Color_Off);
+        painter.drawRect( 239-63, 0,64,32);
+    }
+
 
     redraw = 0;
     painter.end();
