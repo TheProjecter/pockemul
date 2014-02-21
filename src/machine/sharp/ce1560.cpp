@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <QResource>
+#include <QBitmap>
 
 #include "common.h"
 #include "ce1560.h"
@@ -18,6 +19,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     BackGroundFname	= P_RES(":/pc1500/ce1560_1.png");
     LcdFname		= P_RES(":/pc1500/1500lcd.png");
     setcfgfname(QString("ce1560"));
+    coverImage = QImage(P_RES(":/pc1500/ce1560_cover.png"));
 
     setDXmm(329);//Pc_DX_mm = 329;
     setDYmm(115);//Pc_DY_mm = 115;
@@ -39,12 +41,15 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
 
     pLCDC		= new Clcdc_ce1560(this);
     pTIMER		= new Ctimer(this);
-//    pKEYB		= new Ckeyb(this,"ce150.map");
+    pKEYB		= new Ckeyb(this,"ce1560.map");
 
     bus = new CbusPc1500();
 
     for (int i=0;i<3;i++) ps6b0108[i]  = new CS6B0108(this);
 
+    screenOpen = true;
+    screenFlipping = false;
+    m_screenAngle = 180;
 }
 
 Cce1560::~Cce1560() {
@@ -53,6 +58,7 @@ Cce1560::~Cce1560() {
 
     for (int i=0;i<3;i++) delete ps6b0108[i];
 }
+
 
 bool Cce1560::init(void)
 {
@@ -143,5 +149,115 @@ bool Cce1560::SaveConfig(QXmlStreamWriter *xmlOut)
     return true;
 }
 
+//extern int ask(QWidget *parent,QString msg,int nbButton);
+#define KEY(c)	((pKEYB->keyPressedList.contains(TOUPPER(c)) || \
+                  pKEYB->keyPressedList.contains(c) || \
+                  pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
+void Cce1560::ComputeKey()
+{
+
+    // Manage backdoor click
+//    qWarning()<<"lastkey="<<pKEYB->LastKey<<" -"<<pKEYB->keyPressedList<<" - "<<( (currentView==FRONTview) && ( (screenOpen && KEY(0x240) ) || (!screenOpen && KEY(0x241) )));
+    if  ( (currentView==FRONTview) && ( (screenOpen && KEY(0x240) ) || (!screenOpen && KEY(0x241) ))) {
+        pKEYB->keyPressedList.removeAll(0x240);
+        pKEYB->keyPressedList.removeAll(0x241);
+        screenOpen = !screenOpen;
+//        qWarning()<<"compute key screen to:"<<screenOpen;
+        animateScreen();
+    }
+
+}
+
+bool Cce1560::UpdateFinalImage(void) {
+
+    delete FinalImage;
+    FinalImage = new QImage(*BackgroundImageBackup);
+    CpcXXXX::UpdateFinalImage();
 
 
+
+
+//    if ((currentView != FRONTview) ) {
+        QPainter painter;
+        painter.begin(FinalImage);
+
+        QImage screenImage = FinalImage->copy(60,0,692,getDY()/2).mirrored(false,true);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.fillRect(60,0,692,getDY()/2,Qt::transparent);
+
+        painter.translate((getDX()-60)/2+60,getDY()/2);
+        QTransform matrix2;
+        matrix2.rotate(m_screenAngle, Qt::XAxis);
+        painter.setTransform(matrix2,true);
+
+        if (m_screenAngle<=90)
+            screenImage = coverImage.copy(60,0,692,getDY()/2);
+
+        painter.drawImage(-getDX()/2+60/2,0,screenImage);
+        painter.end();
+        mask = QPixmap::fromImage(*FinalImage).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
+
+        setMask(mask.mask());
+
+        if (!forceStackOver && (m_screenAngle <= 90)) {
+            forceStackOver=true;
+            QList<CPObject *> list;
+            mainwindow->pdirectLink->findAllObj(this,&list);
+            for (int i=0;i<list.size();i++) {
+                list.at(i)->raise();
+            }
+            list.clear();
+
+            manageStackPos(&list);
+        }
+        if ( forceStackOver && (m_screenAngle > 90)) {
+            forceStackOver=false;
+            QList<CPObject *> list;
+            mainwindow->pdirectLink->findAllObj(this,&list);
+            for (int i=0;i<list.size();i++) {
+                list.at(i)->raise();
+            }
+            list.clear();
+
+            manageStackPos(&list);
+        }
+
+
+
+
+    return true;
+}
+
+void Cce1560::animateScreen() {
+//    qWarning()<<"ANIMATE";
+    QPropertyAnimation *animation1 = new QPropertyAnimation(this, "screenangle");
+     animation1->setDuration(1500);
+     if (!screenOpen) {
+         animation1->setStartValue(m_screenAngle);
+         animation1->setEndValue(0);
+     }
+     else {
+         animation1->setStartValue(m_screenAngle);
+         animation1->setEndValue(180);
+     }
+
+     QParallelAnimationGroup *group = new QParallelAnimationGroup;
+     group->addAnimation(animation1);
+
+     connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+     connect(animation1,SIGNAL(finished()),this,SLOT(endscreenAnimation()));
+     screenFlipping = true;
+     group->start();
+
+}
+
+void Cce1560::endscreenAnimation()
+{
+    screenFlipping = false;
+    if (screenOpen) {
+//        pKEYB->Keys[backdoorKeyIndex].Rect.setSize(QSize(105,145));
+    }
+    else {
+//        pKEYB->Keys[backdoorKeyIndex].Rect.setSize(QSize(365,145));
+    }
+}

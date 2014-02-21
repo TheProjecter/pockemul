@@ -81,6 +81,8 @@ CPObject::CPObject(CPObject *parent):CViewObject(parent)
         fullscreenMode = false;
         fillSoundBuffer_old_state = 0;
 
+        forceStackOver = forceStackUnder = false;
+
 		dialogkeylist	= 0;
 		dialogdump		= 0;
         dialogdasm = 0;
@@ -917,14 +919,36 @@ void CPObject::manageStackPos(QList<CPObject *> *l) {
         Cconnector * conn2 = mainwindow->pdirectLink->Linked(conn);
         if (conn2) {
             CPObject * linkedPC = (CPObject *) (conn2->Parent);
-            if (conn->getGender() == true) {    // If Male
+            if (forceStackUnder) {
                 linkedPC->stackUnder(this);
                 stackUnder(linkedPC);
                 linkedPC->manageStackPos(l);
             }
             else {
+                if ((conn->getGender() == true)) {    // If Male stackUnder
+                    linkedPC->stackUnder(this);
+                    stackUnder(linkedPC);
+                    linkedPC->manageStackPos(l);
+                }
+                else {
+                    linkedPC->stackUnder(this);
+                    linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
+                }
+            }
+            if (forceStackOver) {
                 linkedPC->stackUnder(this);
                 linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
+            }
+            else {
+                if ((conn->getGender() == true)) {    // If Male stackUnder
+                    linkedPC->stackUnder(this);
+                    stackUnder(linkedPC);
+                    linkedPC->manageStackPos(l);
+                }
+                else {
+                    linkedPC->stackUnder(this);
+                    linkedPC->manageStackPos(l);       // Doesn't work if we don't manage a queue
+                }
             }
         }
     }

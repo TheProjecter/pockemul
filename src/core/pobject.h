@@ -176,6 +176,8 @@ public:
 	bool	Power;
     qint8		PowerSwitch;
 
+    bool forceStackOver,forceStackUnder;
+
     void    SwitchFrontBack(QPoint);
     bool    isFront() {return Front;}
     QList<Cconnector *> nearConnectors(Cconnector *refConnector,qint8 snaprange);

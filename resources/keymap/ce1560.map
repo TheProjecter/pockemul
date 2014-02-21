@@ -1,0 +1,7 @@
+<!DOCTYPE KEYBMAP><KEYBMAP version="1.0">
+<model>rlh1000</model>
+<Keyboard>
+    <KEY description="open/close" height="235" left="50" scancode="0x240" top="0" width="600" view="FRONT"/>
+    <KEY description="open/close" height="235" left="50" scancode="0x241" top="400" width="600" view="FRONT"/>
+</Keyboard>
+</KEYBMAP>

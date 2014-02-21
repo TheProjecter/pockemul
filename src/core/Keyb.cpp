@@ -65,6 +65,7 @@ Ckeyb::~Ckeyb() {
 
 int Ckeyb::KeyClick(QPoint pts)
 {
+//    qWarning()<<"keyclick:"<<pts;
     // calculate all distance betwwen pts and keys centers
     // Keep the nearest
 
