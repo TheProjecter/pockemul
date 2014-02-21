@@ -58,7 +58,7 @@ Cce1560::~Cce1560() {
     delete pCONNECTOR;
     delete bus;
 
-    for (int i=0;i<3;i++) delete ps6b0108[i];
+//    for (int i=0;i<3;i++) delete ps6b0108[i];
 }
 
 
