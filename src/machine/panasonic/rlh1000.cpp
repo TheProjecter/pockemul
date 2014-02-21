@@ -745,6 +745,7 @@ void Crlh1000::addModule(QString item,CPObject *pPC)
     if (item=="SNAPBASIC") moduleName = P_RES(":/rlh1000/SnapBasic.bin");
     if (item=="SNAPFORTH") moduleName = P_RES(":/rlh1000/SnapForth.bin");
     if (item=="MSBASIC")   moduleName = P_RES(":/rlh1000/HHCbasic.bin");
+    if (item=="PORTACALC") moduleName = P_RES(":/rlh1000/Portacalc.bin");
     if (item=="PANACAPSFILE") {
         moduleName = QFileDialog::getOpenFileName(
                     mainwindow,

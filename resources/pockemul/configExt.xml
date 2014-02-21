@@ -45,6 +45,7 @@
      <example idpocket="SNAPBASIC" filename="./" name="SNAPBasic capsule" image=":/rlh1000/modimg/snapbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>
      <example idpocket="SNAPFORTH" filename="./" name="SNAPForth capsule" image=":/rlh1000/modimg/snapforth.png" connectortype="Panasonic_Capsule" conngender="male"/>
      <example idpocket="MSBASIC" filename="./" name="MSBasic capsule" image=":/rlh1000/modimg/msbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>
+     <example idpocket="PORTACALC" filename="./" name="PortaCalc capsule" image=":/rlh1000/modimg/portacalc.png" connectortype="Panasonic_Capsule" conngender="male"/>
      <example idpocket="TELECOMP_I" filename="./" name="Telecomputing I" image=":/rlh1000/modimg/msbasic.png" connectortype="Panasonic_Capsule" conngender="male"/>
      <example idpocket="PANACAPSFILE" filename="./" name="External Capsule file" image=":/rlh1000/modimg/capsule.png" connectortype="Panasonic_Capsule" conngender="male"/>
    <example idpocket="HP82143A" filename="./" name="Printer (non-HP-IL) 82143A" image=":/hp41/modimg/hp82143a.png" connectortype="hp41" conngender="male"/>
