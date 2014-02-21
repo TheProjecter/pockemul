@@ -28,6 +28,7 @@ public:
     virtual bool	SaveConfig(QXmlStreamWriter *xmlOut);	// Save PC Configuration
 
     Cconnector	*pCONNECTOR;	qint64 pCONNECTOR_value;
+    Cconnector	*pEXTCONNECTOR;	qint64 pEXTCONNECTOR_value;
     CbusPc1500    *bus;
 
     CS6B0108 *ps6b0108[4];

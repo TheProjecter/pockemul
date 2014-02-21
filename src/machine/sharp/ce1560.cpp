@@ -8,13 +8,14 @@
 #include "ce1560.h"
 #include "Lcdc_ce1560.h"
 #include "buspc1500.h"
+#include "clink.h"
 
 Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
 {
     Q_UNUSED(parent)
 
     //[constructor]
-    BackGroundFname	= P_RES(":/pc1500/ce1560.png");
+    BackGroundFname	= P_RES(":/pc1500/ce1560_1.png");
     LcdFname		= P_RES(":/pc1500/1500lcd.png");
     setcfgfname(QString("ce1560"));
 
@@ -22,11 +23,15 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     setDYmm(115);//Pc_DY_mm = 115;
     setDZmm(48);//Pc_DZ_mm = 48;
 
-    setDX(481);//Pc_DX	= 960;
-    setDY(550);//Pc_DY	= 320;
+//    setDX(481);//Pc_DX	= 960;
+//    setDY(550);//Pc_DY	= 320;
+    setDX(752);//Pc_DX	= 960;
+    setDY(679);//Pc_DY	= 320;
 
-    Lcd_X		= 48;
-    Lcd_Y		= 53;
+//    Lcd_X		= 48;
+//    Lcd_Y		= 53;
+    Lcd_X		= 180;
+    Lcd_Y		= 55;
     Lcd_DX		= 192;//168;//144 ;
     Lcd_DY		= 64;
     Lcd_ratio_X	= 2;//348.0/240;
@@ -54,7 +59,9 @@ bool Cce1560::init(void)
     CpcXXXX::init();
 
     setfrequency( 0);
-    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(380,332));	publish(pCONNECTOR);
+//    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(380,332));	publish(pCONNECTOR);
+    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(62,450));	publish(pCONNECTOR);
+    pEXTCONNECTOR= new Cconnector(this,60,1,Cconnector::Sharp_60,"Connector 60 pins Ext",false,QPoint(0,447),Cconnector::WEST);	publish(pEXTCONNECTOR);
 
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
@@ -65,12 +72,16 @@ bool Cce1560::init(void)
 
 bool Cce1560::run(void)
 {
+
+    bool forwardBus = true;
+
     bus->fromUInt64(pCONNECTOR->Get_values());
 
     if (!bus->isEnable()) return true;
 
     if (bus->isME1() && (bus->getAddr()<=0x000F))
     {
+        forwardBus = false;
         quint8 module = (bus->getAddr() >> 1 ) & 0x03;
         quint8 reg = (bus->getAddr()&0x07) - (module*2);
         if (module >2) {
@@ -91,6 +102,16 @@ bool Cce1560::run(void)
         }
 
     }
+
+    // Manage EXT Connector
+    if (forwardBus) {
+        // copy MainConnector to Ext Connectors
+        pEXTCONNECTOR->Set_values(bus->toUInt64());
+        // execute Ext
+        mainwindow->pdirectLink->outConnector(pEXTCONNECTOR);
+        bus->fromUInt64(pEXTCONNECTOR->Get_values());
+    }
+
     bus->setEnable(false);
     pCONNECTOR->Set_values(bus->toUInt64());
 
