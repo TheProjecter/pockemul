@@ -8,9 +8,9 @@
 
 Clcdc_ce1560::Clcdc_ce1560(CPObject *parent )	: Clcdc(parent){						//[constructor]
     Color_Off.setRgb(
-                        (int) (92*contrast),
-                        (int) (120*contrast),
-                        (int) (103*contrast));
+                        (int) (64*contrast),
+                        (int) (86*contrast),
+                        (int) (79*contrast));
 }
 
 

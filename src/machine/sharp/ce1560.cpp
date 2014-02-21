@@ -34,8 +34,8 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
 
 //    Lcd_X		= 48;
 //    Lcd_Y		= 53;
-    Lcd_X		= 180;
-    Lcd_Y		= 55;
+    Lcd_X		= 188;
+    Lcd_Y		= 60;
     Lcd_DX		= 192;//168;//144 ;
     Lcd_DY		= 64;
     Lcd_ratio_X	= 2;//348.0/240;
