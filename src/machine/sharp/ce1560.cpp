@@ -87,25 +87,63 @@ bool Cce1560::run(void)
 
     if (!bus->isEnable()) return true;
 
-    if (bus->isME1() && (bus->getAddr()<=0x000F))
+//    if (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
+        if (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
     {
         forwardBus = false;
-        quint8 module = (bus->getAddr() >> 1 ) & 0x03;
-        quint8 reg = (bus->getAddr()&0x07) - (module*2);
-        if (module >2) {
-            qWarning()<<"ERROR Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
-            bus->setEnable(false);
-            pCONNECTOR->Set_values(bus->toUInt64());
-            return true;
-        }
+        quint8 module = (bus->getAddr() >> 1 );
+        quint8 reg = (bus->getAddr()&0x0f) - (module*2);
+//        if (module >2) {
+//            qWarning()<<"ERROR Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
+//            bus->setEnable(false);
+//            pCONNECTOR->Set_values(bus->toUInt64());
+//            return true;
+//        }
         if (bus->isWrite()) {
             quint16 cmd = ((reg==0)? 0x00 : 0x100) | bus->getData()  ;
 //                    qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;
-            ps6b0108[module]->instruction(cmd);
+
+            switch (module) {
+            case 0:
+            case 1:
+            case 2: ps6b0108[module]->instruction(cmd); break;
+            case 3: ps6b0108[0]->instruction(cmd); ps6b0108[1]->instruction(cmd); break;
+            case 4: ps6b0108[0]->instruction(cmd); ps6b0108[2]->instruction(cmd); break;
+            case 5: ps6b0108[1]->instruction(cmd); ps6b0108[2]->instruction(cmd); break;
+            case 6: ps6b0108[0]->instruction(cmd); ps6b0108[1]->instruction(cmd); ps6b0108[2]->instruction(cmd); break;
+            default: break;
+            }
+
+
         }
         else {
             qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
             quint16 cmd = ((reg==0)? 0x200 : 0x300);// | bus->getData();
+
+            switch (module) {
+            case 0:
+            case 1:
+            case 2:
+                bus->setData(ps6b0108[module]->instruction(cmd)); break;
+            case 3:
+                bus->setData(ps6b0108[0]->instruction(cmd));
+                bus->setData(ps6b0108[1]->instruction(cmd)); break;
+            case 4:
+                bus->setData(ps6b0108[0]->instruction(cmd));
+                bus->setData(ps6b0108[2]->instruction(cmd));
+                break;
+            case 5:
+                bus->setData(ps6b0108[1]->instruction(cmd));
+                bus->setData(ps6b0108[2]->instruction(cmd));
+                break;
+            case 6:
+                bus->setData(ps6b0108[0]->instruction(cmd));
+                bus->setData(ps6b0108[1]->instruction(cmd));
+                bus->setData(ps6b0108[2]->instruction(cmd));
+                break;
+            default: break;
+            }
+
             bus->setData(ps6b0108[module]->instruction(cmd));
         }
 
