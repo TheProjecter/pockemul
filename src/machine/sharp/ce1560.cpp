@@ -87,8 +87,8 @@ bool Cce1560::run(void)
 
     if (!bus->isEnable()) return true;
 
-//    if (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
-        if (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
+    if (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
+//        if (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
     {
         forwardBus = false;
         quint8 module = (bus->getAddr() >> 1 );
