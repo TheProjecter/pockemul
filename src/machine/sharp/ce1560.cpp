@@ -111,7 +111,9 @@ bool Cce1560::run(void)
             case 4: ps6b0108[0]->instruction(cmd); ps6b0108[2]->instruction(cmd); break;
             case 5: ps6b0108[1]->instruction(cmd); ps6b0108[2]->instruction(cmd); break;
             case 6: ps6b0108[0]->instruction(cmd); ps6b0108[1]->instruction(cmd); ps6b0108[2]->instruction(cmd); break;
-            default: break;
+            default:
+                qWarning()<<"ERROR Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
+                break;
             }
 
 
@@ -141,7 +143,9 @@ bool Cce1560::run(void)
                 bus->setData(ps6b0108[1]->instruction(cmd));
                 bus->setData(ps6b0108[2]->instruction(cmd));
                 break;
-            default: break;
+            default:
+                qWarning()<<"ERROR Read Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
+                break;
             }
 
             bus->setData(ps6b0108[module]->instruction(cmd));
