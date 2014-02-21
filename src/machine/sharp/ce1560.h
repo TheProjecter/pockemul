@@ -54,7 +54,6 @@ private:
     bool screenFlipping;
     QImage coverImage;
 
+
+#endif
 };
-
-
-#endif // CE1560_H

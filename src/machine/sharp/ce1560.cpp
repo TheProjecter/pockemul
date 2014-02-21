@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QResource>
 #include <QBitmap>
+#include <QLabel>
+#include <QLineEdit>
 
 #include "common.h"
 #include "ce1560.h"
@@ -172,6 +174,7 @@ bool Cce1560::UpdateFinalImage(void) {
 
     delete FinalImage;
     FinalImage = new QImage(*BackgroundImageBackup);
+    pLCDC->Refresh=true;
     CpcXXXX::UpdateFinalImage();
 
 
