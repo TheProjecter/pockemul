@@ -26,6 +26,7 @@ CCPU::CCPU(CPObject *parent)
     regwidget = 0;
     pDEBUG=0;
     connect(this,SIGNAL(msgError(QString)),mainwindow,SLOT(slotMsgError(QString)));
+    connect(this,SIGNAL(showDasm()),pPC,SLOT(Dasm()));
 }
 
 CCPU::~CCPU() {

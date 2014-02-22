@@ -45,6 +45,10 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"ce1560.map");
 
+    memsize		= 0x4000;
+    SlotList.clear();
+    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "ce1560.rom" , CSlot::ROM , "CE-1560 ROM"));
+
     bus = new CbusPc1500();
 
     for (int i=0;i<3;i++) ps6b0108[i]  = new CS6B0108(this);
@@ -52,6 +56,8 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     screenOpen = true;
     screenFlipping = false;
     m_screenAngle = 180;
+
+    inhibitSwitch = false;
 }
 
 Cce1560::~Cce1560() {
@@ -64,6 +70,7 @@ Cce1560::~Cce1560() {
 
 bool Cce1560::init(void)
 {
+    memsize = 0x4000;
     CpcXXXX::init();
 
     setfrequency( 0);
@@ -85,8 +92,24 @@ bool Cce1560::run(void)
 
     bus->fromUInt64(pCONNECTOR->Get_values());
 
-    if (!bus->isEnable()) return true;
+    bus->setINHIBIT(inhibitSwitch);
 
+    if (!bus->isEnable()) {
+        pCONNECTOR->Set_values(bus->toUInt64());
+        return true;
+    }
+
+    quint32 addr = bus->getAddr();
+
+    if ( bus->isINHIBIT() && !bus->isME1() && (bus->getAddr()>=0xC000) && (bus->getAddr()<=0xFFFF) ) {
+        if (!bus->isWrite()) {
+            bus->setData(mem[addr - 0xC000]);
+            forwardBus = false;
+            bus->setEnable(false);
+            pCONNECTOR->Set_values(bus->toUInt64());
+            return true;
+        }
+    }
     if ( (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
         || (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
          )
@@ -197,6 +220,20 @@ bool Cce1560::SaveConfig(QXmlStreamWriter *xmlOut)
 void Cce1560::ComputeKey()
 {
 
+    if (screenOpen && KEY(0x242)) {
+        inhibitSwitch = false;
+        qWarning()<<"INHIBIT FALSE";
+        pKEYB->keyPressedList.removeAll(0x242);
+        update();
+    }
+    if (screenOpen && KEY(0x243)) {
+        inhibitSwitch = true;
+        qWarning()<<"INHIBIT TRUE";
+        pKEYB->keyPressedList.removeAll(0x243);
+        update();
+    }
+
+
     // Manage backdoor click
 //    qWarning()<<"lastkey="<<pKEYB->LastKey<<" -"<<pKEYB->keyPressedList<<" - "<<( (currentView==FRONTview) && ( (screenOpen && KEY(0x240) ) || (!screenOpen && KEY(0x241) )));
     if  ( (currentView==FRONTview) && ( (screenOpen && KEY(0x240) ) || (!screenOpen && KEY(0x241) ))) {
@@ -217,55 +254,57 @@ bool Cce1560::UpdateFinalImage(void) {
     CpcXXXX::UpdateFinalImage();
 
 
+    QPainter painter;
+    painter.begin(FinalImage);
+
+    // update inhibitSwitch
+    if (inhibitSwitch) {
+        painter.drawImage(164,258,BackgroundImageBackup->copy(164,258,56,27).mirrored(inhibitSwitch,false));
+    }
 
 
-//    if ((currentView != FRONTview) ) {
-        QPainter painter;
-        painter.begin(FinalImage);
 
-        QImage screenImage = FinalImage->copy(60,0,692,getDY()/2).mirrored(false,true);
-        painter.setCompositionMode(QPainter::CompositionMode_Source);
-        painter.fillRect(60,0,692,getDY()/2,Qt::transparent);
 
-        painter.translate((getDX()-60)/2+60,getDY()/2);
-        QTransform matrix2;
-        matrix2.rotate(m_screenAngle, Qt::XAxis);
-        painter.setTransform(matrix2,true);
+    QImage screenImage = FinalImage->copy(60,0,692,getDY()/2).mirrored(false,true);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.fillRect(60,0,692,getDY()/2,Qt::transparent);
 
-        if (m_screenAngle<=90)
-            screenImage = coverImage.copy(60,0,692,getDY()/2);
+    painter.translate((getDX()-60)/2+60,getDY()/2);
+    QTransform matrix2;
+    matrix2.rotate(m_screenAngle, Qt::XAxis);
+    painter.setTransform(matrix2,true);
 
-        painter.drawImage(-getDX()/2+60/2,0,screenImage);
-        painter.end();
-        mask = QPixmap::fromImage(*FinalImage).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
+    if (m_screenAngle<=90)
+        screenImage = coverImage.copy(60,0,692,getDY()/2);
 
-        setMask(mask.mask());
+    painter.drawImage(-getDX()/2+60/2,0,screenImage);
+    painter.end();
+    mask = QPixmap::fromImage(*FinalImage).scaled(getDX()*mainwindow->zoom/100,getDY()*mainwindow->zoom/100);
 
-        if (!forceStackOver && (m_screenAngle <= 90)) {
-            forceStackOver=true;
-            QList<CPObject *> list;
-            mainwindow->pdirectLink->findAllObj(this,&list);
-            for (int i=0;i<list.size();i++) {
-                list.at(i)->raise();
-            }
-            list.clear();
+    setMask(mask.mask());
 
-            manageStackPos(&list);
+    if (!forceStackOver && (m_screenAngle <= 90)) {
+        forceStackOver=true;
+        QList<CPObject *> list;
+        mainwindow->pdirectLink->findAllObj(this,&list);
+        for (int i=0;i<list.size();i++) {
+            list.at(i)->raise();
         }
-        if ( forceStackOver && (m_screenAngle > 90)) {
-            forceStackOver=false;
-            QList<CPObject *> list;
-            mainwindow->pdirectLink->findAllObj(this,&list);
-            for (int i=0;i<list.size();i++) {
-                list.at(i)->raise();
-            }
-            list.clear();
+        list.clear();
 
-            manageStackPos(&list);
+        manageStackPos(&list);
+    }
+    if ( forceStackOver && (m_screenAngle > 90)) {
+        forceStackOver=false;
+        QList<CPObject *> list;
+        mainwindow->pdirectLink->findAllObj(this,&list);
+        for (int i=0;i<list.size();i++) {
+            list.at(i)->raise();
         }
+        list.clear();
 
-
-
+        manageStackPos(&list);
+    }
 
     return true;
 }

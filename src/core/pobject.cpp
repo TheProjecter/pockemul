@@ -246,12 +246,12 @@ void CPObject::MoveWithLinked(QPoint p) {
 
 bool CPObject::init()
 {
-        startKeyDrag = false;
-        startPosDrag = false;
-        setMouseTracking(true);
-        resize(Pc_DX,Pc_DY);
-        move(QPoint(PosX,PosY));
-        setAttribute(Qt::WA_AlwaysShowToolTips,true);
+    startKeyDrag = false;
+    startPosDrag = false;
+    setMouseTracking(true);
+    resize(Pc_DX,Pc_DY);
+    move(QPoint(PosX,PosY));
+    setAttribute(Qt::WA_AlwaysShowToolTips,true);
 
     AddLog(LOG_MASTER,tr("Memory initialisation"));
     if (memsize>0)  {
@@ -1443,8 +1443,8 @@ void CPObject::Dump()
 
 void CPObject::Dasm()
 {
-    dialogdasm = new DialogDasm(this);
-    dialogdasm->show();
+    if (!dialogdasm) dialogdasm = new DialogDasm(this);
+    if (dialogdasm) dialogdasm->show();
 }
 
 void CPObject::Postit()
@@ -1580,10 +1580,11 @@ bool CPObject::Mem_Load(BYTE s)
 
     if (SlotList[s].getFileName() == "EMPTY") return true;
 
-    file.setFileName(SlotList[s].getFileName());
-
-    if (file.exists())
+    file.setFileName(QCoreApplication::applicationDirPath()+"/"+QFileInfo(SlotList[s].getFileName()).fileName());
+//    qWarning()<<file.fileName();
+    if (!SlotList[s].getFileName().isEmpty() && file.exists())
     {
+//        qWarning()<<"ok";
         if (file.size() == (SlotList[s].getSize() * 1024) )
         {
             file.open(QIODevice::ReadOnly);

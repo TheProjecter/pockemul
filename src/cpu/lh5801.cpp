@@ -776,6 +776,10 @@ INLINE void CLH5801::instruction_fd(void)
 	default:
 				AddLog(LOG_MASTER,tr("lh5801 illegal opcode at %1  fd%2").arg((P-2),4,16,QChar('0')).arg((int)oper,2,16,QChar('0')));
                 qWarning()<<tr("lh5801 illegal opcode at %1  fd%2").arg((P-2),4,16,QChar('0')).arg((int)oper,2,16,QChar('0'));
+                pPC->BreakSubLevel = 99999;
+                pPC->DasmStep = true;
+                pPC->DasmFlag = false;
+                emit showDasm();
                 break;
 	}
 }
@@ -997,6 +1001,11 @@ INLINE void CLH5801::instruction(void)
 	default:
 		AddLog(LOG_MASTER,tr("lh5801 illegal opcode at %1 %2").arg(P-1,4,16,QChar('0')).arg(oper,4,16,QChar('0')));
         qWarning()<<tr("lh5801 illegal opcode at %1 %2").arg(P-1,4,16,QChar('0')).arg(oper,4,16,QChar('0'));
+
+        pPC->BreakSubLevel = 99999;
+        pPC->DasmStep = true;
+        pPC->DasmFlag = false;
+        emit showDasm();
         break;
 	}
 

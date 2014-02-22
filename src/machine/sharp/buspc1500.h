@@ -11,7 +11,7 @@
 class CbusPc1500:public Cbus {
 
 public:
-//    CbusPc1500(quint8 dest=0, BUS_FUNC func=BUS_SLEEP, quint8 data=0, bool write= false);
+    CbusPc1500();
 
     virtual quint64 toUInt64() const;
     virtual void fromUInt64(quint64 val);
@@ -27,12 +27,15 @@ public:
     bool isPV() const { return pv; }
     void setPV(bool val) { pv = val; }
 
+    bool isINHIBIT() const { return inhibit; }
+    void setINHIBIT(bool val) { inhibit = val; }
 
     virtual QString toLog() const;
 
 private:
     bool me1;
     bool pu,pv;
+    bool inhibit;
 };
 
 

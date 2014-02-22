@@ -54,6 +54,8 @@ private:
     bool screenFlipping;
     QImage coverImage;
 
+    bool inhibitSwitch;
+
 
 #endif
 };

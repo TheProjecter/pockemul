@@ -537,8 +537,11 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
 	if ( (*d>=0x7800) && (*d<=0x7BFF) ) { return(1); }										// RAM area(7800-7BFF)
 	if ( (*d>=0x7C00) && (*d<=0x7FFF) ) { return(0); }										// INHIBITED MIRRORING
     if ( (*d>=0x8000) && (*d<=0xBFFF) ) { writeBus(d,data); return false; }										// RAM area(4000-7FFFF)
-    if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
 
+    if ( (*d>=0xC000) && (*d<=0xFFFF) ) {
+        if (bus->isINHIBIT()) writeBus(d,data);
+        return false;
+    }
     if ( (*d>=0x1F000) && (*d<=0x1F00F) ) { lh5810_write(*d,data); lh5810_Access = true; return false; }	// I/O area(LH5810)
 
     if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { writeBus(d,data); return false; }
@@ -579,6 +582,8 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
         *data = lh5810_read(*d);
         return false;
     }
+
+    if ( bus->isINHIBIT() && (*d>=0xC000) && (*d<=0xFFFF) ) { readBus(d,data); return false; }
 
     if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { readBus(d,data); return false; }
 

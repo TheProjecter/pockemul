@@ -114,6 +114,7 @@ public:
 
 signals:
     void msgError(QString);
+    void showDasm();
 
 private:
 	FILE *fp_status;		//pointer to status file
