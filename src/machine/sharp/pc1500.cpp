@@ -512,7 +512,7 @@ void Cpc15XX::writeBus(UINT32 *d,UINT32 data) {
 void Cpc15XX::readBus(UINT32 *d,UINT32 *data) {
     bus->setWrite(false);
     bus->setAddr(*d);
-    bus->setData(0xfe);
+    bus->setData(0xff);
     bus->setEnable(true);
     manageBus();
     *data = bus->getData();
@@ -582,6 +582,8 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
         *data = lh5810_read(*d);
         return false;
     }
+
+    if (bus->isINHIBIT()) qWarning()<<"ERROR";
 
     if ( bus->isINHIBIT() && (*d>=0xC000) && (*d<=0xFFFF) ) { readBus(d,data); return false; }
 
@@ -731,6 +733,7 @@ bool Cpc15XX::Get_Connector(void)
 {
     bus->fromUInt64(pCONNECTOR->Get_values());
     bus->setEnable(false);
+//    if (bus->isINHIBIT()) qWarning()<<"INhibit";
 
     return true;
 }

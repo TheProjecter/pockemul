@@ -70,7 +70,6 @@ Cce1560::~Cce1560() {
 
 bool Cce1560::init(void)
 {
-    memsize = 0x4000;
     CpcXXXX::init();
 
     setfrequency( 0);
@@ -182,6 +181,7 @@ bool Cce1560::run(void)
         bus->fromUInt64(pEXTCONNECTOR->Get_values());
     }
 
+    bus->setINHIBIT(inhibitSwitch);
     bus->setEnable(false);
     pCONNECTOR->Set_values(bus->toUInt64());
 
