@@ -583,7 +583,7 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
         return false;
     }
 
-    if (bus->isINHIBIT()) qWarning()<<"ERROR";
+//    if (bus->isINHIBIT()) qWarning()<<"ERROR";
 
     if ( bus->isINHIBIT() && (*d>=0xC000) && (*d<=0xFFFF) ) { readBus(d,data); return false; }
 
