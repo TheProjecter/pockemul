@@ -15,6 +15,8 @@
 #include <QLayout>
 #include <QtGui>
 #include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
 
 #include "pobject.h"
 #include "pcxxxx.h"
@@ -46,8 +48,22 @@ QHexPanel::QHexPanel(QWidget *p)
     cbinstallTo->setMinimumSize(QSize(60, 0));
     cbinstallTo->setMaximumSize(QSize(100, 16777215));
     vboxLayout->addWidget(cbinstallTo);
+
+//    QHBoxLayout *hboxAdrLayout= new QHBoxLayout(this);
+//    vboxLayout->addLayout(hboxAdrLayout);
+//    hboxAdrLayout->addWidget(new QLabel("Adr:"));
+    leTargetAdr = new QLineEdit();
+    leTargetAdr->setMinimumSize(QSize(60, 0));
+    leTargetAdr->setMaximumSize(QSize(100, 16777215));
+//    hboxAdrLayout->addWidget(leTargetAdr);
+//    hboxAdrLayout->setSizeConstraint();
+    vboxLayout->addWidget(leTargetAdr);
+
+
     QPushButton *pbInstall = new QPushButton();
     pbInstall->setText("Install");
+    pbInstall->setMinimumSize(QSize(60, 0));
+    pbInstall->setMaximumSize(QSize(100, 16777215));
     vboxLayout->addWidget(pbInstall);
 
     connect(pbInstall,SIGNAL(clicked()),this,SLOT(install()));
@@ -189,7 +205,11 @@ void QHexPanel::install()
     int index = cbinstallTo->currentIndex();
     CpcXXXX *pc = (CpcXXXX *) cbinstallTo->itemData(index).toString().toULongLong();
 
-    emit installTo(pc,startadr,hexeditor->data());
+    quint32 _adr = startadr;
+    if (!leTargetAdr->text().isEmpty()) {
+        _adr = leTargetAdr->text().toULong(0,16);
+    }
+    emit installTo(pc,_adr,hexeditor->data());
 //    QDataStream in(hexeditor->data());
 //    in.readRawData ((char *) &pc->mem[startadr],hexeditor->data().size() );
 //    QMessageBox::about(this,"Transfert",tr("LM stored at %1").arg(startadr));

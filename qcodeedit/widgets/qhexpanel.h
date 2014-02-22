@@ -42,6 +42,7 @@ signals:
 private:
     int m_conflictSpot;
     QComboBox *cbinstallTo;
+    QLineEdit *leTargetAdr;
 
 
 };

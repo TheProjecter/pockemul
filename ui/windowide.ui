@@ -150,46 +150,6 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Adress :</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="adrLineEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
         <widget class="QLabel" name="label_2">
@@ -219,6 +179,15 @@
            <height>20</height>
           </size>
          </property>
+         <item>
+          <property name="text">
+           <string>PC-1500</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resources/pc1500.qrc">
+            <normaloff>:/pc1500/pc1500.png</normaloff>:/pc1500/pc1500.png</iconset>
+          </property>
+         </item>
          <item>
           <property name="text">
            <string>PC-1350</string>
@@ -251,7 +220,7 @@
            <string>PC-1255</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1255.qrc">
+           <iconset>
             <normaloff>:/pc1255/pc1255.jpg</normaloff>:/pc1255/pc1255.jpg</iconset>
           </property>
          </item>
@@ -260,7 +229,7 @@
            <string>PC-1260</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1260.qrc">
+           <iconset>
             <normaloff>:/pc1260/pc1260.jpg</normaloff>:/pc1260/pc1260.jpg</iconset>
           </property>
          </item>
@@ -269,7 +238,7 @@
            <string>PC-1261</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1261.qrc">
+           <iconset>
             <normaloff>:/pc1261/pc1261.jpg</normaloff>:/pc1261/pc1261.jpg</iconset>
           </property>
          </item>
@@ -278,8 +247,8 @@
            <string>PC-1262</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1262.qrc">
-            <normaloff>:/pc1262/pc1262.jpg</normaloff>:/pc1262.jpg</iconset>
+           <iconset>
+            <normaloff>:/pc1262/pc1262.jpg</normaloff>:/pc1262/pc1262.jpg</iconset>
           </property>
          </item>
          <item>
@@ -287,8 +256,8 @@
            <string>PC-1360</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1360.qrc">
-            <normaloff>:/pc1360/pc1360.jpg</normaloff>:/pc1360.jpg</iconset>
+           <iconset>
+            <normaloff>:/pc1360/pc1360.jpg</normaloff>:/pc1360/pc1360.jpg</iconset>
           </property>
          </item>
          <item>
@@ -296,8 +265,8 @@
            <string>PC-1475</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources/pc1475.qrc">
-            <normaloff>:/pc1475/pc1475.jpg</normaloff>:/pc1475.jpg</iconset>
+           <iconset>
+            <normaloff>:/pc1475/pc1475.jpg</normaloff>:/pc1475/pc1475.jpg</iconset>
           </property>
          </item>
         </widget>
@@ -401,13 +370,8 @@
  <resources>
   <include location="../resources/pc1250.qrc"/>
   <include location="../resources/pc1251.qrc"/>
-  <include location="../resources/pc1255.qrc"/>
-  <include location="../resources/pc1260.qrc"/>
-  <include location="../resources/pc1261.qrc"/>
-  <include location="../resources/pc1262.qrc"/>
   <include location="../resources/pc1350.qrc"/>
-  <include location="../resources/pc1360.qrc"/>
-  <include location="../resources/pc1475.qrc"/>
+  <include location="../resources/pc1500.qrc"/>
  </resources>
  <connections/>
 </ui>

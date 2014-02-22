@@ -87,18 +87,15 @@ bool Cce1560::run(void)
 
     if (!bus->isEnable()) return true;
 
-    if (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
-//        if (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
+    if ( (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
+        || (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
+         )
     {
         forwardBus = false;
         quint8 module = (bus->getAddr() >> 1 );
         quint8 reg = (bus->getAddr()&0x0f) - (module*2);
-//        if (module >2) {
-//            qWarning()<<"ERROR Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
-//            bus->setEnable(false);
-//            pCONNECTOR->Set_values(bus->toUInt64());
-//            return true;
-//        }
+
+
         if (bus->isWrite()) {
             quint16 cmd = ((reg==0)? 0x00 : 0x100) | bus->getData()  ;
 //                    qWarning()<<"Write Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<< "cmd:"<<cmd;

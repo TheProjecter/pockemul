@@ -5,6 +5,7 @@
 
 #include <QFile>
 #include <QFileDialog>
+#include <QProcess>
 
 #include "windowide.h"
 #include "ui_windowide.h"
@@ -21,6 +22,7 @@
 #include "qlinemarksinfocenter.h"
 #include "qeditor.h"
 #include "qcodeedit.h"
+#include "qeditconfig.h"
 #include "qlanguagefactory.h"
 #include "qlanguagedefinition.h"
 #include "qhexpanel.h"
@@ -53,6 +55,7 @@ WindowIDE::WindowIDE(QWidget *parent) :
     this->setWindowTitle(tr("PockEmul Integrated Development Environment"));
     this->setAttribute(Qt::WA_DeleteOnClose,true);
 
+//    ui->verticalLayout_2->addWidget(new QEditConfig());
     setupEditor();
 
     connect(ui->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
@@ -257,31 +260,36 @@ void WindowIDE::compile(void) {
         CEditorWidget *currentWidget = locEditorWidget;
 
         mapSRC[sourcefname] = source.toLatin1();
-        Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
-        pasm->run("BAS",mapSRC[sourcefname]);
-        pasm->savefile("BAS");
-        pasm->savefile("BIN");
-        pasm->savefile("HEX");
+        if (ui->targetComboBox->currentText()=="PC-1500") {
+            compilePC1500(sourcefname);
+        }
+        else {
+            Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
+            pasm->run("BAS",mapSRC[sourcefname]);
+            pasm->savefile("BAS");
+            pasm->savefile("BIN");
+            pasm->savefile("HEX");
 
-        createEditorTab(fInfo.baseName()+".bas",mapLM["BAS"]);
+            createEditorTab(fInfo.baseName()+".bas",mapLM["BAS"]);
 
-        createOutputTab("ASM Compiler :"+fInfo.fileName(),mapLM["output"]);
+            createOutputTab("ASM Compiler :"+fInfo.fileName(),mapLM["output"]);
+        }
 
-        currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
-        QHexPanel *hexpanel = new QHexPanel();
-
-
-        currentWidget->m_editControl
-                ->addPanel(hexpanel, QCodeEdit::South, true);
-        hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
-        hexpanel->hexeditor->setData(mapLM["BIN"],hexpanel->startadr);
-        hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
-        connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
-        connect(this,SIGNAL(removeEmulatedPocket(CPObject*)),hexpanel,SLOT(removePocket(CPObject*)));
-        connect(hexpanel,SIGNAL(installTo(CpcXXXX*,qint32,QByteArray)),this,SLOT(installTo(CpcXXXX*,qint32,QByteArray)));
+        if (! mapLM["BIN"].isEmpty()) {
+            currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+            QHexPanel *hexpanel = new QHexPanel();
 
 
+            currentWidget->m_editControl
+                    ->addPanel(hexpanel, QCodeEdit::South, true);
+            hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
+            hexpanel->hexeditor->setData(mapLM["BIN"],hexpanel->startadr);
+            hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
+            connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
+            connect(this,SIGNAL(removeEmulatedPocket(CPObject*)),hexpanel,SLOT(removePocket(CPObject*)));
+            connect(hexpanel,SIGNAL(installTo(CpcXXXX*,qint32,QByteArray)),this,SLOT(installTo(CpcXXXX*,qint32,QByteArray)));
 
+        }
 
 //        MSG_ERROR("*"+mapLM["_ORG"]+"*");
 //        MSG_ERROR(QString("%1").arg(hexpanel->startadr));
@@ -289,6 +297,56 @@ void WindowIDE::compile(void) {
 #endif
 }
 
+void WindowIDE::compilePC1500(QString fn) {
+    QString program = QCoreApplication::applicationDirPath()+"/lhasm_win32.exe";
+    qWarning()<<"exe:"<<program;
+
+    QString _path = QFileInfo(fn).absolutePath();
+    qWarning()<<"Working dir:"<<_path;
+
+    QProcess *myProcess = new QProcess();
+    myProcess->setWorkingDirectory(_path);
+
+    fn = QFileInfo(fn).fileName();
+    QStringList arguments;
+    arguments << "-L ";
+    arguments << QFileInfo(fn).baseName()+".log";
+    arguments << fn;
+    qWarning()<<"args:"<<arguments;
+
+    myProcess->setReadChannel(QProcess::StandardOutput);
+    myProcess->start(program, arguments);
+    if (!myProcess->waitForStarted()){
+        qWarning()<<"ERROR START";
+        return;
+    }
+    if (!myProcess->waitForFinished()) {
+        qWarning()<<"ERROR FINISH";
+        return;
+    }
+    qWarning()<<"EXEC:"<<myProcess->exitStatus();
+    QByteArray stdOutput = myProcess->readAll();
+    qWarning()<<"EXEC result:"<< stdOutput;
+
+    QString binFn = _path+"/"+QFileInfo(fn).baseName()+".bin";
+    qWarning()<<binFn;
+    QFile _f(binFn);
+    qWarning()<<QByteArray("\n\r");
+    if (_f.open(QIODevice::ReadOnly)) {
+        mapLM["BIN"]=_f.readAll().replace("\r\n","\n");
+        _f.close();
+    }
+
+    QString logFn = _path+"/"+QFileInfo(fn).baseName()+".log";
+    qWarning()<<logFn;
+    QFile _f_log(logFn);
+    if (_f_log.open(QIODevice::ReadOnly)) {
+        createOutputTab("lhASM output",_f_log.readAll().append("\n").append(stdOutput));
+//        QByteArray _logResult = _f_log.readAll();
+        _f_log.close();
+    }
+
+}
 
 /*!
  \brief Add a new tab to the Editor panel
@@ -364,9 +422,9 @@ void WindowIDE::removetargetCB(CPObject *pc) {
 */
 void WindowIDE::installTo(CpcXXXX * pc,qint32 adr, QByteArray data ) {
 qint32 targetAdr = adr;
-    if (!(ui->adrLineEdit->text().isEmpty())) {
-        targetAdr = ui->adrLineEdit->text().toLong(0,16);
-    }
+//    if (!(ui->adrLineEdit->text().isEmpty())) {
+//        targetAdr = ui->adrLineEdit->text().toLong(0,16);
+//    }
     if (pc->Mem_Load(targetAdr,data)) {
         QMessageBox::about(mainwindow,"Transfert",tr("LM stored at %1").arg(targetAdr));
     }

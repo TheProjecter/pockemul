@@ -4235,7 +4235,7 @@ void QEditor::insertText(QDocumentCursor& c, const QString& text)
 		c.deleteChar();
 	
 	QStringList lines = text.split('\n', QString::KeepEmptyParts);
-	
+
 	if ( (lines.count() == 1) || !flag(AdjustIndent) )
 	{
 		preInsert(c, lines.first());
@@ -4254,16 +4254,16 @@ void QEditor::insertText(QDocumentCursor& c, const QString& text)
 		QString indent;
         // FIXME: ? work on strings to make sure command grouping does not interfere with cursor state...
 		
-		indent = c.line().text().left(qMax(0, qMin(c.line().firstChar(), c.columnNumber())));
+        indent = c.line().text().left(qMax(0, qMin(c.line().firstChar(), c.columnNumber())));
 		
 		foreach ( QString l, lines )
 		{
 			int n = 0;
-			
+#if 0
 			while ( n < l.count() && l.at(n).isSpace() )
 				++n;
 			
-			l.remove(0, n);
+            l.remove(0, n);
 			
 			if ( m_definition )
 			{
@@ -4273,7 +4273,7 @@ void QEditor::insertText(QDocumentCursor& c, const QString& text)
 				if ( flag(ReplaceTabs) )
 					indent.replace("\t", QString(m_doc->tabStop(), ' '));
 			}
-			
+#endif
 			c.insertLine();
 			c.insertText(indent);
 			
