@@ -100,7 +100,10 @@ bool Cce1560::run(void)
 
     quint32 addr = bus->getAddr();
 
-    if ( bus->isINHIBIT() && !bus->isME1() && (bus->getAddr()>=0xC000) && (bus->getAddr()<=0xFFFF) ) {
+    if ( (bus->getAddr()>=0xC000) && (bus->getAddr()<=0xFFFF) &&
+         bus->isINHIBIT() &&
+         !bus->isME1() )
+    {
         if (!bus->isWrite()) {
             bus->setData(mem[addr - 0xC000]);
             forwardBus = false;
