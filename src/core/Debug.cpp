@@ -693,11 +693,12 @@ typedef enum {
 	XL, XH, X,
 	YL, YH, Y,
 	UL, UH, U,
-	P, S
+    P, S,
+    M, N
 } Regs;
 
 const char *RegNames[]= {
-	0, "A", "XL", "XH", "X", "YL", "YH", "Y", "UL", "UH", "U", "P", "S"
+    0, "A", "XL", "XH", "X", "YL", "YH", "Y", "UL", "UH", "U", "P", "S","M","N"
 };
 
 typedef enum {
@@ -817,13 +818,13 @@ static const Entry table[0x100]={
 	{ EOR, ME0, U },
 	{ STA, ME0, U },
 	{ BIT, ME0, U },
-	{ ILL }, // 0x30
+    { SBC, ME0, N }, // 0x30
 	{ ILL },
+    { ADC, Reg, N },
 	{ ILL },
+    { LDA, Reg, N },
 	{ ILL },
-	{ ILL },
-	{ ILL },
-	{ ILL },
+    { CPA, Reg, N },
 	{ ILL },
 	{ NOP, Imp },
 	{ ILL },

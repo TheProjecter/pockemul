@@ -47,7 +47,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
 
     memsize		= 0x4000;
     SlotList.clear();
-    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "ce1560.rom" , CSlot::ROM , "CE-1560 ROM"));
+    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "ce1560.rom" , CSlot::RAM , "CE-1560 ROM"));
 
     bus = new CbusPc1500();
 

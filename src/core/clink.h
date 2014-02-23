@@ -31,18 +31,25 @@ public:
     bool isLinked(Cconnector *);
     Cconnector * Linked(Cconnector * search);
 	
-	
+    QMutex addlinkMutex;
+    QMutex logMutex;
+
     void clearlog(void) {
+        logMutex.lock();
         log_run.clear();
+        logMutex.unlock();
     }
     void insertlog(CPObject * pPC){
+        logMutex.lock();
         log_run.append(pPC);
+        logMutex.unlock();
 	}
     bool inlogrun(CPObject * pPC){
         return log_run.contains(pPC);
     }
 
-    QMutex addlinkMutex;
+
+
 
 };
 
