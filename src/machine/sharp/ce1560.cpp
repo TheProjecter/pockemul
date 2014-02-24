@@ -45,9 +45,30 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"ce1560.map");
 
-    memsize		= 0x4000;
+    memsize		= 0x90000;
     SlotList.clear();
-    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "ce1560.rom" , CSlot::RAM , "CE-1560 ROM"));
+    // Firmware: 2 page of 16Ko
+    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "ce1560.rom" , CSlot::RAM , "ROM Pg 0"));
+    SlotList.append(CSlot(16 , 0x4000 ,	 ""	, "ce1560.rom" , CSlot::RAM , "ROM Pg 1"));
+
+    // RAMDISK: 16 x 32Ko
+    SlotList.append(CSlot(32 , 0x10000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 0"));
+    SlotList.append(CSlot(32 , 0x18000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 1"));
+    SlotList.append(CSlot(32 , 0x20000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 2"));
+    SlotList.append(CSlot(32 , 0x28000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 3"));
+    SlotList.append(CSlot(32 , 0x30000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 4"));
+    SlotList.append(CSlot(32 , 0x38000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 5"));
+    SlotList.append(CSlot(32 , 0x40000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 6"));
+    SlotList.append(CSlot(32 , 0x48000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 7"));
+    SlotList.append(CSlot(32 , 0x50000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 8"));
+    SlotList.append(CSlot(32 , 0x58000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 9"));
+    SlotList.append(CSlot(32 , 0x60000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg A"));
+    SlotList.append(CSlot(32 , 0x68000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg B"));
+    SlotList.append(CSlot(32 , 0x70000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg C"));
+    SlotList.append(CSlot(32 , 0x78000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg D"));
+    SlotList.append(CSlot(32 , 0x80000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg E"));
+    SlotList.append(CSlot(32 , 0x88000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg F"));
+
 
     bus = new CbusPc1500();
 
@@ -58,6 +79,8 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     m_screenAngle = 180;
 
     inhibitSwitch = false;
+    ramDiskPg = 0;
+    firmwarePg= 0;
 }
 
 Cce1560::~Cce1560() {
@@ -100,12 +123,37 @@ bool Cce1560::run(void)
 
     quint32 addr = bus->getAddr();
 
+    // RAMDISK ACCESS
+    if ( bus->isME1() &&
+         (addr == 0xE300)) {
+        ramDiskPg = bus->getData() & 0x0f;
+     }
+
+
+    if ( (addr<=0x7FFF) && bus->isME1() )
+    {
+        if (bus->isWrite()) {
+            mem[0x10000 + addr + ramDiskPg*0x8000] = bus->getData();
+            forwardBus = false;
+            bus->setEnable(false);
+            pCONNECTOR->Set_values(bus->toUInt64());
+            return true;
+        }
+        else {
+            bus->setData(mem[0x10000 + addr + ramDiskPg*0x8000]);
+            forwardBus = false;
+            bus->setEnable(false);
+            pCONNECTOR->Set_values(bus->toUInt64());
+            return true;
+        }
+    }
+
     if ( (bus->getAddr()>=0xC000) && (bus->getAddr()<=0xFFFF) &&
          bus->isINHIBIT() &&
          !bus->isME1() )
     {
         if (!bus->isWrite()) {
-            bus->setData(mem[addr - 0xC000]);
+            bus->setData(mem[addr - 0xC000 + firmwarePg * 0x4000]);
             forwardBus = false;
             bus->setEnable(false);
             pCONNECTOR->Set_values(bus->toUInt64());
@@ -235,6 +283,18 @@ void Cce1560::ComputeKey()
         pKEYB->keyPressedList.removeAll(0x243);
         update();
     }
+    if (screenOpen && KEY(0x244)) {
+        firmwarePg = 0;
+        qWarning()<<"Firmware Pg 0";
+        pKEYB->keyPressedList.removeAll(0x244);
+        update();
+    }
+    if (screenOpen && KEY(0x245)) {
+        firmwarePg = 1;
+        qWarning()<<"Firmware Pg 1";
+        pKEYB->keyPressedList.removeAll(0x245);
+        update();
+    }
 
 
     // Manage backdoor click
@@ -264,7 +324,9 @@ bool Cce1560::UpdateFinalImage(void) {
     if (inhibitSwitch) {
         painter.drawImage(164,258,BackgroundImageBackup->copy(164,258,56,27).mirrored(inhibitSwitch,false));
     }
-
+    if (firmwarePg==1) {
+        painter.drawImage(164,287,BackgroundImageBackup->copy(164,287,56,27).mirrored(firmwarePg==1,false));
+    }
 
 
 

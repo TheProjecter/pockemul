@@ -55,7 +55,8 @@ private:
     QImage coverImage;
 
     bool inhibitSwitch;
-
+    int  ramDiskPg;
+    int  firmwarePg;
 
 #endif
 };
