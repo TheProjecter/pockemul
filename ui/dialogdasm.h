@@ -32,6 +32,8 @@ public:
 
     void resizeEvent(QResizeEvent *event);
     void selectRow(int index);
+    void saveAll();
+    void load();
 private:
     Ui::DialogDasm *ui;
     BINEditor::BinEditor *imemHexEditor;
@@ -54,6 +56,10 @@ public slots:
     void breakPointChanged(QListWidgetItem* item);
     void addTraceRange();
     void traceRangeChanged(QListWidgetItem* item);
+
+    void addSymbolFile();
+    void removeSymbolFile();
+    void loadSymbolMap();
 };
 
 #endif // DIALOGDASM_H

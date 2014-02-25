@@ -1,6 +1,7 @@
 
 
 #include <stdlib.h>
+#include <QDebug>
 
 #include "common.h"
 #include "Connect.h"
@@ -44,6 +45,7 @@ void Cconnector::ConnectTo(Cconnector * source)
 {
 	if (!source) return;
     values = source->values;
+//    qWarning()<<source->Parent->getcfgfname()<<":"<<source->Id<<source->Desc<<" copied to "<<this->Parent->getcfgfname()<<":"<<Id<<Desc;
 }
 
 void Cconnector::setSnap(QPoint p)

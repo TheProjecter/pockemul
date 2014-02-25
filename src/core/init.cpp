@@ -76,8 +76,8 @@ void CPocketThread::run()
                             pPC->run();
                         }
                         // WRITE the LINK BOX Connector
-                        mainwindow->pdirectLink->clearlog();
-                        mainwindow->pdirectLink->Output(pPC);
+                        if ( ( dynamic_cast<CpcXXXX *>(pPC) ) &&  !((CpcXXXX*)pPC)->DasmFlag)
+                            mainwindow->pdirectLink->Cascade(pPC);
 
                         pause = false;
 

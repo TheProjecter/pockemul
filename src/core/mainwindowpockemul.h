@@ -208,6 +208,7 @@ public slots:
 
 private slots:
 
+
     void about();
     void Log();
     void IDE();
@@ -244,9 +245,11 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent( QMouseEvent * event );
-        void wheelEvent(QWheelEvent *event);
+    void wheelEvent(QWheelEvent *event);
     void resizeEvent(QResizeEvent *);
     void closeEvent(QCloseEvent *event);
+
+
 
 signals:
     void AddLogItem(QString);

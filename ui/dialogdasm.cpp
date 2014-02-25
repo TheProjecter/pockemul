@@ -1,6 +1,8 @@
 //TODO Contextual menu on breakpoints
 #include <QDebug>
 #include <QScrollBar>
+#include <QFileDialog>
+#include <QSettings>
 
 #include "dialogdasm.h"
 #include "ui_dialogdasm.h"
@@ -10,6 +12,10 @@
 #include "ui/cregssc61860widget.h"
 #include "cpu.h"
 #include "cregcpu.h"
+
+#define CODE_LINE 0
+#define LABEL_LINE 1
+#define SEPARATOR_LINE 2
 
 DialogDasm::DialogDasm(QWidget *parent) :
     QDialog(parent),
@@ -39,6 +45,10 @@ DialogDasm::DialogDasm(QWidget *parent) :
     connect(ui->tbAddTraceRange,SIGNAL(clicked()),this,SLOT(addTraceRange()));
     connect(ui->lwTraceRange,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(traceRangeChanged(QListWidgetItem*)));
 
+    connect(ui->pbAddSymbol,SIGNAL(clicked()),this,SLOT(addSymbolFile()));
+    connect(ui->pbRemoveSymbol,SIGNAL(clicked()),this,SLOT(removeSymbolFile()));
+    connect(ui->lwSymbolFiles, SIGNAL(itemChanged(QListWidgetItem *)),this, SLOT(loadSymbolMap()));
+
     QFont font;
     font.setFamily("Courier");
     font.setFixedPitch(true);
@@ -56,10 +66,13 @@ DialogDasm::DialogDasm(QWidget *parent) :
 
     imem=true;
 
+    load();
+
 }
 
 DialogDasm::~DialogDasm()
 {
+    saveAll();
     delete ui;
 }
 
@@ -99,7 +112,8 @@ bool DialogDasm::IsAdrInList(qint32 adr)
     for (int i=0;i<NbLig;i++)
     {
         QListWidgetItem *item = ui->codelistWidget->item(i);
-        if (adr == item->data(Qt::UserRole))
+        if ( (item->data(Qt::UserRole+1) == CODE_LINE) &&
+             (adr == item->data(Qt::UserRole)) )
         {
             selectRow(i);
 
@@ -119,16 +133,23 @@ void DialogDasm::ManualDasm() {
 
     for (int j=0;j<_nb;j++)
     {
-        //            qWarning()<<"adr="<<_adr;
+        qWarning()<<"adr="<<_adr;
         pPC->pCPU->pDEBUG->DisAsm_1(_adr);
         //MaxAdr		= pPC->pCPU->pDEBUG->DasmAdr;
-        _adr	= pPC->pCPU->pDEBUG->NextDasmAdr;
-        QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
-        int adr = pPC->pCPU->pDEBUG->DasmAdr;
-        item->setData(Qt::UserRole,adr);
 
+        int adr = pPC->pCPU->pDEBUG->DasmAdr;
+        if (pPC->pCPU->pDEBUG->symbolMap.contains(_adr)) {
+            QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->symbolMap[_adr]->toLbl()+":");
+            item->setData(Qt::UserRole,QVariant(_adr));
+            item->setData(Qt::UserRole+1,LABEL_LINE);
+            ui->codelistWidget->addItem(item);
+        }
+        QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
+        item->setData(Qt::UserRole,_adr);
+        item->setData(Qt::UserRole+1,CODE_LINE);
         ui->codelistWidget->addItem(item);
         Index++;
+        _adr	= pPC->pCPU->pDEBUG->NextDasmAdr;
     }
 
 
@@ -161,6 +182,7 @@ void DialogDasm::RefreshDasm()
                     QListWidgetItem *item = new QListWidgetItem(text);
                     int adr = pPC->pCPU->pDEBUG->DasmAdr;
                     item->setData(Qt::UserRole,QVariant(adr));
+                    item->setData(Qt::UserRole+1,SEPARATOR_LINE);
                     ui->codelistWidget->addItem(item);
                     selectRow(ui->codelistWidget->count()-1);
 
@@ -171,22 +193,38 @@ void DialogDasm::RefreshDasm()
                 NextMaxAdr	= pPC->pCPU->pDEBUG->NextDasmAdr;
             }
 
-            QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
             int adr = pPC->pCPU->pDEBUG->DasmAdr;
+            if (pPC->pCPU->pDEBUG->symbolMap.contains(adr)) {
+                QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->symbolMap[adr]->toLbl()+":");
+                item->setData(Qt::UserRole,QVariant(adr));
+                item->setData(Qt::UserRole+1,LABEL_LINE);
+                ui->codelistWidget->addItem(item);
+            }
+            QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
             item->setData(Qt::UserRole,adr);
+            item->setData(Qt::UserRole+1,CODE_LINE);
             ui->codelistWidget->addItem(item);
             selectRow(ui->codelistWidget->count()-1);
             Index++;
+            NextMaxAdr	= pPC->pCPU->pDEBUG->NextDasmAdr;
 // full until 15 lines
-            for (int j=Index;j<15;j++)
+            for (int j=Index;j<30;j++)
             {
-                pPC->pCPU->pDEBUG->DisAsm_1(NextMaxAdr);
+                int _adr = pPC->pCPU->pDEBUG->NextDasmAdr;
+                pPC->pCPU->pDEBUG->DisAsm_1(_adr);
                 MaxAdr		= pPC->pCPU->pDEBUG->DasmAdr;
                 NextMaxAdr	= pPC->pCPU->pDEBUG->NextDasmAdr;
-                QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
-                int adr = pPC->pCPU->pDEBUG->DasmAdr;
-                item->setData(Qt::UserRole,adr);
 
+                if (pPC->pCPU->pDEBUG->symbolMap.contains(_adr)) {
+                    QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->symbolMap[_adr]->toLbl()+":");
+                    item->setData(Qt::UserRole,QVariant(_adr));
+                    item->setData(Qt::UserRole+1,LABEL_LINE);
+                    ui->codelistWidget->addItem(item);
+                }
+
+                QListWidgetItem *item = new QListWidgetItem(pPC->pCPU->pDEBUG->Buffer);
+                item->setData(Qt::UserRole,_adr);
+                item->setData(Qt::UserRole+1,CODE_LINE);
                 ui->codelistWidget->addItem(item);
                 Index++;
             }
@@ -302,4 +340,118 @@ void DialogDasm::traceRangeChanged(QListWidgetItem *item)
     _pair.second = ui->leTraceTo->text().toUInt(0,16);
     pPC->TraceRange[_pair] = item->checkState();
 
+}
+
+void DialogDasm::addSymbolFile()
+{
+    // open openfilebox
+    QString fn = QFileDialog::getOpenFileName(
+            this,
+            tr("Choose a Symbole file"),
+            ".");
+    if (fn.isEmpty()) return;
+
+
+    QListWidgetItem *_item = new QListWidgetItem(QFileInfo(fn).fileName());
+    _item->setToolTip(fn);
+    _item->setCheckState(Qt::Checked);
+    ui->lwSymbolFiles->addItem(_item);
+    loadSymbolMap();
+}
+
+void DialogDasm::removeSymbolFile()
+{
+    ui->lwSymbolFiles->takeItem(ui->lwSymbolFiles->currentRow());
+    loadSymbolMap();
+}
+
+extern QString workDir;
+
+void DialogDasm::loadSymbolMap()
+{
+
+    qWarning()<<"loadSymbolMap";
+
+    pPC->pCPU->pDEBUG->symbolMap.clear();
+
+    if (ui->lwSymbolFiles->count()==0) return;
+
+    for (int i=0;i<ui->lwSymbolFiles->count();i++) {
+        if (ui->lwSymbolFiles->item(i)->checkState()==Qt::Checked) {
+            qWarning()<<"loading file:"<<ui->lwSymbolFiles->item(i)->toolTip();
+            QFile file(ui->lwSymbolFiles->item(i)->toolTip());
+            if (file.open(QIODevice::ReadOnly)) {
+                QByteArray line = file.readLine();
+                if (line.contains(".SYMBOLS:")) {
+                    // LHASM Symbols file
+                    while (!file.atEnd()) {
+                        QByteArray line = file.readLine();
+                        quint32 adr;
+                        char lbl[80];
+                        sscanf(line,"\t%x\t%s",&adr,lbl);
+                        pPC->pCPU->pDEBUG->symbolMap[adr] = new Csymbol(QString(lbl));
+                        qWarning()<<"adr:"<<adr<<pPC->pCPU->pDEBUG->symbolMap[adr]->toLbl();
+                    }
+                }
+            }
+        }
+    }
+    qWarning()<<pPC->pCPU->pDEBUG->symbolMap;
+}
+
+void DialogDasm::saveAll() {
+    qWarning()<<"saveall";
+    QSettings settings(workDir+"config.ini",QSettings::IniFormat);
+
+    QString s;
+    QXmlStreamWriter *xmlOut = new QXmlStreamWriter(&s);
+    xmlOut->setAutoFormatting(true);
+
+    xmlOut->writeStartElement("dasm");
+        xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeStartElement("symbols");
+            for (int i=0; i < ui->lwSymbolFiles->count(); i++) {
+                QString _fn = ui->lwSymbolFiles->item(i)->text();
+                QString _fullName = ui->lwSymbolFiles->item(i)->toolTip();
+                QString _checked = (ui->lwSymbolFiles->item(i)->checkState()==Qt::Checked ? "true":"false");
+                xmlOut->writeStartElement("file");
+                xmlOut->writeAttribute("filename", _fn);
+                xmlOut->writeAttribute("fullname", _fullName);
+                xmlOut->writeAttribute("checked", _checked);
+                xmlOut->writeEndElement();
+            }
+        xmlOut->writeEndElement();  // symbol
+    xmlOut->writeEndElement();  // dasm
+
+    settings.setValue("dasm", s);
+}
+
+void DialogDasm::load() {
+    qWarning()<<"LOAD";
+    QSettings settings(workDir+"config.ini",QSettings::IniFormat);
+    QString xmlData = settings.value("dasm").toString();
+    qWarning()<<xmlData;
+    if (xmlData.isEmpty()) return;
+
+    QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
+
+    if (xml->readNextStartElement() && (xml->name() == "dasm")) {
+        if (xml->readNextStartElement() &&
+                (xml->name() == "symbols")) {
+            while (xml->readNextStartElement()) {
+                QString eltname = xml->name().toString();
+//                            AddLog(LOG_TEMP,eltname);
+                if (eltname == "file") {
+                    QString _fn = xml->attributes().value("filename").toString();
+                    QString _fullname = xml->attributes().value("fullname").toString();
+                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+                    QListWidgetItem *_item = new QListWidgetItem(_fn);
+                    _item->setToolTip(_fullname);
+                    _item->setCheckState(_checkstate);
+                    ui->lwSymbolFiles->addItem(_item);
+                }
+                xml->skipCurrentElement();
+            }
+        }
+    }
 }

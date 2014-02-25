@@ -501,22 +501,32 @@ inline bool Cpc1500A::Mem_Mirror(UINT32 *d)
 }
 
 void Cpc15XX::writeBus(UINT32 *d,UINT32 data) {
+    busMutex.lock();
+
     bus->setWrite(true);
     bus->setAddr(*d);
     bus->setData((quint8)data);
     bus->setEnable(true);
     manageBus();
     bus->setEnable(false);
+
+    busMutex.unlock();
 }
 
 void Cpc15XX::readBus(UINT32 *d,UINT32 *data) {
+    busMutex.lock();
+
     bus->setWrite(false);
     bus->setAddr(*d);
     bus->setData(0xff);
     bus->setEnable(true);
+//    qWarning()<<"ReadBus:"<<bus->toLog();
     manageBus();
+//    qWarning()<<"ReadBus after manage:"<<bus->toLog();
     *data = bus->getData();
     bus->setEnable(false);
+
+    busMutex.unlock();
 }
 
 bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data) 
@@ -583,9 +593,11 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
         return false;
     }
 
-//    if (bus->isINHIBIT()) qWarning()<<"ERROR";
+    if (bus->isINHIBIT())
+//        qWarning()<<"Bus is INHIBIT adr="<<QString("%1").arg(*d,5,16,QChar('0'))<<"  iswrite:"<<bus->isWrite();
 
-    if ( (*d>=0xC000) && (*d<=0xFFFF) && bus->isINHIBIT() ) { readBus(d,data); return false; }
+    if ( (*d>=0xC000) && (*d<=0xFFFF) && bus->isINHIBIT() ) {
+        readBus(d,data); return false; }
 
     if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { readBus(d,data); return false; }
 
@@ -726,7 +738,7 @@ bool Cpc15XX::Set_Connector(void)
     bus->setPU(((CLH5801 *)pCPU)->lh5801.pu);
     bus->setPV(((CLH5801 *)pCPU)->lh5801.pv);
     pCONNECTOR->Set_values(bus->toUInt64());
-
+//    qWarning()<<"Cpc15XX::Set_Connector:"<<bus->toLog();
     return true;
 }
 bool Cpc15XX::Get_Connector(void)
@@ -734,7 +746,7 @@ bool Cpc15XX::Get_Connector(void)
     bus->fromUInt64(pCONNECTOR->Get_values());
     bus->setEnable(false);
 //    if (bus->isINHIBIT()) qWarning()<<"INhibit";
-
+//qWarning()<<"Cpc15XX::Get_Connector:"<<bus->toLog();
     return true;
 }
 

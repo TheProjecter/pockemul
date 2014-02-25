@@ -33,6 +33,7 @@ public:
 	
     QMutex addlinkMutex;
     QMutex logMutex;
+    QMutex connectorsMutex;
 
     void clearlog(void) {
         logMutex.lock();
@@ -49,7 +50,7 @@ public:
     }
 
 
-
+    void Cascade(CPObject *pPC);
 
 };
 

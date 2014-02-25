@@ -142,6 +142,14 @@ Cconnector * CDirectLink::Linked(Cconnector * search)
     return 0;
 }
 
+void CDirectLink::Cascade(CPObject *pPC)
+{
+    connectorsMutex.lock();
+    clearlog();
+    Output(pPC);
+    connectorsMutex.unlock();
+}
+
 // Update all conectors of a CPOboject
 void CDirectLink::updateConnectors(CPObject* pPC) {
     for (int i = 0;i < pPC->ConnList.size(); i++)
@@ -152,12 +160,11 @@ void CDirectLink::updateConnectors(CPObject* pPC) {
 
 void CDirectLink::Output(CPObject* pPC)
 {
-
+//    qWarning()<<"Output:"<<pPC->getcfgfname();
 	for (int i = 0;i < pPC->ConnList.size(); i++)
  	{
  		outConnector( pPC->ConnList.at(i) );
-	}
-
+    }
 }
 
 void CDirectLink::outConnector(Cconnector* search)
@@ -189,7 +196,9 @@ void CDirectLink::outConnector(Cconnector* search)
             foundConnector->Parent->pTIMER = search->Parent->pTIMER;
             updateConnectors(foundConnector->Parent);
             insertlog(foundConnector->Parent);
+//            qWarning()<<"run (before):"<<foundConnector->Parent->getcfgfname();
             foundConnector->Parent->run();
+//            qWarning()<<"run (after) :"<<foundConnector->Parent->getcfgfname();
             Output( foundConnector->Parent );
         }
     }

@@ -109,6 +109,8 @@ CPObject::CPObject(CPObject *parent):CViewObject(parent)
 
 CPObject::~CPObject()
 {
+    if (dialogdasm) delete dialogdasm;
+
     delete pKEYB;
     //FIXME: When extension are connected , they share the timer with the host.
     //delete pTIMER;
@@ -1627,8 +1629,7 @@ void CPObject::manageBus() {
 
     // Execute all connected objetcs
     // WRITE the LINK BOX Connector
-    mainwindow->pdirectLink->clearlog();
-    mainwindow->pdirectLink->Output(this);
+    mainwindow->pdirectLink->Cascade(this);
 
     if ((mainwindow->dialoganalogic) && mainwindow->dialoganalogic->capture()) {
         mainwindow->dialoganalogic->captureData();

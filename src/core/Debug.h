@@ -15,6 +15,18 @@ typedef	struct{
 extern 	DisAsmTbl	AsmTbl_sc61860[];
 extern 	DisAsmTbl	AsmTbl_lh5801[];
 
+
+class Csymbol {
+public:
+    Csymbol(QString name) {
+        this->name = name;
+    }
+
+    QString toLbl();
+    QString name;
+
+};
+
 class Cdebug:public CPObject
 {
     Q_OBJECT
@@ -39,12 +51,18 @@ public:
 		breakadr	= 0;
 		debugged	= 0;	//break point(0:disable, 1:enable)
 		isdebug		= 0;			//debug?(0:none, 1:debugging)
-	};
+    }
 	
 	virtual ~Cdebug()
 	{
-	};
+    }
+
+    QMap<UINT32,Csymbol*> symbolMap;
+
+    virtual void loadSymbolMap() {}
+    virtual char *toSymbol(quint32 adr, int size=4);
 private:
+    char tmpSymbolLabel[80];
 };
 
 class Cdebug_sc61860:public Cdebug{
@@ -77,11 +95,10 @@ class Cdebug_lh5801:public Cdebug{
     Q_OBJECT
 public:
 	UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
+    virtual void loadSymbolMap();
 
-		Cdebug_lh5801(CPObject *parent)	: Cdebug(parent)
-		{
-			AsmTbl = AsmTbl_sc61860;
-		}
+    Cdebug_lh5801(CPObject *parent);
+
 
 };
 

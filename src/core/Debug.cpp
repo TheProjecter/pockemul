@@ -3,6 +3,7 @@
 /**********************************************************/
 #include <stdlib.h>
 #include <stdio.h>
+#include <QDebug>
 
 
 #include "common.h"
@@ -558,6 +559,17 @@ void Cdebug::header(UINT32 adr,int l) {
     sprintf(Buffer,"%05X:",(uint) adr);
     for(int i=0;i<l;i++)
         sprintf(Buffer,"%s%02X",Buffer,(uint)pPC->pCPU->get_mem(adr+i,SIZE_8));
+}
+
+char *Cdebug::toSymbol(quint32 adr,int size)
+{
+    if (symbolMap.contains(adr)) {
+        return symbolMap[adr]->toLbl().toLatin1().data();
+    }
+    else {
+        sprintf(tmpSymbolLabel,"%.*x",size,adr & ( (1<<(size*4))-1));
+        return (char*)tmpSymbolLabel;
+    }
 }
 
 /*****************************************************************************/
@@ -1286,9 +1298,15 @@ static const Entry table_fd[0x100]={
 	{ ILL2 }
 };
 
+Cdebug_lh5801::Cdebug_lh5801(CPObject *parent)	: Cdebug(parent)
+{
+    AsmTbl = AsmTbl_sc61860;
+    loadSymbolMap();
+}
 
 UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 {
+//    qWarning()<<"DisAsm:"<<QString("%1").arg(oldpc,4,16,QChar('0'));
 	int pc;
 	int oper;
 	UINT16 absolut;
@@ -1296,15 +1314,21 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 	int temp;
 	char LocBuffer[60];
 
-	oldpc&=0xffff;
+    oldpc &= 0xffff;
 	DasmAdr = oldpc;
-	pc=oldpc;
-	oper=pPC->Get_8(pc++);
-	entry=table+oper;
+    pc = oldpc;
+    oper = pPC->Get_8(pc++);
+//    qWarning()<<"Oper ="<<QString("%1").arg(oper,2,16,QChar('0'));
+
+    entry = table+oper;
 
 	if (table[oper].ins==PREFD) {
+//        qWarning()<<"FD found";
+//        qWarning()<<"DisAsm:"<<QString("%1").arg(pc,4,16,QChar('0'));
 		oper=pPC->Get_8(pc++);
 		entry=table_fd+oper;
+//        qWarning()<<"Oper ="<<QString("%1").arg(oper,2,16,QChar('0'));
+
 	}
 	switch (entry->ins) {
 	case ILL:
@@ -1324,7 +1348,7 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 		case RegImm16:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s %s,%.4x", InsNames[entry->ins],RegNames[entry->reg],absolut );
+            sprintf(LocBuffer,"%s %s,%s", InsNames[entry->ins],RegNames[entry->reg],toSymbol(absolut) );
 			break;
 		case Vec:
 			sprintf(LocBuffer,"%s (ff%.2x)", InsNames[entry->ins],pPC->Get_8(pc++));break;
@@ -1334,31 +1358,32 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 			sprintf(LocBuffer,"%s %.2x", InsNames[entry->ins],pPC->Get_8(pc++));break;
 		case Imm16:
 			absolut=pPC->Get_8(pc++)<<8;
-			absolut|=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s %.4x", InsNames[entry->ins],absolut );break;
+            absolut|=pPC->Get_8(pc++);
+            sprintf(LocBuffer,"%s %s", InsNames[entry->ins],toSymbol(absolut) );
+            break;
 		case RelP:
 			temp=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s %.4x", InsNames[entry->ins],pc+temp );break;
+            sprintf(LocBuffer,"%s %s", InsNames[entry->ins],toSymbol(pc+temp) );break;
 		case RelM:
 			temp=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s %.4x", InsNames[entry->ins],pc-temp );break;
+            sprintf(LocBuffer,"%s %s", InsNames[entry->ins],toSymbol(pc-temp) );break;
 		case Abs:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s (%.4x)", InsNames[entry->ins],absolut );break;
+            sprintf(LocBuffer,"%s (%s)", InsNames[entry->ins],toSymbol(absolut) );break;
 		case ME1Abs:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s #(%.4x)", InsNames[entry->ins],absolut );break;
+            sprintf(LocBuffer,"%s #(%s)", InsNames[entry->ins],toSymbol(absolut|0x10000) );break;
 		case AbsImm:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s (%.4x),%.2x", InsNames[entry->ins],absolut, 
+            sprintf(LocBuffer,"%s (%s),%.2x", InsNames[entry->ins],toSymbol(absolut),
 					pPC->Get_8(pc++));break;
 		case ME1AbsImm:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-			sprintf(LocBuffer,"%s #(%.4x),%.2x", InsNames[entry->ins],absolut, 
+            sprintf(LocBuffer,"%s #(%s),%.2x", InsNames[entry->ins],toSymbol(absolut|0x10000),
 					pPC->Get_8(pc++));break;
 		case ME0:
 			sprintf(LocBuffer,"%s (%s)", InsNames[entry->ins],RegNames[entry->reg] );break;		
@@ -1380,3 +1405,33 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 
 }
 
+void Cdebug_lh5801::loadSymbolMap()
+{
+    qWarning()<<"loadSymbolMap";
+    QFile file("firmware.sym");
+    if (!file.open(QIODevice::ReadOnly)) return;
+    QByteArray line = file.readLine();
+    if (line.contains(".SYMBOLS:")) {
+        // LHASM Symbols file
+        while (!file.atEnd()) {
+            QByteArray line = file.readLine();
+            quint32 adr;
+            char lbl[80];
+            sscanf(line,"\t%x\t%s",&adr,lbl);
+            symbolMap[adr] = new Csymbol(QString(lbl));
+            qWarning()<<"adr:"<<adr<<symbolMap[adr]->toLbl();
+        }
+
+    }
+//    qWarning()<<symbolMap;
+}
+
+
+
+QString Csymbol::toLbl()
+{
+    if (name.contains("$$")){
+        return name.mid(name.indexOf("$$")+2);
+    }
+    return name;
+}

@@ -542,13 +542,14 @@ bool CpcXXXX::run(void)
 {	
     CPObject::run();
 
-	old_state = pTIMER->state;
+    old_state = pTIMER->state;
+
+    if (DasmFlag) return true;
 
     Get_Connector();
     // Read the connectors
     if (pCONNECTOR) pCONNECTOR_value = pCONNECTOR->Get_values();
 
-    if (DasmFlag) return true;
 
 	if(!pCPU->halt && !off)
 	{

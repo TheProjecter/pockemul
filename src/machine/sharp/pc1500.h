@@ -5,6 +5,8 @@
 #include <stdio.h>
 
 #include <QMenu>
+#include <QMutex>
+
 #include "common.h"
 
 //#include "cextension.h"
@@ -85,6 +87,7 @@ public:
 	CLH5810_PC1500	*pLH5810;
 	Cce152_PC15XX	*pce152;
     CbusPc1500        *bus;
+    QMutex          busMutex;
 	
 	bool		lh5810_Access;
     bool		ce150_connected;

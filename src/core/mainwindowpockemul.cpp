@@ -77,6 +77,7 @@ QList<CPObject *> listpPObject;
 
 MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QMainWindow(parent, f)
 {
+//    setAttribute(Qt::WA_DeleteOnClose, true);
     rawclk = 0;
 
     setupUi(this);
@@ -96,6 +97,7 @@ MainWindowPockemul::MainWindowPockemul(QWidget * parent, Qt::WindowFlags f) : QM
     startKeyDrag = false;
     startPosDrag = false;
 
+//    connect (this,SIGNAL()
     connect(actionAbout_PockEmul,	SIGNAL(triggered()),            this, SLOT(about()));
     connect(actionNew,				SIGNAL(triggered()),            this, SLOT(newsession()));
     connect(actionOpen,				SIGNAL(triggered()),            this, SLOT(opensession()));
@@ -149,6 +151,7 @@ server = new ServeurTcp(this);
 }
 
 MainWindowPockemul::~MainWindowPockemul() {
+    delete PcThread;
     delete dialoglog;
     delete dialoganalogic;
 #ifdef P_IDE
@@ -783,9 +786,13 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
 
 void MainWindowPockemul::quitPockEmul()
 {
-    if (ask(this,"Do you really want to quit ?",2)==1)
+    if (ask(this,"Do you really want to quit ?",2)==1) {
+        Close_All();
         QApplication::quit();
+    }
 }
+
+
 
 void MainWindowPockemul::opensession(QString sessionFN)
 {
@@ -1251,6 +1258,8 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
 void MainWindowPockemul::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event)
+    Close_All();
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindowPockemul::slotMsgError(QString msg) {

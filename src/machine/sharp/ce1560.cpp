@@ -48,8 +48,8 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     memsize		= 0x90000;
     SlotList.clear();
     // Firmware: 2 page of 16Ko
-    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "ce1560.rom" , CSlot::RAM , "ROM Pg 0"));
-    SlotList.append(CSlot(16 , 0x4000 ,	 ""	, "ce1560.rom" , CSlot::RAM , "ROM Pg 1"));
+    SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "" , CSlot::RAM , "ROM Pg 0"));
+    SlotList.append(CSlot(16 , 0x4000 ,	 ""	, "" , CSlot::RAM , "ROM Pg 1"));
 
     // RAMDISK: 16 x 32Ko
     SlotList.append(CSlot(32 , 0x10000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg 0"));
@@ -109,12 +109,19 @@ bool Cce1560::init(void)
 
 bool Cce1560::run(void)
 {
-
+//static Cbus lastBus;
     bool forwardBus = true;
 
     bus->fromUInt64(pCONNECTOR->Get_values());
 
     bus->setINHIBIT(inhibitSwitch);
+
+//    if (lastBus.isEnable()!=bus->isEnable()) {
+//        qWarning()<<"new status:"<<bus->isEnable();
+
+//    }
+//    lastBus.fromUInt64(bus->toUInt64());
+
 
     if (!bus->isEnable()) {
         pCONNECTOR->Set_values(bus->toUInt64());
@@ -157,11 +164,12 @@ bool Cce1560::run(void)
             forwardBus = false;
             bus->setEnable(false);
             pCONNECTOR->Set_values(bus->toUInt64());
+//            qWarning()<<"CE-1560 read["<<QString("%1").arg(addr - 0xC000 + firmwarePg * 0x4000,5,16,QChar('0'))<<"]="<<bus->getData();
             return true;
         }
     }
     if ( (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
-        || (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
+//        || (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))
          )
     {
         forwardBus = false;
