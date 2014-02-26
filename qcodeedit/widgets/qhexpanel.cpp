@@ -32,6 +32,7 @@ QHexPanel::QHexPanel(QWidget *p)
  : QPanel(p)
 {
     setFixedHeight(fontMetrics().lineSpacing()*10 + 4);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     hexeditor = new BINEditor::BinEditor(this);
 
     QHBoxLayout *hboxLayout = new QHBoxLayout(this);
@@ -43,6 +44,14 @@ QHexPanel::QHexPanel(QWidget *p)
 
     QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     hboxLayout->addLayout(vboxLayout);
+
+
+    QPushButton *pbClose = new QPushButton();
+    pbClose->setText("Close");
+    pbClose->setMinimumSize(QSize(60, 0));
+    pbClose->setMaximumSize(QSize(100, 16777215));
+    vboxLayout->addWidget(pbClose);
+    connect(pbClose,SIGNAL(clicked()),this,SLOT(close()));
 
     cbinstallTo = new QComboBox();
     cbinstallTo->setMinimumSize(QSize(60, 0));
@@ -76,7 +85,7 @@ QHexPanel::QHexPanel(QWidget *p)
 */
 QHexPanel::~QHexPanel()
 {
-
+    delete hexeditor;
 }
 
 /*!

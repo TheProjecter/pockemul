@@ -51,7 +51,12 @@ WindowIDE::WindowIDE(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    tabifyDockWidget(ui->projectDockWidget,ui->filesDockWidget);
+    tabifyDockWidget(ui->filesDockWidget,ui->projectDockWidget);
+    tabifyDockWidget(ui->projectDockWidget,ui->configDockWidget);
+    ui->filesDockWidget->raise();
+
+//    tabifyDockWidget(ui->configDockWidget,ui->projectDockWidget);
+//    tabifyDockWidget(ui->projectDockWidget,ui->filesDockWidget);
     this->setWindowTitle(tr("PockEmul Integrated Development Environment"));
     this->setAttribute(Qt::WA_DeleteOnClose,true);
 
@@ -298,7 +303,7 @@ void WindowIDE::compile(void) {
 }
 
 void WindowIDE::compilePC1500(QString fn) {
-    QString program = QCoreApplication::applicationDirPath()+"/lhasm_win32.exe";
+    QString program = QCoreApplication::applicationDirPath()+"/lhasm.exe";
     qWarning()<<"exe:"<<program;
 
     QString _path = QFileInfo(fn).absolutePath();
@@ -333,7 +338,7 @@ void WindowIDE::compilePC1500(QString fn) {
     QFile _f(binFn);
     qWarning()<<QByteArray("\n\r");
     if (_f.open(QIODevice::ReadOnly)) {
-        mapLM["BIN"]=_f.readAll().replace("\r\n","\n");
+        mapLM["BIN"]=_f.readAll();//.replace("\r\n","\n");
         _f.close();
     }
 
