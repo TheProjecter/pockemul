@@ -28,7 +28,6 @@ public:
     explicit WindowIDE(QWidget *parent = 0);
     ~WindowIDE();
 
-
     void refreshFileList(void);
 
     CEditorWidget * createEditorTab(QString fname, QString text,bool = false);
@@ -40,14 +39,10 @@ public:
 
     QMap<QString,CEditorWidget *> editorMap;
 
-
-
     void addtargetCB(CPObject *pc);
     void removetargetCB(CPObject *pc);
 
     void createOutputTab(QString fname, QString text);
-
-
 
     QList<QCodeNode *> completionScan(QEditor*);
     QStringList getProc(QString s);
@@ -67,6 +62,14 @@ private slots:
     void targetChange(QString);
     void installTo(CpcXXXX *pc, qint32 adr, QByteArray data);
     void DestroySlot(CPObject *pObject);
+    void OpenNewBuilder();
+    void AddNewBuilder();
+    void SelectBuilder();
+    void removeBuilder();
+    void updateBuilder();
+
+    void saveConfig();
+    void loadConfig();
 
 signals:
     void newEmulatedPocket(CPObject *);

@@ -32,6 +32,7 @@
 #include "qcodemodel2/qcodenode.h"
 
 extern QList<CPObject *> listpPObject; /*!< TODO */
+extern QString workDir;
 
 /*!
     \class WindowIDE
@@ -71,6 +72,13 @@ WindowIDE::WindowIDE(QWidget *parent) :
     connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeEditorTab(int)));
     connect(ui->outputtabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeOutputTab(int)));
     connect(ui->actionNew,SIGNAL(triggered()),this,SLOT(newFile()));
+
+    connect(ui->pbOpenBuider,SIGNAL(clicked()),this,SLOT(OpenNewBuilder()));
+    connect(ui->pbNBAdd,SIGNAL(clicked()),this,SLOT(AddNewBuilder()));
+    connect(ui->pbNBRemove,SIGNAL(clicked()),this,SLOT(removeBuilder()));
+    connect(ui->pbNBUpdate,SIGNAL(clicked()),this,SLOT(updateBuilder()));
+    connect(ui->lwBuilders,SIGNAL(itemSelectionChanged()),this,SLOT(SelectBuilder()));
+
 
     connect(mainwindow,SIGNAL(DestroySignal(CPObject*)),this,SLOT(DestroySlot(CPObject*)));
 }
@@ -440,6 +448,56 @@ void WindowIDE::DestroySlot(CPObject *pObject)
     removetargetCB(pObject);
 }
 
+void WindowIDE::OpenNewBuilder()
+{
+    // open openfilebox
+    QString fn = QFileDialog::getOpenFileName(
+            this,
+            tr("Choose the builder file"),
+            ".");
+    if (fn.isEmpty()) return;
+
+    ui->leNewBuilderFileName->setText(fn);
+}
+
+#define NB_FILENAME (Qt::UserRole+1)
+#define NB_EXT (Qt::UserRole+2)
+#define NB_OUTPUT (Qt::UserRole+3)
+#define NB_BIN (Qt::UserRole+4)
+void WindowIDE::AddNewBuilder()
+{
+    QListWidgetItem *_item = new QListWidgetItem(ui->leNewBuilderTitle->text());
+    _item->setToolTip(ui->leNewBuilderFileName->text());
+    _item->setData(NB_FILENAME,ui->leNewBuilderFileName->text());
+    _item->setData(NB_EXT,ui->leNewBuilderExt->text());
+    _item->setData(NB_OUTPUT,ui->leNewBuilderOutput->text());
+    _item->setData(NB_BIN,ui->leNewBuilderBinFiles->text());
+    _item->setCheckState(Qt::Checked);
+
+    ui->lwBuilders->addItem(_item);
+}
+
+void WindowIDE::updateBuilder()
+{
+    removeBuilder();
+    AddNewBuilder();
+}
+
+void WindowIDE::SelectBuilder()
+{
+    QListWidgetItem *_item = ui->lwBuilders->currentItem();
+    ui->leNewBuilderTitle->setText(_item->text());
+    ui->leNewBuilderFileName->setText(_item->data(NB_FILENAME).toString());
+    ui->leNewBuilderExt->setText(_item->data(NB_EXT).toString());
+    ui->leNewBuilderOutput->setText(_item->data(NB_OUTPUT).toString());
+    ui->leNewBuilderBinFiles->setText(_item->data(NB_BIN).toString());
+
+}
+
+void WindowIDE::removeBuilder()
+{
+    ui->lwBuilders->takeItem(ui->lwBuilders->currentRow());
+}
 /*!
  \brief Sauvegarde le fichier sur disque.
 
@@ -587,4 +645,87 @@ CDOxyItem * WindowIDE::getDOxygenInfo(QString s)
         if (doxygenlist.at(i)->fn.trimmed()==s) return doxygenlist.at(i);
     }
     return 0;
+}
+
+
+void WindowIDE::saveConfig() {
+
+    QSettings settings(workDir+"config.ini",QSettings::IniFormat);
+
+    QString s;
+    QXmlStreamWriter *xmlOut = new QXmlStreamWriter(&s);
+    xmlOut->setAutoFormatting(true);
+
+    xmlOut->writeStartElement("IDE");
+        xmlOut->writeAttribute("version", "1.0");
+        xmlOut->writeStartElement("builders");
+            for (int i=0; i < ui->lwBuilders->count(); i++) {
+                QString _title = ui->lwBuilders->item(i)->text();
+                QString _fileName = ui->lwBuilders->item(i)->data(NB_FILENAME).toString();
+                QString _extensions = ui->lwBuilders->item(i)->data(NB_EXT).toString();
+                QString _output = ui->lwBuilders->item(i)->data(NB_OUTPUT).toString();
+                QString _binFile = ui->lwBuilders->item(i)->data(NB_BIN).toString();
+                QString _checked = (ui->lwBuilders->item(i)->checkState()==Qt::Checked ? "true":"false");
+                xmlOut->writeStartElement("builder");
+                xmlOut->writeAttribute("title", _title);
+                xmlOut->writeAttribute("filename", _fileName);
+                xmlOut->writeAttribute("ext", _extensions);
+                xmlOut->writeAttribute("output", _output);
+                xmlOut->writeAttribute("binfile", _binFile);
+                xmlOut->writeAttribute("checked", _checked);
+                xmlOut->writeEndElement();
+            }
+        xmlOut->writeEndElement();  // builders
+
+
+    xmlOut->writeEndElement();  // dasm
+
+    settings.setValue("IDE", s);
+}
+
+void WindowIDE::loadConfig() {
+    QSettings settings(workDir+"config.ini",QSettings::IniFormat);
+    QString xmlData = settings.value("IDE").toString();
+    if (xmlData.isEmpty()) return;
+
+    QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
+
+    if (xml->readNextStartElement() && (xml->name() == "IDE")) {
+
+        //        if (xml->readNextStartElement() &&
+//                (xml->name() == "symbols")) {
+//            while (xml->readNextStartElement()) {
+//                QString eltname = xml->name().toString();
+////                            AddLog(LOG_TEMP,eltname);
+//                if (eltname == "file") {
+//                    QString _fn = xml->attributes().value("filename").toString();
+//                    QString _fullname = xml->attributes().value("fullname").toString();
+//                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+//                    QListWidgetItem *_item = new QListWidgetItem(_fn);
+//                    _item->setToolTip(_fullname);
+//                    _item->setCheckState(_checkstate);
+//                    ui->lwSymbolFiles->addItem(_item);
+//                }
+//                xml->skipCurrentElement();
+//            }
+//        }
+
+//        if (xml->readNextStartElement() &&
+//                (xml->name() == "breakpoints")) {
+//            while (xml->readNextStartElement()) {
+//                QString eltname = xml->name().toString();
+////                            AddLog(LOG_TEMP,eltname);
+//                if (eltname == "breakpoint") {
+//                    QString _adr = xml->attributes().value("adr").toString();
+//                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+//                    QListWidgetItem *_item = new QListWidgetItem(_adr);
+//                    _item->setCheckState(_checkstate);
+//                    ui->lwBreakPts->addItem(_item);
+//                }
+//                xml->skipCurrentElement();
+//            }
+//        }
+
+
+    }
 }
