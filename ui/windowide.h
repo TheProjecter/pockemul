@@ -67,6 +67,8 @@ private slots:
     void SelectBuilder();
     void removeBuilder();
     void updateBuilder();
+    void AddModelBuilder();
+    void RemoveModelBuilder();
 
     void saveConfig();
     void loadConfig();

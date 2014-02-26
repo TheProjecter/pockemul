@@ -79,10 +79,13 @@ WindowIDE::WindowIDE(QWidget *parent) :
     connect(ui->pbNBUpdate,SIGNAL(clicked()),this,SLOT(updateBuilder()));
     connect(ui->lwBuilders,SIGNAL(itemSelectionChanged()),this,SLOT(SelectBuilder()));
 
+    connect(ui->pbAddMB,SIGNAL(clicked()),this,SLOT(AddModelBuilder()));
+    connect(ui->pbRemoveMB,SIGNAL(clicked()),this,SLOT(RemoveModelBuilder()));
 
     connect(mainwindow,SIGNAL(DestroySignal(CPObject*)),this,SLOT(DestroySlot(CPObject*)));
 
     loadConfig();
+
 }
 
 /*!
@@ -492,6 +495,29 @@ void WindowIDE::updateBuilder()
     _item->setData(NB_BIN,ui->leNewBuilderBinFiles->text());
 }
 
+#define NB_MODEL (Qt::UserRole+5)
+#define NB_BUILDER (Qt::UserRole+6)
+void WindowIDE::AddModelBuilder()
+{
+    QListWidgetItem *_builderItem = ui->lwBuilders->currentItem();
+    if (_builderItem == 0) return; // msgbox select builder first
+
+    QString _model = ui->cbMB->currentText();
+    QListWidgetItem *_item = new QListWidgetItem();
+    _item->setText(_model+" -> "+_builderItem->text());
+    _item->setData(NB_MODEL,_model);
+    _item->setData(NB_BUILDER,_builderItem->text());
+    _item->setCheckState(Qt::Checked);
+    ui->lwModelBuilder->addItem(_item);
+
+}
+
+void WindowIDE::RemoveModelBuilder()
+{
+    if (ui->lwModelBuilder->currentRow()>=0)
+        ui->lwModelBuilder->takeItem(ui->lwModelBuilder->currentRow());
+}
+
 void WindowIDE::SelectBuilder()
 {
     QListWidgetItem *_item = ui->lwBuilders->currentItem();
@@ -508,7 +534,8 @@ void WindowIDE::SelectBuilder()
 
 void WindowIDE::removeBuilder()
 {
-    ui->lwBuilders->takeItem(ui->lwBuilders->currentRow());
+    if (ui->lwBuilders->currentRow()>=0)
+        ui->lwBuilders->takeItem(ui->lwBuilders->currentRow());
 }
 /*!
  \brief Sauvegarde le fichier sur disque.
@@ -670,6 +697,7 @@ void WindowIDE::saveConfig() {
 
     xmlOut->writeStartElement("IDE");
         xmlOut->writeAttribute("version", "1.0");
+
         xmlOut->writeStartElement("builders");
             for (int i=0; i < ui->lwBuilders->count(); i++) {
                 QString _title = ui->lwBuilders->item(i)->text();
@@ -689,6 +717,20 @@ void WindowIDE::saveConfig() {
             }
         xmlOut->writeEndElement();  // builders
 
+        xmlOut->writeStartElement("modelbuilders");
+            for (int i=0; i < ui->lwModelBuilder->count(); i++) {
+                QString _title = ui->lwModelBuilder->item(i)->text();
+                QString _model = ui->lwModelBuilder->item(i)->data(NB_MODEL).toString();
+                QString _builder = ui->lwModelBuilder->item(i)->data(NB_BUILDER).toString();
+                QString _checked = (ui->lwModelBuilder->item(i)->checkState()==Qt::Checked ? "true":"false");
+                xmlOut->writeStartElement("modelbuilder");
+                xmlOut->writeAttribute("title", _title);
+                xmlOut->writeAttribute("model", _model);
+                xmlOut->writeAttribute("builder", _builder);
+                xmlOut->writeAttribute("checked", _checked);
+                xmlOut->writeEndElement();
+            }
+        xmlOut->writeEndElement();  // modelbuilders
 
     xmlOut->writeEndElement();  // dasm
 
@@ -724,6 +766,27 @@ void WindowIDE::loadConfig() {
                     _item->setData(NB_BIN,_binFile);
                     _item->setCheckState(_checkstate);
                     ui->lwBuilders->addItem(_item);
+                }
+                xml->skipCurrentElement();
+            }
+        }
+
+        if (xml->readNextStartElement() &&
+                (xml->name() == "modelbuilders")) {
+            while (xml->readNextStartElement()) {
+                QString eltname = xml->name().toString();
+                //                            AddLog(LOG_TEMP,eltname);
+                if (eltname == "modelbuilder") {
+                    QString _title = xml->attributes().value("title").toString();
+                    QString _model = xml->attributes().value("model").toString();
+                    QString _builder = xml->attributes().value("builder").toString();
+                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+                    QListWidgetItem *_item = new QListWidgetItem(_title);
+//                    _item->setToolTip(_fileName);
+                    _item->setData(NB_MODEL,_model);
+                    _item->setData(NB_BUILDER,_builder);
+                    _item->setCheckState(_checkstate);
+                    ui->lwModelBuilder->addItem(_item);
                 }
                 xml->skipCurrentElement();
             }
