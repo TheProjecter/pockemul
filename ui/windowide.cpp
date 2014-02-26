@@ -81,6 +81,8 @@ WindowIDE::WindowIDE(QWidget *parent) :
 
 
     connect(mainwindow,SIGNAL(DestroySignal(CPObject*)),this,SLOT(DestroySlot(CPObject*)));
+
+    loadConfig();
 }
 
 /*!
@@ -89,6 +91,8 @@ WindowIDE::WindowIDE(QWidget *parent) :
 */
 WindowIDE::~WindowIDE()
 {
+    saveConfig();
+
     delete m_formats;
     delete m_languages;
     foreach (CEditorWidget *value, editorMap) {
@@ -115,8 +119,6 @@ void WindowIDE::setupEditor()
 
     m_languages = new QLanguageFactory(m_formats, this);
     m_languages->addDefinitionPath(":QXS");
-
-
 
     refreshFileList();
 
@@ -479,18 +481,28 @@ void WindowIDE::AddNewBuilder()
 
 void WindowIDE::updateBuilder()
 {
-    removeBuilder();
-    AddNewBuilder();
+    QListWidgetItem *_item = ui->lwBuilders->currentItem();
+    if (_item ==0) return;
+
+    _item->setText(ui->leNewBuilderTitle->text());
+    _item->setToolTip(ui->leNewBuilderFileName->text());
+    _item->setData(NB_FILENAME,ui->leNewBuilderFileName->text());
+    _item->setData(NB_EXT,ui->leNewBuilderExt->text());
+    _item->setData(NB_OUTPUT,ui->leNewBuilderOutput->text());
+    _item->setData(NB_BIN,ui->leNewBuilderBinFiles->text());
 }
 
 void WindowIDE::SelectBuilder()
 {
     QListWidgetItem *_item = ui->lwBuilders->currentItem();
+
     ui->leNewBuilderTitle->setText(_item->text());
     ui->leNewBuilderFileName->setText(_item->data(NB_FILENAME).toString());
     ui->leNewBuilderExt->setText(_item->data(NB_EXT).toString());
     ui->leNewBuilderOutput->setText(_item->data(NB_OUTPUT).toString());
     ui->leNewBuilderBinFiles->setText(_item->data(NB_BIN).toString());
+
+//    ui->lwBuilders->openPersistentEditor(_item);
 
 }
 
@@ -692,23 +704,30 @@ void WindowIDE::loadConfig() {
 
     if (xml->readNextStartElement() && (xml->name() == "IDE")) {
 
-        //        if (xml->readNextStartElement() &&
-//                (xml->name() == "symbols")) {
-//            while (xml->readNextStartElement()) {
-//                QString eltname = xml->name().toString();
-////                            AddLog(LOG_TEMP,eltname);
-//                if (eltname == "file") {
-//                    QString _fn = xml->attributes().value("filename").toString();
-//                    QString _fullname = xml->attributes().value("fullname").toString();
-//                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
-//                    QListWidgetItem *_item = new QListWidgetItem(_fn);
-//                    _item->setToolTip(_fullname);
-//                    _item->setCheckState(_checkstate);
-//                    ui->lwSymbolFiles->addItem(_item);
-//                }
-//                xml->skipCurrentElement();
-//            }
-//        }
+        if (xml->readNextStartElement() &&
+                (xml->name() == "builders")) {
+            while (xml->readNextStartElement()) {
+                QString eltname = xml->name().toString();
+                //                            AddLog(LOG_TEMP,eltname);
+                if (eltname == "builder") {
+                    QString _title = xml->attributes().value("title").toString();
+                    QString _fileName = xml->attributes().value("filename").toString();
+                    QString _extensions = xml->attributes().value("ext").toString();
+                    QString _output = xml->attributes().value("output").toString();
+                    QString _binFile = xml->attributes().value("binfile").toString();
+                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+                    QListWidgetItem *_item = new QListWidgetItem(_title);
+                    _item->setToolTip(_fileName);
+                    _item->setData(NB_FILENAME,_fileName);
+                    _item->setData(NB_EXT,_extensions);
+                    _item->setData(NB_OUTPUT,_output);
+                    _item->setData(NB_BIN,_binFile);
+                    _item->setCheckState(_checkstate);
+                    ui->lwBuilders->addItem(_item);
+                }
+                xml->skipCurrentElement();
+            }
+        }
 
 //        if (xml->readNextStartElement() &&
 //                (xml->name() == "breakpoints")) {
