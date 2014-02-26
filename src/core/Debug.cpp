@@ -1374,7 +1374,7 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 		case ME1Abs:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-            sprintf(LocBuffer,"%s #(%s)", InsNames[entry->ins],toSymbol(absolut|0x10000) );break;
+            sprintf(LocBuffer,"%s #(%s)", InsNames[entry->ins],toSymbol(absolut) );break;
 		case AbsImm:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
@@ -1383,7 +1383,7 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 		case ME1AbsImm:
 			absolut=pPC->Get_8(pc++)<<8;
 			absolut|=pPC->Get_8(pc++);
-            sprintf(LocBuffer,"%s #(%s),%.2x", InsNames[entry->ins],toSymbol(absolut|0x10000),
+            sprintf(LocBuffer,"%s #(%s),%.2x", InsNames[entry->ins],toSymbol(absolut),
 					pPC->Get_8(pc++));break;
 		case ME0:
 			sprintf(LocBuffer,"%s (%s)", InsNames[entry->ins],RegNames[entry->reg] );break;		
