@@ -34,6 +34,7 @@ public:
     void selectRow(int index);
     void saveAll();
     void load();
+
 private:
     Ui::DialogDasm *ui;
     BINEditor::BinEditor *imemHexEditor;
@@ -60,6 +61,8 @@ public slots:
     void addSymbolFile();
     void removeSymbolFile();
     void loadSymbolMap();
+    void removeBreakPoint();
+    void removeTraceRange();
 };
 
 #endif // DIALOGDASM_H

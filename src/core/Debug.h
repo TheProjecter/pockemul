@@ -51,6 +51,8 @@ public:
 		breakadr	= 0;
 		debugged	= 0;	//break point(0:disable, 1:enable)
 		isdebug		= 0;			//debug?(0:none, 1:debugging)
+
+        loadSymbolMap();
     }
 	
 	virtual ~Cdebug()

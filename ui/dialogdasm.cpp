@@ -1,4 +1,4 @@
-//TODO Contextual menu on breakpoints
+﻿//TODO Contextual menu on breakpoints
 #include <QDebug>
 #include <QScrollBar>
 #include <QFileDialog>
@@ -41,13 +41,17 @@ DialogDasm::DialogDasm(QWidget *parent) :
 
     connect(ui->tbAddBrkPt,SIGNAL(clicked()),this,SLOT(addBreakPoint()));
     connect(ui->lwBreakPts,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(breakPointChanged(QListWidgetItem*)));
+    connect(ui->pbRemoveBreakPoint,SIGNAL(clicked()),this,SLOT(removeBreakPoint()));
 
     connect(ui->tbAddTraceRange,SIGNAL(clicked()),this,SLOT(addTraceRange()));
     connect(ui->lwTraceRange,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(traceRangeChanged(QListWidgetItem*)));
+    connect(ui->pbRemoveTraceRange,SIGNAL(clicked()),this,SLOT(removeTraceRange()));
 
     connect(ui->pbAddSymbol,SIGNAL(clicked()),this,SLOT(addSymbolFile()));
     connect(ui->pbRemoveSymbol,SIGNAL(clicked()),this,SLOT(removeSymbolFile()));
     connect(ui->lwSymbolFiles, SIGNAL(itemChanged(QListWidgetItem *)),this, SLOT(loadSymbolMap()));
+
+
 
     QFont font;
     font.setFamily("Courier");
@@ -133,7 +137,7 @@ void DialogDasm::ManualDasm() {
 
     for (int j=0;j<_nb;j++)
     {
-        qWarning()<<"adr="<<_adr;
+//        qWarning()<<"adr="<<_adr;
         pPC->pCPU->pDEBUG->DisAsm_1(_adr);
         //MaxAdr		= pPC->pCPU->pDEBUG->DasmAdr;
 
@@ -329,6 +333,8 @@ void DialogDasm::addTraceRange()
     _pair.second = ui->leTraceTo->text().toUInt(0,16);
     pPC->TraceRange[_pair] = Qt::Checked;
     QListWidgetItem *_item = new QListWidgetItem(ui->leTraceFrom->text()+"-"+ui->leTraceTo->text());
+    _item->setData(Qt::UserRole,ui->leTraceFrom->text());
+    _item->setData(Qt::UserRole+1,ui->leTraceTo->text());
     _item->setCheckState(Qt::Checked);
     ui->lwTraceRange->addItem(_item);
 }
@@ -365,6 +371,19 @@ void DialogDasm::removeSymbolFile()
     loadSymbolMap();
 }
 
+void DialogDasm::removeBreakPoint()
+{
+    ui->lwBreakPts->takeItem(ui->lwBreakPts->currentRow());
+}
+
+void DialogDasm::removeTraceRange()
+{
+    QPair<UINT32,UINT32> _pair;
+    _pair.first = ui->lwTraceRange->currentItem()->data(Qt::UserRole).toString().toUInt(0,16);
+    _pair.second= ui->lwTraceRange->currentItem()->data(Qt::UserRole+1).toString().toUInt(0,16);
+    pPC->TraceRange.remove(_pair);
+    ui->lwTraceRange->takeItem(ui->lwTraceRange->currentRow());
+}
 extern QString workDir;
 
 void DialogDasm::loadSymbolMap()
@@ -420,17 +439,42 @@ void DialogDasm::saveAll() {
                 xmlOut->writeAttribute("checked", _checked);
                 xmlOut->writeEndElement();
             }
-        xmlOut->writeEndElement();  // symbol
+        xmlOut->writeEndElement();  // symbols
+        xmlOut->writeStartElement("breakpoints");
+            for (int i=0; i < ui->lwBreakPts->count(); i++) {
+                QString _adr = ui->lwBreakPts->item(i)->text();
+                QString _checked = (ui->lwBreakPts->item(i)->checkState()==Qt::Checked ? "true":"false");
+                xmlOut->writeStartElement("breakpoint");
+                xmlOut->writeAttribute("adr", _adr);
+                xmlOut->writeAttribute("checked", _checked);
+                xmlOut->writeEndElement();
+            }
+        xmlOut->writeEndElement();  // breakpoints
+        qWarning()<<"ok";
+        xmlOut->writeStartElement("traces");
+            for (int i=0; i < ui->lwTraceRange->count(); i++) {
+                qWarning()<<i;
+                QString _Fromadr = ui->lwTraceRange->item(i)->data(Qt::UserRole).toString();
+                QString _Toadr = ui->lwTraceRange->item(i)->data(Qt::UserRole+1).toString();
+                QString _checked = (ui->lwTraceRange->item(i)->checkState()==Qt::Checked ? "true":"false");
+                xmlOut->writeStartElement("trace");
+                xmlOut->writeAttribute("from", _Fromadr);
+                xmlOut->writeAttribute("to", _Toadr);
+                xmlOut->writeAttribute("checked", _checked);
+                xmlOut->writeEndElement();
+            }
+        xmlOut->writeEndElement();  // traces
+
     xmlOut->writeEndElement();  // dasm
 
     settings.setValue("dasm", s);
 }
 
 void DialogDasm::load() {
-    qWarning()<<"LOAD";
+//    qWarning()<<"LOAD";
     QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     QString xmlData = settings.value("dasm").toString();
-    qWarning()<<xmlData;
+//    qWarning()<<xmlData;
     if (xmlData.isEmpty()) return;
 
     QXmlStreamReader *xml = new QXmlStreamReader(xmlData);
@@ -449,6 +493,46 @@ void DialogDasm::load() {
                     _item->setToolTip(_fullname);
                     _item->setCheckState(_checkstate);
                     ui->lwSymbolFiles->addItem(_item);
+                }
+                xml->skipCurrentElement();
+            }
+        }
+        loadSymbolMap();
+        if (xml->readNextStartElement() &&
+                (xml->name() == "breakpoints")) {
+            while (xml->readNextStartElement()) {
+                QString eltname = xml->name().toString();
+//                            AddLog(LOG_TEMP,eltname);
+                if (eltname == "breakpoint") {
+                    QString _adr = xml->attributes().value("adr").toString();
+                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+                    QListWidgetItem *_item = new QListWidgetItem(_adr);
+                    _item->setCheckState(_checkstate);
+                    ui->lwBreakPts->addItem(_item);
+                }
+                xml->skipCurrentElement();
+            }
+        }
+
+        if (xml->readNextStartElement() &&
+                (xml->name() == "traces")) {
+            pPC->TraceRange.clear();
+            while (xml->readNextStartElement()) {
+                QString eltname = xml->name().toString();
+//                            AddLog(LOG_TEMP,eltname);
+                if (eltname == "trace") {
+                    QString _from = xml->attributes().value("from").toString();
+                    QString _to   = xml->attributes().value("to").toString();
+                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
+                    QListWidgetItem *_item = new QListWidgetItem(_from+"-"+_to);
+                    _item->setData(Qt::UserRole,_from);
+                    _item->setData(Qt::UserRole+1,_to);
+                    _item->setCheckState(_checkstate);
+                    ui->lwTraceRange->addItem(_item);
+                    QPair<UINT32,UINT32> _pair;
+                    _pair.first = _from.toUInt(0,16);
+                    _pair.second = _to.toUInt(0,16);
+                    pPC->TraceRange[_pair] = _item->checkState();
                 }
                 xml->skipCurrentElement();
             }

@@ -1301,7 +1301,7 @@ static const Entry table_fd[0x100]={
 Cdebug_lh5801::Cdebug_lh5801(CPObject *parent)	: Cdebug(parent)
 {
     AsmTbl = AsmTbl_sc61860;
-    loadSymbolMap();
+
 }
 
 UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
@@ -1407,23 +1407,7 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 
 void Cdebug_lh5801::loadSymbolMap()
 {
-    qWarning()<<"loadSymbolMap";
-    QFile file("firmware.sym");
-    if (!file.open(QIODevice::ReadOnly)) return;
-    QByteArray line = file.readLine();
-    if (line.contains(".SYMBOLS:")) {
-        // LHASM Symbols file
-        while (!file.atEnd()) {
-            QByteArray line = file.readLine();
-            quint32 adr;
-            char lbl[80];
-            sscanf(line,"\t%x\t%s",&adr,lbl);
-            symbolMap[adr] = new Csymbol(QString(lbl));
-            qWarning()<<"adr:"<<adr<<symbolMap[adr]->toLbl();
-        }
 
-    }
-//    qWarning()<<symbolMap;
 }
 
 
