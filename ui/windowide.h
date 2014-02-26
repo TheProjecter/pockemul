@@ -49,6 +49,7 @@ public:
     Cproc getProcObj(QString s);
     CDOxyItem * getDOxygenInfo(QString);
 
+    QString getBuilder(QString model, QString ext, int role);
 public slots:
     void saveAll(void);
 

@@ -34,6 +34,13 @@
 extern QList<CPObject *> listpPObject; /*!< TODO */
 extern QString workDir;
 
+#define NB_FILENAME (Qt::UserRole+1)
+#define NB_EXT (Qt::UserRole+2)
+#define NB_OUTPUT (Qt::UserRole+3)
+#define NB_BIN (Qt::UserRole+4)
+#define NB_MODEL (Qt::UserRole+5)
+#define NB_BUILDER (Qt::UserRole+6)
+
 /*!
     \class WindowIDE
     \brief IDE main class
@@ -251,9 +258,12 @@ void WindowIDE::compile(void) {
     save();
 
     CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
-
-    QString source = "#include <internal.h>\r\n"+locEditorWidget->m_editControl->editor()->text();
     QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
+
+    compilePC1500(sourcefname);
+    return;
+    QString source = "#include <internal.h>\r\n"+locEditorWidget->m_editControl->editor()->text();
+
     QFileInfo fInfo(sourcefname);
 
     if (locEditorWidget->m_editControl->editor()->languageDefinition()->language()=="C++") {
@@ -316,24 +326,30 @@ void WindowIDE::compile(void) {
 }
 
 void WindowIDE::compilePC1500(QString fn) {
-    QString program = QCoreApplication::applicationDirPath()+"/lhasm.exe";
-    qWarning()<<"exe:"<<program;
-
     QString _path = QFileInfo(fn).absolutePath();
+    QString _filename = QFileInfo(fn).fileName();
+    QString _ext = QFileInfo(fn).suffix();
+    QString _basename = QFileInfo(fn).baseName();
+    QString _model=ui->targetComboBox->currentText();
+
+    QString program = getBuilder(_model,_ext,NB_FILENAME);
+    QString binFileName = getBuilder(_model,_ext,NB_BIN).replace("$1",_filename).replace("$2",_basename);
+    QString outputFileName = getBuilder(_model,_ext,NB_OUTPUT).replace("$1",_filename).replace("$2",_basename);
+
+    // replace $2 by basename and $1 by filename
+    program.replace("$1",_filename);
+    program.replace("$2",_basename);
+
+//    QString program = QCoreApplication::applicationDirPath()+"/lhasm.exe";
+    qWarning()<<"exe:"<<program;
     qWarning()<<"Working dir:"<<_path;
 
     QProcess *myProcess = new QProcess();
     myProcess->setWorkingDirectory(_path);
 
-    fn = QFileInfo(fn).fileName();
-    QStringList arguments;
-    arguments << "-L ";
-    arguments << QFileInfo(fn).baseName()+".log";
-    arguments << fn;
-    qWarning()<<"args:"<<arguments;
-
     myProcess->setReadChannel(QProcess::StandardOutput);
-    myProcess->start(program, arguments);
+    myProcess->start(program);
+
     if (!myProcess->waitForStarted()){
         qWarning()<<"ERROR START";
         return;
@@ -346,22 +362,38 @@ void WindowIDE::compilePC1500(QString fn) {
     QByteArray stdOutput = myProcess->readAll();
     qWarning()<<"EXEC result:"<< stdOutput;
 
-    QString binFn = _path+"/"+QFileInfo(fn).baseName()+".bin";
+    QString binFn = _path+"/"+binFileName;
     qWarning()<<binFn;
     QFile _f(binFn);
-    qWarning()<<QByteArray("\n\r");
+
     if (_f.open(QIODevice::ReadOnly)) {
-        mapLM["BIN"]=_f.readAll();//.replace("\r\n","\n");
+        mapLM["BIN"]=_f.readAll();
         _f.close();
     }
 
-    QString logFn = _path+"/"+QFileInfo(fn).baseName()+".log";
+    QString logFn = _path+"/"+outputFileName;
     qWarning()<<logFn;
     QFile _f_log(logFn);
     if (_f_log.open(QIODevice::ReadOnly)) {
         createOutputTab("lhASM output",_f_log.readAll().append("\n").append(stdOutput));
 //        QByteArray _logResult = _f_log.readAll();
         _f_log.close();
+    }
+
+    if (! mapLM["BIN"].isEmpty()) {
+        CEditorWidget *currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+        QHexPanel *hexpanel = new QHexPanel();
+
+
+        currentWidget->m_editControl->addPanel(hexpanel, QCodeEdit::South, true);
+        hexpanel->startadr = mapLM["_ORG"].trimmed().toLong();
+        hexpanel->hexeditor->setData(mapLM["BIN"],hexpanel->startadr);
+        hexpanel->hexeditor->setCursorPosition(0,BINEditor::BinEditor::MoveAnchor);
+        connect(this,SIGNAL(newEmulatedPocket(CPObject*)),hexpanel,SLOT(newPocket(CPObject*)));
+        connect(this,SIGNAL(removeEmulatedPocket(CPObject*)),hexpanel,SLOT(removePocket(CPObject*)));
+        connect(hexpanel,SIGNAL(installTo(CpcXXXX*,qint32,QByteArray)),this,SLOT(installTo(CpcXXXX*,qint32,QByteArray)));
+
+        update();
     }
 
 }
@@ -465,10 +497,7 @@ void WindowIDE::OpenNewBuilder()
     ui->leNewBuilderFileName->setText(fn);
 }
 
-#define NB_FILENAME (Qt::UserRole+1)
-#define NB_EXT (Qt::UserRole+2)
-#define NB_OUTPUT (Qt::UserRole+3)
-#define NB_BIN (Qt::UserRole+4)
+
 void WindowIDE::AddNewBuilder()
 {
     QListWidgetItem *_item = new QListWidgetItem(ui->leNewBuilderTitle->text());
@@ -495,8 +524,7 @@ void WindowIDE::updateBuilder()
     _item->setData(NB_BIN,ui->leNewBuilderBinFiles->text());
 }
 
-#define NB_MODEL (Qt::UserRole+5)
-#define NB_BUILDER (Qt::UserRole+6)
+
 void WindowIDE::AddModelBuilder()
 {
     QListWidgetItem *_builderItem = ui->lwBuilders->currentItem();
@@ -580,7 +608,7 @@ void WindowIDE::refreshFileList(void) {
 //    }
     model = new QFileSystemModel;
     model->setRootPath(QDir::currentPath());
-    model->setNameFilters(QStringList() << "*.c" << "*.asm" << "*.h");
+    model->setNameFilters(QStringList() << "*.c" << "*.asm" << "*.h"<<"*.sym"<<"*.log"<<"*.bin");
     model->setNameFilterDisables(false);
     ui->treeView->setModel(model);
     ui->treeView->hideColumn(1);
@@ -686,6 +714,42 @@ CDOxyItem * WindowIDE::getDOxygenInfo(QString s)
     return 0;
 }
 
+QString WindowIDE::getBuilder(QString model,QString ext,int role) {
+
+    // fetch lwModelBuilder
+    for (int i=0; i < ui->lwModelBuilder->count(); i++) {
+        QString _model = ui->lwModelBuilder->item(i)->data(NB_MODEL).toString();
+        QString _builder = ui->lwModelBuilder->item(i)->data(NB_BUILDER).toString();
+        Qt::CheckState _checked = ui->lwModelBuilder->item(i)->checkState();
+
+        if ( (_checked==Qt::Checked) && (_model == model) ){
+            // check builder ext
+            for (int i=0; i < ui->lwBuilders->count(); i++) {
+                QString _title = ui->lwBuilders->item(i)->text();
+                QString _fileName = ui->lwBuilders->item(i)->data(NB_FILENAME).toString();
+                QString _extensions = ui->lwBuilders->item(i)->data(NB_EXT).toString();
+                QString _output = ui->lwBuilders->item(i)->data(NB_OUTPUT).toString();
+                QString _binFile = ui->lwBuilders->item(i)->data(NB_BIN).toString();
+                Qt::CheckState _checked = ui->lwBuilders->item(i)->checkState();
+
+                if ( (_builder==_title) &&
+                     (_checked==Qt::Checked) &&
+                     (_extensions.split(';').contains(ext))) {
+                    // Found
+                    switch (role) {
+                    case 0: return _title;
+                    case NB_FILENAME: return _fileName;
+                    case NB_EXT: return _extensions;
+                    case NB_OUTPUT: return _output;
+                    case NB_BIN: return _binFile;
+                    }
+                }
+            }
+        }
+    }
+
+    return QString();
+}
 
 void WindowIDE::saveConfig() {
 
@@ -811,3 +875,4 @@ void WindowIDE::loadConfig() {
 
     }
 }
+
