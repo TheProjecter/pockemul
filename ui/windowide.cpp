@@ -248,20 +248,12 @@ QStringList WindowIDE::getProc(QString s) {
  \brief lance le processus de compilation adéquate en fonction de l'extension du fichier
 
 */
-void WindowIDE::compile(void) {
+void WindowIDE::compileINTERNAL() {
 #ifndef Q_OS_ANDROID
-    mapSRC.clear();
-    mapPP.clear();
-    mapASM.clear();
-    mapLM.clear();
-
-    save();
 
     CEditorWidget *locEditorWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
-    QString sourcefname=locEditorWidget->m_editControl->editor()->fileName();
 
-    compilePC1500(sourcefname);
-    return;
+    QString sourcefname = locEditorWidget->m_editControl->editor()->fileName();
     QString source = "#include <internal.h>\r\n"+locEditorWidget->m_editControl->editor()->text();
 
     QFileInfo fInfo(sourcefname);
@@ -288,10 +280,7 @@ void WindowIDE::compile(void) {
         CEditorWidget *currentWidget = locEditorWidget;
 
         mapSRC[sourcefname] = source.toLatin1();
-        if (ui->targetComboBox->currentText()=="PC-1500") {
-            compilePC1500(sourcefname);
-        }
-        else {
+
             Cpasm * pasm = new Cpasm(&mapSRC,&mapLM);
             pasm->run("BAS",mapSRC[sourcefname]);
             pasm->savefile("BAS");
@@ -301,7 +290,7 @@ void WindowIDE::compile(void) {
             createEditorTab(fInfo.baseName()+".bas",mapLM["BAS"]);
 
             createOutputTab("ASM Compiler :"+fInfo.fileName(),mapLM["output"]);
-        }
+
 
         if (! mapLM["BIN"].isEmpty()) {
             currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
@@ -325,7 +314,16 @@ void WindowIDE::compile(void) {
 #endif
 }
 
-void WindowIDE::compilePC1500(QString fn) {
+void WindowIDE::compile() {
+    mapSRC.clear();
+    mapPP.clear();
+    mapASM.clear();
+    mapLM.clear();
+
+    save();
+
+    CEditorWidget *currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+    QString fn = currentWidget->m_editControl->editor()->fileName();
     QString _path = QFileInfo(fn).absolutePath();
     QString _filename = QFileInfo(fn).fileName();
     QString _ext = QFileInfo(fn).suffix();
@@ -343,6 +341,11 @@ void WindowIDE::compilePC1500(QString fn) {
 //    QString program = QCoreApplication::applicationDirPath()+"/lhasm.exe";
     qWarning()<<"exe:"<<program;
     qWarning()<<"Working dir:"<<_path;
+
+    if ( (program == "LCC") || (program == "PASM")) {
+        compileINTERNAL();
+        return;
+    }
 
     QProcess *myProcess = new QProcess();
     myProcess->setWorkingDirectory(_path);
@@ -381,7 +384,7 @@ void WindowIDE::compilePC1500(QString fn) {
     }
 
     if (! mapLM["BIN"].isEmpty()) {
-        CEditorWidget *currentWidget = ((CEditorWidget*)ui->tabWidget->currentWidget());
+
         QHexPanel *hexpanel = new QHexPanel();
 
 
@@ -515,6 +518,7 @@ void WindowIDE::updateBuilder()
 {
     QListWidgetItem *_item = ui->lwBuilders->currentItem();
     if (_item ==0) return;
+    if (_item->toolTip()=="INTERNAL") return;
 
     _item->setText(ui->leNewBuilderTitle->text());
     _item->setToolTip(ui->leNewBuilderFileName->text());
@@ -563,7 +567,8 @@ void WindowIDE::SelectBuilder()
 void WindowIDE::removeBuilder()
 {
     if (ui->lwBuilders->currentRow()>=0)
-        ui->lwBuilders->takeItem(ui->lwBuilders->currentRow());
+        if (ui->lwBuilders->currentItem()->toolTip()!= "INTERNAL")      // Add a msg
+            ui->lwBuilders->takeItem(ui->lwBuilders->currentRow());
 }
 /*!
  \brief Sauvegarde le fichier sur disque.
@@ -764,20 +769,22 @@ void WindowIDE::saveConfig() {
 
         xmlOut->writeStartElement("builders");
             for (int i=0; i < ui->lwBuilders->count(); i++) {
-                QString _title = ui->lwBuilders->item(i)->text();
-                QString _fileName = ui->lwBuilders->item(i)->data(NB_FILENAME).toString();
-                QString _extensions = ui->lwBuilders->item(i)->data(NB_EXT).toString();
-                QString _output = ui->lwBuilders->item(i)->data(NB_OUTPUT).toString();
-                QString _binFile = ui->lwBuilders->item(i)->data(NB_BIN).toString();
-                QString _checked = (ui->lwBuilders->item(i)->checkState()==Qt::Checked ? "true":"false");
-                xmlOut->writeStartElement("builder");
-                xmlOut->writeAttribute("title", _title);
-                xmlOut->writeAttribute("filename", _fileName);
-                xmlOut->writeAttribute("ext", _extensions);
-                xmlOut->writeAttribute("output", _output);
-                xmlOut->writeAttribute("binfile", _binFile);
-                xmlOut->writeAttribute("checked", _checked);
-                xmlOut->writeEndElement();
+                if (ui->lwBuilders->item(i)->toolTip()!="INTERNAL") {
+                    QString _title = ui->lwBuilders->item(i)->text();
+                    QString _fileName = ui->lwBuilders->item(i)->data(NB_FILENAME).toString();
+                    QString _extensions = ui->lwBuilders->item(i)->data(NB_EXT).toString();
+                    QString _output = ui->lwBuilders->item(i)->data(NB_OUTPUT).toString();
+                    QString _binFile = ui->lwBuilders->item(i)->data(NB_BIN).toString();
+                    QString _checked = (ui->lwBuilders->item(i)->checkState()==Qt::Checked ? "true":"false");
+                    xmlOut->writeStartElement("builder");
+                    xmlOut->writeAttribute("title", _title);
+                    xmlOut->writeAttribute("filename", _fileName);
+                    xmlOut->writeAttribute("ext", _extensions);
+                    xmlOut->writeAttribute("output", _output);
+                    xmlOut->writeAttribute("binfile", _binFile);
+                    xmlOut->writeAttribute("checked", _checked);
+                    xmlOut->writeEndElement();
+                }
             }
         xmlOut->writeEndElement();  // builders
 
@@ -802,6 +809,27 @@ void WindowIDE::saveConfig() {
 }
 
 void WindowIDE::loadConfig() {
+    {
+        QListWidgetItem *_item = new QListWidgetItem("LCC C Compiler for SC61860");
+        _item->setToolTip("INTERNAL");
+        _item->setData(NB_FILENAME,"LCC");
+        _item->setData(NB_EXT,"c");
+        //    _item->setData(NB_OUTPUT,_output);
+        //    _item->setData(NB_BIN,_binFile);
+        _item->setCheckState(Qt::Checked);
+        ui->lwBuilders->addItem(_item);
+    }
+    {
+        QListWidgetItem *_item = new QListWidgetItem("PASM Assembler for SC61860");
+        _item->setToolTip("INTERNAL");
+        _item->setData(NB_FILENAME,"PASM");
+        _item->setData(NB_EXT,"asm");
+        //    _item->setData(NB_OUTPUT,_output);
+        //    _item->setData(NB_BIN,_binFile);
+        _item->setCheckState(Qt::Checked);
+        ui->lwBuilders->addItem(_item);
+    }
+
     QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     QString xmlData = settings.value("IDE").toString();
     if (xmlData.isEmpty()) return;

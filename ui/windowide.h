@@ -96,7 +96,8 @@ private:
     QList<Cvar> varlist;
     QList<Cproc> proclist;
     QList<CDOxyItem*> doxygenlist;
-    void compilePC1500(QString fn);
+
+    void compileINTERNAL();
 };
 
 #endif // WINDOWIDE_H
