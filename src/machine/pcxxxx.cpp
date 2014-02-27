@@ -429,6 +429,7 @@ void CpcXXXX::Set_8(UINT32 adr,BYTE d)
         checkBreakWrite(adr,d);
 		mem[adr]=d;
     }
+    else checkBreakWrite(adr,d);
 }
 
 void CpcXXXX::Set_16(UINT32 adr,WORD d)
@@ -439,11 +440,13 @@ void CpcXXXX::Set_16(UINT32 adr,WORD d)
         checkBreakWrite(a,d);
         mem[a]=(BYTE) d;
     }
+    else checkBreakWrite(adr,d);
     a=adr+1;
     if(Chk_Adr(&a,(d>>8))) {
         checkBreakWrite(a,d>>8);
         mem[a]=(BYTE) (d>>8);
     }
+    else checkBreakWrite(adr,d);
 }
  
 void CpcXXXX::Set_16r(UINT32 adr,WORD d)
@@ -454,11 +457,13 @@ void CpcXXXX::Set_16r(UINT32 adr,WORD d)
         checkBreakWrite(a,d>>8);
         mem[a]=(BYTE) (d>>8);
     }
+    else checkBreakWrite(adr,d);
     a=adr+1;
     if(Chk_Adr(&a,d)) {
         checkBreakWrite(a,d);
         mem[a]=(BYTE) d;
     }
+    else checkBreakWrite(adr,d);
 }
 
 void CpcXXXX::Set_20(UINT32 adr, UINT32 d)
