@@ -167,6 +167,9 @@ bool Cce1560::run(void)
 //            qWarning()<<"CE-1560 read["<<QString("%1").arg(addr - 0xC000 + firmwarePg * 0x4000,5,16,QChar('0'))<<"]="<<bus->getData();
             return true;
         }
+        else {
+            qWarning()<<"CE-1560 write["<<QString("%1").arg(addr - 0xC000 + firmwarePg * 0x4000,5,16,QChar('0'))<<"]="<<bus->getData();
+        }
     }
     if ( (bus->isME1() && (bus->getAddr()>=0xE200) && (bus->getAddr()<=0xE20F))
 //        || (bus->isME1() && (bus->getAddr()>=0x0000) && (bus->getAddr()<=0x000F))

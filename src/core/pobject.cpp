@@ -1152,7 +1152,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
      menu->addAction(tr("Create desktop Shortcut"),this,SLOT(createShortcut()));
 #endif
 
-    if ( ( dynamic_cast<CpcXXXX *>(this) ) &&  (CpcXXXX*)pPC->pCPU)
+    if ( ( dynamic_cast<CpcXXXX *>(this) ) &&  ((CpcXXXX*)this)->pCPU)
 	{
 		QMenu * menupocket = menu->addMenu(tr("Pocket"));
 			menupocket->addAction(tr("Turn On"),this,SLOT(slotPower()));
@@ -1177,7 +1177,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
 	
 	QMenu * menuconfig = menu->addMenu(tr("Configuration"));
 	
-    if ( dynamic_cast<CpcXXXX *>(this) &&  (CpcXXXX*)pPC->pCPU )
+    if ( dynamic_cast<CpcXXXX *>(this) &&  ((CpcXXXX*)this)->pCPU )
     {
         QMenu * menucpuspeed = menuconfig->addMenu(tr("CPU Speed"));
             menucpuspeed->addAction(tr("100%"));
@@ -1209,7 +1209,7 @@ void CPObject::BuildContextMenu(QMenu * menu)
 
     if (!SlotList.isEmpty()) menu->addAction(tr("Dump Memory"),this,SLOT(Dump()));
 
-    if ( dynamic_cast<CpcXXXX *>(this) &&  (CpcXXXX*)pPC->pCPU  ) {
+    if ( dynamic_cast<CpcXXXX *>(this) &&  ((CpcXXXX*)this)->pCPU  ) {
 
         menu->addAction(tr("Debug"),this,SLOT(Dasm()));
     }

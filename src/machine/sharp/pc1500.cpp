@@ -569,7 +569,10 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
     if ( (*d>=0x4000) && (*d<=0x57FF) )	{ return(1); }										// RAM area(0000-3FFF) 16K
 	if ( (*d>=0x5800) && (*d<=0x67FF) )	{ return(EXTENSION_CE155_CHECK | EXTENSION_CE151_CHECK); }	// RAM area(0000-3FFF) 16K
 	if ( (*d>=0x6800) && (*d<=0x6FFF) )	{ return(EXTENSION_CE155_CHECK); }						// RAM area(0000-3FFF) 16K
-	if ( (*d>=0xC000) && (*d<=0xFFFF) ) { return(0); }										// RAM area(4000-7FFFF)
+    if ( (*d>=0xC000) && (*d<=0xFFFF) ) {
+        qWarning()<<"PC="<<QString("%1").arg(pCPU->get_PC(),4,16,QChar('0'));
+        qWarning()<<"Write :"<<QString("%1").arg(*d,4,16,QChar('0'))<<"="<<QString("%1").arg(data,2,16,QChar('0'));
+                    return(0); }										// RAM area(4000-7FFFF)
 
     return Cpc15XX::Chk_Adr(d,data);
 }
