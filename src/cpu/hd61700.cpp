@@ -2947,7 +2947,7 @@ inline void CHD61700::mem_writebyte(UINT8 segment, UINT16 offset, UINT8 data)
 {
 //    m_program->write_word(make_18bit_addr(segment, offset)<<1, data);
     UINT32 adr = make_18bit_addr(segment, offset);
-    pPC->set_mem(adr,SIZE_8,data);
+    pPC->Set_8(adr,data);
 }
 
 inline UINT32 CHD61700::make_18bit_addr(UINT8 segment, UINT16 offset)

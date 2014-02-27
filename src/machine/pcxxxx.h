@@ -9,7 +9,7 @@
 
 #include "pobject.h"
 
-
+class CbreakpointManager;
 class Clcdc;
 class CCPU;
 class Cconnector;
@@ -282,12 +282,14 @@ public:
     bool DasmStep;
     bool DasmFlag;
     UINT32 DasmLastAdr;
-    QMap<UINT32,Qt::CheckState> BreakPoints;
     QMap<QPair<UINT32,UINT32>,Qt::CheckState> TraceRange;
     int BreakSubLevel;
 
+    CbreakpointManager *pBreakpointManager;
 
     bool checkTraceRange(UINT32 adr);
+    void checkBreakRead(UINT32 adr, UINT32 d);
+    void checkBreakWrite(UINT32 adr, UINT32 d);
 };
 
 

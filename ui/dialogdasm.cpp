@@ -12,10 +12,13 @@
 #include "ui/cregssc61860widget.h"
 #include "cpu.h"
 #include "cregcpu.h"
+#include "breakpoint.h"
 
 #define CODE_LINE 0
 #define LABEL_LINE 1
 #define SEPARATOR_LINE 2
+
+extern int ask(QWidget *parent,QString msg,int nbButton);
 
 DialogDasm::DialogDasm(QWidget *parent) :
     QDialog(parent),
@@ -71,6 +74,8 @@ DialogDasm::DialogDasm(QWidget *parent) :
     imem=true;
 
     load();
+    // Load breakpoints
+    refreshBreakPoints();
 
 }
 
@@ -238,6 +243,7 @@ void DialogDasm::RefreshDasm()
     if (regwidget) regwidget->refresh();
     loadImem();
     loadMem();
+    ui->lblMsg->setText("Last BreakPoint: <font color=\"#FF0000\">"+pPC->pBreakpointManager->breakMsg+"</font>");
 
 }
 
@@ -309,16 +315,55 @@ void DialogDasm::stepOver()
 
 void DialogDasm::addBreakPoint()
 {
-    pPC->BreakPoints[ui->breakPointLineEdit->text().toLongLong(0,16)] = Qt::Checked;
+    Cbreakpoint::TYPE _type = Cbreakpoint::textToType(ui->cbBreakPointType->currentText());
+    UINT32 _adrFrom = ui->leBreakpointFrom->text().toUInt(0,16);
+    UINT32 _adrTo   = ui->leBreakpointTo->text().toUInt(0,16);
 
-    QListWidgetItem *_item = new QListWidgetItem(ui->breakPointLineEdit->text());
-    _item->setCheckState(Qt::Checked);
-    ui->lwBreakPts->addItem(_item);
+    if (_adrTo == 0) _adrTo = _adrFrom;
+
+    if (_adrFrom > _adrTo) {
+        ask(this,"Invalid address range.",1);
+        return;
+    }
+
+
+    Cbreakpoint *_breakpt = new Cbreakpoint(_type,
+                                           _adrFrom,
+                                           _adrTo,
+                                            -1,
+                                           true);
+    pPC->pBreakpointManager->addBreakPoint(_breakpt);
+
+    refreshBreakPoints();
+
+}
+
+void DialogDasm::removeBreakPoint()
+{
+    if (!ui->lwBreakPts->currentItem()) return;
+    int ind = ui->lwBreakPts->currentItem()->data(Qt::UserRole).toInt();
+    pPC->pBreakpointManager->breakList.removeAt(ind);
+    refreshBreakPoints();
+}
+
+void DialogDasm::refreshBreakPoints(){
+    ui->lwBreakPts->clear();
+
+    for (int i=0; i < pPC->pBreakpointManager->breakList.count();i++){
+        Cbreakpoint *_bpt = pPC->pBreakpointManager->breakList[i];
+        QListWidgetItem *_item = new QListWidgetItem();
+        _item->setText(_bpt->toText());
+        _item->setData(Qt::UserRole,i);
+        _item->setCheckState(_bpt->isEnabled()?Qt::Checked:Qt::Unchecked);
+        ui->lwBreakPts->addItem(_item);
+    }
 }
 
 void DialogDasm::breakPointChanged(QListWidgetItem *item)
 {
-    pPC->BreakPoints[item->text().toLongLong(0,16)] = item->checkState();
+    int ind = item->data(Qt::UserRole).toInt();
+
+    pPC->pBreakpointManager->breakList[ind]->setEnabled(item->checkState()==Qt::Checked?true:false);
 
 }
 
@@ -371,10 +416,7 @@ void DialogDasm::removeSymbolFile()
     loadSymbolMap();
 }
 
-void DialogDasm::removeBreakPoint()
-{
-    ui->lwBreakPts->takeItem(ui->lwBreakPts->currentRow());
-}
+
 
 void DialogDasm::removeTraceRange()
 {
@@ -440,16 +482,6 @@ void DialogDasm::saveAll() {
                 xmlOut->writeEndElement();
             }
         xmlOut->writeEndElement();  // symbols
-        xmlOut->writeStartElement("breakpoints");
-            for (int i=0; i < ui->lwBreakPts->count(); i++) {
-                QString _adr = ui->lwBreakPts->item(i)->text();
-                QString _checked = (ui->lwBreakPts->item(i)->checkState()==Qt::Checked ? "true":"false");
-                xmlOut->writeStartElement("breakpoint");
-                xmlOut->writeAttribute("adr", _adr);
-                xmlOut->writeAttribute("checked", _checked);
-                xmlOut->writeEndElement();
-            }
-        xmlOut->writeEndElement();  // breakpoints
         qWarning()<<"ok";
         xmlOut->writeStartElement("traces");
             for (int i=0; i < ui->lwTraceRange->count(); i++) {
@@ -471,6 +503,7 @@ void DialogDasm::saveAll() {
 }
 
 void DialogDasm::load() {
+
 //    qWarning()<<"LOAD";
     QSettings settings(workDir+"config.ini",QSettings::IniFormat);
     QString xmlData = settings.value("dasm").toString();
@@ -498,21 +531,6 @@ void DialogDasm::load() {
             }
         }
         loadSymbolMap();
-        if (xml->readNextStartElement() &&
-                (xml->name() == "breakpoints")) {
-            while (xml->readNextStartElement()) {
-                QString eltname = xml->name().toString();
-//                            AddLog(LOG_TEMP,eltname);
-                if (eltname == "breakpoint") {
-                    QString _adr = xml->attributes().value("adr").toString();
-                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
-                    QListWidgetItem *_item = new QListWidgetItem(_adr);
-                    _item->setCheckState(_checkstate);
-                    ui->lwBreakPts->addItem(_item);
-                }
-                xml->skipCurrentElement();
-            }
-        }
 
         if (xml->readNextStartElement() &&
                 (xml->name() == "traces")) {

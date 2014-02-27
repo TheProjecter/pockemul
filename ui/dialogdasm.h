@@ -35,6 +35,7 @@ public:
     void saveAll();
     void load();
 
+    void refreshBreakPoints();
 private:
     Ui::DialogDasm *ui;
     BINEditor::BinEditor *imemHexEditor;

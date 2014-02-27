@@ -23,6 +23,8 @@
 #include	"dialoganalog.h"
 #include    "buspc1500.h"
 
+#include "breakpoint.h"
+
 
 extern int	g_DasmStep;
 extern bool	UpdateDisplayRunning;
@@ -204,6 +206,7 @@ bool Cpc15XX::LoadConfig(QXmlStreamReader *xmlIn)
 {
     Q_UNUSED(xmlIn)
     pLH5810->Load_Internal(xmlIn);
+    pBreakpointManager->unserialize(xmlIn);
     return true;
 }
 
@@ -229,8 +232,9 @@ bool Cpc15XX::SaveConfig(QFile *file)
 
 bool Cpc15XX::SaveConfig(QXmlStreamWriter *xmlOut)
 {
-    Q_UNUSED(xmlOut)
+
     pLH5810->save_internal(xmlOut);
+    pBreakpointManager->serialize(xmlOut);
     return true;
 }
 
@@ -573,7 +577,9 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
     if ( (*d>=0xC000) && (*d<=0xFFFF) ) {
         qWarning()<<"PC="<<QString("%1").arg(pCPU->get_PC(),4,16,QChar('0'));
         qWarning()<<"Write :"<<QString("%1").arg(*d,4,16,QChar('0'))<<"="<<QString("%1").arg(data,2,16,QChar('0'));
-                    return(0); }										// RAM area(4000-7FFFF)
+        if (bus->isINHIBIT()) writeBus(d,data);
+        return false;
+         }										// RAM area(4000-7FFFF)
 
     return Cpc15XX::Chk_Adr(d,data);
 }

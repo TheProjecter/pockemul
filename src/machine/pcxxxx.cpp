@@ -22,6 +22,7 @@
 #include "Keyb.h"
 #include "xmlwriter.h"
 #include "ui/cregcpu.h"
+#include "breakpoint.h"
 
 #define		bREAD				0
 
@@ -36,6 +37,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     pCONNECTOR	= 0;
     pSIOCONNECTOR	= 0;
     KeyMapLenght = 0;
+    pBreakpointManager = new CbreakpointManager();
 
     fp_log  = 0;
     off			= true;
@@ -81,7 +83,6 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     ioFreq = 0;//24000;
     DasmFlag = false;
     DasmStep = false;
-    BreakPoints.clear();
     TraceRange.clear();
     BreakSubLevel = -1;
 
@@ -304,21 +305,45 @@ void	CpcXXXX::Set_Port_Bit(PORTS Port, int bit, BYTE data)
 /*****************************************************************************/
 /* Get data from mem[]														 */
 /*****************************************************************************/
+void CpcXXXX::checkBreakRead(UINT32 adr,UINT32 d) {
+    if (pBreakpointManager->isBreak(Cbreakpoint::READ,adr,d)) {
+        BreakSubLevel = 99999;
+        DasmStep = true;
+        DasmFlag = false;
+        emit pCPU->showDasm();
+    }
+}
+void CpcXXXX::checkBreakWrite(UINT32 adr,UINT32 d) {
+    if (pBreakpointManager->isBreak(Cbreakpoint::WRITE,adr,d)) {
+        BreakSubLevel = 99999;
+        DasmStep = true;
+        DasmFlag = false;
+        emit pCPU->showDasm();
+    }
+}
 BYTE CpcXXXX::Get_PC(UINT32 adr)
 {
     UINT32 extValue = 0;
-    if (Chk_Adr_R(&adr,&extValue))
+    if (Chk_Adr_R(&adr,&extValue)) {
+        checkBreakRead(adr,mem[adr]);
         return(mem[adr]);
-    else
+    }
+    else {
+        checkBreakRead(adr,extValue);
         return(extValue);
+    }
 }
 BYTE CpcXXXX::Get_8(UINT32 adr)
 {
     UINT32 extValue = 0;
-    if (Chk_Adr_R(&adr,&extValue))
+    if (Chk_Adr_R(&adr,&extValue)) {
+        checkBreakRead(adr,mem[adr]);
         return(mem[adr]);
-    else
+    }
+    else{
+        checkBreakRead(adr,extValue);
         return(extValue);
+    }
 }
 
 WORD CpcXXXX::Get_16(UINT32 adr)
@@ -327,10 +352,16 @@ WORD CpcXXXX::Get_16(UINT32 adr)
     UINT32 extValue2 = 0;
 	UINT32	a;
 	a=adr+1;
-    if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2))
+    if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2)) {
+        checkBreakRead(adr,mem[adr]);
+        checkBreakRead(a,mem[a]<<8);
         return(mem[adr]+(mem[a]<<8));
-    else
+    }
+    else {
+        checkBreakRead(adr,extValue1);
+        checkBreakRead(a,extValue2<<8);
         return(extValue1+(extValue2<<8));
+    }
 }
 
 WORD CpcXXXX::Get_16r(UINT32 adr)
@@ -339,18 +370,27 @@ WORD CpcXXXX::Get_16r(UINT32 adr)
     UINT32 extValue2 = 0;
 	UINT32	a;
 	a=adr+1;
-    if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2))
+    if (Chk_Adr_R(&adr,&extValue1) && Chk_Adr_R(&a,&extValue2)) {
+        checkBreakRead(adr,mem[adr]<<8);
+        checkBreakRead(a,mem[a]);
         return((mem[adr]<<8)+mem[a]);
-    else
+    }
+    else {
+        checkBreakRead(adr,extValue1<<8);
+        checkBreakRead(a,extValue2);
         return((extValue1<<8)+extValue2);
+    }
 }
 
 WORD CpcXXXX::Get_16rPC(UINT32 adr)
 {
     UINT32	a;
     a=adr+1;
-    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD))
+    if (Chk_Adr_R(&adr,bREAD) && Chk_Adr_R(&a,bREAD)) {
+        checkBreakRead(adr,mem[adr]<<8);
+        checkBreakRead(a,mem[a]);
         return((mem[adr]<<8)+mem[a]);
+    }
     else
         return(0);
 }
@@ -385,26 +425,40 @@ UINT32 CpcXXXX::get_mem(UINT32 adr,int size)
 /*****************************************************************************/
 void CpcXXXX::Set_8(UINT32 adr,BYTE d)
 {
-	if(Chk_Adr(&adr,d))
+    if(Chk_Adr(&adr,d)) {
+        checkBreakWrite(adr,d);
 		mem[adr]=d;
+    }
 }
 
 void CpcXXXX::Set_16(UINT32 adr,WORD d)
 {
 	UINT32	a;
 	a=adr;
-	if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
+    if(Chk_Adr(&a,d)) {
+        checkBreakWrite(a,d);
+        mem[a]=(BYTE) d;
+    }
     a=adr+1;
-    if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
+    if(Chk_Adr(&a,(d>>8))) {
+        checkBreakWrite(a,d>>8);
+        mem[a]=(BYTE) (d>>8);
+    }
 }
  
 void CpcXXXX::Set_16r(UINT32 adr,WORD d)
 {
     UINT32	a;
     a=adr;
-    if(Chk_Adr(&a,(d>>8))) mem[a]=(BYTE) (d>>8);
+    if(Chk_Adr(&a,(d>>8))) {
+        checkBreakWrite(a,d>>8);
+        mem[a]=(BYTE) (d>>8);
+    }
     a=adr+1;
-    if(Chk_Adr(&a,d)) mem[a]=(BYTE) d;
+    if(Chk_Adr(&a,d)) {
+        checkBreakWrite(a,d);
+        mem[a]=(BYTE) d;
+    }
 }
 
 void CpcXXXX::Set_20(UINT32 adr, UINT32 d)
@@ -592,7 +646,8 @@ bool CpcXXXX::run(void)
 #endif
         }
 
-        if (BreakPoints.value(pCPU->get_PC(),Qt::Unchecked) == Qt::Checked)
+//        if (BreakPoints.value(pCPU->get_PC(),Qt::Unchecked) == Qt::Checked)
+        if (pBreakpointManager->isBreak(Cbreakpoint::EXEC,pCPU->get_PC(),0))
         {
                 DasmStep = true;
                 BreakSubLevel = 99999;
@@ -808,6 +863,7 @@ bool CpcXXXX::SaveConfig(QXmlStreamWriter *xmlOut)
             xmlOut->writeAttribute("Japan",QString("%1").arg(Japan));
             xmlOut->writeAttribute("closed",QString("%1").arg(closed));
         xmlOut->writeEndElement();
+        pBreakpointManager->serialize(xmlOut);
     xmlOut->writeEndElement();
 
     return true;
