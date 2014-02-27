@@ -13,6 +13,7 @@
 #include "cpu.h"
 #include "cregcpu.h"
 #include "breakpoint.h"
+#include "lcc/parser/parser.h"
 
 #define CODE_LINE 0
 #define LABEL_LINE 1
@@ -39,12 +40,14 @@ DialogDasm::DialogDasm(QWidget *parent) :
 //    connect(ui->pbStop,SIGNAL(clicked()),this,SLOT(stop()));
     connect(ui->tbStep,SIGNAL(clicked()),this,SLOT(step()));
     connect(ui->tbStepOver,SIGNAL(clicked()),this,SLOT(stepOver()));
-    connect(pPC,SIGNAL(RefreshDasm()),this,SLOT(RefreshDasm()));
+    connect(pPC,SIGNAL(askRefreshDasm()),this,SLOT(RefreshDasm()));
     connect(ui->pbDasm,SIGNAL(clicked()),this,SLOT(ManualDasm()));
 
     connect(ui->tbAddBrkPt,SIGNAL(clicked()),this,SLOT(addBreakPoint()));
     connect(ui->lwBreakPts,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(breakPointChanged(QListWidgetItem*)));
+    connect(ui->lwBreakPts,SIGNAL(itemSelectionChanged()),this,SLOT(breakPointSelect()));
     connect(ui->pbRemoveBreakPoint,SIGNAL(clicked()),this,SLOT(removeBreakPoint()));
+    connect(ui->pbTestCond,SIGNAL(clicked()),this,SLOT(evaluateCond()));
 
     connect(ui->tbAddTraceRange,SIGNAL(clicked()),this,SLOT(addTraceRange()));
     connect(ui->lwTraceRange,SIGNAL(itemChanged(QListWidgetItem*)),this,SLOT(traceRangeChanged(QListWidgetItem*)));
@@ -166,7 +169,7 @@ void DialogDasm::ManualDasm() {
 
 void DialogDasm::RefreshDasm()
 {
-
+show();
  if ( pPC->pCPU->pDEBUG->debugged)
     {
         QString	text;
@@ -318,6 +321,7 @@ void DialogDasm::addBreakPoint()
     Cbreakpoint::TYPE _type = Cbreakpoint::textToType(ui->cbBreakPointType->currentText());
     UINT32 _adrFrom = ui->leBreakpointFrom->text().toUInt(0,16);
     UINT32 _adrTo   = ui->leBreakpointTo->text().toUInt(0,16);
+    QString _cond   = ui->teBreakpointCond->toPlainText();
 
     if (_adrTo == 0) _adrTo = _adrFrom;
 
@@ -330,7 +334,7 @@ void DialogDasm::addBreakPoint()
     Cbreakpoint *_breakpt = new Cbreakpoint(_type,
                                            _adrFrom,
                                            _adrTo,
-                                            -1,
+                                            _cond,
                                            true);
     pPC->pBreakpointManager->addBreakPoint(_breakpt);
 
@@ -348,7 +352,7 @@ void DialogDasm::removeBreakPoint()
 
 void DialogDasm::refreshBreakPoints(){
     ui->lwBreakPts->clear();
-
+    qWarning()<<"refreshBreakPoints"<<pPC->pBreakpointManager->breakList.count();
     for (int i=0; i < pPC->pBreakpointManager->breakList.count();i++){
         Cbreakpoint *_bpt = pPC->pBreakpointManager->breakList[i];
         QListWidgetItem *_item = new QListWidgetItem();
@@ -356,6 +360,7 @@ void DialogDasm::refreshBreakPoints(){
         _item->setData(Qt::UserRole,i);
         _item->setCheckState(_bpt->isEnabled()?Qt::Checked:Qt::Unchecked);
         ui->lwBreakPts->addItem(_item);
+        qWarning()<<"insert:"<<_bpt->toText();
     }
 }
 
@@ -364,6 +369,35 @@ void DialogDasm::breakPointChanged(QListWidgetItem *item)
     int ind = item->data(Qt::UserRole).toInt();
 
     pPC->pBreakpointManager->breakList[ind]->setEnabled(item->checkState()==Qt::Checked?true:false);
+
+}
+void DialogDasm::breakPointSelect() {
+    if (!ui->lwBreakPts->currentItem()) return;
+    int _ind = ui->lwBreakPts->currentItem()->data(Qt::UserRole).toInt();
+    Cbreakpoint *_bpt = pPC->pBreakpointManager->breakList[_ind];
+
+    ui->leBreakpointFrom->setText(QString("%1").arg(_bpt->From(),6,16,QChar('0')));
+    ui->leBreakpointTo->setText(QString("%1").arg(_bpt->To(),6,16,QChar('0')));
+    int _cbIndex=0;
+    switch(_bpt->Type()) {
+    case Cbreakpoint::EXEC: _cbIndex=0; break;
+    case Cbreakpoint::READ: _cbIndex=1; break;
+    case Cbreakpoint::WRITE: _cbIndex=2; break;
+    case Cbreakpoint::READWRITE: _cbIndex=3; break;
+    }
+
+    ui->cbBreakPointType->setCurrentIndex(_cbIndex);
+    ui->teBreakpointCond->setPlainText(_bpt->Cond());
+}
+
+void DialogDasm::evaluateCond()
+{
+
+    Parser p(ui->teBreakpointCond->toPlainText().toLatin1().data());
+    pPC->pCPU->pDEBUG->injectReg(&p);
+    double _result = p.Evaluate();
+    qWarning()<<_result;
+    ui->lblResult->setText(QString("%1").arg(_result));
 
 }
 

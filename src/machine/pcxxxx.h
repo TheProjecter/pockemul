@@ -276,7 +276,7 @@ private slots:
 	void manageExtensions(QAction *);
 	
 signals:
-    void RefreshDasm();
+    void askRefreshDasm();
     void showDasm();
 
 public:

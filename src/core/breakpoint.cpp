@@ -7,14 +7,15 @@
 #include "pcxxxx.h"
 #include "cpu.h"
 #include "Debug.h"
+#include "ui/dialogdasm.h"
 
-Cbreakpoint::Cbreakpoint(Cbreakpoint::TYPE _type, UINT32 _from, UINT32 _to, int _val, bool _enabled)
+Cbreakpoint::Cbreakpoint(Cbreakpoint::TYPE _type, UINT32 _from, UINT32 _to, QString _cond, bool _enabled)
 {
     type = _type;
     adrFrom = _from;
     adrTo   = _to;
     enabled = _enabled;
-    val = _val;
+    cond = _cond;
 }
 
 void Cbreakpoint::setCond(QString _cond) {
@@ -29,7 +30,6 @@ QString Cbreakpoint::toText() {
     case Cbreakpoint::READ: ret = "(READ)  "; break;
     case Cbreakpoint::WRITE:ret = "(WRITE) "; break;
     case Cbreakpoint::READWRITE:ret = "(R/W) "; break;
-    case Cbreakpoint::REG:  ret = "(REG)   "; break;
     }
 
     ret += QString("%1").arg(adrFrom,6,16,QChar('0'));
@@ -46,7 +46,7 @@ void Cbreakpoint::serialize(QXmlStreamWriter *xmlOut)
     xmlOut->writeAttribute("adrFrom",QString("%1").arg(adrFrom,6,16,QChar('0')));
     xmlOut->writeAttribute("adrTo",QString("%1").arg(adrTo,6,16,QChar('0')));
     xmlOut->writeAttribute("enabled",enabled?"true":"false");
-    xmlOut->writeAttribute("val",val==-1? "-1" : QString("%1").arg(val,6,16,QChar('0')));
+    xmlOut->writeAttribute("cond",cond);
     xmlOut->writeEndElement();  // breakpoints
 }
 
@@ -58,8 +58,8 @@ Cbreakpoint* Cbreakpoint::unserialize(QXmlStreamReader *xmlIn)
         UINT32 _adrFrom = xmlIn->attributes().value("adrFrom").toUInt(0,16);
         UINT32 _adrTo = xmlIn->attributes().value("adrTo").toUInt(0,16);
         bool _enabled = xmlIn->attributes().value("enabled").toString()=="true" ? true : false;
-        int _val = xmlIn->attributes().value("val").toInt(0,16);
-        Cbreakpoint *_bpt = new Cbreakpoint(_type,_adrFrom,_adrTo,_val,_enabled);
+        QString _cond = xmlIn->attributes().value("cond").toString();
+        Cbreakpoint *_bpt = new Cbreakpoint(_type,_adrFrom,_adrTo,_cond,_enabled);
 
         return _bpt;
     }
@@ -73,7 +73,6 @@ QString Cbreakpoint::typeToText(Cbreakpoint::TYPE _type)
     case READ: return QString("READ");
     case WRITE: return QString("WRITE");
     case READWRITE: return QString("R/W");
-    case REG: return QString("REG");
     default: return "UNDEFINED";
     }
 
@@ -86,7 +85,6 @@ Cbreakpoint::TYPE Cbreakpoint::textToType(QString _type)
     if (_type=="READ") return READ;
     if (_type=="WRITE") return WRITE;
     if (_type=="R/W") return READWRITE;
-    if (_type=="REG") return REG;
 
     return UNDEFINED;
 }
@@ -99,8 +97,6 @@ CbreakpointManager::CbreakpointManager(CpcXXXX *parent)
 bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
 {
     switch (_type) {
-    case Cbreakpoint::REG:
-        break;
 
     case Cbreakpoint::EXEC:
         for (int i=0; i<breakList.count();i++) {
@@ -128,8 +124,7 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
             if ( _bpt->isEnabled() &&
                  _bpt->isType(Cbreakpoint::READ) &&
                  (_adr >= _bpt->From()) &&
-                 (_adr <= _bpt->To()) &&
-                 ( (_bpt->Val()==-1) || (_bpt->Val()==_val) ) ) {
+                 (_adr <= _bpt->To()) ) {
 
                 breakMsg = _bpt->toText();
                 qWarning()<<breakMsg;
@@ -143,8 +138,7 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
             if ( _bpt->isEnabled() &&
                  _bpt->isType(Cbreakpoint::WRITE) &&
                  (_adr >= _bpt->From()) &&
-                 (_adr <= _bpt->To()) &&
-                 ( (_bpt->Val()==-1) || (_bpt->Val()==_val) ) ) {
+                 (_adr <= _bpt->To()) ) {
                 qWarning()<<"break write";
                 breakMsg = _bpt->toText();
                 qWarning()<<breakMsg;
@@ -180,4 +174,5 @@ void CbreakpointManager::unserialize(QXmlStreamReader *xmlIn) {
             xmlIn->skipCurrentElement();
         }
     }
+    pPC->dialogdasm->refreshBreakPoints();
 }

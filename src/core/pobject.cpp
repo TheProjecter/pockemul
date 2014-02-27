@@ -102,6 +102,8 @@ CPObject::CPObject(CPObject *parent):CViewObject(parent)
 
         grabGesture(Qt::TapAndHoldGesture);
 
+
+
         // ERROR MESSAGE
         connect( this,SIGNAL(msgError(QString)),mainwindow,SLOT(slotMsgError(QString)));
     }
@@ -1446,7 +1448,6 @@ void CPObject::Dump()
 
 void CPObject::Dasm()
 {
-    if (!dialogdasm) dialogdasm = new DialogDasm(this);
     if (dialogdasm) dialogdasm->show();
 }
 

@@ -18,6 +18,7 @@
 #include "Debug.h"
 #include "init.h"
 #include "dialoganalog.h"
+#include "ui/dialogdasm.h"
 #include "cextension.h"
 #include "Keyb.h"
 #include "xmlwriter.h"
@@ -85,6 +86,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     DasmStep = false;
     TraceRange.clear();
     BreakSubLevel = -1;
+
 
     connect(this,SIGNAL(showDasm()),this,SLOT(Dasm()));
 
@@ -312,7 +314,8 @@ void CpcXXXX::checkBreakRead(UINT32 adr,UINT32 d) {
         BreakSubLevel = 99999;
         DasmStep = true;
         DasmFlag = false;
-        emit pCPU->showDasm();
+        emit showDasm();
+//        emit RefreshDasm();
     }
 }
 void CpcXXXX::checkBreakWrite(UINT32 adr,UINT32 d) {
@@ -320,7 +323,8 @@ void CpcXXXX::checkBreakWrite(UINT32 adr,UINT32 d) {
         BreakSubLevel = 99999;
         DasmStep = true;
         DasmFlag = false;
-        emit pCPU->showDasm();
+        emit showDasm();
+//        emit RefreshDasm();
     }
 }
 BYTE CpcXXXX::Get_PC(UINT32 adr)
@@ -562,6 +566,9 @@ bool CpcXXXX::init(void)
 	initsound();
 
 //    _loclog=fopen("toto.log","wt");
+
+    dialogdasm = new DialogDasm(this);
+
 	return(1);
 }
 
@@ -666,7 +673,8 @@ bool CpcXXXX::run(void)
                 BreakSubLevel = pCPU->CallSubLevel;
                 DasmLastAdr = pCPU->get_PC();
                 pCPU->pDEBUG->DisAsm_1(DasmLastAdr);
-                emit RefreshDasm();
+                emit showDasm();
+                emit askRefreshDasm();
                 DasmFlag = true;
                 DasmStep = false;
             }

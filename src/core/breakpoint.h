@@ -17,18 +17,17 @@ enum TYPE {
     READ,
     WRITE,
     READWRITE,
-    REG,
     UNDEFINED
 };
     Cbreakpoint() {}
-    Cbreakpoint(TYPE _type, UINT32 _from, UINT32 _to, int _val = -1 ,bool _enabled=true);
+    Cbreakpoint(TYPE _type, UINT32 _from, UINT32 _to, QString cond = QString() , bool _enabled=true);
 
     bool isEnabled() { return enabled;}
     void setEnabled(bool _val) { enabled = _val;}
     UINT32 From() { return adrFrom;}
     UINT32 To() { return adrTo;}
     bool isType(TYPE _val) { return (type == _val); }
-    int Val() { return val; }
+    TYPE Type() { return type;}
 
     QString Cond() { return cond; }
     void setCond(QString _cond);
@@ -43,7 +42,6 @@ private:
     UINT32 adrFrom;
     UINT32 adrTo;
     TYPE type;
-    int val;
     bool enabled;
     QString cond;
 };

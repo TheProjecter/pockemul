@@ -64,6 +64,8 @@ public slots:
     void loadSymbolMap();
     void removeBreakPoint();
     void removeTraceRange();
+    void breakPointSelect();
+    void evaluateCond();
 };
 
 #endif // DIALOGDASM_H
