@@ -415,7 +415,7 @@ void DialogDasm::loadSymbolMap()
             }
         }
     }
-    qWarning()<<pPC->pCPU->pDEBUG->symbolMap;
+//    qWarning()<<pPC->pCPU->pDEBUG->symbolMap;
 }
 
 void DialogDasm::saveAll() {

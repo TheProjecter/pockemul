@@ -261,17 +261,42 @@ bool Cce1560::exit(void)
 
 bool Cce1560::LoadConfig(QXmlStreamReader *xmlIn)
 {
-    for (int i=0; i<3; i++) {
-        ps6b0108[i]->Load_Internal(xmlIn);
+
+    if (xmlIn->readNextStartElement()) {
+        if (xmlIn->name() == "config" && xmlIn->attributes().value("version") == "1.0") {
+            for (int i=0; i<3; i++) {
+                ps6b0108[i]->Load_Internal(xmlIn);
+            }
+            if (xmlIn->readNextStartElement() && xmlIn->name() == "internal" ) {
+                ramDiskPg = xmlIn->attributes().value("RamBank").toString().toInt(0,16);
+                firmwarePg = xmlIn->attributes().value("FirmBank").toString().toInt(0,16);
+                inhibitSwitch = xmlIn->attributes().value("inhibitswitch").toString().toInt(0,16);
+                screenOpen = xmlIn->attributes().value("open").toString().toInt(0,16);
+                xmlIn->skipCurrentElement();
+            }
+
+        }
+        xmlIn->skipCurrentElement();
     }
+
     return true;
 }
 
 bool Cce1560::SaveConfig(QXmlStreamWriter *xmlOut)
 {
-    for (int i=0; i<3; i++) {
-        ps6b0108[i]->save_internal(xmlOut);
-    }
+    xmlOut->writeStartElement("config");
+    xmlOut->writeAttribute("version", "1.0");
+        for (int i=0; i<3; i++) {
+            ps6b0108[i]->save_internal(xmlOut);
+        }
+        xmlOut->writeStartElement("internal");
+            xmlOut->writeAttribute("RamBank",QString("%1").arg(ramDiskPg,2,16));
+            xmlOut->writeAttribute("FirmBank",QString("%1").arg(firmwarePg,2,16));
+            xmlOut->writeAttribute("inhibitswitch",QString("%1").arg(inhibitSwitch));
+            xmlOut->writeAttribute("open",QString("%1").arg(screenOpen));
+        xmlOut->writeEndElement();
+    xmlOut->writeEndElement();
+
     return true;
 }
 

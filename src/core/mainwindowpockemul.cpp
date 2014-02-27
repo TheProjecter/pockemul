@@ -690,6 +690,7 @@ void MainWindowPockemul::CheckUpdates()
 void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
     QMap<int,CPObject*> map;
     CPObject * firstPC = 0;
+    QList<CPObject *> toPowerOn;
 
     if (xml->readNextStartElement()) {
         if (xml->name() == "pml" && xml->attributes().value("version") == "1.0") {
@@ -711,8 +712,8 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
 
                         locPC->Power = (xml->attributes().value("power")=="true") ?true:false;
                         if (locPC->Power) {
-
-                            locPC->TurnON();
+                            toPowerOn.append(locPC);
+//                            locPC->TurnON();
                         }
 
                         while (xml->readNextStartElement()) {
@@ -769,6 +770,8 @@ void MainWindowPockemul::opensession(QXmlStreamReader *xml) {
 
                 }
             }
+            // Turn on all pockets
+            for (int i=0;i<toPowerOn.count();i++) toPowerOn.at(i)->TurnON();
         }
         else
             xml->raiseError(QObject::tr("The file is not a PML version 1.0 file."));
