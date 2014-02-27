@@ -37,7 +37,7 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     pCONNECTOR	= 0;
     pSIOCONNECTOR	= 0;
     KeyMapLenght = 0;
-    pBreakpointManager = new CbreakpointManager();
+    pBreakpointManager = new CbreakpointManager(this);
 
     fp_log  = 0;
     off			= true;
@@ -85,6 +85,8 @@ CpcXXXX::CpcXXXX(CPObject *parent)	: CPObject(parent)
     DasmStep = false;
     TraceRange.clear();
     BreakSubLevel = -1;
+
+    connect(this,SIGNAL(showDasm()),this,SLOT(Dasm()));
 
 }
 

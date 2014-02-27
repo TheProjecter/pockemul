@@ -3,8 +3,11 @@
 
 #include "common.h"
 
+
 class QXmlStreamWriter;
 class QXmlStreamReader;
+class CpcXXXX;
+
 
 class Cbreakpoint {
 
@@ -26,6 +29,9 @@ enum TYPE {
     UINT32 To() { return adrTo;}
     bool isType(TYPE _val) { return (type == _val); }
     int Val() { return val; }
+
+    QString Cond() { return cond; }
+    void setCond(QString _cond);
     QString toText();
 
     void serialize(QXmlStreamWriter *xmlOut);
@@ -39,21 +45,23 @@ private:
     TYPE type;
     int val;
     bool enabled;
+    QString cond;
 };
 
 class CbreakpointManager {
 public:
+
+    CbreakpointManager(CpcXXXX * parent);
     bool isBreak(Cbreakpoint::TYPE _type, UINT32 _adr, int _val=-1);
     void addBreakPoint(Cbreakpoint *_b);
 
-
     QList<Cbreakpoint*> breakList;
-
 
     void serialize(QXmlStreamWriter *xmlOut);
     void unserialize(QXmlStreamReader *xmlIn);
 
     QString breakMsg;
+    CpcXXXX *pPC;
 };
 
 #endif // BREAKPOINT_H

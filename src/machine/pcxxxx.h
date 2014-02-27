@@ -277,6 +277,7 @@ private slots:
 	
 signals:
     void RefreshDasm();
+    void showDasm();
 
 public:
     bool DasmStep;

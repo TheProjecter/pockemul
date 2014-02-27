@@ -3,7 +3,10 @@
 #include <QDebug>
 
 #include "breakpoint.h"
-
+#include "lcc/parser/parser.h"
+#include "pcxxxx.h"
+#include "cpu.h"
+#include "Debug.h"
 
 Cbreakpoint::Cbreakpoint(Cbreakpoint::TYPE _type, UINT32 _from, UINT32 _to, int _val, bool _enabled)
 {
@@ -12,6 +15,11 @@ Cbreakpoint::Cbreakpoint(Cbreakpoint::TYPE _type, UINT32 _from, UINT32 _to, int 
     adrTo   = _to;
     enabled = _enabled;
     val = _val;
+}
+
+void Cbreakpoint::setCond(QString _cond) {
+    cond = _cond;
+
 }
 
 QString Cbreakpoint::toText() {
@@ -83,6 +91,11 @@ Cbreakpoint::TYPE Cbreakpoint::textToType(QString _type)
     return UNDEFINED;
 }
 
+CbreakpointManager::CbreakpointManager(CpcXXXX *parent)
+{
+    pPC = parent;
+}
+
 bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
 {
     switch (_type) {
@@ -96,6 +109,11 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
                  _bpt->isType(Cbreakpoint::EXEC) &&
                  (_adr >= _bpt->From()) &&
                  (_adr <= _bpt->To())) {
+
+                // Evaluate condition
+                Parser p(_bpt->Cond().toLatin1().data());
+
+                pPC->pCPU->pDEBUG->injectReg(&p);
 
                 breakMsg = _bpt->toText();
                 qWarning()<<breakMsg;

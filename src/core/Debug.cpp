@@ -10,6 +10,8 @@
 #include "Debug.h"
 #include "pcxxxx.h"
 #include "cpu.h"
+#include "lh5801.h"
+#include "lcc/parser/parser.h"
 
 //#include "inter.h"
 
@@ -1407,6 +1409,30 @@ UINT32 Cdebug_lh5801::DisAsm_1(UINT32 oldpc)
 
 void Cdebug_lh5801::loadSymbolMap()
 {
+
+}
+
+void Cdebug_lh5801::injectReg(Parser *p)
+{
+    CLH5801 * _lh = (CLH5801*)(pPC->pCPU);
+
+    p->symbols_ ["P"]=	_lh->lh5801.p.w;
+    p->symbols_ ["S"]=	_lh->lh5801.s.w;
+    p->symbols_ ["U"]=	_lh->lh5801.u.w;
+    p->symbols_ ["UL"]=	_lh->lh5801.u.b.l;
+    p->symbols_ ["UH"]=	_lh->lh5801.u.b.h;
+    p->symbols_ ["X"]=	_lh->lh5801.x.w;
+    p->symbols_ ["XL"]=	_lh->lh5801.x.b.l;
+    p->symbols_ ["XH"]=	_lh->lh5801.x.b.h;
+    p->symbols_ ["Y"]=	_lh->lh5801.y.w;
+    p->symbols_ ["YL"]=	_lh->lh5801.y.b.l;
+    p->symbols_ ["YH"]=	_lh->lh5801.y.b.h;
+    p->symbols_ ["T"]=	_lh->lh5801.t;
+    p->symbols_ ["F_C"]=_lh->lh5801.t & 0x01;
+    p->symbols_ ["F_IE"]=_lh->lh5801.t & 0x02;
+    p->symbols_ ["F_Z"]=_lh->lh5801.t & 0x04;
+    p->symbols_ ["F_V"]=_lh->lh5801.t & 0x08;
+    p->symbols_ ["F_H"]=_lh->lh5801.t & 0x10;
 
 }
 

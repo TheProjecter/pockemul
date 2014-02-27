@@ -27,6 +27,8 @@ public:
 
 };
 
+class Parser;
+
 class Cdebug:public CPObject
 {
     Q_OBJECT
@@ -44,6 +46,7 @@ public:
 
 	DisAsmTbl	*AsmTbl;
 
+    virtual void injectReg(Parser *p) {}
 
 	Cdebug(CPObject *parent)	: CPObject(parent)
 	{							//[constructor]
@@ -99,6 +102,7 @@ public:
 	UINT32 DisAsm_1(UINT32 adr);			//disasm 1 line to Buffer
     virtual void loadSymbolMap();
 
+    virtual void injectReg(Parser *p);
     Cdebug_lh5801(CPObject *parent);
 
 
