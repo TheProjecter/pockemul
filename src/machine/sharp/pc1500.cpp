@@ -159,6 +159,7 @@ void Cpc15XX::TurnON(void)
     {
 	AddLog(LOG_FUNC,"Cpc1500::TurnOn");
 
+    manageBus();
 //--	remove(Initial_Session_Fname);
 	pCPU->Reset();
 	CpcXXXX::TurnON();

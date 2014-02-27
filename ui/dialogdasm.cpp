@@ -409,7 +409,7 @@ void DialogDasm::loadSymbolMap()
                         char lbl[80];
                         sscanf(line,"\t%x\t%s",&adr,lbl);
                         pPC->pCPU->pDEBUG->symbolMap[adr] = new Csymbol(QString(lbl));
-                        qWarning()<<"adr:"<<adr<<pPC->pCPU->pDEBUG->symbolMap[adr]->toLbl();
+//                        qWarning()<<"adr:"<<adr<<pPC->pCPU->pDEBUG->symbolMap[adr]->toLbl();
                     }
                 }
             }
