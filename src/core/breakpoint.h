@@ -7,6 +7,7 @@
 class QXmlStreamWriter;
 class QXmlStreamReader;
 class CpcXXXX;
+class Parser;
 
 
 class Cbreakpoint {
@@ -60,6 +61,8 @@ public:
 
     QString breakMsg;
     CpcXXXX *pPC;
+
+    Parser *p;
 };
 
 #endif // BREAKPOINT_H

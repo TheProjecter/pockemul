@@ -92,6 +92,7 @@ Cbreakpoint::TYPE Cbreakpoint::textToType(QString _type)
 CbreakpointManager::CbreakpointManager(CpcXXXX *parent)
 {
     pPC = parent;
+    p = new Parser("");
 }
 
 bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
@@ -157,11 +158,9 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
                 if (!_bpt->Cond().isEmpty())
                 {
                     // Evaluate condition
-                    Parser p(_bpt->Cond().toLatin1().data());
-
-                    pPC->pCPU->pDEBUG->injectReg(&p);
-                    p.symbols_ ["Val"]=	_val;
-                    if (p.Evaluate()<=0) return false;
+                    pPC->pCPU->pDEBUG->injectReg(p);
+                    p->symbols_ ["Val"]=	_val;
+                    if (p->Evaluate(_bpt->Cond().toLatin1().data())<=0) return false;
                 }
 
 //                qWarning()<<"break write";

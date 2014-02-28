@@ -33,6 +33,8 @@ class Parser
     RHPAREN=')',
     COMMA=',',
     NOT='!',
+      BINAND='&',
+      BINOR='|',
     
     // comparisons
     LT='<',

@@ -645,6 +645,11 @@ const Parser::TokenType Parser::GetToken (const bool ignoreSign)
                 pWord_ += 2;   // skip both characters
                 return type_ = AND;
                 }
+      else {
+          word_ = std::string (pWordStart_, 1);
+          ++pWord_;   // skip it
+          return type_ = TokenType (cFirstCharacter);
+      }
               break;
    case '|': if (cNextCharacter == '|')   // ||
                 {
@@ -652,6 +657,11 @@ const Parser::TokenType Parser::GetToken (const bool ignoreSign)
                 pWord_ += 2;   // skip both characters
                 return type_ = OR;
                 }
+      else {
+          word_ = std::string (pWordStart_, 1);
+          ++pWord_;   // skip it
+          return type_ = TokenType (cFirstCharacter);
+      }
               break;
     // single-character symboles
     case '=':
@@ -835,6 +845,10 @@ const double Parser::Term (const bool get)    // multiply and divide
           left /= d; 
           break;
           }
+    case BINAND:qWarning()<<"BINAND";
+        left = ((ulong)left) & ((ulong) Primary(true)); break;
+    case BINOR:qWarning()<<"BINOR";
+        left = ((ulong)left) | ((ulong) Primary(true)); break;
       default:    return left;
       } // end of switch on type
     }   // end of loop
