@@ -110,7 +110,6 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
                 {
                     // Evaluate condition
                     Parser p(_bpt->Cond().toLatin1().data());
-
                     pPC->pCPU->pDEBUG->injectReg(&p);
                     p.symbols_ ["Val"]=	_val;
                     if (p.Evaluate()<=0) return false;
