@@ -454,6 +454,8 @@ void DialogDasm::removeSymbolFile()
 
 void DialogDasm::removeTraceRange()
 {
+    if (!ui->lwTraceRange->currentItem()) return;
+
     QPair<UINT32,UINT32> _pair;
     _pair.first = ui->lwTraceRange->currentItem()->data(Qt::UserRole).toString().toUInt(0,16);
     _pair.second= ui->lwTraceRange->currentItem()->data(Qt::UserRole+1).toString().toUInt(0,16);
