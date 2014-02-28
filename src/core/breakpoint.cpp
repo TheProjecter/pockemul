@@ -106,13 +106,18 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
                  (_adr >= _bpt->From()) &&
                  (_adr <= _bpt->To())) {
 
-                // Evaluate condition
-                Parser p(_bpt->Cond().toLatin1().data());
+                if (!_bpt->Cond().isEmpty())
+                {
+                    // Evaluate condition
+                    Parser p(_bpt->Cond().toLatin1().data());
 
-                pPC->pCPU->pDEBUG->injectReg(&p);
+                    pPC->pCPU->pDEBUG->injectReg(&p);
+                    p.symbols_ ["Val"]=	_val;
+                    if (p.Evaluate()<=0) return false;
+                }
 
                 breakMsg = _bpt->toText();
-                qWarning()<<breakMsg;
+//                qWarning()<<breakMsg;
                 return true;
             }
         }
@@ -126,8 +131,18 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
                  (_adr >= _bpt->From()) &&
                  (_adr <= _bpt->To()) ) {
 
+                if (!_bpt->Cond().isEmpty())
+                {
+                    // Evaluate condition
+                    Parser p(_bpt->Cond().toLatin1().data());
+
+                    pPC->pCPU->pDEBUG->injectReg(&p);
+                    p.symbols_ ["Val"]=	_val;
+                    if (p.Evaluate()<=0) return false;
+                }
+
                 breakMsg = _bpt->toText();
-                qWarning()<<breakMsg;
+//                qWarning()<<breakMsg;
                 return true;
             }
         }
@@ -139,9 +154,20 @@ bool CbreakpointManager::isBreak(Cbreakpoint::TYPE _type,UINT32 _adr, int _val )
                  _bpt->isType(Cbreakpoint::WRITE) &&
                  (_adr >= _bpt->From()) &&
                  (_adr <= _bpt->To()) ) {
-                qWarning()<<"break write";
+
+                if (!_bpt->Cond().isEmpty())
+                {
+                    // Evaluate condition
+                    Parser p(_bpt->Cond().toLatin1().data());
+
+                    pPC->pCPU->pDEBUG->injectReg(&p);
+                    p.symbols_ ["Val"]=	_val;
+                    if (p.Evaluate()<=0) return false;
+                }
+
+//                qWarning()<<"break write";
                 breakMsg = _bpt->toText();
-                qWarning()<<breakMsg;
+//                qWarning()<<breakMsg;
                 return true;
             }
         }
