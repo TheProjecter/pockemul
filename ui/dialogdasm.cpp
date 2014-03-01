@@ -346,14 +346,19 @@ void DialogDasm::removeBreakPoint()
 {
     if (!ui->lwBreakPts->currentItem()) return;
     int ind = ui->lwBreakPts->currentItem()->data(Qt::UserRole).toInt();
-    pPC->pBreakpointManager->breakList.removeAt(ind);
+    qWarning()<<"i="<<ind<<"-"<<pPC->pBreakpointManager->breakList;
+    if (pPC->pBreakpointManager->breakList.size()> ind)
+        pPC->pBreakpointManager->breakList.removeAt(ind);
+    qWarning()<<"ok";
     refreshBreakPoints();
 }
 
 void DialogDasm::refreshBreakPoints(){
+    qWarning()<<"refreshBreakPoints"<<pPC->pBreakpointManager->breakList.size();
     ui->lwBreakPts->clear();
-    qWarning()<<"refreshBreakPoints"<<pPC->pBreakpointManager->breakList.count();
-    for (int i=0; i < pPC->pBreakpointManager->breakList.count();i++){
+    qWarning()<<"ok";
+    for (int i=0; i < pPC->pBreakpointManager->breakList.size();i++){
+        qWarning()<<"in";
         Cbreakpoint *_bpt = pPC->pBreakpointManager->breakList[i];
         QListWidgetItem *_item = new QListWidgetItem();
         _item->setText(_bpt->toText());
@@ -362,6 +367,7 @@ void DialogDasm::refreshBreakPoints(){
         ui->lwBreakPts->addItem(_item);
         qWarning()<<"insert:"<<_bpt->toText();
     }
+    qWarning()<<"out";
 }
 
 void DialogDasm::breakPointChanged(QListWidgetItem *item)
@@ -372,8 +378,9 @@ void DialogDasm::breakPointChanged(QListWidgetItem *item)
 
 }
 void DialogDasm::breakPointSelect() {
-    if (!ui->lwBreakPts->currentItem()) return;
+    if (-1 == ui->lwBreakPts->currentRow()) return;
     int _ind = ui->lwBreakPts->currentItem()->data(Qt::UserRole).toInt();
+    if (_ind >= pPC->pBreakpointManager->breakList.size()) return;
     Cbreakpoint *_bpt = pPC->pBreakpointManager->breakList[_ind];
 
     ui->leBreakpointFrom->setText(QString("%1").arg(_bpt->From(),6,16,QChar('0')));

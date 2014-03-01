@@ -55,8 +55,8 @@ Cbreakpoint* Cbreakpoint::unserialize(QXmlStreamReader *xmlIn)
     QString eltname = xmlIn->name().toString();
     if (eltname=="breakpoint") {
         TYPE _type = textToType(xmlIn->attributes().value("type").toString());
-        UINT32 _adrFrom = xmlIn->attributes().value("adrFrom").toUInt(0,16);
-        UINT32 _adrTo = xmlIn->attributes().value("adrTo").toUInt(0,16);
+        UINT32 _adrFrom = xmlIn->attributes().value("adrFrom").toString().toUInt(0,16);
+        UINT32 _adrTo = xmlIn->attributes().value("adrTo").toString().toUInt(0,16);
         bool _enabled = xmlIn->attributes().value("enabled").toString()=="true" ? true : false;
         QString _cond = xmlIn->attributes().value("cond").toString();
         Cbreakpoint *_bpt = new Cbreakpoint(_type,_adrFrom,_adrTo,_cond,_enabled);
