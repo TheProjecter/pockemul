@@ -195,8 +195,8 @@ public:
     void DoLoad(void);
     void DoSave(void);
     void DoDoWhile(void);
-    void DoSaveState(void);
-    void DoRestoreState(void);
+    virtual void DoSaveState(void);
+    virtual void DoRestoreState(void);
 
     void ProcCall();
 
@@ -338,9 +338,15 @@ public:
 signals:
     void outputSignal(QString,QString);
 
-private:
+protected:
     bool showErrors;
     bool sourceinASM;
+};
+
+class ClccPC1500: public Clcc {
+
+    virtual void DoSaveState(void);
+    virtual void DoRestoreState(void);
 };
 
 #endif // LCC_H

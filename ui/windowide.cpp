@@ -35,11 +35,12 @@ extern QList<CPObject *> listpPObject; /*!< TODO */
 extern QString workDir;
 
 #define NB_FILENAME (Qt::UserRole+1)
-#define NB_EXT (Qt::UserRole+2)
-#define NB_OUTPUT (Qt::UserRole+3)
-#define NB_BIN (Qt::UserRole+4)
-#define NB_MODEL (Qt::UserRole+5)
-#define NB_BUILDER (Qt::UserRole+6)
+#define NB_PREBUILD (Qt::UserRole+2)
+#define NB_EXT (Qt::UserRole+3)
+#define NB_OUTPUT (Qt::UserRole+4)
+#define NB_BIN (Qt::UserRole+5)
+#define NB_MODEL (Qt::UserRole+6)
+#define NB_BUILDER (Qt::UserRole+7)
 
 /*!
     \class WindowIDE
@@ -330,6 +331,29 @@ void WindowIDE::compile() {
     QString _basename = QFileInfo(fn).baseName();
     QString _model=ui->targetComboBox->currentText();
 
+    QString prebuild = getBuilder(_model,_ext,NB_PREBUILD);
+    // replace $2 by basename and $1 by filename
+    prebuild.replace("$1",_filename);
+    prebuild.replace("$2",_basename);
+
+    if (!prebuild.isEmpty()) {
+        QProcess *myProcess = new QProcess();
+        myProcess->setWorkingDirectory(_path);
+
+        myProcess->setReadChannel(QProcess::StandardOutput);
+        myProcess->start(prebuild);
+
+        if (!myProcess->waitForStarted()){
+            qWarning()<<"ERROR PREBUILD START";
+            return;
+        }
+        if (!myProcess->waitForFinished()) {
+            qWarning()<<"ERROR PREBUILD FINISH";
+            return;
+        }
+    }
+
+
     QString program = getBuilder(_model,_ext,NB_FILENAME);
     QString binFileName = getBuilder(_model,_ext,NB_BIN).replace("$1",_filename).replace("$2",_basename);
     QString outputFileName = getBuilder(_model,_ext,NB_OUTPUT).replace("$1",_filename).replace("$2",_basename);
@@ -506,6 +530,7 @@ void WindowIDE::AddNewBuilder()
     QListWidgetItem *_item = new QListWidgetItem(ui->leNewBuilderTitle->text());
     _item->setToolTip(ui->leNewBuilderFileName->text());
     _item->setData(NB_FILENAME,ui->leNewBuilderFileName->text());
+    _item->setData(NB_PREBUILD,ui->leNewBuilderPreBuild->text());
     _item->setData(NB_EXT,ui->leNewBuilderExt->text());
     _item->setData(NB_OUTPUT,ui->leNewBuilderOutput->text());
     _item->setData(NB_BIN,ui->leNewBuilderBinFiles->text());
@@ -523,6 +548,7 @@ void WindowIDE::updateBuilder()
     _item->setText(ui->leNewBuilderTitle->text());
     _item->setToolTip(ui->leNewBuilderFileName->text());
     _item->setData(NB_FILENAME,ui->leNewBuilderFileName->text());
+    _item->setData(NB_PREBUILD,ui->leNewBuilderPreBuild->text());
     _item->setData(NB_EXT,ui->leNewBuilderExt->text());
     _item->setData(NB_OUTPUT,ui->leNewBuilderOutput->text());
     _item->setData(NB_BIN,ui->leNewBuilderBinFiles->text());
@@ -556,6 +582,7 @@ void WindowIDE::SelectBuilder()
 
     ui->leNewBuilderTitle->setText(_item->text());
     ui->leNewBuilderFileName->setText(_item->data(NB_FILENAME).toString());
+    ui->leNewBuilderPreBuild->setText(_item->data(NB_PREBUILD).toString());
     ui->leNewBuilderExt->setText(_item->data(NB_EXT).toString());
     ui->leNewBuilderOutput->setText(_item->data(NB_OUTPUT).toString());
     ui->leNewBuilderBinFiles->setText(_item->data(NB_BIN).toString());
@@ -732,6 +759,7 @@ QString WindowIDE::getBuilder(QString model,QString ext,int role) {
             for (int i=0; i < ui->lwBuilders->count(); i++) {
                 QString _title = ui->lwBuilders->item(i)->text();
                 QString _fileName = ui->lwBuilders->item(i)->data(NB_FILENAME).toString();
+                QString _prebuild = ui->lwBuilders->item(i)->data(NB_PREBUILD).toString();
                 QString _extensions = ui->lwBuilders->item(i)->data(NB_EXT).toString();
                 QString _output = ui->lwBuilders->item(i)->data(NB_OUTPUT).toString();
                 QString _binFile = ui->lwBuilders->item(i)->data(NB_BIN).toString();
@@ -744,6 +772,7 @@ QString WindowIDE::getBuilder(QString model,QString ext,int role) {
                     switch (role) {
                     case 0: return _title;
                     case NB_FILENAME: return _fileName;
+                    case NB_PREBUILD: return _prebuild;
                     case NB_EXT: return _extensions;
                     case NB_OUTPUT: return _output;
                     case NB_BIN: return _binFile;
@@ -772,6 +801,7 @@ void WindowIDE::saveConfig() {
                 if (ui->lwBuilders->item(i)->toolTip()!="INTERNAL") {
                     QString _title = ui->lwBuilders->item(i)->text();
                     QString _fileName = ui->lwBuilders->item(i)->data(NB_FILENAME).toString();
+                    QString _prebuild = ui->lwBuilders->item(i)->data(NB_PREBUILD).toString();
                     QString _extensions = ui->lwBuilders->item(i)->data(NB_EXT).toString();
                     QString _output = ui->lwBuilders->item(i)->data(NB_OUTPUT).toString();
                     QString _binFile = ui->lwBuilders->item(i)->data(NB_BIN).toString();
@@ -779,6 +809,7 @@ void WindowIDE::saveConfig() {
                     xmlOut->writeStartElement("builder");
                     xmlOut->writeAttribute("title", _title);
                     xmlOut->writeAttribute("filename", _fileName);
+                    xmlOut->writeAttribute("prebuild", _prebuild);
                     xmlOut->writeAttribute("ext", _extensions);
                     xmlOut->writeAttribute("output", _output);
                     xmlOut->writeAttribute("binfile", _binFile);
@@ -846,6 +877,7 @@ void WindowIDE::loadConfig() {
                 if (eltname == "builder") {
                     QString _title = xml->attributes().value("title").toString();
                     QString _fileName = xml->attributes().value("filename").toString();
+                    QString _prebuild = xml->attributes().value("prebuild").toString();
                     QString _extensions = xml->attributes().value("ext").toString();
                     QString _output = xml->attributes().value("output").toString();
                     QString _binFile = xml->attributes().value("binfile").toString();
@@ -853,6 +885,7 @@ void WindowIDE::loadConfig() {
                     QListWidgetItem *_item = new QListWidgetItem(_title);
                     _item->setToolTip(_fileName);
                     _item->setData(NB_FILENAME,_fileName);
+                    _item->setData(NB_PREBUILD,_prebuild);
                     _item->setData(NB_EXT,_extensions);
                     _item->setData(NB_OUTPUT,_output);
                     _item->setData(NB_BIN,_binFile);
@@ -883,23 +916,6 @@ void WindowIDE::loadConfig() {
                 xml->skipCurrentElement();
             }
         }
-
-//        if (xml->readNextStartElement() &&
-//                (xml->name() == "breakpoints")) {
-//            while (xml->readNextStartElement()) {
-//                QString eltname = xml->name().toString();
-////                            AddLog(LOG_TEMP,eltname);
-//                if (eltname == "breakpoint") {
-//                    QString _adr = xml->attributes().value("adr").toString();
-//                    Qt::CheckState _checkstate = xml->attributes().value("checked").toString()=="true"?Qt::Checked : Qt::Unchecked;
-//                    QListWidgetItem *_item = new QListWidgetItem(_adr);
-//                    _item->setCheckState(_checkstate);
-//                    ui->lwBreakPts->addItem(_item);
-//                }
-//                xml->skipCurrentElement();
-//            }
-//        }
-
 
     }
 }

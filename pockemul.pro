@@ -539,7 +539,8 @@ HEADERS += src/core/Connect.h \
     src/machine/sharp/buspc1500.h \
     src/machine/sharp/ce162e.h \
     src/machine/sharp/ce153.h \
-    src/core/breakpoint.h
+    src/core/breakpoint.h \
+    resources/lcc/model/__graph.h
 
 greaterThan(QT_MAJOR_VERSION, 4): HEADERS += \
     qhttp/qringbuffer_p.h \

@@ -3274,6 +3274,43 @@ void Clcc::DoRestoreState(void) {
 
 }
 
+/*!
+ \brief
+
+ \fn Clcc::DoSaveState
+*/
+void ClccPC1500::DoSaveState(void) {
+    if (LState.isEmpty()) {
+        LState = NewLabel();
+    }
+    writln(outf,"\t; Save CPU state");
+    writln(outf,"\tLP\t0");
+    writln(outf,"\tLIDP\t"+LState);
+    writln(outf,"\tLII\t0x5F");
+    writln(outf,"\tEXWD");
+    writln(outf,"");
+    Tok.remove(0,5).prepend("#restore");
+    DoRestoreState();
+}
+
+/*!
+ \brief
+
+ \fn Clcc::DoRestoreState
+*/
+void ClccPC1500::DoRestoreState(void) {
+    if (LState.isEmpty()) {
+        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Restore with no previous save!!!");
+        return;
+    }
+    writln(outf,"\tLP\t0");
+    writln(outf,"\tLIDP\t"+LState);
+    writln(outf,"\tLII\t0x5F");
+    writln(outf,"\tMVWD");
+    writln(outf,"");
+    Tok.remove(0,8);
+
+}
 //{--------------------------------------------------------------}
 //{  }
 
