@@ -45,7 +45,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"ce1560.map");
 
-    memsize		= 0x90000;
+    memsize		= 0x98000;
     SlotList.clear();
     // Firmware: 2 page of 16Ko
     SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "" , CSlot::RAM , "ROM Pg 0"));
@@ -69,6 +69,11 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     SlotList.append(CSlot(32 , 0x80000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg E"));
     SlotList.append(CSlot(32 , 0x88000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg F"));
 
+    // ROM8000: 4 x 8Ko
+    SlotList.append(CSlot(8 , 0x90000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 0"));
+    SlotList.append(CSlot(8 , 0x92000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 1"));
+    SlotList.append(CSlot(8 , 0x94000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 2"));
+    SlotList.append(CSlot(8 , 0x96000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 3"));
 
     bus = new CbusPc1500();
 
@@ -81,6 +86,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     inhibitSwitch = false;
     ramDiskPg = 0;
     firmwarePg= 0;
+    rom8000Pg= 0;
 }
 
 Cce1560::~Cce1560() {
@@ -135,7 +141,11 @@ bool Cce1560::run(void)
          (addr == 0xE300)) {
         ramDiskPg = bus->getData() & 0x0f;
      }
-
+    // ROM8000 ACCESS
+    if ( bus->isME1() &&
+         (addr == 0xE400)) {
+        rom8000Pg = bus->getData() & 0x03;
+     }
 
     if ( (addr<=0x7FFF) && bus->isME1() )
     {
@@ -152,6 +162,23 @@ bool Cce1560::run(void)
             bus->setEnable(false);
             pCONNECTOR->Set_values(bus->toUInt64());
             return true;
+        }
+    }
+
+    if ( (bus->getAddr()>=0x8000) && (bus->getAddr()<=0x9FFF) &&
+         !bus->isPV() &&
+         !bus->isME1() )
+    {
+        if (!bus->isWrite()) {
+            bus->setData(mem[0x90000 + addr - 0x8000 + rom8000Pg * 0x2000]);
+            forwardBus = false;
+            bus->setEnable(false);
+            pCONNECTOR->Set_values(bus->toUInt64());
+//            qWarning()<<"CE-1560 read["<<QString("%1").arg(addr - 0xC000 + firmwarePg * 0x4000,5,16,QChar('0'))<<"]="<<bus->getData();
+            return true;
+        }
+        else {
+            qWarning()<<"CE-1560 write["<<QString("%1").arg(0x90000 + addr - 0x8000 + rom8000Pg * 0x2000,5,16,QChar('0'))<<"]="<<bus->getData();
         }
     }
 
@@ -200,7 +227,7 @@ bool Cce1560::run(void)
 
         }
         else {
-            qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
+//            qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
             quint16 cmd = ((reg==0)? 0x200 : 0x300);// | bus->getData();
 
             switch (module) {

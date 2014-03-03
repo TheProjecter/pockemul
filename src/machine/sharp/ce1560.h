@@ -57,6 +57,7 @@ private:
     bool inhibitSwitch;
     int  ramDiskPg;
     int  firmwarePg;
+    int  rom8000Pg;
 
 #endif
 };

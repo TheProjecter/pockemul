@@ -179,7 +179,7 @@ BYTE Ckeyb::Get_KS(void)
 
 void Ckeyb::Set_KS(BYTE data)
 {
-    if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"KStrobe = [%02X]\n",data);
+//    if (pPC->pCPU->fp_log) fprintf(pPC->pCPU->fp_log,"KStrobe = [%02X]\n",data);
 
 	KStrobe = data;
 }
