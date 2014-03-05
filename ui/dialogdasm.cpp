@@ -311,6 +311,7 @@ void DialogDasm::step()
 void DialogDasm::stepOver()
 {
     pPC->BreakSubLevel = pPC->pCPU->CallSubLevel;
+    qWarning()<<"BreakSubLevel:"<<pPC->BreakSubLevel;
     pPC->DasmStep = true;
     pPC->DasmFlag = false;
 }

@@ -14,6 +14,7 @@
 #include "Debug.h"
 #include "Log.h"
 #include "ui/cregslh5801widget.h"
+#include "breakpoint.h"
 
 #define IMEM_LEN    0x200
 
@@ -139,6 +140,7 @@ void CLH5801::step(void)
 		lh5801.IR1=0;
 		PUSH_WORD(P);
 		P = (UINT16) get_mem(0xFFFA,SIZE_16);
+        CallSubLevel++;
 
 	}
 	else
@@ -152,6 +154,7 @@ void CLH5801::step(void)
 		lh5801.IR2=0;
 		PUSH_WORD(P);
 		P = (UINT16) get_mem(0xFFF8,SIZE_16);
+        CallSubLevel++;
 
 	}
 	else
@@ -300,6 +303,7 @@ void CLH5801::Reset(void)
 	lh5801.tm=0; //9 bit
 	lh5801.t=lh5801.a=lh5801.dp=lh5801.pu=lh5801.pv=0;
 	lh5801.bf=1;
+    CallSubLevel = 0;
 }
 
 INLINE void CLH5801::AddState(UINT8 n)
@@ -475,6 +479,7 @@ void CLH5801::RTN(void)
 	P =  cpu_readmem(++S)<<8;
 	P |= cpu_readmem(++S);
 	change_pc(P);
+    CallSubLevel--;
 }
 
 INLINE void CLH5801::RTI(void)
@@ -563,6 +568,7 @@ INLINE void CLH5801::SJP(void)
 	PUSH_WORD(P);
 	P = t;
 	change_pc(t);	
+    CallSubLevel++;
 }
 
 INLINE void CLH5801::VECTOR(int doit, int nr)
@@ -572,6 +578,7 @@ INLINE void CLH5801::VECTOR(int doit, int nr)
 		P =  (cpu_readmem(0xff00+nr) << 8) | cpu_readmem(0xff00+nr+1);
 		change_pc(P);
 		AddState(21-8);
+        CallSubLevel++;
 	}
 	UNSET_Z;
 }
@@ -721,7 +728,7 @@ INLINE void CLH5801::instruction_fd(void)
 	case 0x5a:	Y=X;											AddState(11);	break;
 	case 0x5b:	ORA_MEM(ME1(Y), cpu_readop(P++)); 				AddState(17);	break;
 	case 0x5d:	BIT(cpu_readmem(ME1(Y)), cpu_readop(P++));		AddState(14);/**/	break;
-	case 0x5e:	JMP(X);											AddState(11);	break; // P=X
+    case 0x5e:	JMP(X);	CallSubLevel--;										AddState(11);	break; // P=X
 	case 0x5f:	ADD_MEM(ME1(Y), cpu_readop(P++));				AddState(17);	break;
 	case 0x60:	INC(&UH);										AddState(9);	break;
 	case 0x62:	DEC(&UH);										AddState(9);	break;
@@ -779,6 +786,7 @@ INLINE void CLH5801::instruction_fd(void)
                 pPC->BreakSubLevel = 99999;
                 pPC->DasmStep = true;
                 pPC->DasmFlag = false;
+                pPC->pBreakpointManager->breakMsg=tr("ill op at %1 %2").arg(P-1,4,16,QChar('0')).arg(oper,4,16,QChar('0'));
                 emit showDasm();
                 break;
 	}
@@ -1005,6 +1013,7 @@ INLINE void CLH5801::instruction(void)
         pPC->BreakSubLevel = 99999;
         pPC->DasmStep = true;
         pPC->DasmFlag = false;
+        pPC->pBreakpointManager->breakMsg=tr("ill op at %1 %2").arg(P-1,4,16,QChar('0')).arg(oper,4,16,QChar('0'));
         emit showDasm();
         break;
 	}
