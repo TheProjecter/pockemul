@@ -229,34 +229,27 @@ bool Cce1560::run(void)
         else {
 //            qWarning()<<"Read Data:"<<bus->getAddr()<<"="<<bus->toLog();
             quint16 cmd = ((reg==0)? 0x200 : 0x300);// | bus->getData();
-
+//qWarning()<<tr("CE1560 CMD:%1").arg(cmd,4,16,QChar('0'));
             switch (module) {
             case 0:
             case 1:
             case 2:
                 bus->setData(ps6b0108[module]->instruction(cmd)); break;
             case 3:
-                bus->setData(ps6b0108[0]->instruction(cmd));
-                bus->setData(ps6b0108[1]->instruction(cmd)); break;
+                bus->setData(ps6b0108[0]->instruction(cmd) | ps6b0108[1]->instruction(cmd)); break;
             case 4:
-                bus->setData(ps6b0108[0]->instruction(cmd));
-                bus->setData(ps6b0108[2]->instruction(cmd));
-                break;
+                bus->setData(ps6b0108[0]->instruction(cmd) | ps6b0108[2]->instruction(cmd)); break;
             case 5:
-                bus->setData(ps6b0108[1]->instruction(cmd));
-                bus->setData(ps6b0108[2]->instruction(cmd));
-                break;
+                bus->setData(ps6b0108[1]->instruction(cmd) | ps6b0108[2]->instruction(cmd)); break;
             case 6:
-                bus->setData(ps6b0108[0]->instruction(cmd));
-                bus->setData(ps6b0108[1]->instruction(cmd));
-                bus->setData(ps6b0108[2]->instruction(cmd));
+                bus->setData(ps6b0108[0]->instruction(cmd) |
+                             ps6b0108[1]->instruction(cmd) |\
+                             ps6b0108[2]->instruction(cmd));
                 break;
             default:
                 qWarning()<<"ERROR Read Data:"<<bus->toLog()<<"  module="<<module<<" reg="<<reg<<" data="<<bus->getData();
                 break;
             }
-
-            bus->setData(ps6b0108[module]->instruction(cmd));
         }
 
     }

@@ -35,8 +35,8 @@ public:
     void    cmd_setX(qint16 cmd);
     void    cmd_setY(qint16 cmd);
     BYTE    cmd_status(qint16 cmd);
-    void    cmd_write(qint16 cmd);
-    BYTE    cmd_read(qint16 cmd);
+    virtual void    cmd_write(qint16 cmd);
+    virtual BYTE    cmd_read(qint16 cmd);
 
     BYTE    get8(qint16 adr);
     void    set8(qint16 adr,BYTE val);
@@ -54,7 +54,8 @@ public:
 
     void	addretrace (void);
 
-
+private:
+    quint64 last_state_cmd;
 };
 
 #endif // HD61102_H
