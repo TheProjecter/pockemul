@@ -16,8 +16,10 @@ quint64 CbusPc1500::toUInt64() const
     serialized |= ((pu?1:0) << 4);
     serialized |= ((pv?1:0) << 5);
     serialized |= ((inhibit?1:0) << 6);
-    serialized |= ((quint64)addr & 0xffff)<<7;
-    serialized |= ((quint64)data & 0xff) << 23;
+    serialized |= ((cmtIn?1:0) << 7);
+    serialized |= ((cmtOut?1:0) << 8);
+    serialized |= ((quint64)addr & 0xffff)<<9;
+    serialized |= ((quint64)data & 0xff) << 25;
 
     return serialized;
 }
@@ -31,9 +33,11 @@ void CbusPc1500::fromUInt64(quint64 val)
     pu        = (val >> 4) &0x01;
     pv        = (val >> 5) &0x01;
     inhibit   = (val >> 6) &0x01;
+    cmtIn     = (val >> 7) &0x01;
+    cmtOut    = (val >> 8) &0x01;
 
-    addr = (val>>7) & 0xffff;     // 16 bits
-    data = (val >>23) & 0xff;     // 8 bits
+    addr = (val>>9) & 0xffff;     // 16 bits
+    data = (val >>25) & 0xff;     // 8 bits
 }
 
 void CbusPc1500::setAddr(quint32 val)
@@ -54,6 +58,8 @@ QString CbusPc1500::toLog() const
     ret += QString(" INT:%1").arg(interrupt);
     ret += QString(" ME1:%1").arg(me1);
     ret += QString(" INHIBIT:%1").arg(inhibit);
+    ret += QString(" CMTIn:%1").arg(cmtIn);
+    ret += QString(" CMTOut:%1").arg(cmtOut);
     return ret;
 }
 

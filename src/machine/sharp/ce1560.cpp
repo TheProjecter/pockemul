@@ -106,10 +106,13 @@ bool Cce1560::init(void)
     CpcXXXX::init();
 
     setfrequency( 0);
-//    pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(380,332));	publish(pCONNECTOR);
+
     pCONNECTOR	= new Cconnector(this,60,0,Cconnector::Sharp_60,"Connector 60 pins",true,QPoint(62,450));	publish(pCONNECTOR);
     pEXTCONNECTOR= new Cconnector(this,60,1,Cconnector::Sharp_60,"Connector 60 pins Ext",false,QPoint(0,447),Cconnector::WEST);	publish(pEXTCONNECTOR);
+    pTAPECONNECTOR= new Cconnector(this,3,2,Cconnector::Jack,"Line in / Rec / Rmt",false);	publish(pTAPECONNECTOR);
 
+    WatchPoint.add(&pCONNECTOR_value,64,11,this,"Standard 11pins connector");
+    WatchPoint.add(&pTAPECONNECTOR_value,64,2,this,"Line In / Rec");
     if(pKEYB)	pKEYB->init();
     if(pTIMER)	pTIMER->init();
 
@@ -125,6 +128,12 @@ bool Cce1560::run(void)
     bus->fromUInt64(pCONNECTOR->Get_values());
 
     bus->setINHIBIT(inhibitSwitch);
+
+//    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? SEL1:true));       // RMT
+    pTAPECONNECTOR->Set_pin(2,bus->isCMTOUT());    // Out
+    //MT_IN = pTAPECONNECTOR->Get_pin(1);      // In
+
+    pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
 //    if (lastBus.isEnable()!=bus->isEnable()) {
 //        qWarning()<<"new status:"<<bus->isEnable();

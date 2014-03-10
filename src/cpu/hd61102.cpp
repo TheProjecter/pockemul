@@ -83,7 +83,7 @@ BYTE CHD61102::instruction(qint16 cmd)
 //    if (pPC->pCPU->fp_log)fprintf(pPC->pCPU->fp_log,"HD61102 CMD: %04x\n",cmd);
 //    qWarning()<<tr("HD61102 CMD:%1").arg(cmd,4,16,QChar('0'));
 
-    if (pPC->pTIMER->nsElapsed(last_state_cmd)<2000) {
+    if (pPC->pTIMER->nsElapsed(last_state_cmd)<(2000/pPC->pTIMER->CPUSpeed)) {
         info.status |= 0x80;
         qWarning()<<"LCD BUSY !!!!!";
         return 00;

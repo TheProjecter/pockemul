@@ -313,7 +313,7 @@ bool Cpc15XX::run(void)
 
     if (pKEYB->Kon) lh5810_Access = true;
 
-	if (lh5810_Access)
+//	if (lh5810_Access)
     {
 		pLH5810->step();
         pKEYB->Set_KS(lh5810_read(0x1F00C));
@@ -747,6 +747,7 @@ bool Cpc15XX::Set_Connector(void)
 
     bus->setPU(((CLH5801 *)pCPU)->lh5801.pu);
     bus->setPV(((CLH5801 *)pCPU)->lh5801.pv);
+    bus->setCMTOUT(pLH5810->SDO);
     pCONNECTOR->Set_values(bus->toUInt64());
 //    qWarning()<<"Cpc15XX::Set_Connector:"<<bus->toLog();
     return true;

@@ -30,12 +30,19 @@ public:
     bool isINHIBIT() const { return inhibit; }
     void setINHIBIT(bool val) { inhibit = val; }
 
+    bool isCMTIN() const { return cmtIn; }
+    void setCMTIN(bool val) { cmtIn = val; }
+
+    bool isCMTOUT() const { return cmtOut; }
+    void setCMTOUT(bool val) { cmtOut = val; }
+
     virtual QString toLog() const;
 
 private:
     bool me1;
     bool pu,pv;
     bool inhibit;
+    bool cmtOut,cmtIn;
 };
 
 

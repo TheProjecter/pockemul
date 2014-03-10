@@ -76,6 +76,8 @@ public:
         case MSK:	t=(lh5810.r_msk);
                             if (IRQ)	t|=0x10;
                             if (LH5810_PB7)	t|=0x20;
+                            if (SDI)	t|=0x40;
+                            if (CL1)	t|=0x80;
                             return(t);
         case IF:		t=(lh5810.r_if);
     //						if (IRQ)	t|=0x01;
@@ -99,10 +101,10 @@ public:
         {
         case RESET:	return(lh5810.reset	= data);	break;
         case U:		return(lh5810.r_u	= data);	break;
-        case L:		return(lh5810.r_l	= data);	break;
-        case G:		return(lh5810.r_g	= data);	break;
+        case L:		New_L = true; return(lh5810.r_l	= data);	break;
+        case G:		New_G = true; return(lh5810.r_g	= data);	break;
         case MSK:	return(lh5810.r_msk = data&0x0F);	break;
-        case IF:	return(lh5810.r_if	= data);	break;
+        case IF:	return(lh5810.r_if	= ((lh5810.r_if&0xFC) | (data & 0x03)));	break;
         case DDA:	return(lh5810.r_dda = data);	break;
         case DDB:	return(lh5810.r_ddb = data);	break;
         case OPA:	return(lh5810.r_opa = ( (lh5810.r_opa & (~lh5810.r_dda)) | (data & (lh5810.r_dda))) );	break;
@@ -172,14 +174,24 @@ public:
 
 	LH5810REG	lh5810;
 	char	Regs_String[255];
-	bool	New_L;
+
 	bool	IRQ,INT;
 //	UINT8	OPA,OPB;
+    int FX,FY;
+    bool SDO,SDI,CL1;
 
 	CLH5810(CPObject *parent);
     virtual ~CLH5810();
 
 private:
+    void start_serial_transmit();
+
+    bool	New_L,New_G;
+    quint16 RolReg;
+    quint8 bit;
+    bool serialSend;
+    quint64 lastPulseState,clockRateState;
+    quint64 clockRateWait;
 };
 
 
