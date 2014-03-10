@@ -348,29 +348,29 @@ bool Cpc15XX::run(void)
 		break;
 
 
-    FUNC_CALL(0xA519,QT_TR_NOOP("Function Call [%1] - Change printer pen color"));				break;
-	FUNC_CALL(0xA769,QT_TR_NOOP("Function Call [%1] - Printer motor OFF"));						break;
-	FUNC_CALL(0xA781,QT_TR_NOOP("Function Call [%1] - Send ASCCI char to printer. No LF"));		break;
-	FUNC_CALL(0xA8DD,QT_TR_NOOP("Function Call [%1] - Move PEN"));								break;
-	FUNC_CALL(0xA9F1,QT_TR_NOOP("Function Call [%1] - Send Line Feed to printer"));				break;
-	FUNC_CALL(0xAA04,QT_TR_NOOP("Function Call [%1] - Send (n) Line Feeds to printer"));		break;
-	FUNC_CALL(0xAAE3,QT_TR_NOOP("Function Call [%1] - Pen UP/DOWN"));							break;
-	FUNC_CALL(0xABCB,QT_TR_NOOP("Function Call [%1] - Switch Printer Graphic to Text mode"));	break;
-	FUNC_CALL(0xABEF,QT_TR_NOOP("Function Call [%1] - Switch Printer Text to Graphic mode"));	break;
-	FUNC_CALL(0xB8A6,QT_TR_NOOP("Function Call [%1] - CSAVE"));									break;
-	FUNC_CALL(0xBF11,QT_TR_NOOP("Function Call [%1] - REMOTE ON  (Open/Close)"));				break;
-	FUNC_CALL(0xBF43,QT_TR_NOOP("Function Call [%1] - REMOTE OFF"));							break;
-	FUNC_CALL(0xBBF5,QT_TR_NOOP("Function Call [%1] - Termination of CMT I/O Control"));		break;
-	FUNC_CALL(0xBD3C,QT_TR_NOOP("Function Call [%1] - File Transfer"));							break;
-	FUNC_CALL(0xBDF3,QT_TR_NOOP("Function Call [%1] - Sortie Load Char"));						break;
+//    FUNC_CALL(0xA519,QT_TR_NOOP("Function Call [%1] - Change printer pen color"));				break;
+//	FUNC_CALL(0xA769,QT_TR_NOOP("Function Call [%1] - Printer motor OFF"));						break;
+//	FUNC_CALL(0xA781,QT_TR_NOOP("Function Call [%1] - Send ASCCI char to printer. No LF"));		break;
+//	FUNC_CALL(0xA8DD,QT_TR_NOOP("Function Call [%1] - Move PEN"));								break;
+//	FUNC_CALL(0xA9F1,QT_TR_NOOP("Function Call [%1] - Send Line Feed to printer"));				break;
+//	FUNC_CALL(0xAA04,QT_TR_NOOP("Function Call [%1] - Send (n) Line Feeds to printer"));		break;
+//	FUNC_CALL(0xAAE3,QT_TR_NOOP("Function Call [%1] - Pen UP/DOWN"));							break;
+//	FUNC_CALL(0xABCB,QT_TR_NOOP("Function Call [%1] - Switch Printer Graphic to Text mode"));	break;
+//	FUNC_CALL(0xABEF,QT_TR_NOOP("Function Call [%1] - Switch Printer Text to Graphic mode"));	break;
+//	FUNC_CALL(0xB8A6,QT_TR_NOOP("Function Call [%1] - CSAVE"));									break;
+//	FUNC_CALL(0xBF11,QT_TR_NOOP("Function Call [%1] - REMOTE ON  (Open/Close)"));				break;
+//	FUNC_CALL(0xBF43,QT_TR_NOOP("Function Call [%1] - REMOTE OFF"));							break;
+//	FUNC_CALL(0xBBF5,QT_TR_NOOP("Function Call [%1] - Termination of CMT I/O Control"));		break;
+//	FUNC_CALL(0xBD3C,QT_TR_NOOP("Function Call [%1] - File Transfer"));							break;
+//	FUNC_CALL(0xBDF3,QT_TR_NOOP("Function Call [%1] - Sortie Load Char"));						break;
 	FUNC_CALL(0xBE02,QT_TR_NOOP("Function Call [%1] - Load Quarter")); 
 //											pCPU->logsw=1;
 											pCPU->Check_Log();
 											ReadQuarterTape();
 																								break;
-	FUNC_CALL(0xBDF0,QT_TR_NOOP("Function Call [%1] - Load Char"));								break;
-	FUNC_CALL(0xBDCC,QT_TR_NOOP("Function Call [%1] - CE150 Save one character"));				break;
-	FUNC_CALL(0xBBD6,QT_TR_NOOP("Function Call [%1] - Creation of Header"));					break;
+//	FUNC_CALL(0xBDF0,QT_TR_NOOP("Function Call [%1] - Load Char"));								break;
+//	FUNC_CALL(0xBDCC,QT_TR_NOOP("Function Call [%1] - CE150 Save one character"));				break;
+//	FUNC_CALL(0xBBD6,QT_TR_NOOP("Function Call [%1] - Creation of Header"));					break;
 	}
 
 	//----------------------------------

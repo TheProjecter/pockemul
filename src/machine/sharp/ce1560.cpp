@@ -45,7 +45,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"ce1560.map");
 
-    memsize		= 0x98000;
+    memsize		= 0x9A000;
     SlotList.clear();
     // Firmware: 2 page of 16Ko
     SlotList.append(CSlot(16 , 0x0000 ,	 ""	, "" , CSlot::RAM , "ROM Pg 0"));
@@ -70,10 +70,13 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     SlotList.append(CSlot(32 , 0x88000 ,	 ""	, "" , CSlot::RAM , "RAM Disk Pg F"));
 
     // ROM8000: 4 x 8Ko
-    SlotList.append(CSlot(8 , 0x90000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 0"));
-    SlotList.append(CSlot(8 , 0x92000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 1"));
-    SlotList.append(CSlot(8 , 0x94000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 2"));
-    SlotList.append(CSlot(8 , 0x96000 ,	 ""	, "" , CSlot::RAM , "ROM8000 Pg 3"));
+    SlotList.append(CSlot(8 , 0x90000 ,	 ""	, "" , CSlot::RAM , "ROM8000 PV0-PU0"));
+    SlotList.append(CSlot(8 , 0x92000 ,	 ""	, "" , CSlot::RAM , "ROM8000 PV0-PU1"));
+    SlotList.append(CSlot(8 , 0x94000 ,	 ""	, "" , CSlot::RAM , "ROM8000 PV1-PU0"));
+    SlotList.append(CSlot(8 , 0x96000 ,	 ""	, "" , CSlot::RAM , "ROM8000 PV1-PU1"));
+
+    SlotList.append(CSlot(8 , 0x98000 ,	 ""	, "" , CSlot::RAM , "ROMA000 PV1"));
+
 
     bus = new CbusPc1500();
 
@@ -166,9 +169,10 @@ bool Cce1560::run(void)
     }
 
     if ( (bus->getAddr()>=0x8000) && (bus->getAddr()<=0x9FFF) &&
-         !bus->isPV() &&
+//         !bus->isPV() &&
          !bus->isME1() )
     {
+        rom8000Pg = (bus->isPV() ? 0x02 : 00) | (bus->isPU() ? 0x01 : 00);
         if (!bus->isWrite()) {
             bus->setData(mem[0x90000 + addr - 0x8000 + rom8000Pg * 0x2000]);
             forwardBus = false;

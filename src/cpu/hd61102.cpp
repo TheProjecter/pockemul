@@ -90,6 +90,7 @@ BYTE CHD61102::instruction(qint16 cmd)
     }
     else {
         info.status &= 0x7f;
+//        qWarning()<<"delta t="<<pPC->pTIMER->nsElapsed(last_state_cmd)<<" : "<<pPC->pTIMER->state-last_state_cmd ;
         last_state_cmd = pPC->pTIMER->state;
     }
 

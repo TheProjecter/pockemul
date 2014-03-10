@@ -28,6 +28,7 @@ private slots:
     void FindPrevious(void);
     void JumpTo( void);
     void Refresh(void);
+    void Fill(void);
     void Update(int adr, uchar val);
 
 protected:

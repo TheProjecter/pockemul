@@ -29,6 +29,7 @@ DialogDump::DialogDump(QWidget * parent, Qt::WindowFlags f)
     connect(pbFindNext,SIGNAL(clicked()),this,SLOT(FindNext()));
     connect(leJump,SIGNAL(returnPressed()),this,SLOT(JumpTo()));
     connect(pbRefresh,SIGNAL(clicked()),this,SLOT(Refresh()));
+    connect(pbFill,SIGNAL(clicked()),this,SLOT(Fill()));
 
 
     hexeditor = new BINEditor::BinEditor(framedump);
@@ -77,6 +78,18 @@ void DialogDump::Refresh(void) {
     hexeditor->setReadOnly(false);
     hexeditor->setData(*ba,adr);
     hexeditor->setCursorPosition(_pos,BINEditor::BinEditor::MoveAnchor);
+}
+
+void DialogDump::Fill()
+{
+    if (twSlot->currentRow()==-1) {
+        return;
+    }
+    int adr = twSlot->item(twSlot->currentRow(),2)->text().toInt(0,16);
+    int size = twSlot->item(twSlot->currentRow(),1)->text().toInt() * 1024;
+    quint8 val = leFillWith->text().toUInt(0,16);
+    memset((char*)&(pPC->mem[adr]),val,size);
+    Refresh();
 }
 
 void DialogDump::LoadBin(void)
