@@ -7,6 +7,7 @@
 #define LH5810_H
 
 #include <QFile>
+#include <QDebug>
 
 #include "pobject.h"
 
@@ -79,9 +80,10 @@ public:
                             if (SDI)	t|=0x40;
                             if (CL1)	t|=0x80;
                             return(t);
-        case IF:		t=(lh5810.r_if);
+        case IF:	t=(lh5810.r_if);
     //						if (IRQ)	t|=0x01;
     //						if (PB7)	t|=0x02;
+//                    qWarning()<<"return IF="<<t;
                             return(t);
         case DDA:	return(lh5810.r_dda);
         case DDB:	return(lh5810.r_ddb);

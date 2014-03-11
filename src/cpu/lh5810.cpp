@@ -1,4 +1,4 @@
-//#include <stdlib.h>
+﻿//#include <stdlib.h>
 //#include <string.h>
 
 #include <QDebug>
@@ -21,6 +21,7 @@ CLH5810::CLH5810(CPObject *parent)	: CPObject(parent)				//[constructor]
 	lh5810.r_if=0;
     IRQ=INT=false;
     SDO=SDI=CL1=false;
+    serialSend = false;
 //	OPA=OPB=0;
 
 }
@@ -101,6 +102,7 @@ bool CLH5810::step()
     FY = (lh5810.r_f>>3) & 0x07;
 
     if (serialSend) {
+        SetRegBit(IF,3,false);
         quint64 waitState = pPC->getfrequency() / ( (RolReg & 0x01) ? (0x40 << FX) : (0x40 << FY));
         if ( (pPC->pTIMER->state - lastPulseState) >= waitState) {
             SDO = !SDO;
@@ -110,10 +112,13 @@ bool CLH5810::step()
         if ( (pPC->pTIMER->state - clockRateState) >= clockRateWait) {
             RolReg >>= 1;
             bit++;
-            if (bit == 11) {
+
+            if (bit >= 10) {
                 serialSend = false;
-                SetRegBit(IF,3,false);
+                qWarning()<<"end";
+                SetRegBit(IF,3,true);
             }
+            qWarning()<<"bit:"<<bit<<serialSend;
             SDO = RolReg & 0x01;
             lastPulseState = clockRateState = pPC->pTIMER->state;
         }
@@ -141,7 +146,7 @@ bool CLH5810::step()
 	if (New_L)
 	{
         //AddLog(LOG_TAPE,tr("L register change -> %1X").arg(lh5810.r_l,4,16,QChar('0')));
-        SetRegBit(IF,3,true);
+        SetRegBit(IF,3,false);
 		New_L=false;
         if (serialSend)
             qWarning()<<"Serial transmission in progress!!!";

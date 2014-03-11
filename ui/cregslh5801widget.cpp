@@ -5,6 +5,8 @@
 #include "ui/cregcpu.h"
 #include "cpu.h"
 #include "lh5801.h"
+#include "pcxxxx.h"
+
 
 Cregslh5801Widget::Cregslh5801Widget(CPObject *parent,CCPU *pCPU) :
     CregCPU(parent,pCPU),
@@ -46,8 +48,8 @@ void Cregslh5801Widget::refresh()
 
     CLH5801 *cpu = (CLH5801 *) pCPU;
 
-    cpu->Regs_Info(0);
-    ui->textEdit->setText(QString(cpu->Regs_String));
+    cpu->pPC->Regs_Info(0);
+    ui->textEdit->setText(QString(cpu->pPC->Regs_String));
 
     ui->regP->setText(QString("%1").arg(cpu->lh5801.p.w,4,16,QChar('0')));
     ui->regS->setText(QString("%1").arg(cpu->lh5801.s.w,4,16,QChar('0')));

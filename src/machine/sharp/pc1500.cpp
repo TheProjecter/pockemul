@@ -827,6 +827,7 @@ bool CLH5810_PC1500::step()
 	//	if IF & 0x08  = 0 the CPU store a BYTE to transmit
 	//	send the Byte to TAPE
 	//	set IF | 0x08 to 1
+#if 0
 	if ( !(lh5810.r_if & 0x08))
 	{
 		Cpc15XX *pPC15XX = (Cpc15XX *) pPC;
@@ -840,8 +841,9 @@ bool CLH5810_PC1500::step()
 		pPC15XX->pce152->WriteBitToWav(1,&pPC15XX->pce152->info);				// Stop bit
 		pPC15XX->pce152->WriteBitToWav(1,&pPC15XX->pce152->info);				// Stop bit
 
-        SetRegBit(IF,3,true);
+//        SetRegBit(IF,3,true);
 	}
+#endif
 
 
     SetRegBit(OPB,3,true);	// Export model vs domestic model
