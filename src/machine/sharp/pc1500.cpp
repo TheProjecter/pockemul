@@ -376,7 +376,7 @@ bool Cpc15XX::run(void)
 	//----------------------------------
 	// SOUND BUFFER (quite simple no?) 
 	//----------------------------------
-	fillSoundBuffer((pLH5810->lh5810.r_opc & 0x40 ? 0xff:0x00));
+    fillSoundBuffer( ((pLH5810->lh5810.r_opc & 0x40) || pLH5810->SDO || pLH5810->SDI) ? 0xff:0x00);
 	//----------------------------------
 
 	return(1); 
@@ -446,6 +446,7 @@ INLINE bool Cpc15XX::lh5810_write(UINT32 d, UINT32 data)
     case 0x1F004: pLH5810->SetReg(CLH5810::RESET,	data); break;
     case 0x1F005: pLH5810->SetReg(CLH5810::U,		data); break;
     case 0x1F006: pLH5810->SetReg(CLH5810::L,		data); break;
+    case 0x1F007: pLH5810->SetReg(CLH5810::F,		data); break;
     case 0x1F008: pLH5810->SetReg(CLH5810::OPC,     data); break;
     case 0x1F009: pLH5810->SetReg(CLH5810::G  ,     data); break;
     case 0x1F00A: pLH5810->SetReg(CLH5810::MSK,     data); break;
@@ -465,7 +466,7 @@ INLINE quint8 Cpc15XX::lh5810_read(UINT32 d)
     switch (d) {
     case 0x1F005: return (pLH5810->GetReg(CLH5810::U)); break;
     case 0x1F006: return (pLH5810->GetReg(CLH5810::L)); break;
-
+    case 0x1F007: return (pLH5810->GetReg(CLH5810::F)); break;
     case 0x1F008: return (pLH5810->GetReg(CLH5810::OPC)); break;
     case 0x1F009: return (pLH5810->GetReg(CLH5810::G)); break;
     case 0x1F00A: return (pLH5810->GetReg(CLH5810::MSK)); break;

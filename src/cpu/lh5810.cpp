@@ -22,6 +22,9 @@ CLH5810::CLH5810(CPObject *parent)	: CPObject(parent)				//[constructor]
     IRQ=INT=false;
     SDO=SDI=CL1=false;
     serialSend = false;
+    New_L=false;
+    New_G=New_F=true;
+    RolReg = 0xffff;
 //	OPA=OPB=0;
 
 }
@@ -81,15 +84,18 @@ void	CLH5810::Reset(void)
 	lh5810.r_g=lh5810.r_msk=lh5810.r_if=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=lh5810.r_f=0X00;
     lh5810.r_dda=lh5810.r_ddb=0x00;
     SDO=SDI=CL1=false;
-
+    New_L=false;
+    New_G=New_F=true;
+    serialSend = false;
+    RolReg = 0xffff;
 }
 
 void CLH5810::start_serial_transmit() {
-    RolReg =  (0x300 | lh5810.r_l)<<1 ;
-    bit = 0;
-    serialSend= true;
+    RolReg = (0xff00 | lh5810.r_l)<<1 ;
+//    bit = 0;
+//    serialSend= true;
+    bitCount = 0;
     lastPulseState = clockRateState = pPC->pTIMER->state;
-    SDO = RolReg & 0x01;        // Should be always 0 (Start bit)
     qWarning()<<"New_L:"<<QString("%1").arg(lh5810.r_l,2,16,QChar('0'));
 
 }
@@ -98,29 +104,42 @@ bool CLH5810::step()
 {
 	INT = false;
 
-    FX = lh5810.r_f & 0x07;
-    FY = (lh5810.r_f>>3) & 0x07;
+    if (New_F) {
+        FX = lh5810.r_f & 0x07;
+        FY = (lh5810.r_f>>3) & 0x07;
+        qWarning()<<"Fx="<<FX<<"   FY="<<FY<<"  val="<<lh5810.r_f;
+        New_F = false;
+
+        serialSend = (lh5810.r_f & 0x40);
+        bit = false;
+
+    }
 
     if (serialSend) {
-        SetRegBit(IF,3,false);
-        quint64 waitState = pPC->getfrequency() / ( (RolReg & 0x01) ? (0x40 << FX) : (0x40 << FY));
+//        SetRegBit(IF,3,false);
+        bit = RolReg & 0x01;
+
+        quint64 waitState =  ( bit ? (0x40 << FX) : (0x40 << FY))/2;
         if ( (pPC->pTIMER->state - lastPulseState) >= waitState) {
             SDO = !SDO;
-            lastPulseState = pPC->pTIMER->state;
+//            qWarning()<<"flip="<<(pPC->pTIMER->state - lastPulseState);
+            while ((pPC->pTIMER->state - lastPulseState) >= waitState)
+                lastPulseState += waitState;
         }
 
-        if ( (pPC->pTIMER->state - clockRateState) >= clockRateWait) {
-            RolReg >>= 1;
-            bit++;
+        if ( (pPC->pTIMER->state - clockRateState) >= clockRate) {
 
-            if (bit >= 10) {
-                serialSend = false;
-                qWarning()<<"end";
-                SetRegBit(IF,3,true);
-            }
-            qWarning()<<"bit:"<<bit<<serialSend;
-            SDO = RolReg & 0x01;
-            lastPulseState = clockRateState = pPC->pTIMER->state;
+            bitCount++;
+            if (bitCount==9) SetRegBit(IF,3,true);
+
+            RolReg >>= 1;
+            RolReg |=0x8000;
+
+//            qWarning()<<"bit:"<<(RolReg & 0x01)<<"  delta="<<pPC->pTIMER->state - clockRateState;
+
+            while((pPC->pTIMER->state - clockRateState) >= clockRate)
+                clockRateState += clockRate;
+//            lastPulseState = clockRateState;
         }
 
 
@@ -129,16 +148,18 @@ bool CLH5810::step()
 
     if (New_G) {
         switch (lh5810.r_g & 0x07) {
-        case 0x00 : clockRateWait = pPC->getfrequency() ; break;
-        case 0x01 : clockRateWait = pPC->getfrequency() / 2; break;
-        case 0x02 : clockRateWait = pPC->getfrequency() / 128; break;
-        case 0x03 : clockRateWait = pPC->getfrequency() / 256; break;
-        case 0x04 : clockRateWait = pPC->getfrequency() / 512; break;
-        case 0x05 : clockRateWait = pPC->getfrequency() / 1024; break;
-        case 0x06 : clockRateWait = pPC->getfrequency() / 2048; break;
-        case 0x07 : clockRateWait = pPC->getfrequency() / 4096; break;
+        case 0x00 : clockRate = 1; break;
+        case 0x01 : clockRate = 2; break;
+        case 0x02 : clockRate = 128; break;
+        case 0x03 : clockRate = 256; break;
+        case 0x04 : clockRate = 512; break;
+        case 0x05 : clockRate = 1024; break;
+        case 0x06 : clockRate = 2048; break;
+        case 0x07 : clockRate = 4096; break;
 
         }
+        clockRateWait = pPC->getfrequency() / clockRate;
+        qWarning()<<"G= "<<lh5810.r_g<<"   ClockRate set to :"<<clockRateWait;
 
         New_G = false;
     }

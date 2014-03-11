@@ -129,7 +129,7 @@ bool Cce1560::run(void)
 
     bus->setINHIBIT(inhibitSwitch);
 
-//    pTAPECONNECTOR->Set_pin(3,(rmtSwitch ? SEL1:true));       // RMT
+    pTAPECONNECTOR->Set_pin(3,true);//(rmtSwitch ? SEL1:true));       // RMT
     pTAPECONNECTOR->Set_pin(2,bus->isCMTOUT());    // Out
     //MT_IN = pTAPECONNECTOR->Get_pin(1);      // In
 

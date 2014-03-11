@@ -112,7 +112,7 @@ public:
         case OPA:	return(lh5810.r_opa = ( (lh5810.r_opa & (~lh5810.r_dda)) | (data & (lh5810.r_dda))) );	break;
         case OPB:	return(lh5810.r_opb = ( (lh5810.r_opb & (~lh5810.r_ddb)) | (data & (lh5810.r_ddb))) );	break;
         case OPC:	return(lh5810.r_opc = data);	break;
-        case F:		return(lh5810.r_f	= data);	break;
+        case F:		New_F = true; return(lh5810.r_f	= data);	break;
         }
 
         return (0);
@@ -188,11 +188,13 @@ public:
 private:
     void start_serial_transmit();
 
-    bool	New_L,New_G;
+    bool	New_L,New_G,New_F;
     quint16 RolReg;
-    quint8 bit;
+    quint8 bitCount;
+    bool bit;
     bool serialSend;
     quint64 lastPulseState,clockRateState;
+    int clockRate;
     quint64 clockRateWait;
 };
 
