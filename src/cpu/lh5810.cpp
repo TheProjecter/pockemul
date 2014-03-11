@@ -20,7 +20,7 @@ CLH5810::CLH5810(CPObject *parent)	: CPObject(parent)				//[constructor]
 	lh5810.r_g=lh5810.r_msk=lh5810.r_dda=lh5810.r_ddb=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=lh5810.r_f=0;
 	lh5810.r_if=0;
     IRQ=INT=false;
-    SDO=SDI=CL1=false;
+    SDO=SDI=CLI=false;
     serialSend = false;
     New_L=false;
     New_G=New_F=true;
@@ -83,7 +83,7 @@ void	CLH5810::Reset(void)
 {
 	lh5810.r_g=lh5810.r_msk=lh5810.r_if=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=lh5810.r_f=0X00;
     lh5810.r_dda=lh5810.r_ddb=0x00;
-    SDO=SDI=CL1=false;
+    SDO=SDI=CLI=false;
     New_L=false;
     New_G=New_F=true;
     serialSend = false;
@@ -139,7 +139,6 @@ bool CLH5810::step()
 
             while((pPC->pTIMER->state - clockRateState) >= clockRate)
                 clockRateState += clockRate;
-//            lastPulseState = clockRateState;
         }
 
 

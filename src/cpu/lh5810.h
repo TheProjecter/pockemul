@@ -78,7 +78,8 @@ public:
                             if (IRQ)	t|=0x10;
                             if (LH5810_PB7)	t|=0x20;
                             if (SDI)	t|=0x40;
-                            if (CL1)	t|=0x80;
+//                            if (CLI)
+                                t|=0x80;
                             return(t);
         case IF:	t=(lh5810.r_if);
     //						if (IRQ)	t|=0x01;
@@ -180,7 +181,7 @@ public:
 	bool	IRQ,INT;
 //	UINT8	OPA,OPB;
     int FX,FY;
-    bool SDO,SDI,CL1;
+    bool SDO,SDI,CLI;
 
 	CLH5810(CPObject *parent);
     virtual ~CLH5810();

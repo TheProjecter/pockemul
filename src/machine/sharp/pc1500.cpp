@@ -335,6 +335,7 @@ bool Cpc15XX::run(void)
 	}
 #endif
 
+#if 0
 // HACK Program Counter
 #define FUNC_CALL(ADDR,LIB) case ADDR: AddLog(LOG_ROM,tr(LIB).arg(((CLH5801 *)pCPU)->get_PC(),5,16,QChar('0')))
 
@@ -363,20 +364,26 @@ bool Cpc15XX::run(void)
 //	FUNC_CALL(0xBBF5,QT_TR_NOOP("Function Call [%1] - Termination of CMT I/O Control"));		break;
 //	FUNC_CALL(0xBD3C,QT_TR_NOOP("Function Call [%1] - File Transfer"));							break;
 //	FUNC_CALL(0xBDF3,QT_TR_NOOP("Function Call [%1] - Sortie Load Char"));						break;
-	FUNC_CALL(0xBE02,QT_TR_NOOP("Function Call [%1] - Load Quarter")); 
+//	FUNC_CALL(0xBE02,QT_TR_NOOP("Function Call [%1] - Load Quarter"));
 //											pCPU->logsw=1;
-											pCPU->Check_Log();
-											ReadQuarterTape();
+//											pCPU->Check_Log();
+//											ReadQuarterTape();
 																								break;
 //	FUNC_CALL(0xBDF0,QT_TR_NOOP("Function Call [%1] - Load Char"));								break;
 //	FUNC_CALL(0xBDCC,QT_TR_NOOP("Function Call [%1] - CE150 Save one character"));				break;
 //	FUNC_CALL(0xBBD6,QT_TR_NOOP("Function Call [%1] - Creation of Header"));					break;
 	}
+#endif
 
 	//----------------------------------
 	// SOUND BUFFER (quite simple no?) 
 	//----------------------------------
-    fillSoundBuffer( ((pLH5810->lh5810.r_opc & 0x40) || pLH5810->SDO || pLH5810->SDI) ? 0xff:0x00);
+    fillSoundBuffer(
+                (
+                    (pLH5810->lh5810.r_opc & 0x40 ? false:true) ||
+                    pLH5810->SDO ||
+                    bus->isCMTIN()
+                    ) ? 0xff:0x00);
 	//----------------------------------
 
 	return(1); 
@@ -764,6 +771,7 @@ bool Cpc15XX::Get_Connector(void)
 
 bool	CLH5810_PC1500::init(void)
 {
+    CLH5810::init();
     SetRegBit(OPB,3,true);	// Export model vs domestic model
     SetRegBit(OPB,4,false);	// PB4 to GND
 
@@ -774,10 +782,12 @@ bool	CLH5810_PC1500::init(void)
 
 bool CLH5810_PC1500::step()
 {
+    Cpc15XX *pc1500 = (Cpc15XX *)pPC;
+
 	////////////////////////////////////////////////////////////////////
 	//	INT FROM connector to IRQ
 	////////////////////////////////////////////////////////////////////
-    IRQ= ((Cpc15XX*)pPC)->bus->getINT();
+    IRQ= pc1500->bus->getINT();
 
 	////////////////////////////////////////////////////////////////////
 	//	Send Data to PD1990AC -- TIMER
@@ -816,19 +826,17 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	TAPE READER
 	////////////////////////////////////////////////////////////////////
-	if ( ((Cpc15XX *)pPC)->ce150_connected)
-	{
-//		int bit=((Cpc15XX *)pPC)->pce152->GetBit();
-//		SetRegBit(LH5810_OPB,2,bit);
-	}
+    SetRegBit(OPB,2,pc1500->bus->isCMTIN());
 
-	////////////////////////////////////////////////////////////////////
+
+#if 0
+    ////////////////////////////////////////////////////////////////////
 	//	TAPE WRITER
 	////////////////////////////////////////////////////////////////////
 	//	if IF & 0x08  = 0 the CPU store a BYTE to transmit
 	//	send the Byte to TAPE
 	//	set IF | 0x08 to 1
-#if 0
+
 	if ( !(lh5810.r_if & 0x08))
 	{
 		Cpc15XX *pPC15XX = (Cpc15XX *) pPC;

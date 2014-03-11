@@ -131,7 +131,7 @@ bool Cce1560::run(void)
 
     pTAPECONNECTOR->Set_pin(3,true);//(rmtSwitch ? SEL1:true));       // RMT
     pTAPECONNECTOR->Set_pin(2,bus->isCMTOUT());    // Out
-    //MT_IN = pTAPECONNECTOR->Get_pin(1);      // In
+    bus->setCMTIN( pTAPECONNECTOR->Get_pin(1));      // In
 
     pTAPECONNECTOR_value = pTAPECONNECTOR->Get_values();
 
