@@ -764,8 +764,7 @@ bool Cpc15XX::Get_Connector(void)
 {
     bus->fromUInt64(pCONNECTOR->Get_values());
     bus->setEnable(false);
-//    if (bus->isINHIBIT()) qWarning()<<"INhibit";
-//qWarning()<<"Cpc15XX::Get_Connector:"<<bus->toLog();
+
     return true;
 }
 
@@ -813,7 +812,7 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	ON/Break
 	////////////////////////////////////////////////////////////////////
-    //SetRegBit(LH5810_OPB,7,pPC->pKEYB->Kon);
+    //SetRegBit(OPB,7,pPC->pKEYB->Kon);
 
     if (pPC->pKEYB->Kon)
     {
@@ -827,6 +826,7 @@ bool CLH5810_PC1500::step()
 	//	TAPE READER
 	////////////////////////////////////////////////////////////////////
     SetRegBit(OPB,2,pc1500->bus->isCMTIN());
+    CLI = CLO;
 
 
 #if 0

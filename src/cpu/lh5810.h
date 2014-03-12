@@ -78,8 +78,7 @@ public:
                             if (IRQ)	t|=0x10;
                             if (LH5810_PB7)	t|=0x20;
                             if (SDI)	t|=0x40;
-//                            if (CLI)
-                                t|=0x80;
+                            if (CLI)    t|=0x80;
                             return(t);
         case IF:	t=(lh5810.r_if);
     //						if (IRQ)	t|=0x01;
@@ -102,7 +101,8 @@ public:
     {
         switch (reg)
         {
-        case RESET:	return(lh5810.reset	= data);	break;
+        case RESET:	ResetDivider();
+                    return(lh5810.reset	= data);	break;
         case U:		return(lh5810.r_u	= data);	break;
         case L:		New_L = true; return(lh5810.r_l	= data);	break;
         case G:		New_G = true; return(lh5810.r_g	= data);	break;
@@ -181,22 +181,24 @@ public:
 	bool	IRQ,INT;
 //	UINT8	OPA,OPB;
     int FX,FY;
-    bool SDO,SDI,CLI;
+    bool SDO,SDI,CLI,CLO;
 
 	CLH5810(CPObject *parent);
     virtual ~CLH5810();
 
 private:
     void start_serial_transmit();
+    void ResetDivider();
 
     bool	New_L,New_G,New_F;
     quint16 RolReg;
     quint8 bitCount;
     bool bit;
-    bool serialSend;
+    bool modulationSend;
     quint64 lastPulseState,clockRateState;
     int clockRate;
     quint64 clockRateWait;
+    bool clockOutput;
 };
 
 

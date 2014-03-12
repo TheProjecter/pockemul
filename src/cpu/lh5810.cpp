@@ -21,10 +21,11 @@ CLH5810::CLH5810(CPObject *parent)	: CPObject(parent)				//[constructor]
 	lh5810.r_if=0;
     IRQ=INT=false;
     SDO=SDI=CLI=false;
-    serialSend = false;
+    modulationSend = false;
     New_L=false;
     New_G=New_F=true;
     RolReg = 0xffff;
+    clockOutput = false;
 //	OPA=OPB=0;
 
 }
@@ -81,12 +82,16 @@ void CLH5810::save_internal(QXmlStreamWriter *xmlOut)
 
 void	CLH5810::Reset(void)
 {
-	lh5810.r_g=lh5810.r_msk=lh5810.r_if=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=lh5810.r_f=0X00;
+    lh5810.r_g=0;
+    lh5810.r_msk=lh5810.r_if=lh5810.r_opa=lh5810.r_opb=lh5810.r_opc=0;
+    CLO=false;
+    lh5810.r_f=0X00;
     lh5810.r_dda=lh5810.r_ddb=0x00;
     SDO=SDI=CLI=false;
     New_L=false;
     New_G=New_F=true;
-    serialSend = false;
+    modulationSend = false;
+    clockOutput = false;
     RolReg = 0xffff;
 }
 
@@ -100,6 +105,11 @@ void CLH5810::start_serial_transmit() {
 
 }
 
+void CLH5810::ResetDivider()
+{
+   clockRateState=pPC->pTIMER->state;
+}
+
 bool CLH5810::step()
 {
 	INT = false;
@@ -110,12 +120,12 @@ bool CLH5810::step()
         qWarning()<<"Fx="<<FX<<"   FY="<<FY<<"  val="<<lh5810.r_f;
         New_F = false;
 
-        serialSend = (lh5810.r_f & 0x40);
+        modulationSend = (lh5810.r_f & 0x40);
         bit = false;
 
     }
 
-    if (serialSend) {
+    if (modulationSend) {
 //        SetRegBit(IF,3,false);
         bit = RolReg & 0x01;
 
@@ -126,24 +136,30 @@ bool CLH5810::step()
             while ((pPC->pTIMER->state - lastPulseState) >= waitState)
                 lastPulseState += waitState;
         }
+    }
 
-        if ( (pPC->pTIMER->state - clockRateState) >= clockRate) {
-
+    if (clockOutput) {
+        if ( (pPC->pTIMER->state - clockRateState) >= (clockRate/1)) {
+            CLO = true;
             bitCount++;
             if (bitCount==9) SetRegBit(IF,3,true);
 
             RolReg >>= 1;
             RolReg |=0x8000;
 
-//            qWarning()<<"bit:"<<(RolReg & 0x01)<<"  delta="<<pPC->pTIMER->state - clockRateState;
-
-            while((pPC->pTIMER->state - clockRateState) >= clockRate)
-                clockRateState += clockRate;
+            //            qWarning()<<"bit:"<<(RolReg & 0x01)<<"  delta="<<pPC->pTIMER->state - clockRateState;
+            while((pPC->pTIMER->state - clockRateState) >= (clockRate/1))
+                clockRateState += clockRate/1;
+        }
+        if (CLO &&
+            ( (pPC->pTIMER->state - clockRateState)>(clockRate/10) ) )
+        {
+            CLO = false;
         }
 
-
-
     }
+
+
 
     if (New_G) {
         switch (lh5810.r_g & 0x07) {
@@ -160,6 +176,7 @@ bool CLH5810::step()
         clockRateWait = pPC->getfrequency() / clockRate;
         qWarning()<<"G= "<<lh5810.r_g<<"   ClockRate set to :"<<clockRateWait;
 
+        clockOutput = lh5810.r_g & 0X10;
         New_G = false;
     }
 	// If the L register change, then TD flag of the IF register down
@@ -168,7 +185,7 @@ bool CLH5810::step()
         //AddLog(LOG_TAPE,tr("L register change -> %1X").arg(lh5810.r_l,4,16,QChar('0')));
         SetRegBit(IF,3,false);
 		New_L=false;
-        if (serialSend)
+        if (modulationSend)
             qWarning()<<"Serial transmission in progress!!!";
         start_serial_transmit();
 	}
