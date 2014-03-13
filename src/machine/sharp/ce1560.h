@@ -17,6 +17,7 @@ class CbusPc1500;
 class Cce1560:public CpcXXXX {
     Q_OBJECT
     Q_PROPERTY(int screenangle READ screenAngle WRITE setScreenAngle)
+    Q_PROPERTY(qreal zoom READ zoom WRITE setZoom)
 
 public:
 
@@ -46,6 +47,9 @@ public slots:
     void endscreenAnimation(void);
 
 private:
+    void setZoom(qreal value){ m_zoom = value; }
+    qreal zoom() const { return m_zoom; }
+    qreal m_zoom;
     void setScreenAngle(int value) { m_screenAngle = value; }
     int screenAngle() const { return m_screenAngle; }
     int m_screenAngle;

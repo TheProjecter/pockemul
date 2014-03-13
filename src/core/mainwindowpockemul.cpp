@@ -601,15 +601,15 @@ void MainWindowPockemul::Minimize_All() {
 
 }
 
-void MainWindowPockemul::Close_All() {
+bool MainWindowPockemul::Close_All() {
 #ifdef EMSCRIPTEN
     saveAll = NO;
 #else
     switch (ask(mainwindow,"Do you want to save all sessions ?",3)) {
     case 1: saveAll = YES;break;
     case 2: saveAll = NO;break;
-    case 3: return;
-    default: return;
+    case 3: return false;
+    default: return true;
     }
 #endif
 
@@ -617,6 +617,8 @@ void MainWindowPockemul::Close_All() {
     {
         listpPObject.at(k)->slotExit();
     }
+
+    return true;
 }
 
 void MainWindowPockemul::resetZoom() {
@@ -1261,8 +1263,12 @@ void MainWindowPockemul::DestroySlot( CPObject *pObject)
 void MainWindowPockemul::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event)
-    Close_All();
-    QMainWindow::closeEvent(event);
+    if (Close_All()){
+        QMainWindow::closeEvent(event);
+        event->accept();
+    }
+    else
+        event->ignore();
 }
 
 void MainWindowPockemul::slotMsgError(QString msg) {

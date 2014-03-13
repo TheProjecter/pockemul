@@ -91,6 +91,7 @@ Cce1560::Cce1560(CPObject *parent):CpcXXXX(this)
     ramDiskPg = 0;
     firmwarePg= 0;
     rom8000Pg= 0;
+    m_zoom = 1;
 }
 
 Cce1560::~Cce1560() {
@@ -401,6 +402,7 @@ void Cce1560::ComputeKey()
 
 }
 
+#define RATIO (251.0/502.0)
 bool Cce1560::UpdateFinalImage(void) {
 
     delete FinalImage;
@@ -427,6 +429,14 @@ bool Cce1560::UpdateFinalImage(void) {
     painter.fillRect(60,0,692,getDY()/2,Qt::transparent);
 
     painter.translate((getDX()-60)/2+60,getDY()/2);
+
+    QTransform matrix;
+    matrix.scale(m_zoom,m_zoom);
+    painter.setTransform(matrix,true);
+//    painter.drawImage(QPoint(-w/2,0),
+//                      FinalImage->scaled(QSize(w,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation),
+//                      QRect(0,h*RATIO,w,h-h*RATIO));
+
     QTransform matrix2;
     matrix2.rotate(m_screenAngle, Qt::XAxis);
     painter.setTransform(matrix2,true);
@@ -469,18 +479,32 @@ bool Cce1560::UpdateFinalImage(void) {
 void Cce1560::animateScreen() {
 //    qWarning()<<"ANIMATE";
     QPropertyAnimation *animation1 = new QPropertyAnimation(this, "screenangle");
+    QPropertyAnimation *animation2 = new QPropertyAnimation(this, "zoom");
      animation1->setDuration(1500);
+     animation2->setDuration(1500);
      if (!screenOpen) {
          animation1->setStartValue(m_screenAngle);
          animation1->setEndValue(0);
+
+//         animation2->setKeyValueAt(0.0,1.0);
+//         animation2->setKeyValueAt(0.5,.55);
+//         animation2->setKeyValueAt(1.0,1.0);
+         clearMask();
      }
      else {
          animation1->setStartValue(m_screenAngle);
          animation1->setEndValue(180);
+//         animation2->setKeyValueAt(0,1.0);
+//         animation2->setKeyValueAt(0.5,.55);
+//         animation2->setKeyValueAt(1,1.0);
+         clearMask();
+         setGeometry(this->posx(),this->posy(),this->getDX()*mainwindow->zoom/100.0,this->getDY()*mainwindow->zoom/100.0);
+
      }
 
      QParallelAnimationGroup *group = new QParallelAnimationGroup;
      group->addAnimation(animation1);
+     group->addAnimation(animation2);
 
      connect(animation1,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
      connect(animation1,SIGNAL(finished()),this,SLOT(endscreenAnimation()));

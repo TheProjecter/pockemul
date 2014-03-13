@@ -216,7 +216,7 @@ private slots:
     void Analogic();
     void CheckUpdates();
     void Minimize_All();
-    void Close_All();
+    bool Close_All();
     void resetZoom();
     void SelectPocket(QAction *);
     int  newsession();
