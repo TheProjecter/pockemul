@@ -1,5 +1,711 @@
 #include "lcc.h"
 
+void Clcc::LoadVariableMain(QByteArray s) {
+
+    if (sourceinASM) writln(outf,"\t; LoadVariable : "+s);
+
+    if ( (pointer == ptrREF) || (pointer == ptrREFARR)) {
+        if (pointer == ptrREFARR) {
+            writln(outf,"\tPUSH\t\t; store the offset");pushcnt++;
+        }
+        LoadVariable(s);
+        if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
+        if (varlist[VarFound].xram) {
+            writln(outf,"\tLP\t4\t; XL");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tLP\t5\t; XH");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tDX");
+            if (pointer==ptrREFARR) {
+                // decalage
+                writln(outf,"\tPOP\t\t; retrieve index");pushcnt--;
+                writln(outf,"\tLP 4");
+                writln(outf,"\tLIB 0");
+                writln(outf,"\tADB");
+            }
+            if (varlist[VarFound].pnttyp != "word") {
+                writln(outf,"\tIXL\t\t; Load content *"+s);
+                writln(outf,"\tLIB\t0\t; Load 0 in HB"+s);
+            }
+            else {
+                writln(outf,"\tIXL\t\t; Load content LB *"+s);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tIXL\t\t; Load content HB *"+s);
+                writln(outf,"\tEXAB");
+            }
+        }
+        else {
+            // LIP
+            writln(outf,"\tSTP\t\t; Set P");
+            if (varlist[VarFound].pnttyp != "word") {
+                writln(outf,"\tLDM\t\t; Load content *"+s);
+            }
+            else {
+                writln(outf,"\tLDM\t\t; Load content LB *"+s);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tINCP");
+                writln(outf,"\tLDM\t\t; Load content HB *"+s);
+                writln(outf,"\tEXAB");
+            }
+        }
+    }
+    else
+    if (pointer == ptrADR) {
+        if (varlist[VarFound].xram) {
+            if (varlist[VarFound].address == -1) {
+                writln(outf,"\tLIA\tLB("+s+")\t; &"+s);
+                writln(outf,"\tLIB\tHB("+s+")\t; &"+s);
+            }
+            else {
+                writln(outf,tr("\tLIA\tLB(%1)\t; &").arg(varlist[VarFound].address)+s);
+                writln(outf,tr("\tLIB\tHB(%1)\t; &").arg(varlist[VarFound].address)+s);
+            }
+        }
+        else {
+            writln(outf,tr("\tLIA\t%1\t; &").arg(varlist[VarFound].address)+s);
+        }
+    }
+    else
+        LoadVariable(s);
+}
+
+void Clcc::LoadVariableArray(Cvar v) {
+
+    if ((v.typ=="char") || (v.typ=="byte")) {
+        if (!v.xram) {
+            writln(outf,tr("\tLIB\t%1").arg(v.address)+"\t; Load array element from "+v.varname);
+            writln(outf,"\tLP\t3");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tSTP");
+            writln(outf,"\tLDM");
+        }
+        else {
+            writln(outf,"\tPUSH\t\t; Load array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t5\t; HB of address");
+            if (v.address !=-1) {
+                writln(outf,tr("\tLIA\tHB(%1-1)").arg(v.address));
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP4\t; LB");
+                writln(outf,tr("\tLIA\tLB(%1-1)").arg(v.address));
+            }
+            else {
+                writln(outf,"\tLIA\tHB("+v.varname+"-1)");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t4\t; LB");
+                writln(outf,"\tLIA\tLB("+v.varname+"-1)");
+            }
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tIXL");
+        }
+    }
+    else {
+        if (!v.xram) {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,tr("\tLII\t%1").arg(v.address)+"\t; Store array element from "+v.varname);
+            writln(outf,"\tLP\t0");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tSTP");
+            writln(outf,"\tLDM");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tINCP");
+            writln(outf,"\tLDM");
+            writln(outf,"\tEXAB");
+        }
+        else {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,"\tPUSH\t\t; Load array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t5\t; HB of address");
+            if (v.address !=-1) {
+                writln(outf,tr("\tLIA\tHB(%1-1)").arg(v.address));
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t4\t; LB");
+                writln(outf,tr("\tLIA\tLB(%1-1)").arg(v.address));
+            }
+            else {
+                writln(outf,"\tLIA\tHB("+v.varname+"-1)");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t4\t; LB");
+                writln(outf,"\tLIA\tLB("+v.varname+"-1)");
+            }
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tIXL");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tIXL");
+            writln(outf,"\tEXAB");
+        }
+    }
+}
+
+#if 1
+/*!
+ \brief Load a Variable to the Primary Register
+
+ \fn Clcc::LoadVariable
+ \param name
+*/
+void Clcc::LoadVariable(QByteArray name) {
+
+    writln("LOG",";LoadVariable:"+name);
+    if (!FindVar(name)) Error("Variable not defined: "+name);
+
+    Cvar v = varlist.at(VarFound);
+
+    if (v.array) {
+        LoadVariableArray(v);
+    }
+    else {
+        if ((v.typ=="char") || (v.typ=="byte")) {
+            if (v.local) {
+                // Local char
+                writln(outf,"\tLDR");
+                writln(outf,tr("\tADIA\t%1").arg(v.address+2+pushcnt));
+                writln(outf,"\tSTP");
+                writln(outf,"\tLDM\t\t; Load variable "+v.varname);
+            }
+            else {
+                if (v.xram) {
+                    if (v.address !=-1) writln(outf,tr("\tLIDP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
+                    else writln(outf,"\tLIDP\t"+v.varname+"\t; Load variable "+v.varname);
+                    writln(outf,"\tLDD");
+                }
+                else {
+                    if (v.address < 64) writln(outf,tr("\tLP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
+                    else writln(outf,tr("\tLIP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
+                    writln(outf,"\tLDM");
+                }
+            }
+            if (isword) writln(outf,"\tLIB\t0");
+        }
+        else {
+            if (v.local) {
+                // Local word
+                writln(outf,"\tLDR");
+                writln(outf,tr("\tADIA\t%1").arg(v.address+1+pushcnt));
+                writln(outf,"\tSTP");
+                writln(outf,"\tLDM\t; HB - Load variable "+v.varname);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tINCP");
+                writln(outf,"\tLDM\t; LB");
+            }
+            else {
+                if (v.xram) {
+                    if (v.address != -1)
+                        writln(outf,tr("\tLIDP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
+                    else
+                        writln(outf,"\tLIDP\t"+v.varname+"+1\t; Load 16bit variable "+v.varname);
+
+                    writln(outf,"\tLDD\t\t; HB");
+                    writln(outf,"\tEXAB");
+                    if ((v.address != -1) && ((v.address + 1) / 256 == (v.address / 256))) {
+                        writln(outf,tr("\tLIDL\tLB(%1)").arg(v.address));
+                    }
+                    else {
+                        if (v.address !=-1) {
+                            writln(outf,tr("\tLIDP\t%1").arg(v.address));
+                        }
+                        else {
+                            writln(outf,"\tLIDP\t"+v.varname);
+                        }
+                    }
+                    writln(outf,"\tLDD\t\t; LB");
+                }
+                else {
+                    if (v.address < 64) writln(outf,tr("\tLP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
+                    else writln(outf,tr("\tLIP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
+                    writln(outf,"\tLDM\t\t; HB");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tDECP\t\t; LB");
+                    writln(outf,"\tLDM");
+                }
+            }
+        }
+    }
+}
+
+#else
+void Clcc::LoadVariable(QByteArray name) {
+    QByteArray typ;
+    bool xram,arr,local,pnt;
+    int adr;
+
+    writln("LOG",";LoadVariable:"+name);
+    if (!FindVar(name)) Error("Variable not defined: "+name);
+    typ = varlist[VarFound].typ;
+    adr = varlist[VarFound].address;
+    local = varlist[VarFound].local;
+    arr = varlist[VarFound].array;
+    xram = varlist[VarFound].xram;
+    pnt = varlist.at(VarFound).pointer;
+    Cvar v = varlist.at(VarFound);
+
+    if (! arr) {
+        if ((typ=="char") || (typ=="byte")) {
+            if (!xram) {
+                if (!local) {
+                    if (adr < 64) writln(outf,tr("\tLP\t%1").arg(adr)+"\t; Load variable "+name);
+                    else writln(outf,tr("\tLIP\t%1").arg(adr)+"\t; Load variable "+name);
+                    writln(outf,"\tLDM");
+                }
+                else {// Local char
+                    writln(outf,"\tLDR");
+                    writln(outf,tr("\tADIA\t%1").arg(adr+2+pushcnt));
+                    writln(outf,"\tSTP");
+                    writln(outf,"\tLDM\t\t; Load variable "+name);
+                }
+            }
+            else {
+                if (adr !=-1) writln(outf,tr("\tLIDP\t%1").arg(adr)+"\t; Load variable "+name);
+                else writln(outf,"\tLIDP\t"+name+"\t; Load variable "+name);
+                writln(outf,"\tLDD");
+            }
+            if (isword) writln(outf,"\tLIB\t0");
+        }
+        else {
+            if (!xram) {
+                if (!local) {
+                    if (adr < 64) writln(outf,tr("\tLP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
+                    else writln(outf,tr("\tLIP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
+                    writln(outf,"\tLDM\t\t; HB");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tDECP\t\t; LB");
+                    writln(outf,"\tLDM");
+                }
+                else {// Local word
+                    writln(outf,"\tLDR");
+                    writln(outf,tr("\tADIA\t%1").arg(adr+1+pushcnt));
+                    writln(outf,"\tSTP");
+                    writln(outf,"\tLDM\t; HB - Load variable "+name);
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tINCP");
+                    writln(outf,"\tLDM\t; LB");
+                }
+            }
+            else {
+                if (adr != -1) writln(outf,tr("\tLIDP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
+                else writln(outf,"\tLIDP\t"+name+"+1\t; Load 16bit variable "+name);
+                writln(outf,"\tLDD\t\t; HB");
+                writln(outf,"\tEXAB");
+                if ((adr != -1) && ((adr + 1) / 256 == (adr / 256)))
+                    writln(outf,tr("\tLIDL\tLB(%1)").arg(adr));
+                else if (adr !=-1) writln(outf,tr("\tLIDP\t%1").arg(adr));
+                else writln(outf,"\tLIDP\t"+name);
+                writln(outf,"\tLDD\t\t; LB");
+            }
+        }
+    }
+    else {
+
+        if ((typ=="char") || (typ=="byte")) {
+            if (!xram) {
+                writln(outf,tr("\tLIB\t%1").arg(adr)+"\t; Load array element from "+name);
+                writln(outf,"\tLP\t3");
+                writln(outf,"\tADM");
+                writln(outf,"\tEXAB");
+                writln(outf,"\tSTP");
+                writln(outf,"\tLDM");
+            }
+            else {
+                writln(outf,"\tPUSH\t\t; Load array element from "+name); pushcnt++;
+                writln(outf,"\tLP\t5\t; HB of address");
+                if (adr !=-1) {
+                    writln(outf,tr("\tLIA\tHB(%1-1)").arg(adr));
+                    writln(outf,"\tEXAM");
+                    writln(outf,"\tLP4\t; LB");
+                    writln(outf,tr("\tLIA\tLB(%1-1)").arg(adr));
+                }
+                else {
+                    writln(outf,"\tLIA\tHB("+name+"-1)");
+                    writln(outf,"\tEXAM");
+                    writln(outf,"\tLP\t4\t; LB");
+                    writln(outf,"\tLIA\tLB("+name+"-1)");
+                }
+                writln(outf,"\tEXAM");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tLIB\t0");
+                writln(outf,"\tADB");
+                writln(outf,"\tIXL");
+            }
+        }
+        else {
+            if (!xram) {
+                writln(outf,"\tRC");
+                writln(outf,"\tSL");
+                writln(outf,tr("\tLII\t%1").arg(adr)+"\t; Store array element from "+name);
+                writln(outf,"\tLP\t0");
+                writln(outf,"\tADM");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tSTP");
+                writln(outf,"\tLDM");
+                writln(outf,"\tEXAB");
+                writln(outf,"\tINCP");
+                writln(outf,"\tLDM");
+                writln(outf,"\tEXAB");
+            }
+            else {
+                writln(outf,"\tRC");
+                writln(outf,"\tSL");
+                writln(outf,"\tPUSH\t\t; Load array element from "+name); pushcnt++;
+                writln(outf,"\tLP\t5\t; HB of address");
+                if (adr !=-1) {
+                    writln(outf,tr("\tLIA\tHB(%1-1)").arg(adr));
+                    writln(outf,"\tEXAM");
+                    writln(outf,"\tLP\t4\t; LB");
+                    writln(outf,tr("\tLIA\tLB(%1-1)").arg(adr));
+                }
+                else {
+                    writln(outf,"\tLIA\tHB("+name+"-1)");
+                    writln(outf,"\tEXAM");
+                    writln(outf,"\tLP\t4\t; LB");
+                    writln(outf,"\tLIA\tLB("+name+"-1)");
+                }
+                writln(outf,"\tEXAM");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tLIB\t0");
+                writln(outf,"\tADB");
+                writln(outf,"\tIXL");
+                writln(outf,"\tEXAB");
+                writln(outf,"\tIXL");
+                writln(outf,"\tEXAB");
+            }
+        }
+    }
+}
+
+
+#endif
+
+void Clcc::StoreVariableArray(Cvar v) {
+
+    if ((v.typ=="char") || (v.typ=="byte"))
+    {
+        if (!v.xram)
+        {
+            writln(outf,"\tLIB\t"+QByteArray::number(v.address)+"\t; Store array element from "+v.varname);
+            writln(outf,"\tLP\t3");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tSTP");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAM");
+        }
+        else
+        {
+            writln(outf,"\tPUSH\t\t; Store array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t7\t; HB of address");
+
+            writln(outf,"\tLIA\tHB("+v.getLabel()+"-1)");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tLP\t6\t; LB");
+            writln(outf,"\tLIA\tLB("+v.getLabel()+"-1)");
+
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tIYS");
+        }
+    }
+    else
+    {
+        if (!v.xram)
+        {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,"\tLII\t"+QByteArray::number(v.address)+"\t; Store array element from "+v.varname);
+            writln(outf,"\tLP\t0");
+            writln(outf,"\tADM");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tSTP");
+            writln(outf,"\tINCP");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAM");
+            writln(outf,"\tDECP");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAM");
+        }
+        else
+        {
+            writln(outf,"\tRC");
+            writln(outf,"\tSL");
+            writln(outf,"\tPUSH\t _t; Store array element from "+v.varname); pushcnt++;
+            writln(outf,"\tLP\t7\t; HB of address");
+
+            writln(outf,"\tLIA\tHB("+v.getLabel()+"-1)");
+            writln(outf,"\tEXAM");
+            writln(outf,"\tLP\t6\t; LB");
+            writln(outf,"\tLIA\tLB("+v.getLabel()+"-1)");
+
+            writln(outf,"\tEXAM");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tLIB\t0");
+            writln(outf,"\tADB");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tEXAB");
+            writln(outf,"\tPOP"); pushcnt--;
+            writln(outf,"\tIYS");
+            writln(outf,"\tEXAB");
+            writln(outf,"\tIYS");
+        }
+    }
+}
+
+/*!
+ \brief Store the Primary Register to a Variable
+
+ \fn Clcc::StoreVariable
+ \param name
+*/
+#if 1
+void Clcc::StoreVariable(QByteArray name) {
+
+    Cvar var;
+
+    if (sourceinASM) writln(outf,"\t; StoreVariable : "+name);
+    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); return;}
+    var = varlist.at(VarFound);
+
+    if (var.array) {
+        StoreVariableArray(var);
+    }
+    else {
+        if ( (var.typ=="char") || (var.typ=="byte") ) {
+            if (var.xram) {
+                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store result in "+var.varname);
+                writln(outf,"\tSTD");
+            }
+            else {
+                if (var.local) {
+                    // Local char
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tLDR");
+                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
+                    writln(outf,"\tSTP");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tEXAM\t\t; Store result in "+var.varname);
+                }
+                else {
+                    if (var.address <= 63) {
+                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
+                    }
+                    else {
+                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
+                    }
+                    writln(outf,"\tEXAM");
+                }
+            }
+        }
+        else {
+            if (var.local) {
+                // Local word
+                writln(outf,"\tPUSH"); pushcnt++;
+                writln(outf,"\tLDR");
+                writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
+                writln(outf,"\tSTP");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
+                writln(outf,"\tEXAB");
+                writln(outf,"\tDECP");
+                writln(outf,"\tEXAM\t; HB");
+            }
+            else {
+                if (var.xram) {
+                    writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store 16bit variable "+var.varname);
+                    writln(outf,"\tSTD\t\t; LB");
+                    writln(outf,"\tEXAB");
+                    if ( (var.address>=0) &&
+                         ( ((var.address + 1) / 256) == (var.address / 256) ) ) {
+                        writln(outf,"\tLIDL\tLB("+QByteArray::number(var.address)+"+1)");
+                    }
+                    else  {
+                        writln(outf,"\tLIDP\t"+ var.getLabel()+"+1");
+                    }
+                    writln(outf,"\tSTD\t\t; HB");
+                }
+                else {
+                    // non local, non xram
+                    if (var.address < 64) {
+                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
+                    }
+                    else {
+                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
+                    }
+                    writln(outf,"\tEXAM\t\t; LB");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tINCP\t\t; HB");
+                    writln(outf,"\tEXAM");
+                }
+            }
+        }
+    }
+
+}
+#else
+void Clcc::StoreVariable(QByteArray name) {
+
+    Cvar var;
+
+    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
+    var = varlist.at(VarFound);
+
+    if (!var.array) {
+        if ( (var.typ=="char") || (var.typ=="byte") ) {
+            if (! var.xram) {
+                if (!var.local) {
+                    if (var.address <= 63) {
+                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
+                    }
+                    else {
+                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
+                    }
+                    writln(outf,"\tEXAM");
+                }
+                else {
+                    // Local char
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tLDR");
+                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
+                    writln(outf,"\tSTP");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tEXAM\t\t; Store result in "+var.varname);
+                }
+            }
+            else {
+                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store result in "+var.varname);
+                writln(outf,"\tSTD");
+            }
+        }
+        else {
+            if (!var.xram) {
+                if (!var.local) {
+                    if (var.address < 64) {
+                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
+                    }
+                    else {
+                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
+                    }
+                    writln(outf,"\tEXAM\t\t; LB");
+                    writln(outf,"\tEXAB");
+                    writln(outf,"\tINCP\t\t; HB");
+                    writln(outf,"\tEXAM");
+                }
+                else {
+                // Local word
+                    writln(outf,"\tPUSH"); pushcnt++;
+                    writln(outf,"\tLDR");
+                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
+                    writln(outf,"\tSTP");
+                    writln(outf,"\tPOP"); pushcnt--;
+                    writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
+                    writln(outf,"\tEXAB");
+                    //FIXME: ???? INCP or DECP
+                    writln(outf,"\tDECP");
+                    writln(outf,"\tEXAM\t; HB");
+                    //writln(outf,"\tEXAB");
+                }
+            }
+            else {
+                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store 16bit variable "+var.varname);
+                writln(outf,"\tSTD\t\t; LB");
+                writln(outf,"\tEXAB");
+                if ( var.address &&
+                     ( ((var.address + 1) / 256) == (var.address / 256) ) ) {
+                     writln(outf,"\tLIDL\tLB("+QByteArray::number(var.address)+"+1)");
+                }
+                else  {
+                    writln(outf,"\tLIDP\t"+ var.getLabel()+"+1");
+                }
+                writln(outf,"\tSTD\t\t; HB");
+            }
+        }
+    }
+    else {
+        if ((var.typ=="char") || (var.typ=="byte"))
+        {
+            if (!var.xram)
+            {
+                writln(outf,"\tLIB\t"+QByteArray::number(var.address)+"\t; Store array element from "+var.varname);
+                writln(outf,"\tLP\t3");
+                writln(outf,"\tADM");
+                writln(outf,"\tEXAB");
+                writln(outf,"\tSTP");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tEXAM");
+            }
+            else
+            {
+                writln(outf,"\tPUSH\t\t; Store array element from "+var.varname); pushcnt++;
+                writln(outf,"\tLP\t7\t; HB of address");
+
+                writln(outf,"\tLIA\tHB("+var.getLabel()+"-1)");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t6\t; LB");
+                writln(outf,"\tLIA\tLB("+var.getLabel()+"-1)");
+
+                writln(outf,"\tEXAM");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tLIB\t0");
+                writln(outf,"\tADB");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tIYS");
+            }
+        }
+        else
+        {
+            if (!var.xram)
+            {
+                writln(outf,"\tRC");
+                writln(outf,"\tSL");
+                writln(outf,"\tLII\t"+QByteArray::number(var.address)+"\t; Store array element from "+var.varname);
+                writln(outf,"\tLP\t0");
+                writln(outf,"\tADM");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tSTP");
+                writln(outf,"\tINCP");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tEXAM");
+                writln(outf,"\tDECP");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tEXAM");
+            }
+            else
+            {
+                writln(outf,"\tRC");
+                writln(outf,"\tSL");
+                writln(outf,"\tPUSH\t _t; Store array element from "+var.varname); pushcnt++;
+                writln(outf,"\tLP\t7\t; HB of address");
+
+                writln(outf,"\tLIA\tHB("+var.getLabel()+"-1)");
+                writln(outf,"\tEXAM");
+                writln(outf,"\tLP\t6\t; LB");
+                writln(outf,"\tLIA\tLB("+var.getLabel()+"-1)");
+
+                writln(outf,"\tEXAM");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tLIB\t0");
+                writln(outf,"\tADB");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tEXAB");
+                writln(outf,"\tPOP"); pushcnt--;
+                writln(outf,"\tIYS");
+                writln(outf,"\tEXAB");
+                writln(outf,"\tIYS");
+            }
+        }
+    }
+}
+#endif
 
 
 //{--------------------------------------------------------------}

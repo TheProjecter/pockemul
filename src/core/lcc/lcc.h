@@ -131,6 +131,9 @@ public:
 class Clcc : public QObject{
     Q_OBJECT
 public:
+
+    enum OP_STD { OP_RTN,OP_JP};
+
     Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool showErrors=true);
 
 
@@ -166,8 +169,8 @@ public:
     bool FindVar(QByteArray t);
     bool FindVarCurrProc(QByteArray t);
     bool FindProc(QByteArray t);
-    void AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc);
-    void AddProc(QByteArray t, QByteArray c, QByteArray p, int pc, bool hr, bool wd,QList<QByteArray> partype,QList<QByteArray> parname);
+    bool AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc);
+    bool AddProc(QByteArray t, QByteArray c, QByteArray p, int pc, bool hr, bool wd,QList<QByteArray> partype,QList<QByteArray> parname);
 
     QMap<QString,QByteArray> *sources;
     QMap<QString,QByteArray> *out;
@@ -277,6 +280,8 @@ public:
 
 public:
 
+    QMap<OP_STD,QString> stdOp;
+
     QList<Cvar> varlist;
     QList<Cproc> proclist;
 
@@ -335,6 +340,8 @@ public:
 
 
     bool ExpressionType(QByteArray e);
+    void save();
+    void restore();
 signals:
     void outputSignal(QString,QString);
 
@@ -347,6 +354,9 @@ class ClccPC1500: public Clcc {
 
     virtual void DoSaveState(void);
     virtual void DoRestoreState(void);
+
+    void save();
+    void restore();
 };
 
 #endif // LCC_H

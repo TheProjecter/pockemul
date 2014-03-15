@@ -256,6 +256,8 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool 
     libname[CPGE16] = "cpge16";
 
 //    cg = new Clcg("outputasm");
+
+    stdOp[OP_RTN]="RTN";
 }
 
 
@@ -377,21 +379,7 @@ bool Clcc::FindProc(QByteArray t) {
  \param t
  \return bool
 */
-//TODO Ajouter la possibilité d'avoir plusieurs variables de meme nom dans des contextes différents
-#if 0
-bool Clcc::FindVar(QByteArray t) {
-    bool result = false;
-    for (int i = 0 ; i< varlist.size(); i++) {
-        if (varlist.at(i).varname.toLower()== t.toLower()) {
 
-            result = true;
-            VarFound = i;
-            return result;
-        }
-    }
-    return result;
-}
-#else
 bool Clcc::FindVarCurrProc(QByteArray t) {
     bool result = false;
     for (int i = 0 ; i< varlist.size(); i++) {
@@ -423,7 +411,7 @@ bool Clcc::FindVar(QByteArray t) {
     }
     return result;
 }
-#endif
+
 /*{--------------------------------------------------------------}
 {  }
 */
@@ -558,14 +546,11 @@ void Clcc::printproclist(QString out) {
 */
 QByteArray Clcc::vardecl(void) {
 
-//var Name, Typ, t: string;
-//    xr, p, l: boolean;
     QByteArray t="";
     QByteArray Typ="";
     QByteArray result="";
     bool p,xr,l;
     QByteArray locname="";
-
 
     locname = ExtrWord(&Tok);
     Typ = locname;
@@ -592,8 +577,7 @@ QByteArray Clcc::vardecl(void) {
         }
         if (t.size()>0) locname.append(" " + t);
         l = (level==0 ? false : true);
-        //result.append(name);
-        //if l then varlist[varcount].locproc := currproc;
+
         AddVar(locname, Typ, xr, p, l,(l?currproc:-1));  // Global var definition
     }
     while (Tok.size() >0);
@@ -614,7 +598,7 @@ QByteArray Clcc::vardecl(void) {
  \param partyp
  \param parname
 */
-void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, bool wd,QList<QByteArray> partyp,QList<QByteArray> parname) {
+bool Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, bool wd,QList<QByteArray> partyp,QList<QByteArray> parname) {
 
     QByteArray s = ExtrWord(&t);
     if (! FindProc(s)) {
@@ -632,8 +616,12 @@ void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, 
         proccount++;
         //                writeln('Proc add: NAME: ' + s);
     }
-    else
+    else {
         if (showErrors) QMessageBox::about(mainwindow,"ERROR","Procedure already declared: " + s);
+        return false;
+    }
+
+    return true;
 }
 
 //{ Add Variable Declaration }
@@ -649,150 +637,163 @@ void Clcc::AddProc(QByteArray t, QByteArray c, QByteArray par, int pc, bool hr, 
  \param loc
  \param proc
 */
-void Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc) {
+bool Clcc::AddVar(QByteArray t,QByteArray typ, bool xr, bool pnt, bool loc,int proc) {
 
     QByteArray litem;
     QByteArray s = ExtrWord(&t);
     // Test if var still exist
-    if (! FindVarCurrProc(s)) {
-        Cvar v;
-        v.varname = s;
-        v.pointer = pnt;
-        v.xram = xr;
-        v.local = loc;
-        v.locproc = proc;
-        v.typ = typ;
-        if (pnt) {
-            v.pnttyp = typ;
-            v.typ = (xr ? "word" : "byte");
-        }
+    if (FindVarCurrProc(s))
+    {
+        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable already declared: " + s);
+        return false;
+    }
 
-        if ((typ == "byte") || (typ == "char")) v.size = 1;
-        else if (typ == "word") v.size = 2;
 
-        v.array = false;
-        if (t.startsWith('[')) {
+    Cvar v;
+    v.varname = s;
+    v.pointer = pnt;
+    v.xram = xr;
+    v.local = loc;
+    v.locproc = proc;
+    v.typ = typ;
+    if (pnt) {
+        v.pnttyp = typ;
+        v.typ = (xr ? "word" : "byte");
+    }
 
-            QByteArray s = ExtrCust(&t, ']');
-            //if s[1] <> '[' then Expected('[size]");
-            if (s=="[") {
-                v.size  = 0;
-            }
-            else {
-                s.remove(0,1);
-                int arraysize = mathparse(s, 16);
-                if (arraysize >= 256) if (showErrors) QMessageBox::about(mainwindow,"ERROR","Array too big! 256 bytes max.");
-                v.size = arraysize;
-            }
-            v.array = true;
-        }
-        v.at = false;
+    if ((typ == "byte") || (typ == "char")) v.size = 1;
+    else if (typ == "word") v.size = 2;
 
-        //s := ExtrWord(t);
-        if (!loc) {
-            if (t.startsWith("at")) {
-                if (loc) {
-                    if (showErrors) QMessageBox::about(mainwindow,"ERROR","Local vars can't have 'at' assignments!");
-                }
-                s = ExtrWord(&t);
-                if (t.indexOf('=') >= 0) {
-                    s = ExtrCust(&t, '=');
-                    if (t.startsWith('(')) t = " " + t;
-                    t = "=" + t;
-                }
-                else s = t;
-                //val(s, temp, c);
-                int temp = mathparse(s, 16);
-                if (temp > 95) xr = true;
-                v.xram = xr;
-                v.at = true;
-                v.address = temp;
-                if (pnt) {
-                    if (xr) {
-                        v.typ = "word";
-                        v.size = 2;
-                    }
-                    else {
-                        v.typ = "byte";
-                        v.size = 1;
-                    }
-                }
-                AllocVar(xr, true, v.size, temp);
-                    //s := ExtrWord(t);
-            }
-            else {
-                if (typ == "word")
-                    v.address = AllocVar(xr, v.at, v.size * 2, -1);
-                else
-                    v.address = AllocVar(xr, v.at, v.size, -1);
-            }
-            if (t.startsWith('=')) {
-                if (loc) if (showErrors) QMessageBox::about(mainwindow,"ERROR","Local vars cant have init values!");
-                if (pnt) if (showErrors) QMessageBox::about(mainwindow,"ERROR","pointers cant have init values!");
-                t.remove(0,1);
-                if (v.array && (typ == "char") ) {
-                    t.remove(0,1);
-                    t.remove(t.length()-1,1);
-                    for (int i=0;i<t.length();i++) v.inits.append(t[i]);
-                    if (v.size == 0) {
-                        v.size = t.length()+1;
-                        v.inits.append(QChar(0));
-                    }
-                    if (v.size != (t.length()+1)) {
-                        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Array size different from initial value size");
-                    }
-                    v.initn = 0;
-                }
-                else if (v.array && (typ == "byte") ) {
-                    t.remove(0,2);
-                    t.remove(t.length()-1,1);
-                    t = t + ',';
-                    while ((litem = ExtrList(&t)) != "") {
-                        v.inits.append((char)mathparse(litem, 8));
-                    }
-                    v.initn = 0;
-                }
-                else if (v.array && (typ == "word")) {
-                    t.remove(0,2);
-                    t.remove(t.length()-1,1);//delete(t, length(t), 1);
-                    t = t + ',';
-                    while ((litem = ExtrList(&t)) != "") {
-                        v.inits.append((char)mathparse(litem+"/256", 8));
-                        v.inits.append((char)mathparse(litem+"%256", 8));
-                    //val(litem, temp, c);
-                    //VarList[VarCount].inits := VarList[VarCount].inits + chr(temp div 256) + chr(temp mod 256);
-                    }
-                    v.initn = 0;
-                }
-                else
-                                //val(t, VarList[VarCount].initn, temp);
-                    v.initn = mathparse(t, 16);
-            }
-            else
-                v.initn = -1;
+    v.array = false;
+    if (t.startsWith('[')) {
 
+        QByteArray s = ExtrCust(&t, ']');
+        if (s=="[") {
+            v.size  = 0;
         }
         else {
-            v.initn = -1;
-            if (! procd) {
-                proclist[currproc].LocName.append(v.varname);
-                proclist[currproc].LocTyp.append(v.typ);
-                proclist[currproc].LocCnt++;
-
+            s.remove(0,1);
+            int arraysize = mathparse(s, 16);
+            if (arraysize >= 256) {
+                if (showErrors) QMessageBox::about(mainwindow,"ERROR","Array too big! 256 bytes max.");
+                return false;
             }
+            v.size = arraysize;
         }
+        v.array = true;
+    }
 
-        VarCount++;
+    v.at = false;
+    if (!loc) {
+        if (t.startsWith("at")) {
+            if (loc) {
+                if (showErrors) QMessageBox::about(mainwindow,"ERROR","Local vars can't have 'at' assignments!");
+                return false;
+            }
+            s = ExtrWord(&t);
+            if (t.indexOf('=') >= 0) {
+                s = ExtrCust(&t, '=');
+                if (t.startsWith('(')) t = " " + t;
+                t = "=" + t;
+            }
+            else s = t;
+            //val(s, temp, c);
+            int temp = mathparse(s, 16);
+            if (temp > 95) xr = true;
+            v.xram = xr;
+            v.at = true;
+            v.address = temp;
+            if (pnt) {
+                if (xr) {
+                    v.typ = "word";
+                    v.size = 2;
+                }
+                else {
+                    v.typ = "byte";
+                    v.size = 1;
+                }
+            }
+            AllocVar(xr, true, v.size, temp);
+            //s := ExtrWord(t);
+        }
+        else {
+            if (typ == "word")
+                v.address = AllocVar(xr, v.at, v.size * 2, -1);
+            else
+                v.address = AllocVar(xr, v.at, v.size, -1);
+        }
+        if (t.startsWith('=')) {
+            if (loc) {
+                if (showErrors) QMessageBox::about(mainwindow,"ERROR","Local vars cant have init values!");
+                return false;
+            }
+            if (pnt) {
+                if (showErrors) QMessageBox::about(mainwindow,"ERROR","pointers cant have init values!");
+                return false;
+            }
+            t.remove(0,1);
+            if (v.array && (typ == "char") ) {
+                t.remove(0,1);
+                t.remove(t.length()-1,1);
+                for (int i=0;i<t.length();i++) v.inits.append(t[i]);
+                if (v.size == 0) {
+                    v.size = t.length()+1;
+                    v.inits.append(QChar(0));
+                }
+                if (v.size != (t.length()+1)) {
+                    if (showErrors) QMessageBox::about(mainwindow,"ERROR","Array size different from initial value size");
+                    return false;
+                }
+                v.initn = 0;
+            }
+            else if (v.array && (typ == "byte") ) {
+                t.remove(0,2);
+                t.remove(t.length()-1,1);
+                t = t + ',';
+                while ((litem = ExtrList(&t)) != "") {
+                    v.inits.append((char)mathparse(litem, 8));
+                }
+                v.initn = 0;
+            }
+            else if (v.array && (typ == "word")) {
+                t.remove(0,2);
+                t.remove(t.length()-1,1);//delete(t, length(t), 1);
+                t = t + ',';
+                while ((litem = ExtrList(&t)) != "") {
+                    v.inits.append((char)mathparse(litem+"/256", 8));
+                    v.inits.append((char)mathparse(litem+"%256", 8));
+                    //val(litem, temp, c);
+                    //VarList[VarCount].inits := VarList[VarCount].inits + chr(temp div 256) + chr(temp mod 256);
+                }
+                v.initn = 0;
+            }
+            else
+                //val(t, VarList[VarCount].initn, temp);
+                v.initn = mathparse(t, 16);
+        }
+        else
+            v.initn = -1;
 
-        varlist.append(v);
     }
     else {
-        if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable already declared: " + s);
+        v.initn = -1;
+        if (! procd) {
+            proclist[currproc].LocName.append(v.varname);
+            proclist[currproc].LocTyp.append(v.typ);
+            proclist[currproc].LocCnt++;
+
+        }
     }
+
+    VarCount++;
+
+    varlist.append(v);
+
+    return true;
 }
 
 
-//{  }
+
 
 /*!
  \brief Split String in Words
@@ -815,10 +816,10 @@ QByteArray Clcc::ExtrWord(QByteArray *word) {
             else c = word->at(0);
         }
         result = result + word->at(0);
-        word->remove(0,1);//delete(word, 1, 1);
+        word->remove(0,1);
     }
     if (!word->isEmpty())
-        if (SpacesList.contains(word->at(0))) word->remove(0,1);// delete(word, 1, 1);
+        if (SpacesList.contains(word->at(0))) word->remove(0,1);
     result = result.trimmed();
     //        if word[1] in ['[', '('] then
     //                word := word + ExtrWord(word);
@@ -1345,712 +1346,6 @@ bool isbin, ishex, ischr;
 }
 
 
-void Clcc::LoadVariableMain(QByteArray s) {
-
-    if (sourceinASM) writln(outf,"\t; LoadVariable : "+s);
-
-    if ( (pointer == ptrREF) || (pointer == ptrREFARR)) {
-        if (pointer == ptrREFARR) {
-            writln(outf,"\tPUSH\t\t; store the offset");pushcnt++;
-        }
-        LoadVariable(s);
-        if (! varlist[VarFound].pointer) Error("This var ("+s+") is not a pointer!");
-        if (varlist[VarFound].xram) {
-            writln(outf,"\tLP\t4\t; XL");
-            writln(outf,"\tEXAM");
-            writln(outf,"\tLP\t5\t; XH");
-            writln(outf,"\tEXAB");
-            writln(outf,"\tEXAM");
-            writln(outf,"\tDX");
-            if (pointer==ptrREFARR) {
-                // decalage
-                writln(outf,"\tPOP\t\t; retrieve index");pushcnt--;
-                writln(outf,"\tLP 4");
-                writln(outf,"\tLIB 0");
-                writln(outf,"\tADB");
-            }
-            if (varlist[VarFound].pnttyp != "word") {
-                writln(outf,"\tIXL\t\t; Load content *"+s);
-                writln(outf,"\tLIB\t0\t; Load 0 in HB"+s);
-            }
-            else {
-                writln(outf,"\tIXL\t\t; Load content LB *"+s);
-                writln(outf,"\tEXAB");
-                writln(outf,"\tIXL\t\t; Load content HB *"+s);
-                writln(outf,"\tEXAB");
-            }
-        }
-        else {
-            // LIP
-            writln(outf,"\tSTP\t\t; Set P");
-            if (varlist[VarFound].pnttyp != "word") {
-                writln(outf,"\tLDM\t\t; Load content *"+s);
-            }
-            else {
-                writln(outf,"\tLDM\t\t; Load content LB *"+s);
-                writln(outf,"\tEXAB");
-                writln(outf,"\tINCP");
-                writln(outf,"\tLDM\t\t; Load content HB *"+s);
-                writln(outf,"\tEXAB");
-            }
-        }
-    }
-    else
-    if (pointer == ptrADR) {
-        if (varlist[VarFound].xram) {
-            if (varlist[VarFound].address == -1) {
-                writln(outf,"\tLIA\tLB("+s+")\t; &"+s);
-                writln(outf,"\tLIB\tHB("+s+")\t; &"+s);
-            }
-            else {
-                writln(outf,tr("\tLIA\tLB(%1)\t; &").arg(varlist[VarFound].address)+s);
-                writln(outf,tr("\tLIB\tHB(%1)\t; &").arg(varlist[VarFound].address)+s);
-            }
-        }
-        else {
-            writln(outf,tr("\tLIA\t%1\t; &").arg(varlist[VarFound].address)+s);
-        }
-    }
-    else
-        LoadVariable(s);
-}
-
-void Clcc::LoadVariableArray(Cvar v) {
-
-    if ((v.typ=="char") || (v.typ=="byte")) {
-        if (!v.xram) {
-            writln(outf,tr("\tLIB\t%1").arg(v.address)+"\t; Load array element from "+v.varname);
-            writln(outf,"\tLP\t3");
-            writln(outf,"\tADM");
-            writln(outf,"\tEXAB");
-            writln(outf,"\tSTP");
-            writln(outf,"\tLDM");
-        }
-        else {
-            writln(outf,"\tPUSH\t\t; Load array element from "+v.varname); pushcnt++;
-            writln(outf,"\tLP\t5\t; HB of address");
-            if (v.address !=-1) {
-                writln(outf,tr("\tLIA\tHB(%1-1)").arg(v.address));
-                writln(outf,"\tEXAM");
-                writln(outf,"\tLP4\t; LB");
-                writln(outf,tr("\tLIA\tLB(%1-1)").arg(v.address));
-            }
-            else {
-                writln(outf,"\tLIA\tHB("+v.varname+"-1)");
-                writln(outf,"\tEXAM");
-                writln(outf,"\tLP\t4\t; LB");
-                writln(outf,"\tLIA\tLB("+v.varname+"-1)");
-            }
-            writln(outf,"\tEXAM");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tLIB\t0");
-            writln(outf,"\tADB");
-            writln(outf,"\tIXL");
-        }
-    }
-    else {
-        if (!v.xram) {
-            writln(outf,"\tRC");
-            writln(outf,"\tSL");
-            writln(outf,tr("\tLII\t%1").arg(v.address)+"\t; Store array element from "+v.varname);
-            writln(outf,"\tLP\t0");
-            writln(outf,"\tADM");
-            writln(outf,"\tEXAM");
-            writln(outf,"\tSTP");
-            writln(outf,"\tLDM");
-            writln(outf,"\tEXAB");
-            writln(outf,"\tINCP");
-            writln(outf,"\tLDM");
-            writln(outf,"\tEXAB");
-        }
-        else {
-            writln(outf,"\tRC");
-            writln(outf,"\tSL");
-            writln(outf,"\tPUSH\t\t; Load array element from "+v.varname); pushcnt++;
-            writln(outf,"\tLP\t5\t; HB of address");
-            if (v.address !=-1) {
-                writln(outf,tr("\tLIA\tHB(%1-1)").arg(v.address));
-                writln(outf,"\tEXAM");
-                writln(outf,"\tLP\t4\t; LB");
-                writln(outf,tr("\tLIA\tLB(%1-1)").arg(v.address));
-            }
-            else {
-                writln(outf,"\tLIA\tHB("+v.varname+"-1)");
-                writln(outf,"\tEXAM");
-                writln(outf,"\tLP\t4\t; LB");
-                writln(outf,"\tLIA\tLB("+v.varname+"-1)");
-            }
-            writln(outf,"\tEXAM");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tLIB\t0");
-            writln(outf,"\tADB");
-            writln(outf,"\tIXL");
-            writln(outf,"\tEXAB");
-            writln(outf,"\tIXL");
-            writln(outf,"\tEXAB");
-        }
-    }
-}
-
-#if 1
-/*!
- \brief Load a Variable to the Primary Register
-
- \fn Clcc::LoadVariable
- \param name
-*/
-void Clcc::LoadVariable(QByteArray name) {
-
-    writln("LOG",";LoadVariable:"+name);
-    if (!FindVar(name)) Error("Variable not defined: "+name);
-
-    Cvar v = varlist.at(VarFound);
-
-    if (v.array) {
-        LoadVariableArray(v);
-    }
-    else {
-        if ((v.typ=="char") || (v.typ=="byte")) {
-            if (v.local) {
-                // Local char
-                writln(outf,"\tLDR");
-                writln(outf,tr("\tADIA\t%1").arg(v.address+2+pushcnt));
-                writln(outf,"\tSTP");
-                writln(outf,"\tLDM\t\t; Load variable "+v.varname);
-            }
-            else {
-                if (v.xram) {
-                    if (v.address !=-1) writln(outf,tr("\tLIDP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
-                    else writln(outf,"\tLIDP\t"+v.varname+"\t; Load variable "+v.varname);
-                    writln(outf,"\tLDD");
-                }
-                else {
-                    if (v.address < 64) writln(outf,tr("\tLP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
-                    else writln(outf,tr("\tLIP\t%1").arg(v.address)+"\t; Load variable "+v.varname);
-                    writln(outf,"\tLDM");
-                }
-            }
-            if (isword) writln(outf,"\tLIB\t0");
-        }
-        else {
-            if (v.local) {
-                // Local word
-                writln(outf,"\tLDR");
-                writln(outf,tr("\tADIA\t%1").arg(v.address+1+pushcnt));
-                writln(outf,"\tSTP");
-                writln(outf,"\tLDM\t; HB - Load variable "+v.varname);
-                writln(outf,"\tEXAB");
-                writln(outf,"\tINCP");
-                writln(outf,"\tLDM\t; LB");
-            }
-            else {
-                if (v.xram) {
-                    if (v.address != -1)
-                        writln(outf,tr("\tLIDP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
-                    else
-                        writln(outf,"\tLIDP\t"+v.varname+"+1\t; Load 16bit variable "+v.varname);
-
-                    writln(outf,"\tLDD\t\t; HB");
-                    writln(outf,"\tEXAB");
-                    if ((v.address != -1) && ((v.address + 1) / 256 == (v.address / 256))) {
-                        writln(outf,tr("\tLIDL\tLB(%1)").arg(v.address));
-                    }
-                    else {
-                        if (v.address !=-1) {
-                            writln(outf,tr("\tLIDP\t%1").arg(v.address));
-                        }
-                        else {
-                            writln(outf,"\tLIDP\t"+v.varname);
-                        }
-                    }
-                    writln(outf,"\tLDD\t\t; LB");
-                }
-                else {
-                    if (v.address < 64) writln(outf,tr("\tLP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
-                    else writln(outf,tr("\tLIP\t%1").arg(v.address+1)+"\t; Load 16bit variable "+v.varname);
-                    writln(outf,"\tLDM\t\t; HB");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tDECP\t\t; LB");
-                    writln(outf,"\tLDM");
-                }
-            }
-        }
-    }
-}
-
-#else
-void Clcc::LoadVariable(QByteArray name) {
-    QByteArray typ;
-    bool xram,arr,local,pnt;
-    int adr;
-
-    writln("LOG",";LoadVariable:"+name);
-    if (!FindVar(name)) Error("Variable not defined: "+name);
-    typ = varlist[VarFound].typ;
-    adr = varlist[VarFound].address;
-    local = varlist[VarFound].local;
-    arr = varlist[VarFound].array;
-    xram = varlist[VarFound].xram;
-    pnt = varlist.at(VarFound).pointer;
-    Cvar v = varlist.at(VarFound);
-
-    if (! arr) {
-        if ((typ=="char") || (typ=="byte")) {
-            if (!xram) {
-                if (!local) {
-                    if (adr < 64) writln(outf,tr("\tLP\t%1").arg(adr)+"\t; Load variable "+name);
-                    else writln(outf,tr("\tLIP\t%1").arg(adr)+"\t; Load variable "+name);
-                    writln(outf,"\tLDM");
-                }
-                else {// Local char
-                    writln(outf,"\tLDR");
-                    writln(outf,tr("\tADIA\t%1").arg(adr+2+pushcnt));
-                    writln(outf,"\tSTP");
-                    writln(outf,"\tLDM\t\t; Load variable "+name);
-                }
-            }
-            else {
-                if (adr !=-1) writln(outf,tr("\tLIDP\t%1").arg(adr)+"\t; Load variable "+name);
-                else writln(outf,"\tLIDP\t"+name+"\t; Load variable "+name);
-                writln(outf,"\tLDD");
-            }
-            if (isword) writln(outf,"\tLIB\t0");
-        }
-        else {
-            if (!xram) {
-                if (!local) {
-                    if (adr < 64) writln(outf,tr("\tLP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
-                    else writln(outf,tr("\tLIP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
-                    writln(outf,"\tLDM\t\t; HB");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tDECP\t\t; LB");
-                    writln(outf,"\tLDM");
-                }
-                else {// Local word
-                    writln(outf,"\tLDR");
-                    writln(outf,tr("\tADIA\t%1").arg(adr+1+pushcnt));
-                    writln(outf,"\tSTP");
-                    writln(outf,"\tLDM\t; HB - Load variable "+name);
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tINCP");
-                    writln(outf,"\tLDM\t; LB");
-                }
-            }
-            else {
-                if (adr != -1) writln(outf,tr("\tLIDP\t%1").arg(adr+1)+"\t; Load 16bit variable "+name);
-                else writln(outf,"\tLIDP\t"+name+"+1\t; Load 16bit variable "+name);
-                writln(outf,"\tLDD\t\t; HB");
-                writln(outf,"\tEXAB");
-                if ((adr != -1) && ((adr + 1) / 256 == (adr / 256)))
-                    writln(outf,tr("\tLIDL\tLB(%1)").arg(adr));
-                else if (adr !=-1) writln(outf,tr("\tLIDP\t%1").arg(adr));
-                else writln(outf,"\tLIDP\t"+name);
-                writln(outf,"\tLDD\t\t; LB");
-            }
-        }
-    }
-    else {
-
-        if ((typ=="char") || (typ=="byte")) {
-            if (!xram) {
-                writln(outf,tr("\tLIB\t%1").arg(adr)+"\t; Load array element from "+name);
-                writln(outf,"\tLP\t3");
-                writln(outf,"\tADM");
-                writln(outf,"\tEXAB");
-                writln(outf,"\tSTP");
-                writln(outf,"\tLDM");
-            }
-            else {
-                writln(outf,"\tPUSH\t\t; Load array element from "+name); pushcnt++;
-                writln(outf,"\tLP\t5\t; HB of address");
-                if (adr !=-1) {
-                    writln(outf,tr("\tLIA\tHB(%1-1)").arg(adr));
-                    writln(outf,"\tEXAM");
-                    writln(outf,"\tLP4\t; LB");
-                    writln(outf,tr("\tLIA\tLB(%1-1)").arg(adr));
-                }
-                else {
-                    writln(outf,"\tLIA\tHB("+name+"-1)");
-                    writln(outf,"\tEXAM");
-                    writln(outf,"\tLP\t4\t; LB");
-                    writln(outf,"\tLIA\tLB("+name+"-1)");
-                }
-                writln(outf,"\tEXAM");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tLIB\t0");
-                writln(outf,"\tADB");
-                writln(outf,"\tIXL");
-            }
-        }
-        else {
-            if (!xram) {
-                writln(outf,"\tRC");
-                writln(outf,"\tSL");
-                writln(outf,tr("\tLII\t%1").arg(adr)+"\t; Store array element from "+name);
-                writln(outf,"\tLP\t0");
-                writln(outf,"\tADM");
-                writln(outf,"\tEXAM");
-                writln(outf,"\tSTP");
-                writln(outf,"\tLDM");
-                writln(outf,"\tEXAB");
-                writln(outf,"\tINCP");
-                writln(outf,"\tLDM");
-                writln(outf,"\tEXAB");
-            }
-            else {
-                writln(outf,"\tRC");
-                writln(outf,"\tSL");
-                writln(outf,"\tPUSH\t\t; Load array element from "+name); pushcnt++;
-                writln(outf,"\tLP\t5\t; HB of address");
-                if (adr !=-1) {
-                    writln(outf,tr("\tLIA\tHB(%1-1)").arg(adr));
-                    writln(outf,"\tEXAM");
-                    writln(outf,"\tLP\t4\t; LB");
-                    writln(outf,tr("\tLIA\tLB(%1-1)").arg(adr));
-                }
-                else {
-                    writln(outf,"\tLIA\tHB("+name+"-1)");
-                    writln(outf,"\tEXAM");
-                    writln(outf,"\tLP\t4\t; LB");
-                    writln(outf,"\tLIA\tLB("+name+"-1)");
-                }
-                writln(outf,"\tEXAM");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tLIB\t0");
-                writln(outf,"\tADB");
-                writln(outf,"\tIXL");
-                writln(outf,"\tEXAB");
-                writln(outf,"\tIXL");
-                writln(outf,"\tEXAB");
-            }
-        }
-    }
-}
-
-
-#endif
-
-void Clcc::StoreVariableArray(Cvar v) {
-
-    if ((v.typ=="char") || (v.typ=="byte"))
-    {
-        if (!v.xram)
-        {
-            writln(outf,"\tLIB\t"+QByteArray::number(v.address)+"\t; Store array element from "+v.varname);
-            writln(outf,"\tLP\t3");
-            writln(outf,"\tADM");
-            writln(outf,"\tEXAB");
-            writln(outf,"\tSTP");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tEXAM");
-        }
-        else
-        {
-            writln(outf,"\tPUSH\t\t; Store array element from "+v.varname); pushcnt++;
-            writln(outf,"\tLP\t7\t; HB of address");
-
-            writln(outf,"\tLIA\tHB("+v.getLabel()+"-1)");
-            writln(outf,"\tEXAM");
-            writln(outf,"\tLP\t6\t; LB");
-            writln(outf,"\tLIA\tLB("+v.getLabel()+"-1)");
-
-            writln(outf,"\tEXAM");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tLIB\t0");
-            writln(outf,"\tADB");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tIYS");
-        }
-    }
-    else
-    {
-        if (!v.xram)
-        {
-            writln(outf,"\tRC");
-            writln(outf,"\tSL");
-            writln(outf,"\tLII\t"+QByteArray::number(v.address)+"\t; Store array element from "+v.varname);
-            writln(outf,"\tLP\t0");
-            writln(outf,"\tADM");
-            writln(outf,"\tEXAM");
-            writln(outf,"\tSTP");
-            writln(outf,"\tINCP");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tEXAM");
-            writln(outf,"\tDECP");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tEXAM");
-        }
-        else
-        {
-            writln(outf,"\tRC");
-            writln(outf,"\tSL");
-            writln(outf,"\tPUSH\t _t; Store array element from "+v.varname); pushcnt++;
-            writln(outf,"\tLP\t7\t; HB of address");
-
-            writln(outf,"\tLIA\tHB("+v.getLabel()+"-1)");
-            writln(outf,"\tEXAM");
-            writln(outf,"\tLP\t6\t; LB");
-            writln(outf,"\tLIA\tLB("+v.getLabel()+"-1)");
-
-            writln(outf,"\tEXAM");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tLIB\t0");
-            writln(outf,"\tADB");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tEXAB");
-            writln(outf,"\tPOP"); pushcnt--;
-            writln(outf,"\tIYS");
-            writln(outf,"\tEXAB");
-            writln(outf,"\tIYS");
-        }
-    }
-}
-
-/*!
- \brief Store the Primary Register to a Variable
-
- \fn Clcc::StoreVariable
- \param name
-*/
-#if 1
-void Clcc::StoreVariable(QByteArray name) {
-
-    Cvar var;
-
-    if (sourceinASM) writln(outf,"\t; StoreVariable : "+name);
-    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); return;}
-    var = varlist.at(VarFound);
-
-    if (var.array) {
-        StoreVariableArray(var);
-    }
-    else {
-        if ( (var.typ=="char") || (var.typ=="byte") ) {
-            if (var.xram) {
-                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store result in "+var.varname);
-                writln(outf,"\tSTD");
-            }
-            else {
-                if (var.local) {
-                    // Local char
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tLDR");
-                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
-                    writln(outf,"\tSTP");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tEXAM\t\t; Store result in "+var.varname);
-                }
-                else {
-                    if (var.address <= 63) {
-                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
-                    }
-                    else {
-                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
-                    }
-                    writln(outf,"\tEXAM");
-                }
-            }
-        }
-        else {
-            if (var.local) {
-                // Local word
-                writln(outf,"\tPUSH"); pushcnt++;
-                writln(outf,"\tLDR");
-                writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
-                writln(outf,"\tSTP");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
-                writln(outf,"\tEXAB");
-                writln(outf,"\tDECP");
-                writln(outf,"\tEXAM\t; HB");
-            }
-            else {
-                if (var.xram) {
-                    writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store 16bit variable "+var.varname);
-                    writln(outf,"\tSTD\t\t; LB");
-                    writln(outf,"\tEXAB");
-                    if ( (var.address>=0) &&
-                         ( ((var.address + 1) / 256) == (var.address / 256) ) ) {
-                        writln(outf,"\tLIDL\tLB("+QByteArray::number(var.address)+"+1)");
-                    }
-                    else  {
-                        writln(outf,"\tLIDP\t"+ var.getLabel()+"+1");
-                    }
-                    writln(outf,"\tSTD\t\t; HB");
-                }
-                else {
-                    // non local, non xram
-                    if (var.address < 64) {
-                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
-                    }
-                    else {
-                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
-                    }
-                    writln(outf,"\tEXAM\t\t; LB");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tINCP\t\t; HB");
-                    writln(outf,"\tEXAM");
-                }
-            }
-        }
-    }
-
-}
-#else
-void Clcc::StoreVariable(QByteArray name) {
-
-    Cvar var;
-
-    if (! FindVar(name)) { if (showErrors) QMessageBox::about(mainwindow,"ERROR","Variable not defined: "+name); }
-    var = varlist.at(VarFound);
-
-    if (!var.array) {
-        if ( (var.typ=="char") || (var.typ=="byte") ) {
-            if (! var.xram) {
-                if (!var.local) {
-                    if (var.address <= 63) {
-                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
-                    }
-                    else {
-                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store result in "+var.varname);
-                    }
-                    writln(outf,"\tEXAM");
-                }
-                else {
-                    // Local char
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tLDR");
-                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
-                    writln(outf,"\tSTP");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tEXAM\t\t; Store result in "+var.varname);
-                }
-            }
-            else {
-                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store result in "+var.varname);
-                writln(outf,"\tSTD");
-            }
-        }
-        else {
-            if (!var.xram) {
-                if (!var.local) {
-                    if (var.address < 64) {
-                        writln(outf,"\tLP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
-                    }
-                    else {
-                        writln(outf,"\tLIP\t"+QByteArray::number(var.address)+"\t; Store 16bit variable "+var.varname);
-                    }
-                    writln(outf,"\tEXAM\t\t; LB");
-                    writln(outf,"\tEXAB");
-                    writln(outf,"\tINCP\t\t; HB");
-                    writln(outf,"\tEXAM");
-                }
-                else {
-                // Local word
-                    writln(outf,"\tPUSH"); pushcnt++;
-                    writln(outf,"\tLDR");
-                    writln(outf,"\tADIA\t"+QByteArray::number(var.address+2+pushcnt));
-                    writln(outf,"\tSTP");
-                    writln(outf,"\tPOP"); pushcnt--;
-                    writln(outf,"\tEXAM\t; LB - Store result in "+var.varname);
-                    writln(outf,"\tEXAB");
-                    //FIXME: ???? INCP or DECP
-                    writln(outf,"\tDECP");
-                    writln(outf,"\tEXAM\t; HB");
-                    //writln(outf,"\tEXAB");
-                }
-            }
-            else {
-                writln(outf,"\tLIDP\t"+var.getLabel()+"\t; Store 16bit variable "+var.varname);
-                writln(outf,"\tSTD\t\t; LB");
-                writln(outf,"\tEXAB");
-                if ( var.address &&
-                     ( ((var.address + 1) / 256) == (var.address / 256) ) ) {
-                     writln(outf,"\tLIDL\tLB("+QByteArray::number(var.address)+"+1)");
-                }
-                else  {
-                    writln(outf,"\tLIDP\t"+ var.getLabel()+"+1");
-                }
-                writln(outf,"\tSTD\t\t; HB");
-            }
-        }
-    }
-    else {
-        if ((var.typ=="char") || (var.typ=="byte"))
-        {
-            if (!var.xram)
-            {
-                writln(outf,"\tLIB\t"+QByteArray::number(var.address)+"\t; Store array element from "+var.varname);
-                writln(outf,"\tLP\t3");
-                writln(outf,"\tADM");
-                writln(outf,"\tEXAB");
-                writln(outf,"\tSTP");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tEXAM");
-            }
-            else
-            {
-                writln(outf,"\tPUSH\t\t; Store array element from "+var.varname); pushcnt++;
-                writln(outf,"\tLP\t7\t; HB of address");
-
-                writln(outf,"\tLIA\tHB("+var.getLabel()+"-1)");
-                writln(outf,"\tEXAM");
-                writln(outf,"\tLP\t6\t; LB");
-                writln(outf,"\tLIA\tLB("+var.getLabel()+"-1)");
-
-                writln(outf,"\tEXAM");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tLIB\t0");
-                writln(outf,"\tADB");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tIYS");
-            }
-        }
-        else
-        {
-            if (!var.xram)
-            {
-                writln(outf,"\tRC");
-                writln(outf,"\tSL");
-                writln(outf,"\tLII\t"+QByteArray::number(var.address)+"\t; Store array element from "+var.varname);
-                writln(outf,"\tLP\t0");
-                writln(outf,"\tADM");
-                writln(outf,"\tEXAM");
-                writln(outf,"\tSTP");
-                writln(outf,"\tINCP");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tEXAM");
-                writln(outf,"\tDECP");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tEXAM");
-            }
-            else
-            {
-                writln(outf,"\tRC");
-                writln(outf,"\tSL");
-                writln(outf,"\tPUSH\t _t; Store array element from "+var.varname); pushcnt++;
-                writln(outf,"\tLP\t7\t; HB of address");
-
-                writln(outf,"\tLIA\tHB("+var.getLabel()+"-1)");
-                writln(outf,"\tEXAM");
-                writln(outf,"\tLP\t6\t; LB");
-                writln(outf,"\tLIA\tLB("+var.getLabel()+"-1)");
-
-                writln(outf,"\tEXAM");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tLIB\t0");
-                writln(outf,"\tADB");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tEXAB");
-                writln(outf,"\tPOP"); pushcnt--;
-                writln(outf,"\tIYS");
-                writln(outf,"\tEXAB");
-                writln(outf,"\tIYS");
-            }
-        }
-    }
-}
-#endif
 
 //{--------------------------------------------------------------}
 //{  }
@@ -2922,7 +2217,7 @@ void Clcc::DoSwitch(void) {
         outfile = false;
         writln(outf,"  " + L1 + ':');
         Block();
-        writln(outf,"\tRTN");
+        writln(outf,"\t"+stdOp[OP_RTN]);
         writln(outf,"");
         outfile = true;
     }
@@ -3043,7 +2338,7 @@ void Clcc::DoReturn(void) {
         isword = proclist[currproc].ReturnIsWord;
         Expression();
     }
-    writln(outf,"\tRTN\t\t; Return");
+    writln(outf,"\t"+stdOp[OP_RTN]+"\t\t; Return");
     writln(outf,"");
 }
 
@@ -3444,47 +2739,45 @@ void Clcc::FirstScan(QByteArray filen) {
                 isword = true;
                 name = ExtrWord(&Tok);
                 hasret = true;
-            } else
-            if ((name == "char") || (name == "byte"))
-                {
-                    name = ExtrWord(&Tok);
-                    hasret = true;
-                }
-                else {
-                    name = name2;
-                }
+            }
+            else if ((name == "char") || (name == "byte"))
+            {
+                name = ExtrWord(&Tok);
+                hasret = true;
+            }
+            else {
+                name = name2;
+            }
             Tok = Tok.trimmed(); Tok.remove(0,1); Tok = Tok.trimmed();
             i = 0;
-            //                        p := 0;
             temp = "";
             QList<QByteArray> loc_partyp;
             QList<QByteArray> loc_parname;
             if (!Tok.startsWith(")"))
             {
-                Tok.remove(Tok.size()-1,1);//delete(Tok, length(Tok), 1);
+                Tok.remove(Tok.size()-1,1);
                 temp = Tok;
                 s = Tok + ',';
                 currproc = proccount;
 
                 while (!s.isEmpty()) {
-                        Tok = ExtrList(&s);
+                    Tok = ExtrList(&s);
 #if 1
-                        // new part to parse pointer in parameters
-                        QByteArray locname = Tok.mid(0,4);
-                        if ((locname == "byte") || (locname == "char") || (locname == "word"))
-                        {
-                            Tok.remove(0,4); Tok = Tok.trimmed();
-                            Tok = locname + " " + Tok;
-                        }
-#endif
-
-                        //loc_partyp.append(Tok.left(4));//copy(Tok, 1, 4);
-                        procd = true;
-                        loc_parname.append(vardecl());
-                        loc_partyp.append(varlist.last().typ);
-                        procd = false;
-                        i++;
+                    // new part to parse pointer in parameters
+                    QByteArray locname = Tok.mid(0,4);
+                    if ((locname == "byte") || (locname == "char") || (locname == "word"))
+                    {
+                        Tok.remove(0,4); Tok = Tok.trimmed();
+                        Tok = locname + " " + Tok;
                     }
+#endif  
+                    //loc_partyp.append(Tok.left(4));//copy(Tok, 1, 4);
+                    procd = true;
+                    loc_parname.append(vardecl());
+                    loc_partyp.append(varlist.last().typ);
+                    procd = false;
+                    i++;
+                }
             }
             t = "";
             do {
@@ -3492,13 +2785,13 @@ void Clcc::FirstScan(QByteArray filen) {
                 rd(&Look, &filen);
                 t = t + Look;
             } while ( (level != 0) && (Look != 27));
-            t.remove(t.size()-1,1);//delete(t, length(t), 1);
+            t.remove(t.size()-1,1);
             AddProc(name, t.trimmed(), temp, i, hasret, isword,loc_partyp,loc_parname);
         }
         GetToken(MODESTR, &filen);
         src = src.mid(src.indexOf(Tok)+Tok.size());
     }
-    //closefile(f);
+
 
     if (showErrors && !FindProc("main")) {
         if (showErrors) QMessageBox::about(mainwindow,"ERROR","main not found!");
@@ -3521,16 +2814,46 @@ void Clcc::generateProcCode(QString f,int i) {
     if (pushcnt != 0) Error(proclist[i].ProcName+": Possible Stack corruption!");
     removelocvars(proclist[i].ProcName);
     if (proclist[i].ProcName == "main") {
-        writln(f, " EOP:\tRTN");
+        writln(f, " EOP:\t"+stdOp[OP_RTN]+"");
     }
     else {
-        writln(f,"\tRTN");
+        writln(f,"\t"+stdOp[OP_RTN]+"");
     }
     writln(f,"");
     proclist[i].end = asmtext.size();
     insertedProc.append(i);
 }
 
+void Clcc::save() {
+    writln(outf,"\tLP\t0");
+    writln(outf,"\tLIDP\tSREG");
+    writln(outf,"\tLII\t11");
+    writln(outf,"\tEXWD");
+}
+
+void Clcc::restore() {
+    writln(outf,"\tLP\t0");
+    writln(outf,"\tLIDP\tSREG");
+    writln(outf,"\tLII\t11");
+    writln(outf,"\tMVWD");
+    writln(outf,"\tRTN");
+    writln(outf,"");
+    writln(outf,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
+}
+
+void ClccPC1500::save() {
+    writln(outf,"\tPUSH\tA");
+    writln(outf,"\tPUSH\tHL");
+    writln(outf,"\tPUSH\tBC");
+    writln(outf,"\tPUSH\tDE");
+}
+
+void ClccPC1500::restore() {
+    writln(outf,"\tPOP\tDE");
+    writln(outf,"\tPOP\tBC");
+    writln(outf,"\tPOP\tHL");
+    writln(outf,"\tPOP\tA");
+}
 
 
 /*!
@@ -3539,14 +2862,12 @@ void Clcc::generateProcCode(QString f,int i) {
  \fn Clcc::SecondScan
 */
 void Clcc::SecondScan(void) {
-QByteArray name, typ, s, s2, s3;
-bool    at, arr;
-int    adr, size, value;
-//    f2: textfile;
-//begin
-    //md = MODESTR;
-    //        assign(f,'temp.asm");
-    //        rewrite(f);
+
+    QByteArray name, typ, s, s2, s3;
+    bool    at, arr;
+    int    adr, size, value;
+
+
     QString f = outf;
 
     insertedProc.clear();
@@ -3560,15 +2881,9 @@ int    adr, size, value;
     writln(f,".ORG\t"+org);
     writln(f,"");
     if (!nosave) {
-        writln(f,"\tLP\t0");
-        writln(f,"\tLIDP\tSREG");
-        writln(f,"\tLII\t11");
-        writln(f,"\tEXWD");
+        save();
     }
 
-//        { Write Header & Var inits }
-//        writln( 'JMP\tMAIN");
-//        writln('");
 
     for (int i=0; i<varlist.size();i++) {
         Cvar v = varlist[i];
@@ -3606,13 +2921,7 @@ int    adr, size, value;
     Tok = "main ()";
     currproc = -1;
     ProcCall();
-    writln(f,"\tLP\t0");
-    writln(f,"\tLIDP\tSREG");
-    writln(f,"\tLII\t11");
-    writln(f,"\tMVWD");
-    writln(f,"\tRTN");
-    writln(f,"");
-    writln(f,"SREG:\t.DW 0, 0, 0, 0, 0, 0");
+    restore();
 
 //        { Process procedures }
     for (int i = 0; i< proclist.size();i++) {
@@ -3668,7 +2977,8 @@ int    adr, size, value;
 //            }
 //        }
         s = "\tEXAB\r\tEXAB\r";
-        while (asmtext.contains(s)) asmtext.remove(asmtext.indexOf(s), s.length());
+        while (asmtext.contains(s))
+            asmtext.remove(asmtext.indexOf(s), s.length());
 
         writeln(f, asmtext);
         writeln(f, libtext);
