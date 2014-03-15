@@ -258,6 +258,7 @@ Clcc::Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool 
 //    cg = new Clcg("outputasm");
 
     stdOp[OP_RTN]="RTN";
+    stdOp[OP_INCLUDE]=".include";
 }
 
 
@@ -2467,6 +2468,24 @@ void Clcc::DoFor(void) {
     writln(outf,"\t; End of for");
 }
 
+//{--------------------------------------------------------------}
+//{ Inserts library code for used libs }
+void Clcc::addlib(int libid) {
+    if (libcnt == 0)
+        libtext = libtext + "; LIB Code\r\n";
+    libcnt++;
+
+    if (!libins.contains(libid)) {
+        libins.append(libid);
+        libtext.append(stdOp[OP_INCLUDE]+" "+libname[libid]+".lib\r\n");
+    }
+}
+
+
+void  Clcc::addasm(QByteArray s) {
+    asmlist.append(s+"\r\n");
+    asmcnt++;
+}
 
 /*!
  \brief

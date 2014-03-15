@@ -132,7 +132,7 @@ class Clcc : public QObject{
     Q_OBJECT
 public:
 
-    enum OP_STD { OP_RTN,OP_JP};
+    enum OP_STD { OP_RTN,OP_JP,OP_INCLUDE};
 
     Clcc(QMap<QString,QByteArray> *sources,QMap<QString,QByteArray> *out,bool showErrors=true);
 
@@ -148,7 +148,7 @@ public:
     void LoadVariableMain(QByteArray name);
     void LoadVariable(QByteArray name);
     void LoadVariableArray(Cvar v);
-    void StoreVariable(QByteArray);
+    bool StoreVariable(QByteArray);
     void StoreVariableArray(Cvar v);
     bool  IsVarAtAdr(int adr,int size);
     int AllocVar(bool xr,bool at,int  size, int adr);
@@ -357,6 +357,13 @@ class ClccPC1500: public Clcc {
 
     void save();
     void restore();
+
+public:
+    bool StoreVariable(QByteArray name);
+    void LoadVariable(QByteArray name);
+    void LoadVariableArray(Cvar v);
+    void LoadVariableMain(QByteArray s);
+    void varxram(int value, int adr, int size, QByteArray nm);
 };
 
 #endif // LCC_H
