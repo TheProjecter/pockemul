@@ -1,5 +1,5 @@
 <!DOCTYPE QNFA>
-<QNFA language="ASM" extensions="asm" defaultLineMark="breakpoint">
+<QNFA language="ASM" extensions="asm;inc" defaultLineMark="breakpoint">
 	<!-- <embed target="Doxygen"/> -->
 	
 	<context id="comment/multi" format="comment">

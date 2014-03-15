@@ -640,7 +640,7 @@ void WindowIDE::refreshFileList(void) {
 //    }
     model = new QFileSystemModel;
     model->setRootPath(QDir::currentPath());
-    model->setNameFilters(QStringList() << "*.c" << "*.asm" << "*.h"<<"*.sym"<<"*.log"<<"*.bin");
+    model->setNameFilters(QStringList() << "*.c" << "*.asm" << "*.h"<<"*.sym"<<"*.log"<<"*.bin"<<"*.inc");
     model->setNameFilterDisables(false);
     ui->treeView->setModel(model);
     ui->treeView->hideColumn(1);
