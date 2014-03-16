@@ -13,15 +13,15 @@
 #include "ui/dialogdasm.h"
 
 #include	"pc1500.h"
-#include "cextension.h"
+#include    "cextension.h"
 #include    "Lcdc.h"
 #include	"Inter.h"
 #include	"Debug.h"
 #include	"Keyb.h"
 #include    "Keyb1500.h"
-#include	"ce152.h"
 #include	"dialoganalog.h"
 #include    "buspc1500.h"
+#include    "Connect.h"
 
 #include "breakpoint.h"
 
@@ -82,8 +82,6 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	pLH5810		= new CLH5810_PC1500(this);
 	pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pc1500.map",scandef_pc1500);
-	pce152		= new Cce152_PC15XX(this);
-	delete pce152->pTIMER; pce152->pTIMER = pTIMER;
 	
     bus = new CbusPc1500();
 
@@ -98,7 +96,6 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 Cpc15XX::~Cpc15XX()
 {
     delete pLH5810;
-    delete pce152;
     delete bus;
 }
 
@@ -114,7 +111,7 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     BackGroundFname	= P_RES(":/pc1500A/pc1500A.png");
     LcdFname		= P_RES(":/pc1500A/1500Alcd.png");
     SymbFname		= P_RES(":/pc1500A/1500Asymb.png");
-    memsize			= 0x24000;
+    memsize			= 0x10000;
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""								, "" , CSlot::RAM , "RAM"));
@@ -123,9 +120,9 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
     SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , CSlot::ROM , "ROM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500A/SYS1500A.ROM"), "" , CSlot::ROM , "SYSTEM ROM"));
-    SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
-    SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
-    SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
+//    SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
+//    SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
+//    SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
 
     delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
 
@@ -387,61 +384,6 @@ bool Cpc15XX::run(void)
 	//----------------------------------
 
 	return(1); 
-}
-
-FILE *fp_tmp1;
-void Cpc15XX::ReadQuarterTape(void)
-{
-	u_long quarter=0;
-	u_long trans=0;
-	BYTE bit;
-
-	if (fp_tmp1==NULL) 
-		fp_tmp1=fopen("LOG TAPE1500.txt","wb");
-	// Loop until bit start
-	do 
-	{
-		pce152->ReadBitFromWav(&trans,&pce152->info);
-		if (trans > BIT_MID)
-			bit = 1;     /* Bit a 1 */
-		else
-			bit = 0;     /* Bit a 0 */
-		
-		if (pCPU->fp_log) fprintf(pCPU->fp_log,"%c",(bit==1?'1':'0'));
-
-	}
-	while (bit==1);
-
-	if (pCPU->fp_log) fprintf(pCPU->fp_log," ");
-
-	for (int jj=0;jj<4;jj++) 
-	{
-		pce152->ReadBitFromWav(&trans,&pce152->info);
-		if (trans > BIT_MID)
-			bit = 1;     /* Bit a 1 */
-		else
-			bit = 0;     /* Bit a 0 */
-		if (pCPU->fp_log) fprintf(pCPU->fp_log,"%c",(bit==1?'1':'0'));
-
-		quarter |= (bit << (jj)); 
-	}
-
-	// 6 Bits stop
-//	for (int ii=0;ii<6;ii++) 
-//		ce152.ReadBitFromWav(&trans,&ce152.info);
-
-
-	//		ce152.ReadByteFromWav(1,&tmpL,&ce152.info);
-	//		ce152.ReadQuaterFromWav (&tmpL, &ce152.info) ;
-	//		tmpL=((tmpL>>4)&0x0F) | ((tmpL&0x0F)<<4);
-
-
-    if (fp_tmp1) fprintf(fp_tmp1,"   ** LOAD QUARTER BIT : %02X\n",(uint) (quarter<<4));
-
- 	((CLH5801 *)pCPU)->LDA(quarter<<4);
-	((CLH5801 *)pCPU)->UnSet_C() ;
-	((CLH5801 *)pCPU)->RTN();
-
 }
 
 
@@ -871,21 +813,7 @@ void Cpc15XX::contextMenuEvent ( QContextMenuEvent * event )
     QMenu *menu = new QMenu(this);
 	
     BuildContextMenu(menu);
-	
-    menu->addSeparator();
-
-	    //-----------------------------------------------//
-	   // Specific Tape menu for the PC1500				//
-	  // I use a hack to manage tape read and write	   //
-	 // as i need to improve LH5810 serial emulation  //
-	//-----------------------------------------------//
-    QMenu * menuTape = menu->addMenu(tr("Tape"));
-		menuTape->addAction(tr("Load..."),pce152,SLOT(LoadTape()));
-		menuTape->addAction(tr("Play"),pce152,SLOT(Play()));
-		menuTape->addAction(tr("Stop"),pce152,SLOT(StopPlay()));
-		menuTape->addAction(tr("Record"),pce152,SLOT(RecTape()));
-	//--------------------------------------------------
-	
+		
     menu->popup(event->globalPos () );
 }
 

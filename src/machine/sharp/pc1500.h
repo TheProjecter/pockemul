@@ -9,17 +9,12 @@
 
 #include "common.h"
 
-//#include "cextension.h"
 #include "pcxxxx.h"
-//#include "Log.h"
 #include "lh5801.h"
 #include "lh5810.h"
 #include "pd1990ac.h"
-//#include "ce150.h"
-//#include "Connect.h"
 #include "Keyb.h"
 
-#include "ce152.h"
 
 class CPD1990AC;
 class CbusPc1500;
@@ -53,7 +48,6 @@ Q_OBJECT
 public:
     const char*	GetClassName(){ return("Cpc15XX");}
 
-	void	ReadQuarterTape(void);
 	bool	LoadConfig(QFile *file);
 	bool	SaveConfig(QFile *file);
     bool	LoadConfig(QXmlStreamReader *);
@@ -84,8 +78,7 @@ public:
     virtual bool Set_Connector(void);
     virtual bool Get_Connector(void);
 
-	CLH5810_PC1500	*pLH5810;
-	Cce152_PC15XX	*pce152;
+    CLH5810_PC1500	*pLH5810;
     CbusPc1500        *bus;
     QMutex          busMutex;
 	
@@ -123,10 +116,10 @@ public:
         SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
 		SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , CSlot::ROM , "ROM"));
         SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500/SYS1500.ROM")	, "" , CSlot::ROM , "SYSTEM ROM"));
-		SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
-		SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
-		SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
-        SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500/CE-150.ROM"), "" , CSlot::ROM , "CE-150 ROM"));
+//		SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
+//		SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
+//		SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
+//        SlotList.append(CSlot(8 , 0x24000 ,	P_RES(":/pc1500/CE-150.ROM"), "" , CSlot::ROM , "CE-150 ROM"));
 	}
 
 	~Cpc1500()

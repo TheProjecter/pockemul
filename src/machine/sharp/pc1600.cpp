@@ -45,8 +45,7 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
     BackGroundFname	= P_RES(":/pc1600/pc-1600.png");
     LcdFname		= P_RES(":/pc1600/pc1600lcd.png");
     SymbFname		= P_RES(":/pc1600/1600symb.png");
-    memsize			= 0x0E0000;
-    InitMemValue	= 0x00;
+
 
     LeftFname   = P_RES(":/pc1600/pc1600Left.png");
     RightFname  = P_RES(":/pc1600/pc1600Right.png");
@@ -100,8 +99,6 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
     pLH5810		= new CLH5810_PC1600(this);
     pTIMER		= new Ctimer(this);
     pKEYB		= new Ckeyb(this,"pc1600.map");
-    pce152		= new Cce152_PC15XX(this);
-    delete pce152->pTIMER; pce152->pTIMER = pTIMER;
     pHD61102_1  = new CHD61102(this);
     pHD61102_2  = new CHD61102(this);
     pTC8576P    = new CTC8576P(this,1288800);
@@ -114,6 +111,9 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
     extensionArray[0] = ext_60pins;
     extensionArray[1] = ext_MemSlot1;
     extensionArray[2] = ext_MemSlot2;
+
+    memsize			= 0x0E0000;
+    InitMemValue	= 0x00;
 
     SlotList.clear();
 
@@ -197,7 +197,6 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
 Cpc1600::~Cpc1600()
 {
     delete pLH5810;
-    delete pce152;
     delete pHD61102_1;
     delete pHD61102_2;
     delete pLU57813P;
@@ -211,7 +210,9 @@ void Cpc1600::Reset(void)
     pCPU = pZ80;
     pCPU->halt = false;
     pZ80->Reset();
+    masterCPU = false;
     pLH5803->Reset();
+    masterCPU = true;
     pLU57813P->Reset();
     pLH5810->Reset();
 //    CpcXXXX::Reset();
@@ -900,7 +901,7 @@ bool Cpc1600::Chk_Adr(UINT32 *d,UINT32 data)
         *d+=0x70000;return(1);
     }
 
-    // else it's ROM
+    // else it is ROM
     return (false);
 }
 
@@ -1207,19 +1208,6 @@ void Cpc1600::contextMenuEvent ( QContextMenuEvent * event )
     QMenu *menu= new QMenu(this);
 
     BuildContextMenu(menu);
-    menu->addSeparator();
-
-        //-----------------------------------------------//
-       // Specific Tape menu for the PC1500				//
-      // I use a hack to manage tape read and write	   //
-     // as i need to improve LH5810 serial emulation  //
-    //-----------------------------------------------//
-    QMenu * menuTape = menu->addMenu(tr("SIO"));
-        menuTape->addAction(tr("Load..."),this,SLOT(LoadSIO()));
-        menuTape->addAction(tr("Play"),pce152,SLOT(Play()));
-        menuTape->addAction(tr("Stop"),pce152,SLOT(StopPlay()));
-        menuTape->addAction(tr("Record"),pce152,SLOT(RecTape()));
-    //--------------------------------------------------
 
         menu->popup(event->globalPos () );
         event->accept();

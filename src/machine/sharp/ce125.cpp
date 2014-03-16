@@ -26,15 +26,20 @@ void Cce125tape::ComputeKey(void)
 {
 
     if (pKEYB->LastKey == K_PLAY)
-		{
-            if (mode == LOAD)
-				{
-                    BackGroundFname	= playImage;
-					InitDisplay();
-					update();				
-					Play();	
-				}
-		}
+    {
+        switch (mode)
+        {
+        case STOP:
+        case LOAD:
+            BackGroundFname	= playImage;
+            InitDisplay();
+            update();
+            Play();
+            break;
+        default: break;
+        }
+    }
+
 	if (pKEYB->LastKey == K_EJECT) 
 	{
 		
@@ -73,7 +78,7 @@ void Cce125tape::ComputeKey(void)
             InitDisplay();
             update();
 		}
-};
+}
 
 Cmp220::Cmp220(CPObject *parent):Cce125(parent)
 {

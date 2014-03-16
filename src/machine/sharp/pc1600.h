@@ -102,7 +102,6 @@ public:
     CLU57813P   *pLU57813P;
 
     CLH5810_PC1600	*pLH5810;
-    Cce152_PC15XX	*pce152;
 
     CHD61102        *pHD61102_1;
     CHD61102        *pHD61102_2;

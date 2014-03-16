@@ -130,45 +130,5 @@ public:
     virtual bool	init(void);
 };
 
-class Cce152_PC15XX:public Cce152{
-
-public:
-
-	int		GetBit(void);
-	BYTE	getbyte(void);
-
-	int		SetBit(bool);
-	bool	getbit(void);
-	int		getperiod();
-
-	int		RecTape(void);
-
-	int		ReadQuaterFromWav (u_long*   ptrQuat, WavFileInfo* ptrFile);
-	int		ReadByteFromWav (u_long    order, u_long*   ptrByte, WavFileInfo* ptrFile);
-	int		ReadBitFieldFromWav (u_long nbBits, char* ptrBits, WavFileInfo* ptrFile);
-	int		SkipBitsFromWav (u_long*   ptrNb, WavFileInfo* ptrFile);
-	int		SyncBitFromWav (int sign, u_long*   ptrTrans, u_long* ptrLimit, WavFileInfo* ptrFile);
-	int		ReadBitFromWav (u_long*   ptrTrans,WavFileInfo* ptrFile);
-	int		FindSyncFromWav (u_long freq,u_long* ptrNb,WavFileInfo*  ptrFile);
-	int		FindFreqAndSyncFromWav (u_long freq,WavFileInfo*  ptrFile);
-	int		serial(int bit);
-
-
-	int		WriteBitToWav (u_long    value,WavFileInfo* ptrFile);
-	int		WriteSyncToWav (int       nbSync,WavFileInfo* ptrFile);
-
-
-	void	AddToWavBuffer(char c);
-	char	WavBuffer[2048];
-
-	
-	Cce152_PC15XX(CPObject *parent = 0)	: Cce152(parent)
-	{
-    }
-
-
-
-
-};
 
 #endif
