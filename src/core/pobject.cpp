@@ -34,6 +34,8 @@
 
 #include "mainwindowpockemul.h"
 
+#include "bus.h"
+
 extern QList<CPObject *> listpPObject; 
 FILE	*fp_tmp=NULL;
 
@@ -54,6 +56,7 @@ CPObject::CPObject(CPObject *parent):CViewObject(parent)
 		pKEYB	= 0;
 		pTIMER	= 0;
 		pLCDC	= 0;
+        bus     = 0;
 		FinalImage = 0;
 		BackgroundImage = 0;
         BackgroundImageBackup = 0;
@@ -113,10 +116,11 @@ CPObject::~CPObject()
 {
     if (dialogdasm) delete dialogdasm;
 
-    delete pKEYB;
+    if (pKEYB) delete pKEYB;
     //FIXME: When extension are connected , they share the timer with the host.
     //delete pTIMER;
-    delete pLCDC;
+    if (pLCDC) delete pLCDC;
+    if (bus) delete bus;
 	
     delete FinalImage;
     delete BackgroundImage;
@@ -1638,4 +1642,34 @@ void CPObject::manageBus() {
     // Read connector
     Get_Connector();
 
+}
+
+
+void CPObject::writeBus(UINT32 *d,UINT32 data) {
+    busMutex.lock();
+
+    bus->setWrite(true);
+    bus->setAddr(*d);
+    bus->setData((quint8)data);
+    bus->setEnable(true);
+    manageBus();
+    bus->setEnable(false);
+
+    busMutex.unlock();
+}
+
+void CPObject::readBus(UINT32 *d,UINT32 *data) {
+    busMutex.lock();
+
+    bus->setWrite(false);
+    bus->setAddr(*d);
+    bus->setData(0xff);
+    bus->setEnable(true);
+//    qWarning()<<"ReadBus:"<<bus->toLog();
+    manageBus();
+//    qWarning()<<"ReadBus after manage:"<<bus->toLog();
+    *data = bus->getData();
+    bus->setEnable(false);
+
+    busMutex.unlock();
 }

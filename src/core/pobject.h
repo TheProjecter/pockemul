@@ -8,6 +8,7 @@
 #include <QImage>
 #include <QMenu>
 #include <QFile>
+#include <QMutex>
 
 #ifndef NO_SOUND
 #include <QAudioOutput>
@@ -30,6 +31,7 @@ class DialogDasm;
 class DialogVKeyboard;
 class TapAndHoldGesture;
 class QSwipeGesture;
+class Cbus;
 
 #include "slot.h"
 #include "viewobject.h"
@@ -85,6 +87,8 @@ public:
 	QString	LcdFname;
 	QString	SymbFname;
 
+    Cbus   *bus;
+    QMutex       busMutex;
 
     FILE	*fp_log;
 
@@ -225,6 +229,8 @@ public:
 
     void swipeTriggered(QSwipeGesture *gesture);
     void manageBus();
+    void writeBus(UINT32 *d, UINT32 data);
+    void readBus(UINT32 *d, UINT32 *data);
 signals:
     void msgError(QString);
 

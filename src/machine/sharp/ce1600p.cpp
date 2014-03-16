@@ -10,6 +10,7 @@
 #include "Keyb.h"
 #include "clink.h"
 #include "dialoganalog.h"
+#include "buspc1500.h"
 
 #define NO_MOVE	0
 #define RI_MOVE	1
@@ -49,6 +50,15 @@ Cce1600p::Cce1600p(CPObject *parent) : Cce150(this)
     KeyMapLenght= KeyMapce1600pLenght;
     delete pKEYB;
     pKEYB		= new Ckeyb(this,"ce1600p.map",0);
+
+    bus = new CbusPc1500();
+
+    memsize			= 0x8000;
+
+    SlotList.clear();
+    SlotList.append(CSlot(16, 0x0000 ,P_RES(":/pc1600/romce1600-1.bin"), "" , CSlot::ROM , "ROM"));
+    SlotList.append(CSlot(16, 0x4000 ,P_RES(":/pc1600/romce1600-2.bin"), "" , CSlot::ROM , "ROM"));
+
 }
 
 bool Cce1600p::init(void)
@@ -97,6 +107,10 @@ bool Cce1600p::run(void)
     bool has_moved_X = false;
     bool has_moved_Y = false;
     bool has_moved_Z = false;
+    bool forwardBus = true;
+    bool keyEvent = false;
+
+    bus->fromUInt64(pCONNECTOR->Get_values());
 
 //	lh5810_write();
 
@@ -137,7 +151,41 @@ bool Cce1600p::run(void)
 //	if (pLH5810->lh5810.r_opa & 0x02)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = FALSE;	// RMT 0 ON
 //	if (pLH5810->lh5810.r_opa & 0x04)	((Cpc15XX *)pPC->pTIMER->pPC)->pce152->paused = TRUE;	// RMT 0 OFF
 
+#if 0
+    if (!bus->isEnable()) {
+        if (keyEvent) {
+            pLH5810->step();
+            bus->setINT(pLH5810->INT);
+            pCONNECTOR->Set_values(bus->toUInt64());
+        }
+        return true;
+    }
 
+    quint16 addr = bus->getAddr();
+
+    if (bus->isEnable() &&
+        !bus->isME1() &&
+        !bus->isPV() &&
+        !bus->isWrite() &&
+        (addr >=0xA000) && (addr < 0xC000) )
+    {
+        bus->setData(mem[addr - 0xA000]);
+        forwardBus = false;
+        bus->setEnable(false);
+        pCONNECTOR->Set_values(bus->toUInt64());
+        return true;
+    }
+
+    if (bus->isEnable() &&
+        bus->isME1() &&
+        (addr >= 0xb000) &&
+        (addr <= 0xb00f) &&
+        (bus->isWrite()) )
+    {
+        lh5810_write();
+        forwardBus = false;
+    }
+#endif
 
     Direction = Motor_X.SendPhase(PORT_MOTOR_X);
 

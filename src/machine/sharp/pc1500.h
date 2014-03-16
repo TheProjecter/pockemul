@@ -65,9 +65,6 @@ public:
 
 	void	Regs_Info(UINT8 Type);
 
-    void writeBus(UINT32 *d, UINT32 data);
-    void readBus(UINT32 *d, UINT32 *data);
-
     bool		lh5810_write(UINT32 d, UINT32 data);
     quint8		lh5810_read(UINT32 d);
 
@@ -79,11 +76,8 @@ public:
     virtual bool Get_Connector(void);
 
     CLH5810_PC1500	*pLH5810;
-    CbusPc1500        *bus;
-    QMutex          busMutex;
 	
-	bool		lh5810_Access;
-    bool		ce150_connected;
+    bool		lh5810_Access;
 
 	void		InitCE150(void);
 	

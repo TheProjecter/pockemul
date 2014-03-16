@@ -84,8 +84,6 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     pKEYB		= new Ckeyb(this,"pc1500.map",scandef_pc1500);
 	
     bus = new CbusPc1500();
-
-	ce150_connected = false;
 	
 	Tape_Base_Freq=2500;
 	initExtension();
@@ -96,7 +94,6 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 Cpc15XX::~Cpc15XX()
 {
     delete pLH5810;
-    delete bus;
 }
 
 Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
@@ -379,7 +376,7 @@ bool Cpc15XX::run(void)
                 (
                     (pLH5810->lh5810.r_opc & 0x40 ? false:true) ||
                     pLH5810->SDO ||
-                    bus->isCMTIN()
+                    ((CbusPc1500*)bus)->isCMTIN()
                     ) ? 0xff:0x00);
 	//----------------------------------
 
@@ -426,8 +423,6 @@ INLINE quint8 Cpc15XX::lh5810_read(UINT32 d)
     case 0x1F00F: return (pLH5810->GetReg(CLH5810::OPB)); break;
     default: break;
     }
-
-
 	
     return 0;
 }
@@ -455,34 +450,6 @@ inline bool Cpc1500A::Mem_Mirror(UINT32 *d)
 	return(1);
 }
 
-void Cpc15XX::writeBus(UINT32 *d,UINT32 data) {
-    busMutex.lock();
-
-    bus->setWrite(true);
-    bus->setAddr(*d);
-    bus->setData((quint8)data);
-    bus->setEnable(true);
-    manageBus();
-    bus->setEnable(false);
-
-    busMutex.unlock();
-}
-
-void Cpc15XX::readBus(UINT32 *d,UINT32 *data) {
-    busMutex.lock();
-
-    bus->setWrite(false);
-    bus->setAddr(*d);
-    bus->setData(0xff);
-    bus->setEnable(true);
-//    qWarning()<<"ReadBus:"<<bus->toLog();
-    manageBus();
-//    qWarning()<<"ReadBus after manage:"<<bus->toLog();
-    *data = bus->getData();
-    bus->setEnable(false);
-
-    busMutex.unlock();
-}
 
 bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data) 
 {
@@ -504,7 +471,7 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
     if ( (*d>=0x8000) && (*d<=0xBFFF) ) { writeBus(d,data); return false; }										// RAM area(4000-7FFFF)
 
     if ( (*d>=0xC000) && (*d<=0xFFFF) ) {
-        if (bus->isINHIBIT()) writeBus(d,data);
+        if (((CbusPc1500*)bus)->isINHIBIT()) writeBus(d,data);
         return false;
     }
     if ( (*d>=0x1F000) && (*d<=0x1F00F) ) { lh5810_write(*d,data); lh5810_Access = true; return false; }	// I/O area(LH5810)
@@ -527,7 +494,7 @@ bool Cpc1500A::Chk_Adr(UINT32 *d,UINT32 data)
     if ( (*d>=0xC000) && (*d<=0xFFFF) ) {
         qWarning()<<"PC="<<QString("%1").arg(pCPU->get_PC(),4,16,QChar('0'));
         qWarning()<<"Write :"<<QString("%1").arg(*d,4,16,QChar('0'))<<"="<<QString("%1").arg(data,2,16,QChar('0'));
-        if (bus->isINHIBIT()) writeBus(d,data);
+        if (((CbusPc1500*)bus)->isINHIBIT()) writeBus(d,data);
         return false;
          }										// RAM area(4000-7FFFF)
 
@@ -553,10 +520,10 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
         return false;
     }
 
-    if (bus->isINHIBIT())
+    if (((CbusPc1500*)bus)->isINHIBIT())
 //        qWarning()<<"Bus is INHIBIT adr="<<QString("%1").arg(*d,5,16,QChar('0'))<<"  iswrite:"<<bus->isWrite();
 
-    if ( (*d>=0xC000) && (*d<=0xFFFF) && bus->isINHIBIT() ) {
+    if ( (*d>=0xC000) && (*d<=0xFFFF) && ((CbusPc1500*)bus)->isINHIBIT() ) {
         readBus(d,data); return false; }
 
     if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { readBus(d,data); return false; }
@@ -695,9 +662,9 @@ bool Cpc15XX::Set_Connector(void)
 {
     // transfert busValue to Connector
 
-    bus->setPU(((CLH5801 *)pCPU)->lh5801.pu);
-    bus->setPV(((CLH5801 *)pCPU)->lh5801.pv);
-    bus->setCMTOUT(pLH5810->SDO);
+    ((CbusPc1500*)bus)->setPU(((CLH5801 *)pCPU)->lh5801.pu);
+    ((CbusPc1500*)bus)->setPV(((CLH5801 *)pCPU)->lh5801.pv);
+    ((CbusPc1500*)bus)->setCMTOUT(pLH5810->SDO);
     pCONNECTOR->Set_values(bus->toUInt64());
 //    qWarning()<<"Cpc15XX::Set_Connector:"<<bus->toLog();
     return true;
@@ -728,7 +695,7 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	INT FROM connector to IRQ
 	////////////////////////////////////////////////////////////////////
-    IRQ= pc1500->bus->getINT();
+    IRQ= ((CbusPc1500*)pc1500->bus)->getINT();
 
 	////////////////////////////////////////////////////////////////////
 	//	Send Data to PD1990AC -- TIMER
@@ -767,7 +734,7 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	TAPE READER
 	////////////////////////////////////////////////////////////////////
-    SetRegBit(OPB,2,pc1500->bus->isCMTIN());
+    SetRegBit(OPB,2,((CbusPc1500*)pc1500->bus)->isCMTIN());
     CLI = CLO;
 
 

@@ -101,7 +101,7 @@ void CLH5810::start_serial_transmit() {
 //    serialSend= true;
     bitCount = 0;
     lastPulseState = clockRateState = pPC->pTIMER->state;
-    qWarning()<<"New_L:"<<QString("%1").arg(lh5810.r_l,2,16,QChar('0'));
+//    qWarning()<<"New_L:"<<QString("%1").arg(lh5810.r_l,2,16,QChar('0'));
 
 }
 
@@ -174,7 +174,7 @@ bool CLH5810::step()
 
         }
         clockRateWait = pPC->getfrequency() / clockRate;
-        qWarning()<<"G= "<<lh5810.r_g<<"   ClockRate set to :"<<clockRateWait;
+//        qWarning()<<"G= "<<lh5810.r_g<<"   ClockRate set to :"<<clockRateWait;
 
         clockOutput = lh5810.r_g & 0X10;
         New_G = false;

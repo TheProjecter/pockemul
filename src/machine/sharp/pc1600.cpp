@@ -24,6 +24,7 @@
 #include    "Keyb1600.h"
 #include	"ce152.h"
 #include	"dialoganalog.h"
+#include    "buspc1500.h"
 
 extern int	g_DasmStep;
 extern bool	UpdateDisplayRunning;
@@ -102,6 +103,8 @@ Cpc1600::Cpc1600(CPObject *parent)	: CpcXXXX(parent)
     pHD61102_1  = new CHD61102(this);
     pHD61102_2  = new CHD61102(this);
     pTC8576P    = new CTC8576P(this,1288800);
+
+    bus = new CbusPc1500();
 
     ce1600_connected = false;
 
@@ -200,6 +203,7 @@ Cpc1600::~Cpc1600()
     delete pHD61102_1;
     delete pHD61102_2;
     delete pLU57813P;
+
 }
 
 void Cpc1600::Reset(void)
@@ -749,47 +753,49 @@ void Cpc1600::Hack_CRVA(void){
 FILE *fp_tmp2;
 void Cpc1600::ReadQuarterTape(void){}
 
-
-INLINE bool Cpc1600::lh5810_write(void)
+INLINE bool Cpc1600::lh5810_write(UINT32 d, UINT32 data)
 {
-//	AddLog(LOG_FUNC,"Cpc1600::lh5810_write");
+//	AddLog(LOG_FUNC,"Cpc1500::lh5810_write");
 
-    pLH5810->SetReg(CLH5810::RESET,pCPU->imem[0x14]);
-    pLH5810->SetReg(CLH5810::U  ,	pCPU->imem[0x15]);
-    pLH5810->SetReg(CLH5810::L,	pCPU->imem[0x16]);
+    switch (d) {
+    case 0x14: pLH5810->SetReg(CLH5810::RESET,	data); break;
+    case 0x15: pLH5810->SetReg(CLH5810::U,		data); break;
+    case 0x16: pLH5810->SetReg(CLH5810::L,		data); break;
+    case 0x17: pLH5810->SetReg(CLH5810::F,		data); break;
+    case 0x18: pLH5810->SetReg(CLH5810::OPC,     data); break;
+    case 0x19: pLH5810->SetReg(CLH5810::G  ,     data); break;
+    case 0x1A: pLH5810->SetReg(CLH5810::MSK,     data); break;
+    case 0x1B: pLH5810->SetReg(CLH5810::IF ,     data); break;
+    case 0x1C: pLH5810->SetReg(CLH5810::DDA,     data); break;
+    case 0x1D: pLH5810->SetReg(CLH5810::DDB,     data); break;
+    case 0x1E: pLH5810->SetReg(CLH5810::OPA,     data); break;
+    case 0x1F: pLH5810->SetReg(CLH5810::OPB,     data); break;
+    default: break;
+    }
 
-    pLH5810->SetReg(CLH5810::OPC,	pCPU->imem[0x18]);
-    pLH5810->SetReg(CLH5810::G  ,	pCPU->imem[0x19]);
-    pLH5810->SetReg(CLH5810::MSK,	pCPU->imem[0x1A]);
-    pLH5810->SetReg(CLH5810::IF ,	pCPU->imem[0x1B]);
-    pLH5810->SetReg(CLH5810::DDA,	pCPU->imem[0x1C]);
-    pLH5810->SetReg(CLH5810::DDB,	pCPU->imem[0x1D]);
-    pLH5810->SetReg(CLH5810::OPA,	pCPU->imem[0x1E]);
-    pLH5810->SetReg(CLH5810::OPB,	pCPU->imem[0x1F]);
-
-
-    return(1);
+    return true;
 }
 
-INLINE bool Cpc1600::lh5810_read(void)
+INLINE quint8 Cpc1600::lh5810_read(UINT32 d)
 {
-//    pLH5810->step();
-//	AddLog(LOG_FUNC,"Cpc1600::lh5810_read");
+    switch (d) {
+    case 0x15: return (pLH5810->GetReg(CLH5810::U)); break;
+    case 0x16: return (pLH5810->GetReg(CLH5810::L)); break;
+    case 0x17: return (pLH5810->GetReg(CLH5810::F)); break;
+    case 0x18: return (pLH5810->GetReg(CLH5810::OPC)); break;
+    case 0x19: return (pLH5810->GetReg(CLH5810::G)); break;
+    case 0x1A: return (pLH5810->GetReg(CLH5810::MSK)); break;
+    case 0x1B: return (pLH5810->GetReg(CLH5810::IF)); break;
+    case 0x1C: return (pLH5810->GetReg(CLH5810::DDA)); break;
+    case 0x1D: return (pLH5810->GetReg(CLH5810::DDB)); break;
+    case 0x1E: return (pLH5810->GetReg(CLH5810::OPA)); break;
+    case 0x1F: return (pLH5810->GetReg(CLH5810::OPB)); break;
+    default: break;
+    }
 
-    pCPU->imem[0x15] = pLH5810->GetReg(CLH5810::U);
-    pCPU->imem[0x16] = pLH5810->GetReg(CLH5810::L);
-
-    pCPU->imem[0x18] = pLH5810->GetReg(CLH5810::OPC);
-    pCPU->imem[0x19] = pLH5810->GetReg(CLH5810::G);
-    pCPU->imem[0x1A] = pLH5810->GetReg(CLH5810::MSK);
-    pCPU->imem[0x1B] = pLH5810->GetReg(CLH5810::IF);
-    pCPU->imem[0x1C] = pLH5810->GetReg(CLH5810::DDA);
-    pCPU->imem[0x1D] = pLH5810->GetReg(CLH5810::DDB);
-    pCPU->imem[0x1E] = pLH5810->GetReg(CLH5810::OPA);
-    pCPU->imem[0x1F] = pLH5810->GetReg(CLH5810::OPB);
-
-    return(1);
+    return 0;
 }
+
 
 bool Cpc1600::Mem_Mirror(UINT32 *d)
 {
@@ -993,7 +999,7 @@ UINT8 Cpc1600::out(UINT8 address,UINT8 value)
     case 0x18:    case 0x19:    case 0x1a:    case 0x1b:
     case 0x1c:    case 0x1d:    case 0x1e:    case 0x1f:
 //        if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
-        lh5810_write();
+        lh5810_write(address,value);
         pLH5810->step();
         break;
     case 0x20: if (fp_log) fprintf(fp_log,"OUT [%02X]=%02X\n",address,value);
@@ -1096,7 +1102,8 @@ UINT8 Cpc1600::in(UINT8 address)
     case 0x18:    case 0x19:    case 0x1a:    case 0x1b:
     case 0x1c:    case 0x1d:    case 0x1e:    case 0x1f:
 //        if (fp_log) fprintf(fp_log,"IN [%02X]=%02X\n",address,pCPU->imem[address]);
-        pLH5810->step();lh5810_read();
+        pLH5810->step();
+        pCPU->imem[address] = lh5810_read(address);
         break;
 
 

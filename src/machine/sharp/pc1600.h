@@ -82,8 +82,8 @@ public:
     void    Reset(void);
 
     void	Regs_Info(UINT8 Type);
-    bool	lh5810_write(void);
-    bool	lh5810_read(void);
+    bool	lh5810_write(UINT32 d, UINT32 data);
+    quint8	lh5810_read(UINT32 d);
 
     virtual bool		Chk_Adr(UINT32 *d,UINT32 data);
     virtual bool		Chk_Adr_R(UINT32 *d, UINT32 *data);
