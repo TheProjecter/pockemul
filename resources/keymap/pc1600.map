@@ -96,5 +96,6 @@
     <KEY description="'" masterscancode="0x34" modifier="2nd"/>
     <KEY description="\" masterscancode="0x37" modifier="2nd"/>
     <KEY description="~" masterscancode="0x38" modifier="2nd"/>
+    <KEY description="60pins connector" height="170" left="35" scancode="0x240" top="80" width="25" view="LEFT"/>
 </Keyboard>
 </KEYBMAP>

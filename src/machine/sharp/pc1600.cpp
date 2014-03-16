@@ -15,6 +15,7 @@
 #endif
 
 #include	"common.h"
+#include "fluidlauncher.h"
 #include	"pc1600.h"
 #include    "z80.h"
 #include    "Lcdc_pc1600.h"
@@ -241,7 +242,7 @@ void Cpc1600::TurnON(void)
         Power = true;
         PowerSwitch = PS_RUN;
         pHD61102_1->updated = pHD61102_2->updated = true;
-        Reset();
+//        Reset();
         if (pLCDC) pLCDC->TurnON();
     }
     //remove(Initial_Session_Fname.toStdString().c_str());
@@ -1358,4 +1359,20 @@ bool CLH5810_PC1600::step()
 //    if (pPC->fp_log) fprintf(pPC->fp_log,"Set_KS( %02x )\n",GetReg(CLH5810::OPA));
 
     return(1);
+}
+
+#define KEY(c)	((pKEYB->keyPressedList.contains(TOUPPER(c)) || \
+                  pKEYB->keyPressedList.contains(c) || \
+                  pKEYB->keyPressedList.contains(TOLOWER(c)))?1:0)
+void Cpc1600::ComputeKey()
+{
+    // Manage left connector click
+    if (KEY(0x240) && (currentView==LEFTview)) {
+        pKEYB->keyPressedList.removeAll(0x240);
+        FluidLauncher *launcher = new FluidLauncher(mainwindow,
+                                     QStringList()<<P_RES(":/pockemul/configExt.xml"),
+                                     FluidLauncher::PictureFlowType,
+                                     "Sharp_60");
+        launcher->show();
+    }
 }
