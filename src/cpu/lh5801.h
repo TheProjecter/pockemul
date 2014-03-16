@@ -61,7 +61,7 @@ public:
 
 	bool	init(void);						//initialize
 	bool	exit(void);						//end
-	void	step(void);						//step SC61860
+    virtual void	step(void);						//step SC61860
 	void	Reset(void);
 
 	void	Load_Internal(QFile *file);

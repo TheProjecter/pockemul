@@ -10,6 +10,8 @@ public:
     {
         fn_status="LH5803.sta";
     }
+
+    virtual void	step(void);
 };
 
 
