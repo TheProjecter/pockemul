@@ -112,7 +112,7 @@ public:
         case DDB:	return(lh5810.r_ddb = data);	break;
         case OPA:	return(lh5810.r_opa = ( (lh5810.r_opa & (~lh5810.r_dda)) | (data & (lh5810.r_dda))) );	break;
         case OPB:	return(lh5810.r_opb = ( (lh5810.r_opb & (~lh5810.r_ddb)) | (data & (lh5810.r_ddb))) );	break;
-        case OPC:	return(lh5810.r_opc = data);	break;
+        case OPC:	New_OPC=true; return(lh5810.r_opc = data);	break;
         case F:		New_F = true; return(lh5810.r_f	= data);	break;
         }
 
@@ -134,7 +134,7 @@ public:
             case DDB:	return(lh5810.r_ddb |= (0x01 << bit));	break;
             case OPA:	return(lh5810.r_opa |= (0x01 << bit));	break;
             case OPB:	return(lh5810.r_opb |= (0x01 << bit));	break;
-            case OPC:	return(lh5810.r_opc |= (0x01 << bit));	break;
+            case OPC:	New_OPC=true; return(lh5810.r_opc |= (0x01 << bit));	break;
             case F:		return(lh5810.r_f	|= (0x01 << bit));	break;
             default:    break;
             }
@@ -143,7 +143,6 @@ public:
         {
             switch (reg)
             {
-    #if 1
             case U:		return(lh5810.r_u	&= ((0x01 << bit) ^ 0xff));	break;
             case L:		return(lh5810.r_l	&= ((0x01 << bit) ^ 0xff));	break;
             case G:		return(lh5810.r_g	&= ((0x01 << bit) ^ 0xff));	break;
@@ -156,19 +155,6 @@ public:
             case OPC:	return(lh5810.r_opc &= ((0x01 << bit) ^ 0xff));	break;
             case F:		return(lh5810.r_f	&= ((0x01 << bit) ^ 0xff));	break;
             default:    break;
-    #else
-            case LH5810_U:		return(lh5810.r_u	&= ~(0x01 << bit));	break;
-            case LH5810_L:		return(lh5810.r_l	&= ~(0x01 << bit));	break;
-            case LH5810_G:		return(lh5810.r_g	&= ~(0x01 << bit));	break;
-            case LH5810_MSK:	return(lh5810.r_msk &= ~(0x01 << bit));	break;
-            case LH5810_IF:		return(lh5810.r_if	&= ~(0x01 << bit));	break;
-            case LH5810_DDA:	return(lh5810.r_dda &= ~(0x01 << bit));	break;
-            case LH5810_DDB:	return(lh5810.r_ddb &= ~(0x01 << bit));	break;
-            case LH5810_OPA:	return(lh5810.r_opa &= ~(0x01 << bit));	break;
-            case LH5810_OPB:	return(lh5810.r_opb &= ~(0x01 << bit));	break;
-            case LH5810_OPC:	return(lh5810.r_opc &= ~(0x01 << bit));	break;
-            case LH5820_F:		return(lh5810.r_f	&= ~(0x01 << bit));	break;
-    #endif
             }
         }
         return (0);
@@ -185,12 +171,13 @@ public:
 
 	CLH5810(CPObject *parent);
     virtual ~CLH5810();
-
+protected:
+    bool	New_L,New_G,New_F,New_OPC;
 private:
     void start_serial_transmit();
     void ResetDivider();
 
-    bool	New_L,New_G,New_F;
+
     quint16 RolReg;
     quint8 bitCount;
     bool bit;

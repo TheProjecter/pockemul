@@ -122,7 +122,7 @@ bool CPD1990AC::step(void)
 
 	if (previous_state == 0) previous_state = pPC->pTIMER->state;
 
-	if ( (pPC->pTIMER->state - previous_state) >= pPC->getfrequency() )
+    while ( (pPC->pTIMER->state - previous_state) >= pPC->getfrequency() )
 	{
 		addretrace();
 		previous_state = pPC->pTIMER->state;
@@ -230,9 +230,6 @@ bool CPD1990AC::step(void)
 
 	return(1);
 }
-
-//void	CPD1990AC::Load_Internal(FILE *ffile);
-//void	CPD1990AC::save_internal(FILE *file);
 
 bool	CPD1990AC::Get_data(void)
 {

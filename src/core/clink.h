@@ -36,14 +36,14 @@ public:
     QMutex connectorsMutex;
 
     void clearlog(void) {
-        logMutex.lock();
+//        logMutex.lock();
         log_run.clear();
-        logMutex.unlock();
+//        logMutex.unlock();
     }
     void insertlog(CPObject * pPC){
-        logMutex.lock();
+//        logMutex.lock();
         log_run.append(pPC);
-        logMutex.unlock();
+//        logMutex.unlock();
 	}
     bool inlogrun(CPObject * pPC){
         return log_run.contains(pPC);

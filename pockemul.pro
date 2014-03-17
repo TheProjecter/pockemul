@@ -170,7 +170,6 @@ HEADERS += \
     resources/lcc/model/PC-1350/stdio.h \
     src/core/lcc/cstdlib.h \
     resources/lcc/model/PC-1350/graph.h \
-    src/core/lcc/parser/parser.h \
     src/machine/sharp/ce120p.h \
     qcodeedit/qreliablefilewatch.h \
     qcodeedit/qpanellayout.h \
@@ -265,7 +264,6 @@ SOURCES += \
     src/core/lcc/codegen.cpp \
     src/core/lcc/pasm.cpp \
     src/core/lcc/cstdlib.cpp \
-    src/core/lcc/parser/parser.cpp \
     qcodeedit/qreliablefilewatch.cpp \
     qcodeedit/qpanellayout.cpp \
     qcodeedit/qlinemarksinfocenter.cpp \
@@ -380,6 +378,7 @@ HEADERS += src/core/Connect.h \
     src/core/pobject.h \
     src/core/slot.h \
     src/core/xmlwriter.h \
+    src/core/lcc/parser/parser.h \
     src/cpu/cpu.h \
     src/cpu/lh5801.h \
     src/cpu/lh5810.h \
@@ -642,6 +641,7 @@ SOURCES +=  \
     src/core/paperwidget.cpp \
     src/core/slot.cpp \
     src/core/xmlwriter.cpp \
+    src/core/lcc/parser/parser.cpp \
     src/machine/sharp/Ce126.cpp \
     src/machine/ccable.cpp \
     src/machine/sharp/ce125.cpp \

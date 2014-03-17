@@ -33,7 +33,7 @@ extern bool	UpdateDisplayRunning;
 Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 {								//[constructor]
 	setfrequency( (int) 2600000/2);
-    ioFreq = 0;//5000;
+    ioFreq = 20000;
 	setcfgfname(QString("pc1500"));
 
     SessionHeader	= "PC1500PKM";
@@ -41,7 +41,7 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
     BackGroundFname	= P_RES(":/pc1500/pc1500.png");
     LcdFname		= P_RES(":/pc1500/1500lcd.png");
     SymbFname		= P_RES(":/pc1500/1500symb.png");
-	memsize			= 0x26000;
+    memsize			= 0x10000;
 	InitMemValue	= 0xFF;
 
     LeftFname   = P_RES(":/pc1600/pc1600Left.png");
@@ -117,9 +117,6 @@ Cpc1500A::Cpc1500A(CPObject *parent)	: Cpc15XX(this)
     SlotList.append(CSlot(8 , 0x8000 ,	""								, "" , CSlot::NOT_USED , "NOT USED"));
     SlotList.append(CSlot(8 , 0xA000 ,	""								, "" , CSlot::ROM , "ROM"));
     SlotList.append(CSlot(16, 0xC000 ,	P_RES(":/pc1500A/SYS1500A.ROM"), "" , CSlot::ROM , "SYSTEM ROM"));
-//    SlotList.append(CSlot(64, 0x10000 ,	""								, "" , CSlot::RAM , "RAM"));
-//    SlotList.append(CSlot(8 , 0x20000 ,	""								, "" , CSlot::ROM , "ROM"));
-//    SlotList.append(CSlot(8 , 0x22000 ,	""								, "" , CSlot::ROM , "ROM"));
 
     delete pLCDC; pLCDC = new Clcdc_pc1500A(this);
 
@@ -309,7 +306,7 @@ bool Cpc15XX::run(void)
 
 //	if (lh5810_Access)
     {
-		pLH5810->step();
+        pLH5810->step();
         pKEYB->Set_KS(lh5810_read(0x1F00C));
         lh5810_Access = false;
 	}
@@ -701,17 +698,19 @@ bool CLH5810_PC1500::step()
 	//	Send Data to PD1990AC -- TIMER
 	////////////////////////////////////////////////////////////////////
 
-	UINT8 t = lh5810.r_opc;
-	pPD1990AC->Set_data(READ_BIT(t,0));		// PC0
-	pPD1990AC->Set_stb(READ_BIT(t,1));		// PC1
-	pPD1990AC->Set_clk(READ_BIT(t,2));		// PC2
-	pPD1990AC->Set_out_enable(READ_BIT(t,3));	// PC3
-	pPD1990AC->Set_c0(READ_BIT(t,3));			// PC3
-	pPD1990AC->Set_c1(READ_BIT(t,4));			// PC4
-	pPD1990AC->Set_c2(READ_BIT(t,5));			// PC5
+    if (New_OPC) {
+        UINT8 t = lh5810.r_opc;
+        pPD1990AC->Set_data(READ_BIT(t,0));		// PC0
+        pPD1990AC->Set_stb(READ_BIT(t,1));		// PC1
+        pPD1990AC->Set_clk(READ_BIT(t,2));		// PC2
+        pPD1990AC->Set_out_enable(READ_BIT(t,3));	// PC3
+        pPD1990AC->Set_c0(READ_BIT(t,3));			// PC3
+        pPD1990AC->Set_c1(READ_BIT(t,4));			// PC4
+        pPD1990AC->Set_c2(READ_BIT(t,5));			// PC5
 
-	pPD1990AC->step();
-
+        pPD1990AC->step();
+        New_OPC = false;
+    }
 	// PB5 = TP
 	// PB6 = DATA
     SetRegBit(OPB,5,pPD1990AC->Get_tp());
@@ -721,48 +720,13 @@ bool CLH5810_PC1500::step()
 	////////////////////////////////////////////////////////////////////
 	//	ON/Break
 	////////////////////////////////////////////////////////////////////
-    //SetRegBit(OPB,7,pPC->pKEYB->Kon);
-
-    if (pPC->pKEYB->Kon)
-    {
-        SetRegBit(OPB,7,true);
-    } else
-    {
-        SetRegBit(OPB,7,false);
-    }
+    SetRegBit(OPB,7,pPC->pKEYB->Kon);
 
 	////////////////////////////////////////////////////////////////////
 	//	TAPE READER
 	////////////////////////////////////////////////////////////////////
     SetRegBit(OPB,2,((CbusPc1500*)pc1500->bus)->isCMTIN());
     CLI = CLO;
-
-
-#if 0
-    ////////////////////////////////////////////////////////////////////
-	//	TAPE WRITER
-	////////////////////////////////////////////////////////////////////
-	//	if IF & 0x08  = 0 the CPU store a BYTE to transmit
-	//	send the Byte to TAPE
-	//	set IF | 0x08 to 1
-
-	if ( !(lh5810.r_if & 0x08))
-	{
-		Cpc15XX *pPC15XX = (Cpc15XX *) pPC;
-			
-		AddLog(LOG_TAPE,tr("Write Tape %1").arg(lh5810.r_l,2,16,QChar('0')));
-		pPC15XX->pce152->WriteBitToWav(0,&pPC15XX->pce152->info);				// Start bit
-		for (int ii=0;ii<8;ii++)						// 8 data bits
-		{
-			pPC15XX->pce152->WriteBitToWav(((lh5810.r_l >>ii)&0x01),&pPC15XX->pce152->info);
-		}
-		pPC15XX->pce152->WriteBitToWav(1,&pPC15XX->pce152->info);				// Stop bit
-		pPC15XX->pce152->WriteBitToWav(1,&pPC15XX->pce152->info);				// Stop bit
-
-//        SetRegBit(IF,3,true);
-	}
-#endif
-
 
     SetRegBit(OPB,3,true);	// Export model vs domestic model
     SetRegBit(OPB,4,false);	// PB4 to GND
