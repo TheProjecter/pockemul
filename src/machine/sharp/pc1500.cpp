@@ -75,7 +75,6 @@ Cpc15XX::Cpc15XX(CPObject *parent)	: CpcXXXX(parent)
 	DialogExtensionID = 0;//IDD_EXT_PROPERTIES_1500;
 
     SoundOn			= false;
-    lh5810_Access	= false;
 
 	pLCDC		= new Clcdc_pc1500(this);
     pCPU		= new CLH5801(this); pCPU->logsw=false;
@@ -302,14 +301,9 @@ bool Cpc15XX::run(void)
 	if (pKEYB->CheckKon()) 
 		((CLH5801 *)pCPU)->lh5801.bf=1;
 
-    if (pKEYB->Kon) lh5810_Access = true;
-
-//	if (lh5810_Access)
-    {
-        pLH5810->step();
-        pKEYB->Set_KS(lh5810_read(0x1F00C));
-        lh5810_Access = false;
-	}
+    pLH5810->step();
+    pKEYB->Set_KS(lh5810_read(0x1F00C));
+    lh5810_Access = false;
 
 
     if (pLH5810->INT==true)
@@ -471,7 +465,7 @@ bool Cpc15XX::Chk_Adr(UINT32 *d,UINT32 data)
         if (((CbusPc1500*)bus)->isINHIBIT()) writeBus(d,data);
         return false;
     }
-    if ( (*d>=0x1F000) && (*d<=0x1F00F) ) { lh5810_write(*d,data); lh5810_Access = true; return false; }	// I/O area(LH5810)
+    if ( (*d>=0x1F000) && (*d<=0x1F00F) ) { lh5810_write(*d,data); return false; }	// I/O area(LH5810)
 
     if ( (*d>=0x10000) && (*d<=0x1FFFF) ) { writeBus(d,data); return false; }
 
@@ -512,12 +506,11 @@ bool Cpc15XX::Chk_Adr_R(UINT32 *d,UINT32 *data)
     }
 
     if ( (*d>=0x1F000) && (*d<=0x1F00F) ) {
-        lh5810_Access = true;
         *data = lh5810_read(*d);
         return false;
     }
 
-    if (((CbusPc1500*)bus)->isINHIBIT())
+//    if (((CbusPc1500*)bus)->isINHIBIT())
 //        qWarning()<<"Bus is INHIBIT adr="<<QString("%1").arg(*d,5,16,QChar('0'))<<"  iswrite:"<<bus->isWrite();
 
     if ( (*d>=0xC000) && (*d<=0xFFFF) && ((CbusPc1500*)bus)->isINHIBIT() ) {
