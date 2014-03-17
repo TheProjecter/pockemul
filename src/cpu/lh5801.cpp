@@ -434,7 +434,7 @@ INLINE void CLH5801::ORA_MEM(UINT32 addr, UINT8 data)
 	cpu_writemem(addr,data);	
 }
 
-void CLH5801::LDA(UINT8 data)
+INLINE void CLH5801::LDA(UINT8 data)
 {
 	lh5801.a = data;
 	CHECK_Z(data);

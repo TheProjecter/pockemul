@@ -125,7 +125,7 @@ bool CPD1990AC::step(void)
     while ( (pPC->pTIMER->state - previous_state) >= pPC->getfrequency() )
 	{
 		addretrace();
-        previous_state += pPC->getfrequency();
+        previous_state += (pPC->pTIMER->state - previous_state);
 	};
 
 
