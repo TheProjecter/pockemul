@@ -684,7 +684,7 @@ void CT6834::LineClear (UINT8 P_y)
  UINT8 x,y;
 // FIXME: Wat is the meaning of P_y=0xff ???? clear full screen ?
  //qWarning()<<"P_Y="<<P_y;
-//  if (P_y==0xff) P_y=0;
+  if (P_y==0xff) P_y=0;
 
  /* Effacement de la mémoire video */
  /*--------------------------------*/

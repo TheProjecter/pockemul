@@ -86,7 +86,7 @@ Cx07::Cx07(CPObject *parent)	: CpcXXXX(parent)
     SymbFname		= "";
 
     memsize		= 0x10000;
-    InitMemValue	= 0xff;
+    InitMemValue	= 0x00;     // Mandatory : init memory to 0x00 !!!!!
 
     SlotList.clear();
     SlotList.append(CSlot(8 , 0x0000 ,	""                  , ""	, CSlot::RAM , "RAM"));
@@ -723,6 +723,7 @@ void Cx07::SendToT6834 (PorT_FX *Port)
        s+=QString(" %1 ").arg(pT6834->Send_Cmd_T6834[i],2,16,QChar('0'));
 
    AddLog(LOG_CANON,s);
+//   qWarning()<<Cpt<<s;
 #if AFF_STR_SND_T6834
    fprintf (stderr,"(%s) \n",Cmd_T6834[pT6834->Send_Cmd_T6834[0]].Str_Cmd);
 #endif
