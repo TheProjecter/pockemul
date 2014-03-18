@@ -284,14 +284,14 @@ void Cdebug_ti57cpu::Disassemble(TI57regs *r) {
 
   QString Cdebug_ti57cpu::Tracing(TI57regs *r) {
       QString  s,ss;
-      s=Decode(r).append("\n");
+      s=Decode(r).append(" ");
 
       ss = QString("%1").arg(pPC->Get_16(r->PC<<1),4,16,QChar('0'));
 
-      s.append(QString("  A=%1 B=%2 C=%3 D=%4\n").arg(Reg(r->RA)).arg(Reg(r->RB)).arg(Reg(r->RC)).arg(Reg(r->RD)));
-      s.append(QString("  COND=%1 BASE=%2 R5=%3 RAB=%4 ST=%5 %6 %7 ").
-              arg(r->COND).arg(r->BASE).arg(IntToHex(r->R5,2)).arg(IntToHex(r->RAB,1)).arg(IntToHex(r->ST[0],3)).
-              arg(IntToHex(r->ST[1],3)).arg(IntToHex(r->ST[2],3)));
+//      s.append(QString("  A=%1 B=%2 C=%3 D=%4 ").arg(Reg(r->RA)).arg(Reg(r->RB)).arg(Reg(r->RC)).arg(Reg(r->RD)));
+//      s.append(QString("  COND=%1 BASE=%2 R5=%3 RAB=%4 ST=%5 %6 %7 ").
+//              arg(r->COND).arg(r->BASE).arg(IntToHex(r->R5,2)).arg(IntToHex(r->RAB,1)).arg(IntToHex(r->ST[0],3)).
+//              arg(IntToHex(r->ST[1],3)).arg(IntToHex(r->ST[2],3)));
       //  Write(Tracer,s)
 
       return s;
@@ -315,11 +315,12 @@ UINT32 Cdebug_ti57cpu::DisAsm_1(UINT32 oldpc)
     LocBuffer[0] = '\0';
     int len =1;
 
-    TI57regs *r = ((Cti57cpu *)(pPC->pCPU))->r;
-    r->OP = pPC->Get_16(r->PC<<1);
+    TI57regs r;
+    r.PC = pc;
+    r.OP = pPC->Get_16(r.PC<<1);
 
 //    sprintf(Buffer," %06X:%02X",pc,op);
-    QString t = Tracing(r);
+    QString t = Tracing(&r);
 
 //    qWarning()<<"**"<<t<<"**";
 
@@ -328,4 +329,10 @@ UINT32 Cdebug_ti57cpu::DisAsm_1(UINT32 oldpc)
     NextDasmAdr = oldpc+len;
     debugged = true;
     return NextDasmAdr;
+}
+
+UINT32 Cdebug_hp41cpu::DisAsm_1(UINT32 oldpc)
+{
+    //return (oldpc);
+    Buffer[0] = '\0';
 }

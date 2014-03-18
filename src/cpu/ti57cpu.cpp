@@ -52,7 +52,7 @@ bool Cti57cpu::exit()
 
 void Cti57cpu::step()
 {
-    if (r->Power)
+    if (!halt)
         Emulate();
 }
 
@@ -69,6 +69,8 @@ void Cti57cpu::Reset()
     r->RAB=0;
     r->SIGMA=false;
     r->ST[0]=0; r->ST[1]=0; r->ST[2]=0;
+    r->Power= true;
+    halt = false;
 
     memset(&(r->RA),0,sizeof(r->RA));
     memset(&(r->RB),0,sizeof(r->RB));
@@ -106,12 +108,25 @@ void Cti57cpu::save_internal(QXmlStreamWriter *xmlOut)
 
 void Cti57cpu::Regs_Info(UINT8)
 {
+    QString s;
     sprintf(Regs_String,"");
+    s.append(QString("  A=%1 B=%2 C=%3 D=%4 ").arg(Cdebug_ti57cpu::Reg(r->RA)).arg(Cdebug_ti57cpu::Reg(r->RB)).arg(Cdebug_ti57cpu::Reg(r->RC)).arg(Cdebug_ti57cpu::Reg(r->RD)));
+    s.append(QString("  COND=%1 BASE=%2 R5=%3 RAB=%4 ST=%5 %6 %7 ").
+            arg(r->COND).arg(r->BASE).arg(IntToHex(r->R5,2)).arg(IntToHex(r->RAB,1)).arg(IntToHex(r->ST[0],3)).
+            arg(IntToHex(r->ST[1],3)).arg(IntToHex(r->ST[2],3)));
+    sprintf(Regs_String,"%s",s.toLatin1().data());
 }
 
 void Cti57cpu::BranchOP() {
-    if (r->COND==(r->OP & 0x0400))
+    if (r->COND==( (r->OP & 0x0400)>>10)) {
         r->PC=(r->PC & 0x0400) | (r->OP & 0x03FF);
+        if (fp_log) {
+            sprintf(pPC->Log_String,"%s Branchcondition =%04x ",pPC->Log_String,r->PC);
+        }
+    }
+    if (fp_log) {
+        sprintf(pPC->Log_String,"%s reset cond",pPC->Log_String);
+    }
     r->COND=0;
 }
 
@@ -346,6 +361,7 @@ void Cti57cpu::MiscOP() {
 
   case 0x0B: /*POWOFF*/
         r->Power = false;
+        halt = true;
         break;
 
   case 0x0C: /*STAX MAEX*/

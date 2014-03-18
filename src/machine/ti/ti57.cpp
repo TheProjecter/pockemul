@@ -81,11 +81,14 @@ bool Cti57::run() {
 
     _regs->KEYR = getKey();
 
-    if ( !_regs->Power && (_regs->KEYR !=0 )) {
+    if (
+            !_regs->Power &&
+         (_regs->KEYR !=0 )) {
         _regs->COND = 1;
         _regs->R5 = _regs->KEYR;
         _regs->Timer=0;
         _regs->Power = true;
+        ti57cpu->halt = false;
         qWarning()<<"Wakeup";
 
     }
@@ -122,6 +125,7 @@ void Cti57::TurnON(void){
 
     ti57cpu->r->Run = true;
     ti57cpu->r->Power = !ti57cpu->r->Power;
+    ti57cpu->halt = !ti57cpu->halt;
     pLCDC->updated = true;
 //    Reset();
 //    ti57cpu->r->PC = 0x0052;

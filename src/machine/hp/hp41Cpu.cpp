@@ -28,6 +28,8 @@
 #include "pcxxxx.h"
 #include "hp41.h"
 #include "Lcdc.h"
+#include "ui/cregsz80widget.h"
+#include "Debug.h"
 
 // Class 0 Type A Parameter, Zenrom Pg 83
 //            0 1 2  3 4 5  6 7 8 9 a  b c  d e f
@@ -62,6 +64,8 @@ Chp41Cpu::Chp41Cpu(CPObject *parent):CCPU(parent)
     fBreakPtsEnable=false;
     fBreak=false;
     nBreakPts=0;
+    pDEBUG = new Cdebug_hp41cpu(pPC);
+    regwidget = (CregCPU*) new Cregsz80Widget(0,this);
 }
 
 
