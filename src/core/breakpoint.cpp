@@ -198,5 +198,5 @@ void CbreakpointManager::unserialize(QXmlStreamReader *xmlIn) {
             xmlIn->skipCurrentElement();
         }
     }
-    pPC->dialogdasm->refreshBreakPoints();
+    if (pPC->dialogdasm) pPC->dialogdasm->refreshBreakPoints();
 }

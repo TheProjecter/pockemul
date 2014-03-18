@@ -567,8 +567,10 @@ bool CpcXXXX::init(void)
 
 //    _loclog=fopen("toto.log","wt");
 
-    dialogdasm = new DialogDasm(this);
-    dialogdasm->hide();
+    if (pCPU->pDEBUG) {
+        dialogdasm = new DialogDasm(this);
+        dialogdasm->hide();
+    }
 
 	return(1);
 }
