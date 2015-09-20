@@ -1,0 +1,3 @@
+<a href='http://www.youtube.com/watch?feature=player_embedded&v=1BT8lvuPbZg' target='_blank'><img src='http://img.youtube.com/vi/1BT8lvuPbZg/0.jpg' width='425' height=344 /></a>
+<a href='http://www.youtube.com/watch?feature=player_embedded&v=WbcqnX5yYww' target='_blank'><img src='http://img.youtube.com/vi/WbcqnX5yYww/0.jpg' width='425' height=344 /></a>
+<a href='http://www.youtube.com/watch?feature=player_embedded&v=rzA3vpDGdKk' target='_blank'><img src='http://img.youtube.com/vi/rzA3vpDGdKk/0.jpg' width='425' height=344 /></a>

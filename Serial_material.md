@@ -1,0 +1,1 @@
+![http://pockemul.googlecode.com/svn/wiki/images/serialconsole.jpg](http://pockemul.googlecode.com/svn/wiki/images/serialconsole.jpg)
